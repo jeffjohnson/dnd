@@ -20,7 +20,7 @@ Never infer these from conversation history. Read them from repository manifests
 
 ## Read at startup
 
-1. `rulesets/<ruleset-id>/governance/graph_constitution.md`
+1. `rulesets/<ruleset-id>/governance/constitution.md`
 2. `contracts/GRAPH_INVARIANTS.md`
 3. `contracts/ARTIFACT_LIFECYCLE.md`
 4. all production schemas

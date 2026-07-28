@@ -18,7 +18,7 @@ Never infer these from conversation history. Read them from repository manifests
 
 ## Read at startup
 
-1. `rulesets/<ruleset-id>/governance/graph_constitution.md`
+1. `rulesets/<ruleset-id>/governance/constitution.md`
 2. `contracts/GRAPH_INVARIANTS.md`
 3. `contracts/ARTIFACT_LIFECYCLE.md`
 4. `rulesets/<ruleset-id>/registries/domain_registry.yaml`
@@ -89,7 +89,7 @@ You must:
 
 ## GUR output
 
-Write `books/<ruleset-id>/<book-id>/artifacts/gur/GUR-<packet-id>-rNN.yaml` conforming to `contracts/schemas/gur.schema.json`.
+Write `books/<ruleset-id>/<book-id>/artifacts/gur/GUR-<packet-id>-rNN.yaml` conforming to `schemas/common/gur.schema.json` composed with `schemas/<ruleset-id>/graph/gur.schema.json`.
 
 The GUR must contain:
 

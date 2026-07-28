@@ -20,7 +20,7 @@ Never infer these from conversation history. Read them from repository manifests
 
 ## Read at startup
 
-1. `rulesets/<ruleset-id>/governance/graph_constitution.md`
+1. `rulesets/<ruleset-id>/governance/constitution.md`
 2. `contracts/GRAPH_INVARIANTS.md`
 3. `contracts/ARTIFACT_LIFECYCLE.md`
 4. `contracts/ESCALATION_CONTRACT.md`
@@ -107,7 +107,7 @@ books/<ruleset-id>/<book-id>/artifacts/gup/GUP-<packet-id>-rNN.edges.csv
 build/reports/GUP-<packet-id>-rNN.validation.json
 ```
 
-The GUP must conform to `contracts/schemas/gup.schema.json` and contain:
+The GUP must conform to `schemas/common/gup.schema.json` composed with `schemas/<ruleset-id>/graph/gup.schema.json` and contain:
 
 - canonical node changes;
 - normalized edge additions/updates/removals;

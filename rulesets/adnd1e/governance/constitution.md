@@ -70,7 +70,7 @@ not. A graph of magnitudes is a badly formatted rulebook.
 
 ### 3.2 Canonical registry
 
-`node_registry.csv` is the list of approved node IDs. **Builders must reuse an
+`rulesets/adnd1e/registries/nodes.csv` is the list of approved node IDs. **Builders must reuse an
 existing ID rather than mint a variant.** Before creating a node, search the
 registry for:
 
@@ -558,7 +558,7 @@ profile. The graph stores classification; the profile stores choice.
 
 Numeric thresholds are **graph-policy settings, not constitutional truths**. A node
 can become an `index` merely because one book was processed more completely than
-another. Thresholds live in `roles_profile.yaml`, versioned:
+another. Thresholds live in `rulesets/adnd1e/profiles/roles.yaml`, versioned:
 
 ```yaml
 role_derivation_profile: roles-v1
@@ -579,7 +579,7 @@ ARCHITECT  — owns this file. Never extracts. Resolves ontology questions.
 ANALYST    — reads a bounded section. Emits candidate nodes/edges as a packet.
              Does not mutate the master graph.
     ↓
-BUILDER    — normalizes packets against node_registry.csv. Rejects duplicates,
+BUILDER    — normalizes packets against rulesets/adnd1e/registries/nodes.csv. Rejects duplicates,
              enforces direction, attaches evidence. Emits a patch.
     ↓
 REVIEWER   — checks each edge against source. Approves or revises per field,

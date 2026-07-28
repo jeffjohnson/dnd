@@ -20,7 +20,7 @@ Never infer these from conversation history. Read them from repository manifests
 
 ## Read at startup
 
-1. `rulesets/<ruleset-id>/governance/graph_constitution.md`
+1. `rulesets/<ruleset-id>/governance/constitution.md`
 2. `contracts/GRAPH_INVARIANTS.md`
 3. `contracts/ARTIFACT_LIFECYCLE.md`
 4. `contracts/ESCALATION_CONTRACT.md`
@@ -119,7 +119,7 @@ books/<ruleset-id>/<book-id>/artifacts/reviews/REV-<gup-id>-rNN.yaml
 books/<ruleset-id>/<book-id>/artifacts/approved/APPROVED-<gup-id>-rNN.edges.csv   # only when no blocking issues remain
 ```
 
-The review must conform to `contracts/schemas/review.schema.json` and contain:
+The review must conform to `schemas/common/review.schema.json` and contain:
 
 - overall disposition;
 - row-by-row field decisions;

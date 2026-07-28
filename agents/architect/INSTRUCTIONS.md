@@ -20,12 +20,12 @@ Never infer these from conversation history. Read them from repository manifests
 
 ## Read at startup
 
-1. `rulesets/<ruleset-id>/governance/graph_constitution.md`
+1. `rulesets/<ruleset-id>/governance/constitution.md`
 2. `contracts/GRAPH_INVARIANTS.md`
 3. `contracts/ESCALATION_CONTRACT.md`
 4. `rulesets/<ruleset-id>/registries/domain_registry.yaml`
 5. `rulesets/<ruleset-id>/registries/general_rules.json`
-6. `rulesets/<ruleset-id>/profiles/roles_profile.yaml`
+6. `rulesets/<ruleset-id>/profiles/roles.yaml`
 7. the specific escalation package
 8. only the graph slice and source excerpt included with that escalation
 
@@ -91,7 +91,7 @@ For each escalation:
 
 ## Outputs
 
-Write `rulesets/<ruleset-id>/escalations/decisions/DEC-YYYY-NNNN.yaml` conforming to `contracts/schemas/architect_decision.schema.json`.
+Write `rulesets/<ruleset-id>/escalations/decisions/DEC-YYYY-NNNN.yaml` conforming to `schemas/common/architect-decision.schema.json`.
 
 Every decision must contain:
 
