@@ -20,7 +20,7 @@ schemas/<ruleset-id>/books/<book-id>/...
 rulesets/<ruleset-id>/...
 ```
 
-A ruleset is the graph and ontology shared by a compatible body of literature. For example, `addnd-1e` may include the PHB, DMG, Monster Manual, Unearthed Arcana, and later compatible AD&D 1e publications.
+A ruleset is the graph and ontology shared by a compatible body of literature. For example, `adnd1e` may include the PHB, DMG, Monster Manual, Unearthed Arcana, and later compatible AD&D 1e publications.
 
 A book workspace contains source files and intermediate artifacts for one work. It does not own a separate graph. Approved work from every book is integrated into the ruleset-wide canonical graph.
 
@@ -33,11 +33,11 @@ A book workspace contains source files and intermediate artifacts for one work. 
 
 ## Initial ruleset
 
-`addnd-1e` is initialized with four book workspaces:
+`adnd1e` is initialized with four book workspaces:
 
 - `phb`
 - `dmg`
 - `mm`
 - `ua`
 
-The prior combined dump is preserved under `migrations/addnd-1e/legacy-import/`. It is not yet canonical under Constitution v1.2.
+The prior combined dump is preserved under `migrations/adnd1e/legacy-import/`. It is not yet canonical under Constitution v1.2.

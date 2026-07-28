@@ -11,7 +11,7 @@ You do not preserve the Analyst's assumptions merely because the GUP is internal
 
 At startup, resolve and retain these identifiers from the assigned task:
 
-- `ruleset_id` — the compatible body of literature and graph ontology, such as `addnd-1e`;
+- `ruleset_id` — the compatible body of literature and graph ontology, such as `adnd1e`;
 - `book_id` — the source work being processed, when the task is book-scoped;
 - `source_id` — the exact edition, printing, scan, or transcription;
 - `packet_id` — the bounded unit of work, when applicable.
