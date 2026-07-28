@@ -1,0 +1,20 @@
+source_id,source_label,edge_type,target_id,target_label,aspect,condition,book,page,section,explicit,pass
+rule_secret_roll,Secret Dice Roll,GATES,thief_skills,Thief Skills,thief never learns the result,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+rule_awareness,Opponent Awareness,EXCLUDES,thief_backstab,Back Stab,aware opponents negate the attack form,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+monster_special,Creatures Without a Back,EXCLUDES,thief_backstab,Back Stab,otyughs slimes and molds negate it,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+monster_special,Surprise-Negating Creatures,EXCLUDES,thief_backstab,Back Stab,no surprise means no back stab,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+thief_pick_pockets,Pick Pockets,OVERRIDES,thief_skills,Thief Skills,failure permits repeated attempts,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+thief_pick_pockets,Pick Pockets,CONSTRAINS,time_segment_round_turn,Melee Round,limited attempts per round,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+thief_pick_pockets,Noticed Pickpocketing,TRIGGERS,rule_spy_backtrace,Being Followed,victim may track the thief to his headquarters,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+thief_open_locks,Open Locks,CONSUMES,time_segment_round_turn,Rounds,picking takes rounds by lock complexity,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+rule_lock_complexity,Lock Complexity,MODIFIES,thief_open_locks,Open Locks,time required to pick,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+thief_find_remove_traps,Find/Remove Traps,CONSUMES,time_segment_round_turn,Rounds,each function costs time separately,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+thief_find_remove_traps,Find/Remove Traps,EXCLUDED_FROM,rule_magical_trap,Magical Traps,cannot find magical or magically hidden traps,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+thief_move_silently,Move Silently,CONSTRAINS,ex_movement_rate,Movement Rate,creeps at exploratory speed,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+rule_secret_roll,Secret Dice Roll,GATES,thief_move_silently,Move Silently,thief believes he is silent regardless,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+rule_observer,Direct or Indirect Observation,EXCLUDES,thief_hide_in_shadows,Hide in Shadows,never possible while observed,,DMG,19,THIEF ABILITIES,TRUE,section-sweep
+rule_wall_surface,Wall Surface,FEEDS_INTO,tbl_wall_climbing,Wall Climbing Table,roughness sets the base rate,,DMG,19,"WALL CLIMBING TABLE, FEET PER ROUND OF CLIMBING",TRUE,section-sweep
+rule_surface_condition,Surface Condition,MODIFIES,tbl_wall_climbing,Wall Climbing Table,slipperiness reduces the rate,,DMG,19,"WALL CLIMBING TABLE, FEET PER ROUND OF CLIMBING",TRUE,section-sweep
+tbl_wall_climbing,Wall Climbing Table,FEEDS_INTO,thief_climb_walls,Climb Walls,feet per round of climbing,,DMG,19,"WALL CLIMBING TABLE, FEET PER ROUND OF CLIMBING",TRUE,section-sweep
+tbl_wall_climbing,Wall Climbing Table,CONSTRAINS,thief_climb_walls,Climb Walls,slippery smooth walls cannot be climbed at all,,DMG,19,"WALL CLIMBING TABLE, FEET PER ROUND OF CLIMBING",TRUE,section-sweep
+tbl_wall_climbing,Wall Climbing Table,CONSUMES,time_segment_round_turn,Rounds,ascent measured per round,,DMG,19,"WALL CLIMBING TABLE, FEET PER ROUND OF CLIMBING",TRUE,section-sweep

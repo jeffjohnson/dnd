@@ -1,0 +1,36 @@
+source_id,source_label,edge_type,target_id,target_label,aspect,condition,book,page,section,explicit,pass
+rule_monk_kill,Monk Stunning and Killing,EXCLUDED_FROM,monster_undead,Undead,cannot be affected,,DMG,71,COMBAT (MELEE),TRUE,page-sweep
+rule_open_hand_combat,Open Hand Attack,TRIGGERS,cbt_damage,Touch Damage to Attacker,striking touch-damaging undead harms the monk,,DMG,71,COMBAT (MELEE),TRUE,page-sweep
+rule_monk_kill,Monk Stunning and Killing,EXCLUDED_FROM,monster_special,Golems and Dopplegangers,cannot be affected,,DMG,71,COMBAT (MELEE),TRUE,page-sweep
+rule_open_hand_combat,Open Hand Attack,MODIFIES,cbt_damage,Damage,damage still accrues where the monster is hittable,,DMG,71,COMBAT (MELEE),TRUE,page-sweep
+rule_declared_action,Declared Action,GATES,cbt_melee,Melee Round,activity stated precisely at round start,,DMG,71,Actions During Combat And Similar Time-Important Situations:,TRUE,page-sweep
+rule_declared_action,Player Hesitation,EXCLUDES,cbt_melee,Melee Action,dithering means doing nothing that round,,DMG,71,Actions During Combat And Similar Time-Important Situations:,TRUE,page-sweep
+rule_declared_action,Declared Action,CONSUMES,time_segment_round_turn,Segments,each sub-action costs segments,,DMG,71,Actions During Combat And Similar Time-Important Situations:,TRUE,page-sweep
+sys_equipment,Item Location,MODIFIES,rule_declared_action,Retrieval Time,pouch versus backpack costs different segments,,DMG,71,Actions During Combat And Similar Time-Important Situations:,TRUE,page-sweep
+rule_potion_use,Drinking a Potion,CONSUMES,time_segment_round_turn,Segments,a segment to consume,,DMG,71,Actions During Combat And Similar Time-Important Situations:,TRUE,page-sweep
+rule_declared_action,Multi-Round Action,CONSTRAINS,rule_declared_action,New Instructions,player cannot redirect until the action completes,,DMG,71,Actions During Combat And Similar Time-Important Situations:,TRUE,page-sweep
+rule_invisibility,Invisibility,CONSTRAINS,rule_order_of_march,Allied Movement,allies cannot see the invisible character either,,DMG,71,Actions During Combat And Similar Time-Important Situations:,TRUE,page-sweep
+cbt_pummel_grapple,Grappling,RESOLVED_BY,rule_dice_probability,Percentile Roll,adjusted score read off the grappling table,,DMG,73,NON-LETHAL & WEAPONLESS COMBAT,TRUE,page-sweep
+abil_strength,Opponent Strength,MODIFIES,cbt_pummel_grapple,Grappling,reduces the attacker's score,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+sys_armor,Banded or Plate Mail,MODIFIES,cbt_pummel_grapple,Grappling,heavy armor resists grappling,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+sys_armor,Gorget and Helmet,MODIFIES,cbt_pummel_grapple,Grappling,protects against holds,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+rule_shield,Shield,MODIFIES,cbt_pummel_grapple,Grappling,hinders the grappler,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+cbt_pummel_grapple,Grappling Hold,CONSTRAINS,cbt_pummel_grapple,Grappling,hold persists until a higher hold is scored,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+cbt_pummel_grapple,Grappling Hold,MODIFIES,hit_points,Hit Points,damage accrues each round the hold lasts,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+abil_strength,Strength Bonus,MODIFIES,cbt_pummel_grapple,Grappling Damage,added to the tabulated damage,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+rule_stun,Stunned Opponent,GATES,cbt_pummel_grapple,Second Attack,immediate follow-up permitted,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+rule_stun,Stunned Opponent,EXCLUDES,cbt_pummel_grapple,Counter,cannot counter for a round,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+cbt_overbear,Overbearing,DERIVED_FROM,cbt_pummel_grapple,Weaponless Combat,takes the opponent prone,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+cbt_overbear,Overbearing,GATES,cbt_pummel_grapple,Follow-Up Attack,permits pummel or grapple after,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+cbt_overbear,Overbearing,MODIFIES,hit_points,Hit Points,half the damage is real,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+cbt_overbear,Overbearing,EXCLUDED_FROM,sys_equipment,Free Hands,attacker may hold shield or weapon,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+cbt_surprise,Surprise,GATES,cbt_overbear,First Attack Initiative,first in the initiative order,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+cbt_charge,Charging,GATES,cbt_overbear,First Attack Initiative,second in the initiative order,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+abil_dexterity,Dexterity,GATES,cbt_overbear,First Attack Initiative,higher dexterity acts sooner,,DMG,73,GRAPPLING TABLE,TRUE,page-sweep
+abil_strength,Attacker Strength,MODIFIES,cbt_overbear,Overbearing,improves the score,,DMG,73,OVERBEARING TABLE,TRUE,page-sweep
+tbl_height_weight,Weight Difference,MODIFIES,cbt_overbear,Overbearing,heavier attacker has the advantage,,DMG,73,OVERBEARING TABLE,TRUE,page-sweep
+tbl_height_weight,Height Difference,MODIFIES,cbt_overbear,Overbearing,smaller adjustment than weight,,DMG,73,OVERBEARING TABLE,TRUE,page-sweep
+abil_dexterity,Opponent Dexterity,MODIFIES,cbt_overbear,Overbearing,agile defenders resist,,DMG,73,OVERBEARING TABLE,TRUE,page-sweep
+rule_braced,Braced Opponent,MODIFIES,cbt_overbear,Overbearing,set stance resists being borne over,,DMG,73,OVERBEARING TABLE,TRUE,page-sweep
+cbt_overbear,Overborne Opponent,TRIGGERS,rule_stun,Stunned,worst result stuns for a round,,DMG,73,OVERBEARING TABLE,TRUE,page-sweep
+cbt_overbear,Overborne Opponent,GATES,cbt_melee,Further Combat,some other combat form must follow,,DMG,73,OVERBEARING TABLE,TRUE,page-sweep

@@ -1,0 +1,35 @@
+source_id,source_label,edge_type,target_id,target_label,aspect,condition,book,page,section,explicit,pass
+rule_time,Game Time,GATES,rule_hp_recovery,Hit Point Recovery,makes recovery meaningful,,DMG,37,TIME IN THE CAMPAIGN,TRUE,page-sweep
+rule_time,Game Time,CONSTRAINS,item_enchant,Magic Item Manufacture,no adventuring during fabrication,,DMG,37,TIME IN THE CAMPAIGN,TRUE,page-sweep
+rule_time,Game Time,CONSTRAINS,rule_stronghold,Base of Operations,wilderness time removes characters from base,,DMG,37,TIME IN THE CAMPAIGN,TRUE,page-sweep
+sys_alignment,Unfaithful Cleric,TRIGGERS,rule_deity,Deity Displeasure,transgressions enumerated,seeking high level spells,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+rule_deity,Deity,CONSTRAINS,rule_cleric_spells,Cleric Spells,grants only what the penance requires,,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+rule_deity,Anathema,EXCLUDES,rule_cleric_spells,Cleric Spells,no help until favour is regained,,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+rule_atonement,Prescribed Course,GATES,rule_deity,Deity Favour,redemption path set by the deity,,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+rule_deity_change,Changing Deities,TRIGGERS,rule_deity,Former Deity,the cleric is marked,,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+rule_deity_change,Changing Deities,MODIFIES,cbt_encounter_reactions,New Deity Suspicion,minions are wary,,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+rule_deity_change,Changing Deities,TRIGGERS,death_character,Divine Destruction,unfaithfulness after a change is fatal,,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+rule_deity_change,Thrice-Changed Cleric,TRIGGERS,death_character,Instant Death,no salvation,,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+align_change,Changing Alignment,TRIGGERS,rule_deity_change,Changing Deities,alignment shift forces a deity change,,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+rule_involuntary_change,Involuntary Alignment Change,OVERRIDES,rule_deity_change,Changing Deities,does not count against the cleric,,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+rule_deity_change,Deity Rules,FEEDS_INTO,class_paladin,Paladin,applies to paladin clerical powers,,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+rule_deity_change,Deity Rules,FEEDS_INTO,class_ranger,Ranger,applies to ranger druidic powers,,DMG,39,ACQUISITION OF CLERIC SPELLS,TRUE,page-sweep
+rule_apprenticeship,Apprenticeship,GATES,rule_spell_book,First Spell Book,master bestows the starting spells,,DMG,39,ACQUISITION OF MAGIC-USER SPELLS,TRUE,page-sweep
+exp_level,Master's Level,GATES,rule_apprenticeship,Apprenticeship,master must be of high level,,DMG,39,ACQUISITION OF MAGIC-USER SPELLS,TRUE,page-sweep
+abil_intelligence,Intelligence,CONSTRAINS,rule_spell_book,Spell Book,how many spells may be known,,DMG,39,ACQUISITION OF MAGIC-USER SPELLS,TRUE,page-sweep
+rule_spell_book,Spell Book,GATES,rule_magic_user_spells,Magic-User Spells,knowledge is never automatic,,DMG,39,ACQUISITION OF MAGIC-USER SPELLS,TRUE,page-sweep
+sys_treasure,Found Scroll,FEEDS_INTO,rule_chance_know_spell,Chance to Know Spell,new spells must be found in the world,,DMG,39,ACQUISITION OF MAGIC-USER SPELLS,TRUE,page-sweep
+rule_chance_know_spell,Chance to Know Spell,GATES,rule_spell_book,Spell Book,comprehension before recording,,DMG,39,ACQUISITION OF MAGIC-USER SPELLS,TRUE,page-sweep
+rule_spell_book,Recording a Spell,CONSUMES,item_scroll,Scroll,the scroll portion is destroyed,,DMG,39,ACQUISITION OF MAGIC-USER SPELLS,TRUE,page-sweep
+spell_read_magic,Read Magic,GATES,rule_apprenticeship,Apprenticeship,an absolute requirement of the profession,,DMG,39,ACQUISITION OF MAGIC-USER SPELLS,TRUE,page-sweep
+rule_rest,Rest,GATES,rule_spell_memorization,Spell Recovery,mental faculties must be revitalized,,DMG,40,RECOVERY OF SPELLS,TRUE,page-sweep
+rule_spell_level,Highest Spell Level,MODIFIES,rule_rest,Rest Time,the highest spell sets the whole rest period,,DMG,40,RECOVERY OF SPELLS,TRUE,page-sweep
+rule_spell_level,Spell Level,CONSUMES,rule_time,Study Time,quarter hour per spell level to memorize,,DMG,40,RECOVERY OF SPELLS,TRUE,page-sweep
+rule_spell_memorization,Spell Recovery,CONSUMES,rule_time,Time,rest plus study before any casting,,DMG,40,RECOVERY OF SPELLS,TRUE,page-sweep
+rule_spell_casting,Spell Casting,DERIVED_FROM,rule_planar_travel,Positive and Negative Material Planes,energy is drawn from other planes,,DMG,40,SPELL CASTING,TRUE,page-sweep
+spell_component_verbal,Verbal Component,TRIGGERS,rule_spell_casting,Energy Release,the utterance looses the charge,,DMG,40,SPELL CASTING,TRUE,page-sweep
+rule_spell_casting,Energy Release,CONSUMES,rule_spell_memorization,Memorized Spell,the spell is forgotten on release,,DMG,40,SPELL CASTING,TRUE,page-sweep
+rule_spell_casting,Energy Release,CONSUMES,item_scroll,Scroll Writing,the writing disappears,,DMG,40,SPELL CASTING,TRUE,page-sweep
+spell_component_somatic,Somatic Component,MODIFIES,rule_spell_casting,Spell Effect,controls direction target and area,,DMG,40,SPELL CASTING,TRUE,page-sweep
+spell_component_material,Material Component,CONSUMES,rule_spell_casting,Energy Balance,destruction balances the planar flow,,DMG,40,SPELL CASTING,TRUE,page-sweep
+class_druid,Druid Mistletoe,DERIVED_FROM,spell_component_material,Material Component,consumed very slowly,,DMG,40,SPELL CASTING,TRUE,page-sweep

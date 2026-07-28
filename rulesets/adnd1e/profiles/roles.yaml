@@ -1,0 +1,33 @@
+# Versioned role-derivation thresholds. NOT constitutional.
+# Thresholds depend on graph size, extraction completeness, and which books are
+# loaded. Re-derive whenever this file or the corpus changes.
+role_derivation_profile: roles-v1
+corpus_state:
+  books: [PHB, DMG, UA, MM]
+  edges: 3851
+  note: MM layer is keyword-derived; its nodes are under-connected relative to PHB/DMG,
+        so degree-based roles under-report for monsters.
+
+thresholds:
+  resource:              {inbound_CONSUMES: 2}
+  consumer:              {outbound_CONSUMES: 2}
+  sink:                  {inbound_CONSUMES: 3, outbound_CONSUMES_max: 0}
+  gatekeeper:            {outbound_GATES: 4}
+  gated_privilege:       {inbound_GATES: 3}
+  tuning_point:          {inbound_MODIFIES: 5}
+  modifier_source:       {outbound_MODIFIES: 5}
+  trigger_source:        {outbound_TRIGGERS: 4}
+  triggered_procedure:   {inbound_TRIGGERS: 4}
+  resolution_machinery:  {inbound_RESOLVED_BY: 1}
+  aggregator:            {inbound_FEEDS_INTO: 4}
+  override_source:       {outbound_OVERRIDES: 3}
+  boundary_marker:       {outbound_EXCLUDES_plus_inbound_EXCLUDED_FROM: 3}
+  index:                 {outbound_min: 20, inbound_max: 4}
+  accumulator:           {inbound_min: 20, outbound_max: 6}
+
+tier2:
+  advancement_currency:  outbound FEEDS_INTO -> node prefixed xp_
+  logistical_burden:     outbound FEEDS_INTO -> enc_encumbrance
+  wealth_sink:           outbound CONSUMES  -> money_gp
+  time_sink:             outbound CONSUMES  -> rule_time
+  attrition_pressure:    outbound MODIFIES  -> rule_hit_points, polarity=worsens

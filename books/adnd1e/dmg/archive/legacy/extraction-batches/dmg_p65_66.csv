@@ -1,0 +1,35 @@
+source_id,source_label,edge_type,target_id,target_label,aspect,condition,book,page,section,explicit,pass
+rule_oil,Flaming Oil,TRIGGERS,item_saving_throw,Item Saving Throw,cloth garments may catch fire,leaping across,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+rule_oil,Flaming Oil,MODIFIES,hit_points,Hit Points,damage per round standing in it,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+rule_holy_water,Holy Water,TRIGGERS,monster_undead,Undead,burns as acid,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+rule_holy_water,Holy Water,TRIGGERS,monster_demon_devil,Lower Planar Creatures,burns as acid,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+rule_holy_water,Unholy Water,TRIGGERS,class_paladin,Paladin,burns good-aligned creatures,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+rule_holy_water,Holy Water,EXCLUDED_FROM,monster_undead,Non-Material Undead,gaseous or incorporeal forms are immune,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+sys_alignment,Alignment,GATES,rule_holy_water,Holy or Unholy Water,which liquid affects which creature,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+cbt_initiative,Initiative,GATES,spell_casting_time,Spell Commencement,when casting begins,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+spell_casting_time,Casting Time,GATES,rule_spell_casting,Spell Completion,culmination governed by casting time,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+cbt_damage,Being Struck,TRIGGERS,spell_disruption,Spell Disruption,any successful hit spoils the spell,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+spell_disruption,Spell Disruption,CONSUMES,rule_spell_memorization,Memorized Spell,lost as if cast,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+spell_component_somatic,Somatic Component,CONSTRAINS,rule_spell_casting,Spell Casting,must be smooth and uninterrupted,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+ex_movement_rate,Violent Movement,EXCLUDES,rule_spell_casting,Spell Casting,cannot cast while running or dodging,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+rule_prone,Crouching or Prone,EXCLUDES,rule_spell_casting,Spell Casting,posture prevents somatic components,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+spell_component_somatic,No Somatic Component,OVERRIDES,rule_prone,Posture Restriction,such spells may be cast prone,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+ex_light_vision,Line of Sight,GATES,rule_spell_casting,Targeted Spells,caster must see the area of effect,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+rule_spell_casting,Spell Casting,CONSTRAINS,rule_declared_action,Movement,cannot pause casting and relocate,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+cbt_pummel_grapple,A Mere Shove,TRIGGERS,spell_disruption,Spell Disruption,any interruption cancels the dweomer,,DMG,65,SPELL CASTING DURING MELEE,TRUE,page-sweep
+turn_undead,Commanded Creature,CONSTRAINS,class_cleric,Cleric,compulsion ends if the cleric falls,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+rule_unconsciousness,Cleric Unconscious,TRIGGERS,turn_undead,Release from Compulsion,commanded creatures are freed,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+turn_undead,Freed Creature,TRIGGERS,cbt_melee,Retaliation,may attack the former controller,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+monster_intelligence,Mindless Undead,OVERRIDES,turn_undead,Release from Compulsion,simply lose all animation,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+sys_alignment,Opposed Cleric,GATES,turn_undead,Counter-Affecting,may negate another cleric's turning,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+turn_undead,Counter-Affecting,CONSTRAINS,turn_undead,Counter-Affecting,may be countered in turn indefinitely,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+turn_undead,Counter-Affecting,EXCLUDED_FROM,monster_undead,Destroyed Undead,cannot restore those already destroyed,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+turn_undead,Countered Creature,CONSTRAINS,cbt_melee,Action,powerless for the following round,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+rule_consecrated_area,Evil Area,MODIFIES,turn_undead,Turning Undead,reduces the cleric's chance within its precincts,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+rule_consecrated_area,Evil Area,CONSTRAINS,campaign_construction,Area Size,shrine and temple areas are limited in extent,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+rule_desecration,Desecration,OVERRIDES,rule_consecrated_area,Evil Area,destroys the power base,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+rule_holy_water,Holy Water,FEEDS_INTO,rule_desecration,Desecration,poured upon the altar,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+rule_planar_travel,Lower Planes,EXCLUDES,turn_undead,Turning Undead,good clerics cannot affect natives there,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+rule_planar_travel,Upper Planes,EXCLUDES,turn_undead,Turning Undead,evil clerics cannot affect paladins there,,DMG,66,TURNING UNDEAD,TRUE,page-sweep
+cbt_close_range,Closing to Striking Range,CONSUMES,time_segment_round_turn,Round,play advances without melee,,DMG,66,FURTHER ACTIONS,TRUE,page-sweep
+ex_movement_rate,Base Speed,GATES,cbt_close_range,Closing to Striking Range,movement at base rate,,DMG,66,FURTHER ACTIONS,TRUE,page-sweep
