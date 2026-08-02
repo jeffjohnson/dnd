@@ -1,0 +1,305 @@
+schema_version: "1.0"
+id: GUR-PKT-PHB-040-042-spells-intro-r01
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-040-042-spells-intro
+constitution_version: "1.2"
+
+revision: 1
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 40
+page_end: 42
+
+# =============================================================================
+# HEADLINE RESULT: 6 candidate edges. 0 candidate nodes. 0 escalations.
+#
+# The four spell tables, listing roughly 250 spells by class and spell level,
+# are deliberately not extracted. That decision is the substance of this GUR
+# and is argued in grain_decisions. All six edges come from the prose
+# introduction on page 40.
+# =============================================================================
+
+source_summary: >-
+  Pages 40 to 42. CHARACTER SPELLS, explaining verbal, somatic and material components,
+  how clerical spells are bestowed by a deity while magical ones are memorised from spell
+  books, that memorisation takes time and a rested mind, and that a cast spell is
+  forgotten entirely. Then four large tables listing the spells available to clerics,
+  druids, magic-users and illusionists by spell level. Finally SPELL EXPLANATIONS,
+  describing the format used for every spell entry in the chapters that follow.
+
+node_id_resolution_method: >-
+  No slice supplied. All six edges resolved onto existing canonical IDs by targeted
+  registry lookup. No candidate node was needed.
+
+grain_decisions:
+  - decision: >-
+      The four spell tables are not extracted. No spell node is referenced and no
+      spell-to-class or spell-to-level edge is proposed from them.
+    reasoning: >-
+      Three reasons, the third decisive. Precedent: OBS-04 of the preamble GUR rejected
+      the book's own table index on the grounds that naming a table is not asserting a
+      relationship, and these tables name spells the same way. Grain: what the tables add
+      beyond the name is the spell's level, which is a magnitude. Locus: every spell in
+      these tables is described individually in the chapters that follow, and each
+      description carries its own Level line together with range, duration, area of
+      effect, components, casting time and saving throw. That is where a spell's identity
+      and its mechanics are both established. Extracting the index first would mint up to
+      250 node identities ahead of the mechanics that justify them, against a registry
+      where duplicate identity is already the subject of two open escalations.
+    what_would_reverse_it: >-
+      If the spell chapters did not restate a spell's level, the tables would be the
+      authoritative locus and would have to be extracted. That is a test, and it has been
+      run: the cleric spell packet opens with entries carrying an explicit Level line,
+      confirmed by inspection before this decision was taken.
+
+candidate_nodes: []
+candidate_general_rules: []
+domains_touched: []
+domains_touched_note: BLK-01 unchanged; the domain registry is still an empty map.
+
+candidate_edges:
+  - ref: A1
+    source_id: rule_rest
+    source_label: "Rest and Nourishment"
+    edge_type: GATES
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "rested mind required"
+    condition: ""
+    book: PHB
+    page: 40
+    section: "CHARACTER SPELLS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+
+  - ref: A2
+    source_id: rule_spell_memorization
+    source_label: "Spell Memorization"
+    edge_type: CONSUMES
+    target_id: rule_spell_slot
+    target_label: "Memorized Spell"
+    aspect: "expended on casting"
+    condition: "a cast spell is forgotten entirely"
+    book: PHB
+    page: 40
+    section: "CHARACTER SPELLS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+
+  - ref: A3
+    source_id: rule_spell_book
+    source_label: "Spell Book"
+    edge_type: GATES
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "consultation before memorising"
+    condition: "magic-users and illusionists"
+    book: PHB
+    page: 40
+    section: "CHARACTER SPELLS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+
+  - ref: A4
+    source_id: sys_equipment
+    source_label: "Equipment"
+    edge_type: FEEDS_INTO
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "material components"
+    condition: "supplied by the caster, never bestowed"
+    book: PHB
+    page: 40
+    section: "CHARACTER SPELLS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+
+  - ref: A5
+    source_id: sys_alignment
+    source_label: "Alignment"
+    edge_type: CONSTRAINS
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "granting of the highest spells"
+    condition: "clerics judged on faithfulness by the deity"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 40
+    section: "CHARACTER SPELLS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+
+  - ref: A6
+    source_id: rule_spell_memorization
+    source_label: "Spell Memorization"
+    edge_type: CONSUMES
+    target_id: time_segment_round_turn
+    target_label: "Round and Segment"
+    aspect: "preparation time"
+    condition: "scaled by spell level"
+    book: PHB
+    page: 40
+    section: "CHARACTER SPELLS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+
+rejected_candidates:
+  - text_locus: "SPELL TABLES, pages 40 to 42"
+    quoted_gist: roughly 250 spells listed by class and by spell level
+    rejection_reason: >-
+      See grain_decisions. Deferred to the spell description chapters, not discarded.
+
+  - text_locus: "CHARACTER SPELLS, p40"
+    quoted_gist: the number of spells usable depends upon class and level
+    rejection_reason: >-
+      An explicit back-reference. The text says "As previously shown in the CHARACTER
+      CLASSES section", and packet 05's A1 to A6 carry the relationship from there with a
+      better citation.
+
+  - text_locus: "SPELL EXPLANATIONS, p42"
+    quoted_gist: the format of a spell entry, giving range, duration, area of effect and so on
+    rejection_reason: >-
+      A description of how the following chapters are laid out. It defines fields rather
+      than asserting relationships between mechanics. See OBS-38 for the one consequence
+      worth carrying forward.
+
+non_edge_observations:
+  - id: OBS-37
+    topic: the spell tables are an index, and the index is worth keeping as a checklist
+    finding: >-
+      Four tables list the complete spell selection for clerics, druids, magic-users and
+      illusionists by spell level, roughly 250 entries in total.
+    why_it_matters: >-
+      Not extracted, but directly useful to whoever extracts the spell chapters. It is an
+      independent completeness check of exactly the kind OBS-04 proposed for the table
+      index, and a stronger one, because it enumerates every spell rather than every
+      table. A spell chapter that describes a spell absent from these tables, or omits one
+      present in them, is worth a second look.
+    caveat: >-
+      Subject to OBS-19. The printed apparatus of this book is known to contain at least
+      one error, so this index is a cross-check and not an authority.
+
+  - id: OBS-38
+    topic: area of effect now has a proper locus, and OBS-35 can be answered
+    finding: >-
+      SPELL EXPLANATIONS establishes Area of Effect as a standard field of every spell
+      entry, defined as how large an area the spell covers or how many creatures it
+      affects.
+    why_it_matters: >-
+      OBS-35 of the hirelings packet reported that the emphatic page 39 prohibition on
+      applying outdoor scale to spell area of effect could not be recorded, because no
+      canonical node represents area of effect, and recommended revisiting when this
+      packet was reached. This is that point. The concept is a named, formally defined
+      field of every spell in the book, which is a far stronger basis for a node than a
+      distance-scale paragraph would have been.
+    recommendation: >-
+      Architect to consider a node for spell area of effect. It would let the page 39
+      prohibition be recorded as EXCLUDED_FROM, and the spell chapters will very likely
+      want it regardless. The Analyst does not propose it here, because no edge in this
+      packet needs it and proposing a node from a formatting section is only marginally
+      better than proposing one from a distance paragraph. It should be proposed from a
+      spell packet, where it does load-bearing work.
+
+  - id: OBS-39
+    topic: clerical and magical spell acquisition differ in a way the graph should keep
+    finding: >-
+      Clerical spells are bestowed by a deity through prayer, with the highest levels
+      granted only by the deity directly and subject to judgement of the cleric's
+      faithfulness. Magical spells are memorised from spell books the caster maintains.
+      Material components are supplied by the caster in both cases and are never bestowed.
+    why_it_matters: >-
+      A3 and A5 record the two halves and are the reason this packet is not simply
+      redundant with packet 05. Packet 05 established which classes may use spells; this
+      page establishes that they acquire them by two different routes with two different
+      failure modes, one social and one logistical. A change to spell books affects
+      magic-users only; a change to alignment enforcement affects clerics only.
+
+unresolved_identity_questions: []
+
+architectural_escalations: []
+
+blocking_notes:
+  - id: BLK-01
+    severity: unchanged
+    issue: domain_registry.yaml remains an empty map at status bootstrap.
+    owner: architect
+  - id: BLK-02
+    severity: cumulative
+    issue: no node_registry_slice.csv and no local_neighborhood.json supplied.
+    owner: packet_creator
+
+completeness_statement: >-
+  All 125 lines were read, including all four spell tables in full. The packet was
+  delivered without page markers and the Analyst declined to extract from it on that
+  basis; the operator supplied markers for pages 40 to 42 and extraction proceeded against
+  them. Every edge carries a book, page and section citation and an evidence class, no
+  magnitude reached any aspect or condition field, and authored polarity appears once, on
+  the single CONSTRAINS edge. The edge set contains no duplicate source, type and target
+  triple and no self-loop.
+
+  Six edges is a small yield from three pages, and the reason is a deliberate grain
+  decision rather than a thin reading. The spell tables are an index to material described
+  in full in the chapters that follow, and extracting them would mint up to 250 spell
+  identities ahead of the mechanics that justify them. That decision is recorded together
+  with the test that would reverse it, and the test was run against the following packet
+  before the decision was taken.
+
+# =============================================================================
+# DOWNSTREAM NOTES  (added 2026-07-30, after the GUR body was written)
+# =============================================================================
+downstream_notes:
+  purpose: >-
+    Builder and Reviewer startup does not read books/<book>/reports/, so a finding recorded
+    only there would never reach them. This block is a pointer, not a verdict.
+  dedupe_report:
+    path: books/adnd1e/phb/reports/DEDUPE-PHB-20260729.md
+    what_it_is: >-
+      Every edge proposed across all PHB GURs, compared against the 3,809-edge canonical
+      graph on three tests: exact duplicate triple, type conflict on the same ordered pair,
+      and direction conflict on the reversed pair. Across all PHB GURs, 115 of 389 proposed
+      edges duplicate a canonical triple exactly, 35 are type conflicts and 20 are direction
+      conflicts.
+    why_it_exists: >-
+      No packet was ever supplied with a local_neighborhood.json, so no Analyst could run
+      this check at extraction time. It is BLK-02, run once after the fact.
+    what_builder_should_do: >-
+      Consult it before normalising this GUR. Exact duplicates should generally be dropped
+      from the GUP; where the canonical row cites a different book, prefer adding this
+      packet's citation to the existing row over discarding a second independent witness.
+    what_reviewer_should_do: >-
+      The direction conflicts are classified in the report into four classes with a
+      disposition for each. Class B is not a conflict at all and both sides should be kept.
+      Class D is a flat PHB-versus-DMG contradiction on two rows.
+  no_verdicts_embedded: >-
+    This GUR has not been edited to mark individual edges as duplicates. Whether an
+    assertion is already held by the graph is a normalisation determination owned by
+    Builder and Reviewer; recording it in an interpretive artifact would put the decision
+    in the wrong role.

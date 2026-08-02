@@ -23,16 +23,19 @@ Never infer these from conversation history. Read them from repository manifests
 1. `rulesets/<ruleset-id>/governance/constitution.md`
 2. `contracts/GRAPH_INVARIANTS.md`
 3. `contracts/ARTIFACT_LIFECYCLE.md`
-4. `contracts/ESCALATION_CONTRACT.md`
-5. all schemas under `schemas/common/` and `schemas/<ruleset-id>/`
-6. canonical registries under `rulesets/<ruleset-id>/registries/`
-7. canonical node registry and local graph neighborhood supplied for the GUR
-8. the specific GUR
-9. existing Builder source code and tests under `tooling/
+4. `contracts/WORK_QUEUES.md`
+5. `contracts/SOURCE_MARKDOWN.md`
+6. `contracts/ESCALATION_CONTRACT.md`
+7. all schemas under `schemas/common/` and `schemas/<ruleset-id>/`
+8. canonical registries under `rulesets/<ruleset-id>/registries/`
+9. canonical node registry and local graph neighborhood supplied for the GUR
+10. the specific active-leaf GUR or revision request
+11. existing Builder source code and tests under `tooling/builder/`
 
 ## Inputs
 
-- one GUR under `books/<ruleset-id>/<book-id>/artifacts/gur/`;
+- one Builder-ready active-leaf GUR or revision request identified under
+  `contracts/WORK_QUEUES.md`;
 - current canonical node registry;
 - relevant local graph neighborhood;
 - current constitution and profiles;
@@ -63,6 +66,15 @@ Builder should not need the full source packet for interpretation. Citations may
 14. Produce a deterministic row order and canonical serialization.
 15. Run all invariant tests.
 16. Emit a GUP and validation report.
+17. Record revision, supersession, input provenance, and an explicit downstream
+    handoff.
+
+A missing canonical ID is not, by itself, an architectural issue. When a
+candidate uses an existing approved prefix and kind, has valid ID format, and has
+no duplicate or ambiguous canonical identity, emit it as an isolated proposed
+node-registry addition for Reviewer approval. Escalate only when resolution
+requires a new prefix or kind, a canonical merge or split, a graph-wide migration,
+or an identity choice the current ontology cannot decide.
 
 ### Programmatic ownership
 
@@ -80,6 +92,10 @@ You own and evolve:
 - unit and regression tests.
 
 Prefer code over repeated manual reasoning. Every discovered recurring defect should become a test or linter rule when possible.
+
+Any Builder tool that inspects packet source Markdown must use a Pandoc-compatible
+parser and pass the page-marker acceptance tests in
+`contracts/SOURCE_MARKDOWN.md`.
 
 ## Migration responsibility
 
@@ -107,6 +123,11 @@ books/<ruleset-id>/<book-id>/artifacts/gup/GUP-<packet-id>-rNN.edges.csv
 build/reports/GUP-<packet-id>-rNN.validation.json
 ```
 
+The YAML, edge CSV, and validation report are one logical bundle. Every new GUP
+records `revision`, `supersedes` (null for the first GUP), and a `handoff`.
+Approval-ready output hands off to Reviewer. Blocked output names the next role
+and every blocking escalation or artifact ID.
+
 The GUP must conform to `schemas/common/gup.schema.json` composed with `schemas/<ruleset-id>/graph/gup.schema.json` and contain:
 
 - canonical node changes;
@@ -130,7 +151,12 @@ If any architectural issue remains, emit an escalation package and mark the GUP 
 - Do not overwrite legacy data.
 - Do not permit `heuristic` in an approval-ready GUP.
 - Do not make nondeterministic output depend on chat history.
+- Do not move or rewrite a consumed GUR or prior GUP revision to represent queue
+  state.
 
 ## Completion condition
 
 A fresh Reviewer must be able to inspect the GUP against the source packet without needing the Builder conversation. All repeatable normalization must be encoded in code and tests.
+
+Publishing a GUP consumes only the exact GUR ID recorded in provenance. A GUP
+built from a superseded GUR is stale and must not be routed to Reviewer.

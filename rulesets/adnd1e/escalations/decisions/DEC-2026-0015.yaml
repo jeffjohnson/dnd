@@ -1,0 +1,305 @@
+schema_version: "1.0"
+id: DEC-2026-0015
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-043-054-cleric-spells
+constitution_version: "1.5"
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the authorized identity migration, provenance merge, and
+    Constitution 1.5 validator update as one reviewed package.
+  blocking_ids: []
+
+decision_date: "2026-07-31"
+escalation_id: ESC-2026-07-31T04.35.02.574Z
+supplements: DEC-2026-0013
+
+question: >-
+  When a legacy spell_ node's ID names one spell but its registry label and
+  incident assertions name a broader spell category, a condition, or another
+  spell, which identity survives and what exact split or migration is required?
+
+ruling: >-
+  Approve the per-node dispositions below for nine of the ten disputed IDs.
+  The specific-spell ID survives wherever it is valid. Distinct source-backed
+  spell categories and conditions receive separate IDs, and assertions move
+  to the identity they actually describe. Defer spell_imprisonment without
+  changing it because the supplied UA provenance does not establish whether
+  the legacy assertion describes Imprisonment, Maze, Forcecage, or another
+  spell. This decision completely unblocks Cure Light Wounds and Hold Person
+  in PKT-PHB-043-054-cleric-spells; it does not block the other 74 spells.
+
+rationale:
+  - >-
+    The replacement package satisfies DEC-2026-0013: it corrects the
+    non-reproducible count, isolates ten substantive identity conflicts,
+    supplies all 40 incident rows, gives source or recoverable provenance,
+    compares ID-governs, label-governs, and split options, and quantifies the
+    migration.
+  - >-
+    Constitution section 3.1 makes the ID determinative. A row about curative
+    spells cannot silently become an assertion about Cure Light Wounds, and a
+    row about being confused cannot silently become an assertion about the
+    Confusion spell.
+  - >-
+    Four supplied assertions explicitly operate on source-named spell
+    categories. Reusing specific-spell IDs would destroy assertion scope. The
+    recurring category need is represented under spell_ with plural,
+    category-specific stems; Constitution 1.5 makes that existing ontology
+    meaning explicit without adding a prefix.
+  - >-
+    rule_immobile already represents the held or paralyzed condition. Reusing
+    it for the Rod of Lordly Might and Remove Paralysis assertions avoids a
+    duplicate condition node and preserves spell_hold_person as one spell.
+  - >-
+    Repointing canonical row 1765 to rule_immobile would restate the existing
+    GR_HELPLESS_TARGET_AUTOHIT assertion at canonical row 2258. Constitution
+    section 5 requires one production edge with additional loci in provenance,
+    so row 1765 is merged into row 2258 rather than retained as a near
+    duplicate.
+  - >-
+    Canonical rows 3349 and 3350 remain distinct after row 3350 is repointed to
+    rule_immobile. They preserve separate source assertions for paralysis and
+    held creatures and have distinct aspects under the five-field production
+    assertion key.
+  - >-
+    The Itching, Rash, and Taunt rows are three source-backed UA spells created
+    by overlapping legacy extraction batches. A three-way split preserves
+    their existing meanings and provenance without inventing relationships.
+  - >-
+    The Imprisonment evidence is internally inconsistent in spell level and
+    label. Deferral is narrower and safer than selecting one identity from an
+    unclaimed UA source.
+
+node_dispositions:
+  spell_charm_person:
+    disposition: retain_and_relabel
+    canonical_label: Charm Person
+  spell_confusion:
+    disposition: retain_and_split_condition
+    canonical_label: Confusion
+    split_id: rule_confused_condition
+  spell_cure_light_wounds:
+    disposition: retain_and_split_category
+    canonical_label: Cure Light Wounds
+    split_id: spell_curative_spells
+  spell_esp:
+    disposition: retain_and_split_category
+    canonical_label: ESP
+    split_id: spell_psionic_related_spells
+  spell_fireball:
+    disposition: retain_and_split_category
+    canonical_label: Fireball
+    split_id: spell_fire_spells
+  spell_hold_person:
+    disposition: retain_and_reuse_existing_condition
+    canonical_label: Hold Person
+    condition_id: rule_immobile
+  spell_imprisonment:
+    disposition: deferred
+    current_label_retained: Maze or Cage Spell
+    required_evidence: >-
+      A claimed UA packet excerpt for page 62, its surrounding spell heading
+      and level, and the local neighborhoods for Imprisonment, Maze, and
+      Forcecage or any other named cage spell established by that excerpt.
+  spell_legend_lore:
+    disposition: retain_and_split_category
+    canonical_label: Legend Lore
+    split_id: spell_informational_spells
+  spell_melfs_acid_arrow:
+    disposition: retain_and_relabel
+    canonical_label: Melf's Acid Arrow
+  spell_taunt:
+    disposition: retain_and_split_spells
+    canonical_label: Taunt
+    split_ids:
+      - spell_itching
+      - spell_rash
+
+new_nodes_authorized:
+  - id: rule_confused_condition
+    label: Confused Condition
+    kind: rule
+    basis: Existing condition assertion at canonical row 1984.
+  - id: spell_curative_spells
+    label: Curative Spells
+    kind: spell
+    basis: Source-named spell category at canonical row 3001.
+  - id: spell_psionic_related_spells
+    label: Psionic-Related Spells
+    kind: spell
+    basis: Source-named enumerated spell category at canonical row 1990.
+  - id: spell_fire_spells
+    label: Fire Spells
+    kind: spell
+    basis: Source-named spell category at canonical rows 1702 and 2867.
+  - id: spell_informational_spells
+    label: Informational Spells
+    kind: spell
+    basis: Source-named enumerated spell category at canonical row 2107.
+  - id: spell_itching
+    label: Itching
+    kind: spell
+    basis: UA spell represented by canonical rows 2902 through 2904.
+  - id: spell_rash
+    label: Rash
+    kind: spell
+    basis: UA spell represented by canonical rows 2905 through 2909.
+
+canonical_migration:
+  row_locator: 1-based CSV line including the header in edges_master.csv
+  endpoint_repoints:
+    - {canonical_row: 1984, field: source_id, from: spell_confusion, to: rule_confused_condition, label: Confused Condition}
+    - {canonical_row: 1990, field: source_id, from: spell_esp, to: spell_psionic_related_spells, label: Psionic-Related Spells}
+    - {canonical_row: 2107, field: source_id, from: spell_legend_lore, to: spell_informational_spells, label: Informational Spells}
+    - {canonical_row: 2215, field: target_id, from: spell_hold_person, to: rule_immobile, label: Total Immobility}
+    - {canonical_row: 2867, field: target_id, from: spell_fireball, to: spell_fire_spells, label: Fire Spells}
+    - {canonical_row: 2902, field: source_id, from: spell_taunt, to: spell_itching, label: Itching}
+    - {canonical_row: 2903, field: source_id, from: spell_taunt, to: spell_itching, label: Itching}
+    - {canonical_row: 2904, field: source_id, from: spell_taunt, to: spell_itching, label: Itching}
+    - {canonical_row: 2905, field: source_id, from: spell_taunt, to: spell_rash, label: Rash}
+    - {canonical_row: 2906, field: source_id, from: spell_taunt, to: spell_rash, label: Rash}
+    - {canonical_row: 2907, field: target_id, from: spell_taunt, to: spell_rash, label: Rash}
+    - {canonical_row: 2908, field: target_id, from: spell_taunt, to: spell_rash, label: Rash}
+    - {canonical_row: 2909, field: source_id, from: spell_taunt, to: spell_rash, label: Rash}
+    - {canonical_row: 3001, field: source_id, from: spell_cure_light_wounds, to: spell_curative_spells, label: Curative Spells}
+    - {canonical_row: 3350, field: target_id, from: spell_hold_person, to: rule_immobile, label: Total Immobility}
+    - {canonical_row: 1702, field: target_id, from: spell_fireball, to: spell_fire_spells, label: Fire Spells}
+  merged_assertion:
+    removed_canonical_row: 1765
+    surviving_canonical_row: 2258
+    identity: rule_immobile OVERRIDES cbt_tohit
+    action: >-
+      Preserve DMG page 67 and its section as additional provenance for row
+      2258, then remove row 1765. Do not create a second production edge solely
+      for the additional citation locus.
+  endpoint_label_normalizations_without_repoint:
+    - {canonical_row: 2065, field: source_label, value: Charm Person}
+    - {canonical_row: 2066, field: target_label, value: Charm Person}
+    - {canonical_row: 2122, field: target_label, value: Charm Person}
+    - {canonical_row: 2173, field: target_label, value: ESP}
+    - {canonical_row: 2273, field: target_label, value: ESP}
+    - {canonical_row: 2612, field: source_label, value: ESP}
+    - {canonical_row: 3147, field: target_label, value: Melf's Acid Arrow}
+    - {canonical_row: 3283, field: source_label, value: Taunt}
+    - {canonical_row: 3498, field: target_label, value: Melf's Acid Arrow}
+    - {canonical_row: 3514, field: target_label, value: Charm Person}
+  counts:
+    retained_registry_rows_relabelled: 9
+    new_registry_rows: 7
+    deferred_registry_rows_unchanged: 1
+    canonical_rows_repointed: 16
+    canonical_rows_label_normalized_without_repoint: 10
+    canonical_rows_merged_and_removed: 1
+    canonical_row_net_change: -1
+
+general_rule_disposition:
+  id: GR_HELPLESS_TARGET_AUTOHIT
+  applies_to_change: none
+  reason: >-
+    spell_hold_person remains a valid producing spell and rule_immobile remains
+    the shared condition. Canonical row 2260 continues to connect them and to
+    carry the general_rule_id.
+
+coordination_constraints:
+  - >-
+    The spell_taunt migration rows that also use the invalid endpoint
+    comeliness remain subject to DEC-2026-0004. This decision changes only the
+    spell endpoint and does not supersede that separate ID migration.
+  - >-
+    Builder must emit one reviewed migration package covering all authorized
+    node additions, registry relabels, repoints, label normalizations, and the
+    row-1765 provenance merge. Do not implement only the two packet blockers
+    and leave the other approved identity conflicts partially migrated.
+  - >-
+    Reviewer must compare the post-migration local neighborhood and five-field
+    assertion keys, including the two Remove Paralysis assertions at current
+    rows 3349 and 3350.
+  - >-
+    Integrator alone updates nodes.csv, canonical graph files, manifests, and
+    derived graph artifacts after the migration package is approved.
+
+contract_change:
+  path: rulesets/adnd1e/governance/constitution.md
+  previous_version: "1.4"
+  new_version: "1.5"
+  changelog:
+    - Clarify that spell_ includes source-named spell families and categories.
+    - Require a plural or category-specific stem distinct from a specific spell.
+  exact_diff:
+    - Change the version heading from 1.4 to 1.5.
+    - >-
+      Change the spell_ kind text from "spell" to "spell or source-named spell
+      family/category".
+    - >-
+      Add the rule that a family uses a plural or category-specific stem and
+      does not broaden or alias a specific spell.
+    - Change ruleset.yaml constitution_version from 1.4 to 1.5.
+
+affected_contracts:
+  - rulesets/adnd1e/governance/constitution.md
+affected_registries:
+  - rulesets/adnd1e/registries/nodes.csv
+affected_artifacts:
+  - rulesets/adnd1e/ruleset.yaml
+  - rulesets/adnd1e/escalations/decided/ESC-2026-07-31T04.35.02.574Z.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0015.yaml
+  - rulesets/adnd1e/canonical/edges_master.csv
+  - rulesets/adnd1e/canonical/nodes_master.csv
+  - rulesets/adnd1e/canonical/graph.json
+  - tooling/builder/src/adnd1e_builder/vocab.py
+  - future Builder migration GUP, Reviewer approval, and Integrator manifest
+
+migration_required: true
+migration_scope:
+  canonical_nodes:
+    relabelled: 9
+    added: 7
+    deferred_unchanged:
+      - spell_imprisonment
+  canonical_edges:
+    repointed: 16
+    label_normalized_without_repoint: 10
+    merged_and_removed: 1
+  canonical_write: >-
+    None by the Architect. Canonical and registry application is deferred to
+    the Integrator after Builder and Reviewer artifacts satisfy this decision.
+
+acceptance_tests:
+  - Constitution and ruleset.yaml both declare version 1.5.
+  - Constitution section 3.1 distinguishes a spell family/category from one spell.
+  - Builder vocabulary declares Constitution 1.5 without adding a new prefix.
+  - The seven authorized IDs are unique and absent before the migration.
+  - The nine retained IDs have exactly the canonical labels listed in node_dispositions.
+  - spell_imprisonment and canonical row 3027 remain unchanged.
+  - Exactly 16 current canonical rows are repointed according to canonical_migration.
+  - Exactly 10 retained endpoints receive the listed label normalizations.
+  - Current canonical row 1765 is absent after its DMG page 67 locus is preserved for row 2258.
+  - GR_HELPLESS_TARGET_AUTOHIT still applies to spell_hold_person and rule_immobile.
+  - Current canonical row 2260 still connects spell_hold_person to rule_immobile.
+  - The migrated graph has no endpoint using the wrong one of the nine decided identities.
+  - The five-field assertion key reports no exact duplicate created by the migration.
+  - Reviewer explicitly resolves all near-duplicate findings produced by the migration dry run.
+  - The packet may extract Cure Light Wounds and Hold Person against their specific IDs.
+  - The other 74 packet spells and the 47 ordinary node additions remain outside this migration.
+  - No canonical graph or registry file is changed by this Architect decision.
+
+constitution_version_impact:
+  changed: true
+  previous_version: "1.4"
+  new_version: "1.5"
+  reason: >-
+    The closed prefix set is unchanged, but the controlled meaning of spell_
+    now explicitly includes source-named spell families and categories.
+
+follow_up_owner:
+  constitution_and_decision: architect_complete
+  constitution_version_update_in_builder: builder
+  migration_gup_and_provenance_ledger: builder
+  source_and_neighborhood_review: reviewer
+  canonical_and_registry_application: integrator
+  spell_imprisonment_source_package: analyst_when_ua_packet_is_claimed

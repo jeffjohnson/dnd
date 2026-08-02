@@ -1,0 +1,538 @@
+schema_version: "1.0"
+id: GUR-PKT-PHB-007-008-intro-r01
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-007-008-intro
+constitution_version: "1.2"
+
+revision: 1
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 7
+page_end: 8
+
+# =============================================================================
+# HEADLINE RESULT
+# =============================================================================
+# 7 candidate edges. 0 candidate nodes. 1 candidate general rule.
+#
+# The INTRODUCTION and THE GAME sections are framing prose and yield nothing.
+# All seven edges come from two passages: the character-creation summary on p8,
+# which states outright what determines languages and hit points, and the
+# level-terminology explanation on p8. One negative dependency comes from p7.
+#
+# No authored polarity appears anywhere in this packet. None of the proposed
+# edge types is MODIFIES, TRIGGERS or CONSTRAINS, so polarity is left entirely
+# to the Builder per invariants 13 and 14.
+# =============================================================================
+
+source_summary: >-
+  Pages 7-8. An introduction describing the game's scope and its relation to the
+  Monster Manual and Dungeon Masters Guide; THE GAME, which explains role playing,
+  the Dungeon Master's function, and expectations of player conduct; and CREATING
+  THE PLAYER CHARACTER, which summarises the character-creation sequence and then
+  disambiguates the four distinct meanings the word "level" carries in the system.
+  The first two sections are almost entirely non-mechanical. The third is the first
+  load-bearing text in the book.
+
+node_id_resolution_method: >-
+  No node_registry_slice.csv was supplied with the packet. Rather than mint candidate
+  nodes that would duplicate canonical ones, the Analyst performed targeted lookups
+  against rulesets/adnd1e/registries/nodes.csv for each concept named in the packet.
+  All seven edges resolved onto existing canonical IDs; no new node was needed. This is
+  narrower than loading the graph, which the role instructions forbid, but it is not
+  the supplied slice the process expects. See BLK-02.
+
+reused_nodes:
+  - id: rule_languages
+    label: Languages
+    canonical: true
+  - id: race_any
+    label: Race
+    canonical: true
+  - id: sys_classes
+    label: Character Class
+    canonical: true
+  - id: sys_alignment
+    label: Alignment
+    canonical: true
+  - id: rule_hit_points
+    label: Hit Points
+    canonical: true
+  - id: rule_starting_money
+    label: Player Character Starting Money
+    canonical: true
+  - id: sys_equipment
+    label: Equipment
+    canonical: true
+  - id: exp_level
+    label: Experience Level
+    canonical: true
+  - id: rule_spell_level_access
+    label: High-Level Spell Access
+    canonical: true
+  - id: rule_sex
+    label: Character Sex
+    canonical: true
+  - id: sys_ability_scores
+    label: Ability Scores
+    canonical: true
+
+candidate_nodes: []
+
+# -----------------------------------------------------------------------------
+# Candidate edges
+# -----------------------------------------------------------------------------
+candidate_edges:
+  - ref: E1
+    source_id: rule_languages
+    source_label: Languages
+    edge_type: DERIVED_FROM
+    target_id: race_any
+    target_label: Race
+    aspect: known languages
+    condition: ""
+    book: PHB
+    page: 8
+    section: CREATING THE PLAYER CHARACTER
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+    redundancy_risk: >-
+      rule_languages carries degree 19 and race_any degree 49 in the registry. An
+      equivalent edge may already exist. Unverifiable without a neighborhood slice.
+
+  - ref: E2
+    source_id: rule_languages
+    source_label: Languages
+    edge_type: DERIVED_FROM
+    target_id: sys_classes
+    target_label: Character Class
+    aspect: known languages
+    condition: ""
+    book: PHB
+    page: 8
+    section: CREATING THE PLAYER CHARACTER
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+    redundancy_risk: >-
+      Class-specific language nodes already exist, notably rule_druidic_language. This
+      edge asserts the general dependency the text states, not those instances.
+
+  - ref: E3
+    source_id: rule_languages
+    source_label: Languages
+    edge_type: DERIVED_FROM
+    target_id: sys_alignment
+    target_label: Alignment
+    aspect: known languages
+    condition: ""
+    book: PHB
+    page: 8
+    section: CREATING THE PLAYER CHARACTER
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+    redundancy_risk: >-
+      Highest of the three. A dedicated canonical node rule_alignment_languages exists
+      with degree 12, so the alignment-to-language relationship is very likely already
+      represented, possibly at finer grain. Reviewer should determine whether E3 is a
+      duplicate of an existing assertion or a coarser restatement of it. Analyst
+      proposes it because the packet states it explicitly, but flags it as the most
+      likely of the seven to be rejected as redundant.
+    analyst_rationale: >-
+      Kept rather than silently dropped because dropping it would hide the fact that
+      this page is a second, independent citation for the relationship.
+
+  - ref: E4
+    source_id: rule_hit_points
+    source_label: Hit Points
+    edge_type: DERIVED_FROM
+    target_id: sys_classes
+    target_label: Character Class
+    aspect: hit die type
+    condition: ""
+    book: PHB
+    page: 8
+    section: CREATING THE PLAYER CHARACTER
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+    redundancy_risk: >-
+      rule_hit_points carries degree 63. Likely already present, but the text states it
+      as directly as it can be stated: class determines the type of die rolled.
+
+  - ref: E5
+    source_id: rule_starting_money
+    source_label: Player Character Starting Money
+    edge_type: FEEDS_INTO
+    target_id: sys_equipment
+    target_label: Equipment
+    aspect: purchasing power
+    condition: at character creation
+    book: PHB
+    page: 8
+    section: CREATING THE PLAYER CHARACTER
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+    redundancy_risk: >-
+      money_gp has degree 89 and sys_equipment degree 50, so a money-to-equipment
+      relationship almost certainly exists. This edge is deliberately anchored on
+      rule_starting_money rather than money_gp, because the packet describes the
+      initial funding step specifically, not general purchasing.
+    analyst_rationale: >-
+      FEEDS_INTO rather than CONSUMES was chosen because the sentence describes starting
+      funds supplying the equipping step, not the expenditure event. A CONSUMES edge
+      between sys_equipment and money_gp may well be the correct separate assertion, but
+      it is not what this sentence says.
+
+  - ref: E6
+    source_id: exp_level
+    source_label: Experience Level
+    edge_type: GATES
+    target_id: rule_spell_level_access
+    target_label: High-Level Spell Access
+    aspect: spell level access
+    condition: lesser casters only under stated circumstances and at risk
+    book: PHB
+    page: 8
+    section: "CREATING THE PLAYER CHARACTER — An Explanation of the Usages of the Term Level"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: class_level_conflation
+    redundancy_risk: >-
+      rule_spell_level_access has degree 2, so the node exists but is sparsely
+      connected. This may be a genuine addition.
+    analyst_rationale: >-
+      Two judgments need Reviewer attention. First, the source is exp_level, the generic
+      Experience Level node, but the sentence speaks of magic-user level specifically.
+      Whether caster level is exp_level qualified by class, or warrants its own
+      identity, is exactly the class_level_conflation hazard named in the PHB extraction
+      profile, so the edge carries that review_flag. Second, GATES is normally binary
+      permission, and the text weakens it by allowing lesser casters to attempt such
+      spells at risk. That qualification is carried in condition rather than by
+      switching to CONSTRAINS, because the default state is denial of access, which is a
+      gate, not a bound on something already permitted. The magnitudes in the sentence,
+      ninth-level spells and eighteenth-level casters, are deliberately absent from
+      every field per the grain rule.
+
+  - ref: E7
+    source_id: rule_sex
+    source_label: Character Sex
+    edge_type: EXCLUDED_FROM
+    target_id: sys_ability_scores
+    target_label: Ability Scores
+    aspect: ability determination
+    condition: except in a few unstated cases
+    book: PHB
+    page: 7
+    section: THE GAME
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+    redundancy_risk: >-
+      rule_sex has degree 6. Whether one of those six is this assertion is unverifiable
+      without a slice.
+    analyst_rationale: >-
+      This is a negative dependency and is included because it meets the constitution's
+      test in section 4.1: it denies a dependency a reader would otherwise assume. The
+      assumption is not hypothetical. The preface of this same book, in packet 01, goes
+      out of its way to disclaim "baseless limits arbitrarily placed on female strength
+      or male charisma", which shows the authors expected readers to look for such a
+      rule. EXCLUDED_FROM rather than EXCLUDES is correct because the claim is that sex
+      is not an input to ability determination, not that sex actively prevents anything.
+      The hedge "in all but a few cases" is real and unresolved: the packet names no
+      exception. Reviewer should not treat the condition as decorative. See also
+      IDQ-03 on the cross-book risk.
+
+candidate_general_rules:
+  - proposed_id: GR_DM_DISCRETION_FINAL
+    statement: >-
+      Where the rules and the Dungeon Master's ruling conflict within a campaign, the
+      Dungeon Master's ruling governs.
+    established_by: "PHB p.8 THE GAME"
+    quoted_basis: >-
+      The text states in capitals that the referee is the final arbiter of all affairs
+      of his or her campaign, and adds that participants have no recourse to the
+      publisher.
+    why_proposed: >-
+      The canonical node rule_dm_discretion already exists with degree 58 and carries the
+      role override_source, so the graph is already treating DM discretion as something
+      that overrides other mechanics. This passage is the general statement those
+      specific edges are instances of, which is the exact shape of an inherited general
+      rule under constitution section 7.1.
+    not_promoted: true
+    analyst_position: >-
+      Proposed, not applied. Promoting this would authorise inherited edges from
+      rule_dm_discretion to a very large share of the graph, which is an Architect
+      decision and a costly one to reverse. There is also a real argument against
+      promotion: a rule that overrides everything partitions nothing and may be better
+      left as the existing specific edges. Analyst has created no edge from it and
+      recommends the Architect weigh whether the general rule earns its keep.
+
+# -----------------------------------------------------------------------------
+domains_touched: []
+domains_touched_note: >-
+  Cannot be populated. rulesets/adnd1e/registries/domain_registry.yaml is still an empty
+  map at status bootstrap. Per role instruction 13 the Analyst records candidate domains
+  without promoting them, so the concepts this packet touches are listed below instead.
+  This is BLK-01 arriving as predicted in the preamble GUR.
+
+candidate_domains:
+  - name: character_creation
+    basis: the p8 sequence from ability generation through starting hit points
+  - name: languages
+    basis: E1 through E3
+  - name: spellcasting_access
+    basis: E6
+  - name: ability_scores
+    basis: E7
+
+domain_boundary_questions:
+  - id: DBQ-01
+    question: >-
+      Does character_creation belong as a domain in its own right, or is it a procedural
+      sequence that touches other domains without being one? Every edge in this packet
+      except E6 and E7 arises from a single character-creation paragraph, yet each
+      concerns a different subject area.
+    why_it_matters: >-
+      If character_creation is a domain, a large fraction of early PHB edges land in it
+      and it becomes a hub. If it is not, those edges distribute across languages,
+      equipment, and hit points instead. The choice shapes the domain graph before any
+      domain exists.
+    analyst_position: no recommendation; insufficient corpus seen to judge
+
+# -----------------------------------------------------------------------------
+# Candidates considered and rejected
+# -----------------------------------------------------------------------------
+rejected_candidates:
+  - text_locus: "THE GAME, p8"
+    quoted_gist: characters gain experience and move upward in power by meeting challenges
+    why_considered: >-
+      states the experience-to-advancement dependency, which is unquestionably
+      load-bearing
+    rejection_reason: >-
+      Rejected here on grounds of grain and citation quality, not truth. The statement is
+      framing prose with no procedure attached; the experience tables that carry the
+      relationship appear in the class packets, where the edge can be cited precisely.
+      Asserting it from this page would create an edge whose citation points at prose
+      that names no table. exp_level already carries degree 162, so the relationship is
+      certainly represented.
+
+  - text_locus: "CREATING THE PLAYER CHARACTER, p8"
+    quoted_gist: all characters begin at 1st level
+    why_considered: canonical node rule_starting_level exists with degree 3
+    rejection_reason: >-
+      A constant, not a relationship. The mechanical content is the value 1, which the
+      grain rule forbids storing. The node exists to hold this fact; no edge is implied
+      by the sentence.
+
+  - text_locus: "CREATING THE PLAYER CHARACTER, p8"
+    quoted_gist: >-
+      the creation sequence runs abilities, then race, class, alignment, name,
+      languages, money, equipment, hit points
+    why_considered: >-
+      an ordering this explicit often encodes real dependencies, since race gates class
+      and class gates hit dice
+    rejection_reason: >-
+      The passage states the order of steps but does not assert that any step depends on
+      the one before it. The genuine dependencies inside the sequence are extracted
+      individually as E1 through E5. Reading further dependency into the ordering would
+      be inference dressed as explicit rule. Where the book does assert such gating, in
+      the race and class tables, later packets can cite it directly.
+
+  - text_locus: "CREATING THE PLAYER CHARACTER, p8"
+    quoted_gist: level has four distinct meanings — character, dungeon, spell, monster
+    why_considered: >-
+      the four meanings map onto four separate canonical nodes and the distinction is
+      the subject of a named extraction hazard
+    rejection_reason: >-
+      Denies that four concepts are the same concept. That is an identity claim, not a
+      dependency claim, and EXCLUDED_FROM asserts that one thing is not an input to
+      another, which is a different assertion. No edge type expresses "these are not the
+      same node". Recorded as OBS-05, where it is more useful.
+
+  - text_locus: "INTRODUCTION, p7"
+    quoted_gist: clerics and fighters strengthened relative to magic-users; sub-classes included
+    why_considered: names classes and relative power
+    rejection_reason: >-
+      Edition-comparison commentary addressed to readers of earlier D&D. It describes
+      changes between rulesets, not a relationship inside this one.
+
+  - text_locus: "INTRODUCTION, p7"
+    quoted_gist: players are urged not to read the Dungeon Masters Guide
+    why_considered: relates two books in the ruleset
+    rejection_reason: >-
+      Advice about reading habits. No mechanic on either side.
+
+# -----------------------------------------------------------------------------
+non_edge_observations:
+  - id: OBS-05
+    topic: the book's own definition of the four meanings of "level"
+    locus: "CREATING THE PLAYER CHARACTER, p8"
+    finding: >-
+      The text enumerates four distinct uses of the word level and states they are
+      different things sharing a name: level as character power, level as depth of a
+      dungeon, level as spell difficulty, and level as a monster's threat grade. It
+      further records that the author considered using rank, power, and order to
+      separate them and kept level only because existing usage had entrenched it.
+    why_it_matters: >-
+      This is the highest-value item in the packet, and it is not an edge. The PHB
+      extraction profile declares class_level_conflation as a known hazard, and the
+      constitution's review_flag vocabulary includes it. This passage is the book's own
+      statement of the distinction the hazard is about, which means the ruleset does not
+      need an invented convention to separate these identities. The registry already
+      reflects the split: exp_level, gen_dungeon_level, rule_spell_level, and
+      gen_monster_level_matrix are four separate nodes. That the author himself
+      considered four different words is strong evidence the split is faithful to the
+      source rather than imposed on it.
+    recommendation: >-
+      Architect may wish to cite this passage in whatever guidance governs the
+      class_level_conflation flag, so the distinction rests on the book rather than on
+      analyst convention. Every later packet that says "level" without qualification
+      should be resolved against these four before an edge is drawn.
+    analyst_action_taken: >-
+      Used it. E6 carries review_flag class_level_conflation precisely because it links
+      a character-power level to a spell-difficulty level, which is the boundary this
+      passage draws.
+
+  - id: OBS-06
+    topic: aggregate node naming is inconsistent across kinds
+    locus: registry observation arising from E1 through E4
+    finding: >-
+      The aggregate concept "race" is canonically race_any under the race_ prefix, while
+      the aggregate concept "class" is canonically sys_classes under the sys_ prefix.
+      The aggregate for abilities is sys_ability_scores. There is no class_any and no
+      race equivalent under sys_.
+    why_it_matters: >-
+      E1 and E2 are the same assertion about two parallel concepts, yet they resolve onto
+      nodes under different prefixes. An analyst working from a slice rather than the
+      full registry could easily miss sys_classes, fail to find class_any, and mint a
+      duplicate. Constitution section 3.2 names exactly this drift as the most common
+      defect in the graph.
+    recommendation: >-
+      Architect decision on whether aggregates belong under their kind prefix or under
+      sys_. No migration is proposed here; the point is that the inconsistency is a
+      standing duplication trap for every future packet.
+    analyst_action_taken: >-
+      Used the existing IDs as found. No node was minted.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    question: >-
+      Is the correct source for E6 exp_level, or does caster level need an identity
+      distinct from character experience level?
+    bearing: E6
+    analyst_handling: >-
+      Used exp_level and set review_flag class_level_conflation rather than choose
+      silently.
+
+  - id: IDQ-02
+    question: >-
+      Does E3 duplicate an assertion already carried by rule_alignment_languages, and if
+      so should E3 be rejected or should the two nodes be related by DERIVED_FROM?
+    bearing: E3
+    analyst_handling: Proposed with the duplication called out; deliberately not resolved.
+
+  - id: IDQ-03
+    question: >-
+      E7 asserts that sex is not an input to ability scores, hedged as true in all but a
+      few cases. Unearthed Arcana, a book inside this same ruleset, is widely understood
+      to introduce sex-linked ability treatment. If a UA packet later asserts the
+      contrary, is that an OVERRIDES with supersession_basis later_publication, or does
+      it reveal that E7's hedge was pointing at exactly those cases?
+    bearing: E7
+    analyst_handling: >-
+      Recorded now, while the PHB claim is fresh, so the UA analyst is not left to
+      rediscover the conflict. No cross-book artifact is created; per
+      REPOSITORY_STRUCTURE cross-book work belongs under rulesets/adnd1e/cross-book/ and
+      is not the Analyst's to open on suspicion.
+
+architectural_escalations: []
+architectural_escalations_note: >-
+  Nothing in this packet meets the ESCALATION_CONTRACT bar. GR_DM_DISCRETION_FINAL is
+  the nearest candidate, since a proposed general rule creating inherited edges is a
+  listed trigger, but it is recorded as a proposal for the Architect to consider rather
+  than raised as a blocking escalation, because no edge in this packet depends on the
+  answer.
+
+blocking_notes:
+  - id: BLK-01
+    severity: now_active
+    status_change: >-
+      Predicted in the preamble GUR as blocking packets 02-05. It is now active.
+    issue: domain_registry.yaml is an empty map at status bootstrap.
+    consequence: >-
+      domains_touched is empty not because the packet touches no domain but because no
+      domain exists to touch. Four candidate domains are recorded instead. Packets 03
+      through 05 will generate many more, and the Architect will face the promotion
+      decision as a single large batch rather than incrementally.
+    owner: architect
+
+  - id: BLK-02
+    severity: now_material
+    status_change: >-
+      Harmless in packet 01, which produced no candidates. Material here.
+    issue: no node_registry_slice.csv and no local_neighborhood.json supplied.
+    consequence: >-
+      All seven edges carry a redundancy_risk field the Analyst cannot discharge. Against
+      a 3,809-edge graph, several are plausibly already present, E3 and E4 most of all.
+      Either the Builder must dedupe against canonical or the Reviewer must, and neither
+      has the Analyst's reading of the source in front of them when they do.
+    owner: packet_creator
+
+completeness_statement: >-
+  All 59 lines of the packet were read before extraction. Three sections were
+  considered in full: INTRODUCTION, THE GAME, and CREATING THE PLAYER CHARACTER
+  including its four-part explanation of the term level and the closing note on the
+  rejected rank, power and order terminology. Both page markers were classified under
+  the operator's semantics and the resulting page split was checked against the table of
+  contents transcribed in packet 01, which independently places THE GAME on 7 and
+  CREATING THE PLAYER CHARACTER on 8. They agree.
+
+  Seven candidate edges are proposed and six candidates are recorded as rejected with
+  reasons. The yield is concentrated: the INTRODUCTION and THE GAME sections are
+  essentially non-mechanical, and every edge but E7 comes from the single
+  character-creation paragraph and the level explanation on page 8.
+
+  No candidate node was minted. All eleven node references resolved onto existing
+  canonical IDs by targeted registry lookup, which is a substitute for the missing
+  registry slice and is declared as such under node_id_resolution_method. No magnitude,
+  die expression, or threshold was carried into any field; the ninth-level and
+  eighteenth-level figures in the source of E6 are deliberately absent. No polarity was
+  authored, correctly, since no proposed edge is MODIFIES, TRIGGERS or CONSTRAINS.
+  One general rule is proposed and explicitly not applied.
+
+  The principal thing a reader should not miss is OBS-05: the book itself distinguishes
+  the four meanings of the word level, which supplies a source-grounded basis for the
+  class_level_conflation hazard rather than an analyst convention.
+
+  This GUR is complete enough for the Builder to normalize without rereading the source,
+  with one qualification stated plainly: the Builder or Reviewer must dedupe all seven
+  edges against the canonical graph, because the Analyst was not given the neighborhood
+  needed to do it at extraction time.

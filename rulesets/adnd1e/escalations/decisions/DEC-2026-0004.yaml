@@ -1,0 +1,192 @@
+schema_version: "1.0"
+id: DEC-2026-0004
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-009-013-ability-scores
+constitution_version: "1.3"
+
+decision_date: "2026-07-29"
+escalation_id: ESC-2026-0002
+
+question: >-
+  Which of the node prefixes used by existing AD&D 1e production data should be
+  added to the closed prefix vocabulary, and which identities should instead be
+  migrated to approved kinds?
+
+ruling: >-
+  Approve only wpn_ as a new prefix, with kind "weapon property or weapon
+  statistic". Do not approve str_, dex_, magic_, death_, turn_, cursed_, time_,
+  or align_. The bare IDs comeliness, fatigue, and training are not prefixes and
+  cannot be legalized by extending the prefix table. Keep the seven wpn_ nodes
+  unchanged. Builder must prepare a reviewed migration for the other sixteen
+  nodes and their 326 incident endpoints using existing approved kinds.
+
+rationale:
+  - >-
+    The seven wpn_ nodes form one coherent recurring data layer for properties
+    by which weapons are described. The constitution already uses
+    wpn_speed_factor in an impact-analysis example, so approving wpn_ resolves
+    a real self-contradiction without changing node identity.
+  - >-
+    The str_ and dex_ nodes are ability-derived mechanics. The approved abil_
+    kind already represents both ability scores and named submechanics, as
+    demonstrated by existing abil_cha_ identities.
+  - >-
+    The two magic_ nodes are not one kind: one is a rule and the other is a
+    table. Prefix approval would hide that distinction rather than represent it.
+  - >-
+    The death_, turn_, time_, and align_ identities are named rules or
+    procedures and fit rule_. The cursed_ identity names an item and fits
+    item_.
+  - >-
+    A prefix vocabulary should represent recurring kinds, not ratify every
+    legacy lexical stem. The approved kinds can express all sixteen migration
+    targets without expanding the ontology.
+  - >-
+    The migration remains source- and neighborhood-sensitive. This decision
+    fixes kind and naming direction but does not authorize the Architect to
+    mutate canonical rows or silently merge concepts.
+
+prefix_dispositions:
+  - prefix: wpn_
+    disposition: approved
+    kind: weapon property or weapon statistic
+    nodes: 7
+    incident_endpoints: 53
+    action: keep IDs unchanged
+  - prefixes: [str_, dex_]
+    disposition: rejected
+    required_kind: abil_
+    nodes: 5
+    incident_endpoints: 44
+  - prefix: magic_
+    disposition: rejected
+    required_kinds: [rule_, tbl_]
+    nodes: 2
+    incident_endpoints: 107
+  - prefixes: [death_, turn_, time_, align_]
+    disposition: rejected
+    required_kind: rule_
+    nodes: 5
+    incident_endpoints: 101
+  - prefix: cursed_
+    disposition: rejected
+    required_kind: item_
+    nodes: 1
+    incident_endpoints: 28
+  - ids: [comeliness, fatigue, training]
+    disposition: invalid_unprefixed_ids
+    required_kinds: [abil_, rule_]
+    nodes: 3
+    incident_endpoints: 46
+
+candidate_migration_map:
+  align_change: rule_alignment_change
+  comeliness: abil_comeliness
+  cursed_item: item_cursed_sword
+  death_character: rule_character_death
+  death_drowning: rule_drowning
+  dex_defensive_adj: abil_dexterity_defensive_adjustment
+  dex_reaction_adj: abil_dexterity_reaction_attacking_adjustment
+  fatigue: rule_exhaustion
+  magic_item_determination: tbl_magic_items
+  magic_resistance: rule_magic_resistance
+  str_bend_bars: abil_strength_bend_bars
+  str_exceptional: abil_strength_exceptional
+  str_open_doors: abil_strength_open_doors
+  time_segment_round_turn: rule_rounds_and_segments
+  training: rule_training
+  turn_undead: rule_turn_undead
+
+candidate_mapping_constraints:
+  - >-
+    These target IDs are implementation candidates, not Architect-authored
+    canonical rows. Builder must isolate each node change and its endpoint
+    repoints in a GUP.
+  - >-
+    Reviewer must confirm source identity, label, duplicate risk, and local
+    neighborhood before approving each mapping. A collision or semantic
+    ambiguity returns as a complete Architect escalation.
+  - >-
+    No migration may collapse provenance or change the assertion grain.
+  - >-
+    Integrator alone may update nodes.csv, canonical graph files, manifests,
+    and derived artifacts after approval.
+
+contract_change:
+  path: rulesets/adnd1e/governance/constitution.md
+  previous_version: "1.2"
+  new_version: "1.3"
+  changes:
+    - Add wpn_ to section 3.1.
+    - Replace the unapproved str_bend_bars worked example with abil_strength_bend_bars.
+    - Replace turn_undead worked examples with rule_turn_undead.
+
+builder_implementation_required:
+  owner: builder
+  files:
+    - tooling/builder/src/adnd1e_builder/vocab.py
+    - tooling/builder/tests/test_registry_and_vocab.py
+  changes:
+    - Set CONSTITUTION_VERSION to "1.3".
+    - Add wpn_ to NODE_PREFIXES.
+    - Add a positive prefix-recognition test for wpn_speed_factor.
+    - Keep turn_undead and the other rejected legacy IDs unapproved.
+    - >-
+      Add migration validation that distinguishes the seven unchanged wpn_
+      nodes from the sixteen nodes requiring reviewed replacement IDs.
+
+affected_contracts:
+  - rulesets/adnd1e/governance/constitution.md
+affected_registries:
+  - rulesets/adnd1e/registries/nodes.csv
+affected_artifacts:
+  - rulesets/adnd1e/ruleset.yaml
+  - rulesets/adnd1e/escalations/decided/ESC-2026-0002.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0004.yaml
+  - tooling/builder/src/adnd1e_builder/vocab.py
+  - tooling/builder/tests/test_registry_and_vocab.py
+  - future Builder GUP, Reviewer approval, and Integrator migration artifacts
+
+migration_required: true
+migration_scope:
+  unchanged:
+    nodes: 7
+    incident_endpoints: 53
+    selection: node ID starts with wpn_
+  reviewed_migration:
+    nodes: 16
+    incident_endpoints: 326
+    selection: node ID appears as a key in candidate_migration_map
+  canonical_write: >-
+    None by the Architect. Canonical application is deferred to the Integrator
+    after Builder and Reviewer artifacts satisfy the constraints above.
+
+acceptance_tests:
+  - Constitution version is 1.3 and ruleset.yaml references version 1.3.
+  - Constitution section 3.1 contains exactly one wpn_ prefix row.
+  - No str_, dex_, magic_, death_, turn_, cursed_, time_, or align_ prefix row is added.
+  - Constitution worked examples contain abil_strength_bend_bars and rule_turn_undead.
+  - All seven existing wpn_ node IDs remain unchanged.
+  - The sixteen migration candidates map to sixteen unique target IDs under approved prefixes.
+  - Builder vocab.py declares Constitution 1.3 and accepts wpn_.
+  - Builder validation continues to reject the other legacy prefixes and bare IDs.
+  - Reviewer verifies every proposed identity and endpoint repoint against source and local neighborhood.
+  - Integrator applies only approved migrations and preserves provenance.
+  - No canonical graph file is changed by this Architect decision.
+
+constitution_version_impact:
+  changed: true
+  previous_version: "1.2"
+  new_version: "1.3"
+  reason: >-
+    Adding a node prefix changes the closed ontology vocabulary and requires a
+    constitution version bump.
+
+follow_up_owner:
+  prefix_approval_and_constitution: architect_complete
+  validator_and_gup_migration: builder
+  identity_and_source_review: reviewer
+  canonical_migration: integrator

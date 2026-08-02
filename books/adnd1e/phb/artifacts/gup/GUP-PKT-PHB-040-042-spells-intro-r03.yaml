@@ -1,0 +1,134 @@
+schema_version: '1.0'
+id: GUP-PKT-PHB-040-042-spells-intro-r03
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-040-042-spells-intro
+constitution_version: '1.2'
+revision: 3
+supersedes: GUP-PKT-PHB-040-042-spells-intro-r02
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 1 edge addition(s), 0 update(s), 0 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-PHB-040-042-spells-intro-r01
+  gur_checksum: sha256:1e5f6a0c3ef2a6107a91f76bf94e4136c3462848387286c9cede9a34a52028f1
+  review_id: REV-GUP-PKT-PHB-040-042-spells-intro-r02-r01
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: false
+    reason: skipped by flag
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed: []
+  proposals_rejected_by_decision: []
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions:
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: CONSTRAINS
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: granting of the highest spells
+      condition: clerics judged on faithfulness by the deity
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '40'
+      section: CHARACTER SPELLS
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A5
+  pending_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts:
+    read: 1
+duplicate_findings: []
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 6
+  edges_compiled: 1
+  edges_rejected: 5
+  edge_additions: 1
+  edge_pending_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 2
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 0
+  duplicate_findings: 0
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-PHB-040-042-spells-intro-r03.validation.json
+reviewer_directives_applied:
+  review_id: REV-GUP-PKT-PHB-040-042-spells-intro-r02-r01
+  corrections: []
+  rejected_rows:
+    - ref: A1
+      reason: reviewer_rejected
+      rationale: The rested-mind gate is already represented by canonical row 448. The proposed wording
+        is a duplicate insertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 448
+    - ref: A2
+      reason: reviewer_rejected
+      rationale: Memorization does not consume the memorized spell on casting; casting does. Canonical
+        row 256 already represents that operational dependency, so this reversed and reified restatement
+        must be omitted.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 256
+    - ref: A3
+      reason: reviewer_rejected
+      rationale: Spell-book consultation gating memorization is already represented by canonical row 255.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 255
+    - ref: A4
+      reason: reviewer_rejected
+      rationale: Material components are supplied for clerical, druidic, and magical spell effects, not
+        for memorization. The supported relationships are already represented by canonical rows 445, 446,
+        450, and 2647.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 445
+        - 446
+        - 450
+        - 2647
+    - ref: A6
+      reason: reviewer_rejected
+      rationale: Spell memorization consuming preparation time is already canonical row 447. The proposed
+        time_segment_round_turn target is additionally too narrow for minutes of game time.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 447
+  note: Reviewer decisions are applied as given; the Reviewer owns what an edge asserts. Corrected values
+    are then revalidated, and a correction that violates the constitution is reported like any other defect
+    rather than passed through.

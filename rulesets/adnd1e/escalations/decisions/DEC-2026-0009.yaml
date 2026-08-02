@@ -1,0 +1,117 @@
+schema_version: "1.0"
+id: DEC-2026-0009
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-013-018-races
+constitution_version: "1.4"
+
+decision_date: "2026-07-30"
+escalation_id: ESC-2026-07-30T04.45.31.286Z
+
+question: >-
+  Should the dwarf, gnome, and halfling underground-detection assertions reuse
+  rule_detection, create rule_racial_detection, or be split further?
+
+ruling: >-
+  Map F6, F20, and F31 to canonical rule_detection with target label Detection.
+  Do not register rule_racial_detection. Preserve one row per race with its
+  source-specific aspect, activation condition, status, and section citation.
+  Under the singular-locus rule, F6 and F20 cite their section with page blank;
+  F31 may cite page 17 and section Halflings.
+
+rationale:
+  - >-
+    rule_detection is the existing unqualified umbrella and already carries
+    heterogeneous bundled detection powers from devices, swords, scrying, and
+    prior detection.
+  - >-
+    The PHB never names a shared Racial Underground Detection procedure.
+    Creating that identity would turn a useful analytic grouping into a source
+    identity and duplicate the intended breadth of rule_detection.
+  - >-
+    The three race sources, aspects, conditions, and section citations keep the
+    assertions distinct without encoding race qualification in a second target
+    identity.
+  - >-
+    No canonical race-to-rule_detection row exists, so the mapping creates no
+    exact duplicate and requires no migration.
+  - >-
+    A future split of the generic detection node would require a separate
+    complete package covering all seven existing incident rows and source books.
+
+row_dispositions:
+  - ref: F6
+    source_id: race_dwarf
+    target_id: rule_detection
+    target_label: Detection
+    page: ""
+    section: Dwarves
+    condition: when actively seeking
+  - ref: F20
+    source_id: race_gnome
+    target_id: rule_detection
+    target_label: Detection
+    page: ""
+    section: Gnomes
+    condition: when actively seeking
+  - ref: F31
+    source_id: race_halfling
+    target_id: rule_detection
+    target_label: Detection
+    page: "17"
+    section: Halflings
+    condition: when concentrating
+
+registry_disposition:
+  proposed_id: rule_racial_detection
+  disposition: rejected_as_duplicate_analytic_aggregate
+  replacement_id: rule_detection
+
+rejected_identity_map:
+  rule_racial_detection: rule_detection
+
+affected_contracts: []
+affected_registries: []
+affected_artifacts:
+  - rulesets/adnd1e/escalations/decided/ESC-2026-07-30T04.45.31.286Z.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0009.yaml
+  - books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-013-018-races-r04.yaml
+  - tooling/builder/src/adnd1e_builder/governance.py
+  - tooling/builder/src/adnd1e_builder/compiler.py
+  - tooling/builder/tests/test_governance.py
+  - tooling/builder/tests/test_compiler.py
+  - future Builder GUP and Review revisions
+
+migration_required: false
+migration_scope:
+  existing_canonical_rows_changed: 0
+  registry_rows_changed: 0
+  future_edges_after_approval: 3
+  builder_governance_routing: reject_candidate_identity_and_name_replacement
+
+acceptance_tests:
+  - No rule_racial_detection row is added to nodes.csv.
+  - Builder loads rejected_identity_map from approved Architect decisions.
+  - A rule_racial_detection node proposal is rejected with rule_detection named as its replacement.
+  - A dependent edge cannot enter a GUP until it targets rule_detection.
+  - F6, F20, and F31 target rule_detection with label Detection.
+  - F6 and F20 use section-only citations and contain no page range.
+  - F31 retains page 17 and section Halflings.
+  - All three rows preserve their race source and activation condition.
+  - A fresh duplicate check finds no exact canonical assertion match.
+  - Builder and Reviewer emit new revisions rather than overwriting prior artifacts.
+  - No canonical graph file is changed directly by this Architect decision.
+
+constitution_version_impact:
+  changed: false
+  reason: >-
+    The decision reuses an existing rule identity and applies Constitution 1.4
+    citation semantics.
+
+follow_up_owner:
+  gup_revision: builder
+  rejected_identity_routing_and_tests: builder
+  source_and_identity_review: reviewer
+  approved_edge_application: integrator

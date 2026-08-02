@@ -1,0 +1,145 @@
+schema_version: "1.0"
+id: DEC-2026-0005
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+constitution_version: "1.3"
+
+decision_date: "2026-07-29"
+escalation_id: ESC-2026-0006
+supplements: DEC-2026-0003
+
+question: >-
+  After DEC-2026-0003 returned incomplete architectural placeholders, which role
+  must supply each standalone escalation package, and what interim precedence
+  applies to the PHB and UA subrace-infravision assertions?
+
+ruling: >-
+  Builder must file ESC-2026-07-30T04.42.48.030Z for the citation-cardinality question in the
+  intro GUP. Reviewer must file ESC-2026-07-30T04.45.31.286Z for racial-detection identity and
+  ESC-2026-07-30T04.57.52.190Z for the PHB/UA subrace-infravision identity and provenance
+  conflict. Until ESC-2026-07-30T04.57.52.190Z is decided, treat the PHB core assertion as the
+  active baseline and UA as optional. This interim precedence does not approve
+  an edge, merge provenance, or authorize a canonical mutation.
+
+rationale:
+  - >-
+    Builder created the normalized intro GUP and encountered a contract-level
+    disagreement over whether one edge may carry multiple page and section
+    loci. Builder therefore owns the complete escalation package; the Analyst
+    need not reinterpret the source.
+  - >-
+    Reviewer identified the unresolved identity between
+    rule_racial_detection and rule_detection while checking specific rows.
+    Review is the lifecycle stage that produces an Architect Escalation when
+    identity cannot be approved under current ontology.
+  - >-
+    Reviewer also identified the cross-book collision between PHB F33 and the
+    broader optional UA canonical assertion. Reviewer has the row-level source
+    and neighborhood evidence needed to package the provenance question.
+  - >-
+    Constitution section 8 makes UA optional in its entirety. An optional UA
+    assertion must not replace, broaden, or block a supported PHB core
+    assertion merely because the UA row entered canonical data first.
+  - >-
+    The PHB statement is halfling-specific while the UA row is broader. Giving
+    PHB interim precedence does not justify broadening the PHB assertion to all
+    subraces or discarding the UA citation.
+
+package_assignments:
+  - audit_item: 3
+    reserved_escalation_id: ESC-2026-07-30T04.42.48.030Z
+    topic: citation_cardinality
+    originating_artifact: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-007-008-intro-r03.yaml
+    affected_ref: E7
+    package_owner: builder
+    required_contents:
+      - The exact proposed edge and all printed-page and section loci.
+      - Current CSV, schema, and Reviewer citation-cardinality constraints.
+      - Options for one assertion with several citations versus separately represented assertions.
+      - Migration and validator impact for existing canonical rows.
+      - Builder recommendation.
+  - audit_item: 4
+    reserved_escalation_id: ESC-2026-07-30T04.45.31.286Z
+    topic: racial_detection_identity
+    originating_artifact: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-013-018-races-r03-r01.yaml
+    affected_refs: [F6, F20, F31]
+    package_owner: reviewer
+    required_contents:
+      - Source excerpts supporting the dwarf, gnome, and halfling detection mechanics.
+      - Local neighborhoods for rule_detection and proposed rule_racial_detection.
+      - Identity, split, and mapping options with duplicate and migration impact.
+      - Reviewer recommendation.
+  - audit_item: 5
+    reserved_escalation_id: ESC-2026-07-30T04.57.52.190Z
+    topic: subrace_infravision_identity_and_provenance
+    originating_artifact: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-013-018-races-r03-r01.yaml
+    affected_refs: [F33]
+    package_owner: reviewer
+    required_contents:
+      - The PHB p17 Halflings excerpt and corrected F33 assertion.
+      - The complete UA p10 Dwarves assertion and its canonical provenance.
+      - The local race_subrace and race_infravision neighborhood.
+      - Options that preserve core and optional assertions without false deduplication.
+      - Exact migration impact and Reviewer recommendation.
+
+interim_assertion_policy:
+  preferred_baseline:
+    book: PHB
+    status: core
+    scope: halfling subraces
+    reason: >-
+      PHB is part of the core ruleset and the cited assertion is narrower than
+      the optional UA assertion.
+  optional_assertion:
+    book: UA
+    status: optional
+    scope: broader subrace statement
+    treatment: >-
+      Preserve as optional provenance pending decision. It must not replace,
+      broaden, or block the PHB core assertion.
+  prohibited_interim_actions:
+    - Do not silently overwrite canonical row 2781.
+    - Do not broaden the PHB halfling claim to every subrace.
+    - Do not erase or relabel the UA provenance as PHB.
+    - Do not integrate F33 before the standalone escalation is decided.
+
+affected_contracts: []
+affected_registries: []
+affected_artifacts:
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0003.yaml
+  - rulesets/adnd1e/escalations/decided/ESC-2026-0006.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0005.yaml
+  - books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-007-008-intro-r03.yaml
+  - books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-013-018-races-r03-r01.yaml
+
+migration_required: false
+migration_scope:
+  canonical_data: none
+  note: >-
+    This is a package-ownership and interim-precedence decision. Any node,
+    assertion, schema, contract, or canonical migration requires the assigned
+    standalone package and a subsequent Architect decision.
+
+acceptance_tests:
+  - ESC-2026-07-30T04.42.48.030Z, when filed, is authored by Builder and contains the complete citation-cardinality package.
+  - ESC-2026-07-30T04.45.31.286Z, when filed, is authored by Reviewer and contains the complete racial-detection identity package.
+  - ESC-2026-07-30T04.57.52.190Z, when filed, is authored by Reviewer and contains both PHB and UA evidence plus local neighborhoods.
+  - No review-only placeholder is treated as an approved standalone escalation.
+  - PHB F33 remains held and is not broadened beyond halfling subraces.
+  - UA canonical provenance remains identifiable and optional pending decision.
+  - No canonical graph file is changed by this supplemental decision.
+
+constitution_version_impact:
+  changed: false
+  reason: >-
+    Package routing and the core-before-optional interim policy apply existing
+    workflow and Constitution section 8 without changing graph semantics.
+
+follow_up_owner:
+  citation_cardinality_package: builder
+  racial_detection_package: reviewer
+  subrace_infravision_package: reviewer
+  subsequent_ontology_decisions: architect
+  approved_canonical_application: integrator

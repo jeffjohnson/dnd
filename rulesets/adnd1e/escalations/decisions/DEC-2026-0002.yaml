@@ -1,0 +1,152 @@
+schema_version: "1.0"
+id: DEC-2026-0002
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-013-018-races
+constitution_version: "1.2"
+
+decision_date: "2026-07-28"
+escalation_id: ESC-2026-0004
+
+question: >-
+  How should the seven playable character races be represented as one controlled
+  set, how should human and demihuman classification be recorded, and what
+  identity should replace race_any where legacy rows mean demihuman?
+
+ruling: >-
+  Establish a closed AD&D 1e playable-character-race set containing exactly
+  race_dwarf, race_elf, race_gnome, race_half_elf, race_half_orc,
+  race_halfling, and race_human. Classify race_human as human and the other six
+  members as demihuman. Keep race_any as the group identity for the complete
+  seven-member set, and approve race_demihuman as the group identity for the
+  six demihuman members. Taxonomy membership is controlled registry metadata;
+  it does not generate edges, confer roles, or cause mechanical inheritance.
+
+rationale:
+  - >-
+    The seven leaf identities are the playable character races named by the
+    current PHB packet. Recording them once prevents packet-specific lists from
+    drifting.
+  - >-
+    Human and demihuman are classifications over those identities, while
+    race_any and race_demihuman are addressable group nodes for source rules
+    that explicitly operate at group grain.
+  - >-
+    Expanding every demihuman statement into six leaf edges would claim
+    per-race precision that a group-grain citation may not support.
+  - >-
+    Classification alone cannot authorize mechanics. A rule about demihumans
+    must still be source-supported and represented by an explicit approved edge
+    to race_demihuman or by separately supported leaf edges.
+  - >-
+    The existing race_ prefix and race node kind already cover leaf and group
+    race identities. No new prefix, node kind, edge type, or semantic exception
+    is required.
+
+identifier_normalization:
+  canonical_ids:
+    - race_human
+    - race_elf
+    - race_half_elf
+    - race_half_orc
+    - race_halfling
+    - race_dwarf
+    - race_gnome
+  invalid_spellings:
+    - race_half-elf
+    - race_half-orc
+  rule: >-
+    Multiword IDs use underscores under the constitution's prefixed-snake-case
+    requirement.
+
+affected_contracts: []
+affected_registries:
+  - rulesets/adnd1e/registries/nodes.csv
+  - rulesets/adnd1e/registries/character_races.yaml
+affected_artifacts:
+  - agents/analyst/INSTRUCTIONS.md
+  - agents/architect/INSTRUCTIONS.md
+  - agents/reviewer/INSTRUCTIONS.md
+  - rulesets/adnd1e/ruleset.yaml
+  - schemas/adnd1e/registries/character-race.schema.json
+  - rulesets/adnd1e/escalations/decided/ESC-2026-0004.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0002.yaml
+  - books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-013-018-races-r03.yaml
+
+registry_changes:
+  - operation: add
+    registry: rulesets/adnd1e/registries/nodes.csv
+    exact_row: "race_demihuman,Demihuman,race,0,"
+    notes:
+      - Degree zero is the deterministic value before approved edges are integrated.
+      - Roles remain empty and must be derived by build tooling.
+  - operation: add
+    registry: rulesets/adnd1e/registries/character_races.yaml
+    notes:
+      - The member set is closed at registry version 1.0.
+      - A membership change requires an Architect decision and registry version change.
+      - Set order has no semantic meaning.
+  - operation: reference
+    registry: rulesets/adnd1e/ruleset.yaml
+    notes:
+      - The ruleset manifest names the controlled character-race registry.
+
+migration_required: true
+migration_scope:
+  review_set:
+    count: 4
+    selection: >-
+      Canonical race_any incident rows whose source or target label means
+      Demihuman, Demi-Humans, Demihuman Race, Demihuman Craftsmen, or Small
+      Demi-Humans.
+  disposition:
+    - >-
+      Builder and Reviewer must verify each row against its citation before
+      proposing a replacement identity.
+    - >-
+      Rows that mean all six playable demihumans may be repointed to
+      race_demihuman.
+    - >-
+      The Small Demi-Humans row must not be broadened to all demihumans. It
+      requires source-supported leaf expansion or a separately approved
+      narrower group identity.
+    - >-
+      GUR leaf edges B1 through B6 remain independent proposals. Their presence
+      is not implied by membership and must be deduplicated at source-supported
+      grain.
+    - >-
+      Only the Integrator may apply an approved canonical migration.
+
+out_of_scope:
+  monster_taxonomy: >-
+    No monster family registry or monster nodes are approved by this decision.
+    When that taxonomy is encountered, a specific bestiary identity such as
+    monster_berserker should remain distinct from an orthogonal family
+    classification such as monster_human. Existing candidate family IDs,
+    including monster_dragon, must be audited for identity conflicts before
+    reuse.
+
+acceptance_tests:
+  - The character-race registry contains exactly seven unique member IDs.
+  - race_human is the only member classified as human.
+  - Exactly six members are classified as demihuman.
+  - race_any contains all seven members.
+  - race_demihuman contains exactly the six demihuman members.
+  - Every member and group ID resolves exactly once in nodes.csv.
+  - race_half-elf and race_half-orc do not appear as canonical IDs.
+  - Registry membership creates no canonical graph edge.
+  - No canonical edge is changed by this Architect decision.
+  - The four race_any demihuman rows remain queued for source review and Integrator migration.
+
+constitution_version_impact:
+  changed: false
+  reason: >-
+    The decision uses the existing race_ prefix, race kind, and current node
+    identity rules without changing graph semantics.
+
+follow_up_owner:
+  source_review: reviewer
+  migration_proposal: builder
+  canonical_migration: integrator

@@ -1,0 +1,88 @@
+schema_version: "1.0"
+id: PKT-PHB-043-054-cleric-spells
+status: claimed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-043-054-cleric-spells
+constitution_version: "1.4"
+
+citation_code: PHB
+page_start: 43
+page_end: 54
+page_number_basis: printed_page_footer
+section_span:
+  - CLERIC SPELLS
+  - Notes Regarding Cleric Spells
+  - First through Seventh Level Spells
+
+source_file: source.md
+source_checksum: sha256:afa7c7380a77837cb9bd8d5c14120b9942db1bf48b46916b96632a099ffb622a
+source_bytes: 91446
+original_filename: phb.10.cleric_spells.md
+operator_sequence: 10
+
+# --- Parsed under contracts/SOURCE_MARKDOWN.md v1.0 --------------------------
+parse_method: >-
+  Pandoc 3.10 JSON AST, not regular expressions or line splitting. This is the first packet
+  processed under the Pandoc Source Markdown Contract, whose Parser Requirements section
+  makes a CommonMark-only or GFM-only parser nonconforming. Page markers were resolved from
+  the AST: a heading whose Pandoc Attr identifier is pN is treated as an end-of-heading
+  marker under placement rule 1, which the contract states has the same meaning as literal
+  marker text. Paragraph markers were classified as rule 1 or rule 3 by whether any inline
+  content follows the marker token on the same source line.
+parse_artifacts:
+  location: books/adnd1e/phb/work/analyst/p10/
+  files:
+    - ast.json           # full Pandoc AST
+    - parsed_spells.json # 76 spell entries with all seven fields and resolved page
+    - edges_draft.json   # draft edges, NOT published; see blocking note
+  note: >-
+    Held in Analyst scratch space rather than in the packet directory, because a claimed
+    packet is immutable under ARTIFACT_LIFECYCLE and must contain only the source it was
+    claimed with.
+
+parse_result:
+  spell_entries: 76
+  pages_resolved: 43 to 54
+  field_coverage:
+    Level: 76
+    Range: 76
+    Duration: 76
+    Area of Effect: 75
+    Components: 76
+    Casting Time: 76
+    Saving Throw: 76
+  area_of_effect_gap: >-
+    One entry has no Area of Effect line. Not yet identified; harmless because no proposed
+    edge depends on that field.
+  saving_throw_distribution: {None: 66, Special: 5, "Neg.": 4, other: 1}
+  component_distribution: {"V,S,M": 42, "V,S": 31, "V": 3}
+  reversible_entries: 31
+
+# --- Extraction is blocked ---------------------------------------------------
+extraction_status: blocked_on_identity
+blocking_escalation: ESC-2026-07-30T15.16.18.973Z
+blocking_summary: >-
+  Of the 76 cleric spells, 29 match an existing canonical spell_ node by name and 47 do not.
+  The 47 are ordinary node additions and are Builder and Reviewer work under DEC-2026-0003,
+  so they are not escalated and do not block. The 29 matches are the block: 27 of the 183
+  canonical spell_ nodes carry a label contradicting their own ID, and several are
+  aggregates wearing a specific spell's ID, for example spell_cure_light_wounds labelled
+  "Curative Spells" and spell_fireball labelled "Fire Spells". Constitution 3.1 says IDs
+  determine identity, but the incident edges on those nodes were presumably written against
+  the labels. Publishing roughly 130 edges on 29 unverified matches would inject the same
+  class of defect ESC-2026-0001 already reports.
+what_unblocks_it: >-
+  A ruling on whether ID or label governs for the 27 divergent spell_ nodes. The parse is
+  complete and preserved, so extraction resumes immediately once that is answered.
+
+packet_metadata_origin: analyst_derived_at_claim
+missing_supplied_inputs:
+  - node_registry_slice.csv
+  - local_neighborhood.json
+  - general_rule_slice.json
+missing_input_impact: >-
+  This is the packet where the missing slice does real damage rather than creating rework.
+  A supplied slice of the 183 spell_ nodes would have surfaced the label divergence before
+  extraction rather than after, and is the single input that would most improve this packet.

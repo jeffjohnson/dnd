@@ -1,0 +1,91 @@
+schema_version: "1.0"
+id: PKT-PHB-013-018-races
+status: claimed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-013-018-races
+constitution_version: "1.2"
+
+citation_code: PHB
+page_start: 13
+page_end: 18
+page_number_basis: printed_page_footer
+section_span:
+  - CHARACTER RACES
+  - CHARACTER RACE TABLE I, II and III
+  - CHARACTER RACE DESCRIPTIONS
+  - RACIAL PREFERENCES
+
+source_file: source.md
+source_checksum: sha256:d934424b2995c53e725b31634e87be59573f9ef9436167679f3ab38db9dbb98f
+source_bytes: 41253
+original_filename: phb.04.races.md
+operator_sequence: 4
+
+page_composition:
+  p13: CHARACTER RACES intro; Table I and its notes
+  p14: Table II with footnotes and notes; Penalties and Bonuses for Race
+  p15: Character Ability Scores by Racial Type; Table III and notes; Dwarves opening
+  p16: remainder of Dwarves; Elves; Gnomes opening
+  p17: remainder of Gnomes; Half-Elves; Halflings; Half-Orcs; Humans opening
+  p18: remainder of Humans; RACIAL PREFERENCES and its table
+
+# --- Page marker defects: both resolved ---------------------------------------
+# Post-claim source amendment. Recorded rather than hidden, since ARTIFACT_LIFECYCLE
+# section 1 makes a claimed packet immutable and the checksum has therefore changed.
+source_amendment:
+  amended_by: operator
+  reason_given: correcting the final page marker
+  superseded_checksum: sha256:395dab641c265d15a7587e3037cf973d0041104a501f1139512fad4c25115ef3
+  superseded_bytes: 41255
+  line_count: 350 as claimed, 349 after amendment
+  gur_affected: >-
+    Not in its edges. GUR r01 already used marker-derived paging, which both resolutions
+    confirm, so no citation changes. GUR r02 was issued to correct the provenance of the
+    page 18 citations, which rested on Analyst inference in r01 and now rest on a marker.
+
+page_marker_defects:
+  - id: PM-01
+    severity: resolved
+    finding: >-
+      {#p17} appeared twice, at line 250 and line 304, and {#p18} appeared nowhere, so
+      the packet carried no marker for its last page.
+    analyst_reading_at_r01: >-
+      The line 304 marker was treated as an intended {#p18}, on three grounds: it sits
+      mid-paragraph in the Humans section, a second {#p17} would be a no-op since line
+      250 already opened p17, and the table of contents places RACIAL PREFERENCES on
+      page 18.
+    resolution: >-
+      Operator corrected the marker to {#p18} at line 303. All six markers are now unique
+      and cover p13 through p18. The Analyst's reading was correct, so the six page 18
+      citations in the GUR are unchanged; they now rest on a marker in the source rather
+      than on inference.
+  - id: PM-02
+    severity: resolved_contents_was_wrong
+    finding: >-
+      Marker-derived paging put Half-Elves on p17. The table of contents transcribed in
+      packet 01 places Half-Elves on p16.
+    resolution: >-
+      Operator checked a physical copy of the Players Handbook and confirms the printed
+      table of contents is in error: Half-Elves is on page 17. Marker-derived paging was
+      correct and the Half-Elves edges citing p17 are right as written. No change to the
+      GUR edges.
+    wider_consequence: >-
+      The printed table of contents is now known to contain at least one error. OBS-04 of
+      GUR-PKT-PHB-001-006-preamble-r02 recommended using the contents as an independent
+      completeness check for later PHB packets. That recommendation still holds, but the
+      contents is a cross-check and not an authority: where it disagrees with a page
+      marker, the marker wins. Recorded in GUR r02 as OBS-19.
+
+packet_metadata_origin: analyst_derived_at_claim
+missing_supplied_inputs:
+  - node_registry_slice.csv
+  - local_neighborhood.json
+  - general_rule_slice.json
+missing_input_impact: >-
+  The largest exposure so far. 136 edges are proposed against six race nodes whose
+  existing degrees run from 5 to 23, plus race_any at 49. If the canonical graph already
+  models racial class restrictions at any grain, a large share of the 36 EXCLUDES edges
+  in section A will collide with it. The Analyst can state what Table I says but cannot
+  state what the graph already holds.

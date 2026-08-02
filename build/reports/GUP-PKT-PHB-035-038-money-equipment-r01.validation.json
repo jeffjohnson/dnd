@@ -1,0 +1,646 @@
+{
+  "gup_id": "GUP-PKT-PHB-035-038-money-equipment-r01",
+  "gur_id": "GUR-PKT-PHB-035-038-money-equipment-r04",
+  "packet_id": "PKT-PHB-035-038-money-equipment",
+  "gur_checksum": "sha256:271aeda987f7753cb7efbfb4f807b3566efd57c950348f5766670e7a3eb40a63",
+  "tool": {
+    "name": "adnd1e-builder",
+    "version": "1.0.0"
+  },
+  "test_result": {
+    "ran": true,
+    "tests": 241,
+    "failures": 0,
+    "errors": 0,
+    "passed": true
+  },
+  "status": "blocked",
+  "approval_ready": false,
+  "summary": {
+    "edges_in": 18,
+    "edges_compiled": 18,
+    "edges_rejected": 0,
+    "edge_additions": 18,
+    "edge_pending_additions": 0,
+    "edge_updates": 0,
+    "errors": 1,
+    "warnings": 5,
+    "escalations": 0,
+    "escalations_since_decided": 0,
+    "architect_overrides": 0,
+    "node_proposals_rejected": 0,
+    "direction_findings": 4,
+    "node_additions_proposed": 0,
+    "duplicate_findings": 13,
+    "neighbourhood_conflicts": 7
+  },
+  "derivations": {
+    "polarity_basis": {
+      "derived": 5,
+      "read": 13
+    },
+    "edge_types": {
+      "CONSTRAINS": 2,
+      "CONSUMES": 1,
+      "EXCLUDED_FROM": 2,
+      "FEEDS_INTO": 2,
+      "MODIFIES": 11
+    }
+  },
+  "findings_by_rule": {
+    "constitution_version_older_than_compiler": 1,
+    "duplicate_assertion": 1,
+    "opposed_direction_vs_canonical": 4
+  },
+  "findings": [
+    {
+      "rule": "constitution_version_older_than_compiler",
+      "severity": "warning",
+      "detail": "GUR was authored under constitution 1.2 and is revalidated under 1.4, not trusted on its declared version. 1.4 is not purely permissive over 1.2: it fixes citation cardinality at one locus per edge (DEC-2026-0008) and settles MODIFIES vs DERIVED_FROM for table lookups (DEC-2026-0011). Rows that were valid under 1.2 may fail here."
+    },
+    {
+      "rule": "opposed_direction_vs_canonical",
+      "severity": "warning",
+      "detail": "sys_equipment CONSUMES money_gp runs opposite to canonical money_gp CONSTRAINS sys_equipment. DEC-2026-0011 does not settle this shape mechanically: the Reviewer decides case by case with both sources in hand. Carried unchanged.",
+      "ref": "B2"
+    },
+    {
+      "rule": "opposed_direction_vs_canonical",
+      "severity": "warning",
+      "detail": "enc_encumbrance CONSTRAINS sys_equipment runs opposite to canonical sys_equipment FEEDS_INTO enc_encumbrance; sys_equipment EXCLUDED_FROM enc_encumbrance. DEC-2026-0011 does not settle this shape mechanically: the Reviewer decides case by case with both sources in hand. Carried unchanged.",
+      "ref": "B3"
+    },
+    {
+      "rule": "opposed_direction_vs_canonical",
+      "severity": "warning",
+      "detail": "wpn_stats FEEDS_INTO cbt_damage runs opposite to canonical cbt_damage OVERRIDES wpn_stats. DEC-2026-0011 does not settle this shape mechanically: the Reviewer decides case by case with both sources in hand. Carried unchanged.",
+      "ref": "B18"
+    },
+    {
+      "rule": "opposed_direction_vs_canonical",
+      "severity": "warning",
+      "detail": "wpn_stats MODIFIES cbt_damage runs opposite to canonical cbt_damage OVERRIDES wpn_stats. DEC-2026-0011 does not settle this shape mechanically: the Reviewer decides case by case with both sources in hand. Carried unchanged.",
+      "ref": "B19"
+    },
+    {
+      "rule": "duplicate_assertion",
+      "severity": "error",
+      "detail": "assertion key already present in the canonical graph; inserting it again would violate invariant 12",
+      "ref": "B18"
+    }
+  ],
+  "duplicates": [
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B1",
+      "canonical": {
+        "canonical_row": 1595,
+        "canonical_index": 1593,
+        "source_id": "sys_classes",
+        "edge_type": "MODIFIES",
+        "target_id": "rule_starting_money",
+        "aspect": "class explains the sum held",
+        "condition": "",
+        "book": "DMG",
+        "page": "25",
+        "section": "PLAYER CHARACTER STARTING MONEY"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B2",
+      "canonical": {
+        "canonical_row": 1744,
+        "canonical_index": 1742,
+        "source_id": "sys_equipment",
+        "edge_type": "CONSUMES",
+        "target_id": "money_gp",
+        "aspect": "acquisition cost at DM adjudication",
+        "condition": "",
+        "book": "DMG",
+        "page": "64",
+        "section": "MISSILE DISCHARGE"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B6",
+      "canonical": {
+        "canonical_row": 416,
+        "canonical_index": 414,
+        "source_id": "rule_shield",
+        "edge_type": "MODIFIES",
+        "target_id": "cbt_armor_class",
+        "aspect": "improves rating",
+        "condition": "",
+        "book": "PHB",
+        "page": "36",
+        "section": "ARMOR CLASS TABLE"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B8",
+      "canonical": {
+        "canonical_row": 417,
+        "canonical_index": 415,
+        "source_id": "item_magic_armor",
+        "edge_type": "MODIFIES",
+        "target_id": "cbt_armor_class",
+        "aspect": "one step per plus",
+        "condition": "",
+        "book": "PHB",
+        "page": "36",
+        "section": "ARMOR CLASS TABLE"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B10",
+      "canonical": {
+        "canonical_row": 421,
+        "canonical_index": 419,
+        "source_id": "sys_classes",
+        "edge_type": "MODIFIES",
+        "target_id": "prof_weapon",
+        "aspect": "initial number permitted",
+        "condition": "",
+        "book": "PHB",
+        "page": "37",
+        "section": "WEAPON PROFICIENCY TABLE"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B11",
+      "canonical": {
+        "canonical_row": 425,
+        "canonical_index": 423,
+        "source_id": "exp_level",
+        "edge_type": "MODIFIES",
+        "target_id": "prof_weapon",
+        "aspect": "additional weapons gained",
+        "condition": "rate varies by class",
+        "book": "PHB",
+        "page": "37",
+        "section": "WEAPON PROFICIENCY TABLE"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B11",
+      "canonical": {
+        "canonical_row": 2843,
+        "canonical_index": 2841,
+        "source_id": "exp_level",
+        "edge_type": "MODIFIES",
+        "target_id": "prof_weapon",
+        "aspect": "rate of gain differs by class",
+        "condition": "",
+        "book": "UA",
+        "page": "26",
+        "section": "WEAPON PROFICIENCY TABLE"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B12",
+      "canonical": {
+        "canonical_row": 423,
+        "canonical_index": 421,
+        "source_id": "prof_nonproficiency_penalty",
+        "edge_type": "MODIFIES",
+        "target_id": "cbt_tohit",
+        "aspect": "subtraction from attack",
+        "condition": "melee and missile",
+        "book": "PHB",
+        "page": "37",
+        "section": "WEAPON PROFICIENCY TABLE"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B13",
+      "canonical": {
+        "canonical_row": 430,
+        "canonical_index": 428,
+        "source_id": "wpn_weight",
+        "edge_type": "FEEDS_INTO",
+        "target_id": "enc_encumbrance",
+        "aspect": "carried load",
+        "condition": "",
+        "book": "PHB",
+        "page": "37",
+        "section": "WEIGHT AND DAMAGE BY WEAPON TYPE"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B15",
+      "canonical": {
+        "canonical_row": 2846,
+        "canonical_index": 2844,
+        "source_id": "wpn_type_vs_ac",
+        "edge_type": "MODIFIES",
+        "target_id": "cbt_tohit",
+        "aspect": "per weapon against each armor class",
+        "condition": "",
+        "book": "UA",
+        "page": "27",
+        "section": "HAND HELD WEAPON TYPES, GENERAL DATA"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B16",
+      "canonical": {
+        "canonical_row": 596,
+        "canonical_index": 594,
+        "source_id": "wpn_range",
+        "edge_type": "MODIFIES",
+        "target_id": "cbt_tohit",
+        "aspect": "penalty at medium and long range",
+        "condition": "",
+        "book": "DMG",
+        "page": "64",
+        "section": "GRENADE-LIKE MISSILES"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "near_vs_canonical",
+      "ref": "B17",
+      "canonical": {
+        "canonical_row": 3132,
+        "canonical_index": 3130,
+        "source_id": "cbt_surprise",
+        "edge_type": "MODIFIES",
+        "target_id": "cbt_tohit",
+        "aspect": "bonus to strike",
+        "condition": "",
+        "book": "UA",
+        "page": "107",
+        "section": "APPENDIX Q: WEAPONLESS COMBAT"
+      },
+      "detail": "same endpoints and edge type as an existing canonical edge, differing in aspect or condition; Reviewer must decide restatement vs addition"
+    },
+    {
+      "grade": "exact_vs_canonical",
+      "ref": "B18",
+      "canonical": {
+        "canonical_row": 428,
+        "canonical_index": 426,
+        "source_id": "wpn_stats",
+        "edge_type": "FEEDS_INTO",
+        "target_id": "cbt_damage",
+        "aspect": "damage by weapon type",
+        "condition": "",
+        "book": "PHB",
+        "page": "37",
+        "section": "WEIGHT AND DAMAGE BY WEAPON TYPE"
+      },
+      "field_diff": {
+        "pass": {
+          "patch": "page-sweep",
+          "canonical": "prose-sweep"
+        }
+      },
+      "detail": "assertion key already present in the canonical graph; inserting it again would violate invariant 12"
+    }
+  ],
+  "neighbourhood_conflicts": [
+    {
+      "ref": "B2",
+      "endpoints": [
+        "sys_equipment",
+        "money_gp"
+      ],
+      "existing_edges": [
+        {
+          "canonical_row": 420,
+          "canonical_index": 418,
+          "source_id": "money_gp",
+          "edge_type": "CONSTRAINS",
+          "target_id": "sys_equipment",
+          "aspect": "initial cost limits choice",
+          "condition": "",
+          "book": "PHB",
+          "page": "36",
+          "section": "WEAPONS"
+        }
+      ],
+      "detail": "the same node pair is already related by other edge types"
+    },
+    {
+      "ref": "B3",
+      "endpoints": [
+        "enc_encumbrance",
+        "sys_equipment"
+      ],
+      "existing_edges": [
+        {
+          "canonical_row": 1709,
+          "canonical_index": 1707,
+          "source_id": "enc_encumbrance",
+          "edge_type": "DERIVED_FROM",
+          "target_id": "sys_equipment",
+          "aspect": "light average or heavy bands",
+          "condition": "",
+          "book": "DMG",
+          "page": "58",
+          "section": "MOVEMENT AFOOT IN MILES/DAY"
+        },
+        {
+          "canonical_row": 2718,
+          "canonical_index": 2716,
+          "source_id": "sys_equipment",
+          "edge_type": "FEEDS_INTO",
+          "target_id": "enc_encumbrance",
+          "aspect": "each item has a listed weight",
+          "condition": "",
+          "book": "DMG",
+          "page": "225",
+          "section": "APPENDIX O: ENCUMBRANCE OF STANDARD ITEMS"
+        },
+        {
+          "canonical_row": 2722,
+          "canonical_index": 2720,
+          "source_id": "sys_equipment",
+          "edge_type": "EXCLUDED_FROM",
+          "target_id": "enc_encumbrance",
+          "aspect": "not counted",
+          "condition": "",
+          "book": "DMG",
+          "page": "225",
+          "section": "APPENDIX O: ENCUMBRANCE OF STANDARD ITEMS"
+        }
+      ],
+      "detail": "the same node pair is already related by other edge types"
+    },
+    {
+      "ref": "B6",
+      "endpoints": [
+        "rule_shield",
+        "cbt_armor_class"
+      ],
+      "existing_edges": [
+        {
+          "canonical_row": 1387,
+          "canonical_index": 1385,
+          "source_id": "rule_shield",
+          "edge_type": "CONSTRAINS",
+          "target_id": "cbt_armor_class",
+          "aspect": "covers only the front and shield side",
+          "condition": "",
+          "book": "DMG",
+          "page": "28",
+          "section": "ARMOR ARMOR CLASS & WEAPONS"
+        }
+      ],
+      "detail": "the same node pair is already related by other edge types"
+    },
+    {
+      "ref": "B7",
+      "endpoints": [
+        "rule_shield",
+        "cbt_armor_class"
+      ],
+      "existing_edges": [
+        {
+          "canonical_row": 416,
+          "canonical_index": 414,
+          "source_id": "rule_shield",
+          "edge_type": "MODIFIES",
+          "target_id": "cbt_armor_class",
+          "aspect": "improves rating",
+          "condition": "",
+          "book": "PHB",
+          "page": "36",
+          "section": "ARMOR CLASS TABLE"
+        },
+        {
+          "canonical_row": 1387,
+          "canonical_index": 1385,
+          "source_id": "rule_shield",
+          "edge_type": "CONSTRAINS",
+          "target_id": "cbt_armor_class",
+          "aspect": "covers only the front and shield side",
+          "condition": "",
+          "book": "DMG",
+          "page": "28",
+          "section": "ARMOR ARMOR CLASS & WEAPONS"
+        }
+      ],
+      "detail": "the same node pair is already related by other edge types"
+    },
+    {
+      "ref": "B9",
+      "endpoints": [
+        "item_magic_armor",
+        "enc_encumbrance"
+      ],
+      "existing_edges": [
+        {
+          "canonical_row": 1384,
+          "canonical_index": 1382,
+          "source_id": "item_magic_armor",
+          "edge_type": "MODIFIES",
+          "target_id": "enc_encumbrance",
+          "aspect": "weight halved",
+          "condition": "",
+          "book": "DMG",
+          "page": "28",
+          "section": "ARMOR ARMOR CLASS & WEAPONS"
+        }
+      ],
+      "detail": "the same node pair is already related by other edge types"
+    },
+    {
+      "ref": "B18",
+      "endpoints": [
+        "wpn_stats",
+        "cbt_damage"
+      ],
+      "existing_edges": [
+        {
+          "canonical_row": 2975,
+          "canonical_index": 2973,
+          "source_id": "wpn_stats",
+          "edge_type": "EXCLUDES",
+          "target_id": "cbt_damage",
+          "aspect": "lighter javelins do full damage due to velocity",
+          "condition": "",
+          "book": "UA",
+          "page": "77",
+          "section": "DESCRIPTIONS OF NEW WEAPON TYPES"
+        },
+        {
+          "canonical_row": 2984,
+          "canonical_index": 2982,
+          "source_id": "cbt_damage",
+          "edge_type": "OVERRIDES",
+          "target_id": "wpn_stats",
+          "aspect": "allies may hack through the shaft",
+          "condition": "",
+          "book": "UA",
+          "page": "78",
+          "section": "ARMOR, ARMOR CLASS & WEAPONS"
+        }
+      ],
+      "detail": "the same node pair is already related by other edge types"
+    },
+    {
+      "ref": "B19",
+      "endpoints": [
+        "wpn_stats",
+        "cbt_damage"
+      ],
+      "existing_edges": [
+        {
+          "canonical_row": 428,
+          "canonical_index": 426,
+          "source_id": "wpn_stats",
+          "edge_type": "FEEDS_INTO",
+          "target_id": "cbt_damage",
+          "aspect": "damage by weapon type",
+          "condition": "",
+          "book": "PHB",
+          "page": "37",
+          "section": "WEIGHT AND DAMAGE BY WEAPON TYPE"
+        },
+        {
+          "canonical_row": 2975,
+          "canonical_index": 2973,
+          "source_id": "wpn_stats",
+          "edge_type": "EXCLUDES",
+          "target_id": "cbt_damage",
+          "aspect": "lighter javelins do full damage due to velocity",
+          "condition": "",
+          "book": "UA",
+          "page": "77",
+          "section": "DESCRIPTIONS OF NEW WEAPON TYPES"
+        },
+        {
+          "canonical_row": 2984,
+          "canonical_index": 2982,
+          "source_id": "cbt_damage",
+          "edge_type": "OVERRIDES",
+          "target_id": "wpn_stats",
+          "aspect": "allies may hack through the shaft",
+          "condition": "",
+          "book": "UA",
+          "page": "78",
+          "section": "ARMOR, ARMOR CLASS & WEAPONS"
+        }
+      ],
+      "detail": "the same node pair is already related by other edge types"
+    }
+  ],
+  "escalations": [],
+  "escalations_since_decided": [],
+  "architect_dispositions_applied": [],
+  "direction_findings": [
+    {
+      "ref": "B2",
+      "rule": "opposed_direction_vs_canonical",
+      "disposition": "carry_for_reviewer",
+      "proposed": "sys_equipment CONSUMES money_gp",
+      "canonical_counterparts": [
+        {
+          "canonical_row": 420,
+          "canonical_index": 418,
+          "source_id": "money_gp",
+          "edge_type": "CONSTRAINS",
+          "target_id": "sys_equipment",
+          "aspect": "initial cost limits choice",
+          "condition": "",
+          "book": "PHB",
+          "page": "36",
+          "section": "WEAPONS"
+        }
+      ]
+    },
+    {
+      "ref": "B3",
+      "rule": "opposed_direction_vs_canonical",
+      "disposition": "carry_for_reviewer",
+      "proposed": "enc_encumbrance CONSTRAINS sys_equipment",
+      "canonical_counterparts": [
+        {
+          "canonical_row": 2718,
+          "canonical_index": 2716,
+          "source_id": "sys_equipment",
+          "edge_type": "FEEDS_INTO",
+          "target_id": "enc_encumbrance",
+          "aspect": "each item has a listed weight",
+          "condition": "",
+          "book": "DMG",
+          "page": "225",
+          "section": "APPENDIX O: ENCUMBRANCE OF STANDARD ITEMS"
+        },
+        {
+          "canonical_row": 2722,
+          "canonical_index": 2720,
+          "source_id": "sys_equipment",
+          "edge_type": "EXCLUDED_FROM",
+          "target_id": "enc_encumbrance",
+          "aspect": "not counted",
+          "condition": "",
+          "book": "DMG",
+          "page": "225",
+          "section": "APPENDIX O: ENCUMBRANCE OF STANDARD ITEMS"
+        }
+      ]
+    },
+    {
+      "ref": "B18",
+      "rule": "opposed_direction_vs_canonical",
+      "disposition": "carry_for_reviewer",
+      "proposed": "wpn_stats FEEDS_INTO cbt_damage",
+      "canonical_counterparts": [
+        {
+          "canonical_row": 2984,
+          "canonical_index": 2982,
+          "source_id": "cbt_damage",
+          "edge_type": "OVERRIDES",
+          "target_id": "wpn_stats",
+          "aspect": "allies may hack through the shaft",
+          "condition": "",
+          "book": "UA",
+          "page": "78",
+          "section": "ARMOR, ARMOR CLASS & WEAPONS"
+        }
+      ]
+    },
+    {
+      "ref": "B19",
+      "rule": "opposed_direction_vs_canonical",
+      "disposition": "carry_for_reviewer",
+      "proposed": "wpn_stats MODIFIES cbt_damage",
+      "canonical_counterparts": [
+        {
+          "canonical_row": 2984,
+          "canonical_index": 2982,
+          "source_id": "cbt_damage",
+          "edge_type": "OVERRIDES",
+          "target_id": "wpn_stats",
+          "aspect": "allies may hack through the shaft",
+          "condition": "",
+          "book": "UA",
+          "page": "78",
+          "section": "ARMOR, ARMOR CLASS & WEAPONS"
+        }
+      ]
+    }
+  ]
+}

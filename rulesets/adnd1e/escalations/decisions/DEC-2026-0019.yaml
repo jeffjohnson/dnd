@@ -1,0 +1,263 @@
+schema_version: "1.0"
+id: DEC-2026-0019
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.6"
+revision: 1
+supersedes: null
+handoff:
+  next_role: analyst
+  readiness: ready
+  reason: >-
+    Produce source-backed correction GURs for the exact 20 touched assertions
+    before Builder revises the decision migration.
+  blocking_ids: []
+
+decision_date: "2026-08-01"
+escalation_id: ESC-2026-07-31T23.21.50.116Z
+supplements: DEC-2026-0015
+corrects: DEC-2026-0015
+
+question: >-
+  How must the DEC-2026-0015/0016 migration proceed when one label directive
+  names the wrong endpoint field and 20 touched authored-polarity assertions
+  retain bases that an Approved patch may not contain?
+
+ruling: >-
+  Correct only DEC-2026-0015's canonical-row-3283 label directive: preserve
+  source_label Caster Level and normalize target_label to Taunt. Do not edit the
+  immutable Decision. GUP-MIG-DEC-2026-0015-0016-r02 is not approvable and must
+  remain immutable. Before Builder creates r03, Analyst must resolve the exact
+  20 listed authored polarities from bounded source packets, Reviewer must
+  independently verify them and resolve the three currently heuristic values,
+  and Integrator must apply that separately Approved polarity cleanup. Builder
+  then emits r03 against the post-cleanup canonical checksum under
+  DEC-2026-0015, DEC-2026-0016, and this corrective Decision.
+
+decision_precedence:
+  corrected_decision: DEC-2026-0015
+  corrected_clause: canonical_migration.endpoint_label_normalizations_without_repoint
+  corrected_locator: canonical row 3283 against the recorded DEC-2026-0015 baseline
+  prior_directive: {field: source_label, value: Taunt}
+  governing_directive: {field: target_label, value: Taunt}
+  preserved_endpoint_label: {field: source_label, value: Caster Level}
+  scope: >-
+    This Decision overrides only the row-3283 field selection. Every other
+    DEC-2026-0015 ruling, guard, count, and migration directive remains in force.
+
+rationale:
+  - >-
+    The supplied legacy row is exp_level MODIFIES spell_taunt. Taunt names the
+    target node, while Caster Level names exp_level. Applying the literal prior
+    directive would corrupt the source endpoint label.
+  - >-
+    MODIFIES, TRIGGERS, and CONSTRAINS use authored polarity. Constitution 1.6
+    section 6.1 and GRAPH_INVARIANTS 15-16 prohibit an Approved GUP from
+    retaining polarity_basis heuristic or unset on these touched assertions.
+  - >-
+    A migration exception would weaken a categorical review boundary to carry
+    known legacy debt through modified rows. Source-backed cleanup is narrower
+    and leaves the invariant intact.
+  - >-
+    DEC-2026-0016 authorizes exactly nine page-only corrections. Keeping the
+    polarity work in a separately reviewed and integrated package preserves
+    that Decision's semantic and field scope.
+  - >-
+    Exact polarity values require source interpretation. They are Analyst work,
+    with independent Reviewer resolution, and are not inferred by Architect or
+    Builder from the existing neutral, inflicts, or worsens values.
+
+current_artifact_disposition:
+  gup:
+    id: GUP-MIG-DEC-2026-0015-0016-r02
+    path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0015-0016-r02.yaml
+    checksum: sha256:83004cf576df2548af73fea1d32073ecd27ee69d6f8e4cea7cf8fc6aba2d72bb
+    disposition: immutable_non_approvable_revision
+  review:
+    id: REV-GUP-MIG-DEC-2026-0015-0016-r02-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-MIG-DEC-2026-0015-0016-r02-r01.yaml
+    disposition: remains_architect_escalation_history
+  replacement:
+    id: GUP-MIG-DEC-2026-0015-0016-r03
+    revision: 3
+    supersedes: GUP-MIG-DEC-2026-0015-0016-r02
+    lineage_id: MIG-DEC-2026-0015-0016
+    authority: [DEC-2026-0015, DEC-2026-0016, DEC-2026-0019]
+    timing: only_after_prerequisite_cleanup_integration
+
+prerequisite_polarity_cleanup:
+  baseline:
+    canonical_source: rulesets/adnd1e/canonical/edges_master.csv
+    canonical_checksum: sha256:48b057b71c7e8e9249af6cae1440030e7143c8d32a873fb1ae2f2a628a607633
+    canonical_rows_read: 3815
+    review_source: books/adnd1e/phb/artifacts/reviews/REV-GUP-MIG-DEC-2026-0015-0016-r02-r01.yaml
+  locator_rule: >-
+    The row numbers below identify the reviewed baseline only. Analyst and
+    downstream artifacts must also record each stable five-field assertion key;
+    no migration may select a row from a later canonical file by row number.
+  exact_scope:
+    phb:
+      rows:
+        - {canonical_row: 413, edge_type: CONSTRAINS, current_basis: unset}
+        - {canonical_row: 531, edge_type: MODIFIES, current_basis: unset}
+        - {canonical_row: 532, edge_type: MODIFIES, current_basis: unset}
+        - {canonical_row: 535, edge_type: TRIGGERS, current_basis: heuristic}
+    dmg:
+      rows:
+        - {canonical_row: 1702, edge_type: MODIFIES, current_basis: unset}
+        - {canonical_row: 1984, edge_type: MODIFIES, current_basis: heuristic}
+        - {canonical_row: 2065, edge_type: TRIGGERS, current_basis: unset}
+        - {canonical_row: 2066, edge_type: CONSTRAINS, current_basis: unset}
+        - {canonical_row: 2122, edge_type: TRIGGERS, current_basis: unset}
+        - {canonical_row: 2215, edge_type: TRIGGERS, current_basis: unset}
+        - {canonical_row: 2273, edge_type: MODIFIES, current_basis: heuristic}
+        - {canonical_row: 2612, edge_type: MODIFIES, current_basis: unset}
+    ua:
+      rows:
+        - {canonical_row: 2902, edge_type: MODIFIES, current_basis: unset}
+        - {canonical_row: 2903, edge_type: MODIFIES, current_basis: unset}
+        - {canonical_row: 2904, edge_type: TRIGGERS, current_basis: unset}
+        - {canonical_row: 2905, edge_type: MODIFIES, current_basis: unset}
+        - {canonical_row: 2906, edge_type: MODIFIES, current_basis: unset}
+        - {canonical_row: 3147, edge_type: CONSTRAINS, current_basis: unset}
+        - {canonical_row: 3283, edge_type: MODIFIES, current_basis: unset}
+        - {canonical_row: 3498, edge_type: MODIFIES, current_basis: unset}
+  row_count: 20
+  source_requirement: >-
+    Use bounded claimed Markdown source packets conforming to
+    contracts/SOURCE_MARKDOWN.md. Legacy rows and GUP before-images locate the
+    assertions but do not substitute for reading the source rule.
+  permitted_edge_fields: [polarity, polarity_basis]
+  required_result:
+    polarity_basis: read
+    authored_polarity_count: 20
+    retained_unset_count: 0
+    retained_heuristic_count: 0
+    all_other_edge_fields: unchanged
+  package_rule: >-
+    Publish one GUR per bounded claimed source packet. Builder may compile those
+    GURs into separately reviewable packet-update GUPs, but must not combine the
+    cleanup with DEC-2026-0016's nine page-only changes.
+
+migration_sequence:
+  - step: 1
+    owner: analyst
+    action: >-
+      Read source and publish correction GURs for all and only the 20 assertions,
+      including a stable assertion key and authored polarity for each.
+  - step: 2
+    owner: builder
+    action: >-
+      Compile the active-leaf GURs into polarity-only packet-update GUPs without
+      changing labels, IDs, citations, or assertion identity.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently read all 20 assertions, expressly resolve baseline rows 535,
+      1984, and 2273, and approve only read-based authored polarity.
+  - step: 4
+    owner: integrator
+    action: >-
+      Apply the Approved polarity cleanup and publish the resulting canonical
+      checksum before any replacement decision migration is built.
+  - step: 5
+    owner: builder
+    action: >-
+      Emit GUP-MIG-DEC-2026-0015-0016-r03 against the post-cleanup canonical
+      checksum and implement the corrected row-3283 target-label directive.
+  - step: 6
+    owner: reviewer
+    action: >-
+      Review r03 as a fresh active leaf. The r02 review is evidence, not approval.
+  - step: 7
+    owner: integrator
+    action: Apply only the separately Approved r03 bundle.
+
+affected_contracts_and_registries:
+  contracts: []
+  registries:
+    - rulesets/adnd1e/registries/nodes.csv
+  schemas: []
+  governance_files:
+    - rulesets/adnd1e/escalations/decisions/DEC-2026-0015.yaml
+  canonical_files:
+    - rulesets/adnd1e/canonical/edges_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+
+migration_required: true
+migration_scope:
+  architect_writes: none_to_canonical_or_registries
+  prerequisite_cleanup:
+    assertions: 20
+    allowed_fields: [polarity, polarity_basis]
+  corrected_identity_migration:
+    row_count_change: 0
+    assertion_identity_change: false
+    corrected_field: target_label
+    preserved_field: source_label
+  final_decision_migration: >-
+    The complete DEC-2026-0015/0016 scope remains required after prerequisite
+    cleanup. This Decision changes no count except the authority list.
+
+acceptance_tests:
+  - DEC-2026-0015, DEC-2026-0016, r02, and its Review remain byte-immutable.
+  - >-
+    The source-backed cleanup identifies exactly 20 baseline assertions by
+    stable five-field keys and accounts for baseline rows 413, 531, 532, 535,
+    1702, 1984, 2065, 2066, 2122, 2215, 2273, 2612, 2902, 2903, 2904, 2905,
+    2906, 3147, 3283, and 3498.
+  - >-
+    Every cleanup row uses polarity_basis read; none retains heuristic or unset.
+  - >-
+    Reviewer independently verifies all 20 source readings and explicitly
+    resolves the three baseline heuristic rows 535, 1984, and 2273.
+  - The cleanup changes no field except polarity and polarity_basis.
+  - The Approved polarity cleanup is integrated before r03 is emitted.
+  - >-
+    r03 records revision 3, supersedes r02, preserves lineage_id
+    MIG-DEC-2026-0015-0016, and checksums all three authority Decisions.
+  - r03 uses the post-cleanup canonical checksum and matching before-images.
+  - >-
+    The r03 result for the affected assertion is exp_level/Caster Level
+    MODIFIES spell_taunt/Taunt; it never assigns Taunt to source_label.
+  - >-
+    The DEC-2026-0016 component still changes exactly nine page values and no
+    other field as part of that decision scope.
+  - The simulated r03 graph has no exact five-field assertion duplicates.
+  - Canonical rows corresponding to baseline rows 3349 and 3350 remain distinct.
+  - GR_HELPLESS_TARGET_AUTOHIT and the assertion at baseline row 2260 remain unchanged.
+  - The deferred spell_imprisonment assertion at baseline row 3027 remains unchanged.
+  - No THE PALADIN page changes are included.
+  - The DMG page 67 locus from baseline row 1765 remains on survivor row 2258.
+  - Architect changes no canonical graph or registry file.
+
+constitution_version_impact:
+  changed: false
+  version: "1.6"
+  reason: >-
+    This enforces existing endpoint-label and polarity contracts and corrects a
+    Decision directive; it changes no graph ontology or controlled vocabulary.
+
+follow_up_owner: analyst
+follow_up_owners:
+  analyst:
+    - Publish source-backed correction GURs for the exact 20 assertions.
+  builder:
+    - Compile and validate polarity-only packet updates after Analyst handoff.
+    - Build r03 only after the cleanup integration supplies a new baseline.
+  reviewer:
+    - Resolve and verify all authored polarities from source.
+    - Review r03 independently; do not convert the r02 disposition into approval.
+  integrator:
+    - Integrate the polarity cleanup first and r03 only after separate approval.
+
+prohibited_actions:
+  - Do not edit DEC-2026-0015 to repair its historical text.
+  - Do not edit, rename, move, delete, or approve r02.
+  - Do not infer exact polarity values from current canonical values or edge names.
+  - Do not combine the polarity cleanup with DEC-2026-0016's page-only scope.
+  - Do not build r03 against the pre-cleanup canonical checksum.
+  - Architect does not edit canonical graph or registry files.

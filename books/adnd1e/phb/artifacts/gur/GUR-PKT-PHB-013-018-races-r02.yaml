@@ -1,0 +1,2935 @@
+schema_version: "1.0"
+id: GUR-PKT-PHB-013-018-races-r02
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-013-018-races
+constitution_version: "1.2"
+
+revision: 2
+supersedes: GUR-PKT-PHB-013-018-races-r01
+revision_reason: >-
+  Both source defects reported in r01 are resolved and the escalation r01 raised has been
+  filed as a standalone artifact. The operator corrected the final page marker to {#p18},
+  so the six citations to page 18 now rest on a marker in the source rather than on
+  Analyst inference. The operator also checked a physical copy of the book and confirms
+  the printed table of contents is wrong about Half-Elves, which is on page 17 as
+  marker-derived paging had it. No edge is added, removed, retyped or recited. OBS-18 is
+  rewritten, OBS-19 is added on the newly known contents error, and the escalation now
+  points at its filed location.
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 13
+page_end: 18
+
+# =============================================================================
+# HEADLINE RESULT
+# =============================================================================
+# 136 candidate edges. 2 candidate nodes. 1 architectural escalation.
+#
+#  1. The packet 03 deferral is discharged and was correct. CHARACTER RACE
+#     TABLE III is here and is the complete statement of racial ability
+#     minimums and maximums. It also settles the question left open across two
+#     prior GURs: sex differentiates exactly one ability, strength maximum, and
+#     nothing else. See OBS-13.
+#
+#  2. Table III also resolves OBS-08 from packet 03. Racial maxima of 19 exist,
+#     and the notes say outright that some races exceed the 18 obtainable from
+#     three six-sided dice. The declared 3 to 18 range bounds generation, not
+#     scores.
+#
+#  3. There is no race_human node in the registry, though humans are a playable
+#     race with rules of their own stated on p17. Proposed as a candidate.
+#
+#  4. Both page-marker defects r01 reported are now fixed at source, and both
+#     of r01's readings proved correct. See OBS-18. The printed table of
+#     contents is now known to carry an error; see OBS-19.
+#
+#  5. ESC-2026-0003 is filed at
+#     rulesets/adnd1e/escalations/pending/ESC-2026-0003.yaml.
+# =============================================================================
+
+source_summary: >-
+  Pages 13 through 18, the CHARACTER RACES section in full. An opening paragraph fixing
+  the seven playable racial stocks. Three tables: class limitations by race, class level
+  limitations by race with nine ability-linked footnotes, and ability score minimums and
+  maximums by race and sex. A short table of racial ability penalties and bonuses. Then
+  a descriptive section for each of the seven races carrying saving-throw bonuses,
+  language limits, infravision, underground detection, combat adjustments, spell
+  resistances and secret-door detection. Finally the RACIAL PREFERENCES table giving
+  inter-racial attitudes.
+
+node_id_resolution_method: >-
+  No slice supplied. Resolved by targeted lookup against the canonical registry, as with
+  packets 02 and 03. 134 of the 136 edges resolved onto existing canonical IDs. Two
+  concepts had no node and are proposed as candidates. The generated edge block was
+  checked for duplicate source, type and target triples before assembly; there are none,
+  which matters here because invariant 12 forbids duplicate edge identity and this packet
+  proposes many edges from the same six source nodes.
+
+grain_decisions:
+  - decision: >-
+      Table I is recorded as 36 EXCLUDES edges, one per "no" cell, and none of the 34
+      "yes" cells is recorded.
+    reasoning: >-
+      The table is a permission matrix and its information content is the denials. A
+      "yes" cell records the absence of a restriction, which is the default state and
+      not an assertion. Constitution 4.1 permits EXCLUDES where the text denies a
+      dependency a reader would otherwise assume, and an explicit "no" in a printed
+      matrix is exactly that, not the untouched silence 4.1 warns against.
+  - decision: >-
+      Table II is recorded as one CONSTRAINS edge per race rather than one per race and
+      class pair, of which there would be 22.
+    reasoning: >-
+      The per-class detail in Table II is entirely level numbers, which the grain rule
+      excludes. What survives the grain rule is that the race caps level attainment and
+      that the cap varies by class, which is one relationship per race. The nine
+      footnotes carry something the table does not, that an ability score raises the cap,
+      and those are recorded separately as B7 through B9.
+  - decision: >-
+      Table III is split into two directions rather than recorded as one relationship
+      per cell.
+    reasoning: >-
+      A minimum and a maximum are different mechanics pointing opposite ways. A minimum
+      is an eligibility precondition, so it is recorded as the ability gating the race.
+      A maximum is the race bounding the ability, so it is recorded in the other
+      direction as CONSTRAINS. Cells that constrain nothing are not recorded: a minimum
+      of 3 is the floor of the dice range and a maximum of 18 is its ceiling, so neither
+      asserts anything. That reduces 72 cells to 18 gates and 16 constraints.
+
+candidate_nodes:
+  - proposed_id: race_human
+    proposed_label: Human
+    prefix: race_
+    prefix_is_approved: true
+    why_needed: >-
+      The registry holds race_dwarf, race_elf, race_gnome, race_half_elf, race_half_orc,
+      race_halfling, plus race_any, race_subrace and race_infravision. There is no node
+      for humans, yet humans are one of the seven playable stocks and the book states
+      rules about them: they take no racial ability adjustment, and they have no racial
+      level ceiling in any class. Both are assertions about a race, and neither can be
+      attached to anything without the node.
+    edges_depending_on_it: [F37]
+    analyst_position: >-
+      Proposed under an approved prefix. Only one edge depends on it here, but the gap
+      will matter more in packet 05, where the class tables treat humans as the
+      unrestricted default against which every other race is described.
+
+  - proposed_id: rule_racial_detection
+    proposed_label: Racial Underground Detection
+    prefix: rule_
+    prefix_is_approved: true
+    why_needed: >-
+      Dwarves, gnomes and halflings each have a table of underground detection abilities:
+      slope, new construction, shifting walls, stonework traps, unsafe surfaces, depth
+      and direction. No canonical node covers them. The nearest candidates in the
+      registry, campaign_construction and rule_depth, mean unrelated things, the latter
+      being water depth.
+    edges_depending_on_it: [F6, F20, F31]
+    analyst_position: >-
+      Proposed as one node covering the shared mechanic rather than three per-race nodes,
+      because the three tables differ only in which phenomena and what percentages, and
+      percentages are outside the grain. If the Architect prefers per-race identity the
+      three edges split cleanly.
+
+candidate_edges:
+  - ref: A1
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: EXCLUDES
+    target_id: class_cleric
+    target_label: "Cleric"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A2
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: EXCLUDES
+    target_id: class_druid
+    target_label: "Druid"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A3
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: EXCLUDES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A4
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: EXCLUDES
+    target_id: class_ranger
+    target_label: "Ranger"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A5
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: EXCLUDES
+    target_id: class_magic_user
+    target_label: "Magic-User"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A6
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: EXCLUDES
+    target_id: class_illusionist
+    target_label: "Illusionist"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A7
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: EXCLUDES
+    target_id: class_monk
+    target_label: "Monk"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A8
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: EXCLUDES
+    target_id: class_cleric
+    target_label: "Cleric"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A9
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: EXCLUDES
+    target_id: class_druid
+    target_label: "Druid"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A10
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: EXCLUDES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A11
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: EXCLUDES
+    target_id: class_ranger
+    target_label: "Ranger"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A12
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: EXCLUDES
+    target_id: class_illusionist
+    target_label: "Illusionist"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A13
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: EXCLUDES
+    target_id: class_monk
+    target_label: "Monk"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A14
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: EXCLUDES
+    target_id: class_cleric
+    target_label: "Cleric"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A15
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: EXCLUDES
+    target_id: class_druid
+    target_label: "Druid"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A16
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: EXCLUDES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A17
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: EXCLUDES
+    target_id: class_ranger
+    target_label: "Ranger"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A18
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: EXCLUDES
+    target_id: class_magic_user
+    target_label: "Magic-User"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A19
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: EXCLUDES
+    target_id: class_monk
+    target_label: "Monk"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A20
+    source_id: race_half_elf
+    source_label: "Half-Elf"
+    edge_type: EXCLUDES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A21
+    source_id: race_half_elf
+    source_label: "Half-Elf"
+    edge_type: EXCLUDES
+    target_id: class_illusionist
+    target_label: "Illusionist"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A22
+    source_id: race_half_elf
+    source_label: "Half-Elf"
+    edge_type: EXCLUDES
+    target_id: class_monk
+    target_label: "Monk"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A23
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: EXCLUDES
+    target_id: class_cleric
+    target_label: "Cleric"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A24
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: EXCLUDES
+    target_id: class_druid
+    target_label: "Druid"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A25
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: EXCLUDES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A26
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: EXCLUDES
+    target_id: class_ranger
+    target_label: "Ranger"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A27
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: EXCLUDES
+    target_id: class_magic_user
+    target_label: "Magic-User"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A28
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: EXCLUDES
+    target_id: class_illusionist
+    target_label: "Illusionist"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A29
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: EXCLUDES
+    target_id: class_assassin
+    target_label: "Assassin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A30
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: EXCLUDES
+    target_id: class_monk
+    target_label: "Monk"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A31
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: EXCLUDES
+    target_id: class_druid
+    target_label: "Druid"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A32
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: EXCLUDES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A33
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: EXCLUDES
+    target_id: class_ranger
+    target_label: "Ranger"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A34
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: EXCLUDES
+    target_id: class_magic_user
+    target_label: "Magic-User"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A35
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: EXCLUDES
+    target_id: class_illusionist
+    target_label: "Illusionist"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A36
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: EXCLUDES
+    target_id: class_monk
+    target_label: "Monk"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARACTER RACE TABLE I: CHARACTER CLASS LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B1
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "maximum level"
+    condition: "varies by class"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "CHARACTER RACE TABLE II: CLASS LEVEL LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B2
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "maximum level"
+    condition: "varies by class"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "CHARACTER RACE TABLE II: CLASS LEVEL LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B3
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "maximum level"
+    condition: "varies by class"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "CHARACTER RACE TABLE II: CLASS LEVEL LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B4
+    source_id: race_half_elf
+    source_label: "Half-Elf"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "maximum level"
+    condition: "varies by class"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "CHARACTER RACE TABLE II: CLASS LEVEL LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B5
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "maximum level"
+    condition: "varies by class"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "CHARACTER RACE TABLE II: CLASS LEVEL LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B6
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "maximum level"
+    condition: "varies by class"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "CHARACTER RACE TABLE II: CLASS LEVEL LIMITATIONS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B7
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: MODIFIES
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "racial level ceiling"
+    condition: "non-human fighters"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "CHARACTER RACE TABLE II: CLASS LEVEL LIMITATIONS footnotes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B8
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: MODIFIES
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "racial level ceiling"
+    condition: "non-human magic-users and illusionists"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "CHARACTER RACE TABLE II: CLASS LEVEL LIMITATIONS footnotes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B9
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: MODIFIES
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "racial level ceiling"
+    condition: "gnome illusionists and half-orc thieves"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "CHARACTER RACE TABLE II: CLASS LEVEL LIMITATIONS footnotes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B10
+    source_id: race_subrace
+    source_label: "Sub-Race"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "maximum level"
+    condition: "halfling fighter sub-races"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "CHARACTER RACE TABLE II: CLASS LEVEL LIMITATIONS footnotes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C1
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: MODIFIES
+    target_id: abil_constitution
+    target_label: "Constitution"
+    aspect: "initial score"
+    condition: "applied at race selection"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "Penalties and Bonuses for Race"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C2
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: MODIFIES
+    target_id: abil_charisma
+    target_label: "Charisma"
+    aspect: "initial score"
+    condition: "applied at race selection"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "Penalties and Bonuses for Race"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C3
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: MODIFIES
+    target_id: abil_dexterity
+    target_label: "Dexterity"
+    aspect: "initial score"
+    condition: "applied at race selection"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "Penalties and Bonuses for Race"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C4
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: MODIFIES
+    target_id: abil_constitution
+    target_label: "Constitution"
+    aspect: "initial score"
+    condition: "applied at race selection"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "Penalties and Bonuses for Race"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C5
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: MODIFIES
+    target_id: abil_strength
+    target_label: "Strength"
+    aspect: "initial score"
+    condition: "applied at race selection"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "Penalties and Bonuses for Race"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C6
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: MODIFIES
+    target_id: abil_constitution
+    target_label: "Constitution"
+    aspect: "initial score"
+    condition: "applied at race selection"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "Penalties and Bonuses for Race"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C7
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: MODIFIES
+    target_id: abil_charisma
+    target_label: "Charisma"
+    aspect: "initial score"
+    condition: "applied at race selection"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "Penalties and Bonuses for Race"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C8
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: MODIFIES
+    target_id: abil_strength
+    target_label: "Strength"
+    aspect: "initial score"
+    condition: "applied at race selection"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "Penalties and Bonuses for Race"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C9
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: MODIFIES
+    target_id: abil_dexterity
+    target_label: "Dexterity"
+    aspect: "initial score"
+    condition: "applied at race selection"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 14
+    section: "Penalties and Bonuses for Race"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D1
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: GATES
+    target_id: race_dwarf
+    target_label: "Dwarf"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D2
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: GATES
+    target_id: race_gnome
+    target_label: "Gnome"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D3
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: GATES
+    target_id: race_halfling
+    target_label: "Halfling"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D4
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: GATES
+    target_id: race_half_orc
+    target_label: "Half-Orc"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D5
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: GATES
+    target_id: race_elf
+    target_label: "Elf"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D6
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: GATES
+    target_id: race_gnome
+    target_label: "Gnome"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D7
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: GATES
+    target_id: race_half_elf
+    target_label: "Half-Elf"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D8
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: GATES
+    target_id: race_halfling
+    target_label: "Halfling"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D9
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: GATES
+    target_id: race_elf
+    target_label: "Elf"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D10
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: GATES
+    target_id: race_half_elf
+    target_label: "Half-Elf"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D11
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: GATES
+    target_id: race_halfling
+    target_label: "Halfling"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D12
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: GATES
+    target_id: race_dwarf
+    target_label: "Dwarf"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D13
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: GATES
+    target_id: race_elf
+    target_label: "Elf"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D14
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: GATES
+    target_id: race_gnome
+    target_label: "Gnome"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D15
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: GATES
+    target_id: race_half_elf
+    target_label: "Half-Elf"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D16
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: GATES
+    target_id: race_halfling
+    target_label: "Halfling"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D17
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: GATES
+    target_id: race_half_orc
+    target_label: "Half-Orc"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D18
+    source_id: abil_charisma
+    source_label: "Charisma"
+    edge_type: GATES
+    target_id: race_elf
+    target_label: "Elf"
+    aspect: "racial minimum"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E1
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: CONSTRAINS
+    target_id: abil_strength
+    target_label: "Strength"
+    aspect: "maximum score"
+    condition: "females only"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E2
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: CONSTRAINS
+    target_id: abil_strength
+    target_label: "Strength"
+    aspect: "maximum score"
+    condition: "females only"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E3
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: CONSTRAINS
+    target_id: abil_strength
+    target_label: "Strength"
+    aspect: "maximum score"
+    condition: "females only"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E4
+    source_id: race_half_elf
+    source_label: "Half-Elf"
+    edge_type: CONSTRAINS
+    target_id: abil_strength
+    target_label: "Strength"
+    aspect: "maximum score"
+    condition: "females only"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E5
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: CONSTRAINS
+    target_id: abil_strength
+    target_label: "Strength"
+    aspect: "maximum score"
+    condition: "both sexes, lower for females"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E6
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: CONSTRAINS
+    target_id: abil_intelligence
+    target_label: "Intelligence"
+    aspect: "maximum score"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E7
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: CONSTRAINS
+    target_id: abil_wisdom
+    target_label: "Wisdom"
+    aspect: "maximum score"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E8
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: CONSTRAINS
+    target_id: abil_wisdom
+    target_label: "Wisdom"
+    aspect: "maximum score"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E9
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: CONSTRAINS
+    target_id: abil_dexterity
+    target_label: "Dexterity"
+    aspect: "maximum score"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E10
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: CONSTRAINS
+    target_id: abil_dexterity
+    target_label: "Dexterity"
+    aspect: "maximum score"
+    condition: "ceiling raised above the human maximum"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E11
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: CONSTRAINS
+    target_id: abil_dexterity
+    target_label: "Dexterity"
+    aspect: "maximum score"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E12
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: CONSTRAINS
+    target_id: abil_constitution
+    target_label: "Constitution"
+    aspect: "maximum score"
+    condition: "ceiling raised above the human maximum"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E13
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: CONSTRAINS
+    target_id: abil_constitution
+    target_label: "Constitution"
+    aspect: "maximum score"
+    condition: "ceiling raised above the human maximum"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E14
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: CONSTRAINS
+    target_id: abil_constitution
+    target_label: "Constitution"
+    aspect: "maximum score"
+    condition: "ceiling raised above the human maximum"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E15
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: CONSTRAINS
+    target_id: abil_charisma
+    target_label: "Charisma"
+    aspect: "maximum score"
+    condition: "outside the character's own race"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: E16
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: CONSTRAINS
+    target_id: abil_charisma
+    target_label: "Charisma"
+    aspect: "maximum score"
+    condition: "outside the character's own race"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F1
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: MODIFIES
+    target_id: save_rod_staff_wand
+    target_label: "Rod Staff or Wand"
+    aspect: "saving throw"
+    condition: "scaled by constitution"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "Dwarves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F2
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: MODIFIES
+    target_id: save_spell
+    target_label: "Spell"
+    aspect: "saving throw"
+    condition: "scaled by constitution"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "Dwarves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F3
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: MODIFIES
+    target_id: save_poison
+    target_label: "Saving Throw vs Poison"
+    aspect: "saving throw"
+    condition: "scaled by constitution"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "Dwarves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F4
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: CONSTRAINS
+    target_id: rule_languages
+    target_label: "Languages"
+    aspect: "additional language limit"
+    condition: "regardless of intelligence"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 15
+    section: "Dwarves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F5
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: GATES
+    target_id: race_infravision
+    target_label: "Infravision"
+    aspect: "racial vision"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "Dwarves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F6
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: GATES
+    target_id: rule_racial_detection
+    target_label: "Racial Underground Detection"
+    aspect: "underground detection"
+    condition: "when actively seeking"
+    book: PHB
+    page: 15
+    section: "Dwarves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F7
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    target_label: "To-Hit Roll"
+    aspect: "attack and defence adjustment"
+    condition: "versus specified creature types"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Dwarves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F8
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: CONSTRAINS
+    target_id: hench_henchmen
+    target_label: "Henchmen"
+    aspect: "henchman ceiling"
+    condition: "own-race retainers exempt from the charisma cap"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Dwarves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F9
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: MODIFIES
+    target_id: spell_sleep
+    target_label: "Sleep"
+    aspect: "spell resistance"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F10
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: MODIFIES
+    target_id: spell_charm_person
+    target_label: "Charm"
+    aspect: "spell resistance"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F11
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    target_label: "To-Hit Roll"
+    aspect: "attack adjustment"
+    condition: "bow or sword"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F12
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: MODIFIES
+    target_id: rule_languages
+    target_label: "Languages"
+    aspect: "additional languages"
+    condition: "scaled by intelligence"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F13
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: GATES
+    target_id: race_infravision
+    target_label: "Infravision"
+    aspect: "racial vision"
+    condition: ""
+    book: PHB
+    page: 16
+    section: "Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F14
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: MODIFIES
+    target_id: ex_secret_doors
+    target_label: "Secret Doors"
+    aspect: "detection chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F15
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: MODIFIES
+    target_id: cbt_surprise
+    target_label: "Surprise"
+    aspect: "surprise chance"
+    condition: "alone or well in advance, not in metal armour"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F16
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: MODIFIES
+    target_id: save_rod_staff_wand
+    target_label: "Rod Staff or Wand"
+    aspect: "saving throw"
+    condition: "scaled by constitution"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Gnomes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F17
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: MODIFIES
+    target_id: save_spell
+    target_label: "Spell"
+    aspect: "saving throw"
+    condition: "scaled by constitution"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Gnomes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F18
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: CONSTRAINS
+    target_id: rule_languages
+    target_label: "Languages"
+    aspect: "additional language limit"
+    condition: "regardless of intelligence"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Gnomes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F19
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: GATES
+    target_id: race_infravision
+    target_label: "Infravision"
+    aspect: "racial vision"
+    condition: ""
+    book: PHB
+    page: 16
+    section: "Gnomes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F20
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: GATES
+    target_id: rule_racial_detection
+    target_label: "Racial Underground Detection"
+    aspect: "underground detection"
+    condition: "when actively seeking"
+    book: PHB
+    page: 16
+    section: "Gnomes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F21
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    target_label: "To-Hit Roll"
+    aspect: "attack and defence adjustment"
+    condition: "versus specified creature types"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Gnomes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F22
+    source_id: race_half_elf
+    source_label: "Half-Elf"
+    edge_type: MODIFIES
+    target_id: spell_sleep
+    target_label: "Sleep"
+    aspect: "spell resistance"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Half-Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F23
+    source_id: race_half_elf
+    source_label: "Half-Elf"
+    edge_type: MODIFIES
+    target_id: spell_charm_person
+    target_label: "Charm"
+    aspect: "spell resistance"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Half-Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F24
+    source_id: race_half_elf
+    source_label: "Half-Elf"
+    edge_type: MODIFIES
+    target_id: rule_languages
+    target_label: "Languages"
+    aspect: "additional languages"
+    condition: "scaled by intelligence"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Half-Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F25
+    source_id: race_half_elf
+    source_label: "Half-Elf"
+    edge_type: GATES
+    target_id: race_infravision
+    target_label: "Infravision"
+    aspect: "racial vision"
+    condition: ""
+    book: PHB
+    page: 17
+    section: "Half-Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F26
+    source_id: race_half_elf
+    source_label: "Half-Elf"
+    edge_type: MODIFIES
+    target_id: ex_secret_doors
+    target_label: "Secret Doors"
+    aspect: "detection chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Half-Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F27
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: MODIFIES
+    target_id: save_rod_staff_wand
+    target_label: "Rod Staff or Wand"
+    aspect: "saving throw"
+    condition: "scaled by constitution"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Halflings"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F28
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: MODIFIES
+    target_id: save_spell
+    target_label: "Spell"
+    aspect: "saving throw"
+    condition: "scaled by constitution"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Halflings"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F29
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: MODIFIES
+    target_id: save_poison
+    target_label: "Saving Throw vs Poison"
+    aspect: "saving throw"
+    condition: "scaled by constitution"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Halflings"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F30
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: MODIFIES
+    target_id: rule_languages
+    target_label: "Languages"
+    aspect: "additional languages"
+    condition: "scaled by intelligence"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Halflings"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F31
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: GATES
+    target_id: rule_racial_detection
+    target_label: "Racial Underground Detection"
+    aspect: "underground detection"
+    condition: "when concentrating"
+    book: PHB
+    page: 17
+    section: "Halflings"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F32
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: MODIFIES
+    target_id: cbt_surprise
+    target_label: "Surprise"
+    aspect: "surprise chance"
+    condition: "alone or well in advance, not in metal armour"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Halflings"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F33
+    source_id: race_subrace
+    source_label: "Sub-Race"
+    edge_type: GATES
+    target_id: race_infravision
+    target_label: "Infravision"
+    aspect: "racial vision"
+    condition: "halfling blood determines range"
+    book: PHB
+    page: 17
+    section: "Halflings"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F34
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: CONSTRAINS
+    target_id: rule_languages
+    target_label: "Languages"
+    aspect: "additional language limit"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Half-Orcs"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F35
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: GATES
+    target_id: race_infravision
+    target_label: "Infravision"
+    aspect: "racial vision"
+    condition: ""
+    book: PHB
+    page: 17
+    section: "Half-Orcs"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F36
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: CONSTRAINS
+    target_id: hench_henchmen
+    target_label: "Henchmen"
+    aspect: "henchman ceiling"
+    condition: "own-race retainers exempt from the charisma penalty"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 17
+    section: "Half-Orcs"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F37
+    source_id: race_human
+    source_label: "Human"
+    edge_type: EXCLUDED_FROM
+    target_id: rule_racial_adjustment
+    target_label: "Racial Ability Adjustment"
+    aspect: "ability adjustment"
+    condition: ""
+    book: PHB
+    page: 17
+    section: "Humans"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G1
+    source_id: race_dwarf
+    source_label: "Dwarf"
+    edge_type: GATES
+    target_id: rule_multiclass
+    target_label: "Multi-Class"
+    aspect: "multi-class eligibility"
+    condition: ""
+    book: PHB
+    page: 15
+    section: "Dwarves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G2
+    source_id: race_elf
+    source_label: "Elf"
+    edge_type: GATES
+    target_id: rule_multiclass
+    target_label: "Multi-Class"
+    aspect: "multi-class eligibility"
+    condition: ""
+    book: PHB
+    page: 16
+    section: "Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G3
+    source_id: race_gnome
+    source_label: "Gnome"
+    edge_type: GATES
+    target_id: rule_multiclass
+    target_label: "Multi-Class"
+    aspect: "multi-class eligibility"
+    condition: ""
+    book: PHB
+    page: 16
+    section: "Gnomes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G4
+    source_id: race_half_elf
+    source_label: "Half-Elf"
+    edge_type: GATES
+    target_id: rule_multiclass
+    target_label: "Multi-Class"
+    aspect: "multi-class eligibility"
+    condition: ""
+    book: PHB
+    page: 17
+    section: "Half-Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G5
+    source_id: race_halfling
+    source_label: "Halfling"
+    edge_type: GATES
+    target_id: rule_multiclass
+    target_label: "Multi-Class"
+    aspect: "multi-class eligibility"
+    condition: ""
+    book: PHB
+    page: 17
+    section: "Halflings"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G6
+    source_id: race_half_orc
+    source_label: "Half-Orc"
+    edge_type: GATES
+    target_id: rule_multiclass
+    target_label: "Multi-Class"
+    aspect: "multi-class eligibility"
+    condition: ""
+    book: PHB
+    page: 17
+    section: "Half-Orcs"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G7
+    source_id: rule_multiclass
+    source_label: "Multi-Class"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "experience division"
+    condition: "even after a class ceiling is reached"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G8
+    source_id: rule_multiclass
+    source_label: "Multi-Class"
+    edge_type: CONSTRAINS
+    target_id: sys_equipment
+    target_label: "Equipment"
+    aspect: "armour and weaponry"
+    condition: "when performing thief functions"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 16
+    section: "Elves"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G9
+    source_id: tbl_racial_preferences
+    source_label: "Racial Preferences Table"
+    edge_type: FEEDS_INTO
+    target_id: cbt_encounter_reactions
+    target_label: "Encounter Reactions"
+    aspect: "racial reaction"
+    condition: "by race pair"
+    book: PHB
+    page: 18
+    section: "RACIAL PREFERENCES TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G10
+    source_id: tbl_racial_preferences
+    source_label: "Racial Preferences Table"
+    edge_type: FEEDS_INTO
+    target_id: hench_hirelings
+    target_label: "Hirelings"
+    aspect: "acquisition by racial type"
+    condition: ""
+    book: PHB
+    page: 18
+    section: "RACIAL PREFERENCES TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The constitution-scaled saving throw bonus shared by dwarves, gnomes and
+  halflings looks like a general rule and may become one, but all three races state it
+  outright in their own descriptions, so every edge here is an explicit rule with an
+  empty general_rule_id and nothing is inherited. Flagged as OBS-16 for the Architect
+  rather than proposed, because a general rule that saves three explicit statements
+  earns little.
+
+domains_touched: []
+domains_touched_note: BLK-01 unchanged; the domain registry is still an empty map.
+
+candidate_domains:
+  - name: character_races
+    basis: the whole packet
+  - name: class_eligibility
+    basis: the 36 EXCLUDES edges of section A, joining the 30 eligibility edges from packet 03
+  - name: level_advancement
+    basis: B1 through B10, G7
+  - name: saving_throws
+    basis: the racial saving throw bonuses in section F
+  - name: languages
+    basis: the six racial language edges in section F
+  - name: exploration_senses
+    basis: infravision, secret door detection and underground detection edges
+
+domain_boundary_questions:
+  - id: DBQ-03
+    question: >-
+      class_eligibility now draws from two packets and two unrelated table families, the
+      ability tables of packet 03 and the race tables here. Is it one domain or two?
+    why_it_matters: >-
+      66 edges across the two packets assert who may be what. If that is a single domain
+      it is already among the largest in the graph before classes have been read at all.
+    analyst_position: no recommendation
+
+rejected_candidates:
+  - text_locus: "CHARACTER RACE TABLE I, p13"
+    quoted_gist: the 34 cells reading "yes"
+    rejection_reason: >-
+      A "yes" records the absence of a restriction. Recording it would assert the default
+      state, and 34 such edges would say only that nothing stands in the way. The
+      denials carry the information and are recorded.
+
+  - text_locus: "Notes Regarding Character Race Table I, p13"
+    quoted_gist: >-
+      the parenthetical letters after each class name give that class's permitted
+      alignments
+    why_considered: >-
+      genuinely load-bearing, and sys_alignment exists canonically with degree 102
+    rejection_reason: >-
+      Deferred to packet 05, not discarded. This is a note explaining a legend on a race
+      table; the alignment restrictions belong to the classes and the contents places
+      ALIGNMENT on page 33 and the class sections from 18 onward. Recording them here
+      would attach class-alignment edges to a citation about a race table. Recorded as
+      OBS-15 so the deferral is visible and testable, exactly as the Table III deferral
+      from packet 03 was.
+
+  - text_locus: "Notes Regarding Character Race Table II, p14"
+    quoted_gist: numbers in parentheses indicate the class exists only as non-player characters
+    why_considered: >-
+      a real restriction distinguishing player from non-player availability
+    rejection_reason: >-
+      A legend for reading the table rather than a relationship between mechanics. The
+      restriction it describes is carried by the race-to-class edges already; what the
+      parentheses add is a value judgment about who may play one, and there is no node
+      for player versus non-player status. Worth revisiting if such a node appears.
+
+  - text_locus: "CHARACTER RACE TABLE III, p15"
+    quoted_gist: minimum scores of 3 and maximum scores of 18
+    rejection_reason: >-
+      Three is the floor of the generation range and 18 its ceiling, so neither bounds
+      anything. Recording them would assert a constraint that constrains nothing. Only
+      the 34 cells that actually bind are recorded.
+
+  - text_locus: "Dwarves p15, Elves p16, Gnomes p16, Halflings p17, Half-Orcs p17"
+    quoted_gist: the reader is referred to the MONSTER MANUAL for details of each race
+    why_considered: >-
+      an explicit cross-book pointer, and CROSS_REFERENCES is a legal edge type whose
+      definition is text explicitly pointing elsewhere
+    rejection_reason: >-
+      There is no node for the Monster Manual as a document, and the monster_ nodes for
+      these races, monster_dwarf and monster_elf, exist at degree 1 apiece and denote the
+      creature entries rather than the book. Pointing a CROSS_REFERENCES edge at
+      monster_dwarf would assert a mechanical relationship between the playable race and
+      the bestiary entry, which is not what the sentence says. Recorded as OBS-17.
+
+  - text_locus: "Humans, p17"
+    quoted_gist: human is superior to the other races in general
+    rejection_reason: >-
+      Editorial comparison. The mechanical content, that humans take no adjustment and
+      have no level ceiling, is recorded as F44 and as the absence of any human row in
+      Table II.
+
+non_edge_observations:
+  - id: OBS-13
+    topic: the packet 03 deferral is discharged, and the sex question is now closed
+    locus: "CHARACTER RACE TABLE III and its notes, p15"
+    finding: >-
+      Table III gives minimum and maximum scores for all six abilities across the six
+      non-human races, each cell in male/female form, and the notes explain the slash
+      convention explicitly. Reading the maxima across all six abilities, male and female
+      values are identical everywhere except strength. Strength maxima differ by sex for
+      dwarven, elven, gnome, half-elven and halfling characters. Every other ability, and
+      every minimum without exception, is the same for both sexes.
+    why_it_matters: >-
+      Three artifacts have now circled this. GUR-PKT-PHB-007-008-intro-r01 asserted from
+      p7 that sex is not an input to ability scores, hedged as true "in all but a few
+      cases", with the cases unnamed. r02 amended that condition after STRENGTH TABLE I
+      on p9 named them. Table III now bounds the claim precisely and from the
+      authoritative table: the exception is one ability, strength, and one direction,
+      the maximum. E7 of that GUR is correct as amended and needs no further revision.
+    consequence_for_prior_artifacts: none; r02 stands
+    also: >-
+      IDQ-03 of that GUR, on whether Unearthed Arcana would later conflict, is now
+      well-posed rather than speculative. The PHB position is precise and narrow, so a
+      UA assertion can be compared against it cell by cell.
+
+  - id: OBS-14
+    topic: OBS-08 from packet 03 is resolved by the source itself
+    locus: "Notes Regarding Character Race Table III, p15"
+    finding: >-
+      The notes state that maximum scores include racial penalties and bonuses and that
+      some races can therefore exceed the 18 total possible in the initial generation of
+      abilities with three six-sided dice. Table III bears this out with dexterity 19 for
+      elves and constitution 19 for dwarves, halflings and half-orcs.
+    why_it_matters: >-
+      Packet 03 recorded the tension between the declared 3 to 18 range on p9 and the "19
+      or more" row in Intelligence Table II, and flagged that any validator treating 18
+      as a hard ceiling would be wrong. The book now says so directly. The declared range
+      describes what dice produce, not what a score may be.
+    recommendation: >-
+      If a validator is ever written for ability score bounds, this note is its citation.
+
+  - id: OBS-15
+    topic: class alignment restrictions are stated here but belong to packet 05
+    locus: "Notes Regarding Character Race Table I, p13"
+    finding: >-
+      The legend gives each class's permitted alignments: any, neutral only, lawful good
+      only, good only, any neutral to any evil, evil only, lawful only, plus the note that
+      a cleric cannot be true neutral unless of the druid subclass.
+    why_it_matters: >-
+      This is a complete class-to-alignment restriction table hiding inside a note on a
+      race table. It is load-bearing and sys_alignment carries degree 102. It is deferred
+      to packet 05 on the same reasoning that deferred racial minimums from packet 03 to
+      this packet, and that deferral proved correct.
+    recommendation: >-
+      Packet 05 should be checked for whether the class sections restate these. If they
+      do not, the edges must be cited back to this note and this packet, and the deferral
+      was wrong. Recording the test so it can be run.
+
+  - id: OBS-16
+    topic: a shared racial mechanic stated three times
+    locus: "Dwarves p15, Gnomes p16, Halflings p17"
+    finding: >-
+      Dwarves, gnomes and halflings each independently state a saving throw bonus against
+      wands, staves, rods and spells scaled at one point per three and a half points of
+      constitution. Dwarves and halflings additionally extend the same bonus to poison
+      saves; gnomes do not.
+    why_it_matters: >-
+      It has the shape of a general rule, but all three statements are explicit, so
+      nothing would be inherited and every edge here carries an empty general_rule_id
+      correctly. Recorded because the gnome exception is the interesting part: it bounds
+      the rule, and constitution 7.1 requires a registered general rule to carry the
+      counter-example that bounds it. If the Architect ever registers this, the gnome
+      omission is that counter-example.
+    recommendation: Architect may register; Analyst does not propose it.
+
+  - id: OBS-17
+    topic: repeated cross-book pointers with no target node
+    locus: five race descriptions, p15 to p17
+    finding: >-
+      Five of the seven race descriptions refer the reader to the Monster Manual for
+      details of the race.
+    why_it_matters: >-
+      CROSS_REFERENCES exists as an edge type for exactly this, but it needs a target
+      node and none represents a book. This is the third instance of the pattern first
+      recorded as OBS-02 and again as OBS-10: the PHB routinely points outside itself and
+      the graph has no way to say so.
+    recommendation: >-
+      Architect decision on whether a book or document node kind is wanted. Until then
+      these pointers are unrepresentable and are being dropped, which is a small, silent,
+      repeated loss worth someone deciding about deliberately.
+
+  - id: OBS-18
+    revision_status: resolved_in_r02
+    topic: source page marker defects, both corrected
+    locus: lines 250 and 303
+    finding_at_r01: >-
+      {#p17} appeared twice and {#p18} never, so the packet had no marker for its final
+      page. Separately, marker-derived paging put Half-Elves on p17 while the table of
+      contents placed it on p16.
+    resolution: >-
+      The operator corrected the final marker to {#p18}. All six markers are now unique
+      and cover p13 through p18. The operator separately checked a physical copy of the
+      book and confirms the table of contents is in error, not the marker: Half-Elves is
+      on page 17.
+    consequence: >-
+      Both of r01's readings were correct, so no citation in this GUR changes. What
+      changes is their provenance. In r01 the six page 18 citations rested on the
+      Analyst's inference that a duplicated {#p17} was an intended {#p18}; they now rest
+      on a marker in the source. A Reviewer auditing r01 would have had to accept that
+      inference, and should not have to.
+    why_recorded: >-
+      An artifact that silently improves its own evidence is harder to audit than one
+      that says which claims were inferred and when they stopped being inferences.
+
+  - id: OBS-19
+    revision_status: new_in_r02
+    topic: the printed table of contents contains at least one error
+    locus: "PHB p3-p5 contents, against this packet's markers and a physical copy"
+    finding: >-
+      The contents places Half-Elves on page 16. The section is on page 17, confirmed by
+      the source markers and independently by the operator against a physical copy of the
+      book.
+    why_it_matters: >-
+      OBS-04 of GUR-PKT-PHB-001-006-preamble-r02 proposed the contents and the table
+      index as an independent completeness check for later PHB packets, and specifically
+      as a guard against the tables_split_across_pages hazard declared in the book's
+      extraction profile. That recommendation still holds, because a flawed index is
+      still a useful checklist. But it must be used as a cross-check and not as an
+      authority. Where the contents and a page marker disagree, the marker wins, and a
+      disagreement is a prompt to check rather than evidence that the packet is wrong.
+    consequence_for_prior_artifacts: >-
+      Packet 01's OBS-04 is qualified, not withdrawn. It already carried a caveat that
+      the index describes the printing this one was based on and would not list
+      re-included material; this adds that the index is not error-free even for the
+      material it does list.
+    recommendation: >-
+      Any future use of the contents as a coverage check should treat a mismatch as a
+      question, not a defect report against the packet.
+
+unresolved_identity_questions:
+  - id: IDQ-06
+    question: >-
+      Two canonical nodes exist that could carry this packet's table relationships
+      instead of the direct race-to-ability edges used here: tbl_race_maximums, labelled
+      Racial Ability Maximums at degree 3, and rule_racial_adjustment, labelled Racial
+      Ability Adjustment at degree 2. Should sections C and E route through them?
+    bearing: C1 through C9, E1 through E16
+    analyst_handling: >-
+      Used direct race-to-ability edges, because impact analysis asks what breaks if a
+      given ability changes and the direct form answers it. But constitution 3.2 says a
+      rule and its table are two nodes joined by DERIVED_FROM when separately referenced,
+      and both nodes exist and are separately referenced, which argues the other way. Not
+      resolved silently: if the Reviewer prefers routing, the 25 edges repoint mechanically.
+
+  - id: IDQ-07
+    question: >-
+      Elves and half-elves resist sleep and charm. The edges target spell_sleep and
+      spell_charm_person with polarity worsens, meaning the race degrades the spell.
+      Should the target instead be save_spell, since the text grants a saving throw in
+      the charm case?
+    bearing: F9, F10, F22, F23
+    analyst_handling: >-
+      Targeted the spells, because the percentage resistance operates before any saving
+      throw and applies to both spells, while the saving throw is mentioned only as what
+      survives the resistance check for charm. Constitution 6 warns that ambiguity comes
+      from choosing the wrong target, so this is flagged rather than assumed.
+
+architectural_escalations:
+  - id: ESC-2026-0003
+    filed_at: rulesets/adnd1e/escalations/pending/ESC-2026-0003.yaml
+    filed_in_revision: 2
+    filing_note: >-
+      Raised in r01 inside this GUR and filed in r02 as a standalone artifact at operator
+      instruction, so the Architect sees it without having to read a book packet's GUR.
+      The filed package is fuller than this summary: it adds the race_any audit question,
+      per-option arguments, and the migration consequence of each ruling. It remains
+      incomplete in one respect, the local graph neighborhood, which was not supplied.
+    trigger: >-
+      ESCALATION_CONTRACT — "no existing node ID represents the concept and a new kind or
+      prefix may be needed"
+    originating: PKT-PHB-013-018-races / GUR-PKT-PHB-013-018-races-r01
+    question: >-
+      Should race_human exist? More broadly, should the graph carry nodes for the default
+      case, or model defaults as the absence of edges?
+    affected_canonical_ids: [race_any, race_dwarf, race_elf, race_gnome, race_half_elf, race_half_orc, race_halfling]
+    source_excerpt: >-
+      Humans, PHB p17. "Human characters are neither given penalties nor bonuses, as they
+      are established as the norm upon which these subtractions or additions for racial
+      stock are based. Human characters are not limited as to what class of character
+      they can become, nor do they have any maximum limit — other than that intrinsic to
+      the class — of level they can attain within a class."
+    local_neighborhood: not available; no slice supplied
+    options_considered:
+      - add race_human, so the seventh playable stock can carry its two stated rules
+      - treat humans as race_any, which currently carries degree 49 and appears to serve
+        as the generic race
+      - model the human case as the absence of restriction edges and record nothing
+    recommended_resolution: >-
+      Add race_human. The book states two positive rules about humans and both are
+      unattachable without it, and the absence of a node for the most-played race is
+      likely to be felt again in packet 05. The Analyst notes but does not resolve the
+      risk that race_any is already doing this job under a confusing name.
+    expected_migration_impact: >-
+      None to existing edges if added. If instead race_any is ruled to mean human, some
+      of its 49 edges may be mis-scoped and would need review.
+    would_change: registry
+    blocking: no; one edge depends on it and it is declared as a candidate
+
+blocking_notes:
+  - id: BLK-01
+    severity: unchanged
+    issue: domain_registry.yaml remains an empty map at status bootstrap.
+    owner: architect
+  - id: BLK-02
+    severity: severe
+    issue: no node_registry_slice.csv and no local_neighborhood.json supplied.
+    consequence: >-
+      136 edges proposed blind against a 3,809-edge graph. Section A alone is 36 EXCLUDES
+      edges asserting racial class restrictions, which is precisely the kind of content a
+      legacy import would already hold. Deduplication is mandatory downstream.
+    owner: packet_creator
+  - id: BLK-05
+    severity: new
+    issue: >-
+      Cross-book pointers cannot be represented, as recorded in OBS-17 and previously in
+      OBS-02 and OBS-10.
+    consequence: >-
+      Every explicit referral from the PHB to the DMG or Monster Manual is silently
+      dropped. Three packets have now hit it.
+    owner: architect
+
+completeness_statement: >-
+  All 350 lines were read before extraction. All four tables were worked cell by cell:
+  Table I across 70 permission cells, Table II across 70 level cells plus its nine
+  ability-linked footnotes, the racial penalties and bonuses table, and Table III across
+  72 minimum and maximum cells in male/female form. All seven race descriptions were read
+  in full, along with the racial preferences table and its six-value legend. Pages 13
+  through 18 are accounted for, subject to the two marker defects recorded as OBS-18 and
+  declared in packet.yaml.
+
+  136 candidate edges are proposed and six candidate groups are recorded as rejected with
+  reasons, including one deliberate deferral of the class alignment restrictions to packet
+  05. That deferral is recorded as a test in OBS-15 so it can be checked rather than
+  trusted, which is how the equivalent deferral from packet 03 was handled and it proved
+  correct.
+
+  Three grain decisions shaped the count and are stated explicitly rather than left to be
+  inferred: only the denials in Table I are recorded, Table II is one edge per race
+  because its per-class detail is entirely magnitudes, and Table III is split into gates
+  for minimums and constraints for maximums with non-binding cells dropped.
+
+  Two candidate nodes are proposed, both under approved prefixes, both with their
+  dependent edges named. One architectural escalation is raised, on whether the graph
+  should carry a node for the default case. Authored polarity appears on the three
+  permitted types only, and the generated edge set contains no duplicate source, type and
+  target triple, which was checked mechanically because this packet proposes many edges
+  from few source nodes and invariant 12 is strict.
+
+  The single most useful result is OBS-13. A question that ran through three artifacts,
+  whether character sex feeds ability scores, is now closed against the authoritative
+  table: it does not, except for strength maximum, in five of the six non-human races.
+
+  This GUR is complete enough for the Builder to normalize without rereading the source,
+  with the standing qualification that deduplication against canonical is mandatory and
+  could not be performed at extraction time.

@@ -1,0 +1,177 @@
+schema_version: '1.0'
+id: GUP-MIG-DEC-2026-0007-r01
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-009-013-ability-scores
+constitution_version: '1.4'
+artifact_kind: identity_merge_migration
+authority:
+  - DEC-2026-0007
+provenance:
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 225
+    failures: 0
+    errors: 0
+    passed: true
+  canonical_source: rulesets/adnd1e/canonical/edges_master.csv
+  canonical_rows_read: 3809
+approval_ready: true
+node_changes:
+  retirements:
+    - retired_id: abil_cha_loyalty_base
+      survivor_id: hench_loyalty
+      label: Loyalty Base
+      authority: DEC-2026-0007
+      action: remove_from_nodes_csv_after_approval
+    - retired_id: hench_max_number
+      survivor_id: abil_cha_max_henchmen
+      label: Maximum Henchmen
+      authority: DEC-2026-0007
+      action: remove_from_nodes_csv_after_approval
+  additions_proposed: []
+  note: Only the Integrator removes a registry row. Retirement is proposed here and applied from an approved
+    migration artifact.
+edge_changes:
+  additions: []
+  updates:
+    - canonical_row: 141
+      change: repoint_endpoint
+      field: target_id
+      from: hench_max_number
+      to: abil_cha_max_henchmen
+      before:
+        source_id: abil_charisma
+        edge_type: MODIFIES
+        target_id: hench_max_number
+        aspect: cap
+        condition: ''
+      after:
+        source_id: abil_charisma
+        edge_type: MODIFIES
+        target_id: abil_cha_max_henchmen
+        aspect: cap
+        condition: ''
+      provenance_preserved: &id001
+        book: PHB
+        page: '13'
+        section: CHARISMA TABLE
+        evidence: explicit_rule
+        pass: prose-sweep
+        status: core
+    - canonical_row: 685
+      change: repoint_endpoint
+      field: target_id
+      from: abil_cha_loyalty_base
+      to: hench_loyalty
+      before:
+        source_id: abil_charisma
+        edge_type: MODIFIES
+        target_id: abil_cha_loyalty_base
+        aspect: tabulated adjustment
+        condition: ''
+      after:
+        source_id: abil_charisma
+        edge_type: MODIFIES
+        target_id: hench_loyalty
+        aspect: tabulated adjustment
+        condition: ''
+      provenance_preserved: &id002
+        book: PHB
+        page: '13'
+        section: CHARISMA TABLE
+        evidence: explicit_rule
+        pass: table-column
+        status: core
+  removals: []
+assertion_key_audit:
+  fields:
+    - source_id
+    - edge_type
+    - target_id
+    - aspect
+    - condition
+  method: Retired IDs were normalized in a dry-run copy of the canonical graph, then every resulting source/type/target
+    match was classified on all five fields.
+  triple_matches_examined: 2
+  exact_duplicates: []
+  distinct_assertions_preserved:
+    - repointed_row: 141
+      other_row: 684
+      differing_fields:
+        - aspect
+      repointed:
+        source_id: abil_charisma
+        edge_type: MODIFIES
+        target_id: abil_cha_max_henchmen
+        aspect: cap
+        condition: ''
+        provenance: *id001
+      other:
+        source_id: abil_charisma
+        edge_type: MODIFIES
+        target_id: abil_cha_max_henchmen
+        aspect: tabulated adjustment
+        condition: ''
+        provenance:
+          book: PHB
+          page: '13'
+          section: CHARISMA TABLE
+          evidence: explicit_rule
+          pass: table-column
+          status: core
+    - repointed_row: 685
+      other_row: 142
+      differing_fields:
+        - aspect
+      repointed:
+        source_id: abil_charisma
+        edge_type: MODIFIES
+        target_id: hench_loyalty
+        aspect: tabulated adjustment
+        condition: ''
+        provenance: *id002
+      other:
+        source_id: abil_charisma
+        edge_type: MODIFIES
+        target_id: hench_loyalty
+        aspect: loyalty
+        condition: ''
+        provenance:
+          book: PHB
+          page: '13'
+          section: CHARISMA TABLE
+          evidence: explicit_rule
+          pass: prose-sweep
+          status: core
+excluded_from_migration:
+  - canonical_row: 1472
+    reason: survivor_self_loop_untouched
+    detail: hench_loyalty self-loop (DMG p37) is outside this migration and is not modified
+    verified_untouched: true
+findings:
+  - severity: info
+    rule: merge_planned
+    detail: 'abil_cha_loyalty_base -> hench_loyalty: 1 incident row(s) repointed, per DEC-2026-0007'
+  - severity: info
+    rule: merge_planned
+    detail: 'hench_max_number -> abil_cha_max_henchmen: 1 incident row(s) repointed, per DEC-2026-0007'
+  - severity: info
+    rule: merge_preserves_distinct_assertion
+    detail: repointed row 141 shares endpoints and type with canonical row 684 but differs in aspect.
+      Preserved as distinct; a triple collision is not a duplicate.
+  - severity: info
+    rule: merge_preserves_distinct_assertion
+    detail: repointed row 685 shares endpoints and type with canonical row 142 but differs in aspect.
+      Preserved as distinct; a triple collision is not a duplicate.
+validation_summary:
+  merges: 2
+  rows_repointed: 2
+  triple_matches_examined: 2
+  exact_duplicates: 0
+  distinct_assertions_preserved: 2
+  excluded: 1

@@ -1,0 +1,181 @@
+schema_version: '1.0'
+id: ESC-2026-07-31T17.05.43.998Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-043-054-cleric-spells
+constitution_version: '1.5'
+raised_by: analyst
+raised_on: '2026-07-31'
+decision_owner: architect
+decision_id: DEC-2026-0016
+decided_on: '2026-07-31'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: operator ruled packet sources authoritative for page numbers; nine canonical rows provably disagree
+  blocking_ids: []
+originating_artifacts:
+  packet: PKT-PHB-043-054-cleric-spells
+  gur: GUR-PKT-PHB-043-054-cleric-spells-r02
+  observation: OBS-44 in that GUR, which recorded the disagreement and left the disposition open
+question: The operator has ruled that the claimed input packets are authoritative for page numbers without
+  exception. Should that be recorded as a contract, and should the canonical rows that provably disagree
+  with their packet source be corrected?
+operator_ruling:
+  statement: For page numbers, the current input packets should be considered canonical. One hundred percent.
+  received: 2026-07-31, in session, from the repository operator
+  analyst_reading: This settles OBS-44, which the Analyst had left open as an Integrator question. It
+    makes marker-derived paging authoritative and makes a disagreeing canonical citation a defect rather
+    than an alternative reading. It touches no field other than page.
+method:
+  how_pages_were_derived: 'Every claimed packet source was parsed with Pandoc 3.10 to JSON AST and walked
+    in document order, resolving all three marker placements from contracts/SOURCE_MARKDOWN.md: end of
+    a line or heading means that unit starts on the named page, a marker in a table cell means the whole
+    row starts there, and a mid-paragraph marker splits the paragraph.'
+  a_wrong_first_attempt_and_why_it_is_recorded: A first pass walked only Header and Para blocks. In the
+    table-heavy classes packet the page went stale and it reported 117 disagreements, including THE THIEF
+    on page 22, which is impossible. That figure is withdrawn. It is recorded because the corrected walker
+    is what the Architect is being asked to trust, and the difference between the two runs is the reason
+    to trust it.
+  test_used: For a section that is a heading, the canonical page is compared against that section's span,
+    from its own page to the page of the next same-or-higher heading. Only a citation outside that span
+    is called a defect. Comparing against the section start alone would have flagged 89 rows that are
+    legitimately on a later page of a multi-page section.
+  spell_sections: Packet 10 spell entries are compared directly against the parsed entry page, because
+    each entry sits at a single known location rather than spanning pages.
+findings:
+  rows_checked: 326
+  consistent_with_source: 317
+  provably_wrong: 9
+  not_checkable: 77
+  not_checkable_reason: 77 canonical rows in the claimed range carry a section string that is not a heading
+    in the source, for example a table name or a descriptive phrase. They are neither asserted right nor
+    wrong here.
+  explicitly_not_a_finding: 89 rows differ from their section's start page. They are NOT claimed as defects.
+    They sit in multi-page sections such as THE THIEF and THE ASSASSIN and are consistent with the source.
+proposed_corrections:
+- canonical_row: 520
+  assertion: spell_cure_disease OVERRIDES rule_disease
+  section: CURE DISEASE
+  cited_page: 49
+  authoritative_page: 47
+  packet: PKT-PHB-043-054-cleric-spells
+  field_to_change: page
+  from: '49'
+  to: '47'
+- canonical_row: 521
+  assertion: spell_neutralize_poison OVERRIDES save_poison
+  section: NEUTRALIZE POISON
+  cited_page: 50
+  authoritative_page: 48
+  packet: PKT-PHB-043-054-cleric-spells
+  field_to_change: page
+  from: '50'
+  to: '48'
+- canonical_row: 524
+  assertion: spell_atonement OVERRIDES sys_alignment
+  section: ATONEMENT
+  cited_page: 51
+  authoritative_page: 49
+  packet: PKT-PHB-043-054-cleric-spells
+  field_to_change: page
+  from: '51'
+  to: '49'
+- canonical_row: 525
+  assertion: spell_know_alignment FEEDS_INTO sys_alignment
+  section: KNOW ALIGNMENT
+  cited_page: 47
+  authoritative_page: 45
+  packet: PKT-PHB-043-054-cleric-spells
+  field_to_change: page
+  from: '47'
+  to: '45'
+- canonical_row: 531
+  assertion: spell_bless MODIFIES cbt_morale
+  section: BLESS
+  cited_page: 44
+  authoritative_page: 43
+  packet: PKT-PHB-043-054-cleric-spells
+  field_to_change: page
+  from: '44'
+  to: '43'
+- canonical_row: 532
+  assertion: spell_bless MODIFIES cbt_tohit
+  section: BLESS
+  cited_page: 44
+  authoritative_page: 43
+  packet: PKT-PHB-043-054-cleric-spells
+  field_to_change: page
+  from: '44'
+  to: '43'
+- canonical_row: 535
+  assertion: spell_glyph_of_warding TRIGGERS exp_level_loss
+  section: GLYPH OF WARDING
+  cited_page: 49
+  authoritative_page: 47
+  packet: PKT-PHB-043-054-cleric-spells
+  field_to_change: page
+  from: '49'
+  to: '47'
+- canonical_row: 413
+  assertion: align_change CONSTRAINS sys_alignment
+  section: CHANGING ALIGNMENT
+  cited_page: 33
+  authoritative_page: 34
+  packet: PKT-PHB-033-035-alignment-hp-languages
+  field_to_change: page
+  from: '33'
+  to: '34'
+- canonical_row: 414
+  assertion: align_change ALTERNATIVE_TO rule_involuntary_change
+  section: CHANGING ALIGNMENT
+  cited_page: 33
+  authoritative_page: 34
+  packet: PKT-PHB-033-035-alignment-hp-languages
+  field_to_change: page
+  from: '33'
+  to: '34'
+a_confirming_detail: Seventeen canonical rows cite THE PALADIN to page 23. The operator has previously
+  stated that page 23 is a full-page drawing containing no text, which is why the source carries no p23
+  marker. Those rows are not in the corrections below, because THE PALADIN legitimately spans pages 22
+  and 24 and the section name alone does not say which of the two each assertion belongs to. They are
+  raised because a citation to a page with no text cannot be right, and a Builder with the source open
+  could resolve all seventeen quickly.
+options_considered:
+- option: Record the ruling as a contract line and correct the nine rows
+  assessment: Recommended. The ruling is already made; what is missing is a durable record and the consequent
+    data fix.
+- option: Record the ruling only, correct nothing
+  assessment: Leaves nine rows disagreeing with the authority the ruling just established, and leaves
+    this packet's GUR citing pages that differ from neighbouring rows about the same spells.
+- option: Correct the nine rows silently as a typo class
+  assessment: Rejected. ESCALATION_CONTRACT treats a change to approved canonical assertions as a migration,
+    and only the Integrator may write canonical.
+recommended_resolution: Add the ruling to contracts/SOURCE_MARKDOWN.md as an explicit statement that the
+  claimed packet source is authoritative for page attribution and that a disagreeing legacy citation is
+  a defect. Authorise the nine page corrections as an Integrator migration. Ask the Builder to resolve
+  the seventeen THE PALADIN rows against the source, since page 23 has no text.
+expected_migration_impact:
+  canonical_edge_rows_changed: 9
+  field_changed: page only
+  identities_changed: 0
+  assertions_changed: 0
+  registry_rows_changed: 0
+  nodes_added_or_retired: 0
+  general_rule_references_changed: 0
+  constitution_changes: false
+  registry_schema_changes: false
+  contract_changes:
+  - contracts/SOURCE_MARKDOWN.md, to state the authority rule
+blocking:
+  blocks: []
+  does_not_block:
+  - GUR-PKT-PHB-043-054-cleric-spells-r02, whose pages are already marker-derived and therefore already
+    correct under this ruling
+  - any other packet or role
+analyst_position: 'The ruling is unambiguous and the Analyst has already been applying it. The only new
+  work it creates is the nine-row correction and the contract line. The larger value is preventive: with
+  the authority settled, later packets can treat a legacy page disagreement as a defect to report rather
+  than a judgement to make, which is what OBS-44 had to do.'

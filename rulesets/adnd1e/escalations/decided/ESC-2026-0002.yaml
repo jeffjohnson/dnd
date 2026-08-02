@@ -1,0 +1,196 @@
+schema_version: "1.0"
+id: ESC-2026-0002
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-009-013-ability-scores
+constitution_version: "1.2"
+
+raised_by: analyst
+raised_on: "2026-07-28"
+filed_on: "2026-07-29"
+decision_owner: architect
+decision_id: DEC-2026-0004
+
+filing_note: >-
+  DEC-2026-0003 records this escalation as remaining blocking because the referenced
+  standalone package was absent. Correct, and the Analyst's omission: it was raised inside
+  GUR-PKT-PHB-009-013-ability-scores-r01 and never filed. This file supplies the package
+  including the exact node-by-node disposition and migration figures DEC-2026-0003 named
+  as missing.
+
+originating:
+  packet_id: PKT-PHB-009-013-ability-scores
+  gur_id: GUR-PKT-PHB-009-013-ability-scores-r01
+  also_evidenced_by: GUR-PKT-PHB-035-038-money-equipment-r02, OBS-31
+  prior_art: rulesets/adnd1e/reports/PRECONDITION-AUDIT-20260727.md
+
+trigger: >-
+  ESCALATION_CONTRACT 1.1 — "the constitution and production data disagree in a way that
+  cannot be fixed mechanically". This is not the ordinary node-addition case DEC-2026-0003
+  removed from escalation: no node is proposed, and the question is whether an existing
+  prefix is approved, which that decision explicitly retains as Architect-blocking.
+
+question: >-
+  Twenty-three canonical nodes use twelve prefixes that constitution 3.1 does not list.
+  Should 3.1 be extended to approve them, or should the nodes be migrated to approved
+  prefixes?
+
+# -- the disagreement ----------------------------------------------------------
+the_disagreement: >-
+  Constitution 3.1 gives a closed table of twenty-four approved prefixes. Twenty-three
+  production nodes fall outside it. This cannot be fixed mechanically because both sides
+  are authoritative: 3.1 is the constitution, and the nodes carry 379 incident edge
+  endpoints in the canonical graph.
+the_self_contradiction: >-
+  The constitution uses unapproved prefixes in its own worked examples. turn_undead
+  appears five times in constitution prose, including the section 6.2 worked example that
+  teaches the enables-versus-improves distinction. str_bend_bars appears once, in the
+  section 4.1 worked example that teaches EXCLUDES. Neither turn_ nor str_ is in the 3.1
+  table. This is the strongest single piece of evidence that the prefix list is incomplete
+  rather than the data being wrong.
+
+# -- node-by-node disposition --------------------------------------------------
+node_by_node:
+  total_nodes: 23
+  total_incident_endpoints: 379
+  by_prefix:
+    - prefix: wpn_
+      nodes: 7
+      endpoints: 53
+      ids: [wpn_stats, wpn_range, wpn_speed_factor, wpn_length, wpn_type_vs_ac, wpn_space_required, wpn_weight]
+      analyst_view: >-
+        A coherent kind. Weapon statistics are not items, rules or combat mechanics; they
+        are the data layer weapons are described by. Recommend approving wpn_.
+    - prefix: str_
+      nodes: 3
+      endpoints: 22
+      ids: [str_bend_bars, str_exceptional, str_open_doors]
+      analyst_view: >-
+        These are strength-derived sub-mechanics and are the direct analogue of
+        abil_cha_loyalty_base and dex_defensive_adj. Whatever is decided here should be
+        decided the same way for dex_ and for the abil_cha_ nodes in ESC-2026-07-30T01.21.13.768Z, or the
+        registry gains a third convention. Cited in constitution 4.1.
+    - prefix: dex_
+      nodes: 2
+      endpoints: 22
+      ids: [dex_defensive_adj, dex_reaction_adj]
+      analyst_view: same class as str_; decide together
+    - prefix: magic_
+      nodes: 2
+      endpoints: 107
+      ids: [magic_resistance, magic_item_determination]
+      analyst_view: >-
+        The heaviest by far. magic_resistance alone carries 97 endpoints, more than any
+        other node in this list by a factor of three. Migration here is the expensive
+        case and the one most worth avoiding.
+    - prefix: death_
+      nodes: 2
+      endpoints: 37
+      ids: [death_character, death_drowning]
+      analyst_view: death_character at 36 endpoints is a major hub
+    - prefix: turn_
+      nodes: 1
+      endpoints: 29
+      ids: [turn_undead]
+      analyst_view: cited five times in constitution prose, including the 6.2 worked example
+    - prefix: cursed_
+      nodes: 1
+      endpoints: 28
+      ids: [cursed_item]
+      analyst_view: label reads "Cursed Sword" while the ID reads cursed_item; a labelling defect independent of the prefix question
+    - prefix: comeliness
+      nodes: 1
+      endpoints: 25
+      ids: [comeliness]
+      analyst_view: >-
+        The odd one out. It carries no prefix at all, not merely an unapproved one, so it
+        violates 3.1's format requirement rather than only its vocabulary. It is a UA
+        ability score and the obvious approved form is abil_comeliness.
+    - prefix: time_
+      nodes: 1
+      endpoints: 24
+      ids: [time_segment_round_turn]
+      analyst_view: label "Round and Segment" against an ID naming three units; minor mismatch
+    - prefix: align_
+      nodes: 1
+      endpoints: 11
+      ids: [align_change]
+      analyst_view: >-
+        sys_alignment exists and is approved, so rule_alignment_change or an align_ approval
+        both work. Used by four Analyst-proposed edges across packets 05 and 06.
+    - prefix: fatigue
+      nodes: 1
+      endpoints: 11
+      ids: [fatigue]
+      analyst_view: unprefixed, like comeliness; label "Exhaustion" does not match the ID
+    - prefix: training
+      nodes: 1
+      endpoints: 10
+      ids: [training]
+      analyst_view: unprefixed; rule_training_status already exists separately, so check for overlap before migrating
+
+# -- options -------------------------------------------------------------------
+options_considered:
+  - option: extend constitution 3.1 to approve the prefixes in production use
+    for: >-
+      No data migration. Resolves the self-contradiction in the constitution's own worked
+      examples. Zero risk to 379 endpoints.
+    against: >-
+      Ratifies prefixes that were never designed, including three unprefixed IDs which no
+      extension can make conform to the snake_case-prefixed format 3.1 requires.
+  - option: migrate all 23 to approved prefixes
+    for: one convention; 3.1 stays closed and small
+    against: >-
+      Touches 379 endpoints. The PRECONDITION-AUDIT of 2026-07-27 measured the same figure
+      as 379 edge rows. Constitution 4.1 and 6.2 would need rewriting because their worked
+      examples cite two of the migrating IDs.
+  - option: split the decision
+    detail: >-
+      Approve the prefixes that name a coherent kind, wpn_ and probably magic_, death_ and
+      turn_; migrate the three unprefixed IDs, comeliness, fatigue and training, which
+      violate the format rule and not merely the vocabulary; and decide str_, dex_ and the
+      abil_cha_ pattern together as one question about how sub-mechanics of an ability
+      score are named.
+    for: >-
+      Puts migration cost only where the format is actually broken. The three unprefixed
+      IDs carry 46 endpoints between them, an eighth of the total.
+    against: two conventions coexist during migration
+
+recommended_resolution: >-
+  The split option. Extend 3.1 to approve wpn_, magic_, death_, turn_, cursed_, time_ and
+  fatigue-class prefixes where they name a coherent kind; migrate the three unprefixed IDs
+  comeliness, fatigue and training, since no extension of a prefix vocabulary can legalise
+  an ID with no prefix; and treat str_, dex_ and the abil_cha_ nodes of ESC-2026-07-30T01.21.13.768Z as a
+  single sub-mechanic-naming question, because deciding them separately is how the registry
+  acquired three conventions for one pattern.
+recommendation_confidence: >-
+  High that the constitution should be extended rather than the bulk of the data moved,
+  on the worked-example evidence. Moderate on where exactly to draw the line.
+
+expected_migration_impact:
+  extend_only: 0 rows changed
+  migrate_all: 379 endpoints repointed across 23 nodes; constitution 4.1 and 6.2 rewritten
+  split_recommended: 46 endpoints repointed across comeliness, fatigue and training
+  analyst_work_affected: >-
+    Twelve of the 23 are needed by proposed edges. GUR-PKT-PHB-009-013-ability-scores-r01
+    uses str_exceptional, str_open_doors, str_bend_bars, dex_reaction_adj and
+    dex_defensive_adj. GUR-PKT-PHB-035-038-money-equipment-r02 uses wpn_weight, wpn_range,
+    wpn_space_required, wpn_stats and wpn_type_vs_ac.
+    GUR-PKT-PHB-018-033-classes-r01 and GUR-PKT-PHB-033-035-alignment-hp-languages-r01 use
+    turn_undead and align_change. Under the extend option none change; under migration all
+    repoint mechanically.
+
+would_change:
+  constitution: true
+  registry: >-
+    Only on the migrate or split options.
+  profile: false
+  canonical_graph: >-
+    Only on the migrate or split options.
+
+blocking: >-
+  Not for extraction; the Analyst reused the existing IDs as instructed rather than
+  minting variants. Yes for any Integrator run that enforces 3.1, since 379 endpoints
+  would fail the check.

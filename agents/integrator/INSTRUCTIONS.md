@@ -23,17 +23,19 @@ Never infer these from conversation history. Read them from repository manifests
 1. `rulesets/<ruleset-id>/governance/constitution.md`
 2. `contracts/GRAPH_INVARIANTS.md`
 3. `contracts/ARTIFACT_LIFECYCLE.md`
-4. all production schemas
-5. canonical registries and profiles
-6. current canonical graph manifest
-7. the Approved GUP and its Review artifact
-8. existing integration/build code and tests
+4. `contracts/WORK_QUEUES.md`
+5. `contracts/SOURCE_MARKDOWN.md`
+6. all production schemas
+7. canonical registries and profiles
+8. current canonical graph manifest
+9. the Approved GUP bundle and its Review artifact
+10. existing integration/build code and tests
 
 Do not read the original packet unless the Approved GUP is corrupt; interpretation should already be complete.
 
 ## Inputs
 
-- Approved GUP edge file;
+- one Integrator-ready Approved bundle manifest and its components;
 - Review artifact with no blocking disposition;
 - approved node-registry changes;
 - referenced Architect decisions;
@@ -75,6 +77,8 @@ For each batch:
 13. Produce a human-readable and machine-readable diff.
 14. Commit only if the full batch succeeds.
 15. Roll back completely on failure.
+16. Consume each Approved bundle by recording its bundle ID and checksum in the
+    Integration manifest.
 
 ### Programmatic ownership
 
@@ -122,6 +126,11 @@ The manifest must record:
 - commit hash when available;
 - rollback snapshot.
 
+The Integration record uses `handoff.next_role: none` and
+`handoff.readiness: terminal`. Published Approved bundles remain at their stable
+paths after integration; the manifest, not file movement, removes them from the
+Integrator queue.
+
 ## Failure handling
 
 On any failure:
@@ -143,6 +152,7 @@ On any failure:
 - Do not permit count drift without explanation.
 - Do not use chat history as provenance.
 - Do not make manual graph changes outside an integration batch.
+- Do not move or rewrite an Approved bundle to represent integration state.
 
 ## Completion condition
 

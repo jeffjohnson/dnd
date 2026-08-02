@@ -1,0 +1,1223 @@
+schema_version: '1.0'
+id: GUP-PKT-PHB-009-013-ability-scores-r05
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-009-013-ability-scores
+constitution_version: '1.2'
+revision: 5
+supersedes: GUP-PKT-PHB-009-013-ability-scores-r04
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 24 edge addition(s), 4 update(s), 5 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-PHB-009-013-ability-scores-r01
+  gur_checksum: sha256:64e15c2738c5f5910634997c31891fb078b512928198b7dac10ba04498396618
+  review_id: REV-GUP-PKT-PHB-009-013-ability-scores-r04-r01
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: false
+    reason: skipped by flag
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: rule_prime_requisite
+      proposed_label: Prime Requisite Experience Bonus
+      kind: rule
+      why_needed: The packet states four times, once each for Strength, Intelligence, Wisdom and Dexterity,
+        that a character whose prime requisite is high gains a bonus to earned experience. The registry
+        has no node for this mechanic. rule_xp_division exists but concerns dividing awards among a party,
+        which is a different thing. Forcing these four edges onto exp_level or onto the xp_ award-source
+        nodes would misstate what the rule does.
+      edges_depending_on_it:
+        - S14
+        - I11
+        - W8
+        - D19
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+      returned_to_workflow_by: DEC-2026-0003
+    - proposed_id: rule_revivification_limit
+      proposed_label: Lifetime Revivification Limit
+      kind: rule
+      why_needed: The Constitution section describes two distinct mechanics that a single node would conflate.
+        rule_resurrection_survival, which exists, is the percentage roll made on each attempt. The packet
+        separately establishes that a character's initial constitution score is a hard lifetime cap on
+        how many times revivification may be attempted at all, that each success permanently reduces the
+        score, and that later magical restoration of the score does not restore the cap. That is a resource
+        ceiling, not a survival roll.
+      edges_depending_on_it:
+        - C5
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+      returned_to_workflow_by: DEC-2026-0003
+  proposals_rejected_by_decision: []
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions:
+    - source_id: abil_cha_max_henchmen
+      source_label: Maximum Henchmen
+      edge_type: EXCLUDED_FROM
+      target_id: hench_mercenary
+      target_label: Mercenary Soldier
+      aspect: troop numbers
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '13'
+      section: Notes Regarding Charisma Table
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: H7
+    - source_id: abil_charisma
+      source_label: Charisma
+      edge_type: CONSTRAINS
+      target_id: sys_classes
+      target_label: Character Class
+      aspect: class eligibility
+      condition: at the lowest scores
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '13'
+      section: CHARISMA TABLE
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: H6
+    - source_id: abil_charisma
+      source_label: Charisma
+      edge_type: GATES
+      target_id: class_druid
+      target_label: Druid
+      aspect: class eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '13'
+      section: CHARISMA TABLE
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: H4
+    - source_id: abil_constitution
+      source_label: Constitution
+      edge_type: CONSTRAINS
+      target_id: sys_classes
+      target_label: Character Class
+      aspect: class eligibility
+      condition: at the lowest scores
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '12'
+      section: CONSTITUTION TABLE
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C11
+    - source_id: abil_dexterity
+      source_label: Dexterity
+      edge_type: CONSTRAINS
+      target_id: sys_classes
+      target_label: Character Class
+      aspect: class eligibility
+      condition: at the lowest scores
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '11'
+      section: DEXTERITY TABLE I
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D18
+    - source_id: abil_dexterity
+      source_label: Dexterity
+      edge_type: GATES
+      target_id: class_illusionist
+      target_label: Illusionist
+      aspect: class eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '11'
+      section: DEXTERITY TABLE I
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D16
+    - source_id: abil_dexterity
+      source_label: Dexterity
+      edge_type: MODIFIES
+      target_id: thief_find_remove_traps
+      target_label: Find/Remove Traps
+      aspect: success chance
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '12'
+      section: 'DEXTERITY TABLE II: ADJUSTMENTS FOR THIEVES'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D10
+    - source_id: abil_dexterity
+      source_label: Dexterity
+      edge_type: MODIFIES
+      target_id: thief_hide_in_shadows
+      target_label: Hide in Shadows
+      aspect: success chance
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '12'
+      section: 'DEXTERITY TABLE II: ADJUSTMENTS FOR THIEVES'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D12
+    - source_id: abil_dexterity
+      source_label: Dexterity
+      edge_type: MODIFIES
+      target_id: thief_move_silently
+      target_label: Move Silently
+      aspect: success chance
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '12'
+      section: 'DEXTERITY TABLE II: ADJUSTMENTS FOR THIEVES'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D11
+    - source_id: abil_dexterity
+      source_label: Dexterity
+      edge_type: MODIFIES
+      target_id: thief_open_locks
+      target_label: Open Locks
+      aspect: success chance
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '12'
+      section: 'DEXTERITY TABLE II: ADJUSTMENTS FOR THIEVES'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D9
+    - source_id: abil_dexterity
+      source_label: Dexterity
+      edge_type: MODIFIES
+      target_id: thief_pick_pockets
+      target_label: Pick Pockets
+      aspect: success chance
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '12'
+      section: 'DEXTERITY TABLE II: ADJUSTMENTS FOR THIEVES'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D8
+    - source_id: abil_intelligence
+      source_label: Intelligence
+      edge_type: CONSTRAINS
+      target_id: sys_classes
+      target_label: Character Class
+      aspect: class eligibility
+      condition: at the lowest scores
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '10'
+      section: INTELLIGENCE TABLE I
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: I10
+    - source_id: abil_intelligence
+      source_label: Intelligence
+      edge_type: TRIGGERS
+      target_id: rule_chance_know_spell
+      target_label: Chance to Know Each Listed Spell
+      aspect: recheck of known spells
+      condition: on relatively permanent score change
+      polarity: inflicts
+      polarity_basis: read
+      book: PHB
+      page: '10'
+      section: Notes Regarding Intelligence Table II
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: I12
+    - source_id: abil_strength
+      source_label: Strength
+      edge_type: CONSTRAINS
+      target_id: sys_classes
+      target_label: Character Class
+      aspect: class eligibility
+      condition: at the lowest scores
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '9'
+      section: STRENGTH TABLE I
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: S6
+    - source_id: abil_strength
+      source_label: Strength
+      edge_type: GATES
+      target_id: class_ranger
+      target_label: Ranger
+      aspect: class eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '9'
+      section: STRENGTH TABLE I
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: S4
+    - source_id: abil_wisdom
+      source_label: Wisdom
+      edge_type: CONSTRAINS
+      target_id: sys_classes
+      target_label: Character Class
+      aspect: class eligibility
+      condition: at the lowest scores
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '11'
+      section: WISDOM TABLE I
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: W7
+    - source_id: class_fighter
+      source_label: Fighter
+      edge_type: GATES
+      target_id: str_exceptional
+      target_label: Exceptional Strength
+      aspect: eligibility to roll
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '9'
+      section: Strength
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: S12
+    - source_id: dex_defensive_adj
+      source_label: Dexterity Defensive Adjustment
+      edge_type: MODIFIES
+      target_id: save_spell
+      target_label: Spell
+      aspect: saving throw
+      condition: attacks permitting dodging
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '11'
+      section: Notes Regarding Dexterity Table I
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D6
+    - source_id: dex_reaction_adj
+      source_label: Reaction/Attacking Adjustment
+      edge_type: MODIFIES
+      target_id: cbt_missile
+      target_label: Missile Fire
+      aspect: attack adjustment
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '11'
+      section: Notes Regarding Dexterity Table I
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D4
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: GATES
+      target_id: rule_cleric_bonus_spells
+      target_label: Cleric Bonus Spells
+      aspect: availability
+      condition: only when the spell level is reached
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '11'
+      section: Notes Regarding Wisdom Table II
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: W12
+    - source_id: race_any
+      source_label: Race
+      edge_type: MODIFIES
+      target_id: thief_skills
+      target_label: Thief Skills
+      aspect: racial adjustment
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '12'
+      section: Notes Regarding Dexterity Table II
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D20
+    - source_id: rule_sex
+      source_label: Character Sex
+      edge_type: CONSTRAINS
+      target_id: abil_strength
+      target_label: Strength
+      aspect: maximum score
+      condition: jointly with race
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '9'
+      section: STRENGTH TABLE I
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: S15
+    - source_id: str_exceptional
+      source_label: Exceptional Strength
+      edge_type: DERIVED_FROM
+      target_id: abil_strength
+      target_label: Strength
+      aspect: percentile subdivision
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '9'
+      section: Strength
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: S13
+    - source_id: sys_classes
+      source_label: Character Class
+      edge_type: CONSTRAINS
+      target_id: rule_hit_points
+      target_label: Hit Points
+      aspect: constitution bonus cap
+      condition: non-fighter classes
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '12'
+      section: Notes Regarding Constitution Table
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C2
+  pending_additions:
+    - source_id: abil_constitution
+      source_label: Constitution
+      edge_type: CONSTRAINS
+      target_id: rule_revivification_limit
+      target_label: Lifetime Revivification Limit
+      aspect: lifetime revivifications
+      condition: initial score only
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '12'
+      section: Constitution
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C5
+    - source_id: abil_dexterity
+      source_label: Dexterity
+      edge_type: MODIFIES
+      target_id: rule_prime_requisite
+      target_label: Prime Requisite Experience Bonus
+      aspect: experience bonus
+      condition: thief at high score
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '11'
+      section: Dexterity
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D19
+    - source_id: abil_intelligence
+      source_label: Intelligence
+      edge_type: MODIFIES
+      target_id: rule_prime_requisite
+      target_label: Prime Requisite Experience Bonus
+      aspect: experience bonus
+      condition: magic-user at high score
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '10'
+      section: Intelligence
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: I11
+    - source_id: abil_strength
+      source_label: Strength
+      edge_type: MODIFIES
+      target_id: rule_prime_requisite
+      target_label: Prime Requisite Experience Bonus
+      aspect: experience bonus
+      condition: fighter at high score
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '9'
+      section: Strength
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: S14
+    - source_id: abil_wisdom
+      source_label: Wisdom
+      edge_type: MODIFIES
+      target_id: rule_prime_requisite
+      target_label: Prime Requisite Experience Bonus
+      aspect: experience bonus
+      condition: cleric at high score
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '11'
+      section: Wisdom
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: W8
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates:
+    - ref: I3
+      canonical_row: 105
+      reason: polarity_repair
+      changes:
+        polarity:
+          patch: improves
+          canonical: neutral
+        polarity_basis:
+          patch: read
+          canonical: unset
+      differences_not_applied:
+        section:
+          patch: 'INTELLIGENCE TABLE II: ABILITY FOR MAGIC-USERS'
+          canonical: INTELLIGENCE TABLE II
+        pass:
+          patch: page-sweep
+          canonical: prose-sweep
+      detail: assertion already canonical with polarity_basis='unset'; this patch supplies an authored
+        reading. Only polarity fields are proposed for change.
+    - ref: C3
+      canonical_row: 4
+      reason: polarity_repair
+      changes:
+        polarity:
+          patch: improves
+          canonical: neutral
+        polarity_basis:
+          patch: read
+          canonical: unset
+      differences_not_applied:
+        pass:
+          patch: page-sweep
+          canonical: prose-sweep
+      detail: assertion already canonical with polarity_basis='unset'; this patch supplies an authored
+        reading. Only polarity fields are proposed for change.
+    - ref: C4
+      canonical_row: 5
+      reason: polarity_repair
+      changes:
+        polarity:
+          patch: improves
+          canonical: neutral
+        polarity_basis:
+          patch: read
+          canonical: unset
+      differences_not_applied:
+        pass:
+          patch: page-sweep
+          canonical: prose-sweep
+      detail: assertion already canonical with polarity_basis='unset'; this patch supplies an authored
+        reading. Only polarity fields are proposed for change.
+    - ref: H3
+      canonical_row: 143
+      reason: polarity_repair
+      changes:
+        polarity:
+          patch: improves
+          canonical: neutral
+        polarity_basis:
+          patch: read
+          canonical: unset
+      differences_not_applied:
+        pass:
+          patch: page-sweep
+          canonical: prose-sweep
+      detail: assertion already canonical with polarity_basis='unset'; this patch supplies an authored
+        reading. Only polarity fields are proposed for change.
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts:
+    derived: 7
+    read: 17
+duplicate_findings: []
+neighbourhood_conflicts:
+  - ref: S13
+    endpoints:
+      - str_exceptional
+      - abil_strength
+    existing_edges:
+      - canonical_row: 102
+        canonical_index: 100
+        source_id: str_exceptional
+        edge_type: GATES
+        target_id: abil_strength
+        aspect: percentile rating
+        condition: fighter classes only
+        book: PHB
+        page: '9'
+        section: STRENGTH
+    detail: the same node pair is already related by other edge types
+  - ref: I12
+    endpoints:
+      - abil_intelligence
+      - rule_chance_know_spell
+    existing_edges:
+      - canonical_row: 105
+        canonical_index: 103
+        source_id: abil_intelligence
+        edge_type: MODIFIES
+        target_id: rule_chance_know_spell
+        aspect: learning chance
+        condition: ''
+        book: PHB
+        page: '10'
+        section: INTELLIGENCE TABLE II
+    detail: the same node pair is already related by other edge types
+  - ref: C2
+    endpoints:
+      - sys_classes
+      - rule_hit_points
+    existing_edges:
+      - canonical_row: 3812
+        canonical_index: 3810
+        source_id: rule_hit_points
+        edge_type: DERIVED_FROM
+        target_id: sys_classes
+        aspect: hit die type
+        condition: ''
+        book: PHB
+        page: '8'
+        section: CREATING THE PLAYER CHARACTER
+    detail: the same node pair is already related by other edge types
+escalations: []
+escalations_since_decided:
+  - id: ESC-2026-07-30T01.21.13.768Z
+    decided_by: DEC-2026-0007
+    question: Two pairs of canonical nodes carry the same label and appear to denote the same mechanic.
+      Should they be merged, and if so which ID survives?
+  - id: ESC-2026-0002
+    decided_by: DEC-2026-0004
+    question: Five nodes this packet must reference use prefixes that constitution 3.1 does not list.
+      Should the constitution be extended, or should the nodes be migrated to approved prefixes?
+architect_dispositions_applied: []
+direction_findings:
+  - ref: C2
+    rule: opposed_direction_vs_canonical
+    disposition: carry_for_reviewer
+    proposed: sys_classes CONSTRAINS rule_hit_points
+    canonical_counterparts:
+      - canonical_row: 3812
+        canonical_index: 3810
+        source_id: rule_hit_points
+        edge_type: DERIVED_FROM
+        target_id: sys_classes
+        aspect: hit die type
+        condition: ''
+        book: PHB
+        page: '8'
+        section: CREATING THE PLAYER CHARACTER
+validation_summary:
+  edges_in: 84
+  edges_compiled: 33
+  edges_rejected: 51
+  edge_additions: 24
+  edge_pending_additions: 5
+  edge_updates: 4
+  errors: 0
+  warnings: 10
+  escalations: 0
+  escalations_since_decided: 2
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 1
+  node_additions_proposed: 2
+  duplicate_findings: 0
+  neighbourhood_conflicts: 3
+validation_report: build/reports/GUP-PKT-PHB-009-013-ability-scores-r05.validation.json
+reviewer_directives_applied:
+  review_id: REV-GUP-PKT-PHB-009-013-ability-scores-r04-r01
+  corrections: []
+  rejected_rows:
+    - ref: G1
+      reason: reviewer_rejected
+      rationale: sys_ability_scores DERIVED_FROM rule_ability_generation is the inverse of canonical rule_ability_generation
+        FEEDS_INTO sys_ability_scores. Under DEC-2026-0011 an input that changes a mechanic uses input
+        MODIFIES mechanic, including direct table lookups, and the same dependency is not recorded both
+        ways. The proposal restates an existing canonical assertion and is dropped rather than retyped.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 687
+    - ref: S1
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [205]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 205
+    - ref: S2
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [318]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 318
+    - ref: S3
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [219]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 219
+    - ref: S5
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [352]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 352
+    - ref: S7
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [92]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 92
+    - ref: S8
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [93]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 93
+    - ref: S9
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [94]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 94
+    - ref: S10
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [95]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 95
+    - ref: S11
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [96]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 96
+    - ref: I1
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [103]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 103
+    - ref: I2
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [107]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 107
+    - ref: I4
+      reason: reviewer_rejected
+      rationale: Canonical row 106 already records that Intelligence constrains the maximum spells knowable
+        per spell level. The submitted MODIFIES encoding restates that cap under a less precise edge type.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 106
+    - ref: I5
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [108]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 108
+    - ref: I6
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [109]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 109
+    - ref: I7
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [110]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 110
+    - ref: I8
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [111]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 111
+    - ref: I9
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [112]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 112
+    - ref: I13
+      reason: reviewer_rejected
+      rationale: The PHB statement is source-supported, but this direction is a reciprocal restatement
+        of canonical row 816. DEC-2026-0011 requires the existing operational gate from chance-to-know
+        into spell-book recording rather than a second reverse edge.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 816
+    - ref: W1
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [119, 681]). A second edge would violate the no-duplicate-identity invariant;
+        rejection is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 119
+        - 681
+    - ref: W2
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [123, 178]). A second edge would violate the no-duplicate-identity invariant;
+        rejection is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 123
+        - 178
+    - ref: W3
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [124]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 124
+    - ref: W4
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [125]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 125
+    - ref: W5
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [126]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 126
+    - ref: W6
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [127]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 127
+    - ref: W9
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [121]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 121
+    - ref: W10
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [122]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 122
+    - ref: W11
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [128]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 128
+    - ref: D1
+      reason: reviewer_rejected
+      rationale: dex_reaction_adj DERIVED_FROM abil_dexterity is the inverse of canonical abil_dexterity
+        MODIFIES dex_reaction_adj. Under DEC-2026-0011 an input that changes a mechanic uses input MODIFIES
+        mechanic, including direct table lookups, and the same dependency is not recorded both ways. The
+        proposal restates an existing canonical assertion and is dropped rather than retyped.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 682
+    - ref: D2
+      reason: reviewer_rejected
+      rationale: dex_defensive_adj DERIVED_FROM abil_dexterity is the inverse of canonical abil_dexterity
+        MODIFIES dex_defensive_adj. Under DEC-2026-0011 an input that changes a mechanic uses input MODIFIES
+        mechanic, including direct table lookups, and the same dependency is not recorded both ways. The
+        proposal restates an existing canonical assertion and is dropped rather than retyped.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 683
+    - ref: D3
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [1723]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 1723
+    - ref: D5
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [763]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 763
+    - ref: D7
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [132]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 132
+    - ref: D13
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [268]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 268
+    - ref: D14
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [319]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 319
+    - ref: D15
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [353]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 353
+    - ref: D17
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [137]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 137
+    - ref: C1
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [2, 3]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 2
+        - 3
+    - ref: C6
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [88]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 88
+    - ref: C7
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [7]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 7
+    - ref: C8
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [8]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 8
+    - ref: C9
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [9]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 9
+    - ref: C10
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [10]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 10
+    - ref: C12
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [16]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 16
+    - ref: C13
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [17]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 17
+    - ref: C14
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [20]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 20
+    - ref: C15
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [19]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 19
+    - ref: C16
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [18]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 18
+    - ref: H1
+      reason: reviewer_rejected
+      rationale: abil_cha_max_henchmen DERIVED_FROM abil_charisma is the inverse of canonical abil_charisma
+        MODIFIES abil_cha_max_henchmen. Under DEC-2026-0011 an input that changes a mechanic uses input
+        MODIFIES mechanic, including direct table lookups, and the same dependency is not recorded both
+        ways. The proposal restates an existing canonical assertion and is dropped rather than retyped.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 684
+    - ref: H2
+      reason: reviewer_rejected
+      rationale: hench_loyalty DERIVED_FROM abil_charisma is the inverse of canonical abil_charisma MODIFIES
+        hench_loyalty; abil_charisma FEEDS_INTO hench_loyalty. Under DEC-2026-0011 an input that changes
+        a mechanic uses input MODIFIES mechanic, including direct table lookups, and the same dependency
+        is not recorded both ways. The proposal restates an existing canonical assertion and is dropped
+        rather than retyped.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 142
+        - 792
+    - ref: H5
+      reason: reviewer_rejected
+      rationale: The source relationship is supported, but this proposed insertion is a canonical restatement
+        (canonical row(s) [220]). A second edge would violate the no-duplicate-identity invariant; rejection
+        is of the duplicate insertion, not of the source assertion.
+      integration_action: omit_duplicate_or_unsupported_row
+      canonical_rows:
+        - 220
+  note: Reviewer decisions are applied as given; the Reviewer owns what an edge asserts. Corrected values
+    are then revalidated, and a correction that violates the constitution is reported like any other defect
+    rather than passed through.

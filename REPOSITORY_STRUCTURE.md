@@ -13,6 +13,10 @@ From most stable to most local:
 7. `books/<ruleset-id>/<book-id>/` — source and packet workspaces.
 8. `tooling/` — deterministic implementations owned by Builder, Reviewer, and Integrator.
 
+Artifact-kind directories are append-only stores. They are not role inboxes.
+Logical work queues are derived from artifact revision and provenance lineage
+under `contracts/WORK_QUEUES.md`.
+
 ## Main layout
 
 ```text
@@ -48,12 +52,17 @@ Only Integrator mutates canonical graph state. Architect may alter governance an
 - `book.yaml` — stable work identity;
 - `source/<source-id>/` — exact source edition/printing assets;
 - `packets/` — incoming, claimed, and completed packet directories;
-- `artifacts/gur/` — Analyst output;
-- `artifacts/gup/` — Builder output;
+- `artifacts/gur/` — immutable Analyst GUR revisions;
+- `artifacts/gup/` — immutable Builder GUP bundles and revisions;
 - `artifacts/reviews/` and `artifacts/approved/` — Reviewer output;
 - `artifacts/integrated/` — immutable copies of integrated artifacts;
 - `work/<role>/` — disposable role scratch space;
 - `reports/` and `archive/`.
+
+Do not infer pending work by counting files in `artifacts/gur/`,
+`artifacts/gup/`, or `artifacts/approved/`. Companion files form one bundle,
+superseded revisions remain for audit, and downstream artifacts record
+consumption by ID and checksum.
 
 ## Cross-book work
 

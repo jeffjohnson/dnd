@@ -1,0 +1,697 @@
+schema_version: "1.0"
+id: ESC-2026-07-30T04.45.31.286Z
+legacy_id: ESC-2026-0008
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-013-018-races
+constitution_version: "1.3"
+
+raised_by: reviewer
+raised_on: "2026-07-29"
+filed_on: "2026-07-30"
+decision_owner: architect
+decision_id: DEC-2026-0009
+assigned_by: DEC-2026-0005
+assignment_audit_item: 4
+topic: racial_detection_identity
+supersedes_placeholder: REVIEW-ESC-RACIAL-DETECTION
+
+# 1. -- originating artifacts --------------------------------------------------
+originating:
+  packet:
+    id: PKT-PHB-013-018-races
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-013-018-races/packet.yaml
+  source:
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-013-018-races/source.md
+    checksum: sha256:d934424b2995c53e725b31634e87be59573f9ef9436167679f3ab38db9dbb98f
+  gur:
+    id: GUR-PKT-PHB-013-018-races-r03
+    path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-013-018-races-r03.yaml
+    checksum: sha256:04ecb29ec2f2015544fbc9fbdc89b8ec446638c2584832d193bcea56ff076827
+  gup:
+    id: GUP-PKT-PHB-013-018-races-r03
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-013-018-races-r03.yaml
+    checksum: sha256:8e066f5f88d4bba0020c36d11cd4e400719368c4f3dde8aacdbda3a332ddfe9e
+    validation_report: build/reports/GUP-PKT-PHB-013-018-races-r03.validation.json
+    status: blocked
+  review:
+    id: REV-GUP-PKT-PHB-013-018-races-r03-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-013-018-races-r03-r01.yaml
+    checksum: sha256:f0ff1445712eca75a3dc9180dbd57e06bc9fcc9a4b39f728350ea96bd550dc48
+    affected_refs: [F6, F20, F31]
+    disposition: architect_escalation
+
+trigger: >-
+  ESCALATION_CONTRACT 1.1 and DEC-2026-0003 retain an irreducible identity
+  ambiguity as Architect-blocking when a proposed node may duplicate or split a
+  canonical identity. The proposed rule_racial_detection uses an approved prefix
+  and kind, but its intended mechanic overlaps canonical rule_detection. Choosing
+  either identity without a ruling could create duplicate identity, worsen the
+  existing node's grain, or require later migration.
+
+# 2. -- exact question ---------------------------------------------------------
+question: >-
+  Should PHB race rows F6, F20, and F31 map to canonical rule_detection; should
+  rule_racial_detection be registered as a distinct shared node for innate racial
+  underground detection; or should the source mechanics be split more narrowly?
+  If a split is required, what identities should be created and what existing
+  canonical rows, if any, must migrate?
+
+why_it_needs_governance: >-
+  The source support and edge semantics are reviewable under the current
+  constitution, but target identity is not deterministic. Canonical rule_detection
+  is intentionally or accidentally broad across several detection powers, while
+  the proposed node would create a narrower analytic grouping not named as one
+  shared rule by the PHB. Deciding whether that is reuse, a valid specialization,
+  or a canonical split changes graph identity and future impact-analysis paths.
+
+# 3. -- affected proposed rows -------------------------------------------------
+affected_rows:
+  - ref: F6
+    submitted_operation: pending_additions
+    source_id: race_dwarf
+    source_label: Dwarf
+    edge_type: GATES
+    proposed_target_id: rule_racial_detection
+    proposed_target_label: Racial Underground Detection
+    aspect: underground detection
+    condition: when actively seeking
+    polarity: enables
+    polarity_basis: derived
+    book: PHB
+    page_as_submitted: "15"
+    page_as_reviewed: "15-16"
+    section: Dwarves
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    reviewer_finding: >-
+      The relationship is supported. The submitted citation is incomplete because
+      the statement begins on page 15 and the table and active-seeking qualification
+      continue on page 16. Only target identity remains Architect-blocked.
+  - ref: F20
+    submitted_operation: pending_additions
+    source_id: race_gnome
+    source_label: Gnome
+    edge_type: GATES
+    proposed_target_id: rule_racial_detection
+    proposed_target_label: Racial Underground Detection
+    aspect: underground detection
+    condition: when actively seeking
+    polarity: enables
+    polarity_basis: derived
+    book: PHB
+    page_as_submitted: "16"
+    page_as_reviewed: "16-17"
+    section: Gnomes
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    reviewer_finding: >-
+      The relationship is supported. The table is on page 16 and the
+      active-seeking qualification crosses the inline page-17 marker. Only target
+      identity remains Architect-blocked.
+  - ref: F31
+    submitted_operation: pending_additions
+    source_id: race_halfling
+    source_label: Halfling
+    edge_type: GATES
+    proposed_target_id: rule_racial_detection
+    proposed_target_label: Racial Underground Detection
+    aspect: underground detection
+    condition: when concentrating
+    polarity: enables
+    polarity_basis: derived
+    book: PHB
+    page_as_submitted: "17"
+    page_as_reviewed: "17"
+    section: Halflings
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    reviewer_finding: >-
+      The relationship and submitted citation are supported. Only target identity
+      remains Architect-blocked.
+
+# 4. -- smallest relevant source excerpts --------------------------------------
+source_excerpts:
+  - ref: F6
+    race: dwarf
+    locus:
+      book: PHB
+      page: "15-16"
+      section: Dwarves
+      source_lines: "191-201"
+    excerpted_text:
+      introduction: >-
+        "Dwarves are miners of great skill. They are able to detect the following
+        facts..."
+      condition: >-
+        "the dwarven character must be actively seeking to determine the
+        phenomenon in question"
+    detected_facts:
+      - grade or slope in a passage
+      - new construction or a passage or tunnel
+      - sliding or shifting walls or rooms
+      - stonework traps
+      - approximate depth underground
+    page_attribution_note: >-
+      The inline {#p16} marker occurs in the introductory paragraph. Under
+      SOURCE_MARKDOWN 1.0, the statement begins on page 15 and the following
+      table and condition are page 16.
+  - ref: F20
+    race: gnome
+    locus:
+      book: PHB
+      page: "16-17"
+      section: Gnomes
+      source_lines: "241-250"
+    excerpted_text:
+      introduction: >-
+        "Being miners of exceptional merit, gnomes are able to detect the
+        following facts..."
+      condition: >-
+        "the gnome must be actively seeking to determine the matter in question"
+    detected_facts:
+      - grade or slope in a passage
+      - unsafe walls, ceilings, or floors
+      - approximate depth underground
+      - direction of travel underground
+    page_attribution_note: >-
+      The table is page 16. The condition paragraph crosses the inline {#p17}
+      marker, so the complete support spans pages 16 and 17.
+  - ref: F31
+    race: halfling
+    locus:
+      book: PHB
+      page: "17"
+      section: Halflings
+      source_lines: "280-282"
+    excerpted_text:
+      rule: >-
+        "halflings of mixed type and those of pure Stoutish blood are able to
+        note if a passage is an up or down grade ... and they can determine
+        direction"
+      condition: >-
+        "these abilities function only when the character is concentrating on
+        the desired information"
+    detected_facts:
+      - grade or slope in a passage
+      - direction
+    page_attribution_note: >-
+      The complete statement inherits page 17 from the preceding page marker.
+
+source_excerpt_policy: >-
+  Numeric probabilities and distances are omitted from this package because they
+  do not bear on identity and the constitution's grain rule excludes magnitudes
+  from graph assertions. The source loci above retain enough text to reproduce
+  the existence, scope, and activation condition of each mechanic.
+
+# 5. -- affected identities ----------------------------------------------------
+affected_canonical_ids:
+  - id: rule_detection
+    label: Detection
+    kind: rule
+    degree: 7
+    roles: [gated_privilege]
+    status: canonical
+  - id: race_dwarf
+    label: Dwarf
+    status: canonical
+  - id: race_gnome
+    label: Gnome
+    status: canonical
+  - id: race_halfling
+    label: Halfling
+    status: canonical
+  - id: rule_scrying
+    label: Crystal Balls and Scrying
+    status: canonical
+  - id: cbt_surprise
+    label: Surprise
+    status: canonical
+  - id: item_wand
+    label: Wand
+    status: canonical
+  - id: sword_primary_abilities
+    label: Primary Abilities
+    status: canonical
+  - id: item_rod_alertness
+    label: Rod of Alertness
+    status: canonical
+  - id: rule_charges
+    label: Charges
+    status: canonical
+
+affected_proposed_ids:
+  - id: rule_racial_detection
+    label: Racial Underground Detection
+    kind: rule
+    prefix: rule_
+    prefix_approved: true
+    id_format_valid: true
+    registry_status: absent
+    canonical_incident_edge_count: 0
+    proposed_incident_refs: [F6, F20, F31]
+
+# 6. -- complete local neighborhoods ------------------------------------------
+local_graph_neighborhood:
+  supplied: true
+  canonical_graph:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:86b26641a1f62e5b758916bbaba1364bf5316690499dbf580b8ec9a86a22cbf5
+    row_count: 3809
+  node_registry:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:958d78e0f50f6244c70b237a88b3514354e7a578bad643f752a91533ea86c084
+  method: >-
+    Reviewer read every canonical row whose source_id or target_id is
+    rule_detection, checked every canonical and proposed occurrence of
+    rule_racial_detection, searched the node registry for detection, underground,
+    slope, grade, direction, depth, construction, wall, trap, and stone identities,
+    and checked for race_dwarf, race_gnome, or race_halfling detection-like
+    canonical edges.
+  decisive_counts:
+    rule_detection_registry_degree: 7
+    rule_detection_incident_rows_found: 7
+    rule_racial_detection_registry_rows_found: 0
+    rule_racial_detection_canonical_incident_rows_found: 0
+    affected_race_detection_like_canonical_rows_found: 0
+    exact_edge_duplicates_for_f6_f20_f31_if_mapped_to_rule_detection: 0
+
+  rule_detection_incident_edges:
+    - canonical_row: 641
+      csv_line: 642
+      source_id: rule_scrying
+      source_label: Crystal Balls and Scrying
+      edge_type: TRIGGERS
+      target_id: rule_detection
+      target_label: Detection
+      aspect: observation is detectable
+      condition: ""
+      book: DMG
+      page: "121"
+      section: CRYSTAL BALLS AND SCRYING
+      status: core
+    - canonical_row: 1718
+      csv_line: 1719
+      source_id: rule_detection
+      source_label: Prior Detection
+      edge_type: EXCLUDES
+      target_id: cbt_surprise
+      target_label: Surprise
+      aspect: negates the possibility entirely
+      condition: ""
+      book: DMG
+      page: "62"
+      section: "ENCOUNTERS, COMBAT, & INITIATIVE"
+      status: core
+    - canonical_row: 2240
+      csv_line: 2241
+      source_id: item_wand
+      source_label: Wand of Enemy Detection
+      edge_type: GATES
+      target_id: rule_detection
+      target_label: Detection
+      aspect: finds hostile creatures regardless of concealment
+      condition: ""
+      book: DMG
+      page: "135"
+      section: "Wands:"
+      status: core
+    - canonical_row: 2575
+      csv_line: 2576
+      source_id: sword_primary_abilities
+      source_label: Primary Abilities
+      edge_type: GATES
+      target_id: rule_detection
+      target_label: Detection
+      aspect: swords detect traps doors metals and magic
+      condition: ""
+      book: DMG
+      page: "167"
+      section: "Table 3.: Sword Primary Abilities"
+      status: core
+    - canonical_row: 3050
+      csv_line: 3051
+      source_id: item_rod_alertness
+      source_label: Rod of Alertness
+      edge_type: GATES
+      target_id: rule_detection
+      target_label: Detection Powers
+      aspect: alignment evil good illusion invisibility lie and magic
+      condition: ""
+      book: UA
+      page: "94"
+      section: "RODS (III.D.)"
+      status: optional
+    - canonical_row: 3051
+      csv_line: 3052
+      source_id: rule_detection
+      source_label: Detection Powers
+      edge_type: EXCLUDED_FROM
+      target_id: rule_charges
+      target_label: Charges
+      aspect: detection expends none
+      condition: ""
+      book: UA
+      page: "94"
+      section: "RODS (III.D.)"
+      status: optional
+    - canonical_row: 3052
+      csv_line: 3053
+      source_id: item_rod_alertness
+      source_label: Planted Rod
+      edge_type: TRIGGERS
+      target_id: rule_detection
+      target_label: Hostile Intent
+      aspect: senses creatures intending harm
+      condition: ""
+      book: UA
+      page: "94"
+      section: "RODS (III.D.)"
+      status: optional
+
+  rule_racial_detection_proposed_neighborhood:
+    - ref: F6
+      source_id: race_dwarf
+      edge_type: GATES
+      target_id: rule_racial_detection
+      aspect: underground detection
+      condition: when actively seeking
+      citation: "PHB pp15-16, Dwarves"
+      status: core
+    - ref: F20
+      source_id: race_gnome
+      edge_type: GATES
+      target_id: rule_racial_detection
+      aspect: underground detection
+      condition: when actively seeking
+      citation: "PHB pp16-17, Gnomes"
+      status: core
+    - ref: F31
+      source_id: race_halfling
+      edge_type: GATES
+      target_id: rule_racial_detection
+      aspect: underground detection
+      condition: when concentrating
+      citation: "PHB p17, Halflings"
+      status: core
+
+  nearby_specialized_detection_identities:
+    - id: rule_detect_evil
+      label: Detect Evil
+      kind: rule
+      degree: 1
+    - id: rule_detection_invisibility
+      label: Detection of Invisibility
+      kind: rule
+      degree: 6
+    - id: rule_poison_detection
+      label: Poison Detection
+      kind: rule
+      degree: 5
+  nearby_specialized_detection_note: >-
+    These nodes establish that the registry sometimes distinguishes a named or
+    separately resolved detection procedure. They do not themselves cover the
+    PHB underground abilities. Existing rule_depth means Water Depth and
+    existing rule_direction means Degree of Direction; neither is a valid
+    silent mapping for the racial mechanics.
+
+# 7. -- identity and grain analysis -------------------------------------------
+identity_analysis:
+  evidence_for_mapping_to_rule_detection:
+    - >-
+      The canonical node's label is the unqualified Detection, and its current
+      neighborhood already aggregates enemy detection, sword detection of traps,
+      doors, metals and magic, rod detection powers, hostile intent, prior
+      detection, and detectability of scrying.
+    - >-
+      Canonical row 2575 is especially close in grain: one source gates a bundle
+      of trap, door, metal, and magic detection abilities through rule_detection.
+      The PHB race descriptions similarly gate bundles of underground facts.
+    - >-
+      The PHB presents three parallel racial abilities but never names one shared
+      rule called Racial Underground Detection. Mapping avoids establishing an
+      Analyst-authored aggregate identity when an existing broad identity can
+      carry the aspect and condition distinctions.
+    - >-
+      F6, F20, and F31 would remain distinct assertions because edge identity
+      retains the race source and each row retains its reviewed condition and
+      citation.
+  evidence_for_a_distinct_rule_racial_detection:
+    - >-
+      All three source passages concern innate racial awareness of underground
+      construction, orientation, or depth and require active seeking or
+      concentration. That is a coherent subsystem boundary not represented in
+      rule_detection's current neighborhood.
+    - >-
+      The registry already has specialized detection nodes where a procedure is
+      separately named or resolved, so specialization is not forbidden by the
+      ontology.
+    - >-
+      Keeping the PHB core mechanic separate would prevent optional UA rod powers
+      and unrelated DMG detection devices from sharing one impact-analysis target.
+  evidence_for_a_split:
+    - >-
+      The three races do not detect identical facts. Dwarves detect construction,
+      shifting stonework, traps, slope and depth; gnomes detect unsafe surfaces,
+      slope, depth and direction; qualifying halflings detect only slope and
+      direction.
+    - >-
+      A single shared target therefore treats different bundles as one mechanic.
+      If changes to individual detectable phenomena must produce distinct impact
+      paths, the shared node is too coarse.
+  reviewer_grain_judgment: >-
+    Under the graph's current practice, the differing fact lists and probabilities
+    can remain source-level detail while each race gates a detection procedure.
+    The current rule_detection neighborhood already uses one target for heterogeneous
+    detection bundles. The ambiguity is therefore identity policy, not a failure of
+    source support or edge type.
+
+# 8. -- options, duplicate impact, and migration impact ------------------------
+options_considered:
+  - option: A. Map F6, F20, and F31 to canonical rule_detection
+    mechanism: >-
+      Remove the proposed rule_racial_detection registry addition. Revise each
+      affected row's target_id to rule_detection and target_label to Detection,
+      preserving its aspect, condition, status, and reviewed citation.
+    for:
+      - Reuses the existing unqualified Detection identity as Constitution 3.2 prefers.
+      - Matches canonical row 2575's use of rule_detection for a bundled detection power.
+      - Adds no registry identity and requires no migration of existing rows.
+      - Creates no exact edge duplicate; all three source/type/target triples are new.
+    against:
+      - Increases the semantic breadth of a node that already spans unrelated procedures.
+      - Makes a change to generic detection reach innate racial senses, devices, swords, scrying, surprise, and optional rod powers.
+    duplicate_impact:
+      exact_collapses: 0
+      near_duplicate_risk: >-
+        No canonical race-to-rule_detection edge exists. The risk is coarse
+        semantic aggregation, not duplicate row identity.
+    migration_impact:
+      existing_canonical_rows_repointed: 0
+      proposed_registry_additions_removed: 1
+      proposed_edges_retargeted: 3
+      future_canonical_edges_added_after_approval: 3
+      node_degree_after_integration: 10
+      role_impact: gated_privilege remains derived
+
+  - option: B. Register one distinct shared rule_racial_detection node
+    mechanism: >-
+      Approve the isolated rule_ node addition and retain F6, F20, and F31 at
+      their proposed target with the Reviewer's citation corrections.
+    for:
+      - Keeps innate underground racial awareness separate from devices, spells, scrying, surprise, and optional rod powers.
+      - Gives all three parallel PHB abilities one queryable subsystem target.
+      - Uses an approved prefix and kind and creates no canonical row collision.
+    against:
+      - The shared name is analytic; the PHB states three race-specific abilities rather than one named common rule.
+      - Queries for generic detection will not reach the new node unless a later taxonomy or relationship connects them.
+      - The differing detected facts may make the shared node too coarse.
+    duplicate_impact:
+      exact_collapses: 0
+      semantic_duplicate_risk: >-
+        The new identity may duplicate the intended umbrella meaning of canonical
+        rule_detection even though its label and incident triples are distinct.
+    migration_impact:
+      existing_canonical_rows_repointed: 0
+      registry_additions: 1
+      future_canonical_edges_added_after_approval: 3
+      initial_registry_degree: 0
+      derived_degree_after_integration: 3
+      role_impact: gated_privilege would derive after integration
+
+  - option: C. Split into one procedure node per race
+    mechanism: >-
+      Replace rule_racial_detection with three identities such as
+      rule_dwarven_detection, rule_gnome_detection, and rule_halfling_detection,
+      and map one reviewed row to each.
+    for:
+      - Mirrors the fact that each procedure is stated separately and detects a different bundle.
+      - Avoids both the broad canonical umbrella and an unsupported shared racial rule.
+    against:
+      - Fragments one recurring procedure into race-prefixed copies and weakens cross-race impact analysis.
+      - Creates three node identities where the present proposal needs one.
+      - The exact IDs and labels would require Architect approval and a Builder revision.
+    duplicate_impact:
+      exact_collapses: 0
+      semantic_duplicate_risk: >-
+        The three nodes may encode race qualification in both the source endpoint
+        and target identity.
+    migration_impact:
+      existing_canonical_rows_repointed: 0
+      registry_additions: 3
+      proposed_edges_retargeted: 3
+      future_canonical_edges_added_after_approval: 3
+
+  - option: D. Split by detectable phenomenon
+    mechanism: >-
+      Create separately reviewed identities for grade or slope, new construction,
+      shifting walls or rooms, stonework traps, unsafe surfaces, underground
+      depth, and underground direction, then replace the three aggregate rows with
+      the applicable race-to-phenomenon edges.
+    for:
+      - Gives the most precise impact paths when one detectable fact changes.
+      - Preserves the genuine differences among the dwarf, gnome, and halfling lists.
+    against:
+      - Expands three reviewed rows into eleven candidate edges and as many as
+        seven new identities.
+      - Existing rule_depth and rule_direction have unrelated meanings, so they
+        cannot be silently reused.
+      - Requires a new Analyst GUR because it is an interpretive expansion, then
+        a new Builder GUP and independent Review.
+    duplicate_impact:
+      exact_collapses: 0
+      semantic_duplicate_risk: >-
+        Each proposed phenomenon identity must be checked independently against
+        rule_detection, rule_traps, thief_find_remove_traps, campaign_construction,
+        rule_depth, rule_direction, and other local candidates.
+    migration_impact:
+      existing_canonical_rows_repointed: 0
+      possible_registry_additions: 7
+      replacement_candidate_edges: 11
+      upstream_gur_revision_required: true
+
+  - option: E. Split or redefine canonical rule_detection before mapping
+    mechanism: >-
+      Audit all seven canonical incident rows, assign distinct detection identities
+      where warranted, then decide where the three PHB race rows belong.
+    for:
+      - Repairs the generic node's existing label and grain drift rather than
+        extending it or creating an unconnected specialization.
+    against:
+      - Broadens this packet decision into a canonical migration across DMG and UA
+        source material not supplied to this Reviewer.
+      - Requires source review for seven existing rows and a separate duplicate
+        collapse audit after destination identities are known.
+      - The PHB rows can be represented without first repairing the entire detection neighborhood.
+    duplicate_impact:
+      current_incident_triples_are_unique: true
+      post_split_collapses: unknown_until_destinations_are_decided
+    migration_impact:
+      existing_canonical_rows_requiring_source_review: 7
+      existing_books_touched: [DMG, UA]
+      proposed_phb_rows_held: 3
+      separate_migration_decision_required: true
+
+# 9. -- Reviewer recommendation ------------------------------------------------
+recommended_resolution: >-
+  Option A. Map F6, F20, and F31 to canonical rule_detection and do not register
+  rule_racial_detection. The complete canonical neighborhood shows that
+  rule_detection already functions as the umbrella for heterogeneous bundled
+  detection powers, including a sword's detection of traps, doors, metals, and
+  magic. The PHB never names one shared racial-detection rule; the race source,
+  aspect "underground detection", activation condition, and citation preserve the
+  distinctions needed by these three assertions without minting another aggregate.
+
+recommendation_confidence: >-
+  Moderate. Mapping is the least expressive change and creates no duplicate or
+  migration, but rule_detection is already semantically broad. If the Architect
+  determines that the generic node's breadth is legacy drift rather than intended
+  umbrella grain, Option B is the preferred fallback: one distinct shared PHB node,
+  not three race-qualified copies.
+
+recommended_exact_follow_up:
+  builder:
+    - Remove rule_racial_detection from node_changes.additions_proposed.
+    - Retarget F6, F20, and F31 to rule_detection with target_label Detection.
+    - Preserve the Reviewer's page corrections for F6 and F20.
+    - Emit a new GUP revision and validation report; do not overwrite r03.
+  reviewer:
+    - Review the new GUP revision against this decision and the original packet.
+    - Preserve the existing r03-r01 Review as the immutable origin of this escalation.
+  integrator:
+    - Apply only a later Approved CSV; do not mutate the registry or canonical graph from this pending package.
+
+# 10. -- expected change surface ----------------------------------------------
+expected_migration_impact:
+  under_recommendation:
+    canonical_migration_required: false
+    registry_change_required: false
+    existing_canonical_rows_changed: 0
+    new_edges_after_approval: 3
+    gup_revision_required: true
+    review_revision_required: true
+    note: >-
+      The three edges are ordinary additions after target correction. The
+      Integrator would add them only from a later Approved artifact.
+  under_distinct_node_fallback:
+    canonical_migration_required: false
+    registry_change_required: true
+    registry_additions: 1
+    existing_canonical_rows_changed: 0
+    new_edges_after_approval: 3
+  under_any_split_of_rule_detection:
+    canonical_migration_required: true
+    minimum_existing_rows_for_source_review: 7
+    note: >-
+      A canonical split must be separately specified with exact survivor or
+      destination IDs, source review, duplicate-collapse results, and Integrator
+      instructions.
+
+would_change:
+  constitution: false
+  contracts: false
+  profile: false
+  registry: >-
+    No under the Reviewer recommendation. Yes under Options B, C, or D.
+  canonical_graph: >-
+    This pending package changes none. Under the recommendation, a later approved
+    integration would add three edges and repoint no existing row.
+  workflow_artifacts: >-
+    Builder and Reviewer must issue new revisions after the Architect decision.
+
+# 11. -- related and blocking state -------------------------------------------
+related:
+  - id: DEC-2026-0003
+    relation: >-
+      Confirms that ordinary unambiguous rule_ additions are not architectural,
+      but retains unresolved canonical identity and migration questions as
+      Architect-blocking.
+  - id: DEC-2026-0005
+    relation: >-
+      Assigns this complete standalone package to Reviewer, reserves
+      ESC-2026-07-30T04.45.31.286Z, and requires source excerpts, both neighborhoods, options,
+      migration impact, and a Reviewer recommendation.
+  - id: ESC-2026-0006
+    relation: >-
+      Records why the earlier review-only placeholder was insufficient: it did
+      not include both neighborhoods or enough identity evidence for a decision.
+  - id: REV-GUP-PKT-PHB-013-018-races-r03-r01
+    relation: >-
+      Holds F6, F20, and F31 and supplies the independently verified citations and
+      row-level dispositions.
+
+blocking: true
+blocking_note: >-
+  Blocks integration of F6, F20, and F31 only. The rows remain
+  architect_escalation and no node or edge may be integrated from this package
+  until an Architect decision is implemented through new Builder and Reviewer
+  revisions. Unrelated packet work may continue.
+
+reviewer_ownership_statement: >-
+  Reviewer filed this package and has not modified the GUR, GUP, Review, node
+  registry, or canonical graph.

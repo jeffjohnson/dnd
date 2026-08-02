@@ -1,0 +1,188 @@
+schema_version: "1.0"
+id: ESC-2026-07-30T05.01.15.336Z
+legacy_id: ESC-20260730-010115
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+constitution_version: "1.2"
+
+raised_by: analyst
+raised_on: "2026-07-30"
+id_scheme_note: >-
+  Filed originally as ESC-2026-0006, which collided with an existing decided escalation of
+  the same number raised by architect_intake. Re-identified under a timestamped scheme at
+  operator direction. The operator's proposed form used colons; those are illegal in
+  Windows filenames and git-bash silently strips them, which would have made the ID inside
+  the artifact disagree with the name on disk. The colon-free form used here is sortable,
+  collision-proof to the second, valid on every filesystem, and consistent with the
+  INT-YYYYMMDD-NNN shape already in contracts/FILE_NAMING.md.
+supersedes_id: ESC-2026-0006 (withdrawn; collided)
+decision_owner: architect
+decision_id: DEC-2026-0011
+
+originating:
+  report: books/adnd1e/phb/reports/DEDUPE-PHB-20260729.md
+  gur_ids:
+    - GUR-PKT-PHB-007-008-intro-r02
+    - GUR-PKT-PHB-009-013-ability-scores-r01
+    - GUR-PKT-PHB-035-038-money-equipment-r02
+    - GUR-PKT-PHB-013-018-races-r03
+
+trigger: >-
+  ESCALATION_CONTRACT 1.1 — "a proposed interpretation changes edge semantics or direction
+  globally". This is not the ordinary node-addition case DEC-2026-0003 removed from
+  escalation; no node is proposed and nothing here is a routine instance of an approved
+  kind. It is a question about which of two legal edge types expresses a recurring shape.
+
+question: >-
+  When a table derives a value from an ability score or a class, which edge type and
+  direction express it: the input MODIFIES the derived value, or the derived value is
+  DERIVED_FROM the input? Both are legal under constitution section 4 and the constitution
+  does not say which applies to this shape.
+
+why_it_needs_governance: >-
+  It is not a local naming choice and it is not settleable by evidence from any one packet.
+  It recurs in every ability table, every class table and every racial table, and it will
+  recur across the DMG and UA re-analysis. Deciding it once is cheap; discovering it
+  packet by packet is what produced the present disagreement.
+
+# -- the evidence --------------------------------------------------------------
+the_disagreement:
+  canonical_convention: >-
+    The canonical graph consistently uses the input as source with MODIFIES, or in a few
+    places FEEDS_INTO. Examples: abil_dexterity MODIFIES dex_reaction_adj [PHB p11],
+    abil_charisma MODIFIES hench_loyalty [PHB p13], sys_classes MODIFIES prof_weapon
+    [PHB p37], rule_ability_generation FEEDS_INTO sys_ability_scores [DMG p11].
+  analyst_convention: >-
+    The Analyst consistently used the derived value as source with DERIVED_FROM, on the
+    strength of the section 4 definition, which gives DERIVED_FROM as "computed or looked
+    up from" with direction derived to source. A tabulated adjustment read off an ability
+    score is exactly a lookup.
+  both_are_licensed: >-
+    That is the difficulty. Section 4 defines MODIFIES as "changes a value, chance, or
+    rating", direction modifier to modified; and DERIVED_FROM as "computed or looked up
+    from", direction derived to source. A Strength Table II adjustment satisfies both
+    descriptions. Section 4.2 disambiguates four other type pairs and does not address
+    this one.
+  supporting_evidence_for_canonical: >-
+    Constitution section 2's own worked example is abil_strength MODIFIES cbt_tohit
+    aspect "hit probability", which is the same shape and uses MODIFIES. Section 6 assigns
+    abil_ nodes the role modifier_source. Both point at the canonical convention.
+  supporting_evidence_for_analyst: >-
+    Section 6.1 makes MODIFIES an authored-polarity type and DERIVED_FROM a derived-polarity
+    type. Under the canonical convention every tabulated adjustment requires a human to
+    author a polarity value; under the Analyst convention the build assigns it. Section 6.1's
+    own governing principle is "do not author information that follows deterministically
+    from another field", which argues that a pure table lookup should not need authored
+    polarity.
+
+affected_rows:
+  class_A_direct:
+    count: 8
+    detail: >-
+      E1 of the intro GUR; G1, D1, D2, H1 and H2 of the ability-scores GUR; B1 and B10 of
+      the money-equipment GUR. Each proposes DERIVED_FROM where a canonical row already
+      holds the reverse with MODIFIES or FEEDS_INTO.
+  class_C_related:
+    count: 7
+    detail: >-
+      A further seven direction disagreements share the same root, most clearly E6, E7 and
+      E8 of the races GUR, where canonical points ability to race from the ability tables
+      and the Analyst points race to ability from Character Race Table III. Those three are
+      one question asked three times.
+  canonical_rows_if_analyst_convention_wins:
+    estimate: >-
+      Not counted precisely, but the pattern is pervasive in canonical. Ruling for the
+      Analyst convention would imply a large migration; ruling for the canonical
+      convention costs only the 8 proposed rows, which are then dropped as duplicates.
+
+local_graph_neighborhood:
+  supplied: partially
+  detail: >-
+    The relevant canonical rows are enumerated in the dedupe report at
+    books/adnd1e/phb/reports/DEDUPE-PHB-20260729.md, sections 3 and its classification
+    subsection, with citations. That report is the neighborhood evidence for this
+    escalation.
+
+options_considered:
+  - option: ratify the canonical convention; input MODIFIES derived value
+    for: >-
+      Matches the constitution's own worked example in section 2 and the modifier_source
+      role in section 6. Costs nothing to canonical. The eight proposed rows are dropped
+      as duplicates.
+    against: >-
+      Requires an authored polarity on every tabulated adjustment, which sits awkwardly
+      with section 6.1's principle about not authoring deterministic information.
+  - option: ratify the Analyst convention; derived value DERIVED_FROM input
+    for: >-
+      Table lookups get derived polarity automatically, consistent with section 6.1.
+    against: implies a large and unbudgeted canonical migration
+  - option: distinguish by whether the derived value has its own node
+    detail: >-
+      Where the book names the derived quantity and the graph gives it a node, such as
+      dex_defensive_adj, use DERIVED_FROM. Where the input modifies an existing mechanic
+      that exists independently, such as cbt_tohit, use MODIFIES.
+    for: >-
+      Explains the constitution's own example without contradiction: cbt_tohit exists
+      independently of Strength, so MODIFIES is right there, while dex_defensive_adj exists
+      only as a lookup from Dexterity.
+    against: >-
+      A finer rule to teach and to enforce, and it would still require re-typing some
+      canonical rows.
+
+  - option: keep both edges on the same pair, one MODIFIES and one DERIVED_FROM
+    raised_by: operator
+    detail: >-
+      For a table such as STRENGTH TABLE II, record both that the ability modifies the
+      target and that the target is derived from the ability.
+    for: >-
+      Nothing is lost. Invariant 12 forbids duplicate edge identity only for the same
+      source, type and target triple, so two different types between one ordered pair are
+      legal, and no ruling is needed before extraction can continue.
+    against: >-
+      The Analyst's reservation, offered for the Architect to weigh rather than as a
+      refusal. For one relationship the two edges are the same fact stated twice: an
+      adjustment that exists only as a table lookup is not additionally modified by the
+      thing it is looked up from. Impact analysis, which constitution section 1 names as
+      the graph's whole purpose, would traverse either edge and reach the same answer, so
+      the second row adds a maintenance obligation without adding an answer. It also
+      doubles the count in a graph that already has 115 measured duplicate proposals.
+    where_the_operator_is_clearly_right: >-
+      Across a multi-column table the two types genuinely coexist, and this is the part the
+      Analyst under-stated. On STRENGTH TABLE II, abil_strength MODIFIES cbt_tohit is
+      correct because to-hit exists independently of Strength, while str_open_doors
+      DERIVED_FROM abil_strength is correct because the open-doors chance exists only as a
+      lookup. Two entries, two types, different pairs. That is option three above, stated
+      more concretely, and it is the reading the Analyst believes the operator intends.
+
+recommended_resolution: >-
+  The Analyst recommends ratifying the canonical convention and yielding the eight rows,
+  on the narrow ground that the constitution's own section 2 example settles the shape and
+  that no migration is then required. The third option is intellectually the better
+  distinction and the Analyst notes it honestly, but recommends against it: it buys
+  precision at the cost of a rule that must be applied correctly by every worker on every
+  table, and the registry already carries three conventions for naming sub-mechanics
+  because a similar fine distinction was never written down.
+recommendation_confidence: >-
+  High on the practical answer. The Analyst notes that its own convention has the better
+  argument from section 6.1 and is recommending against itself on cost grounds, which the
+  Architect may wish to weigh differently.
+
+expected_migration_impact:
+  ratify_canonical: 8 proposed rows dropped; 0 canonical rows changed
+  ratify_analyst: 8 proposed rows kept; large canonical migration, not yet counted
+  third_option: mixed; requires a per-row re-type of an uncounted subset of canonical
+
+would_change:
+  constitution: >-
+    Yes on any option, as an addition to section 4.2, which currently disambiguates four
+    type pairs and should disambiguate this one.
+  registry: false
+  profile: false
+  canonical_graph: only on the second or third option
+
+blocking: >-
+  Not for extraction. It is blocking for Builder normalisation of the eight rows, which is
+  why the affected GURs now carry a pointer to this escalation rather than a silent
+  proposal.

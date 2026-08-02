@@ -1,0 +1,212 @@
+schema_version: "1.0"
+id: DEC-2026-0018
+status: approved
+ruleset_id: adnd1e
+constitution_version: "1.6"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Publish a conforming decision-migration GUP revision, update the common GUP
+    schema, and implement decision-migration lineage in both queue scanners with
+    the required acceptance tests.
+  blocking_ids: []
+
+decision_date: "2026-07-31"
+escalation_id: null
+supplements: DEC-2026-0012
+decision_basis:
+  type: direct_architect_assignment
+  reported_by: builder
+  affected_artifact: GUP-MIG-DEC-2026-0015-0016-r01
+  observed_diagnostic: stale_gup_input
+
+question: >-
+  How does a GUP produced directly from approved Architect Decisions enter the
+  Builder and Reviewer queues when it intentionally has no GUR lineage?
+
+ruling: >-
+  Adopt decision_migration as a first-class GUP lineage root alongside
+  packet_update. A conforming decision migration is Reviewer-ready without a GUR
+  when its Decision authority, checksums, canonical baseline, revision lineage,
+  validation component, status, approval flag, and Reviewer handoff all validate.
+  Missing GUR provenance is expected for this artifact kind and must never emit
+  stale_gup_input. Invalid decision-migration lineage remains Builder work and
+  must not be routed to Reviewer.
+
+current_artifact_disposition:
+  artifact_id: GUP-MIG-DEC-2026-0015-0016-r01
+  disposition: builder_revision_required
+  reviewer_ready: false
+  reasons:
+    - It omits revision and supersedes metadata required for every new GUP.
+    - It has no stable lineage_id.
+    - It lists Decision IDs but no checksummed decision_inputs.
+    - It records the canonical source and row count but no canonical checksum.
+    - It has no external validation-report path and checksum bundle component.
+  required_revision:
+    id: GUP-MIG-DEC-2026-0015-0016-r02
+    revision: 2
+    supersedes: GUP-MIG-DEC-2026-0015-0016-r01
+    lineage_id: MIG-DEC-2026-0015-0016
+    authority: [DEC-2026-0015, DEC-2026-0016]
+  immutability: Do not edit, rename, move, or delete r01.
+
+rationale:
+  - >-
+    A migration directed by approved Decisions has legitimate provenance even
+    though no Analyst GUR exists. Applying packet-only lineage to it creates a
+    false stale-input warning and hides valid work from Reviewer.
+  - >-
+    Suppressing that warning based only on artifact_kind would allow arbitrary
+    GUPs to bypass source lineage. Decision IDs, paths, and checksums provide the
+    alternate auditable root required by the workflow invariants.
+  - >-
+    A canonical migration is planned against mutable repository state. Recording
+    the canonical checksum prevents a reviewed plan from being applied after its
+    before-state has drifted.
+  - >-
+    packet_id cannot group decision migrations because several independent
+    migrations may all use cross-packet scope. A stable lineage_id provides
+    deterministic revision leaves without filename or timestamp inference.
+  - >-
+    DEC-2026-0012 already assigns common-schema and queue-scanner implementation
+    to Builder. tooling/common is shared in location, but the Builder is the
+    designated implementation owner for this contract change.
+
+affected_contracts_and_registries:
+  contracts:
+    - contracts/ARTIFACT_LIFECYCLE.md
+    - contracts/WORK_QUEUES.md
+  registries: []
+  schemas:
+    - schemas/common/gup.schema.json
+  tooling:
+    - tooling/common/scan_agent_queues.py
+    - tooling/common/scan-agent-queues.ps1
+    - tooling/common/tests/test_scan_agent_queues.py
+    - tooling/builder/src/adnd1e_builder/decision_migration.py
+    - tooling/builder/src/adnd1e_builder/emit.py
+    - tooling/builder/src/adnd1e_builder/migration.py
+    - tooling/builder/tests/test_decision_migration.py
+    - tooling/builder/src/adnd1e_builder/vocab.py
+    - tooling/builder/tests/test_registry_and_vocab.py
+
+migration_required: false
+migration_scope:
+  canonical_data: none
+  published_artifacts: no_move_no_rewrite
+  workflow_rework:
+    - Supersede GUP-MIG-DEC-2026-0015-0016-r01 with conforming r02.
+    - Route r02 to Reviewer only after all decision-migration lineage checks pass.
+    - Add artifact_kind packet_update to newly emitted packet GUPs.
+    - >-
+      Treat identity_merge_migration as an immutable legacy spelling; any future
+      revision uses decision_migration and the complete current envelope.
+  scanner_behavior:
+    - Discover Builder-ready, unconsumed migration Decisions.
+    - Group decision-migration GUP revisions by lineage_id, not packet_id.
+    - Validate authority and baseline provenance before Reviewer routing.
+    - Reserve stale_gup_input for packet-update GUR lineage.
+    - Discover decision migrations in book GUP stores and ruleset cross-book stores.
+  governance_reference_corrections:
+    - >-
+      Attribute Constitution 1.6 section 2.1 and its historical-version
+      revalidation requirement to DEC-2026-0017, not DEC-2026-0016.
+    - >-
+      Keep SOURCE_MARKDOWN 1.1 packet-page authority attributed to
+      DEC-2026-0016; do not describe it as Constitution section 5.
+
+contract_version_impact:
+  contracts/ARTIFACT_LIFECYCLE.md:
+    previous_version: "1.1"
+    new_version: "1.2"
+  contracts/WORK_QUEUES.md:
+    previous_version: "1.1"
+    new_version: "1.2"
+
+constitution_version_impact:
+  changed: false
+  version: "1.6"
+  reason: This changes universal artifact lineage and queue discovery, not graph semantics.
+
+acceptance_tests:
+  - >-
+    A conforming decision_migration with no GUR appears exactly once as
+    REVIEWER-DECISION-MIGRATION and emits no stale_gup_input diagnostic.
+  - >-
+    Missing or mismatched Decision paths, IDs, checksums, approval status,
+    migration requirement, or ruleset prevent Reviewer routing and return a
+    lineage-error exit code.
+  - >-
+    Missing revision, supersedes, lineage_id, canonical checksum, validation
+    report, or validation-report checksum prevents Reviewer routing.
+  - >-
+    A decision_migration containing gur_id or gur_checksum is diagnostic and not
+    Reviewer-ready.
+  - >-
+    An invalid decision migration does not consume its authority Decisions; the
+    Decisions remain visible as Builder jobs.
+  - >-
+    Two migrations with packet_id cross-packet and distinct lineage_id values
+    remain independent.
+  - >-
+    A superseding revision leaves only the active leaf Reviewer-ready, and a
+    Review consuming that leaf removes it from Reviewer readiness.
+  - >-
+    The Python and PowerShell scanners return equivalent decision-migration jobs,
+    diagnostics, components, and exit codes.
+  - >-
+    GUP-MIG-DEC-2026-0015-0016-r02 validates against the updated common GUP
+    schema and names an existing checksummed validation report.
+  - >-
+    Builder vocabulary and tests attribute Constitution 1.6 scaling to
+    DEC-2026-0017 and SOURCE_MARKDOWN 1.1 page authority to DEC-2026-0016.
+  - >-
+    Newly emitted packet GUPs declare artifact_kind packet_update, and legacy
+    identity_merge_migration artifacts are never silently made Reviewer-ready.
+  - >-
+    Equivalent decision migrations are discovered in book-scoped and
+    ruleset-scoped cross-book stores.
+  - No canonical, registry, Decision, or r01 artifact changes during implementation.
+
+governance_changelog:
+  - >-
+    ARTIFACT_LIFECYCLE 1.2 defines packet updates and decision migrations as the
+    two GUP lineage roots and makes their bundle components kind-specific.
+  - >-
+    WORK_QUEUES 1.2 defines Builder discovery, Reviewer eligibility, revision
+    grouping, provenance validation, diagnostics, and tests for decision
+    migrations.
+
+exact_diff:
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - Change Version 1.1 to 1.2.
+    - Define packet_update and decision_migration lineage roots.
+    - Define decision-migration provenance and bundle components.
+    - Preserve identity_merge_migration only as an immutable legacy spelling.
+  contracts/WORK_QUEUES.md:
+    - Change Version 1.1 to 1.2.
+    - Add GUP Lineage Roots and the decision-migration minimum envelope.
+    - Extend Builder and Reviewer queue rules.
+    - Add decision-migration acceptance tests 12 through 20.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Publish the r02 decision-migration GUP and validation report.
+    - Update the common GUP schema and both queue scanners with tests.
+    - Add packet_update to future packet GUP envelopes and normalize future identity-migration revisions.
+    - Correct the stale DEC-2026-0016/0017 governance references in Builder tooling.
+  reviewer:
+    - Independently validate scanner parity and review r02 when it becomes ready.
+  integrator:
+    - Accept only an Approved decision-migration bundle with verified baseline provenance.
+
+prohibited_actions:
+  - Do not mutate or relocate GUP-MIG-DEC-2026-0015-0016-r01.
+  - Do not make r01 Reviewer-ready by suppressing diagnostics alone.
+  - Do not treat decision IDs without checksums as consumed authority.
+  - Do not edit canonical graph or registry files while implementing queue support.

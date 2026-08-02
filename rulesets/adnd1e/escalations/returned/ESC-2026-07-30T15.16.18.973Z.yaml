@@ -1,0 +1,84 @@
+schema_version: "1.0"
+id: ESC-2026-07-30T15.16.18.973Z
+status: returned_incomplete
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-043-054-cleric-spells
+constitution_version: "1.4"
+raised_by: analyst
+decision_owner: architect
+decision_id: DEC-2026-0013
+decided_on: "2026-07-30"
+
+handoff:
+  next_role: analyst
+  readiness: ready
+  reason: >-
+    Submit a new complete escalation package satisfying DEC-2026-0013.
+  blocking_ids: []
+
+state_semantics: >-
+  Returned for correction; this package does not resolve its architectural
+  blocker and is not a decided escalation.
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2 - identity ambiguity the current ontology cannot resolve.
+  Explicitly NOT the ordinary node-addition case DEC-2026-0003 removed from escalation:
+  the question is not whether 47 absent spells may be added, which is now Builder and
+  Reviewer work, but whether 27 existing spell_ nodes mean what their IDs say.
+
+question: >-
+  Twenty-seven of the 183 canonical spell_ nodes carry a label that contradicts their own
+  ID, and several are aggregates wearing a specific spell's ID. Constitution 3.1 says
+  labels do not determine identity and IDs do. Applied literally that makes
+  spell_cure_light_wounds the Cure Light Wounds spell, but its label reads "Curative
+  Spells" and its existing edges were presumably written against that broader meaning.
+  Which reading governs, and what should an Analyst attach a specific spell's mechanics to?
+
+worked_examples:
+  - id: spell_cure_light_wounds
+    label: "Curative Spells"
+    problem: aggregate label on a specific-spell ID; packet 10 has a Cure Light Wounds entry
+  - id: spell_fireball
+    label: "Fire Spells"
+    problem: aggregate label on a specific-spell ID
+  - id: spell_esp
+    label: "Psionic-Related Spells"
+    problem: >-
+      aggregate label. GUR-PKT-PHB-018-033-classes-r02 edge M1 already attaches the monk's
+      ESP resistance to this node on the strength of the ID. If the label governs, M1 is
+      mis-scoped and asserts resistance to a whole spell family.
+  - id: spell_hold_person
+    label: "Held or Paralyzed"
+    problem: >-
+      the label names a condition, not a spell. It is also in the applies_to list of
+      GR_HELPLESS_TARGET_AUTOHIT, so the general rule may inherit through a node whose ID
+      and label disagree about what it is.
+  - id: spell_charm_person
+    label: "Charm"
+    problem: >-
+      broader than the ID. GUR-PKT-PHB-018-033-classes-r02 edge M5 depends on it.
+
+why_it_blocks_extraction: >-
+  Packet 10 contains 76 cleric spell descriptions. 29 match a canonical spell_ node by name
+  and 47 do not. The 47 are ordinary node additions and are not escalated. The 29 are the
+  problem: at least five are demonstrably mis-scoped under one of the two readings, and the
+  Analyst cannot tell which without a ruling. Proposing roughly 130 edges resting on 29
+  unverified identity matches would inject exactly the duplicate and mis-scoped identity
+  that ESC-2026-0001 already reports two live instances of.
+
+analyst_position: >-
+  The Analyst recommends the ID governs, per constitution 3.1, and that the 27 divergent
+  labels be corrected to match their IDs rather than the reverse. Where a node genuinely
+  means an aggregate, it should be renamed to say so, for example spell_curative rather
+  than spell_cure_light_wounds. The alternative, letting labels govern, would silently
+  reinterpret 3.1 and leave every future spell match ambiguous.
+
+affected_existing_artifacts:
+  - GUR-PKT-PHB-018-033-classes-r02 edges M1 and M5
+  - registries/general_rules.json GR_HELPLESS_TARGET_AUTOHIT applies_to spell_hold_person
+
+blocking: >-
+  Yes for GUR-PKT-PHB-043-054-cleric-spells. The packet is claimed and fully parsed; the
+  parse artifacts are preserved under books/adnd1e/phb/work/analyst/p10/ so no work is lost.

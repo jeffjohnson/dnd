@@ -1,0 +1,82 @@
+schema_version: "1.0"
+id: ESC-2026-07-30T05.03.21.873Z
+status: decided
+ruleset_id: adnd1e
+constitution_version: "1.3"
+
+raised_by: architect_intake
+raised_on: "2026-07-30"
+decision_owner: architect
+decision_id: DEC-2026-0006
+
+originating:
+  user_request: >-
+    Replace sequential escalation IDs with a datetime or epoch-based convention
+    that is valid in Windows filenames.
+
+trigger: >-
+  A sequential escalation ID was allocated twice by concurrent workers. The
+  naming contract needs a decentralized, time-sortable allocation rule that
+  does not depend on a shared counter and does not contain Windows-forbidden
+  colon characters.
+
+question: >-
+  What Windows-safe escalation ID format should replace ESC-YYYY-NNNN, how
+  should same-instant collisions be handled, and must existing escalation IDs
+  be migrated?
+
+smallest_relevant_source_excerpt:
+  applicable: false
+  reason: >-
+    This is a workflow identity question, not an interpretation of source text.
+
+local_graph_neighborhood:
+  applicable: false
+  reason: >-
+    Escalation artifact identity does not alter graph nodes or edges.
+
+affected_canonical_ids: []
+
+options_considered:
+  - option: Unix epoch milliseconds
+    for: compact and naturally sortable
+    against: >-
+      Opaque to reviewers and still needs an explicit collision rule when
+      concurrent allocators observe the same millisecond.
+  - option: local datetime with punctuation removed
+    for: readable and Windows-safe
+    against: >-
+      Ambiguous across time zones and daylight-saving transitions.
+  - option: ISO-like UTC datetime with dots replacing time colons
+    for: >-
+      Human-readable, lexically sortable, explicitly UTC, Windows-safe, and
+      compatible with an atomic occurrence suffix.
+    against: longer than epoch or sequential IDs
+
+recommended_resolution: >-
+  Use ESC-YYYY-MM-DDTHH.mm.ss.fffZ, allocated in UTC with millisecond
+  precision. If an atomic create collides, append -02, -03, and so on. Require
+  filename-stem equality and namespace-wide uniqueness. Preserve all existing
+  identifiers as legacy IDs rather than rewriting historical references.
+
+expected_migration_impact:
+  existing_artifacts: none
+  new_artifacts: >-
+    Every role that files an escalation must allocate the new timestamp form.
+  validation: >-
+    Builder and repository validators must accept legacy IDs by repository
+    identity while enforcing the new format for post-contract allocations.
+
+would_change:
+  constitution: false
+  registry: false
+  profile: false
+  canonical_graph: false
+  contracts:
+    - contracts/FILE_NAMING.md
+    - contracts/ESCALATION_CONTRACT.md
+
+blocking: false
+blocking_note: >-
+  Existing work may continue. New escalation allocation must follow the
+  timestamp convention after DEC-2026-0006.

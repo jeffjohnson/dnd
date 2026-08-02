@@ -1,6 +1,6 @@
 # Graph Constitution — AD&D 1e Mechanical Relationship Graph
 
-**Version 1.2.** This document is authoritative. Any conversation producing graph
+**Version 1.6.** This document is authoritative. Any conversation producing graph
 data must follow it exactly. If a rule here conflicts with a habit from another
 conversation, this document wins. Changes to this file are made only by the
 Architect conversation.
@@ -33,6 +33,23 @@ target need review?* If no, it is not an edge.
 Magnitudes change between printings, house rules, and editions. Relationships do
 not. A graph of magnitudes is a badly formatted rulebook.
 
+### 2.1 Scaling dependencies are relationships
+
+Do not confuse a magnitude with the fact that one mechanic depends on another.
+When the source explicitly says that changing one mechanic changes another,
+record the dependency and omit the numeric value or formula.
+
+For a spell description that explicitly makes an effect scale with the caster's
+experience level, record `exp_level MODIFIES spell_<id>`. The `aspect` names the
+affected facet without its value. `MODIFIES` polarity remains Analyst-authored
+under section 6.1.
+
+These are per-spell assertions when only a subset of spells states the
+dependency. Do not infer the edge for a spell that does not state it, and do not
+replace a selective set of per-spell dependencies with one aggregate edge. An
+aggregate or inherited representation is appropriate only when the source states
+a general rule with that scope; inherited edges then follow section 7.1.
+
 ---
 
 ## 3. Node identity
@@ -48,7 +65,7 @@ not. A graph of magnitudes is a badly formatted rulebook.
 | `race_` | race or subrace | `race_half_elf` |
 | `rule_` | named rule or procedure | `rule_system_shock` |
 | `tbl_` | table consulted as a unit | `tbl_poisons` |
-| `spell_` | spell | `spell_polymorph_other` |
+| `spell_` | spell or source-named spell family/category | `spell_polymorph_other` |
 | `item_` | magic item or item class | `item_ring` |
 | `potion_` | potion | `potion_speed` |
 | `sword_` | intelligent-sword mechanic | `sword_ego_vs_personality` |
@@ -66,7 +83,13 @@ not. A graph of magnitudes is a badly formatted rulebook.
 | `enc_` | encumbrance | `enc_encumbrance` |
 | `money_` | currency | `money_gp` |
 | `prof_` | proficiency | `prof_specialization` |
+| `wpn_` | weapon property or weapon statistic | `wpn_speed_factor` |
 | `thief_` | thief skill | `thief_open_locks` |
+
+Use a plural or otherwise category-specific stem when a source assertion applies
+to a spell family rather than one spell. A family node and a specific spell are
+different identities; for example, `spell_fire_spells` does not broaden or alias
+`spell_fireball`.
 
 ### 3.2 Canonical registry
 
@@ -116,7 +139,7 @@ gives no bonus against electrical attacks.
 
 | Type | Assertion | Example |
 |---|---|---|
-| `EXCLUDES` | X **actively prevents** Y | `spell_knock EXCLUDES str_bend_bars` — knock will not raise a portcullis |
+| `EXCLUDES` | X **actively prevents** Y | `spell_knock EXCLUDES abil_strength_bend_bars` — knock will not raise a portcullis |
 | `EXCLUDED_FROM` | X **is not an input to** Y | `abil_constitution EXCLUDED_FROM tbl_parasite` — Constitution does not factor into parasite determination |
 
 "A prevents B" and "A is irrelevant to B" are different claims and both are needed.
@@ -135,6 +158,12 @@ assume**. Do not record the infinite set of things a rule simply doesn't touch.
   supplies data to something that was going to happen anyway.
 - `OVERRIDES` vs `ALTERNATIVE_TO` — overrides means one wins; alternative means
   the user chooses.
+- `MODIFIES` vs `DERIVED_FROM` — when an ability, class, or other input changes
+  a mechanic, use `input MODIFIES mechanic`, including when the mechanic is
+  read directly from a table. Use `DERIVED_FROM` for computation or lookup
+  lineage between separately represented concepts, such as a rule and its
+  separately addressable table. Do not record both types for the same
+  dependency merely because both descriptions could be made to fit.
 
 ---
 
@@ -154,8 +183,8 @@ supersession_basis, general_rule_id, review_flag
 | `polarity` | see §6 |
 | `polarity_basis` | `derived` \| `read` \| `heuristic` \| `unset` — see §6.1 |
 | `book` | `PHB`, `DMG`, `UA`, `MM` |
-| `page` | printed page number from the source's own footer |
-| `section` | section heading — **preferred over page**, survives repagination |
+| `page` | one printed page number from the source's own footer; blank when one section is the sufficient locator |
+| `section` | one section heading — **preferred over page**, survives repagination |
 | `evidence` | see §7 |
 | `pass` | extraction provenance (`page-sweep`, `spell-scan`, `general-rule`, …) |
 | `status` | `core` or `optional` — see §8 |
@@ -164,6 +193,16 @@ supersession_basis, general_rule_id, review_flag
 | `review_flag` | Empty unless the edge is queued for Architect attention. Controlled vocabulary: `class_level_conflation`, `mm_keyword_derived`, `grouped_entry_attribution` |
 
 Every edge must carry a citation. An uncited edge is rejected.
+
+Each production edge carries exactly one primary citation locus. `page` never
+contains a list, range, or delimiter-separated value, and `section` never
+contains a list of headings. When the evidence spans printed pages but remains
+within one section, leave `page` blank and cite that section.
+
+If the same assertion is stated at several loci, keep one edge and preserve the
+additional source assertions in the provenance manifest or ledger. Do not place
+multiple loci in one edge field, and do not create duplicate edges solely to
+carry additional citations.
 
 ---
 
@@ -180,7 +219,7 @@ books to interpret.
 | `improves` | X improves this for its bearer | dwarf **improves** save_poison |
 | `worsens` | X worsens this for its bearer | ring of clumsiness **worsens** thief_skills |
 | `negates` | X makes this not apply | golem **negates** save_poison |
-| `enables` | X is required for this to work | cleric **enables** turn_undead |
+| `enables` | X is required for this to work | cleric **enables** rule_turn_undead |
 | `governs` | X is the resolution machinery | tbl_poisons **governs** save_poison |
 | `neutral` | not applicable | default |
 
@@ -239,11 +278,11 @@ These four values are exhaustive. No other value is legal.
 
 ### 6.2 Do not conflate enabling with improving
 
-`exp_level enables turn_undead` is wrong. **The class enables; the level improves.**
+`exp_level enables rule_turn_undead` is wrong. **The class enables; the level improves.**
 
 ```
-class_cleric  GATES     turn_undead   polarity=enables  (you must be a cleric)
-exp_level     MODIFIES  turn_undead   polarity=improves (higher level turns better)
+class_cleric  GATES     rule_turn_undead   polarity=enables  (you must be a cleric)
+exp_level     MODIFIES  rule_turn_undead   polarity=improves (higher level turns better)
 ```
 
 Note the notation: `ENABLES` and `IMPROVES` are **polarity values, not edge types**.
@@ -481,7 +520,7 @@ race_dwarf,Dwarf,MODIFIES,save_poison,Saving Throw vs Poison,save bonus by const
 
 Derived polarity — the worker leaves polarity blank and the build fills it:
 ```csv
-class_cleric,Cleric,GATES,turn_undead,Turning Undead,class prerequisite,,enables,derived,PHB,,CLERICS,explicit_rule,page-sweep,core,,,
+class_cleric,Cleric,GATES,rule_turn_undead,Turning Undead,class prerequisite,,enables,derived,PHB,,CLERICS,explicit_rule,page-sweep,core,,,
 ```
 
 An `OVERRIDES` edge requires `supersession_basis`:

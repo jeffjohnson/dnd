@@ -1,0 +1,131 @@
+schema_version: "1.0"
+id: PKT-PHB-009-013-ability-scores
+status: claimed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-009-013-ability-scores
+constitution_version: "1.2"
+
+citation_code: PHB
+page_start: 9
+page_end: 13
+page_number_basis: printed_page_footer
+section_span:
+  - CHARACTER ABILITIES
+  - Strength
+  - Intelligence
+  - Wisdom
+  - Dexterity
+  - Constitution
+  - Charisma
+
+source_file: source.md
+source_checksum: sha256:821603c16113fddbad420d42aad318e524bda592ced89a17974cfeb71d50091f
+source_bytes: 41651
+original_filename: phb.03.ability_scores.md
+operator_sequence: 3
+
+# --- Post-claim source amendment ---------------------------------------------
+# ARTIFACT_LIFECYCLE section 1 states a packet is immutable once claimed. The
+# operator amended source.md after claim and after
+# GUR-PKT-PHB-009-013-ability-scores-r01 was written. Recorded rather than hidden,
+# so a Reviewer re-verifying the GUR against this packet does not find an
+# unexplained checksum mismatch. FILE_NAMING defines no packet revision suffix, so
+# the amendment is recorded in place.
+source_amendment:
+  amended_by: operator
+  reason_given: correcting an auto-table-formatter defect
+  amendment_count: 2
+  checksum_history:
+    - sha256:87bc0613d9a48531a4606727af75f7d5734ab95e92c48078abd3b2a815111204  # as claimed, 41630 bytes, 304 lines
+    - sha256:33cd72c473f76f419997d4add4a0bc61e1a6c5f9b031e185c9056e2fdea7f759  # first amendment, 41537 bytes, 300 lines
+    - sha256:821603c16113fddbad420d42aad318e524bda592ced89a17974cfeb71d50091f  # second amendment, 41651 bytes, 300 lines, current
+  superseded_checksum: sha256:33cd72c473f76f419997d4add4a0bc61e1a6c5f9b031e185c9056e2fdea7f759
+  superseded_bytes: 41537
+  line_count: 304 as claimed, 300 after first amendment, 300 after second
+  final_state: >-
+    Clean. All three regressions introduced by the first amendment were corrected in the
+    second. A first-column ascending-order scan and a row-count check across all ten
+    tables both pass. Row counts are 21, 15, 16, 7, 16, 10, 16, 10, 16, 16, each matching
+    the score range the table covers. The deadwresurrected typo is also fixed, and the
+    Constitution paragraph that had wrapped mid-sentence is rejoined. Page markers still
+    resolve to p9, p10, p11, p12 and p13 against the same section boundaries, so every
+    page citation in the GUR remains correct.
+  gur_affected: false
+  gur_affected_basis: >-
+    GUR-r01 stores relationships only. Per the grain rule no magnitude, row label or
+    table value reaches any aspect or condition field, so no proposed edge depends on
+    the cells that changed. The class minimums the GATES edges rest on are intact, and
+    the Strength Table I rows S15 rests on are untouched. Verified by re-reading both
+    amended tables and by a first-column scan of all ten tables in the packet.
+  changes_verified:
+    fixed:
+      - the doubled heading, "### WISDOM TABLE I" followed by "## Wisdom Table I", is
+        now a single heading
+      - Strength Table I score 15 row, whose cell had wrapped onto a second table row,
+        is rejoined into one row
+      - the deadwresurrected typo is corrected, and the Constitution paragraph that had
+        wrapped mid-sentence after the word "initial" is rejoined
+    not_fixed:
+      - >-
+        Dexterity Table II remains in pandoc grid format with a five-column spanning
+        header above a six-column rule, which was the defect the first amendment
+        targeted. It does not affect extraction, because the five thief function names
+        are read from the real header row beneath the spanning cell and the table's ten
+        data rows parse correctly.
+    regressions_introduced_then_corrected:
+      - table: STRENGTH TABLE I
+        detail: >-
+          score label briefly read "67" with the blank score 7 row dropped. Corrected;
+          scores 6 and 7 are separate rows again and 6 carries the gnome, half-orc and
+          halfling minimum.
+      - table: CHARISMA TABLE
+        detail: >-
+          score label briefly read "567". Corrected to "5"; rows 6 and 7 were never lost.
+      - table: CHARISMA TABLE
+        detail: >-
+          score labels 13 and 14 were transposed while their data rows stayed in place.
+          Corrected; score 13 again carries 5 henchmen with normal loyalty and +5%
+          reaction, and score 14 carries 6 henchmen with +5% loyalty and +10% reaction.
+          This was the only regression that corrupted values rather than labels.
+    unaffected: >-
+      The other eight tables scanned clean throughout both amendments.
+
+# Page composition under the operator's {#pN} semantics. All five markers are
+# end-of-line, so each marks the line it terminates as starting that page.
+# Cross-checked against the table of contents transcribed in PKT-PHB-001-006-preamble,
+# which lists Strength 9, Intelligence 10, Wisdom 11, Dexterity 11, Constitution 12,
+# Charisma 13. Every boundary agrees.
+page_composition:
+  p9:  CHARACTER ABILITIES intro; Strength; Strength Tables I and II with notes
+  p10: Intelligence; Intelligence Tables I and II with notes
+  p11: Wisdom with both tables and notes; Dexterity intro and Dexterity Table I
+  p12: Dexterity Table II with notes; Constitution and Constitution Table with notes
+  p13: Charisma and Charisma Table with notes
+
+tables_in_packet:
+  - STRENGTH TABLE I
+  - "STRENGTH TABLE II: ABILITY ADJUSTMENTS"
+  - INTELLIGENCE TABLE I
+  - "INTELLIGENCE TABLE II: ABILITY FOR MAGIC-USERS"
+  - WISDOM TABLE I
+  - "WISDOM TABLE II: ADJUSTMENTS FOR CLERICS AND DRUIDS"
+  - DEXTERITY TABLE I
+  - "DEXTERITY TABLE II: ADJUSTMENTS FOR THIEVES"
+  - CONSTITUTION TABLE
+  - CHARISMA TABLE
+
+packet_metadata_origin: analyst_derived_at_claim
+missing_supplied_inputs:
+  - node_registry_slice.csv
+  - local_neighborhood.json
+  - general_rule_slice.json
+missing_input_impact: >-
+  Severe for this packet. It is the densest mechanical text seen so far and touches
+  nodes with very high canonical degree, including abil_strength at 51, abil_dexterity
+  at 40 and rule_hit_points at 63. Many of the 71 proposed edges are near-certainly
+  already present in the canonical graph. The Analyst resolved node identity by targeted
+  registry lookup, which found two duplicate-identity pairs and five nodes under
+  prefixes the constitution does not approve, but cannot determine which edges already
+  exist. Deduplication is deferred to Builder or Reviewer and is not optional here.

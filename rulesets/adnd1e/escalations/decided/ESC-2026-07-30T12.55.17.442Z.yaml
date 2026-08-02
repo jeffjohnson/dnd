@@ -1,0 +1,79 @@
+schema_version: "1.0"
+id: ESC-2026-07-30T12.55.17.442Z
+status: decided
+ruleset_id: adnd1e
+constitution_version: "1.4"
+
+raised_by: operator
+raised_on: "2026-07-30"
+decision_owner: architect
+decision_id: DEC-2026-0012
+
+topic: agent_work_queue_state_and_artifact_lifecycle
+originating_artifacts:
+  - tooling/common/scan-agent-queues.ps1
+  - tooling/common/run_results_analysis.md
+
+question: >-
+  How must role work queues distinguish ready jobs from immutable historical
+  revisions, bundle components, blocked work, reviewed work, and integrated
+  work without breaking artifact provenance?
+
+observed_problem:
+  scanner_result:
+    raw_entries: 52
+    packet_incoming_entries: 1
+    packet_claimed_entries: 9
+    gur_files: 19
+    gup_component_files: 22
+    pending_escalations: 0
+    approved_component_files: 1
+  defects:
+    - Every GUR revision is reported as a separate Builder job.
+    - GUP YAML and edge CSV components are reported as separate Reviewer jobs.
+    - Reviewed, superseded, blocked, and stale artifacts remain reported as ready.
+    - Every retained claimed packet is reported as active Analyst work.
+
+smallest_relevant_evidence:
+  - >-
+    PKT-PHB-001-006-preamble has two GUR revisions, one GUP bundle, one approved
+    Review, and one Approved edge component. The raw scanner reports the packet,
+    both GURs, both GUP components, and the Approved component as separate work.
+  - >-
+    Published Reviews contain exact paths and checksums for claimed packets,
+    GURs, and GUPs. Moving those inputs into status subdirectories would make
+    recorded provenance paths false.
+  - >-
+    GUP-PKT-PHB-018-033-classes-r02 names superseded
+    GUR-PKT-PHB-018-033-classes-r01 even though r02 is the leaf GUR. It is a
+    lineage diagnostic, not clean Reviewer work.
+
+options_considered:
+  - option: Move packets and artifacts through pending, completed, superseded, and failed folders.
+    disposition: rejected
+    reason: >-
+      Moving published inputs invalidates paths and checksums embedded in later
+      artifacts and conflates durable provenance with mutable queue state.
+  - option: Keep the current raw directory scan.
+    disposition: rejected
+    reason: >-
+      Directory membership cannot distinguish revisions, bundles, blockers, or
+      downstream consumption.
+  - option: Keep artifacts append-only and derive logical work from explicit lineage.
+    disposition: recommended
+    reason: >-
+      Stable IDs, supersedes links, provenance links, Reviews, Decisions, and
+      Integration manifests provide deterministic state without mutating history.
+
+expected_migration_impact:
+  canonical_graph: none
+  existing_artifact_bytes: none
+  contracts_and_instructions: required
+  schemas_and_tooling: required
+  queue_state_backfill: legacy_inference_only
+
+would_change:
+  - universal workflow contract
+  - role handoff instructions
+  - common artifact schemas for future handoff metadata
+  - shared queue scanner behavior

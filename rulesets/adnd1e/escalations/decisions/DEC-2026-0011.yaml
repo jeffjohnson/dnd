@@ -1,0 +1,112 @@
+schema_version: "1.0"
+id: DEC-2026-0011
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+constitution_version: "1.4"
+
+decision_date: "2026-07-30"
+escalation_id: ESC-2026-07-30T05.01.15.336Z
+
+question: >-
+  When an ability score, class, or other input determines a mechanic through a
+  table, should the graph use input MODIFIES mechanic or mechanic DERIVED_FROM
+  input?
+
+ruling: >-
+  Ratify the canonical operational direction: an ability, class, or other input
+  that changes a mechanic uses input MODIFIES mechanic, including direct table
+  lookups. DERIVED_FROM is reserved for computation or lookup lineage between
+  separately represented concepts, such as a rule and its separately
+  addressable table. Do not record both types for the same dependency merely
+  because both descriptions are linguistically possible. The eight direct
+  inverse proposals and seven related direction disagreements return to Builder
+  for normalization and canonical deduplication; this decision authorizes no
+  canonical retyping.
+
+rationale:
+  - >-
+    Constitution section 2 already models Strength changing hit probability as
+    abil_strength MODIFIES cbt_tohit. The canonical graph consistently follows
+    that impact-oriented direction for ability and class inputs.
+  - >-
+    Impact analysis asks what mechanics move when an input changes. The
+    operational input-to-mechanic direction makes that dependency explicit.
+  - >-
+    DERIVED_FROM remains useful for separately addressable lineage, especially
+    the rule/table distinction in Constitution section 3.2. It need not be a
+    second edge for every operational modifier.
+  - >-
+    Keeping both edges for one fact adds a second maintenance path without
+    changing the impact answer.
+  - >-
+    Ratifying current canonical practice avoids an uncounted graph-wide
+    migration. The held proposals can be normalized within ordinary workflow.
+
+type_selection_rule:
+  use_modifies_when:
+    - An ability, class, race, item, or rule changes a target mechanic.
+    - A target mechanic is read directly from a table using that input.
+  use_derived_from_when:
+    - Both concepts are separately represented and the assertion is calculation or lookup lineage.
+    - The relationship is not already the same operational dependency represented by MODIFIES.
+  do_not:
+    - Emit MODIFIES and DERIVED_FROM for the same dependency.
+    - Reverse a canonical operational edge merely because the source uses lookup language.
+    - Retype FEEDS_INTO rows under this decision; apply its separate semantic test.
+
+proposal_disposition:
+  direct_inverse_rows: 8
+  related_direction_rows: 7
+  action: >-
+    Builder compares each proposal with canonical under the approved type and
+    direction, rejects exact restatements, and carries only source-supported
+    assertions not already represented.
+  canonical_rows_retyped: 0
+
+contract_change:
+  path: rulesets/adnd1e/governance/constitution.md
+  previous_version: "1.3"
+  new_version: "1.4"
+  change: >-
+    Add MODIFIES-versus-DERIVED_FROM guidance to section 4.2.
+
+affected_contracts:
+  - rulesets/adnd1e/governance/constitution.md
+affected_registries: []
+affected_artifacts:
+  - rulesets/adnd1e/ruleset.yaml
+  - rulesets/adnd1e/escalations/decided/ESC-2026-07-30T05.01.15.336Z.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0011.yaml
+  - books/adnd1e/phb/reports/DEDUPE-PHB-20260729.md
+  - affected GUR and future Builder GUP revisions
+
+migration_required: false
+migration_scope:
+  canonical_rows: none
+  proposed_rows: 15_direction_cases_for_builder_normalization
+
+acceptance_tests:
+  - Constitution version is 1.4 and contains the type_selection_rule distinction.
+  - Ability and class inputs point to affected mechanics with MODIFIES.
+  - No held proposal adds an inverse DERIVED_FROM for the same dependency.
+  - DERIVED_FROM remains available for separately represented computation or lookup lineage.
+  - FEEDS_INTO rows are not mechanically retyped by this ruling.
+  - Builder deduplicates the eight direct cases against canonical.
+  - Builder reviews the seven related cases under the same direction rule.
+  - No canonical graph file is changed by this Architect decision.
+
+constitution_version_impact:
+  changed: true
+  previous_version: "1.3"
+  new_version: "1.4"
+  co_released_with: DEC-2026-0008
+  reason: >-
+    The distinction changes global type-selection guidance while preserving
+    current canonical data.
+
+follow_up_owner:
+  gur_and_gup_normalization: builder
+  source_and_duplicate_review: reviewer
+  approved_application: integrator

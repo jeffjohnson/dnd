@@ -1,0 +1,179 @@
+schema_version: "1.0"
+id: ESC-2026-0003
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-013-018-races
+constitution_version: "1.2"
+
+raised_by: analyst
+raised_on: "2026-07-28"
+decision_owner: architect
+decision_id: DEC-2026-0001
+
+# 1. -- originating artifacts --------------------------------------------------
+originating:
+  packet_id: PKT-PHB-013-018-races
+  gur_id: GUR-PKT-PHB-013-018-races-r02
+  gur_section: architectural_escalations
+  gup_id: null
+  review_id: null
+
+trigger: >-
+  ESCALATION_CONTRACT, "no existing node ID represents the concept and a new kind or
+  prefix may be needed".
+
+# 2. -- the question -----------------------------------------------------------
+question: >-
+  Should race_human be added to the canonical node registry? And behind that, the
+  question it is an instance of: does this graph carry nodes for the default case, or
+  does it model the default as the absence of edges?
+
+why_it_needs_governance: >-
+  The Analyst may propose a candidate node but may not mint one, and this is not a local
+  naming choice. Whichever way it is answered establishes a convention that will be
+  applied repeatedly, starting immediately in the class packet, where humans are the
+  unrestricted baseline against which every other race is described.
+
+# 3. -- what the source says ---------------------------------------------------
+source_excerpt:
+  citation: "PHB p17, CHARACTER RACE DESCRIPTIONS, Humans"
+  text: >-
+    "Human characters are neither given penalties nor bonuses, as they are established as
+    the norm upon which these subtractions or additions for racial stock are based. Human
+    characters are not limited as to what class of character they can become, nor do they
+    have any maximum limit — other than that intrinsic to the class — of level they can
+    attain within a class."
+  second_citation: "PHB p13, CHARACTER RACES"
+  second_text: >-
+    "For purposes of the game the racial stocks are limited to the following: dwarven,
+    elven, gnome, half-elven, halfling, half-orc, and human."
+  reading: >-
+    Human is one of seven named playable stocks, and the book makes two positive
+    assertions about it. Both are unattachable to the graph today. The Table I and Table
+    II human columns are also positive statements: every class reads "yes" and every
+    level limit reads "U", unlimited.
+
+# 4. -- affected canonical IDs -------------------------------------------------
+affected_canonical_ids:
+  - id: race_any
+    label: Race
+    degree: 49
+    note: >-
+      The crux. Labelled simply "Race" and carrying by far the highest degree of any
+      race_ node. It may be a generic race node, or it may already be serving as the
+      human node under a misleading name, or it may be a mix of both. This cannot be
+      determined without inspecting its 49 incident edges, which the Analyst was not
+      given.
+  - id: race_dwarf
+    degree: 23
+  - id: race_elf
+    degree: 23
+  - id: race_gnome
+    degree: 14
+  - id: race_halfling
+    degree: 11
+  - id: race_half_orc
+    degree: 10
+  - id: race_half_elf
+    degree: 5
+  - id: race_subrace
+    degree: 12
+  - id: race_infravision
+    degree: 18
+    note: not a race; a racial ability filed under the race_ prefix
+
+# 5. -- local graph neighborhood -----------------------------------------------
+local_graph_neighborhood:
+  supplied: false
+  why: >-
+    No local_neighborhood.json accompanied the packet. ESCALATION_CONTRACT requires a
+    local graph neighborhood in the package and this escalation is incomplete in that
+    one respect. What the Analyst can supply from the registry alone is the node list and
+    degrees above.
+  what_would_settle_it: >-
+    The 49 edges incident to race_any. If they are assertions that hold of every race,
+    race_any is generic and race_human is missing. If any of them assert something true
+    only of humans, race_any is already doing double duty and the escalation widens from
+    an addition into a disambiguation.
+
+# 6. -- options ----------------------------------------------------------------
+options_considered:
+  - option: add race_human
+    for: >-
+      Restores symmetry across the seven playable stocks. Gives the two stated human
+      rules somewhere to attach. Costs nothing to existing edges, since it is purely an
+      addition.
+    against: >-
+      Adds a node whose only content may be the absence of restrictions, which is close
+      to storing a default.
+  - option: treat race_any as the human node
+    for: no new node; uses what exists
+    against: >-
+      The label is "Race", not "Human". Reading 49 edges as human-specific when they were
+      probably written as race-generic would silently narrow their meaning, and there is
+      no evidence for the reading beyond convenience.
+  - option: record nothing; model the human case as the absence of restriction edges
+    for: >-
+      Consistent with constitution 4.1, which warns against recording the infinite set of
+      things a rule does not touch.
+    against: >-
+      The book does not describe humans by silence. It makes explicit positive statements
+      about them, and Table I and Table II carry explicit human columns. Treating an
+      explicit statement as an absence loses a real assertion, and the impact question
+      "what changes if the human baseline changes" becomes unanswerable.
+
+# 7. -- recommendation ---------------------------------------------------------
+recommended_resolution: >-
+  Add race_human under the existing approved race_ prefix, and separately audit race_any
+  to establish what it means. The Analyst recommends the addition on the narrow ground
+  that the book states positive rules about humans that currently have nowhere to live,
+  not on grounds of symmetry alone. The audit is recommended because if race_any turns
+  out to be a human node with a generic label, adding race_human beside it creates
+  exactly the duplicate-identity defect that constitution 3.2 calls the most common
+  failure in this graph, and that ESC-2026-07-30T01.21.13.768Z already reports two live instances of.
+recommendation_confidence: >-
+  High on the addition. Low on whether the addition is sufficient, because race_any is
+  unexamined.
+
+# 8. -- migration impact -------------------------------------------------------
+expected_migration_impact:
+  if_added: >-
+    None to existing edges. One edge in GUR-PKT-PHB-013-018-races-r02, ref F37, depends
+    on it. Packet 05 is expected to need it more heavily.
+  if_race_any_is_ruled_to_mean_human: >-
+    Up to 49 edges would be mis-scoped and would need review, and some may need to be
+    repointed to a new generic race node, which is a larger migration than the addition.
+  if_rejected: >-
+    F37 should be rejected with it rather than redirected, and the Analyst needs a ruling
+    on how to record the two human rules, or an instruction that they are not recorded.
+
+# 9. -- what would change ------------------------------------------------------
+would_change:
+  constitution: false
+  registry: true
+  profile: false
+  canonical_graph: >-
+    Not on the addition alone. Yes, if the race_any audit finds mis-scoped edges.
+  notes: >-
+    The race_ prefix is already approved in constitution 3.1, so no constitution change
+    is needed for the addition. This is distinct from ESC-2026-0002, which does concern
+    the prefix list.
+
+# 10. -- related ---------------------------------------------------------------
+related_escalations:
+  - id: ESC-2026-07-30T01.21.13.768Z
+    relation: >-
+      Also a node-identity question, on two duplicate-label pairs. Relevant because the
+      race_any risk here is the same failure mode.
+  - id: ESC-2026-0002
+    relation: >-
+      Unapproved node prefixes. Independent of this, but both were raised from PHB
+      extraction and both concern registry hygiene predating this work.
+
+blocking: false
+blocking_note: >-
+  Not blocking extraction. race_human is carried as a declared candidate node in the GUR,
+  and the single dependent edge is marked accordingly. It will become blocking if packet
+  05 needs to assert much about humans, which on the table of contents it likely does.

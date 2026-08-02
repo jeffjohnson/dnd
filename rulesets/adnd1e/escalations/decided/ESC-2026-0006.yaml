@@ -1,0 +1,124 @@
+schema_version: "1.0"
+id: ESC-2026-0006
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+constitution_version: "1.3"
+
+raised_by: architect_intake
+raised_on: "2026-07-29"
+decision_owner: architect
+decision_id: DEC-2026-0005
+
+originating:
+  gup:
+    id: GUP-PKT-PHB-007-008-intro-r03
+    packet_id: PKT-PHB-007-008-intro
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-007-008-intro-r03.yaml
+    unresolved_ref: E7
+  review:
+    id: REV-GUP-PKT-PHB-013-018-races-r03-r01
+    packet_id: PKT-PHB-013-018-races
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-013-018-races-r03-r01.yaml
+    unresolved_refs: [F6, F20, F31, F33]
+
+trigger: >-
+  DEC-2026-0003 correctly returned review-only placeholders as incomplete, but
+  did not assign a filing role for every unresolved item. The intro GUP also
+  carries an architectural citation-cardinality question without a standalone
+  ESC ID. The user additionally supplied an interim core-before-optional
+  precedence instruction for the PHB/UA conflict.
+
+question: >-
+  Which originating role must supply each missing standalone escalation
+  package, and what interim precedence should govern the PHB and UA
+  subrace-infravision assertions while the complete package is pending?
+
+smallest_relevant_evidence:
+  citation_cardinality: >-
+    GUP intro r03 E7 carries page "7, 9, 15" and three section locators while
+    Constitution section 5 defines singular page and section fields.
+  racial_detection: >-
+    Review races r03-r01 holds F6, F20, and F31 pending a decision whether
+    proposed rule_racial_detection is distinct from canonical rule_detection.
+  subrace_infravision:
+    phb: >-
+      Review F33 corrects the PHB p17 Halflings assertion to
+      race_subrace MODIFIES race_infravision, aspect "vision range", condition
+      "halfling subraces", polarity neutral/read, status core.
+    ua: >-
+      Canonical row 2781 records race_subrace MODIFIES race_infravision,
+      aspect "ranges vary by subrace", cited to UA p10 Dwarves, status optional.
+
+local_graph_context:
+  citation_cardinality: >-
+    The GUP reports that canonical page values are overwhelmingly single
+    printed-page numbers. A complete package must supply the exact schema,
+    contract, and validator impact before cardinality can change.
+  racial_detection: >-
+    The Review names canonical rule_detection but does not supply both local
+    neighborhoods or enough identity evidence for an Architect decision.
+  subrace_infravision: >-
+    The Review supplies the colliding canonical row but not the complete UA
+    excerpt or the full race_subrace/race_infravision neighborhood. That is
+    enough to establish a hold and interim precedence, not enough to decide
+    final assertion identity or provenance representation.
+
+affected_canonical_ids:
+  - rule_detection
+  - rule_racial_detection
+  - race_subrace
+  - race_infravision
+
+options_considered:
+  - option: require Analyst to file all three packages
+    against: >-
+      Citation cardinality arose during Builder normalization, while the two
+      identity conflicts arose during Review. Reassigning them to Analyst
+      would break lifecycle ownership and duplicate completed source reading.
+  - option: assign each package to the role that encountered the architectural boundary
+    for: >-
+      Builder can state schema and validator impact for citation cardinality;
+      Reviewer can state source, identity, duplicate, and provenance impacts
+      for the reviewed race rows.
+  - option: let the optional UA row block the PHB row until final resolution
+    against: >-
+      Constitution section 8 makes UA optional. Canonical insertion order must
+      not make optional material override or suppress a supported core rule.
+  - option: prefer PHB temporarily while preserving UA provenance
+    for: >-
+      Maintains a core-rules baseline without prejudging whether the two
+      assertions ultimately coexist, supersede, or require separate provenance.
+
+recommended_resolution: >-
+  Assign citation cardinality to Builder and both review-originated identity
+  questions to Reviewer. Reserve separate ESC IDs for the three complete
+  packages. Hold all affected rows from integration. For subrace infravision,
+  prefer the narrower PHB core assertion as the interim baseline while
+  preserving the UA assertion and citation as optional provenance.
+
+expected_migration_impact:
+  immediate: none
+  possible_later:
+    citation_cardinality: >-
+      May change edge citation fields, CSV/schema contracts, Builder
+      validation, Reviewer checks, and existing citation normalization.
+    racial_detection: >-
+      May add or map a rule identity and repoint the three held PHB rows.
+    subrace_infravision: >-
+      May change duplicate identity, assertion-key, supersession, or provenance
+      treatment for PHB F33 and UA canonical row 2781.
+
+would_change:
+  constitution: false
+  registry: false
+  profile: false
+  canonical_graph: false
+  note: >-
+    This intake decides ownership and interim precedence only. Substantive
+    changes require the complete assigned packages and later decisions.
+
+blocking: true
+blocking_note: >-
+  The affected rows remain held. Unrelated packet processing may continue.

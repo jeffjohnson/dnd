@@ -1,0 +1,131 @@
+schema_version: "1.0"
+id: DEC-2026-0012
+status: approved
+ruleset_id: adnd1e
+constitution_version: "1.4"
+
+decision_date: "2026-07-30"
+escalation_id: ESC-2026-07-30T12.55.17.442Z
+
+question: >-
+  How must repository work queues represent role-ready jobs while preserving
+  immutable artifact paths, revision history, component grouping, and provenance?
+
+ruling: >-
+  Adopt append-only artifact stores and lineage-derived logical work queues.
+  Published packets and artifacts do not move merely to signal consumption.
+  Only an active leaf artifact with an explicit ready handoff and no consuming
+  downstream artifact is role-ready. Companion files form one bundle and never
+  count as separate jobs. Existing artifacts remain byte-for-byte unchanged;
+  queue tooling applies documented legacy inference and reports ambiguous
+  lineage as a diagnostic rather than guessing.
+
+rationale:
+  - >-
+    Reviews and validation artifacts record exact upstream paths and checksums.
+    Moving GURs, GUPs, or claimed packets into state folders would invalidate
+    those durable provenance statements.
+  - >-
+    Revision and provenance links already model the lifecycle. The defect is
+    that the scanner ignores those links and treats archive membership as queue
+    membership.
+  - >-
+    One job must correspond to one logical artifact bundle. A GUP YAML, edge
+    CSV, and validation report are components of one patch.
+  - >-
+    Explicit handoff metadata makes future queue state directly readable while
+    legacy inference permits adoption without rewriting checksummed history.
+  - >-
+    Claimed packet retention is not proof of active Analyst work. A valid GUR
+    for the packet proves the Analyst handoff occurred.
+
+approved_contract:
+  path: contracts/WORK_QUEUES.md
+  version: "1.0"
+  artifact_store_model: append_only
+  queue_model: lineage_derived
+  component_counting: one_bundle_one_job
+  timestamp_ordering: forbidden
+
+current_snapshot_interpretation:
+  scanned_at_utc: "2026-07-30T12:55:17.442Z"
+  raw_scanner_entries: 52
+  expected_ready_jobs:
+    analyst: 1
+    builder: 6
+    reviewer: 2
+    architect: 0
+    integrator: 1
+    total: 10
+  important_diagnostics:
+    - >-
+      The nine claimed packets already have GURs and are not active Analyst
+      jobs; they remain at stable source paths.
+    - >-
+      GUP-PKT-PHB-018-033-classes-r02 cites non-leaf GUR r01 while GUR r02
+      exists, so it is stale for Reviewer routing.
+    - >-
+      Legacy GUP revisions lack explicit supersedes links and require reported
+      revision-number inference.
+    - >-
+      The legacy Approved edge CSV lacks an Approved manifest and requires
+      grouping through its approving Review.
+
+affected_contracts:
+  - contracts/WORK_QUEUES.md
+  - contracts/ARTIFACT_LIFECYCLE.md
+  - contracts/FILE_NAMING.md
+  - REPOSITORY_STRUCTURE.md
+affected_registries: []
+affected_artifacts:
+  - agents/architect/INSTRUCTIONS.md
+  - agents/analyst/INSTRUCTIONS.md
+  - agents/builder/INSTRUCTIONS.md
+  - agents/reviewer/INSTRUCTIONS.md
+  - agents/integrator/INSTRUCTIONS.md
+  - schemas/common/artifact-envelope.schema.json
+  - schemas/common/gur.schema.json
+  - schemas/common/gup.schema.json
+  - schemas/common/review.schema.json
+  - schemas/common/integration-record.schema.json
+  - schemas/common/approved-bundle.schema.json
+  - tooling/common/scan-agent-queues.ps1
+
+migration_required: true
+migration_scope:
+  canonical_data: none
+  existing_artifacts: no_move_no_rewrite
+  future_artifacts:
+    - Add revision, supersedes, and handoff metadata.
+    - Emit an Approved bundle manifest with component paths and checksums.
+  legacy_queue_derivation:
+    - Use explicit provenance and downstream references first.
+    - Infer rNN order only within an unambiguous packet and artifact kind.
+    - Report every inference and lineage inconsistency.
+  tooling:
+    - Replace raw directory-entry counting with logical bundle and lineage evaluation.
+
+acceptance_tests:
+  - Two GUR revisions linked by supersedes produce at most one Builder job.
+  - A GUP YAML and edge CSV count as one Reviewer job.
+  - Reviewed, blocked, superseded, and integrated artifacts do not appear as ready.
+  - A GUP based on a superseded GUR is diagnostic rather than Reviewer-ready.
+  - A claimed packet with a valid GUR is not active Analyst work.
+  - An Approved bundle with several components counts as one Integrator job.
+  - File timestamps do not affect queue order or readiness.
+  - Ambiguous or forked lineage returns exit code 2.
+  - The current repository snapshot reports ten ready logical jobs with role counts 1, 6, 2, 0, and 1.
+  - No canonical graph file or existing artifact content changes during adoption.
+
+constitution_version_impact:
+  changed: false
+  reason: >-
+    This changes universal artifact workflow and queue discovery, not graph
+    ontology or edge semantics.
+
+follow_up_owner:
+  common_schema_changes: builder
+  queue_scanner_implementation_and_tests: builder
+  queue_result_independent_validation: reviewer
+  approved_bundle_and_integration_linkage: integrator
+  contract_and_role_instruction_changes: architect

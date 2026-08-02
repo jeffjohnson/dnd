@@ -1,0 +1,179 @@
+schema_version: "1.0"
+id: ESC-2026-07-30T01.21.13.768Z
+legacy_id: ESC-2026-0001
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-009-013-ability-scores
+constitution_version: "1.2"
+
+raised_by: analyst
+raised_on: "2026-07-28"
+filed_on: "2026-07-29"
+decision_owner: architect
+decision_id: DEC-2026-0007
+
+filing_note: >-
+  DEC-2026-0003 records this escalation as remaining blocking because the referenced
+  standalone package was absent. That is correct and it was the Analyst's omission: the
+  escalation was raised inside the architectural_escalations section of
+  GUR-PKT-PHB-009-013-ability-scores-r01 and never filed as its own artifact. This file
+  supplies the package, including the two things DEC-2026-0003 named as missing, the
+  incident-edge neighborhoods and the duplicate-collapse impact.
+
+originating:
+  packet_id: PKT-PHB-009-013-ability-scores
+  gur_id: GUR-PKT-PHB-009-013-ability-scores-r01
+  gur_section: architectural_escalations
+  also_evidenced_by: GUR-PKT-PHB-039-040-hirelings-time-distance-r01, OBS-34
+
+trigger: >-
+  ESCALATION_CONTRACT 1.1 — "two canonical nodes appear ontologically equivalent and
+  merging them could affect existing edges". This is not the ordinary node-addition case
+  that DEC-2026-0003 removed from escalation: no node is being added, and a canonical
+  merge is explicitly retained as Architect-blocking by that same decision.
+
+question: >-
+  Two pairs of canonical nodes carry identical labels and appear to denote the same
+  mechanic. Should each pair be merged, and if so which ID survives?
+
+# -- 1. the pairs --------------------------------------------------------------
+pairs:
+  - label: Loyalty Base
+    ids: [hench_loyalty, abil_cha_loyalty_base]
+    degrees: {hench_loyalty: 41, abil_cha_loyalty_base: 1}
+  - label: Maximum Henchmen
+    ids: [abil_cha_max_henchmen, hench_max_number]
+    degrees: {abil_cha_max_henchmen: 3, hench_max_number: 1}
+
+# -- 2. why the duplication exists ---------------------------------------------
+root_cause: >-
+  Not arbitrary drift. The book states each mechanic twice, once as a column of the
+  CHARISMA TABLE on PHB p13 and once as a rule in the HENCHMEN section on PHB p39. The
+  registry has one node per statement. Whichever ID survives a merge will need to carry
+  citations from both pages, because both are genuine.
+
+# -- 3. incident-edge neighborhoods (supplied) ---------------------------------
+neighborhoods:
+  abil_cha_loyalty_base:
+    count: 1
+    edges:
+      - "abil_charisma MODIFIES abil_cha_loyalty_base  aspect='tabulated adjustment'  [PHB p13]"
+  hench_loyalty:
+    count: 41
+    summary: >-
+      Heavily connected and almost entirely DMG-sourced. Inbound modifiers include
+      abil_charisma, sys_alignment, money_gp, tbl_racial_preferences, rule_torture,
+      rule_reputation, item_magic_item, spell_raise_dead, rule_liege_status,
+      rule_enlistment_length, rule_enlistment_type, rule_training_status, rule_discipline,
+      monster_hd, hench_henchmen, rule_coercion, item_crystal_hypnosis,
+      item_deck_many_things, spell_enthrall and comeliness. Outbound edges reach
+      cbt_morale twice, rule_loyalty_check twice, hench_betrayal, hench_hirelings,
+      cbt_encounter_reactions and tbl_side_effects.
+    citation_spread: PHB p13, PHB p39, DMG p24 p29 p36 p37 p63 p67 p70 p89 p101 p103 p142 p143 p164, UA p35 p68
+    defect_noticed: >-
+      One row is a self-loop, hench_loyalty CONSTRAINS hench_loyalty at DMG p37, aspect
+      "only one penalty and one bonus". Reported here because the Analyst was reading the
+      neighborhood and it is the kind of row that survives indefinitely unnoticed. Not
+      part of this question.
+  abil_cha_max_henchmen:
+    count: 3
+    edges:
+      - "abil_charisma MODIFIES abil_cha_max_henchmen  aspect='tabulated adjustment'  [PHB p13]"
+      - "abil_cha_max_henchmen CONSTRAINS hench_henchmen  aspect='number attracted'  [PHB p39]"
+      - "hench_hirelings EXCLUDED_FROM abil_cha_max_henchmen  aspect='number not capped by charisma'  [PHB p39]"
+  hench_max_number:
+    count: 1
+    edges:
+      - "abil_charisma MODIFIES hench_max_number  aspect='cap'  [PHB p13]"
+
+# -- 4. duplicate-collapse impact (supplied) -----------------------------------
+collapse_impact:
+  method: >-
+    For each pair, every incident row of both nodes was rewritten with the dropped ID
+    replaced by the surviving ID, and the resulting source, type and target triples were
+    counted for collisions. Invariant 12 forbids duplicate edge identity, so a collision
+    means two rows must be merged or one rejected, not merely repointed.
+  Loyalty_Base:
+    rows_before: 42
+    distinct_triples_after: 38
+    collapses: 4
+    colliding_triples:
+      - "abil_charisma MODIFIES <survivor>"
+      - "sys_alignment MODIFIES <survivor>"
+      - "money_gp MODIFIES <survivor>"
+      - "<survivor> FEEDS_INTO cbt_morale"
+    note: >-
+      Identical in either direction of merge. The abil_charisma collision is the
+      significant one: it is exactly the p13-versus-p39 double statement described under
+      root_cause, so the merged edge should retain both citations rather than one being
+      discarded. The cbt_morale collision is two DMG rows, p70 and p67, both asserting
+      that base morale derives from loyalty.
+  Maximum_Henchmen:
+    rows_before: 4
+    distinct_triples_after: 3
+    collapses: 1
+    colliding_triples:
+      - "abil_charisma MODIFIES <survivor>"
+    note: same p13 double-statement pattern, at much smaller scale
+
+# -- 5. affected canonical IDs -------------------------------------------------
+affected_canonical_ids:
+  [hench_loyalty, abil_cha_loyalty_base, abil_cha_max_henchmen, hench_max_number,
+   abil_charisma, sys_alignment, money_gp, cbt_morale, hench_henchmen, hench_hirelings]
+
+# -- 6. options ----------------------------------------------------------------
+options_considered:
+  - option: merge Loyalty Base into hench_loyalty; merge Maximum Henchmen into abil_cha_max_henchmen
+    for: >-
+      Each keeps the better-connected node, 41 edges against 1 and 3 against 1, so the
+      migration is one row and three rows respectively.
+    against: >-
+      The survivors then sit under different prefixes for two mechanics that are both
+      Charisma Table columns, which is the inconsistency that produced the duplication.
+  - option: merge both into the hench_ node
+    for: consistent; the henchman subsystem owns the mechanic and charisma is its input
+    against: abil_cha_max_henchmen has three edges to hench_max_number's one, so the larger side is discarded
+  - option: merge both into the abil_cha_ node
+    for: consistent; both are Charisma Table columns
+    against: >-
+      Discards the 41-edge hench_loyalty in favour of a 1-edge node, and hench_loyalty's
+      neighborhood is overwhelmingly DMG henchman-management material that has nothing to
+      do with the Charisma Table.
+  - option: keep both, related by DERIVED_FROM
+    for: no migration; preserves both citations natively
+    against: >-
+      Constitution 3.2 permits two nodes only where a rule and its table are separately
+      referenced. These are the same mechanic stated twice, not a rule and its table.
+
+recommended_resolution: >-
+  Merge Loyalty Base into hench_loyalty. The 41-to-1 asymmetry is decisive and the
+  neighborhood confirms hench_loyalty is the node the graph actually uses. For Maximum
+  Henchmen the Analyst recommends abil_cha_max_henchmen on the same
+  keep-the-larger-side reasoning, while noting this produces the prefix inconsistency
+  described above; if the Architect prefers consistency, merging both into hench_ costs
+  two additional row repointings and no information. In either case the surviving edge
+  from abil_charisma must retain both the p13 and p39 citations.
+recommendation_confidence: >-
+  High on Loyalty Base. Moderate on Maximum Henchmen, where the choice is between
+  connectivity and prefix consistency and both are defensible.
+
+expected_migration_impact:
+  Loyalty_Base: 1 row repointed, 4 triples collapse to merged edges retaining both citations
+  Maximum_Henchmen: 1 or 3 rows repointed depending on direction, 1 triple collapses
+  analyst_edges_affected: >-
+    GUR-PKT-PHB-009-013-ability-scores-r01 H1 and H2, and
+    GUR-PKT-PHB-039-040-hirelings-time-distance-r01 C1, C3, C5, C6, C9 and C10 all
+    reference one side or the other. All were proposed against the choice declared in that
+    GUR's IDQ-05 and repoint mechanically if the Architect rules otherwise.
+
+would_change:
+  constitution: false
+  registry: true
+  profile: false
+  canonical_graph: true
+
+blocking: >-
+  Yes for integration of the affected rows, no for extraction. The Analyst has continued
+  to propose edges against the declared choice and to flag each one.

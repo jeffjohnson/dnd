@@ -1,0 +1,381 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20260801-002",
+  "ruleset_id": "adnd1e",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-08-02T02:21:47.333Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:82b4c5ac1f558fc4a9aa19fc5ea2eae49c3412978595158b6a4911f638777a1e actual=sha256:82b4c5ac1f558fc4a9aa19fc5ea2eae49c3412978595158b6a4911f638777a1e"
+        },
+        {
+          "check": "component checksum matches: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:83c9ef4486a17be6fc9e03be76e9b8e50c4b955bce8a72a4304dec33c245f33a actual=sha256:83c9ef4486a17be6fc9e03be76e9b8e50c4b955bce8a72a4304dec33c245f33a"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-039-040-hirelings-time-distance-r05.yaml: declared=sha256:0d1646c576f5cdc888f1a68798d08c6ce7691ff0d44d56a721921859b2ef3b97 actual=sha256:0d1646c576f5cdc888f1a68798d08c6ce7691ff0d44d56a721921859b2ef3b97"
+        },
+        {
+          "check": "review-pinned GUP edge CSV still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-039-040-hirelings-time-distance-r05.edges.csv: declared=sha256:b7b6147e0c1ecea69184e4aea52f3f45d95f912739eb9d9db2b836b36639d2c1 actual=sha256:b7b6147e0c1ecea69184e4aea52f3f45d95f912739eb9d9db2b836b36639d2c1"
+        },
+        {
+          "check": "review-pinned GUR still matches on disk",
+          "result": "pass",
+          "blocking": false,
+          "detail": "books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-039-040-hirelings-time-distance-r01.yaml: declared=sha256:70ad814875e90ca254b5832d726a88804550be192ca99268a86cf3e5dd263de4 actual=sha256:70ad814875e90ca254b5832d726a88804550be192ca99268a86cf3e5dd263de4"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=7 actual=7"
+        },
+        {
+          "check": "review approved-row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "review approved 7 row(s), CSV carries 7"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "reviewer did not modify GUP files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "gup_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 2, 'pending_additions': 1, 'updates': 4, 'node_registrations': 1}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 1722,
+      "by_invariant": {
+        "3": 19,
+        "11": 9,
+        "16": 1694
+      },
+      "affected_rows": 1696,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 1718,
+      "by_invariant": {
+        "3": 19,
+        "11": 9,
+        "16": 1690
+      }
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 3958,
+    "edges_after": 3961,
+    "edges_updated_in_place": 4,
+    "nodes_before": 1103,
+    "nodes_after": 1104,
+    "registry_before": 1103,
+    "registry_after": 1104,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [
+      {
+        "ref": "C2",
+        "canonical_row": 455,
+        "csv_row": 4,
+        "changed_fields": [
+          "polarity",
+          "polarity_basis"
+        ],
+        "changes": {
+          "polarity": {
+            "from": "neutral",
+            "to": "improves"
+          },
+          "polarity_basis": {
+            "from": "unset",
+            "to": "read"
+          }
+        },
+        "differences_not_applied": [
+          "pass"
+        ],
+        "assertion_before": "abil_charisma MODIFIES hench_hirelings",
+        "assertion_after": "abil_charisma MODIFIES hench_hirelings",
+        "bundle_id": "APPROVED-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01",
+        "packet_id": "PKT-PHB-039-040-hirelings-time-distance",
+        "gup_id": "GUP-PKT-PHB-039-040-hirelings-time-distance-r05",
+        "review_id": "REV-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01",
+        "integration_id": "INT-20260801-002"
+      },
+      {
+        "ref": "C5",
+        "canonical_row": 463,
+        "csv_row": 5,
+        "changed_fields": [
+          "aspect",
+          "pass",
+          "polarity",
+          "polarity_basis",
+          "target_label"
+        ],
+        "changes": {
+          "target_label": {
+            "from": "Loyalty",
+            "to": "Loyalty Base"
+          },
+          "aspect": {
+            "from": "compatibility required",
+            "to": "loyalty"
+          },
+          "polarity": {
+            "from": "neutral",
+            "to": "worsens"
+          },
+          "polarity_basis": {
+            "from": "unset",
+            "to": "read"
+          },
+          "pass": {
+            "from": "prose-sweep",
+            "to": "page-sweep"
+          }
+        },
+        "differences_not_applied": [],
+        "assertion_before": "sys_alignment MODIFIES hench_loyalty",
+        "assertion_after": "sys_alignment MODIFIES hench_loyalty",
+        "bundle_id": "APPROVED-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01",
+        "packet_id": "PKT-PHB-039-040-hirelings-time-distance",
+        "gup_id": "GUP-PKT-PHB-039-040-hirelings-time-distance-r05",
+        "review_id": "REV-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01",
+        "integration_id": "INT-20260801-002"
+      },
+      {
+        "ref": "C6",
+        "canonical_row": 472,
+        "csv_row": 6,
+        "changed_fields": [
+          "aspect",
+          "condition",
+          "pass",
+          "polarity",
+          "polarity_basis",
+          "target_label"
+        ],
+        "changes": {
+          "target_label": {
+            "from": "Loyalty",
+            "to": "Loyalty Base"
+          },
+          "aspect": {
+            "from": "remuneration and bonuses",
+            "to": "loyalty"
+          },
+          "condition": {
+            "from": "",
+            "to": "remuneration and treasure share"
+          },
+          "polarity": {
+            "from": "neutral",
+            "to": "improves"
+          },
+          "polarity_basis": {
+            "from": "unset",
+            "to": "read"
+          },
+          "pass": {
+            "from": "prose-sweep",
+            "to": "page-sweep"
+          }
+        },
+        "differences_not_applied": [],
+        "assertion_before": "money_gp MODIFIES hench_loyalty",
+        "assertion_after": "money_gp MODIFIES hench_loyalty",
+        "bundle_id": "APPROVED-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01",
+        "packet_id": "PKT-PHB-039-040-hirelings-time-distance",
+        "gup_id": "GUP-PKT-PHB-039-040-hirelings-time-distance-r05",
+        "review_id": "REV-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01",
+        "integration_id": "INT-20260801-002"
+      },
+      {
+        "ref": "C12",
+        "canonical_row": 451,
+        "csv_row": 7,
+        "changed_fields": [
+          "aspect",
+          "edge_type",
+          "pass",
+          "polarity",
+          "polarity_basis",
+          "section"
+        ],
+        "changes": {
+          "edge_type": {
+            "from": "MODIFIES",
+            "to": "CONSTRAINS"
+          },
+          "aspect": {
+            "from": "varies by situation",
+            "to": "scale by setting"
+          },
+          "polarity": {
+            "from": "neutral",
+            "to": "worsens"
+          },
+          "polarity_basis": {
+            "from": "unset",
+            "to": "read"
+          },
+          "section": {
+            "from": "SCALE",
+            "to": "DISTANCE"
+          },
+          "pass": {
+            "from": "prose-sweep",
+            "to": "page-sweep"
+          }
+        },
+        "differences_not_applied": [],
+        "assertion_before": "rule_movement_scale MODIFIES ex_movement_rate",
+        "assertion_after": "rule_movement_scale CONSTRAINS ex_movement_rate",
+        "bundle_id": "APPROVED-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01",
+        "packet_id": "PKT-PHB-039-040-hirelings-time-distance",
+        "gup_id": "GUP-PKT-PHB-039-040-hirelings-time-distance-r05",
+        "review_id": "REV-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01",
+        "integration_id": "INT-20260801-002"
+      }
+    ],
+    "node_registrations": [
+      {
+        "id": "rule_rounds_and_segments",
+        "label": "Rounds and Segments",
+        "kind": "rule",
+        "basis": "The TIME source, C11, and the reviewed DEC-2026-0004 mapping all use the plural identity Rounds and Segments.",
+        "edges_depending_on_it": [
+          "C11"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01",
+        "review_id": "REV-GUP-PKT-PHB-039-040-hirelings-time-distance-r05-r01",
+        "integration_id": "INT-20260801-002"
+      }
+    ],
+    "registry_derived_resync": 5,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

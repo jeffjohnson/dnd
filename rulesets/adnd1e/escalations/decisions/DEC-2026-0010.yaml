@@ -1,0 +1,109 @@
+schema_version: "1.0"
+id: DEC-2026-0010
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-013-018-races
+constitution_version: "1.4"
+
+decision_date: "2026-07-30"
+escalation_id: ESC-2026-07-30T04.57.52.190Z
+
+question: >-
+  How should the PHB halfling-subrace infravision assertion coexist with the
+  broader optional UA assertion without false deduplication or provenance loss?
+
+ruling: >-
+  Treat corrected PHB F33 and UA canonical CSV line 2781 as distinct scoped
+  assertions. The PHB core assertion may proceed through Builder and Reviewer
+  as race_subrace MODIFIES race_infravision, aspect "vision range", condition
+  "halfling subraces", polarity neutral with basis read, cited to PHB p17
+  Halflings. Preserve the existing UA assertion unchanged, optional, and
+  UA-attributed. UA does not replace, broaden, or block PHB. Any semantic
+  narrowing of the UA row requires a newly claimed UA p10 source packet and the
+  full Analyst, Builder, Reviewer, and Integrator lifecycle.
+
+rationale:
+  - >-
+    The implemented assertion key includes aspect and condition. PHB F33 and
+    the UA row differ in both fields and are therefore not exact duplicates.
+  - >-
+    PHB directly supports a halfling-specific core relationship. Suppressing it
+    because an optional legacy UA row entered canonical first would invert
+    ruleset precedence.
+  - >-
+    One row cannot preserve both core and optional activation status under the
+    current production contract, so citation merging would lose semantics.
+  - >-
+    The UA Dwarves section suggests narrower scope, but no current source packet
+    supplies independently reviewable prose. Rewriting that row now would infer
+    beyond the available package.
+
+phb_assertion_disposition:
+  ref: F33
+  source_id: race_subrace
+  source_label: Sub-Race
+  edge_type: MODIFIES
+  target_id: race_infravision
+  target_label: Infravision
+  aspect: vision range
+  condition: halfling subraces
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: "17"
+  section: Halflings
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+
+ua_assertion_disposition:
+  stable_match:
+    source_id: race_subrace
+    edge_type: MODIFIES
+    target_id: race_infravision
+    book: UA
+    page: "10"
+    section: "Dwarves:"
+    status: optional
+  present_action: preserve_unchanged
+  later_scope_review:
+    required_source: newly claimed UA page 10 packet
+    current_authorization: none
+
+affected_contracts: []
+affected_registries: []
+affected_artifacts:
+  - rulesets/adnd1e/escalations/decided/ESC-2026-07-30T04.57.52.190Z.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0010.yaml
+  - books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-013-018-races-r04.yaml
+  - future Builder GUP and Review revisions
+
+migration_required: false
+migration_scope:
+  existing_canonical_rows_changed: 0
+  future_phb_edges_after_approval: 1
+  future_ua_cleanup: separate_source_review_and_decision_required
+
+acceptance_tests:
+  - PHB F33 retains the exact scoped fields in phb_assertion_disposition.
+  - UA line 2781 remains optional and UA-attributed.
+  - PHB and UA remain two independently activatable assertions.
+  - The PHB condition is not broadened beyond halfling subraces.
+  - Builder reports the UA row as a semantic near match, not an exact duplicate.
+  - No UA field is rewritten without a current UA source packet and Review.
+  - Builder and Reviewer emit new revisions rather than overwriting prior artifacts.
+  - No canonical graph file is changed directly by this Architect decision.
+
+constitution_version_impact:
+  changed: false
+  reason: >-
+    The current assertion key, provenance model, and core/optional distinction
+    already resolve the conflict.
+
+follow_up_owner:
+  phb_gup_revision: builder
+  phb_source_and_near_match_review: reviewer
+  phb_application_after_approval: integrator
+  optional_ua_repacketization_if_pursued: analyst

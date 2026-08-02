@@ -1,0 +1,209 @@
+schema_version: "1.0"
+id: DEC-2026-0016
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-043-054-cleric-spells
+constitution_version: "1.5"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Produce a reviewable migration that changes only the nine authorized
+    canonical page values and preserves every assertion field and provenance.
+  blocking_ids: []
+
+decision_date: "2026-07-31"
+escalation_id: ESC-2026-07-31T17.05.43.998Z
+
+question: >-
+  When page attribution derived from a current claimed packet conflicts with a
+  legacy canonical citation, which value governs and should the nine supplied
+  canonical disagreements be corrected?
+
+ruling: >-
+  The current input packet is authoritative for printed page attribution.
+  Page markers interpreted under contracts/SOURCE_MARKDOWN.md govern new
+  artifacts and supersede conflicting legacy or canonical page values. Approve
+  the nine supplied page-only corrections. The corrections do not change node
+  identity, assertion identity, edge semantics, or evidence class. Defer the
+  seventeen THE PALADIN citations because the supplied section span proves only
+  that page 23 is wrong, not whether each assertion belongs to page 22 or 24.
+
+rationale:
+  - >-
+    A single authoritative packet source makes citation generation
+    deterministic. Treating unrecoverable legacy page values as co-equal would
+    allow identical assertions to retain contradictory provenance.
+  - >-
+    The escalation documents a corrected Pandoc AST walk, distinguishes section
+    spans from section starts, checks 326 rows, and limits its correction claim
+    to nine values outside the authoritative source locus.
+  - >-
+    All nine changes are confined to page. The five-field assertion keys and all
+    semantic fields remain unchanged, so this is a reviewed citation migration
+    rather than an assertion rewrite.
+  - >-
+    The Paladin rows require source interpretation at assertion level. That is
+    Analyst and Reviewer work, not Builder normalization and not a basis for the
+    Architect to guess between two possible pages.
+
+affected_contracts_and_registries:
+  contracts:
+    - contracts/SOURCE_MARKDOWN.md
+  registries: []
+  schemas: []
+  canonical_files:
+    - rulesets/adnd1e/canonical/edges_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+
+migration_required: true
+migration_scope:
+  canonical_citation_revisions:
+    - assertion:
+        source_id: spell_bless
+        edge_type: MODIFIES
+        target_id: cbt_morale
+        aspect: improves morale
+        condition: ""
+      from_page: "44"
+      to_page: "43"
+    - assertion:
+        source_id: spell_bless
+        edge_type: MODIFIES
+        target_id: cbt_tohit
+        aspect: attack bonus
+        condition: ""
+      from_page: "44"
+      to_page: "43"
+    - assertion:
+        source_id: spell_know_alignment
+        edge_type: FEEDS_INTO
+        target_id: sys_alignment
+        aspect: reveals alignment
+        condition: ""
+      from_page: "47"
+      to_page: "45"
+    - assertion:
+        source_id: spell_cure_disease
+        edge_type: OVERRIDES
+        target_id: rule_disease
+        aspect: cures affliction
+        condition: ""
+      from_page: "49"
+      to_page: "47"
+    - assertion:
+        source_id: spell_glyph_of_warding
+        edge_type: TRIGGERS
+        target_id: exp_level_loss
+        aspect: energy drain variant
+        condition: ""
+      from_page: "49"
+      to_page: "47"
+    - assertion:
+        source_id: spell_neutralize_poison
+        edge_type: OVERRIDES
+        target_id: save_poison
+        aspect: detoxifies venom
+        condition: ""
+      from_page: "50"
+      to_page: "48"
+    - assertion:
+        source_id: spell_atonement
+        edge_type: OVERRIDES
+        target_id: sys_alignment
+        aspect: restores alignment standing
+        condition: ""
+      from_page: "51"
+      to_page: "49"
+    - assertion:
+        source_id: align_change
+        edge_type: CONSTRAINS
+        target_id: sys_alignment
+        aspect: voluntary change limited
+        condition: along like axis only
+      from_page: "33"
+      to_page: "34"
+    - assertion:
+        source_id: align_change
+        edge_type: ALTERNATIVE_TO
+        target_id: rule_involuntary_change
+        aspect: two routes to shift
+        condition: ""
+      from_page: "33"
+      to_page: "34"
+  citation_change_count: 9
+  fields_changed: [page]
+  assertion_semantic_changes: 0
+  node_changes: 0
+  canonical_write_owner: integrator
+  deferred_source_audit:
+    section: THE PALADIN
+    row_count: 17
+    current_page: "23"
+    possible_pages: ["22", "24"]
+    owner: analyst
+    disposition: >-
+      Verify each assertion against the packet source in a separate Analyst
+      artifact. This decision authorizes no page replacement for these rows.
+
+constitution_version_impact:
+  changed: false
+  version: "1.5"
+  reason: Page-source authority is a universal packet provenance contract.
+
+contract_version_impact:
+  source_markdown_previous_version: "1.0"
+  source_markdown_new_version: "1.1"
+
+governance_changelog:
+  - >-
+    SOURCE_MARKDOWN 1.1 makes the current input packet authoritative for printed
+    page attribution and routes canonical conflicts through reviewed Integrator
+    correction.
+
+exact_diff:
+  contracts/SOURCE_MARKDOWN.md:
+    - Change Version 1.0 to 1.1.
+    - Add Page Authority and Conflicts with packet-over-legacy precedence.
+    - Add the 1.1 version-history entry.
+
+acceptance_tests:
+  - >-
+    SOURCE_MARKDOWN states that the current input packet's marker-derived page
+    takes precedence over legacy extraction and conflicting canonical values.
+  - >-
+    A Builder migration selects exactly the nine listed assertions by stable
+    assertion fields, not by row number.
+  - >-
+    Reviewer independently verifies all nine destination pages against the
+    Pandoc packet sources and SOURCE_MARKDOWN 1.1.
+  - >-
+    The Approved migration changes exactly nine page values and no other edge,
+    registry, assertion-key, or semantic field.
+  - >-
+    Integrator rebuilds graph.json from canonical tabular data and records this
+    decision and the source packets in the integration manifest.
+  - >-
+    No Paladin page is changed until an Analyst artifact resolves each of the
+    seventeen assertions to page 22 or 24 and a Reviewer approves it.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Produce the exact nine-row citation migration as a reviewable package.
+  analyst:
+    - Resolve the seventeen THE PALADIN citations against the packet source.
+  reviewer:
+    - Verify the nine corrections and any later Paladin correction package.
+  integrator:
+    - Apply only an Approved migration and preserve provenance.
+
+prohibited_actions:
+  - Architect does not edit canonical graph files.
+  - Do not select canonical rows by mutable row number.
+  - Do not treat a page-only correction as a new or duplicate assertion.
+  - Do not assign page 22 or 24 to any Paladin assertion without source evidence.

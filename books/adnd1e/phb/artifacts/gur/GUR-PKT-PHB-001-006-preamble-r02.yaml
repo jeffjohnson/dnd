@@ -1,0 +1,375 @@
+schema_version: "1.0"
+id: GUR-PKT-PHB-001-006-preamble-r02
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-001-006-preamble
+constitution_version: "1.2"
+
+revision: 2
+supersedes: GUR-PKT-PHB-001-006-preamble-r01
+revision_reason: >-
+  Operator supplied two corrections after r01 was written. First, this source is a
+  deliberately modified custom printing in which the combat tables have been
+  re-included at the end of the book; r01's OBS-02 was built on the foreword's claim
+  that those tables were withheld, which is not true of this artifact. Second, the
+  operator documented the semantics of the {#pN} page markers, which were previously
+  being read by inference. Neither correction invalidated a page citation in r01, but
+  both change what the packet tells a downstream reader.
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 1
+page_end: 6
+
+# =============================================================================
+# HEADLINE RESULT  (unchanged from r01)
+# =============================================================================
+# Zero candidate edges. Zero candidate nodes.
+#
+# Front matter asserts no dependency between mechanics. Five candidates were
+# considered and rejected against the core test; all are retained below so the
+# null result stays auditable.
+# =============================================================================
+
+source_summary: >-
+  Front matter of the AD&D Players Handbook, pages 1-6, in an operator-transcribed
+  custom printing. Title and copyright page; Mike Carr's foreword dated 2 June 1978;
+  the table of contents; the index of tables and charts; and Gary Gygax's preface. The
+  material is bibliographic, navigational, and design-rationale prose. It states no
+  procedure, no value, and no dependency between mechanics.
+
+# -----------------------------------------------------------------------------
+# Source conventions established for this book
+# -----------------------------------------------------------------------------
+# Recorded here because packet.yaml is immutable once claimed
+# (contracts/ARTIFACT_LIFECYCLE.md section 1). The natural durable home is
+# schemas/adnd1e/books/phb/extraction_profile.yaml, which is Architect-owned.
+# The operator has stated the Architect will fold this into role instructions.
+# -----------------------------------------------------------------------------
+source_conventions:
+  page_marker_syntax: "{#pN}"
+  page_marker_positions:
+    - position: end_of_line
+      meaning: >-
+        The line, heading, paragraph, or list item carrying the marker starts on page N
+        and lives on page N.
+      instances_in_this_packet:
+        - "line 1, title heading, p1"
+        - "line 42, FOREWORD heading, p2"
+        - "line 70, CONTENTS heading, p3"
+        - "line 305, third preface paragraph, p6"
+    - position: table_cell_last_column
+      meaning: The entire table row carrying the marker starts a new page N.
+      instances_in_this_packet:
+        - "line 137, Encumbrance row of contents, p4"
+        - "line 204, Ethereal Travel row of appendices contents, p5"
+    - position: mid_paragraph_between_words
+      meaning: >-
+        The paragraph breaks across pages at that point. Everything FOLLOWING the marker
+        is on page N; everything preceding it is on the prior page.
+      instances_in_this_packet: []
+  derived_page_composition:
+    p1: title and copyright page
+    p2: foreword, complete
+    p3: contents, from the heading through the Dungeon Expeditions entry
+    p4: contents, from the Encumbrance row through the Ethereal Travel row
+    p5: >-
+      tail of the appendices contents, the complete tables and charts index across both
+      column blocks, the PREFACE heading, and the first two preface paragraphs
+    p6: preface from its third paragraph through the acknowledgements
+  citation_note: >-
+    Every page citation in this GUR was re-verified against these semantics. All four
+    are correct as written in r01 and are carried forward unchanged.
+
+reused_nodes: []
+
+candidate_nodes: []
+
+candidate_edges: []
+
+candidate_general_rules: []
+
+domains_touched: []
+
+candidate_domains: []
+
+domain_boundary_questions: []
+
+# -----------------------------------------------------------------------------
+# Candidates considered and rejected
+# -----------------------------------------------------------------------------
+# Core test: if the source rule were changed or removed, would the target
+# mechanic need review? Each item answers no.
+# -----------------------------------------------------------------------------
+rejected_candidates:
+  - text_locus: "PREFACE, p6"
+    quoted_gist: classes carry restrictions to provide play balance
+    why_considered: names classes and restrictions, which are both mechanical concepts
+    rejection_reason: >-
+      Statement of design intent, not a rule. It identifies no specific restriction and
+      no specific class. Nothing downstream would need review if the sentence were
+      struck. The actual class restrictions appear in later packets and must be cited
+      there.
+
+  - text_locus: "PREFACE, p6"
+    quoted_gist: races are given advantages or limits to preserve the game's character
+    why_considered: names races and limits
+    rejection_reason: >-
+      Same as above. Rationale for the existence of racial modifiers, not a modifier.
+      The Character Race tables cited in the contents carry the load-bearing content.
+
+  - text_locus: "FOREWORD, p2"
+    quoted_gist: combat table detail is excluded from this book and placed in the DMG
+    why_considered: >-
+      reads as a scope relationship between two books and could be mistaken for a
+      cross-book dependency edge
+    rejection_reason: >-
+      Editorial scope statement about where text was printed. It relates two documents,
+      not two mechanics. Retained under non_edge_observations, but see OBS-02 as
+      revised: this claim is contradicted by the artifact it appears in.
+
+  - text_locus: "PREFACE, p6"
+    quoted_gist: sub-classes, psionics and similar material are labeled optional
+    why_considered: >-
+      bears on the constitution section 8 status field, whose vocabulary is core or
+      optional
+    rejection_reason: >-
+      Governs a field value on future edges rather than asserting a relationship. It
+      creates no edge of its own. Retained under non_edge_observations because it is the
+      book's own statement of what its optional material is.
+
+  - text_locus: "CONTENTS and TABLES AND CHARTS, p3-p5"
+    quoted_gist: section and table names with page numbers
+    why_considered: >-
+      names roughly eighty tables that will become nodes when their content is extracted
+    rejection_reason: >-
+      A locator index. Naming a table is not asserting a relationship, and minting nodes
+      from an index would create identities with no extracted mechanics behind them.
+      Retained as orientation only.
+
+# -----------------------------------------------------------------------------
+# Non-edge observations for Reviewer and Architect
+# -----------------------------------------------------------------------------
+non_edge_observations:
+  - id: OBS-01
+    revision_status: revised_in_r02_strengthened
+    topic: source identity is determinable, materially divergent, and the registry entry is stale
+    locus: "Title page, p1, plus operator statement of scope"
+    finding: >-
+      The title page carries copyright 1978 TSR Games, ISBN 0-935696-01-6, and the line
+      "Custom printing b, originally based on the 9th Printing, 1983". The operator has
+      further confirmed this is a hand-transcribed custom printing whose contents
+      deliberately diverge from the printing it is based on, the known instance being
+      the re-inclusion of the combat tables at the end of the book.
+    why_it_matters: >-
+      The source registry records this book as phb-legacy-unspecified with
+      edition_or_printing unspecified and provenance "legacy graph dump". That entry
+      cannot describe this artifact. Two distinct risks follow. First,
+      schemas/adnd1e/books/phb/extraction_profile.yaml sets edition_specific_pagination
+      true, so page citations are only meaningful against a named printing. Second, and
+      more serious, content exists in this source that does not exist in any standard
+      PHB. An edge cited to PHB from the re-included combat tables would be
+      unverifiable, and arguably false, against a stock 9th printing. The citation would
+      name a book and page where the reader finds nothing.
+    recommendation: >-
+      Architect should register a distinct source_id for this custom printing before
+      packets covering divergent content are extracted, and decide whether divergent
+      material requires an explicit marker on the edge so a reader knows the assertion
+      is not checkable against a stock PHB. Analyst does not modify the source registry.
+    analyst_action_taken: none
+    urgency: >-
+      Not blocking for packets 02-05 if those cover only standard PHB content. Blocking
+      for the combat table material whenever it is packetized.
+
+  - id: OBS-02
+    revision_status: rewritten_in_r02_premise_was_wrong
+    topic: the foreword's scope claim is contradicted by this artifact
+    locus: "FOREWORD, p2, read against operator statement of scope"
+    finding: >-
+      The foreword states that some material, combat tables given as the example, was
+      deliberately withheld from this volume and placed in the Dungeon Masters Guide
+      because it falls outside player reference. The operator has re-included the combat
+      tables at the end of this book on the judgment that players need them.
+    r01_error: >-
+      r01 recorded this as evidence that PHB silence on combat tables is editorial
+      rather than mechanical. The underlying guidance stands, but the example was
+      inverted: this source is not silent on combat tables.
+    why_it_matters: >-
+      Two consequences. The general guidance survives and is worth keeping: absence of a
+      procedure from a book is an editorial decision about audience, so a later packet
+      must not yield a negative dependency merely because the PHB does not mention
+      something. A negative edge needs text that denies the relationship in words. But
+      the specific case now runs the other way, and creates a duplication hazard. The
+      canonical graph already holds 3,809 edges in which combat table mechanics are
+      presumably attributed to DMG. Extracting the same mechanics from this book's
+      re-included tables could mint parallel edges differing only in the book field.
+    recommendation: >-
+      Reviewer should continue to reject negative dependencies grounded in PHB silence
+      alone. When the combat table packet arrives, the local neighborhood slice supplied
+      with it must include the existing DMG combat edges so duplication is visible at
+      extraction time rather than discovered at integration.
+    analyst_action_taken: none
+
+  - id: OBS-03
+    revision_status: unchanged_from_r01
+    topic: the book states its own optional material
+    locus: "PREFACE, p6"
+    finding: >-
+      The preface names sub-classes of characters and psionics as material that is
+      clearly labeled optional for inclusion, in contrast to material described as
+      essential.
+    why_it_matters: >-
+      Constitution section 8 requires every edge to carry status core or optional. This
+      is the book's own statement of the distinction. The contents place Psionics at
+      Appendix I p110 and Bards at Appendix II p117, both consistent with optional.
+    recommendation: >-
+      Carry forward as the default basis for status assignment on PHB appendix material.
+      Not proposed as a general rule because it creates no inherited edges; it governs a
+      field value.
+    analyst_action_taken: none
+
+  - id: OBS-04
+    revision_status: unchanged_from_r01
+    topic: table index usable as an extraction completeness check
+    locus: "TABLES AND CHARTS, p5"
+    finding: >-
+      The packet indexes roughly eighty named tables with page numbers, including the
+      ability score tables at pages 9-13, the race tables at 13-15, and the class
+      experience tables at 19-31.
+    why_it_matters: >-
+      Packets 02-05 cover exactly this pagination. The index gives an independent
+      checklist for confirming no table was missed, which directly addresses the
+      tables_split_across_pages hazard declared in the PHB extraction profile.
+    caveat_added_in_r02: >-
+      The index describes the book this printing was based on. Because the printing
+      diverges, the index is a necessary but not sufficient completeness check. It will
+      not list re-included material such as the combat tables.
+    recommendation: >-
+      Reviewer may use this index to verify coverage of later PHB packets, treating any
+      extracted content absent from the index as a divergence to confirm rather than an
+      error.
+    analyst_action_taken: none
+
+unresolved_identity_questions: []
+
+architectural_escalations: []
+
+# -----------------------------------------------------------------------------
+# Blocking notes for work that follows this packet
+# -----------------------------------------------------------------------------
+# Not escalations. Per ESCALATION_CONTRACT these are precondition and
+# re-packetization matters, recorded so they are not rediscovered.
+# -----------------------------------------------------------------------------
+blocking_notes:
+  - id: BLK-01
+    revision_status: unchanged_from_r01
+    severity: blocks_packets_02_to_05
+    issue: >-
+      rulesets/adnd1e/registries/domain_registry.yaml is empty. It carries status
+      bootstrap, domains is an empty map, and its own comment reads "Populate from the
+      existing project domain list before packet work."
+    consequence: >-
+      The Analyst must mark domains touched and record candidate domains without
+      promoting them. With an empty registry every domain named on a mechanical packet
+      becomes a candidate, pushing a large promotion decision onto the Architect at
+      once. This packet touches no domain, so the gap is not blocking here.
+    owner: architect
+
+  - id: BLK-02
+    revision_status: unchanged_from_r01
+    severity: degrades_extraction_quality
+    issue: >-
+      Packets were supplied as bare markdown without node_registry_slice.csv or
+      local_neighborhood.json.
+    consequence: >-
+      Analyst responsibilities include matching each concept against the supplied
+      registry slice and comparing candidates against the local neighborhood for
+      redundancy or contradiction. Neither is possible without those inputs. Harmless
+      for this packet, which produced no candidates. For packets 02-05, extraction
+      against a 1,094-node registry without a slice risks minting candidate nodes that
+      duplicate canonical ones.
+    owner: packet_creator
+
+  - id: BLK-03
+    revision_status: unchanged_from_r01
+    severity: documentation
+    issue: >-
+      contracts/FILE_NAMING.md places Analyst output at work/gur, while
+      REPOSITORY_STRUCTURE.md and agents/analyst/INSTRUCTIONS.md both place it at
+      books/<ruleset-id>/<book-id>/artifacts/gur/. Only the latter exists.
+    consequence: >-
+      This GUR was written to artifacts/gur/ on the two-to-one agreement and the on-disk
+      layout. The same conflict affects the gup, reviews and escalations paths.
+    owner: architect
+
+  - id: BLK-04
+    revision_status: new_in_r02
+    severity: affects_a_packet_not_yet_supplied
+    issue: >-
+      The combat tables re-included at the end of this book are not covered by any of
+      the five packets supplied, which run preamble, intro, ability scores, races,
+      classes.
+    consequence: >-
+      No action needed now. Flagged so the material is not assumed covered once packets
+      01-05 are complete, and so that OBS-01 and OBS-02 are consulted before it is
+      packetized.
+    owner: packet_creator
+
+# -----------------------------------------------------------------------------
+completeness_statement: >-
+  Every section of the packet was read in full before extraction: the title and
+  copyright page, the foreword, the complete table of contents including the appendices
+  listing, the full tables and charts index across both of its column blocks, and the
+  preface through its acknowledgements. Pages 1 through 6 are accounted for against the
+  {#p1} through {#p6} anchors, with no gap in the sequence, and page composition has
+  been re-derived under the marker semantics recorded in source_conventions.
+
+  The packet yields no candidate edges and no candidate nodes. This is a property of
+  the material, not an incomplete pass: front matter asserts no dependency between
+  mechanics. Five candidates were considered and rejected against the core test, each
+  recorded with its reason so the null result can be audited rather than assumed. No
+  magnitude, die expression, or rule prose has been carried into any field. No polarity
+  was authored, since authored polarity applies only to MODIFIES, TRIGGERS and
+  CONSTRAINS and no edge of any type is proposed.
+
+  Relative to r01 the extraction result is unchanged and all four page citations were
+  re-verified as correct. What changed is the reading of the source: OBS-02 was built on
+  a premise the artifact contradicts and has been rewritten, OBS-01 is materially
+  strengthened because the source is now known to diverge from any stock printing, and
+  the page marker convention is recorded so later packets do not re-infer it.
+
+  This GUR is complete enough for the Builder to process without rereading the source:
+  the correct action on it is to compile an empty patch.
+
+# =============================================================================
+# DOWNSTREAM NOTES  (added 2026-07-30, after the GUR body was written)
+# =============================================================================
+downstream_notes:
+  purpose: >-
+    Builder and Reviewer startup does not read books/<book>/reports/, so a finding recorded
+    only there would never reach them. This block is a pointer, not a verdict.
+  dedupe_report:
+    path: books/adnd1e/phb/reports/DEDUPE-PHB-20260729.md
+    what_it_is: >-
+      Every edge proposed across all PHB GURs, compared against the 3,809-edge canonical
+      graph on three tests: exact duplicate triple, type conflict on the same ordered pair,
+      and direction conflict on the reversed pair. Across all PHB GURs, 115 of 389 proposed
+      edges duplicate a canonical triple exactly, 35 are type conflicts and 20 are direction
+      conflicts.
+    why_it_exists: >-
+      No packet was ever supplied with a local_neighborhood.json, so no Analyst could run
+      this check at extraction time. It is BLK-02, run once after the fact.
+    what_builder_should_do: >-
+      Consult it before normalising this GUR. Exact duplicates should generally be dropped
+      from the GUP; where the canonical row cites a different book, prefer adding this
+      packet's citation to the existing row over discarding a second independent witness.
+    what_reviewer_should_do: >-
+      The direction conflicts are classified in the report into four classes with a
+      disposition for each. Class B is not a conflict at all and both sides should be kept.
+      Class D is a flat PHB-versus-DMG contradiction on two rows.
+  no_verdicts_embedded: >-
+    This GUR has not been edited to mark individual edges as duplicates. Whether an
+    assertion is already held by the graph is a normalisation determination owned by
+    Builder and Reviewer; recording it in an interpretive artifact would put the decision
+    in the wrong role.

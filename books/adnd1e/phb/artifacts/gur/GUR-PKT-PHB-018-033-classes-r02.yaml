@@ -1,0 +1,2576 @@
+schema_version: "1.0"
+id: GUR-PKT-PHB-018-033-classes-r02
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-018-033-classes
+constitution_version: "1.2"
+
+revision: 2
+supersedes: GUR-PKT-PHB-018-033-classes-r01
+revision_reason: >-
+  DEC-2026-0003 returned REVIEW-ESC-CLASS-SPECIAL-ABILITIES to Analyst and Builder with
+  the instruction to apply the constitution's grain and impact tests ability by ability
+  and to escalate only a concrete ontology conflict. r01's OBS-26 asked a blanket
+  question, which was the right thing to flag and the wrong way to flag it. r02 does the
+  work: each of the eleven monk special abilities is tested individually against the
+  registry and the core test. Seven new edges result, one existing edge is corrected, four
+  are deferred to the spell packets with reasons, and one candidate node is proposed. No
+  escalation is raised, because none of the eleven turns out to be an ontology conflict.
+  The same revision also corrects r01's framing of candidate nodes, which described them
+  as awaiting an Architect ruling; under DEC-2026-0003 an unambiguous node addition under
+  an approved prefix is ordinary Builder and Reviewer work.
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 18
+page_end: 33
+
+# =============================================================================
+# HEADLINE RESULT
+# =============================================================================
+# 108 candidate edges. 2 candidate nodes. 0 architectural escalations.
+#
+#  1. The packet 04 deferral is discharged and was CORRECT. Nine of the ten
+#     classes restate their own alignment restriction in their own section,
+#     with a better citation than the race-table legend the deferral came from.
+#     The tenth, the illusionist, does not. See OBS-22.
+#
+#  2. The packet 03 ability-minimum edges are confirmed complete. Every class
+#     minimum stated in this packet is already carried by packet 03's GATES
+#     edges. Nothing new; nothing missing. Verified class by class. See OBS-23.
+#
+#  3. race_human and race_demihuman, both approved since packet 04, are used
+#     here for the multi-class and dual-class rules. DEC-2026-0002's rule that
+#     group membership generates no edges is respected: G1 is an explicit
+#     source-supported edge, not an inheritance. See OBS-24.
+#
+#  4. Two duplicate identity triples arose during generation and were resolved
+#     before assembly rather than emitted. See grain_decisions.
+# =============================================================================
+
+source_summary: >-
+  Pages 18 through 33, the CHARACTER CLASSES section in full. An opening survey of the
+  ten classes; CHARACTER CLASSES TABLE I giving hit die type, maximum hit dice, spell
+  ability and class level limit; TABLE II giving armour, shield, weapons, oil and poison
+  permitted. Then a section for each of the ten classes carrying its ability minimums,
+  alignment restriction, experience table, spell progression table where applicable, and
+  its distinctive powers and strictures. Finally the multi-classed character and the
+  character with two classes. Twenty-three tables in all, twelve of them experience or
+  spell progressions.
+
+node_id_resolution_method: >-
+  No slice supplied; resolved by targeted registry lookup as in packets 02 to 04. 106 of
+  108 edges resolved onto existing canonical IDs. Two concepts had no node. A third
+  candidate, rule_prime_requisite, is carried forward unchanged from packet 03 and is not
+  re-proposed here; it is still pending an Architect ruling.
+
+grain_decisions:
+  - decision: >-
+      The twelve experience and spell progression tables yield no edges of their own.
+    reasoning: >-
+      Their content is entirely magnitudes: experience thresholds, hit dice counts and
+      spell counts per level. What survives the grain rule is that class level determines
+      spell availability, which is already asserted by A1 to A6 as the class gating spell
+      use, and by packet 02's E6 and packet 03's I2 and W11 for the level and ability
+      gates on spell level access. Restating it per class per spell level would be twelve
+      near-identical edges carrying no new relationship.
+  - decision: >-
+      Per-class ability minimums are not re-extracted here.
+    reasoning: >-
+      Verified redundant against packet 03 rather than assumed redundant. See OBS-23.
+  - decision: >-
+      Two duplicate identity triples were resolved before assembly, not emitted.
+    reasoning: >-
+      class_druid CONSTRAINS exp_level and class_monk CONSTRAINS exp_level each arose
+      twice: once from the Table I class level limit, and once from the rule that the
+      highest ranks are contested and numerically limited. Invariant 12 forbids duplicate
+      edge identity and the constitution defines no distinct assertion key that would
+      permit the pair, so each was folded into a single edge whose condition records both
+      the hard ceiling and the contest. The alternative, inventing a second target node to
+      carry the contest, would have manufactured identity to dodge an invariant.
+
+candidate_nodes:
+  - proposed_id: rule_quivering_palm
+    proposed_label: Quivering Palm
+    prefix: rule_
+    prefix_is_approved: true
+    why_needed: >-
+      Added in r02 from the per-ability analysis in OBS-26. The monk's highest attack form,
+      touching a victim to set up fatal vibrations under stated limits on frequency, target
+      type and hit dice. No canonical node covers it and it is not a spell.
+    edges_depending_on_it: []
+    note: >-
+      Proposed with no edge attached, because the mechanic's targets are the victim's death
+      and the monk's own level, neither of which this packet states as a relationship the
+      core test admits. It is proposed so the identity exists when the DMG combat material
+      references it.
+
+  - proposed_id: rule_dual_class
+    proposed_label: The Character with Two Classes
+    prefix: rule_
+    prefix_is_approved: true
+    why_needed: >-
+      The registry holds rule_multiclass at degree 14 but nothing for the human
+      dual-class rule, which this packet gives a section of its own and which works
+      differently: the character stops advancing in the original class rather than
+      dividing experience between classes. Collapsing the two would make the graph unable
+      to distinguish "what breaks if multi-classing changes" from "what breaks if
+      dual-classing changes".
+    edges_depending_on_it: [G3, G4, G5, G6]
+
+  - proposed_id: rule_tracking
+    proposed_label: Tracking
+    prefix: rule_
+    prefix_is_approved: true
+    why_needed: >-
+      Ranger tracking is a distinct procedure with its own underground and outdoor
+      resolution, and no canonical node covers it. The registry's nearest matches,
+      item_boots_varied_tracks and monster_slithering_tracker, are unrelated.
+    edges_depending_on_it: [F19]
+
+carried_forward_candidates:
+  - id: rule_prime_requisite
+    first_proposed_in: GUR-PKT-PHB-009-013-ability-scores-r01
+    status: >-
+      Routed to Builder and Reviewer by DEC-2026-0003, not awaiting an Architect ruling.
+      That decision holds that absence from the registry is not by itself architectural and
+      that an unambiguous addition under an approved prefix and kind may be approved through
+      the normal GUP and Review path. The disposition recorded there is
+      return_to_builder_and_reviewer, which is a routing instruction and not a rejection.
+    edges_here: [D1]
+    note: >-
+      This packet strengthens the case for it. Packet 03 saw the bonus from the ability
+      side, four times. This packet gives the class side for all ten classes, including
+      three explicit denials, which is what D2 to D4 record.
+
+candidate_edges:
+  - ref: A1
+    source_id: class_cleric
+    source_label: "Cleric"
+    edge_type: GATES
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "spell ability"
+    condition: ""
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A2
+    source_id: class_druid
+    source_label: "Druid"
+    edge_type: GATES
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "spell ability"
+    condition: ""
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A3
+    source_id: class_paladin
+    source_label: "Paladin"
+    edge_type: GATES
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "spell ability"
+    condition: ""
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A4
+    source_id: class_ranger
+    source_label: "Ranger"
+    edge_type: GATES
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "spell ability"
+    condition: ""
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A5
+    source_id: class_magic_user
+    source_label: "Magic-User"
+    edge_type: GATES
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "spell ability"
+    condition: ""
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A6
+    source_id: class_illusionist
+    source_label: "Illusionist"
+    edge_type: GATES
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "spell ability"
+    condition: ""
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A7
+    source_id: class_fighter
+    source_label: "Fighter"
+    edge_type: EXCLUDED_FROM
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "spell ability"
+    condition: ""
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A8
+    source_id: class_thief
+    source_label: "Thief"
+    edge_type: EXCLUDED_FROM
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "spell ability"
+    condition: ""
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A9
+    source_id: class_assassin
+    source_label: "Assassin"
+    edge_type: EXCLUDED_FROM
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "spell ability"
+    condition: ""
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A10
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: EXCLUDED_FROM
+    target_id: rule_spell_memorization
+    target_label: "Spell Memorization"
+    aspect: "spell ability"
+    condition: ""
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A11
+    source_id: class_druid
+    source_label: "Druid"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "class level limit"
+    condition: "hard class ceiling, and contested for the highest ranks"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A12
+    source_id: class_assassin
+    source_label: "Assassin"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "class level limit"
+    condition: "hard class ceiling, and contested for the highest ranks"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A13
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "class level limit"
+    condition: "hard class ceiling, and contested for the highest ranks"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A14
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: GATES
+    target_id: thief_read_scrolls
+    target_label: "Use Scrolls"
+    aspect: "scroll use"
+    condition: "thieves and assassins"
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: A15
+    source_id: rule_multiclass
+    source_label: "Multi-Class"
+    edge_type: CONSTRAINS
+    target_id: rule_hit_points
+    target_label: "Hit Points"
+    aspect: "hit dice averaging"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "Notes Regarding Character Classes Table I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B1
+    source_id: class_cleric
+    source_label: "Cleric"
+    edge_type: CONSTRAINS
+    target_id: sys_equipment
+    target_label: "Equipment"
+    aspect: "armour and weapons permitted"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B2
+    source_id: class_druid
+    source_label: "Druid"
+    edge_type: CONSTRAINS
+    target_id: sys_equipment
+    target_label: "Equipment"
+    aspect: "armour and weapons permitted"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B3
+    source_id: class_magic_user
+    source_label: "Magic-User"
+    edge_type: CONSTRAINS
+    target_id: sys_equipment
+    target_label: "Equipment"
+    aspect: "armour and weapons permitted"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B4
+    source_id: class_illusionist
+    source_label: "Illusionist"
+    edge_type: CONSTRAINS
+    target_id: sys_equipment
+    target_label: "Equipment"
+    aspect: "armour and weapons permitted"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B5
+    source_id: class_thief
+    source_label: "Thief"
+    edge_type: CONSTRAINS
+    target_id: sys_equipment
+    target_label: "Equipment"
+    aspect: "armour and weapons permitted"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B6
+    source_id: class_assassin
+    source_label: "Assassin"
+    edge_type: CONSTRAINS
+    target_id: sys_equipment
+    target_label: "Equipment"
+    aspect: "armour and weapons permitted"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B7
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: CONSTRAINS
+    target_id: sys_equipment
+    target_label: "Equipment"
+    aspect: "armour and weapons permitted"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B8
+    source_id: tbl_height_weight
+    source_label: "Height and Weight Tables"
+    edge_type: CONSTRAINS
+    target_id: sys_equipment
+    target_label: "Equipment"
+    aspect: "weapon usability"
+    condition: "small or light characters"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B9
+    source_id: class_paladin
+    source_label: "Paladin"
+    edge_type: EXCLUDED_FROM
+    target_id: rule_poison_ingested
+    target_label: "Ingested Poison"
+    aspect: "poison use"
+    condition: ""
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B10
+    source_id: sys_alignment
+    source_label: "Alignment"
+    edge_type: GATES
+    target_id: rule_poison_ingested
+    target_label: "Ingested Poison"
+    aspect: "poison use"
+    condition: "clerics of evil alignment only"
+    book: PHB
+    page: 19
+    section: "CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C1
+    source_id: sys_alignment
+    source_label: "Alignment"
+    edge_type: GATES
+    target_id: class_cleric
+    target_label: "Cleric"
+    aspect: "alignment eligibility"
+    condition: ""
+    book: PHB
+    page: 20
+    section: "The Cleric"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C2
+    source_id: sys_alignment
+    source_label: "Alignment"
+    edge_type: GATES
+    target_id: class_druid
+    target_label: "Druid"
+    aspect: "alignment eligibility"
+    condition: ""
+    book: PHB
+    page: 21
+    section: "The Druid"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C3
+    source_id: sys_alignment
+    source_label: "Alignment"
+    edge_type: GATES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "alignment eligibility"
+    condition: ""
+    book: PHB
+    page: 22
+    section: "The Paladin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C4
+    source_id: sys_alignment
+    source_label: "Alignment"
+    edge_type: GATES
+    target_id: class_ranger
+    target_label: "Ranger"
+    aspect: "alignment eligibility"
+    condition: ""
+    book: PHB
+    page: 24
+    section: "The Ranger"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C5
+    source_id: sys_alignment
+    source_label: "Alignment"
+    edge_type: GATES
+    target_id: class_thief
+    target_label: "Thief"
+    aspect: "alignment eligibility"
+    condition: ""
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C6
+    source_id: sys_alignment
+    source_label: "Alignment"
+    edge_type: GATES
+    target_id: class_assassin
+    target_label: "Assassin"
+    aspect: "alignment eligibility"
+    condition: ""
+    book: PHB
+    page: 29
+    section: "The Assassin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C7
+    source_id: sys_alignment
+    source_label: "Alignment"
+    edge_type: GATES
+    target_id: class_monk
+    target_label: "Monk"
+    aspect: "alignment eligibility"
+    condition: ""
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C8
+    source_id: align_change
+    source_label: "Changing Alignment"
+    edge_type: TRIGGERS
+    target_id: class_paladin_loss
+    target_label: "Loss of Paladinhood"
+    aspect: "loss of class"
+    condition: "on any evil act"
+    polarity: inflicts
+    polarity_basis: read
+    book: PHB
+    page: 22
+    section: "The Paladin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C9
+    source_id: align_change
+    source_label: "Changing Alignment"
+    edge_type: TRIGGERS
+    target_id: class_monk_loss
+    target_label: "Loss of Monk Status"
+    aspect: "loss of class"
+    condition: "on loss of lawful alignment"
+    polarity: inflicts
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C10
+    source_id: align_change
+    source_label: "Changing Alignment"
+    edge_type: TRIGGERS
+    target_id: class_followers
+    target_label: "Followers"
+    aspect: "loss of followers"
+    condition: "cleric changing deity or alignment"
+    polarity: inflicts
+    polarity_basis: read
+    book: PHB
+    page: 20
+    section: "The Cleric"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C11
+    source_id: sys_alignment
+    source_label: "Alignment"
+    edge_type: CONSTRAINS
+    target_id: hench_henchmen
+    target_label: "Henchmen"
+    aspect: "retainer alignment"
+    condition: "paladins"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 22
+    section: "The Paladin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D1
+    source_id: abil_charisma
+    source_label: "Charisma"
+    edge_type: MODIFIES
+    target_id: rule_prime_requisite
+    target_label: "Prime Requisite Experience Bonus"
+    aspect: "experience bonus"
+    condition: "druid with high score"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 21
+    section: "The Druid"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D2
+    source_id: class_illusionist
+    source_label: "Illusionist"
+    edge_type: EXCLUDED_FROM
+    target_id: rule_prime_requisite
+    target_label: "Prime Requisite Experience Bonus"
+    aspect: "experience bonus"
+    condition: ""
+    book: PHB
+    page: 26
+    section: "The Illusionist"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D3
+    source_id: class_assassin
+    source_label: "Assassin"
+    edge_type: EXCLUDED_FROM
+    target_id: rule_prime_requisite
+    target_label: "Prime Requisite Experience Bonus"
+    aspect: "experience bonus"
+    condition: ""
+    book: PHB
+    page: 29
+    section: "The Assassin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D4
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: EXCLUDED_FROM
+    target_id: rule_prime_requisite
+    target_label: "Prime Requisite Experience Bonus"
+    aspect: "experience bonus"
+    condition: ""
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F1
+    source_id: class_cleric
+    source_label: "Cleric"
+    edge_type: GATES
+    target_id: turn_undead
+    target_label: "Turning Undead"
+    aspect: "undead turning"
+    condition: ""
+    book: PHB
+    page: 20
+    section: "The Cleric"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F2
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: GATES
+    target_id: class_followers
+    target_label: "Followers"
+    aspect: "follower attraction"
+    condition: ""
+    book: PHB
+    page: 20
+    section: "The Cleric"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F3
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: GATES
+    target_id: rule_stronghold
+    target_label: "Stronghold"
+    aspect: "stronghold construction"
+    condition: ""
+    book: PHB
+    page: 20
+    section: "The Cleric"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F4
+    source_id: class_druid
+    source_label: "Druid"
+    edge_type: EXCLUDED_FROM
+    target_id: turn_undead
+    target_label: "Turning Undead"
+    aspect: "undead turning"
+    condition: ""
+    book: PHB
+    page: 21
+    section: "The Druid"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F5
+    source_id: class_druid
+    source_label: "Druid"
+    edge_type: MODIFIES
+    target_id: save_matrix
+    target_label: "Saving Throw Matrix"
+    aspect: "saving throw"
+    condition: "fire and lightning attacks"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 21
+    section: "The Druid"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F6
+    source_id: class_druid
+    source_label: "Druid"
+    edge_type: GATES
+    target_id: rule_languages
+    target_label: "Languages"
+    aspect: "druidic and gained languages"
+    condition: ""
+    book: PHB
+    page: 21
+    section: "The Druid"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F7
+    source_id: class_fighter
+    source_label: "Fighter"
+    edge_type: GATES
+    target_id: rule_freehold
+    target_label: "Freehold"
+    aspect: "freehold establishment"
+    condition: "at high level"
+    book: PHB
+    page: 22
+    section: "The Fighter"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F8
+    source_id: class_fighter
+    source_label: "Fighter"
+    edge_type: GATES
+    target_id: hench_mercenary
+    target_label: "Mercenary Soldier"
+    aspect: "men-at-arms attraction"
+    condition: "on establishing a freehold"
+    book: PHB
+    page: 22
+    section: "The Fighter"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F9
+    source_id: class_paladin
+    source_label: "Paladin"
+    edge_type: GATES
+    target_id: rule_detect_evil
+    target_label: "Detect Evil"
+    aspect: "evil detection"
+    condition: "when concentrating"
+    book: PHB
+    page: 22
+    section: "The Paladin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F10
+    source_id: class_paladin
+    source_label: "Paladin"
+    edge_type: MODIFIES
+    target_id: save_matrix
+    target_label: "Saving Throw Matrix"
+    aspect: "saving throw"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 22
+    section: "The Paladin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F11
+    source_id: class_paladin
+    source_label: "Paladin"
+    edge_type: EXCLUDED_FROM
+    target_id: rule_disease
+    target_label: "Disease"
+    aspect: "disease immunity"
+    condition: ""
+    book: PHB
+    page: 22
+    section: "The Paladin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F12
+    source_id: class_paladin
+    source_label: "Paladin"
+    edge_type: GATES
+    target_id: rule_lay_on_hands
+    target_label: "Lay on Hands"
+    aspect: "wound healing"
+    condition: "once per day"
+    book: PHB
+    page: 22
+    section: "The Paladin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F13
+    source_id: class_paladin
+    source_label: "Paladin"
+    edge_type: GATES
+    target_id: turn_undead
+    target_label: "Turning Undead"
+    aspect: "undead turning"
+    condition: "from third level"
+    book: PHB
+    page: 22
+    section: "The Paladin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F14
+    source_id: class_paladin
+    source_label: "Paladin"
+    edge_type: CONSTRAINS
+    target_id: item_magic_item
+    target_label: "Magic Device"
+    aspect: "retained magic items"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 22
+    section: "The Paladin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F15
+    source_id: class_paladin
+    source_label: "Paladin"
+    edge_type: CONSTRAINS
+    target_id: money_gp
+    target_label: "Money"
+    aspect: "retained wealth"
+    condition: "tithe and modest living"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 22
+    section: "The Paladin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F16
+    source_id: class_paladin
+    source_label: "Paladin"
+    edge_type: EXCLUDED_FROM
+    target_id: hench_mercenary
+    target_label: "Mercenary Soldier"
+    aspect: "men-at-arms attraction"
+    condition: ""
+    book: PHB
+    page: 22
+    section: "The Paladin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F17
+    source_id: class_ranger
+    source_label: "Ranger"
+    edge_type: MODIFIES
+    target_id: cbt_damage
+    target_label: "Damage"
+    aspect: "damage bonus"
+    condition: "versus giant-class humanoids"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 24
+    section: "The Ranger"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F18
+    source_id: class_ranger
+    source_label: "Ranger"
+    edge_type: MODIFIES
+    target_id: cbt_surprise
+    target_label: "Surprise"
+    aspect: "surprise chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 24
+    section: "The Ranger"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F19
+    source_id: class_ranger
+    source_label: "Ranger"
+    edge_type: GATES
+    target_id: rule_tracking
+    target_label: "Tracking"
+    aspect: "tracking"
+    condition: ""
+    book: PHB
+    page: 24
+    section: "The Ranger"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F20
+    source_id: class_ranger
+    source_label: "Ranger"
+    edge_type: CONSTRAINS
+    target_id: hench_hirelings
+    target_label: "Hirelings"
+    aspect: "hiring eligibility"
+    condition: "below the eighth level"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 24
+    section: "The Ranger"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F21
+    source_id: class_ranger
+    source_label: "Ranger"
+    edge_type: EXCLUDED_FROM
+    target_id: hench_mercenary
+    target_label: "Mercenary Soldier"
+    aspect: "mercenary attraction"
+    condition: ""
+    book: PHB
+    page: 24
+    section: "The Ranger"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F22
+    source_id: class_ranger
+    source_label: "Ranger"
+    edge_type: CONSTRAINS
+    target_id: money_gp
+    target_label: "Money"
+    aspect: "retained wealth"
+    condition: "only what can be carried"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 24
+    section: "The Ranger"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F23
+    source_id: class_magic_user
+    source_label: "Magic-User"
+    edge_type: GATES
+    target_id: rule_spell_book
+    target_label: "Spell Book"
+    aspect: "spell book maintenance"
+    condition: ""
+    book: PHB
+    page: 25
+    section: "The Magic-User"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F24
+    source_id: class_magic_user
+    source_label: "Magic-User"
+    edge_type: GATES
+    target_id: item_scribe_scroll
+    target_label: "Scribing Scrolls"
+    aspect: "scroll scribing"
+    condition: "at high level"
+    book: PHB
+    page: 25
+    section: "The Magic-User"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F25
+    source_id: class_magic_user
+    source_label: "Magic-User"
+    edge_type: GATES
+    target_id: item_enchant
+    target_label: "Enchanting Items"
+    aspect: "item enchantment"
+    condition: "at high level"
+    book: PHB
+    page: 25
+    section: "The Magic-User"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F26
+    source_id: class_magic_user
+    source_label: "Magic-User"
+    edge_type: GATES
+    target_id: rule_stronghold
+    target_label: "Stronghold"
+    aspect: "stronghold construction"
+    condition: "at high level"
+    book: PHB
+    page: 25
+    section: "The Magic-User"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F27
+    source_id: class_illusionist
+    source_label: "Illusionist"
+    edge_type: CONSTRAINS
+    target_id: item_magic_item
+    target_label: "Magic Device"
+    aspect: "usable magic items"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 26
+    section: "The Illusionist"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F28
+    source_id: class_thief
+    source_label: "Thief"
+    edge_type: GATES
+    target_id: thief_skills
+    target_label: "Thief Skills"
+    aspect: "thief function"
+    condition: ""
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F29
+    source_id: class_thief
+    source_label: "Thief"
+    edge_type: GATES
+    target_id: thief_backstab
+    target_label: "Back Stab"
+    aspect: "back stabbing"
+    condition: ""
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F30
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: MODIFIES
+    target_id: thief_backstab
+    target_label: "Back Stab"
+    aspect: "damage multiple"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F31
+    source_id: thief_backstab
+    source_label: "Back Stab"
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    target_label: "To-Hit Roll"
+    aspect: "attack roll"
+    condition: "striking from behind by surprise"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F32
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: MODIFIES
+    target_id: thief_skills
+    target_label: "Thief Skills"
+    aspect: "success chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F33
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: GATES
+    target_id: thief_read_languages
+    target_label: "Read Languages"
+    aspect: "language reading"
+    condition: "from the fourth level"
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F34
+    source_id: class_thief
+    source_label: "Thief"
+    edge_type: GATES
+    target_id: rule_languages
+    target_label: "Languages"
+    aspect: "thieves cant"
+    condition: ""
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F35
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: CONSTRAINS
+    target_id: thief_pick_pockets
+    target_label: "Pick Pockets"
+    aspect: "success chance"
+    condition: "victim level"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F36
+    source_id: thief_move_silently
+    source_label: "Move Silently"
+    edge_type: MODIFIES
+    target_id: cbt_surprise
+    target_label: "Surprise"
+    aspect: "surprise chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F37
+    source_id: race_infravision
+    source_label: "Infravision"
+    edge_type: CONSTRAINS
+    target_id: thief_hide_in_shadows
+    target_label: "Hide in Shadows"
+    aspect: "concealment"
+    condition: "observers with infravision"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F38
+    source_id: class_thief
+    source_label: "Thief"
+    edge_type: GATES
+    target_id: rule_thieves_guild
+    target_label: "Thieves Guild"
+    aspect: "guild rivalry"
+    condition: "at high level"
+    book: PHB
+    page: 27
+    section: "The Thief"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F39
+    source_id: class_assassin
+    source_label: "Assassin"
+    edge_type: GATES
+    target_id: xp_assassination
+    target_label: "Assassination Experience"
+    aspect: "assassination attack"
+    condition: "on surprise"
+    book: PHB
+    page: 29
+    section: "The Assassin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F40
+    source_id: class_assassin
+    source_label: "Assassin"
+    edge_type: CONSTRAINS
+    target_id: thief_skills
+    target_label: "Thief Skills"
+    aspect: "effective thieving level"
+    condition: "two levels below assassin level"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 29
+    section: "The Assassin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F41
+    source_id: class_assassin
+    source_label: "Assassin"
+    edge_type: GATES
+    target_id: rule_disguise
+    target_label: "Disguise"
+    aspect: "disguise"
+    condition: ""
+    book: PHB
+    page: 29
+    section: "The Assassin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F42
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: GATES
+    target_id: rule_alignment_languages
+    target_label: "Alignment Languages"
+    aspect: "alignment tongues"
+    condition: "assassins at high level"
+    book: PHB
+    page: 29
+    section: "The Assassin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F43
+    source_id: class_assassin
+    source_label: "Assassin"
+    edge_type: GATES
+    target_id: rule_assassins_guild
+    target_label: "Assassins Guild"
+    aspect: "guild membership"
+    condition: ""
+    book: PHB
+    page: 29
+    section: "The Assassin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F44
+    source_id: class_assassin
+    source_label: "Assassin"
+    edge_type: GATES
+    target_id: rule_poison_ingested
+    target_label: "Ingested Poison"
+    aspect: "poison use"
+    condition: ""
+    book: PHB
+    page: 29
+    section: "The Assassin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F45
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: GATES
+    target_id: hench_hirelings
+    target_label: "Hirelings"
+    aspect: "hiring eligibility"
+    condition: "assassins from the fourth level"
+    book: PHB
+    page: 29
+    section: "The Assassin"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F46
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: GATES
+    target_id: thief_skills
+    target_label: "Thief Skills"
+    aspect: "thief function"
+    condition: "at identical level"
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F47
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: GATES
+    target_id: rule_open_hand_combat
+    target_label: "Open Hand Combat"
+    aspect: "open hand attack"
+    condition: ""
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F48
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: GATES
+    target_id: rule_stun
+    target_label: "Stunning Blow"
+    aspect: "stunning blow"
+    condition: "on a sufficient attack roll"
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F49
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: MODIFIES
+    target_id: cbt_armor_class
+    target_label: "Armor Class"
+    aspect: "effective armour class"
+    condition: "monks"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F50
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: MODIFIES
+    target_id: ex_movement_rate
+    target_label: "Movement Rate"
+    aspect: "movement rate"
+    condition: "monks"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F51
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: MODIFIES
+    target_id: cbt_surprise
+    target_label: "Surprise"
+    aspect: "surprise chance"
+    condition: "monks"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F52
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: EXCLUDED_FROM
+    target_id: cbt_armor_class
+    target_label: "Armor Class"
+    aspect: "defensive adjustment"
+    condition: ""
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F53
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: EXCLUDED_FROM
+    target_id: cbt_tohit
+    target_label: "To-Hit Roll"
+    aspect: "attack adjustment"
+    condition: ""
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F54
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: EXCLUDED_FROM
+    target_id: cbt_damage
+    target_label: "Damage"
+    aspect: "damage adjustment"
+    condition: ""
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F55
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: MODIFIES
+    target_id: cbt_damage
+    target_label: "Damage"
+    aspect: "weapon damage bonus"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F56
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: MODIFIES
+    target_id: save_matrix
+    target_label: "Saving Throw Matrix"
+    aspect: "saving throw"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F57
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: EXCLUDES
+    target_id: rule_disease
+    target_label: "Disease"
+    aspect: "disease immunity"
+    condition: "from the fifth level"
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F58
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: CONSTRAINS
+    target_id: hench_hirelings
+    target_label: "Hirelings"
+    aspect: "hiring eligibility"
+    condition: "below the sixth level"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F59
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: CONSTRAINS
+    target_id: money_gp
+    target_label: "Money"
+    aspect: "retained treasure"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F60
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: CONSTRAINS
+    target_id: item_magic_item
+    target_label: "Magic Device"
+    aspect: "retained magic items"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: F61
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: MODIFIES
+    target_id: ex_falling
+    target_label: "Falling Damage"
+    aspect: "falling damage"
+    condition: "when descending near a wall"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "The Monk"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G1
+    source_id: race_demihuman
+    source_label: "Demihuman"
+    edge_type: GATES
+    target_id: rule_multiclass
+    target_label: "Multi-Class"
+    aspect: "multi-class eligibility"
+    condition: ""
+    book: PHB
+    page: 33
+    section: "The Multi-Classed Character"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G2
+    source_id: race_human
+    source_label: "Human"
+    edge_type: EXCLUDED_FROM
+    target_id: rule_multiclass
+    target_label: "Multi-Class"
+    aspect: "multi-class eligibility"
+    condition: ""
+    book: PHB
+    page: 33
+    section: "The Multi-Classed Character"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G3
+    source_id: race_human
+    source_label: "Human"
+    edge_type: GATES
+    target_id: rule_dual_class
+    target_label: "The Character with Two Classes"
+    aspect: "dual-class eligibility"
+    condition: ""
+    book: PHB
+    page: 33
+    section: "The Character with Two Classes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G4
+    source_id: sys_ability_scores
+    source_label: "Ability Scores"
+    edge_type: GATES
+    target_id: rule_dual_class
+    target_label: "The Character with Two Classes"
+    aspect: "class change eligibility"
+    condition: ""
+    book: PHB
+    page: 33
+    section: "The Character with Two Classes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G5
+    source_id: rule_dual_class
+    source_label: "The Character with Two Classes"
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: "Experience Level"
+    aspect: "advancement in the original class"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 33
+    section: "The Character with Two Classes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G6
+    source_id: rule_dual_class
+    source_label: "The Character with Two Classes"
+    edge_type: CONSTRAINS
+    target_id: rule_hit_points
+    target_label: "Hit Points"
+    aspect: "hit dice on class change"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 33
+    section: "The Character with Two Classes"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: G7
+    source_id: rule_multiclass
+    source_label: "Multi-Class"
+    edge_type: CONSTRAINS
+    target_id: rule_xp_division
+    target_label: "Adjustment and Division of Experience"
+    aspect: "experience division"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 33
+    section: "The Multi-Classed Character"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+
+  - ref: M1
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: MODIFIES
+    target_id: spell_esp
+    target_label: "Psionic-Related Spells"
+    aspect: "resistance"
+    condition: "mental discipline masks the mind"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "Notes Regarding Special Abilities, ability B"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: M2
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: EXCLUDES
+    target_id: spell_haste
+    target_label: "Haste"
+    aspect: "immunity"
+    condition: ""
+    book: PHB
+    page: 31
+    section: "Notes Regarding Special Abilities, ability C"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: M3
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: EXCLUDES
+    target_id: spell_slow
+    target_label: "Slow"
+    aspect: "immunity"
+    condition: ""
+    book: PHB
+    page: 31
+    section: "Notes Regarding Special Abilities, ability C"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: M4
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: MODIFIES
+    target_id: rule_hp_recovery
+    target_label: "Hit Point Recovery"
+    aspect: "self-healing"
+    condition: "once per day"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "Notes Regarding Special Abilities, ability E"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: M5
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: MODIFIES
+    target_id: spell_charm_person
+    target_label: "Charm"
+    aspect: "resistance"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "Notes Regarding Special Abilities, ability G"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: M6
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: MODIFIES
+    target_id: spell_suggestion
+    target_label: "Suggestion"
+    aspect: "resistance"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "Notes Regarding Special Abilities, ability G"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: M7
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: MODIFIES
+    target_id: psi_attack_modes
+    target_label: "Psionic Attack"
+    aspect: "resistance"
+    condition: "telepathic and mind blast attacks resolved against a raised intelligence"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 31
+    section: "Notes Regarding Special Abilities, ability H"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: M8
+    source_id: class_monk
+    source_label: "Monk"
+    edge_type: EXCLUDES
+    target_id: save_poison
+    target_label: "Saving Throw vs Poison"
+    aspect: "immunity"
+    condition: ""
+    book: PHB
+    page: 31
+    section: "Notes Regarding Special Abilities, ability I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The pattern that a sub-class inherits its parent's mechanics unless the
+  text says otherwise, druid from cleric and paladin and ranger from fighter, has the
+  shape of a general rule. It is not proposed, because every inheritance this packet
+  relies on is stated outright in the sub-class section, so nothing would be inherited
+  silently and no edge here would carry a general_rule_id. Recorded as OBS-25 for the
+  Architect, since it may earn promotion once the spell packets are read.
+
+domains_touched: []
+domains_touched_note: BLK-01 unchanged; the domain registry is still an empty map.
+
+candidate_domains:
+  - name: character_classes
+    basis: the whole packet
+  - name: class_eligibility
+    basis: the alignment gates C1 to C7, joining the ability and race gates of packets 03 and 04
+  - name: level_advancement
+    basis: A11 to A13, G5, and the exp_level edges through section F
+  - name: followers_and_loyalty
+    basis: the follower, henchman and hireling edges across five classes
+  - name: thief_function
+    basis: the thief, assassin and monk skill edges
+  - name: equipment_restriction
+    basis: B1 to B8
+
+domain_boundary_questions:
+  - id: DBQ-04
+    question: >-
+      class_eligibility now draws from three packets and three unrelated table families:
+      ability minimums in packet 03, racial class limitations in packet 04, and alignment
+      restrictions here. Sixty-seven edges across the three. Is that one domain?
+    analyst_position: no recommendation; the same question as DBQ-02 and DBQ-03, now larger
+
+rejected_candidates:
+  - text_locus: "the twelve experience and spell progression tables, pages 20 to 32"
+    quoted_gist: experience thresholds, hit dice and spells usable per class per level
+    rejection_reason: >-
+      Entirely magnitudes. See grain_decisions. The relationships they encode are already
+      carried by the class-gates-spell-use edges here and the level and ability gates on
+      spell level access from packets 02 and 03.
+
+  - text_locus: "every class section, pages 20 to 31"
+    quoted_gist: the ability score minimums required to enter each class
+    rejection_reason: >-
+      Verified redundant against packet 03's eighteen GATES edges rather than assumed. See
+      OBS-23 for the class-by-class check.
+
+  - text_locus: "The Cleric, p20"
+    quoted_gist: the undead are ghasts, ghosts, ghouls, liches, mummies and so on
+    why_considered: monster_undead exists canonically at degree 28
+    rejection_reason: >-
+      A definition by enumeration, not a relationship. The load-bearing claim, that
+      clerics turn undead, is F1. Which creatures count as undead is a Monster Manual
+      matter and the text says so.
+
+  - text_locus: "The Cleric, p20; The Fighter, p22; The Magic-User, p25"
+    quoted_gist: revenue of nine, seven or five silver pieces per inhabitant per month
+    rejection_reason: >-
+      Magnitudes attached to a stronghold. The relationship that high level gates
+      stronghold construction is F3 and F26.
+
+  - text_locus: "The Paladin, p22, benefit 8"
+    quoted_gist: the paladin may call for an intelligent warhorse with stated statistics
+    why_considered: a real granted resource
+    rejection_reason: >-
+      No canonical node represents the paladin's warhorse, and the passage is largely
+      statistics, which are magnitudes. A candidate node was considered and not proposed:
+      the packet gives it two sentences and the Analyst would be minting identity for a
+      mechanic the book barely elaborates. Flagged here so the omission is deliberate and
+      visible rather than silent.
+
+  - text_locus: "The Assassin, p29"
+    quoted_gist: the assassination table gives roughly a fifty percent chance of killing
+    rejection_reason: >-
+      The relationship, that assassins gain an assassination attack on surprise, is F39.
+      The probability is a magnitude.
+
+  - text_locus: "The Monk, p31, special abilities A through K"
+    quoted_gist: eleven lettered special abilities gained at rising levels
+    why_considered: >-
+      several are genuinely mechanical, including immunity to poison, resistance to
+      beguiling and charm, and the quivering palm
+    rejection_reason: >-
+      Partially extracted, not wholly rejected. Those with an existing canonical target
+      are recorded, notably disease immunity as F57. The remainder, including quivering
+      palm, speak with plants, feign death and mind masking, have no canonical node, and
+      proposing eleven candidate nodes from one table would flood the registry with
+      monk-only identities. Recorded as OBS-26 with a recommendation.
+
+non_edge_observations:
+  - id: OBS-22
+    topic: the packet 04 alignment deferral was correct, with one exception
+    locus: all ten class sections, pages 20 to 31
+    finding: >-
+      OBS-15 of GUR-PKT-PHB-013-018-races-r03 deferred the class alignment restrictions
+      out of the Table I legend on p13 and recorded the deferral as a test: if the class
+      sections did not restate them, the deferral was wrong. They do. Cleric states any
+      alignment save true neutral; druid states the only absolute neutrals; fighter states
+      any alignment; paladin states lawful good and must remain so; ranger states good;
+      magic-user states any alignment; thief states neutral or evil, rarely neutral good;
+      assassin states evil; monk states lawful. That is nine of ten classes stating their
+      own restriction in their own section.
+    the_exception: >-
+      The illusionist section states no alignment restriction at all. The p13 legend gives
+      illusionist as (A), any. So for the illusionist the race-table legend is the only
+      statement in either packet, and no C-series edge is proposed for it.
+    consequence: >-
+      The deferral is discharged for nine classes with better citations than the legend
+      would have given. For the illusionist the Reviewer has a choice: accept that "any
+      alignment" is the absence of a restriction and therefore not an edge, which is the
+      Analyst's reading and why nothing is proposed, or cite it back to the p13 legend in
+      packet 04. The Analyst recommends the former, consistent with rejecting the "yes"
+      cells of the race table in packet 04.
+    why_recorded: >-
+      A deferral is only sound if someone checks it. This one was checked class by class.
+
+  - id: OBS-23
+    topic: packet 03's ability minimums are complete for all ten classes
+    locus: all ten class sections
+    finding: >-
+      Every ability minimum stated in this packet was checked against the eighteen
+      ability-gates-class edges of GUR-PKT-PHB-009-013-ability-scores-r01. Cleric wisdom;
+      druid wisdom and charisma; fighter strength and constitution; paladin strength,
+      intelligence, wisdom, constitution and charisma; ranger strength, intelligence,
+      wisdom and constitution; magic-user intelligence and dexterity; illusionist
+      intelligence and dexterity; thief dexterity; assassin strength, intelligence and
+      dexterity; monk strength, wisdom, dexterity and constitution. All are already
+      carried. None is missing, and this packet adds none.
+    why_it_matters: >-
+      Packet 03 extracted these from the ability tables, which list class minimums in a
+      General Information column. It was not obvious that a column of scattered notes
+      would prove complete against ten dedicated class sections. It did. That is evidence
+      the ability tables are the authoritative locus, which supports having extracted them
+      there rather than here.
+    consequence: no edges; the potential twenty-eight duplicates are not proposed
+
+  - id: OBS-24
+    topic: the new race nodes are used, and the taxonomy rule is respected
+    locus: "The Multi-Classed Character and The Character with Two Classes, p33"
+    finding: >-
+      The packet states that only non- or semi-human characters can be multi-classed, and
+      that the character with two classes must be human. Both are group-grain statements
+      about exactly the categories DEC-2026-0002 established.
+    how_it_was_handled: >-
+      G1 asserts race_demihuman GATES rule_multiclass and G2 asserts race_human
+      EXCLUDED_FROM rule_multiclass, both as explicit source-supported edges citing this
+      page. Neither is an inheritance from taxonomy membership, which DEC-2026-0002
+      forbids. G3 uses race_human for the dual-class rule, which is the second edge that
+      node has earned since it was approved.
+    redundancy_note: >-
+      G1 overlaps the six per-race GATES edges G1 to G6 of packet 04, which assert the
+      same eligibility per race from the race sections. Whether the group edge should
+      replace them, coexist with them, or be rejected in their favour is a Reviewer
+      question and exactly the grain choice DEC-2026-0002 anticipated. The Analyst
+      proposes both and flags the overlap rather than silently choosing.
+
+  - id: OBS-25
+    topic: sub-class inheritance is stated, not assumed
+    locus: The Druid, The Paladin, The Ranger, The Illusionist, The Assassin
+    finding: >-
+      Five classes are sub-classes of another, and each states its inherited behaviour
+      explicitly: druids fight and save as clerics, monks attack on the cleric table and
+      save on the thief table, assassins attack on thief tables and have all thief
+      functions, illusionists conform to magic-users in most respects.
+    why_it_matters: >-
+      This is the clearest general-rule candidate seen so far, but promoting it now would
+      buy nothing, because every instance is stated outright and would carry an empty
+      general_rule_id under constitution 7.1 regardless. It becomes worth promoting only
+      if a later packet relies on the inheritance without restating it, which the spell
+      chapters may.
+    recommendation: Architect may wish to note it now and decide after the spell packets.
+
+  - id: OBS-26
+    revision_status: rewritten_in_r02_at_architect_direction
+    topic: the eleven monk special abilities, tested one by one
+    locus: "Notes Regarding Special Abilities, pages 31 to 32"
+    r01_error: >-
+      r01 asserted that only disease immunity had a canonical target node and asked a
+      blanket question about whether class-specific abilities warrant nodes at all.
+      DEC-2026-0003 returned that as not decidable architecture. It was also wrong on the
+      facts: re-checking the registry ability by ability found targets for seven of the
+      eleven. r01 under-checked and then escalated the gap instead of closing it.
+    method_in_r02: >-
+      Each lettered ability was tested against the core test and then against the registry
+      for an existing target. Extract where a canonical target exists; defer where the
+      target is a spell that the spell packets will establish; propose a node only where
+      the mechanic exists nowhere else.
+    disposition:
+      - ability: "A, speak with animals at third level"
+        outcome: deferred
+        reason: >-
+          The target is the Speak with Animals spell, which appears in the cleric and
+          druid tables of packet 09 and will be established with its own description.
+          Minting it from a monk table would fix a spell's identity from the wrong locus.
+      - ability: "B, mind masking against ESP at fourth level"
+        outcome: extracted as M1
+        target: spell_esp
+      - ability: "C, immunity to disease, haste and slow at fifth level"
+        outcome: extracted as F57 corrected, plus M2 and M3
+        target: rule_disease, spell_haste, spell_slow
+        note: >-
+          F57 was typed EXCLUDED_FROM in r01 and is corrected to EXCLUDES in r02.
+          Constitution 4.1 distinguishes them: EXCLUDED_FROM says X is not an input to Y,
+          EXCLUDES says X actively prevents Y. An immunity is the second. The same
+          correction is applied by using EXCLUDES for M2, M3 and M8.
+      - ability: "D, self-induced catalepsy at sixth level"
+        outcome: deferred
+        reason: >-
+          spell_feign_death exists but denotes the spell. The monk ability is
+          self-induced and physiological, so pointing at the spell would assert a
+          relationship the text does not make. No node represents the ability.
+      - ability: "E, self-healing at seventh level"
+        outcome: extracted as M4
+        target: rule_hp_recovery
+      - ability: "F, speak with plants at eighth level"
+        outcome: deferred
+        reason: same as A; the target is a spell the spell packets will establish
+      - ability: "G, resistance to beguiling, charm, hypnosis and suggestion at ninth level"
+        outcome: extracted as M5 and M6
+        target: spell_charm_person, spell_suggestion
+        note: >-
+          Beguiling and hypnosis have no canonical spell node and are not extracted. The
+          two that exist carry the relationship; the omission is partial coverage of one
+          sentence rather than a missing mechanic.
+      - ability: "H, telepathic and mind blast defence at tenth level"
+        outcome: extracted as M7
+        target: psi_attack_modes
+      - ability: "I, poison immunity at eleventh level"
+        outcome: extracted as M8
+        target: save_poison
+      - ability: "J, geas and quest immunity at twelfth level"
+        outcome: deferred
+        reason: no canonical node for either spell; both are magic-user spells the spell packets will establish
+      - ability: "K, quivering palm"
+        outcome: candidate node proposed
+        reason: >-
+          The only one of the eleven that exists nowhere else in the graph and is not a
+          spell. It is a distinct attack form with its own preconditions and limits.
+    is_this_an_ontology_conflict: >-
+      No. That is the finding. Seven abilities resolved onto existing canonical nodes, four
+      are deferred to a packet that will establish their targets properly, and one needs an
+      ordinary node under an approved prefix. Under DEC-2026-0003 that last case is Builder
+      and Reviewer work, not an escalation. r01 escalated because it had not done the
+      per-ability work; having done it, there is nothing architectural here.
+    recommendation: >-
+      The same method should be applied to the paladin benefits and ranger abilities that
+      r01 also only partly represented, rather than asking about them as a class.
+
+unresolved_identity_questions:
+  - id: IDQ-08
+    question: >-
+      B10 asserts sys_alignment GATES rule_poison_ingested, from the Table II footnote
+      that the poison prohibition binds only clerics who are not of evil alignment. Should
+      the source be sys_alignment, or class_cleric qualified by alignment?
+    bearing: B10
+    analyst_handling: >-
+      Used sys_alignment because alignment is what varies in the sentence; the class is
+      fixed. Flagged because the reverse reading is defensible.
+
+  - id: IDQ-09
+    question: >-
+      F35 asserts exp_level CONSTRAINS thief_pick_pockets, for the rule that a victim's
+      level reduces the thief's chance. The exp_level node here denotes the victim's
+      level, not the thief's, while F30, F32 and F33 use the same node for the thief's
+      own level, in the same class section and on the same page.
+    bearing: F35
+    analyst_handling: >-
+      Proposed as written and flagged rather than resolved. The graph has one node for
+      experience level and this rule needs it to mean two different characters at once.
+      This is a genuine expressiveness limit, not a naming slip, and it is adjacent to the
+      class_level_conflation hazard already flagged on packet 02's E6.
+
+architectural_escalations: []
+architectural_escalations_note: >-
+  None raised. OBS-26 is the nearest, and it is deliberately recorded as an observation
+  seeking guidance rather than as an escalation, because no edge in this packet depends on
+  the answer and the question is better decided across several packets than from this one.
+
+blocking_notes:
+  - id: BLK-01
+    severity: unchanged
+    issue: domain_registry.yaml remains an empty map at status bootstrap.
+    owner: architect
+  - id: BLK-02
+    severity: severe and now cumulative
+    issue: no node_registry_slice.csv and no local_neighborhood.json supplied, for the fifth packet running.
+    consequence: >-
+      335 edges have now been proposed across five packets with no deduplication against
+      the 3,809-edge canonical graph. This packet is the worst exposure yet: it touches
+      exp_level at degree 162, sys_alignment at 102, thief_skills, turn_undead at 29 and
+      every class node. OBS-24 records one overlap the Analyst could find without a slice;
+      there are certainly others that cannot be found without one.
+    owner: packet_creator
+
+completeness_statement: >-
+  All 1,160 lines were read before extraction. Every one of the twenty-three tables was
+  examined and every class section was read in full, including the notes beneath each
+  table and the lettered special-ability list for monks. Page markers were checked for
+  sequence and uniqueness before reading; the single gap at page 23 is explained in
+  OBS-27 and is not a defect.
+
+  108 candidate edges are proposed. Seven candidate groups are recorded as rejected with
+  reasons, two of which are substantive rather than mechanical: the twelve progression
+  tables, rejected on grain, and the per-class ability minimums, rejected on a verified
+  redundancy against packet 03 rather than an assumed one.
+
+  Two candidate nodes are proposed and a third is carried forward from packet 03 unchanged
+  rather than re-proposed. Two duplicate identity triples were caught by a mechanical check
+  during generation and resolved before assembly, not emitted and left for a Reviewer.
+
+  Two prior deferrals are discharged in this packet and both were correct. The alignment
+  restrictions deferred from packet 04 are restated by nine of ten classes, and the
+  ability minimums extracted in packet 03 prove complete against all ten class sections.
+  Recording deferrals as tests rather than as intentions is what made both checkable.
+
+  The two nodes approved since packet 04, race_human and race_demihuman, are both used
+  here on explicit source statements rather than on taxonomy inheritance, which
+  DEC-2026-0002 forbids.
+
+  This GUR is complete enough for the Builder to normalize without rereading the source.
+  The standing qualification is now cumulative and is the most important thing in this
+  artifact: five packets have proposed 335 edges against a graph none of them could see.
+
+# =============================================================================
+# DOWNSTREAM NOTES  (added 2026-07-30, after the GUR body was written)
+# =============================================================================
+downstream_notes:
+  purpose: >-
+    Builder and Reviewer startup does not read books/<book>/reports/, so a finding recorded
+    only there would never reach them. This block is a pointer, not a verdict.
+  dedupe_report:
+    path: books/adnd1e/phb/reports/DEDUPE-PHB-20260729.md
+    what_it_is: >-
+      Every edge proposed across all PHB GURs, compared against the 3,809-edge canonical
+      graph on three tests: exact duplicate triple, type conflict on the same ordered pair,
+      and direction conflict on the reversed pair. Across all PHB GURs, 115 of 389 proposed
+      edges duplicate a canonical triple exactly, 35 are type conflicts and 20 are direction
+      conflicts.
+    why_it_exists: >-
+      No packet was ever supplied with a local_neighborhood.json, so no Analyst could run
+      this check at extraction time. It is BLK-02, run once after the fact.
+    what_builder_should_do: >-
+      Consult it before normalising this GUR. Exact duplicates should generally be dropped
+      from the GUP; where the canonical row cites a different book, prefer adding this
+      packet's citation to the existing row over discarding a second independent witness.
+    what_reviewer_should_do: >-
+      The direction conflicts are classified in the report into four classes with a
+      disposition for each. Class B is not a conflict at all and both sides should be kept.
+      Class D is a flat PHB-versus-DMG contradiction on two rows.
+  no_verdicts_embedded: >-
+    This GUR has not been edited to mark individual edges as duplicates. Whether an
+    assertion is already held by the graph is a normalisation determination owned by
+    Builder and Reviewer; recording it in an interpretive artifact would put the decision
+    in the wrong role.

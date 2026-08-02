@@ -1,0 +1,115 @@
+schema_version: "1.0"
+id: PKT-PHB-018-033-classes
+status: claimed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-018-033-classes
+constitution_version: "1.2"
+
+citation_code: PHB
+page_start: 18
+page_end: 33
+page_number_basis: printed_page_footer
+section_span:
+  - CHARACTER CLASSES
+  - CHARACTER CLASSES TABLE I and II
+  - the ten class sections
+  - The Multi-Classed Character
+  - The Character with Two Classes
+
+source_file: source.md
+source_checksum: sha256:f3ea5ca9a697d548c6b76af71fcef56d68282a686fd1008a16424a9b5ddba981
+source_bytes: 133036
+original_filename: phb.05.classes.md
+operator_sequence: 5
+
+page_composition:
+  p18: CHARACTER CLASSES introduction
+  p19: Table I and Table II with their notes
+  p20: The Cleric
+  p21: The Druid
+  p22: remainder of The Druid; The Fighter; The Paladin
+  p24: remainder of The Paladin
+  p25: remainder of The Ranger; attacks per melee round; The Magic-User
+  p26: The Illusionist
+  p27: The Thief
+  p28: Thief Function Table and its notes
+  p29: The Assassin
+  p30: remainder of The Assassin
+  p31: The Monk
+  p32: remainder of The Monk
+  p33: The Multi-Classed Character; The Character with Two Classes
+
+# --- Page 23 is not missing ---------------------------------------------------
+page_23_note: >-
+  Markers run 18 to 33 with no {#p23}, and this is correct rather than a defect. The
+  operator confirms page 23 of this printing is a full-page illustration carrying no
+  text. The Paladin section therefore spans pages 22 and 24 with no intervening prose.
+  Recorded here and as OBS-27 in the GUR because a gap in an otherwise contiguous marker
+  run is exactly what an automated check flags, and it was in fact flagged before it was
+  explained.
+
+# --- Pre-extraction source amendment ------------------------------------------
+# Amended before claim, so no artifact depended on the superseded content.
+source_amendment:
+  amended_by: operator
+  amended_before_claim: true
+  post_claim_byte_neutral_change:
+    observed: true
+    checksum_at_claim: sha256:cd45635e9933d8b209450872cb092da62f6eb75b0203e7b40a5f3dbfa5fc6d48
+    checksum_now: sha256:f3ea5ca9a697d548c6b76af71fcef56d68282a686fd1008a16424a9b5ddba981
+    byte_count: 133036 both before and after, so a substitution rather than an edit in length
+    gur_affected: false
+    verification: >-
+      Structure re-checked against what the Analyst actually read: 1,160 lines, the same
+      fifteen section headings at identical line numbers, the same fifteen page markers
+      covering 18 to 33 with the expected gap at 23, and no doubled headings. Every
+      section name and page cited by the GUR resolves to the same place. Most likely the
+      trailing-whitespace cleanup on the Magic-User heading or a similar single-character
+      substitution. Recorded rather than silently overwritten, because a claimed packet is
+      immutable under ARTIFACT_LIFECYCLE section 1 and an unexplained checksum change is
+      worse than an explained one.
+  reason_given: correcting two doubled headings reported by the Analyst's table diagnostics
+  changes:
+    fixed:
+      - >-
+        line 483/485 carried "#### SPELLS USABLE BY CLASS AND LEVEL - RANGERS (FIGHTERS)"
+        immediately followed by the same title at "##" level; now a single heading
+      - >-
+        line 1055/1057 carried "#### MONKS TABLE II: MONKS ABILITY TABLE" immediately
+        followed by the same title at "##" level; now a single heading
+    not_defects:
+      - >-
+        The Rangers spell table was flagged by the Analyst's first check as having ragged
+        rows. It does not. It is a pandoc grid table with a three-tier header, a "Spell
+        Level" banner over "Druidic" spanning three columns and "Magic-User" spanning two,
+        over the real six-column header. All eleven data rows are six wide. Same
+        construction as Dexterity Table II in packet 03.
+      - >-
+        Five class tables were flagged for a non-ascending first column. False positive:
+        the first column is an experience-point range with comma thousands separators, and
+        the checker read the leading digits before the first comma. The authoritative
+        column is Experience Level, which was re-checked across all twelve class tables
+        and is strictly ascending with no duplicates in every one.
+
+table_verification:
+  tables_in_packet: 23
+  level_sequences_checked: 12
+  level_sequence_failures: 0
+  detail: >-
+    Clerics 1-11, Druids 1-14, Fighters 1-11, Paladins 1-11, Rangers 1-12, Magic-Users
+    1-18, Illusionists 1-12, Thieves 1-12, Assassins 1-15, Monks Table I 1-17, Monks Table
+    II 1-17. No transposition of the kind found in the Charisma Table of packet 03.
+
+packet_metadata_origin: analyst_derived_at_claim
+missing_supplied_inputs:
+  - node_registry_slice.csv
+  - local_neighborhood.json
+  - general_rule_slice.json
+missing_input_impact: >-
+  The worst exposure of the five packets. 108 edges proposed against nodes of very high
+  canonical degree, including exp_level at 162, sys_alignment at 102 and every class node.
+  One overlap with packet 04 was found without a slice and is recorded as OBS-24; others
+  almost certainly exist and cannot be found this way. Across five packets 335 edges now
+  await deduplication that no Analyst was equipped to perform.

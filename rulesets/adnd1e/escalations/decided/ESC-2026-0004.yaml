@@ -1,0 +1,172 @@
+schema_version: "1.0"
+id: ESC-2026-0004
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-013-018-races
+constitution_version: "1.2"
+
+raised_by: analyst
+raised_on: "2026-07-28"
+decision_owner: architect
+decision_id: DEC-2026-0002
+
+originating:
+  packet_id: PKT-PHB-013-018-races
+  gur_id: GUR-PKT-PHB-013-018-races-r03
+  gur_section: post_decision_observations / OBS-21
+  gup_id: null
+  review_id: null
+
+trigger: >-
+  ESCALATION_CONTRACT, "the constitution and production data disagree in a way that cannot
+  be fixed mechanically", and "two canonical nodes appear ontologically equivalent and
+  merging them could affect existing edges" read in reverse: one canonical node is
+  carrying several meanings.
+
+relationship_to_prior_decision: >-
+  This is not a defect report against DEC-2026-0001, which answered correctly the question
+  it was asked. That decision ruled race_any to be the generic race concept and scoped
+  legacy migration to rows whose label reads Human or Humanity, a set of exactly three.
+  That set is right. This escalation reports that the same node carries a second and
+  opposite conflation which falls outside that scope, found while verifying the decision's
+  acceptance tests.
+
+# -- the question --------------------------------------------------------------
+question: >-
+  DEC-2026-0001 rules that race_any means the generic race concept. Four canonical edges
+  use race_any to mean demihuman, that is, the non-human races specifically, which is the
+  complement of human rather than a synonym for it. Do those rows need a distinct identity,
+  and if so is it a new node such as race_demihuman, or the existing set of six race nodes?
+
+# -- evidence ------------------------------------------------------------------
+evidence:
+  method: >-
+    All 49 race_any incident edges in rulesets/adnd1e/canonical/edges_master.csv were read
+    while verifying the acceptance tests of DEC-2026-0001.
+  label_census:
+    total_incident_edges: 49
+    generic_Race: 36
+    Human_or_Humanity: 3
+    demihuman_family: 4
+    empty_label: 1
+    idiosyncratic: 5
+  demihuman_rows:
+    - edge: race_any CONSUMES money_gp
+      label: Demihuman Craftsmen
+      citation: DMG p30
+    - edge: race_any CONSTRAINS exp_level
+      label: Demihuman Race
+      citation: DMG p74
+    - edge: race_any MODIFIES rule_shield
+      label: Small Demi-Humans
+      citation: UA p76
+    - edge: item_elixir_life GATES race_any
+      label: Demi-Humans
+      citation: UA p90
+  other_labels_seen:
+    - ""
+    - Race and Sex
+    - Racial Determination
+    - Racial Relationship
+    - Racial Character
+    - Observer Race
+
+# -- why it matters ------------------------------------------------------------
+impact_on_current_work: >-
+  One row bears directly on work in hand. race_any CONSTRAINS exp_level, labelled
+  "Demihuman Race" and cited to DMG p74, asserts that demihuman status caps level
+  attainment. Edges B1 through B6 of GUR-PKT-PHB-013-018-races-r03 assert the same
+  relationship per race, cited to PHB CHARACTER RACE TABLE II. They are either a
+  finer-grained restatement of that row, a duplicate of it, or in tension with it. The
+  Analyst cannot tell, because no local_neighborhood.json was supplied with the packet.
+impact_generally: >-
+  A node ruled to mean "any race" is being read by four rows to mean "not human". Under
+  the decision's ruling those four now assert something broader than their source
+  supports: a demihuman-only rule stated as applying to every race, humans included. That
+  is a correctness problem in the existing graph, not only a tidiness one.
+
+affected_canonical_ids:
+  - race_any
+  - exp_level
+  - money_gp
+  - rule_shield
+  - item_elixir_life
+  - race_dwarf
+  - race_elf
+  - race_gnome
+  - race_half_elf
+  - race_half_orc
+  - race_halfling
+
+local_graph_neighborhood:
+  supplied: false
+  why: >-
+    No local_neighborhood.json accompanied the packet. The label census above is derived
+    from the canonical edge list directly and is complete for race_any, but the Analyst
+    cannot show what else the four target nodes carry.
+
+options_considered:
+  - option: add race_demihuman and repoint the four rows to it
+    for: >-
+      Direct parallel to DEC-2026-0001. Demihuman is a real category in this literature,
+      used by the source books themselves, and it is not expressible as any single
+      existing node.
+    against: >-
+      Adds a node that is definitionally the union of six existing ones, which may belong
+      as a role or a domain rather than a node.
+  - option: expand each of the four rows into per-race edges
+    for: >-
+      Uses only existing nodes and matches the grain of B1 through B6.
+    against: >-
+      Turns four rows into up to twenty-four, and asserts per-race precision the DMG and UA
+      citations may not support.
+  - option: leave them, and treat demihuman as an acceptable reading of race_any
+    for: no migration
+    against: >-
+      Contradicts DEC-2026-0001, which ruled race_any generic. Leaves four rows asserting
+      of humans something the source says only of non-humans.
+
+recommended_resolution: >-
+  The Analyst recommends deciding this together with the race_any labelling question
+  rather than row by row, because the deeper finding is that thirteen distinct labels sit
+  on one node ID. Constitution 3.1 states that labels do not determine identity and IDs do,
+  which means every one of those 49 rows currently asserts something about the same node
+  whatever its label says. Whether race_any is one node doing one job is the question
+  worth answering; race_demihuman is one likely consequence of the answer rather than the
+  answer itself.
+recommendation_confidence: >-
+  High that the four rows are wrong under the new ruling. Low on the remedy, which depends
+  on how the Architect wants category nodes handled generally.
+
+expected_migration_impact:
+  if_race_demihuman_added: four rows repointed; no other edge affected
+  if_expanded_per_race: up to twenty-four rows replace four; interacts with B1 through B6
+  if_left: >-
+    No migration, but four rows remain incorrect under DEC-2026-0001 and the Reviewer
+    dedupe of B1 through B6 has no stable target to compare against.
+
+would_change:
+  constitution: false
+  registry: >-
+    Only on the race_demihuman option.
+  profile: false
+  canonical_graph: true
+
+related:
+  - id: ESC-2026-0003
+    relation: parent question; decided as DEC-2026-0001
+  - id: DEC-2026-0001
+    relation: >-
+      This escalation reports a case outside that decision's migration scope. It does not
+      contest the ruling.
+  - id: ESC-2026-07-30T01.21.13.768Z
+    relation: >-
+      Also node identity, on two duplicate-label pairs. Three identity escalations now sit
+      against this registry.
+
+blocking: false
+blocking_note: >-
+  Not blocking extraction. B1 through B6 stand as proposed and unchanged. It becomes
+  material at Builder or Reviewer dedupe, which is where the collision surfaces.

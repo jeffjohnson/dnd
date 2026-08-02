@@ -1,0 +1,633 @@
+schema_version: "1.0"
+id: ESC-2026-07-30T04.57.52.190Z
+legacy_id: ESC-2026-0009
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-013-018-races
+constitution_version: "1.3"
+
+raised_by: reviewer
+raised_on: "2026-07-30"
+filed_on: "2026-07-30"
+decision_owner: architect
+decision_id: DEC-2026-0010
+assigned_by: DEC-2026-0005
+assignment_audit_item: 5
+topic: subrace_infravision_identity_and_provenance
+supersedes_placeholder: REVIEW-ESC-SUBRACE-INFRAVISION
+
+# 1. -- originating artifacts --------------------------------------------------
+originating:
+  packet:
+    id: PKT-PHB-013-018-races
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-013-018-races/packet.yaml
+  source:
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-013-018-races/source.md
+    checksum: sha256:d934424b2995c53e725b31634e87be59573f9ef9436167679f3ab38db9dbb98f
+  gur:
+    id: GUR-PKT-PHB-013-018-races-r03
+    path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-013-018-races-r03.yaml
+    reviewed_checksum: sha256:04ecb29ec2f2015544fbc9fbdc89b8ec446638c2584832d193bcea56ff076827
+    current_checksum_at_filing: sha256:7f32467b193d873eefde728171ce1a50d205d5a1b0de8d20a3fe2c9f3826bc03
+    current_matches_reviewed_checksum: false
+    drift_finding: >-
+      The GUP and Review immutably identify the reviewed GUR bytes by the
+      reviewed checksum, but the current file at that path changed before this
+      escalation's final validation. Reviewer re-read current F33 and compared
+      it directly with F33 in the checksummed GUP: its authored endpoints, type,
+      aspect, condition, citation, and status remain the same. This package
+      therefore preserves the reviewed checksum as provenance and separately
+      records the current path checksum rather than claiming a false match.
+  gup:
+    id: GUP-PKT-PHB-013-018-races-r03
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-013-018-races-r03.yaml
+    checksum: sha256:8e066f5f88d4bba0020c36d11cd4e400719368c4f3dde8aacdbda3a332ddfe9e
+    validation_report: build/reports/GUP-PKT-PHB-013-018-races-r03.validation.json
+    status: blocked
+  review:
+    id: REV-GUP-PKT-PHB-013-018-races-r03-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-013-018-races-r03-r01.yaml
+    checksum: sha256:f0ff1445712eca75a3dc9180dbd57e06bc9fcc9a4b39f728350ea96bd550dc48
+    affected_refs: [F33]
+    disposition: architect_escalation
+
+trigger: >-
+  Review corrected F33 from a GATES assertion to a MODIFIES assertion about
+  halfling-subrace infravision range. The corrected PHB core assertion shares
+  endpoints and type with an optional UA legacy assertion at canonical CSV line
+  2781. The assertions have different scope and different assertion keys, but
+  silently deduplicating, merging, or replacing either row would broaden the PHB
+  claim or lose UA provenance. DEC-2026-0005 therefore assigned the complete
+  standalone package to Reviewer.
+
+# 2. -- fixed interim policy ---------------------------------------------------
+interim_assertion_policy:
+  applies_until: ESC-2026-07-30T04.57.52.190Z is decided and implemented through the normal lifecycle
+  active_baseline:
+    book: PHB
+    status: core
+    scope: halfling subraces
+    assertion: >-
+      Halfling subrace modifies infravision range; the source distinguishes
+      mixed-blood and pure Stoutish halflings.
+    treatment: >-
+      This narrower PHB assertion is the active baseline. The pending
+      architecture decision does not make the broader optional assertion the
+      active rule.
+  optional_provenance:
+    book: UA
+    status: optional
+    canonical_csv_line: 2781
+    treatment: >-
+      Preserve the UA assertion and its UA provenance as optional. It must not
+      replace, broaden, or block the PHB core assertion.
+  prohibited_actions:
+    - Do not overwrite or relabel canonical CSV line 2781 as PHB.
+    - Do not broaden the PHB claim from halfling subraces to every subrace.
+    - Do not merge PHB and UA into one row that cannot preserve separate activation status.
+    - Do not treat the optional UA row as an exact duplicate that suppresses F33.
+    - Do not mutate canonical data from this pending escalation package.
+  assignment_text_clarification: >-
+    DEC-2026-0005's ruling paragraph says "Until ESC-2026-07-30T04.45.31.286Z is decided"
+    immediately after assigning both ESC-2026-07-30T04.45.31.286Z and ESC-2026-07-30T04.57.52.190Z. For this
+    subrace-infravision package, the controlling interim period is pending the
+    ESC-2026-07-30T04.57.52.190Z decision, consistent with audit item 5 and the explicit filing
+    directive.
+
+# 3. -- exact question ---------------------------------------------------------
+question: >-
+  Under the fixed core-before-optional policy above, should corrected PHB F33 be
+  integrated as a distinct core assertion while the UA assertion at canonical
+  CSV line 2781 remains separately preserved as optional legacy provenance?
+  Should any later narrowing of the UA row to dwarven subraces require a current
+  UA page-10 source packet and independent review, or does the Architect direct
+  a different representation that still preserves both scopes, statuses, and
+  provenance without false deduplication?
+
+why_it_needs_governance: >-
+  The PHB source and F33 field corrections are deterministic at Review, and the
+  implemented assertion key makes F33 a semantic-near rather than exact
+  duplicate of the UA row. Governance is nevertheless required because the
+  existing canonical assertion is optional legacy data with a blank condition
+  and a Dwarves-section citation, while the new assertion is current,
+  independently reviewed, core, and halfling-specific. Choosing replacement,
+  merge, or a rewrite of the existing row would change canonical provenance or
+  activation semantics.
+
+# 4. -- PHB evidence and corrected F33 -----------------------------------------
+phb_evidence:
+  locus:
+    book: PHB
+    page: "17"
+    section: Halflings
+    source_line: 280
+  smallest_relevant_excerpt: >-
+    "Certain halfling characters have infravision. Those with mixed blood are
+    assumed to have infravision which functions up to 30′ distant, while those
+    of pure Stoutish blood are able to see heat radiation variation at up to
+    60′(normal infravision)."
+  reviewer_interpretation: >-
+    The passage does not make subrace gate the existence of the infravision
+    mechanic as a whole. It states that qualifying halfling ancestry changes
+    the range, so MODIFIES with aspect "vision range" is the supported grain.
+    The numeric distances remain source detail and do not enter aspect or
+    condition.
+
+corrected_f33:
+  ref: F33
+  operation: additions
+  source_id: race_subrace
+  source_label: Sub-Race
+  edge_type: MODIFIES
+  target_id: race_infravision
+  target_label: Infravision
+  aspect: vision range
+  condition: halfling subraces
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: "17"
+  section: Halflings
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ""
+  general_rule_id: ""
+  review_flag: ""
+  assertion_key:
+    - race_subrace
+    - modifies
+    - race_infravision
+    - vision range
+    - halfling subraces
+  review_disposition: architect_escalation
+  review_integration_action: hold_for_architect_decision
+
+# 5. -- complete UA assertion and canonical provenance -------------------------
+ua_assertion:
+  canonical_location:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:86b26641a1f62e5b758916bbaba1364bf5316690499dbf580b8ec9a86a22cbf5
+    canonical_csv_line_including_header: 2781
+    data_row_1_based_excluding_header: 2780
+    canonical_index_0_based: 2779
+    numbering_note: >-
+      DEC-2026-0005 calls this canonical row 2781. That value is the physical
+      CSV line including the header. The following saving-throw assertion is
+      CSV line 2782 and must not be changed by mistake.
+  complete_canonical_row:
+    source_id: race_subrace
+    source_label: Subrace
+    edge_type: MODIFIES
+    target_id: race_infravision
+    target_label: Infravision
+    aspect: ranges vary by subrace
+    condition: ""
+    polarity: neutral
+    polarity_basis: unset
+    book: UA
+    page: "10"
+    section: "Dwarves:"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: optional
+    supersession_basis: ""
+    general_rule_id: ""
+    review_flag: ""
+  assertion_key:
+    - race_subrace
+    - modifies
+    - race_infravision
+    - ranges vary by subrace
+    - ""
+  resolved_source_registration:
+    source_id: ua-legacy-unspecified
+    book_id: ua
+    citation_code: UA
+    edition_or_printing: unspecified
+    provenance: legacy graph dump
+    registry_path: rulesets/adnd1e/registries/sources.yaml
+    registry_checksum: sha256:43ac1ad0b7c49b6f6bb11f03f18cfd8df20c47ef0a80f0d45fc3cce4244648ad
+  book_registration:
+    book_id: ua
+    citation_code: UA
+    title: Unearthed Arcana
+    status: optional
+    registry_path: rulesets/adnd1e/registries/books.yaml
+    registry_checksum: sha256:e9e3c4276efc92ac69c565428c6dcda44a241ad2ca84bec6ac0c1c705cca854a
+
+ua_canonical_lineage:
+  - stage: archived extraction batch
+    path: books/adnd1e/ua/archive/legacy/extraction-batches/ua_p04_12.csv
+    checksum: sha256:9febc23e7b862fedb1d14c5dbe3d064a41ec1b0929b40f098d6f60b1725b0a7c
+    csv_line_including_header: 29
+    row: >-
+      race_subrace,Subrace,MODIFIES,race_infravision,Infravision,ranges vary
+      by subrace,,UA,10,Dwarves:,TRUE,page-sweep
+  - stage: preserved original legacy master
+    path: migrations/adnd1e/legacy-import/original/edges_master.csv
+    checksum: sha256:7d10cc41bc9138fec5b6055cc27531df245b56f1023fddba2da11037fec48f82
+    csv_line_including_header: 2781
+    row: >-
+      race_subrace,Subrace,MODIFIES,race_infravision,Infravision,ranges vary
+      by subrace,,UA,10,Dwarves:,TRUE,page-sweep,optional
+  - stage: generated UA convenience partition
+    path: migrations/adnd1e/legacy-import/by-book/ua/edges_legacy.csv
+    checksum: sha256:9bd4449d23e6511238de196a7038a7e0446b9f3d1310c9e411c39b8fe6bcdf98
+    csv_line_including_header: 48
+    row: >-
+      race_subrace,Subrace,MODIFIES,race_infravision,Infravision,ranges vary
+      by subrace,,UA,10,Dwarves:,TRUE,page-sweep,optional
+  - stage: current canonical normalization
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:86b26641a1f62e5b758916bbaba1364bf5316690499dbf580b8ec9a86a22cbf5
+    csv_line_including_header: 2781
+    transformation_observed:
+      explicit: explicit_rule
+      polarity: neutral
+      polarity_basis: unset
+      governance_fields_added_blank:
+        - supersession_basis
+        - general_rule_id
+        - review_flag
+    semantic_and_citation_fields_preserved: true
+
+ua_evidence_limit:
+  current_source_packet_present: false
+  current_ua_gur_present: false
+  current_ua_gup_present: false
+  current_ua_review_present: false
+  available_current_book_state: initialized
+  available_evidence: >-
+    The repository contains the complete canonical edge assertion and three
+    matching legacy-lineage copies, but no current UA source.md packet or
+    independently reviewed page-10 prose.
+  consequence: >-
+    "Dwarves:" is reliable recorded provenance and strongly contextualizes the
+    assertion, but Reviewer cannot convert that context into a new
+    "dwarven subraces" condition as an independently source-verified fact from
+    this package. Any semantic rewrite of the UA row should follow UA
+    packetization and Review. This limitation does not weaken or block the
+    directly verified PHB assertion.
+
+# 6. -- affected identities ----------------------------------------------------
+affected_canonical_ids:
+  - id: race_subrace
+    label: Sub-Race
+    kind: race
+    registry_degree: 12
+    roles: [modifier_source]
+    status: canonical
+  - id: race_infravision
+    label: Infravision
+    kind: race
+    registry_degree: 18
+    roles: [gated_privilege]
+    status: canonical
+  - id: race_halfling
+    label: Halfling
+    kind: race
+    registry_degree: 11
+    roles: [gated_privilege]
+    relevance: PHB scope named by the F33 condition
+    status: canonical
+  - id: race_dwarf
+    label: Dwarf
+    kind: race
+    registry_degree: 23
+    roles: [modifier_source, wealth_sink]
+    relevance: UA section provenance, not an endpoint in the legacy row
+    status: canonical
+
+# 7. -- complete local graph neighborhood -------------------------------------
+local_graph_neighborhood:
+  supplied: true
+  canonical_graph:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:86b26641a1f62e5b758916bbaba1364bf5316690499dbf580b8ec9a86a22cbf5
+    data_rows: 3809
+  node_registry:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:958d78e0f50f6244c70b237a88b3514354e7a578bad643f752a91533ea86c084
+  method: >-
+    Reviewer read every canonical row whose source_id or target_id is
+    race_subrace or race_infravision. The union below contains every such row
+    once and marks the node or nodes to which it is incident. Assertions include
+    endpoints, type, aspect, condition, citation, and activation status.
+  decisive_counts:
+    race_subrace_incident_rows: 12
+    race_infravision_incident_rows: 18
+    union_rows: 29
+    rows_incident_to_both: 1
+    exact_matches_for_corrected_f33: 0
+    same_endpoint_and_type_near_matches_for_corrected_f33: 1
+    near_match_csv_lines: [2781]
+
+  incident_edge_union:
+    - {csv_line: 152, incident_to: [race_subrace], assertion: "race_subrace MODIFIES exp_level", aspect: "raises racial level cap", condition: "halfling sub-races", citation: "PHB p14, CHARACTER RACE TABLE II", status: core}
+    - {csv_line: 169, incident_to: [race_subrace], assertion: "race_subrace MODIFIES tbl_racial_preferences", aspect: "attitude shift", condition: "halfling sub-races", citation: "PHB p18, RACIAL PREFERENCES", status: core}
+    - {csv_line: 487, incident_to: [race_infravision], assertion: "race_infravision EXCLUDED_FROM ex_mapping", aspect: "not suitable for mapping", condition: "", citation: "PHB p102, MOVEMENT IN CITIES", status: core}
+    - {csv_line: 494, incident_to: [race_infravision], assertion: "race_infravision GATES ex_light_vision", aspect: "sight without light", condition: "", citation: "PHB p102, INFRAVISION", status: core}
+    - {csv_line: 495, incident_to: [race_infravision], assertion: "rule_light OVERRIDES race_infravision", aspect: "spoiled by illumination", condition: "", citation: "PHB p102, INFRAVISION", status: core}
+    - {csv_line: 496, incident_to: [race_infravision], assertion: "rule_heat OVERRIDES race_infravision", aspect: "spoiled by great heat", condition: "", citation: "PHB p102, INFRAVISION", status: core}
+    - {csv_line: 497, incident_to: [race_infravision], assertion: "race_infravision CONSTRAINS thief_hide_in_shadows", aspect: "body heat betrays the thief", condition: "unless masked", citation: "PHB p102, INFRAVISION", status: core}
+    - {csv_line: 528, incident_to: [race_infravision], assertion: "spell_infravision GATES race_infravision", aspect: "grants the ability", condition: "", citation: "PHB p85, INFRAVISION", status: core}
+    - {csv_line: 529, incident_to: [race_infravision], assertion: "spell_darkness OVERRIDES race_infravision", aspect: "blocks infrared sight", condition: "", citation: "PHB p66, DARKNESS 15 RADIUS", status: core}
+    - {csv_line: 670, incident_to: [race_subrace], assertion: "race_subrace GATES class_cavalier", aspect: "dark gray or high elf descent only", condition: "", citation: "UA p12, CHARACTER CLASSES", status: optional}
+    - {csv_line: 671, incident_to: [race_subrace], assertion: "race_subrace CONSTRAINS class_ranger", aspect: "wild elf descent excluded", condition: "", citation: "UA p12, CHARACTER CLASSES", status: optional}
+    - {csv_line: 679, incident_to: [race_subrace], assertion: "race_subrace MODIFIES race_any", aspect: "expanded racial roster", condition: "", citation: "UA p3, CHARACTER RACES", status: optional}
+    - {csv_line: 976, incident_to: [race_infravision], assertion: "tbl_minor_benign GATES race_infravision", aspect: "granted while held", condition: "", citation: "DMG p155, TABLE I: MINOR BENIGN POWERS", status: core}
+    - {csv_line: 2333, incident_to: [race_infravision], assertion: "race_infravision MODIFIES item_cloak_elvenkind", aspect: "heat sight partially defeats it", condition: "", citation: "DMG p141, TREASURE (MISCELLANEOUS MAGIC)", status: core}
+    - {csv_line: 2774, incident_to: [race_subrace], assertion: "race_subrace CONSTRAINS sys_classes", aspect: "expanded class limitations table", condition: "", citation: "UA p7, CHARACTER RACE TABLE I.", status: optional}
+    - {csv_line: 2775, incident_to: [race_subrace], assertion: "race_subrace CONSTRAINS exp_level", aspect: "expanded level limit table", condition: "", citation: "UA p8, CHARACTER RACE TABLE II.", status: optional}
+    - {csv_line: 2780, incident_to: [race_subrace], assertion: "race_subrace MODIFIES tbl_racial_preferences", aspect: "expanded preference table", condition: "", citation: "UA p12, RACIAL PREFERENCES TABLE", status: optional}
+    - {csv_line: 2781, incident_to: [race_subrace, race_infravision], assertion: "race_subrace MODIFIES race_infravision", aspect: "ranges vary by subrace", condition: "", citation: "UA p10, Dwarves:", status: optional}
+    - {csv_line: 2782, incident_to: [race_subrace], assertion: "race_subrace MODIFIES save_matrix", aspect: "resistances vary by subrace", condition: "", citation: "UA p10, Dwarves:", status: optional}
+    - {csv_line: 2900, incident_to: [race_infravision], assertion: "spell_cantrip EXCLUDES race_infravision", aspect: "does not affect heat or ultraviolet sight", condition: "", citation: "UA p50, Bluelight (Conjuration)", status: optional}
+    - {csv_line: 2910, incident_to: [race_subrace], assertion: "race_subrace GATES rule_multiclass", aspect: "each subrace permits specific combinations", condition: "", citation: "UA p72, CHARACTER RACE TABLE III.", status: optional}
+    - {csv_line: 3138, incident_to: [race_infravision], assertion: "spell_permanency GATES race_infravision", aspect: "may be made permanent on a person", condition: "", citation: "UA p81, SPELL EXPLANATIONS", status: optional}
+    - {csv_line: 3153, incident_to: [race_subrace], assertion: "race_subrace MODIFIES rule_birth", aspect: "each elven stock has its own modifier", condition: "", citation: "UA p83, CIRCUMSTANCES OF BIRTH", status: optional}
+    - {csv_line: 3227, incident_to: [race_infravision], assertion: "item_ring_faerie GATES race_infravision", aspect: "bestowed on the wearer", condition: "", citation: "UA p93, TREASURE (RINGS)", status: optional}
+    - {csv_line: 3316, incident_to: [race_infravision], assertion: "spell_moonbeam EXCLUDED_FROM race_infravision", aspect: "does not spoil heat sight", condition: "", citation: "UA p44, DRUID SPELLS (5TH LEVEL)", status: optional}
+    - {csv_line: 3357, incident_to: [race_infravision], assertion: "spell_sunray EXCLUDES race_infravision", aspect: "suppressed for rounds inside and near the area", condition: "", citation: "UA p45, DRUID SPELLS (7TH LEVEL)", status: optional}
+    - {csv_line: 3479, incident_to: [race_infravision], assertion: "spell_starshine MODIFIES race_infravision", aspect: "soft light interacts with heat sight", condition: "", citation: "UA p43, DRUID SPELLS (3RD LEVEL)", status: optional}
+    - {csv_line: 3532, incident_to: [race_infravision], assertion: "spell_cantrip EXCLUDED_FROM race_infravision", aspect: "coloured glow does not spoil heat sight", condition: "", citation: "UA p65, ILLUSIONIST SPELLS (CANTRIPS)", status: optional}
+    - {csv_line: 3597, incident_to: [race_infravision], assertion: "item_girdle_dwarvenkind GATES race_infravision", aspect: "grants dwarven heat sight", condition: "", citation: "UA p100, TREASURE (MISCELLANEOUS MAGIC)", status: optional}
+
+# 8. -- assertion identity and provenance analysis -----------------------------
+identity_analysis:
+  implemented_assertion_key:
+    fields: [source_id, edge_type, target_id, aspect, condition]
+    implementation: tooling/builder/src/adnd1e_builder/vocab.py
+    duplicate_detector: tooling/builder/src/adnd1e_builder/duplicates.py
+  normalized_key_comparison:
+    phb_f33:
+      - race_subrace
+      - modifies
+      - race_infravision
+      - vision range
+      - halfling subraces
+    ua_csv_line_2781:
+      - race_subrace
+      - modifies
+      - race_infravision
+      - ranges vary by subrace
+      - ""
+    exact_duplicate: false
+    endpoint_and_type_near_match: true
+  reviewer_near_duplicate_finding: >-
+    The two rows are distinct assertions under the implemented key, not one
+    assertion repeated with different citations. PHB F33 is expressly limited
+    to halfling subraces. The UA row is optional, carries a Dwarves-section
+    citation, and has no condition as encoded. Status and book are not part of
+    the assertion key, so the distinctness rests on the reviewed scope-bearing
+    aspect and condition; provenance then controls source identity and
+    activation.
+  overbreadth_risk: >-
+    The UA row's blank condition can be read more broadly than its Dwarves
+    section provenance warrants. That legacy ambiguity is not evidence that PHB
+    made a universal subrace assertion. It is a reason to source-review UA, not
+    a reason to widen or suppress F33.
+  supersession_finding: >-
+    No supplied evidence says the UA Dwarves assertion replaces the PHB
+    Halflings assertion. The mechanics concern different racial scopes, and the
+    UA row is optional. OVERRIDES and provenance merge are therefore unsupported.
+
+# 9. -- options and exact impact ----------------------------------------------
+options_considered:
+  - option: A. Integrate PHB F33 as a distinct core assertion and preserve UA unchanged
+    mechanism: >-
+      After an Architect decision, Builder emits corrected F33 exactly as
+      reviewed. Reviewer explicitly accepts the one semantic-near match as a
+      distinct scoped assertion. Integrator later appends the approved PHB row
+      and leaves UA CSV line 2781 unchanged and optional.
+    for:
+      - Preserves both assertions, citations, source identities, and activation statuses.
+      - Applies the existing five-field assertion key without creating an exact duplicate.
+      - Gives the directly verified, narrower PHB core assertion an independent graph row.
+      - Requires no speculative rewrite of UA without a current source packet.
+    against:
+      - Leaves the legacy UA row's blank-condition overbreadth unresolved.
+      - Consumers must continue respecting status filtering and the fixed interim interpretation.
+    duplicate_impact:
+      exact_duplicates_added: 0
+      semantic_near_pairs_added: 1
+      reviewer_disposition_required: distinct_assertions
+    migration_impact:
+      existing_canonical_rows_changed: 0
+      existing_canonical_rows_deleted: 0
+      new_canonical_edges_after_approval: 1
+      canonical_edge_count_before: 3809
+      canonical_edge_count_after: 3810
+      registry_identity_additions: 0
+      derived_degree_changes:
+        race_subrace: "12 -> 13"
+        race_infravision: "18 -> 19"
+      canonical_graph_json_regeneration_required: true
+      node_registry_degree_refresh_required: true
+
+  - option: B. Integrate PHB now and separately source-review a later UA scope correction
+    mechanism: >-
+      Take Option A for F33. Independently create a current source packet for UA
+      page 10, then run Analyst, Builder, and Reviewer stages. If the source
+      confirms a dwarven-subrace scope, a later approved migration may revise
+      the UA aspect and condition while preserving UA p10, Dwarves:, optional,
+      and ua-legacy-unspecified provenance.
+    for:
+      - Resolves PHB without waiting for optional UA repacketization.
+      - Provides the strongest eventual scope accuracy for the legacy row.
+      - Preserves UA rather than erasing or relabeling it.
+    against:
+      - Requires a separate UA packet and lifecycle pass.
+      - Exact UA replacement fields cannot be approved until its page is supplied and reviewed.
+    duplicate_impact:
+      immediate: identical to Option A
+      possible_after_ua_review: >-
+        PHB and UA would remain distinct if their conditions are respectively
+        halfling subraces and dwarven subraces.
+    migration_impact:
+      immediate: identical to Option A
+      possible_later_existing_rows_changed: 1
+      possible_later_target_csv_line: 2781
+      possible_later_row_count_change: 0
+      possible_later_degree_change: 0
+      later_migration_requires_new_source_evidence: true
+
+  - option: C. Repoint both assertions to race-specific source nodes
+    mechanism: >-
+      Represent the PHB assertion as race_halfling MODIFIES race_infravision
+      with a by-subrace condition, and after UA source review represent its
+      assertion as race_dwarf MODIFIES race_infravision.
+    for:
+      - Makes racial context structural rather than dependent only on condition and section.
+      - Eliminates the shared race_subrace endpoint/type near pair.
+    against:
+      - Changes the asserted modifier from subrace to base race.
+      - Requires reinterpretation and migration of the UA row.
+      - Is unnecessary because the existing assertion key already distinguishes scoped conditions.
+    duplicate_impact:
+      exact_duplicates_added: 0
+      endpoint_type_near_pair_removed: true
+    migration_impact:
+      existing_canonical_rows_changed: 1
+      proposed_f33_endpoint_changed: true
+      source_review_of_ua_required: true
+      registry_identity_additions: 0
+
+  - option: D. Merge both citations into one broad subrace assertion
+    mechanism: >-
+      Collapse the PHB and UA material into one race_subrace MODIFIES
+      race_infravision row with broad scope and combined provenance.
+    for:
+      - Produces one endpoint/type assertion.
+    against:
+      - Falsely broadens the PHB halfling statement.
+      - The production edge schema carries one book, page, section, and status locus.
+      - A single status cannot preserve PHB core and UA optional activation.
+      - Conflates different racial contexts and violates the fixed interim policy.
+    duplicate_impact:
+      false_deduplication: true
+    migration_impact:
+      contract_or_schema_change_required_for_multi_provenance: true
+      existing_canonical_rows_changed_or_deleted: 1
+      phb_provenance_loss_under_current_schema: true
+    disposition: reject
+
+  - option: E. Replace either assertion with the other
+    mechanism: >-
+      Either overwrite UA line 2781 with PHB F33 or suppress F33 because the UA
+      row entered canonical data first.
+    for: []
+    against:
+      - Replacing UA erases optional provenance.
+      - Suppressing PHB lets optional legacy data block a supported core assertion.
+      - Rewriting PHB to the UA wording broadens the PHB claim.
+      - Every direction violates DEC-2026-0005 and the fixed interim policy.
+    duplicate_impact:
+      false_deduplication: true
+    migration_impact:
+      provenance_or_core_assertion_lost: true
+    disposition: reject
+
+# 10. -- Reviewer recommendation ----------------------------------------------
+recommended_resolution: >-
+  Adopt Option A for the present decision and authorize Option B only as
+  separate follow-up work. Corrected PHB F33 is a source-supported core
+  assertion with a distinct five-field assertion key. It should proceed as its
+  own row after Builder and Reviewer revision; the optional UA assertion at CSV
+  line 2781 should remain unchanged and separately attributable while no current
+  UA page-10 source packet exists. If the Architect wants the UA row narrowed,
+  require packetization and independent review rather than inferring a canonical
+  rewrite from the section label alone.
+
+recommendation_confidence: >-
+  High for distinct PHB integration and preservation of the UA row. Moderate
+  for the eventual shape of a UA correction because the current repository does
+  not contain UA page-10 source prose.
+
+recommended_architect_ruling_points:
+  - Confirm that PHB F33 and UA CSV line 2781 are distinct scoped assertions, not exact duplicates.
+  - Confirm PHB F33 exactly as corrected in this package.
+  - Preserve UA CSV line 2781 unchanged, optional, and UA-attributed in the present decision.
+  - State that UA does not replace, broaden, or block PHB.
+  - Require a current UA source packet and lifecycle review before any semantic rewrite of the UA row.
+
+recommended_exact_follow_up:
+  builder:
+    - Emit a new GUP revision; do not overwrite r03.
+    - Apply F33's exact Review corrections from this package.
+    - Record canonical CSV line 2781 as a reviewed semantic-near match, not an exact duplicate.
+    - Do not modify or migrate the UA row.
+  reviewer:
+    - Independently review the new GUP revision and its CSV.
+    - Confirm the near-match disposition and fixed PHB/UA activation policy.
+    - Preserve r03-r01 as the immutable origin of this escalation.
+  analyst_if_ua_cleanup_is_ordered:
+    - Work only from a newly claimed UA page-10 source packet.
+    - Do not treat the archived CSV wording as a substitute for source prose.
+  integrator:
+    - Apply only a later Approved CSV.
+    - Add the approved PHB assertion without replacing or relabeling UA CSV line 2781.
+    - Regenerate canonical graph output and derived node degrees.
+
+# 11. -- expected change surface ----------------------------------------------
+expected_migration_impact:
+  under_recommendation:
+    canonical_migration_required: false
+    ordinary_canonical_addition_after_approval: true
+    existing_canonical_rows_changed: 0
+    new_edges: 1
+    registry_identity_change_required: false
+    derived_registry_degree_refresh_required: true
+    gup_revision_required: true
+    review_revision_required: true
+  possible_later_ua_cleanup:
+    canonical_migration_required: true
+    existing_rows_in_scope: 1
+    target:
+      path: rulesets/adnd1e/canonical/edges_master.csv
+      current_csv_line: 2781
+      stable_match_fields:
+        source_id: race_subrace
+        edge_type: MODIFIES
+        target_id: race_infravision
+        book: UA
+        page: "10"
+        section: "Dwarves:"
+        status: optional
+    exact_replacement_fields: pending_source_review
+
+would_change:
+  constitution: false
+  contracts: false
+  profile: false
+  registry_identity: false
+  canonical_graph: >-
+    This pending package changes none. Under the recommendation, later approved
+    integration adds one PHB core edge and refreshes generated graph and degree
+    data; it does not rewrite the UA row.
+  workflow_artifacts: >-
+    Builder and Reviewer issue new PHB revisions after the Architect decision.
+    UA artifacts are needed only if the Architect separately orders cleanup.
+
+# 12. -- related and blocking state -------------------------------------------
+related:
+  - id: DEC-2026-0005
+    relation: >-
+      Reserves ESC-2026-07-30T04.57.52.190Z, assigns it to Reviewer, specifies the required
+      evidence, and establishes the core-before-optional interim policy.
+  - id: REV-GUP-PKT-PHB-013-018-races-r03-r01
+    relation: >-
+      Supplies the independently verified F33 source citation, exact field
+      corrections, and original architecture hold.
+  - id: REVIEW-ESC-SUBRACE-INFRAVISION
+    relation: >-
+      Review-only placeholder superseded by this complete standalone package.
+
+blocking: true
+blocking_note: >-
+  Blocks formal integration of F33 only until the Architect decides this
+  standalone package and the decision is implemented through new Builder and
+  Reviewer revisions. It does not make UA active, does not block use of PHB as
+  the narrower core baseline, and does not block unrelated packet work.
+
+filing_validation:
+  yaml_parse: passed
+  escalation_contract_sections: passed
+  canonical_neighborhood: "29 of 29 union rows matched"
+  ua_canonical_assertion: "18 of 18 fields matched CSV line 2781"
+  assertion_key_result: distinct_semantic_near_pair
+  builder_test_suite:
+    tests: 169
+    failures: 0
+    errors: 0
+  checksum_result: >-
+    Stable source, GUP, Review, canonical graph, node registry, source registry,
+    book registry, and UA lineage checksums matched. The changed current GUR
+    path is separately and explicitly recorded under originating.gur.
+
+reviewer_ownership_statement: >-
+  Reviewer filed this escalation package only and did not modify the GUR, GUP,
+  Review, source packet, node registry, or canonical graph.

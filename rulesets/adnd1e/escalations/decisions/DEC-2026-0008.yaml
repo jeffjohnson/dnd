@@ -1,0 +1,122 @@
+schema_version: "1.0"
+id: DEC-2026-0008
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-007-008-intro
+constitution_version: "1.4"
+
+decision_date: "2026-07-30"
+escalation_id: ESC-2026-07-30T04.42.48.030Z
+
+question: >-
+  May one production edge carry several page and section loci, and how should
+  repeated or multi-page support be preserved?
+
+ruling: >-
+  A production edge carries exactly one primary citation locus. The page field
+  is blank or one printed page number; the section field is blank or one section
+  heading. Lists, ranges, and delimiter-separated loci are forbidden. When
+  support spans pages within one section, cite the section and leave page blank.
+  Repeated statements of the same assertion are preserved in provenance, not in
+  multi-locus edge fields or duplicate edges. E7 must use page 7 and section THE
+  GAME; its p9 and p15 corroboration remains represented by the separately
+  scoped assertions already identified in those packets.
+
+rationale:
+  - >-
+    All 3,809 canonical rows use a single numeric page or blank, and no section
+    contains a delimiter list. The proposed correction has no corpus precedent.
+  - >-
+    Packet-bounded Review cannot independently verify pages absent from the
+    packet. Allowing cross-packet citation lists would weaken the source
+    lifecycle rather than improve provenance.
+  - >-
+    The p9 and p15 material makes separately scoped assertions; it is not merely
+    extra citation text for E7. The graph already composes those relationships.
+  - >-
+    A provenance ledger can retain multiple origins for one canonical assertion
+    without changing the 18-column production edge contract.
+
+citation_contract:
+  page:
+    allowed: [blank, one_positive_integer]
+    forbidden: [lists, ranges, comma_delimited_values, semicolon_delimited_values]
+  section:
+    allowed: [blank, one_heading]
+    forbidden: [heading_lists, delimiter_joined_headings]
+  multi_page_single_section:
+    page: blank
+    section: required
+  repeated_assertion:
+    edge_rows: one
+    additional_loci: provenance_manifest_or_ledger
+
+e7_disposition:
+  ref: E7
+  page: "7"
+  section: THE GAME
+  additional_loci_not_added_to_e7:
+    - PHB p9, STRENGTH TABLE I
+    - PHB p15, CHARACTER RACE TABLE III
+  follow_up: >-
+    Builder emits a new GUP revision and Reviewer evaluates it. Neither role
+    overwrites prior artifacts.
+
+contract_changes:
+  - path: rulesets/adnd1e/governance/constitution.md
+    previous_version: "1.3"
+    new_version: "1.4"
+    change: >-
+      Clarify singular page and section loci plus provenance treatment for
+      repeated assertions.
+  - path: schemas/adnd1e/graph/edge.schema.json
+    change: >-
+      Restrict page to a positive integer, a digit string, or blank.
+
+affected_contracts:
+  - rulesets/adnd1e/governance/constitution.md
+  - schemas/adnd1e/graph/edge.schema.json
+affected_registries: []
+affected_artifacts:
+  - rulesets/adnd1e/ruleset.yaml
+  - rulesets/adnd1e/escalations/decided/ESC-2026-07-30T04.42.48.030Z.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0008.yaml
+  - books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-007-008-intro-r03.yaml
+  - tooling/builder/src/adnd1e_builder/vocab.py
+  - tooling/builder/tests/test_registry_and_vocab.py
+  - future Builder GUP and Review revisions
+
+migration_required: false
+migration_scope:
+  canonical_rows: none
+  reason: >-
+    Every current canonical page already conforms. Only the held E7 proposal
+    requires a new workflow revision.
+
+acceptance_tests:
+  - Constitution version is 1.4 and ruleset.yaml references 1.4.
+  - Builder declares 1.4 as its current Constitution version and accepts 1.4 artifacts.
+  - Historical 1.2 and 1.3 GURs are revalidated under 1.4 rather than silently trusted.
+  - The edge schema rejects page values containing commas, ranges, or spaces.
+  - The edge schema accepts blank page when section supplies the citation.
+  - E7 carries page 7 and section THE GAME only.
+  - Pages outside a packet cannot be added to that packet's edge citation.
+  - Repeated source loci remain independently recoverable through provenance.
+  - No duplicate edge is created solely to retain another citation.
+  - No canonical graph file is changed by this Architect decision.
+
+constitution_version_impact:
+  changed: true
+  previous_version: "1.3"
+  new_version: "1.4"
+  co_released_with: DEC-2026-0011
+  reason: >-
+    Citation field cardinality is a production-edge semantic contract.
+
+follow_up_owner:
+  gup_revision: builder
+  compiler_governance_version_and_tests: builder
+  source_verification: reviewer
+  provenance_preservation_after_approval: integrator

@@ -1,0 +1,2111 @@
+schema_version: '1.0'
+id: GUR-PKT-PHB-043-054-cleric-spells-r05
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-043-054-cleric-spells
+constitution_version: '1.6'
+revision: 5
+supersedes: GUR-PKT-PHB-043-054-cleric-spells-r04
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: DEC-2026-0017 applied; 41 caster-level scaling edges added, not 14 - see the count correction
+    in decisions_applied
+  blocking_ids: []
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 43
+page_end: 54
+source_summary: Pages 43 to 54, CLERIC SPELLS in full. A short Notes Regarding Cleric Spells preamble,
+  then 76 spell entries across seven levels, each with Level, Range, Duration, Area of Effect, Components,
+  Casting Time and Saving Throw followed by an Explanation/Description. Thirty-one entries are reversible.
+parse_method: 'Pandoc 3.10 JSON AST, per contracts/SOURCE_MARKDOWN.md, which makes a CommonMark-only or
+  GFM-only parser nonconforming. Page markers were resolved from the AST: a heading whose Pandoc Attr
+  identifier is pN is an end-of-heading marker under placement rule 1, so that heading and what follows
+  begin on page N. Parse artifacts are preserved at books/adnd1e/phb/work/analyst/p10/.'
+node_id_resolution_method: No slice supplied, for the sixth packet running. Resolved by registry lookup
+  on the cleaned spell name, first against spell_ labels and then against a slugified ID. 28 of 76 resolve
+  onto an existing node and 48 do not. An earlier draft of this matcher reported 29 because a fallback
+  stripped text after a comma and merged Protection from Evil with Protection from Evil, 10' Radius, which
+  are different spells at different levels. The fallback is removed and the two are now separate, one
+  matched and one proposed.
+grain_decisions:
+- decision: No class-to-individual-spell availability edge is proposed for any of the 76 spells.
+  reasoning: The obvious reading of a cleric spell list is that the cleric class grants each spell, which
+    would yield 76 edges. Canonical does not model spells that way. It carries seven class-to-spell edges
+    in 3,809 rows, all of them special cases, and represents clerical access through the rule_cleric_spells
+    aggregate, which already holds 25 edges including rule_deity GATES rule_cleric_spells and exp_level
+    GATES rule_cleric_spells. Emitting 76 near-identical GATES rows would invent a pattern the graph does
+    not use and would bury the aggregate that does the work.
+- decision: No per-spell material-component edge is proposed, although 42 of 76 list an M component.
+  reasoning: Canonical row 445 already asserts rule_cleric_spells CONSUMES spell_component_material, cited
+    to PHB 40, the packet immediately before this one. Forty-two per-spell repetitions would restate one
+    general rule at a worse grain. The preamble's genuine addition is the exception, that religious items
+    are not consumed, recorded as X1.
+- decision: Level, Range, Duration, Area of Effect and Casting Time yield no edges.
+  reasoning: Magnitudes throughout. Spell level survives only where the source makes it load-bearing on
+    something else, which happens once, at P3.
+- decision: Saving Throw yields an edge only where the field is not None.
+  reasoning: Sixty-six of 76 entries read None. The ten that do not are a real dependency on save_spell
+    and match the canonical spell-to-save pattern, which exists 27 times. The values Special, Neg. and
+    one-half describe the outcome and are magnitudes or procedure; only Command and Flame Strike carry
+    a qualitative condition worth keeping.
+candidate_nodes:
+- proposed_id: spell_command
+  proposed_label: Command
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '1'
+  page: 43
+  reversible: false
+  edges_depending_on_it:
+  - D1
+  - S1
+- proposed_id: spell_create_water
+  proposed_label: Create Water
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '1'
+  page: 43
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_purify_food_and_drink
+  proposed_label: Purify Food & Drink
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '1'
+  page: 44
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_remove_fear
+  proposed_label: Remove Fear
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '1'
+  page: 44
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_resist_cold
+  proposed_label: Resist Cold
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '1'
+  page: 44
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_sanctuary
+  proposed_label: Sanctuary
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '1'
+  page: 44
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_augury
+  proposed_label: Augury
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '2'
+  page: 45
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_detect_charm
+  proposed_label: Detect Charm
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '2'
+  page: 45
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_find_traps
+  proposed_label: Find Traps
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '2'
+  page: 45
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_resist_fire
+  proposed_label: Resist Fire
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '2'
+  page: 45
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_silence_15_radius
+  proposed_label: Silence, 15′ Radius
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '2'
+  page: 45
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_snake_charm
+  proposed_label: Snake Charm
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '2'
+  page: 46
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_speak_with_animals
+  proposed_label: Speak with Animals
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '2'
+  page: 46
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_spiritual_hammer
+  proposed_label: Spiritual Hammer
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '2'
+  page: 46
+  reversible: false
+  edges_depending_on_it:
+  - S2
+- proposed_id: spell_animate_dead
+  proposed_label: Animate Dead
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '3'
+  page: 46
+  reversible: false
+  edges_depending_on_it:
+  - D2
+- proposed_id: spell_continual_light
+  proposed_label: Continual Light
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '3'
+  page: 46
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_create_food_and_water
+  proposed_label: Create Food & Water
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '3'
+  page: 46
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_speak_with_the_dead
+  proposed_label: Speak with the Dead
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '3'
+  page: 48
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_cure_serious_wounds
+  proposed_label: Cure Serious Wounds
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '4'
+  page: 48
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_detect_lie
+  proposed_label: Detect Lie
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '4'
+  page: 48
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_divination
+  proposed_label: Divination
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '4'
+  page: 48
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_exorcise
+  proposed_label: Exorcise
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '4'
+  page: 48
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_lower_water
+  proposed_label: Lower Water
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '4'
+  page: 48
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_protection_from_evil_10_radius
+  proposed_label: Protection from Evil, 10′ Radius
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '4'
+  page: 49
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_speak_with_plants
+  proposed_label: Speak with Plants
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '4'
+  page: 49
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_sticks_to_snakes
+  proposed_label: Sticks to Snakes
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '4'
+  page: 49
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_tongues
+  proposed_label: Tongues
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '4'
+  page: 49
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_cure_critical_wounds
+  proposed_label: Cure Critical Wounds
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '5'
+  page: 49
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_dispel_evil
+  proposed_label: Dispel Evil
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '5'
+  page: 49
+  reversible: true
+  edges_depending_on_it:
+  - S5
+- proposed_id: spell_flame_strike
+  proposed_label: Flame Strike
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '5'
+  page: 49
+  reversible: false
+  edges_depending_on_it:
+  - S6
+- proposed_id: spell_plane_shift
+  proposed_label: Plane Shift
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '5'
+  page: 50
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_quest
+  proposed_label: Quest
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '5'
+  page: 50
+  reversible: false
+  edges_depending_on_it:
+  - S7
+- proposed_id: spell_true_seeing
+  proposed_label: True Seeing
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '5'
+  page: 50
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_aerial_servant
+  proposed_label: Aerial Servant
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '6'
+  page: 50
+  reversible: false
+  edges_depending_on_it: []
+  label_collision_note: 'The label Aerial Servant is already used by canonical monster_aerial_servant.
+    That is expected and deliberate: the spell summons the monster, so both identities exist and both
+    want the same label. Invariant 4 says labels do not determine identity.'
+- proposed_id: spell_animate_object
+  proposed_label: Animate Object
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '6'
+  page: 51
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_blade_barrier
+  proposed_label: Blade Barrier
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '6'
+  page: 51
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_find_the_path
+  proposed_label: Find the Path
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '6'
+  page: 51
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_part_water
+  proposed_label: Part Water
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '6'
+  page: 51
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_speak_with_monsters
+  proposed_label: Speak with Monsters
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '6'
+  page: 51
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_stone_tell
+  proposed_label: Stone Tell
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '6'
+  page: 52
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_word_of_recall
+  proposed_label: Word of Recall
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '6'
+  page: 52
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_astral_spell
+  proposed_label: Astral Spell
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '7'
+  page: 52
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_control_weather
+  proposed_label: Control Weather
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '7'
+  page: 52
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_earthquake
+  proposed_label: Earthquake
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '7'
+  page: 52
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_holy_word
+  proposed_label: Holy Word
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '7'
+  page: 52
+  reversible: false
+  edges_depending_on_it: []
+- proposed_id: spell_regenerate
+  proposed_label: Regenerate
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '7'
+  page: 52
+  reversible: true
+  edges_depending_on_it: []
+- proposed_id: spell_symbol
+  proposed_label: Symbol
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '7'
+  page: 52
+  reversible: false
+  edges_depending_on_it:
+  - S9
+- proposed_id: spell_wind_walk
+  proposed_label: Wind Walk
+  prefix: spell_
+  prefix_is_approved: true
+  kind: spell
+  spell_level: '7'
+  page: 54
+  reversible: false
+  edges_depending_on_it: []
+candidate_edges:
+- ref: P1
+  source_id: rule_spell_reversal
+  source_label: Reversed Spells
+  edge_type: TRIGGERS
+  target_id: align_change
+  target_label: Changing Alignment
+  aspect: alignment drift
+  condition: continued incautious use
+  polarity: inflicts
+  polarity_basis: read
+  book: PHB
+  page: 43
+  section: Notes Regarding Cleric Spells
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  source_quote: Incautious use of spells will change the cleric's alignment, if such usage continues unchecked.
+  aspect_was: alignment drift from reversed spell use
+- ref: P2
+  source_id: rule_spell_reversal
+  source_label: Reversed Spells
+  edge_type: CONSTRAINS
+  target_id: rule_spell_memorization
+  target_label: Spell Memorization
+  aspect: application fixed at learning
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 43
+  section: Notes Regarding Cleric Spells
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  source_quote: the cleric must decide which application of a reversible spell will be used prior to learning
+    it, i.e. it is not possible to have one spell both ways.
+  aspect_was: which application is fixed before learning
+- ref: P3
+  source_id: rule_spell_level
+  source_label: Spell Level
+  edge_type: MODIFIES
+  target_id: rule_cleric_spells
+  target_label: Cleric Spells
+  aspect: likelihood the deity concurs
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 43
+  section: Notes Regarding Cleric Spells
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  source_quote: As the spell level becomes higher, confidence will decrease that that deity will concur.
+  relationship_to_canonical: 'Canonical row 442 holds rule_deity OVERRIDES rule_cleric_spells, that the
+    deity may substitute or deny. This is a different assertion: it says the spell''s own level is what
+    moves that likelihood. No canonical row carries it.'
+- ref: S1
+  source_id: spell_command
+  source_label: Command
+  edge_type: TRIGGERS
+  target_id: save_spell
+  target_label: Spell
+  aspect: saving throw
+  condition: high intelligence or many hit dice
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 43
+  section: Command
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  node_status: proposed in this GUR
+- ref: S2
+  source_id: spell_spiritual_hammer
+  source_label: Spiritual Hammer
+  edge_type: TRIGGERS
+  target_id: save_spell
+  target_label: Spell
+  aspect: saving throw
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 46
+  section: Spiritual Hammer
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  node_status: proposed in this GUR
+- ref: S3
+  source_id: spell_glyph_of_warding
+  source_label: Glyph of Warding
+  edge_type: TRIGGERS
+  target_id: save_spell
+  target_label: Spell
+  aspect: saving throw
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 47
+  section: Glyph of Warding
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  node_status: existing
+- ref: S4
+  source_id: spell_remove_curse
+  source_label: Remove Curse
+  edge_type: TRIGGERS
+  target_id: save_spell
+  target_label: Spell
+  aspect: saving throw
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 47
+  section: Remove Curse
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  node_status: existing
+- ref: S5
+  source_id: spell_dispel_evil
+  source_label: Dispel Evil
+  edge_type: TRIGGERS
+  target_id: save_spell
+  target_label: Spell
+  aspect: saving throw
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 49
+  section: Dispel Evil
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  node_status: proposed in this GUR
+- ref: S6
+  source_id: spell_flame_strike
+  source_label: Flame Strike
+  edge_type: TRIGGERS
+  target_id: save_spell
+  target_label: Spell
+  aspect: saving throw
+  condition: reduces damage
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 49
+  section: Flame Strike
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  node_status: proposed in this GUR
+- ref: S7
+  source_id: spell_quest
+  source_label: Quest
+  edge_type: TRIGGERS
+  target_id: save_spell
+  target_label: Spell
+  aspect: saving throw
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 50
+  section: Quest
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  node_status: proposed in this GUR
+- ref: S8
+  source_id: spell_raise_dead
+  source_label: Raise Dead
+  edge_type: TRIGGERS
+  target_id: save_spell
+  target_label: Spell
+  aspect: saving throw
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 50
+  section: Raise Dead
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  node_status: existing
+- ref: S9
+  source_id: spell_symbol
+  source_label: Symbol
+  edge_type: TRIGGERS
+  target_id: save_spell
+  target_label: Spell
+  aspect: saving throw
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 52
+  section: Symbol
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  node_status: proposed in this GUR
+- ref: D1
+  source_id: monster_undead
+  source_label: Undead
+  edge_type: EXCLUDES
+  target_id: spell_command
+  target_label: Command
+  aspect: cannot be affected
+  condition: ''
+  book: PHB
+  page: 43
+  section: Command
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  node_status: target proposed in this GUR
+  source_quote: Undead are not affected by a command.
+  typing_note: 'EXCLUDES rather than EXCLUDED_FROM, on the constitution 4.1 reading applied to F57 and
+    M2, M3, M8 of the classes packet: an immunity is X actively preventing Y.'
+- ref: D2
+  source_id: spell_animate_dead
+  source_label: Animate Dead
+  edge_type: TRIGGERS
+  target_id: monster_undead
+  target_label: Undead
+  aspect: creates skeletons or zombies
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 46
+  section: Animate Dead
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  node_status: source proposed in this GUR
+  source_quote: This spell creates the lowest of the undead monsters, skeletons or zombies, from the bones
+    or bodies of dead humans.
+- ref: D3
+  source_id: spell_heal
+  source_label: Heal
+  edge_type: OVERRIDES
+  target_id: rule_disease
+  target_label: Disease
+  aspect: cures all disease
+  condition: ''
+  book: PHB
+  page: 51
+  section: Heal
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: explicit_replacement
+  review_flag: ''
+  source_quote: It will completely cure any and all diseases and/or blindness of the recipient.
+  relationship_to_canonical: Canonical row 520 holds spell_cure_disease OVERRIDES rule_disease. This is
+    a different spell asserting the same override and is not a duplicate identity.
+  supersession_note: explicit_replacement rather than later_publication. The source does not supersede
+    a rule published earlier; it states outright that the spell cures any and all diseases, which replaces
+    the disease mechanic's outcome in that instance.
+- ref: D4
+  source_id: spell_light
+  source_label: Light
+  edge_type: TRIGGERS
+  target_id: magic_resistance
+  target_label: Magic Resistance
+  aspect: resistance check
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 44
+  section: Light
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  source_quote: If this spell is cast upon a creature, the applicable magic resistance and saving throw
+    dice rolls must be made.
+  aspect_was: resistance checked when cast at a creature
+  retargeted_in_r04: r03 proposed a new node rule_magic_resistance. That was wrong. Canonical already
+    carries magic_resistance at degree 97, and row 2484, magic_resistance GATES save_spell 'resistance
+    checked before the save', is the same mechanic this edge depends on. Minting a second node would have
+    fragmented a well connected concept, which is a worse defect than the one it avoided. The existing
+    ID is unprefixed and therefore carries a DEC-2026-0004 pending-migration warning, exactly as align_change
+    does on P1 and D5; that is a known migration, not a reason to duplicate the node.
+- ref: D5
+  source_id: spell_raise_dead
+  source_label: Raise Dead
+  edge_type: TRIGGERS
+  target_id: align_change
+  target_label: Changing Alignment
+  aspect: alignment shift
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: PHB
+  page: 50
+  section: Raise Dead
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  source_quote: the cleric must be sure that the recipient of the slay living spell is evil and that his
+    or her death is a matter of great necessity and for good, otherwise the alignment of the cleric will
+    be sharply changed.
+  aspect_was: alignment shift from misuse of the reverse
+- ref: S10
+  source_id: spell_hold_person
+  source_label: Held or Paralyzed
+  edge_type: TRIGGERS
+  target_id: save_spell
+  target_label: Spell
+  aspect: saving throw
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 45
+  section: Hold Person
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  released_in_r02: Held as H1 in r01. DEC-2026-0015 ratifies spell_hold_person as the spell, so a spell-specific
+    save edge no longer risks adding a meaning to a node carrying three.
+- ref: C1
+  source_id: monster_special
+  source_label: Special Creatures
+  edge_type: EXCLUDES
+  target_id: spell_cure_light_wounds
+  target_label: Curative Spells
+  aspect: cannot be affected
+  condition: creatures harmed only by special weapons
+  book: PHB
+  page: 43
+  section: Cure Light Wounds
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  released_in_r02: Held as H2 in r01, which proposed no edge at all for this spell.
+  source_quote: nor will it cure wounds of creatures not living or those which can be harmed only by iron,
+    silver, and/or magical weapons
+  node_choice: monster_special is the node canonical already uses for this category, at row 1830.
+- ref: C2
+  source_id: spell_cure_light_wounds
+  source_label: Curative Spells
+  edge_type: TRIGGERS
+  target_id: cbt_tohit
+  target_label: To-Hit Roll
+  aspect: attack roll required
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 43
+  section: Cure Light Wounds
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  source_quote: if a person is avoiding this touch, a melee combat "to hit" die is rolled to determine
+    if the cleric's hand strikes the opponent
+  aspect_was: attack roll for the reversed touch
+- ref: L1
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_aerial_servant
+  target_label: Aerial Servant
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 50
+  section: Aerial Servant
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L2
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_animate_dead
+  target_label: Animate Dead
+  aspect: number animated
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 46
+  section: Animate Dead
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L3
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_animate_object
+  target_label: Animate Object
+  aspect: volume animated
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 51
+  section: Animate Object
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L4
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_augury
+  target_label: Augury
+  aspect: success chance
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 45
+  section: Augury
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L5
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_blade_barrier
+  target_label: Blade Barrier
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 51
+  section: Blade Barrier
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L6
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_commune
+  target_label: Commune
+  aspect: questions permitted
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 49
+  section: Commune
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L7
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_conjure_animals
+  target_label: Conjure Animals
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 51
+  section: Conjure Animals
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L8
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_create_food_and_water
+  target_label: Create Food & Water
+  aspect: volume created
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 46
+  section: Create Food & Water
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L9
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_create_water
+  target_label: Create Water
+  aspect: volume created
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 43
+  section: Create Water
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L10
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_detect_evil
+  target_label: Detect Evil
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 44
+  section: Detect Evil
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L11
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_detect_lie
+  target_label: Detect Lie
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 48
+  section: Detect Lie
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L12
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_dispel_evil
+  target_label: Dispel Evil
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 49
+  section: Dispel Evil
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L13
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_dispel_magic
+  target_label: Dispel Magic
+  aspect: success chance
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 47
+  section: Dispel Magic
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L14
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_divination
+  target_label: Divination
+  aspect: success chance
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 48
+  section: Divination
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L15
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_earthquake
+  target_label: Earthquake
+  aspect: area of effect
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 52
+  section: Earthquake
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L16
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_exorcise
+  target_label: Exorcise
+  aspect: success chance
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 48
+  section: Exorcise
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L17
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_find_the_path
+  target_label: Find the Path
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 51
+  section: Find the Path
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L18
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_glyph_of_warding
+  target_label: Glyph of Warding
+  aspect: warded area
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 47
+  section: Glyph of Warding
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L19
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_hold_person
+  target_label: Hold Person
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 45
+  section: Hold Person
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L20
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_insect_plague
+  target_label: Insect Plague
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 50
+  section: Insect Plague
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L21
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_light
+  target_label: Light
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 44
+  section: Light
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L22
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_lower_water
+  target_label: Lower Water
+  aspect: depth and duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 48
+  section: Lower Water
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L23
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_part_water
+  target_label: Part Water
+  aspect: trough size
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 51
+  section: Part Water
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L24
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_raise_dead
+  target_label: Raise Dead
+  aspect: time dead limit
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 50
+  section: Raise Dead
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L25
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_remove_curse
+  target_label: Remove Curse
+  aspect: reverse duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 47
+  section: Remove Curse
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L26
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_remove_fear
+  target_label: Remove Fear
+  aspect: saving throw bonus
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 44
+  section: Remove Fear
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L27
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_resist_cold
+  target_label: Resist Cold
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 44
+  section: Resist Cold
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L28
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_resist_fire
+  target_label: Resist Fire
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 45
+  section: Resist Fire
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L29
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_restoration
+  target_label: Restoration
+  aspect: treatment window
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 52
+  section: Restoration
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L30
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_resurrection
+  target_label: Resurrection
+  aspect: time dead limit
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 52
+  section: Resurrection
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L31
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_silence_15_radius
+  target_label: Silence, 15′ Radius
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 45
+  section: Silence, 15′ Radius
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L32
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_slow_poison
+  target_label: Slow Poison
+  aspect: treatment window
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 45
+  section: Slow Poison
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L33
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_speak_with_animals
+  target_label: Speak with Animals
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 46
+  section: Speak with Animals
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L34
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_speak_with_monsters
+  target_label: Speak with Monsters
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 51
+  section: Speak with Monsters
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L35
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_speak_with_plants
+  target_label: Speak with Plants
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 49
+  section: Speak with Plants
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L36
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_speak_with_the_dead
+  target_label: Speak with the Dead
+  aspect: questions permitted
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 48
+  section: Speak with the Dead
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L37
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_spiritual_hammer
+  target_label: Spiritual Hammer
+  aspect: weapon enchantment
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 46
+  section: Spiritual Hammer
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L38
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_sticks_to_snakes
+  target_label: Sticks to Snakes
+  aspect: number transformed
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 49
+  section: Sticks to Snakes
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L39
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_symbol
+  target_label: Symbol
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 52
+  section: Symbol
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L40
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_wind_walk
+  target_label: Wind Walk
+  aspect: duration
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 54
+  section: Wind Walk
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+- ref: L41
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: spell_word_of_recall
+  target_label: Word of Recall
+  aspect: weight transported
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 52
+  section: Word of Recall
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  general_rule_id: ''
+  supersession_basis: ''
+  review_flag: ''
+  authored_under: DEC-2026-0017
+held_pending_escalation: []
+canonical_duplicates_not_for_emission:
+- ref: X1
+  proposed: rule_holy_symbol EXCLUDED_FROM spell_components
+  aspect: religious items are not used up
+  page: 43
+  section: Notes Regarding Cleric Spells
+  canonical_row: null
+  canonical_assertion: rule_holy_symbol EXCLUDED_FROM spell_components, 'symbols and mistletoe are not
+    consumed', DMG 41
+  source_quote: with the notable exceptions of standard religious items, i.e. religious symbols and prayer
+    beads or similar devices
+  builder_action: do_not_emit; PHB 43 is a second and arguably better witness, so prefer adding this citation
+    to the existing DMG 41 row over discarding it
+- ref: X2
+  proposed: rule_cleric_spells CONSUMES spell_component_material
+  aspect: material components are used up
+  page: 43
+  section: Notes Regarding Cleric Spells
+  canonical_row: 445
+  canonical_assertion: rule_cleric_spells CONSUMES spell_component_material, 'caster must supply', PHB
+    40
+  builder_action: do_not_emit; exact duplicate from the immediately preceding packet
+- ref: X3
+  proposed: spell_slow_poison MODIFIES save_poison
+  aspect: delays the effect
+  page: 45
+  section: Slow Poison
+  canonical_row: 3478
+  canonical_assertion: spell_slow_poison MODIFIES save_poison, 'delays the effect', UA 43
+  builder_action: do_not_emit; PHB 45 is the spell's own description and a better locus than the UA row,
+    so prefer adding this citation to row 3478
+- ref: X4
+  proposed: abil_constitution GATES spell_raise_dead
+  aspect: survival of the ordeal
+  page: 50
+  section: Raise Dead
+  canonical_row: 91
+  canonical_assertion: spell_raise_dead TRIGGERS rule_resurrection_survival, 'roll required', PHB 12
+  builder_action: do_not_emit; the dependency is already carried, from the constitution table where it
+    belongs
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The reversal pattern, that many cleric spells have an opposite
+  form carrying alignment risk, is stated once in the preamble and is captured by P1 and P2 against rule_spell_reversal,
+  which already exists. Promoting it to a general rule would add nothing that those two edges do not already
+  say.
+domains_touched: []
+domains_touched_note: BLK-01 unchanged; domain_registry.yaml is still an empty map.
+candidate_domains:
+- name: clerical_magic
+  basis: the whole packet
+- name: spell_reversal
+  basis: P1, P2 and the 31 reversible entries
+- name: saving_throws
+  basis: S1 to S9
+domain_boundary_questions: []
+rejected_candidates:
+- text_locus: every spell entry, pages 43 to 54
+  quoted_gist: Level, Range, Duration, Area of Effect and Casting Time
+  rejection_reason: Magnitudes. See grain_decisions.
+- text_locus: Notes Regarding Cleric Spells, p43
+  quoted_gist: Your Dungeon Master might alter the material components of spells, require only religious
+    adjuncts as material, or just do away with them.
+  why_considered: it names material components, which are mechanical
+  rejection_reason: An instruction to consult the referee, not a rule. It states that the preceding rule
+    is optional, which the graph has no way to assert and which would weaken the rule if it did.
+- text_locus: 42 spell entries listing an M component
+  quoted_gist: specific material components, holy water, sulphur, a silver mirror and so on
+  why_considered: each is a real consumed resource
+  rejection_reason: The individual substances are not canonical nodes and minting 40 of them from a spell
+    list would flood the registry with single-use identities. The relationship that clerical spells consume
+    material components is already canonical at row 445.
+- text_locus: 31 reversible spell entries
+  quoted_gist: the reverse of this spell is X
+  why_considered: canonical carries spell_bless ALTERNATIVE_TO spell_curse at DMG 70, so the pattern exists
+  rejection_reason: Deferred rather than rejected outright. Emitting 31 ALTERNATIVE_TO edges would require
+    minting a node for each reversed form, roughly 31 more nodes, and most reversed forms are named only
+    in passing. The one canonical instance was minted from the DMG, where the reversed spell has its own
+    treatment. Recorded as OBS-43 with a recommendation rather than guessed at here.
+- text_locus: Cure Light Wounds, p43
+  quoted_gist: will not affect creatures without corporeal bodies, nor cure wounds of creatures not living
+  why_considered: it sits in the same sentence as C1, which is proposed
+  rejection_reason: No canonical node represents incorporeality, and "creatures not living" is broader
+    than monster_undead. Mapping it there would assert something narrower than the source says. C1 carries
+    the half of the sentence that has a node.
+- text_locus: Hold Person, p45
+  quoted_gist: creatures affected are brownies, dryads, dwarves, elves and fifteen more
+  rejection_reason: A definition by enumeration, not a relationship, rejected on the same ground as the
+    undead enumeration in the classes packet.
+- text_locus: Hold Person, p45
+  quoted_gist: saving throws are penalised when the spell is cast at fewer targets
+  why_considered: a real interaction between target count and the save
+  rejection_reason: The penalties are magnitudes and the target count has no node. What survives is that
+    the spell calls for a save, which is S10.
+- text_locus: Command, p43
+  quoted_gist: creatures with 6 or more hit dice (or experience levels) are entitled to a saving throw
+  why_considered: the description contains an experience-level phrase and was caught by the same sweep
+  rejection_reason: 'The level named is the target''s, not the caster''s. Nothing about this spell scales
+    with the cleric''s level. DEC-2026-0017 asks for a per-case rejection exactly here: it is the one
+    description of the forty-two that mentions experience level without expressing the dependency the
+    ruling is about.'
+non_edge_observations:
+- id: OBS-43
+  topic: the 31 reversible spells and whether each reverse needs a node
+  locus: throughout, and the preamble at p43
+  finding: 'Thirty-one of 76 entries are marked Reversible and most name the reverse in the description:
+    curse, destroy water, cause disease, harm, slay living, energy drain and so on. Canonical carries
+    exactly one such pair, spell_bless ALTERNATIVE_TO spell_curse at DMG 70.'
+  why_it_matters: The reversed forms are where the alignment risk in P1 actually bites, so they are not
+    decorative. But minting 31 nodes from names that appear only inside another spell's description would
+    fix a lot of identity from a weak locus, which is the mistake IDQ-13 and the spell-identity escalation
+    are both about.
+  recommendation: Decide the policy once rather than per packet. The magic-user spell packets will present
+    the same question at greater volume. The Analyst's preference is to mint a reversed-form node only
+    where the source gives it its own entry or its own mechanics, which for this packet would be a handful
+    rather than 31.
+  owner: architect
+- id: OBS-44
+  topic: legacy page attribution for this range disagrees with the source markers
+  locus: canonical rows 520, 521, 524, 525, 531, 532, 535
+  finding: Nine canonical edges are cited to PHB 43 to 54. Marker-derived paging from the operator's source
+    agrees with two of them and disagrees with seven. Bless is cited to 44 and the markers put it on 43.
+    Know Alignment is cited to 47 and the markers put it on 45. Cure Disease and Glyph of Warding are
+    cited to 49 and the markers put both on 47. Neutralize Poison is cited to 50 against 48, and Atonement
+    to 51 against 49.
+  detail:
+  - node: spell_bless
+    canonical_row: 531
+    canonical_page: 44
+    marker_derived_page: 43
+  - node: spell_bless
+    canonical_row: 532
+    canonical_page: 44
+    marker_derived_page: 43
+  - node: spell_know_alignment
+    canonical_row: 525
+    canonical_page: 47
+    marker_derived_page: 45
+  - node: spell_cure_disease
+    canonical_row: 520
+    canonical_page: 49
+    marker_derived_page: 47
+  - node: spell_glyph_of_warding
+    canonical_row: 535
+    canonical_page: 49
+    marker_derived_page: 47
+  - node: spell_neutralize_poison
+    canonical_row: 521
+    canonical_page: 50
+    marker_derived_page: 48
+  - node: spell_atonement
+    canonical_row: 524
+    canonical_page: 51
+    marker_derived_page: 49
+  why_it_matters: The offsets are not constant, so this is not one systematic shift that could be corrected
+    mechanically. It means legacy page citations in this range cannot be trusted, and this GUR's pages
+    will disagree with neighbouring canonical rows about the same spells. The identities and the assertions
+    are unaffected; only the citations differ.
+  recommendation: Prefer the marker-derived page for anything this packet cites, because the markers are
+    in the operator's own source and the legacy figures have no recoverable basis. Whether the seven canonical
+    rows should be corrected is an Integrator question, not one this GUR can settle.
+  owner: architect, then integrator
+  status: closed by operator ruling, 2026-07-31
+  ruling: For page numbers, the current input packets are canonical, without exception.
+  what_changed: r02 recorded the disagreement and declined to say which side was right, calling it an
+    Integrator question. It is now settled in favour of the packet. Every page in this GUR is marker-derived
+    and is therefore correct as published; nothing in the edge set changes.
+  consequence_for_canonical: The seven rows named here are defects rather than an alternative reading.
+    They are carried, with two more found outside this packet, in ESC-2026-07-31T17.05.43.998Z.
+- id: OBS-45
+  topic: the packet is almost entirely unextracted
+  locus: pages 43 to 54
+  finding: Nine canonical edges cover this twelve-page range, against 76 spell entries. Twenty-eight of
+    the 76 spells have a node; 48 do not.
+  why_it_matters: 'This is the first packet where the dominant output is identity rather than relationships.
+    Forty-eight of the 49 proposed nodes are spells that the graph simply does not know about, and 17
+    edges is a small return for twelve pages. That is the correct outcome and not a shortfall: a spell
+    list is mostly a list, its mechanical content is magnitudes, and the relationships worth having are
+    the handful where a spell reaches outside itself.'
+  owner: none, recorded for context
+- id: OBS-46
+  topic: a repository-wide page check, and one wrong answer withdrawn
+  locus: all ten claimed PHB packets against the 3,809-row canonical graph
+  finding: With the ruling settled, every canonical PHB row citing a page inside claimed coverage was
+    checked against the packet sources. 326 rows were checkable, 317 are consistent with their source
+    and 9 are provably wrong. A further 77 carry a section string that is not a heading and could not
+    be checked.
+  a_withdrawn_figure: 'A first pass reported 117 disagreements. It walked only Header and Para blocks,
+    so in the table-heavy classes packet the page went stale and it placed THE THIEF on page 22. That
+    figure is wrong and is withdrawn. The corrected walker resolves all three marker placements, including
+    the table-cell rule, in document order. A second refinement mattered as much: comparing a canonical
+    page against a section START page flags 89 rows that are legitimately on a later page of a multi-page
+    section. Only a citation outside the section SPAN is a defect.'
+  why_recorded: Two different bugs, in the same check, each produced a large and confident wrong number.
+    Both were caught by an impossibility in the output rather than by review of the code. It is worth
+    stating that a page audit needs a span test and a full-AST walk, because the next book will need the
+    same check and the naive version looks like it works.
+  owner: none, recorded for whoever runs this against the DMG
+- id: OBS-48
+  topic: what the Builder's validation caught that the Analyst's own checks did not
+  locus: build/reports/GUP-PKT-PHB-043-054-cleric-spells-r01.validation.json
+  finding: 'Four defects reached the Builder. One was a hard error, the missing supersession_basis on
+    D3. Three were warnings that are nonetheless Analyst defects: five aspects over the word limit, a
+    proposed node duplicating a 97-degree canonical concept, and a stale declared constitution version.'
+  why_it_matters: 'The Analyst ran invariant 12, canonical duplicate, grain-numeral, polarity and node-resolution
+    checks before publishing and all passed. None of them covered aspect word count, supersession basis,
+    or whether a proposed node duplicates an existing concept by meaning rather than by ID. The node case
+    is the instructive one: the check asked whether rule_magic_resistance already existed, and it did
+    not, so it passed. The right question was whether the concept already had a node, and it did, with
+    97 edges.'
+  recommendation: An Analyst pre-publication check should include aspect word count, supersession_basis
+    on every OVERRIDES, and a label search against canonical for every proposed node. The first two are
+    mechanical. The third is what would have caught magic_resistance and is worth doing on every packet
+    that proposes nodes, which from here is all of them.
+  owner: analyst
+  a_third_instance: 'IDQ-14''s count of fourteen is the same failure a third time, and the most consequential:
+    a keyword sweep was trusted as a census. It under-reported by a factor of three and the Architect
+    ruled on the wrong number. The pattern across all three is that a check which returns a plausible
+    number gets believed. The two page-audit bugs were caught only because they returned something impossible.'
+- id: OBS-49
+  topic: what the forty-one scaling edges do to this packet's shape
+  locus: the whole packet
+  finding: r04 proposed twenty edges against forty-eight new nodes, and OBS-45 recorded that identity
+    rather than relationship was this packet's dominant output. DEC-2026-0017 changes that. The packet
+    now proposes sixty-one edges, and exp_level becomes the single busiest source in it.
+  why_it_matters: exp_level is already the highest-degree node in the graph at 162. Adding forty-one more
+    incident edges from one packet makes it substantially busier, and the magic-user spell chapters will
+    do the same again at greater volume. That is the correct representation under the ruling and the Analyst
+    is not arguing against it. It is recorded because a node that accumulates several hundred edges of
+    one shape may eventually want a different treatment, and the moment to notice that is while the first
+    large batch is being added rather than after four books of it.
+  owner: architect, for the spell chapters generally
+unresolved_identity_questions:
+- id: IDQ-14
+  question: Fourteen spell descriptions make the effect scale with the caster's experience level. Should
+    that be one edge per spell against exp_level, or is it the general property of spellcasting that the
+    graph already carries?
+  bearing: no edge proposed
+  analyst_handling: Not proposed. Canonical already holds exp_level edges against the spell aggregates,
+    and 14 per-spell repetitions would restate them. Flagged because the magic-user packets will have
+    far more than 14 and the answer should be the same in both.
+architectural_escalations:
+- ESC-2026-07-31T04.35.02.574Z
+- ESC-2026-07-31T17.05.43.998Z
+architectural_escalations_note: Two escalations bear on this packet. ESC-2026-07-31T04.35.02.574Z is decided
+  by DEC-2026-0015 and released the two held spells. ESC-2026-07-31T17.05.43.998Z carries the nine canonical
+  page corrections and asks for the operator ruling to be written into contracts/SOURCE_MARKDOWN.md. Neither
+  blocks this GUR.
+blocking_notes:
+- id: BLK-01
+  severity: unchanged
+  issue: domain_registry.yaml remains an empty map at status bootstrap.
+  owner: architect
+- id: BLK-02
+  severity: severe and now cumulative
+  issue: no node_registry_slice.csv and no local_neighborhood.json supplied, for the sixth packet running.
+  consequence: For this packet the missing slice did real damage rather than creating rework, and it is
+    worth being precise about how. A supplied slice of the 183 spell_ nodes would have shown the label
+    divergence before extraction rather than after, which is what produced the escalation that was returned
+    as incomplete. It would also have shown the nine existing PHB 43 to 54 rows, which the Analyst found
+    only by looking.
+  owner: packet_creator
+completeness_statement: 'All 76 spell entries were parsed from the Pandoc AST and every one of the seven
+  header fields was captured: Level 76, Range 76, Duration 76, Area of Effect 75, Components 76, Casting
+  Time 76, Saving Throw 76. The single missing Area of Effect is Astral Spell, which has no such line
+  in the source; no proposed edge depends on that field. The preamble was read in full and yields three
+  of the seventeen edges.
+
+  Twenty candidate edges are proposed and forty-nine candidate nodes, of which forty-eight are spells
+  and one is Magic Resistance. Four assertions the packet genuinely witnesses are held back because canonical
+  already carries them, each with the row it duplicates. Four candidate groups are recorded as rejected
+  with reasons, one of them a deferral recorded as OBS-43 rather than a refusal.
+
+  r01 held two spells of 76 pending ESC-2026-07-31T04.35.02.574Z; r02 releases them under DEC-2026-0015
+  and all 76 are now extracted. That escalation supersedes the returned ESC-2026-07-30T15.16.18.973Z,
+  which had claimed the whole packet was blocked. It was not. Of the 28 spells matching an existing node,
+  26 match a node whose label agrees with its ID and only Cure Light Wounds and Hold Person do not.
+
+  Every proposed edge was checked against the 3,809-row canonical graph for an existing identity triple
+  and none collides. No duplicate identity triple exists within the proposal. No aspect or condition contains
+  a numeral.
+
+  r03 adds no edges and changes no page. It records the operator ruling that the claimed packet is authoritative
+  for page attribution, closes OBS-44 with that answer, and adds OBS-46 for the repository-wide check
+  the ruling made worth running.
+
+  r04 fixes the four defects the Builder''s validation surfaced. No edge is added or removed and no page
+  changes. D3 gains its required supersession_basis, five aspects are shortened to within the 1-4 word
+  limit with the original wording retained on each edge as aspect_was, D4 is repointed from a proposed
+  node to the existing magic_resistance, and the node count falls from 49 to 48.
+
+  r05 applies DEC-2026-0017. Forty-one exp_level MODIFIES edges are added, one per spell whose own description
+  explicitly scales an effect with the caster''s experience level, all authored improves with basis read
+  and none carrying a number. One further description, Command, contains an experience-level phrase that
+  refers to the target rather than the caster and is recorded as a rejection. The decision was given a
+  figure of fourteen, which was the Analyst''s under-count from a narrow keyword sweep; the corrected
+  figure and why it was wrong are in decisions_applied.DEC-2026-0017.count_correction. The packet now
+  proposes sixty-one edges against forty-eight candidate nodes.'
+downstream_notes:
+  purpose: Builder and Reviewer startup does not read books/<book>/reports/, so this block points at what
+    they would otherwise miss.
+  what_builder_should_do: Emit the 17 candidate edges and register the 49 candidate nodes. Do not emit
+    the four entries in canonical_duplicates_not_for_emission; three of them carry a recommendation to
+    add this packet's citation to the existing row instead. Do not emit H1 or H2.
+  what_reviewer_should_do: OBS-44 is closed and no longer needs a decision. This GUR's pages are authoritative
+    under the operator ruling and will disagree with seven neighbouring canonical rows about the same
+    spells until ESC-2026-07-31T17.05.43.998Z is applied. That is expected and is not a defect in this
+    artifact.
+  dedupe_report:
+    path: books/adnd1e/phb/reports/DEDUPE-PHB-20260729.md
+    note: Predates this packet and does not cover it. The equivalent check was run inline here against
+      all 3,809 canonical rows.
+revision_reason: DEC-2026-0017 answers IDQ-14 and directs the Analyst to record one exp_level MODIFIES
+  spell_<id> candidate for each spell whose own description explicitly scales an effect with caster experience
+  level, omitting every number. r05 does that. It also corrects the count the decision was given. The
+  decision names GUR-r03 as its required output because it was written against r02; r03 and r04 have since
+  published, so this work lands in r05, which is the active leaf.
+decisions_applied:
+  DEC-2026-0015:
+    effect_on_this_packet: Both held identities are ratified as the specific spells. spell_cure_light_wounds
+      means Cure Light Wounds, with the category assertion moving to the newly authorised spell_curative_spells.
+      spell_hold_person means Hold Person, with the two condition assertions moving to rule_immobile.
+    what_this_gur_must_not_do: The migration itself is Builder work under a single reviewed package, per
+      the decision coordination constraints, and the Integrator alone touches nodes.csv and the canonical
+      files. None of the seven newly authorised nodes is re-proposed here; they are the decision's, not
+      this packet's.
+    constitution_1_5: spell_ now explicitly covers source-named spell families using a plural or category-specific
+      stem. No node proposed by this packet is a family, so nothing here changes shape.
+  DEC-2026-0017:
+    ruling_applied: One exp_level MODIFIES spell_<id> per spell whose description explicitly scales an
+      effect with caster level. No numbers in aspect or condition, no inference for spells that do not
+      state it, no aggregate edge substituted for the selective set.
+    count_correction:
+      what_the_decision_was_told: fourteen of seventy-six spells state the dependency
+      what_is_actually_true: forty-one of seventy-six state it; forty-two descriptions contain an experience-level
+        phrase and one of those is rejected
+      why_the_original_figure_was_wrong: IDQ-14 in r02 reported fourteen. That figure came from a keyword
+        sweep whose pattern was 'level of the cleric', 'level of the caster', 'per level' and 'experience
+        level'. It missed the far commoner phrasings 'for each level of experience' and 'for every level
+        of experience', which is how most of these descriptions are actually written. The Analyst raised
+        IDQ-14 on that number and the decision's rationale repeats it. The error is the Analyst's, not
+        the Architect's.
+      does_it_change_the_ruling: 'No. The rationale argues that an aggregate edge would imply broader
+        scope than the source supports, and that argument holds at forty-one of seventy-six as it did
+        at fourteen: thirty-five spells still state no such dependency and would be wrongly covered. The
+        selective per-spell shape is unaffected.'
+      what_does_need_amending: 'The acceptance test ''the active-leaf cleric-spell GUR accounts for all
+        fourteen IDQ-14 scaling descriptions'' cannot be satisfied as written, because the true set is
+        forty-one. It is satisfied in substance: every description containing an experience-level phrase
+        is accounted for, forty-one as edges and one as a recorded rejection.'
+    rejections_recorded: 1
+    polarity_note: 'All forty-one are authored improves with basis read. In every case a higher caster
+      level produces more of the thing measured: longer duration, more targets, a better chance, a larger
+      area. None of the forty-one is worsens or neutral, which is worth stating explicitly because a uniform
+      polarity across a large set is the kind of thing that looks unexamined.'
+released_in_r02:
+  was_held:
+  - H1
+  - H2
+  now:
+  - S10
+  - C1
+  - C2
+  basis: 'DEC-2026-0015 ruling text: this decision completely unblocks Cure Light Wounds and Hold Person
+    in PKT-PHB-043-054-cleric-spells.'

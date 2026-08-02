@@ -1,0 +1,88 @@
+schema_version: "1.0"
+id: DEC-2026-0001
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-013-018-races
+constitution_version: "1.2"
+
+decision_date: "2026-07-28"
+escalation_id: ESC-2026-0003
+
+question: >-
+  Should race_human be added to the node registry, and should the explicit human
+  default case be represented by a node rather than by the absence of edges?
+
+ruling: >-
+  Approve race_human with label Human and kind race under the existing race_
+  prefix. race_any remains the generic race concept and must not be used as the
+  human identity. Explicit rules about the human baseline may attach to
+  race_human when they otherwise satisfy the graph constitution.
+
+rationale:
+  - >-
+    The PHB explicitly names human as one of seven playable racial stocks and
+    states mechanically relevant rules about human characters. This is a
+    positive source identity, not an inference from silence.
+  - >-
+    The race_ prefix and race kind are already approved. This decision adds no
+    node kind, prefix, edge type, or semantic exception.
+  - >-
+    The 49-edge race_any neighborhood is predominantly generic and spans age,
+    class, language, tables, generation, and other race-wide mechanics. It
+    cannot be narrowed to Human without corrupting those assertions.
+  - >-
+    Three legacy incident edges currently use race_any with the source label
+    Human or Humanity. Those rows demonstrate identity conflation in legacy
+    data; they do not make race_any the canonical human node.
+  - >-
+    A distinct race_human node preserves impact analysis for changes to the
+    stated human baseline while avoiding duplicate identity with race_any.
+
+affected_contracts: []
+affected_registries:
+  - rulesets/adnd1e/registries/nodes.csv
+affected_artifacts:
+  - rulesets/adnd1e/escalations/decided/ESC-2026-0003.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0001.yaml
+  - books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-013-018-races-r02.yaml
+
+registry_change:
+  operation: add
+  exact_row: "race_human,Human,race,0,"
+  notes:
+    - Degree zero is the deterministic value before any approved edge is integrated.
+    - Roles remain empty and must be derived by build tooling.
+
+migration_required: true
+migration_scope:
+  registry_addition: >-
+    No migration of existing edges is required to add race_human.
+  legacy_cleanup: >-
+    Builder and Reviewer must isolate the race_any incident edges whose
+    source_label is Human or Humanity and determine, from source, which belong
+    to race_human. Integrator may repoint only approved rows. Do not
+    automatically repoint all 49 race_any edges.
+  current_minimum_review_set:
+    count: 3
+    selection: "source_id=race_any and source_label in [Human, Humanity]"
+
+acceptance_tests:
+  - rulesets/adnd1e/registries/nodes.csv contains exactly one race_human row.
+  - The race_human row has label Human, kind race, degree 0, and no authored roles.
+  - The node registry contains no duplicate IDs after insertion.
+  - race_any remains present as the generic Race node.
+  - GUR candidate references to race_human can resolve without minting another ID.
+  - No canonical edge is changed by this Architect decision.
+  - Any race_any-to-race_human edge migration is source-reviewed and Integrator-applied.
+
+constitution_version_impact:
+  changed: false
+  reason: >-
+    The decision uses the existing race_ prefix and current node identity rules.
+
+follow_up_owner:
+  gur_normalization: builder
+  source_review: reviewer
+  canonical_migration: integrator

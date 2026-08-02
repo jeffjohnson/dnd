@@ -21,18 +21,23 @@ Never infer these from conversation history. Read them from repository manifests
 1. `rulesets/<ruleset-id>/governance/constitution.md`
 2. `contracts/GRAPH_INVARIANTS.md`
 3. `contracts/ARTIFACT_LIFECYCLE.md`
-4. `rulesets/<ruleset-id>/registries/domain_registry.yaml`
-5. the claimed source packet
-6. the node-registry slice supplied with the packet
-7. the local graph neighborhood supplied with the packet
-8. relevant approved general-rule records, if supplied
+4. `contracts/WORK_QUEUES.md`
+5. `contracts/SOURCE_MARKDOWN.md`
+6. `rulesets/<ruleset-id>/registries/domain_registry.yaml`
+7. `rulesets/<ruleset-id>/ruleset.yaml` and any referenced controlled taxonomy
+   registry relevant to the packet
+8. the claimed source packet
+9. the node-registry slice supplied with the packet
+10. the local graph neighborhood supplied with the packet
+11. relevant approved general-rule records, if supplied
 
 ## Inputs
 
 A claimed packet under `books/<ruleset-id>/<book-id>/packets/claimed/PKT-.../` containing:
 
 - `packet.yaml` metadata;
-- source text;
+- source text in one or more `.md` files conforming to
+  `contracts/SOURCE_MARKDOWN.md`;
 - source locator information;
 - optional page images/layout notes;
 - `node_registry_slice.csv`;
@@ -40,6 +45,16 @@ A claimed packet under `books/<ruleset-id>/<book-id>/packets/claimed/PKT-.../` c
 - optional `general_rule_slice.json`.
 
 Do not request or load the whole graph.
+
+The packet is Analyst work only when no valid GUR exists for its `packet_id`,
+unless a later Review explicitly returns work to Analyst. A retained claimed
+packet with an existing GUR is pipeline context, not a new Analyst job.
+
+An escalation under `rulesets/<ruleset-id>/escalations/returned/` with a ready
+Analyst handoff is corrective input. Follow its return Decision and submit a
+complete replacement escalation with a new timestamped ID and
+`prior_escalation_id`. When the related packet is already active, the return is
+context for that work rather than a second Analyst job.
 
 ## Core test
 
@@ -69,6 +84,10 @@ You must:
 14. identify potential general rules without applying them graph-wide;
 15. raise architectural questions explicitly rather than improvising ontology;
 16. include negative dependencies only when the text denies a relationship a reader would reasonably assume.
+17. derive printed-page citations from `{#pN}` placement before removing markers
+    from semantic source text;
+18. use Pandoc-compatible parsing for any programmatic packet processing.
+19. publish an explicit Builder handoff under `contracts/WORK_QUEUES.md`.
 
 ## Extraction sequence
 
@@ -90,6 +109,19 @@ You must:
 ## GUR output
 
 Write `books/<ruleset-id>/<book-id>/artifacts/gur/GUR-<packet-id>-rNN.yaml` conforming to `schemas/common/gur.schema.json` composed with `schemas/<ruleset-id>/graph/gur.schema.json`.
+
+Every new GUR records `revision`, `supersedes` (null for r01), and:
+
+```yaml
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+```
+
+Published GURs remain at stable paths. Do not move prior revisions into state
+subdirectories.
 
 The GUR must contain:
 
@@ -135,12 +167,16 @@ Each candidate edge must include:
 - Do not emit semantic edges such as `COUNTERS`.
 - Do not hide ambiguity by selecting a plausible ID without noting it.
 - Do not use conversation history as evidence.
+- Do not move or rewrite the claimed packet or a published GUR to signal
+  handoff state.
 
 ## Quality checks before handoff
 
 - Every source section was considered.
 - Every candidate edge passes the impact test.
 - Every edge has a citation.
+- Every page citation follows the block, table-row, or inline marker semantics in
+  `contracts/SOURCE_MARKDOWN.md`.
 - No magnitudes are stored.
 - Authored polarity appears only on the three permitted edge types.
 - Candidate IDs are clearly distinguished from canonical IDs.

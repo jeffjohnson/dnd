@@ -1,0 +1,233 @@
+schema_version: '1.0'
+id: GUP-PKT-PHB-040-042-spells-intro-r01
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-040-042-spells-intro
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 6 edge addition(s), 0 update(s), 0 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-PHB-040-042-spells-intro-r01
+  gur_checksum: sha256:1e5f6a0c3ef2a6107a91f76bf94e4136c3462848387286c9cede9a34a52028f1
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 241
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed: []
+  proposals_rejected_by_decision: []
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions:
+    - source_id: rule_rest
+      source_label: Rest and Nourishment
+      edge_type: GATES
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: rested mind required
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '40'
+      section: CHARACTER SPELLS
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A1
+    - source_id: rule_spell_book
+      source_label: Spell Book
+      edge_type: GATES
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: consultation before memorising
+      condition: magic-users and illusionists
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '40'
+      section: CHARACTER SPELLS
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A3
+    - source_id: rule_spell_memorization
+      source_label: Spell Memorization
+      edge_type: CONSUMES
+      target_id: rule_spell_slot
+      target_label: Memorized Spell
+      aspect: expended on casting
+      condition: a cast spell is forgotten entirely
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '40'
+      section: CHARACTER SPELLS
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A2
+    - source_id: rule_spell_memorization
+      source_label: Spell Memorization
+      edge_type: CONSUMES
+      target_id: time_segment_round_turn
+      target_label: Round and Segment
+      aspect: preparation time
+      condition: scaled by spell level
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '40'
+      section: CHARACTER SPELLS
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A6
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: CONSTRAINS
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: granting of the highest spells
+      condition: clerics judged on faithfulness by the deity
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '40'
+      section: CHARACTER SPELLS
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A5
+    - source_id: sys_equipment
+      source_label: Equipment
+      edge_type: FEEDS_INTO
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: material components
+      condition: supplied by the caster, never bestowed
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '40'
+      section: CHARACTER SPELLS
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A4
+  pending_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts:
+    derived: 5
+    read: 1
+duplicate_findings:
+  - grade: near_vs_canonical
+    ref: A1
+    canonical:
+      canonical_row: 448
+      canonical_index: 446
+      source_id: rule_rest
+      edge_type: GATES
+      target_id: rule_spell_memorization
+      aspect: mind must be rested
+      condition: ''
+      book: PHB
+      page: '40'
+      section: CHARACTER SPELLS
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: A3
+    canonical:
+      canonical_row: 255
+      canonical_index: 253
+      source_id: rule_spell_book
+      edge_type: GATES
+      target_id: rule_spell_memorization
+      aspect: must consult to prepare
+      condition: ''
+      book: PHB
+      page: '25'
+      section: THE MAGIC-USER
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+neighbourhood_conflicts:
+  - ref: A3
+    endpoints:
+      - rule_spell_book
+      - rule_spell_memorization
+    existing_edges:
+      - canonical_row: 2924
+        canonical_index: 2922
+        source_id: rule_spell_book
+        edge_type: ALTERNATIVE_TO
+        target_id: rule_spell_memorization
+        aspect: a hazardous alternative route
+        condition: ''
+        book: UA
+        page: '80'
+        section: Casting spells directly from books
+    detail: the same node pair is already related by other edge types
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 6
+  edges_compiled: 6
+  edges_rejected: 0
+  edge_additions: 6
+  edge_pending_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 3
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 0
+  duplicate_findings: 2
+  neighbourhood_conflicts: 1
+validation_report: build/reports/GUP-PKT-PHB-040-042-spells-intro-r01.validation.json

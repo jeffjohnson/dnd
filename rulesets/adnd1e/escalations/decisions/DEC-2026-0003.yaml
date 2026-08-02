@@ -1,0 +1,150 @@
+schema_version: "1.0"
+id: DEC-2026-0003
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+constitution_version: "1.2"
+
+decision_date: "2026-07-29"
+escalation_id: ESC-2026-0005
+
+question: >-
+  Does every absent canonical node ID require Architect approval, or may the
+  normal Builder and Reviewer workflow approve a registry addition under an
+  already-approved prefix and kind?
+
+ruling: >-
+  Absence from the node registry is not, by itself, an architectural issue.
+  Builder must isolate an unambiguous proposed node addition in GUP node_changes.
+  Reviewer may approve that node change when source identity is supported, the
+  prefix and kind are already approved, the ID format is valid, and canonical
+  duplicate and neighborhood checks are clear. Integrator alone applies the
+  approved registry change. Architect escalation remains mandatory for a new
+  prefix or kind, a canonical merge or split, a graph-wide migration, or an
+  identity ambiguity the current ontology cannot resolve.
+
+rationale:
+  - >-
+    The artifact lifecycle explicitly gives GUPs an isolated proposed-registry-
+    addition channel and gives Review an independent approval stage.
+  - >-
+    Architect authority governs ontology shape and migration consequences, not
+    routine instances of an already-approved node kind.
+  - >-
+    Requiring Architect approval for every new rule_ ID turns ordinary packet
+    processing into ontology governance and creates a serial bottleneck.
+  - >-
+    Builder may propose but cannot establish source correctness. Reviewer
+    approval and Integrator ownership preserve the required separation of duties.
+  - >-
+    Ambiguous identity still belongs to Architect because an incorrect choice
+    may create duplicate canonical identity or require migration.
+
+contract_change:
+  path: contracts/ESCALATION_CONTRACT.md
+  previous_version: unversioned
+  new_version: "1.1"
+  change: >-
+    Add an explicit do-not-escalate case for valid, unambiguous node additions
+    under an existing approved prefix and kind.
+
+affected_contracts:
+  - contracts/ESCALATION_CONTRACT.md
+affected_registries: []
+affected_artifacts:
+  - agents/builder/INSTRUCTIONS.md
+  - agents/reviewer/INSTRUCTIONS.md
+  - rulesets/adnd1e/escalations/decided/ESC-2026-0005.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0003.yaml
+  - books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-009-013-ability-scores-r01.yaml
+  - books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-013-018-races-r03.yaml
+  - books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-018-033-classes-r01.yaml
+  - books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-009-013-ability-scores-r01-r01.yaml
+  - books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-013-018-races-r03-r01.yaml
+  - books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-018-033-classes-r01-r01.yaml
+
+ordinary_node_registration_routing:
+  - proposed_id: rule_prime_requisite
+    disposition: return_to_builder_and_reviewer
+    note: >-
+      Not approved by this decision. Re-evaluate as a normal isolated node
+      addition using the evidence and duplicate checks in both affected packets.
+  - proposed_id: rule_revivification_limit
+    disposition: return_to_builder_and_reviewer
+    note: >-
+      Not approved by this decision. Re-evaluate against
+      rule_resurrection_survival as a normal identity and grain review.
+  - proposed_id: rule_tracking
+    disposition: return_to_builder_and_reviewer
+    note: >-
+      Not approved by this decision. Re-evaluate as a normal isolated node
+      addition under rule_.
+  - proposed_id: rule_dual_class
+    disposition: return_to_builder_and_reviewer
+    note: >-
+      Not approved by this decision. Re-evaluate against rule_multiclass as a
+      normal identity and grain review.
+
+genuine_or_incomplete_escalations:
+  - id: ESC-2026-07-30T01.21.13.768Z
+    disposition: remains_blocking
+    reason: >-
+      The referenced standalone package is absent. Canonical Loyalty Base and
+      Maximum Henchmen merge or split decisions require supplied incident-edge
+      neighborhoods and duplicate-collapse impact.
+  - id: ESC-2026-0002
+    disposition: remains_blocking
+    reason: >-
+      The referenced standalone package is absent. Prefix governance requires
+      an exact node-by-node disposition and migration plan for the affected
+      registry and canonical endpoints.
+  - id: REVIEW-ESC-RACIAL-DETECTION
+    disposition: return_incomplete
+    reason: >-
+      Potential identity overlap with rule_detection is architectural, but the
+      review supplies no standalone ESC ID, source excerpt, local neighborhood,
+      options, recommendation, or migration impact.
+  - id: REVIEW-ESC-SUBRACE-INFRAVISION
+    disposition: return_incomplete
+    reason: >-
+      The PHB-versus-UA assertion identity and provenance question may require a
+      contract decision, but the review summary is not a complete escalation
+      package.
+  - id: REVIEW-ESC-CLASS-SPECIAL-ABILITIES
+    disposition: return_to_analyst_and_builder
+    reason: >-
+      A blanket question with no affected rows or candidate identities is not
+      decidable architecture. Apply the constitution's grain and impact tests
+      ability by ability; escalate only a concrete ontology conflict.
+
+migration_required: false
+migration_scope:
+  canonical_data: none
+  workflow: >-
+    Builder and Reviewer must issue new revisions rather than altering the
+    existing GUP and Review artifacts. Ordinary node proposals must no longer
+    be blocked solely for requiring Architect approval.
+
+acceptance_tests:
+  - Builder instructions state that a missing ID alone is not architectural.
+  - Reviewer instructions permit approval of an unambiguous isolated node change under an approved prefix and kind.
+  - The Escalation Contract records the same boundary at version 1.1.
+  - No node is added to nodes.csv by this decision.
+  - No canonical graph file is changed by this decision.
+  - New GUP revisions isolate every proposed node addition from edge changes.
+  - New Review revisions verify source identity, ID format, duplicates, and local neighborhood before approving a node.
+  - New prefixes or kinds, canonical merges or splits, migrations, and unresolved identity choices remain Architect-blocking.
+  - Missing or review-only escalation placeholders are not treated as approved decisions.
+
+constitution_version_impact:
+  changed: false
+  reason: >-
+    This decision clarifies workflow authority already implied by Constitution
+    v1.2 and the artifact lifecycle. It changes no graph ontology or semantics.
+
+follow_up_owner:
+  gup_revision: builder
+  review_revision: reviewer
+  source_completeness_revision: analyst
+  canonical_application: integrator

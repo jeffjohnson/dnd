@@ -1,0 +1,2075 @@
+schema_version: "1.0"
+id: GUR-PKT-PHB-009-013-ability-scores-r01
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-009-013-ability-scores
+constitution_version: "1.2"
+
+revision: 1
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 9
+page_end: 13
+
+# =============================================================================
+# HEADLINE RESULT
+# =============================================================================
+# 84 candidate edges. 2 candidate nodes. 2 architectural escalations.
+#
+# Three things a reader should not miss:
+#
+#  1. STRENGTH TABLE I contains sex-differentiated maximum strength by race.
+#     This directly bears on edge E7 of GUR-PKT-PHB-007-008-intro-r01, which
+#     recorded the p7 claim that sex makes no difference to ability "in all but
+#     a few cases" and flagged the exceptions as unstated. They are stated here.
+#     See OBS-07. That GUR needs a revision; this one does not resolve it.
+#
+#  2. This packet is the establishing source for a general rule already in the
+#     register. general_rules.json records GR_IMPOSED_FORM_CHANGE_SYSTEM_SHOCK
+#     as established_by "PHB p.12 CONSTITUTION TABLE", which is edges C12-C16
+#     below. Per constitution 7.1 an establishing edge carries an EMPTY
+#     general_rule_id. They do. See OBS-09.
+#
+#  3. Node identity in this region of the graph is damaged. Two duplicate-identity
+#     pairs and five nodes under prefixes the constitution does not approve sit
+#     directly in this packet's extraction path. Both are escalated, not worked
+#     around silently. See ESC-2026-07-30T01.21.13.768Z and ESC-2026-0002.
+# =============================================================================
+
+source_summary: >-
+  Pages 9 through 13, the CHARACTER ABILITIES section in full. An opening paragraph
+  establishing that every character has six abilities, that their range is 3 to 18, and
+  that scores are produced by random generation whose methods live in the Dungeon
+  Masters Guide. Then each ability in turn — Strength, Intelligence, Wisdom, Dexterity,
+  Constitution, Charisma — with its explanatory prose, its tables, and notes on the
+  tables. Ten tables in all. This is the densest mechanical text in the book so far and
+  the first packet in which the ability scores connect outward to combat, saving throws,
+  thief function, hit points, henchmen and spell acquisition.
+
+node_id_resolution_method: >-
+  No node_registry_slice.csv was supplied. The Analyst resolved every concept by
+  targeted lookup against rulesets/adnd1e/registries/nodes.csv, then ran two structural
+  scans over the registry: a duplicate-label scan and a prefix census against
+  constitution 3.1. Both scans returned findings that bear directly on this packet and
+  are escalated below. 82 of the 84 edges resolved onto existing canonical IDs. Two
+  concepts had no canonical node and are proposed as candidates rather than forced onto
+  an approximate existing ID.
+
+reused_nodes_note: >-
+  Every node referenced below other than the two candidates is an existing canonical ID
+  taken verbatim from the registry, including its label. Labels were copied
+  programmatically from nodes.csv so that no label can drift from its ID in this
+  artifact.
+
+candidate_nodes:
+  - proposed_id: rule_prime_requisite
+    proposed_label: Prime Requisite Experience Bonus
+    prefix: rule_
+    prefix_is_approved: true
+    why_needed: >-
+      The packet states four times, once each for Strength, Intelligence, Wisdom and
+      Dexterity, that a character whose prime requisite is high gains a bonus to earned
+      experience. The registry has no node for this mechanic. rule_xp_division exists but
+      concerns dividing awards among a party, which is a different thing. Forcing these
+      four edges onto exp_level or onto the xp_ award-source nodes would misstate what
+      the rule does.
+    edges_depending_on_it: [S14, I11, W8, D19]
+    analyst_position: >-
+      Proposed under an existing approved prefix, so no new prefix is requested. If the
+      Architect rejects the node, the four edges should be rejected with it rather than
+      redirected, because no existing node carries this meaning.
+
+  - proposed_id: rule_revivification_limit
+    proposed_label: Lifetime Revivification Limit
+    prefix: rule_
+    prefix_is_approved: true
+    why_needed: >-
+      The Constitution section describes two distinct mechanics that a single node would
+      conflate. rule_resurrection_survival, which exists, is the percentage roll made on
+      each attempt. The packet separately establishes that a character's initial
+      constitution score is a hard lifetime cap on how many times revivification may be
+      attempted at all, that each success permanently reduces the score, and that later
+      magical restoration of the score does not restore the cap. That is a resource
+      ceiling, not a survival roll.
+    edges_depending_on_it: [C5]
+    analyst_position: >-
+      Proposed because collapsing it into rule_resurrection_survival would make the
+      graph unable to answer "what breaks if resurrection survival changes" separately
+      from "what breaks if the revivification cap changes". They are independently
+      changeable.
+
+candidate_edges:
+  - ref: G1
+    source_id: sys_ability_scores
+    source_label: "Ability Scores"
+    edge_type: DERIVED_FROM
+    target_id: rule_ability_generation
+    target_label: "Ability Score Generation"
+    aspect: "score determination"
+    condition: ""
+    book: PHB
+    page: 9
+    section: "CHARACTER ABILITIES"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S1
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: GATES
+    target_id: class_fighter
+    target_label: "Fighter"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S2
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: GATES
+    target_id: class_assassin
+    target_label: "Assassin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S3
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: GATES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S4
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: GATES
+    target_id: class_ranger
+    target_label: "Ranger"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S5
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: GATES
+    target_id: class_monk
+    target_label: "Monk"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S6
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: CONSTRAINS
+    target_id: sys_classes
+    target_label: "Character Class"
+    aspect: "class eligibility"
+    condition: "at the lowest scores"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S7
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    target_label: "To-Hit Roll"
+    aspect: "hit probability"
+    condition: "melee"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE II: ABILITY ADJUSTMENTS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S8
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: MODIFIES
+    target_id: cbt_damage
+    target_label: "Damage"
+    aspect: "damage adjustment"
+    condition: "melee"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE II: ABILITY ADJUSTMENTS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S9
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: MODIFIES
+    target_id: enc_weight_allowance
+    target_label: "Weight Allowance"
+    aspect: "weight allowance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE II: ABILITY ADJUSTMENTS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S10
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: MODIFIES
+    target_id: str_open_doors
+    target_label: "Open Doors"
+    aspect: "forcing chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE II: ABILITY ADJUSTMENTS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S11
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: MODIFIES
+    target_id: str_bend_bars
+    target_label: "Bend Bars/Lift Gates"
+    aspect: "success chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE II: ABILITY ADJUSTMENTS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S12
+    source_id: class_fighter
+    source_label: "Fighter"
+    edge_type: GATES
+    target_id: str_exceptional
+    target_label: "Exceptional Strength"
+    aspect: "eligibility to roll"
+    condition: ""
+    book: PHB
+    page: 9
+    section: "Strength"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S13
+    source_id: str_exceptional
+    source_label: "Exceptional Strength"
+    edge_type: DERIVED_FROM
+    target_id: abil_strength
+    target_label: "Strength"
+    aspect: "percentile subdivision"
+    condition: ""
+    book: PHB
+    page: 9
+    section: "Strength"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S14
+    source_id: abil_strength
+    source_label: "Strength"
+    edge_type: MODIFIES
+    target_id: rule_prime_requisite
+    target_label: "Prime Requisite Experience Bonus"
+    aspect: "experience bonus"
+    condition: "fighter at high score"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 9
+    section: "Strength"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: S15
+    source_id: rule_sex
+    source_label: "Character Sex"
+    edge_type: CONSTRAINS
+    target_id: abil_strength
+    target_label: "Strength"
+    aspect: "maximum score"
+    condition: "jointly with race"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 9
+    section: "STRENGTH TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I1
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: MODIFIES
+    target_id: rule_languages
+    target_label: "Languages"
+    aspect: "additional languages"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 10
+    section: "INTELLIGENCE TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I2
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: GATES
+    target_id: rule_spell_level_access
+    target_label: "High-Level Spell Access"
+    aspect: "spell level access"
+    condition: "magic-user spells"
+    book: PHB
+    page: 10
+    section: "INTELLIGENCE TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I3
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: MODIFIES
+    target_id: rule_chance_know_spell
+    target_label: "Chance to Know Each Listed Spell"
+    aspect: "learning chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 10
+    section: "INTELLIGENCE TABLE II: ABILITY FOR MAGIC-USERS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I4
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: MODIFIES
+    target_id: rule_spells_per_level
+    target_label: "Spells Knowable Per Level"
+    aspect: "spells knowable"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 10
+    section: "INTELLIGENCE TABLE II: ABILITY FOR MAGIC-USERS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I5
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: GATES
+    target_id: class_magic_user
+    target_label: "Magic-User"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 10
+    section: "INTELLIGENCE TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I6
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: GATES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 10
+    section: "INTELLIGENCE TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I7
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: GATES
+    target_id: class_assassin
+    target_label: "Assassin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 10
+    section: "INTELLIGENCE TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I8
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: GATES
+    target_id: class_ranger
+    target_label: "Ranger"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 10
+    section: "INTELLIGENCE TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I9
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: GATES
+    target_id: class_illusionist
+    target_label: "Illusionist"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 10
+    section: "INTELLIGENCE TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I10
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: CONSTRAINS
+    target_id: sys_classes
+    target_label: "Character Class"
+    aspect: "class eligibility"
+    condition: "at the lowest scores"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 10
+    section: "INTELLIGENCE TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I11
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: MODIFIES
+    target_id: rule_prime_requisite
+    target_label: "Prime Requisite Experience Bonus"
+    aspect: "experience bonus"
+    condition: "magic-user at high score"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 10
+    section: "Intelligence"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I12
+    source_id: abil_intelligence
+    source_label: "Intelligence"
+    edge_type: TRIGGERS
+    target_id: rule_chance_know_spell
+    target_label: "Chance to Know Each Listed Spell"
+    aspect: "recheck of known spells"
+    condition: "on relatively permanent score change"
+    polarity: inflicts
+    polarity_basis: read
+    book: PHB
+    page: 10
+    section: "Notes Regarding Intelligence Table II"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: I13
+    source_id: rule_spell_book
+    source_label: "Spell Book"
+    edge_type: FEEDS_INTO
+    target_id: rule_chance_know_spell
+    target_label: "Chance to Know Each Listed Spell"
+    aspect: "spell acquisition"
+    condition: "from acquired books or scrolls"
+    book: PHB
+    page: 10
+    section: "Notes Regarding Intelligence Table II"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W1
+    source_id: abil_wisdom
+    source_label: "Wisdom"
+    edge_type: MODIFIES
+    target_id: save_magical_attack
+    target_label: "Saving Throw vs Magical Attack"
+    aspect: "saving throw"
+    condition: "will-force mental attacks only"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "WISDOM TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W2
+    source_id: abil_wisdom
+    source_label: "Wisdom"
+    edge_type: GATES
+    target_id: class_cleric
+    target_label: "Cleric"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "WISDOM TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W3
+    source_id: abil_wisdom
+    source_label: "Wisdom"
+    edge_type: GATES
+    target_id: class_druid
+    target_label: "Druid"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "WISDOM TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W4
+    source_id: abil_wisdom
+    source_label: "Wisdom"
+    edge_type: GATES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "WISDOM TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W5
+    source_id: abil_wisdom
+    source_label: "Wisdom"
+    edge_type: GATES
+    target_id: class_ranger
+    target_label: "Ranger"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "WISDOM TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W6
+    source_id: abil_wisdom
+    source_label: "Wisdom"
+    edge_type: GATES
+    target_id: class_monk
+    target_label: "Monk"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "WISDOM TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W7
+    source_id: abil_wisdom
+    source_label: "Wisdom"
+    edge_type: CONSTRAINS
+    target_id: sys_classes
+    target_label: "Character Class"
+    aspect: "class eligibility"
+    condition: "at the lowest scores"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "WISDOM TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W8
+    source_id: abil_wisdom
+    source_label: "Wisdom"
+    edge_type: MODIFIES
+    target_id: rule_prime_requisite
+    target_label: "Prime Requisite Experience Bonus"
+    aspect: "experience bonus"
+    condition: "cleric at high score"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "Wisdom"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W9
+    source_id: abil_wisdom
+    source_label: "Wisdom"
+    edge_type: MODIFIES
+    target_id: rule_cleric_bonus_spells
+    target_label: "Cleric Bonus Spells"
+    aspect: "bonus spell allotment"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "WISDOM TABLE II: ADJUSTMENTS FOR CLERICS AND DRUIDS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W10
+    source_id: abil_wisdom
+    source_label: "Wisdom"
+    edge_type: MODIFIES
+    target_id: rule_spell_failure
+    target_label: "Chance of Spell Failure"
+    aspect: "failure chance"
+    condition: "clerics at low score"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "WISDOM TABLE II: ADJUSTMENTS FOR CLERICS AND DRUIDS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W11
+    source_id: abil_wisdom
+    source_label: "Wisdom"
+    edge_type: GATES
+    target_id: rule_spell_level_access
+    target_label: "High-Level Spell Access"
+    aspect: "spell level access"
+    condition: "clerical spells"
+    book: PHB
+    page: 11
+    section: "WISDOM TABLE II: ADJUSTMENTS FOR CLERICS AND DRUIDS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: W12
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: GATES
+    target_id: rule_cleric_bonus_spells
+    target_label: "Cleric Bonus Spells"
+    aspect: "availability"
+    condition: "only when the spell level is reached"
+    book: PHB
+    page: 11
+    section: "Notes Regarding Wisdom Table II"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D1
+    source_id: dex_reaction_adj
+    source_label: "Reaction/Attacking Adjustment"
+    edge_type: DERIVED_FROM
+    target_id: abil_dexterity
+    target_label: "Dexterity"
+    aspect: "adjustment value"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "DEXTERITY TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D2
+    source_id: dex_defensive_adj
+    source_label: "Dexterity Defensive Adjustment"
+    edge_type: DERIVED_FROM
+    target_id: abil_dexterity
+    target_label: "Dexterity"
+    aspect: "adjustment value"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "DEXTERITY TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D3
+    source_id: dex_reaction_adj
+    source_label: "Reaction/Attacking Adjustment"
+    edge_type: MODIFIES
+    target_id: cbt_surprise
+    target_label: "Surprise"
+    aspect: "surprise adjustment"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "Notes Regarding Dexterity Table I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D4
+    source_id: dex_reaction_adj
+    source_label: "Reaction/Attacking Adjustment"
+    edge_type: MODIFIES
+    target_id: cbt_missile
+    target_label: "Missile Fire"
+    aspect: "attack adjustment"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "Notes Regarding Dexterity Table I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D5
+    source_id: dex_defensive_adj
+    source_label: "Dexterity Defensive Adjustment"
+    edge_type: MODIFIES
+    target_id: cbt_armor_class
+    target_label: "Armor Class"
+    aspect: "armor class"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "Notes Regarding Dexterity Table I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D6
+    source_id: dex_defensive_adj
+    source_label: "Dexterity Defensive Adjustment"
+    edge_type: MODIFIES
+    target_id: save_spell
+    target_label: "Spell"
+    aspect: "saving throw"
+    condition: "attacks permitting dodging"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "Notes Regarding Dexterity Table I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D7
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: MODIFIES
+    target_id: cbt_initiative
+    target_label: "Initiative"
+    aspect: "initiative"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "Dexterity"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D8
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: MODIFIES
+    target_id: thief_pick_pockets
+    target_label: "Pick Pockets"
+    aspect: "success chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "DEXTERITY TABLE II: ADJUSTMENTS FOR THIEVES"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D9
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: MODIFIES
+    target_id: thief_open_locks
+    target_label: "Open Locks"
+    aspect: "success chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "DEXTERITY TABLE II: ADJUSTMENTS FOR THIEVES"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D10
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: MODIFIES
+    target_id: thief_find_remove_traps
+    target_label: "Find/Remove Traps"
+    aspect: "success chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "DEXTERITY TABLE II: ADJUSTMENTS FOR THIEVES"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D11
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: MODIFIES
+    target_id: thief_move_silently
+    target_label: "Move Silently"
+    aspect: "success chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "DEXTERITY TABLE II: ADJUSTMENTS FOR THIEVES"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D12
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: MODIFIES
+    target_id: thief_hide_in_shadows
+    target_label: "Hide in Shadows"
+    aspect: "success chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "DEXTERITY TABLE II: ADJUSTMENTS FOR THIEVES"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D13
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: GATES
+    target_id: class_thief
+    target_label: "Thief"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "DEXTERITY TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D14
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: GATES
+    target_id: class_assassin
+    target_label: "Assassin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "DEXTERITY TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D15
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: GATES
+    target_id: class_monk
+    target_label: "Monk"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "DEXTERITY TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D16
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: GATES
+    target_id: class_illusionist
+    target_label: "Illusionist"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "DEXTERITY TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D17
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: GATES
+    target_id: class_magic_user
+    target_label: "Magic-User"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 11
+    section: "DEXTERITY TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D18
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: CONSTRAINS
+    target_id: sys_classes
+    target_label: "Character Class"
+    aspect: "class eligibility"
+    condition: "at the lowest scores"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "DEXTERITY TABLE I"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D19
+    source_id: abil_dexterity
+    source_label: "Dexterity"
+    edge_type: MODIFIES
+    target_id: rule_prime_requisite
+    target_label: "Prime Requisite Experience Bonus"
+    aspect: "experience bonus"
+    condition: "thief at high score"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 11
+    section: "Dexterity"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: D20
+    source_id: race_any
+    source_label: "Race"
+    edge_type: MODIFIES
+    target_id: thief_skills
+    target_label: "Thief Skills"
+    aspect: "racial adjustment"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "Notes Regarding Dexterity Table II"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C1
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: MODIFIES
+    target_id: rule_hit_points
+    target_label: "Hit Points"
+    aspect: "hit point adjustment"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "CONSTITUTION TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C2
+    source_id: sys_classes
+    source_label: "Character Class"
+    edge_type: CONSTRAINS
+    target_id: rule_hit_points
+    target_label: "Hit Points"
+    aspect: "constitution bonus cap"
+    condition: "non-fighter classes"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "Notes Regarding Constitution Table"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C3
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: MODIFIES
+    target_id: rule_system_shock
+    target_label: "System Shock Survival"
+    aspect: "survival chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "CONSTITUTION TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C4
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: MODIFIES
+    target_id: rule_resurrection_survival
+    target_label: "Resurrection Survival"
+    aspect: "survival chance"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "CONSTITUTION TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C5
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: CONSTRAINS
+    target_id: rule_revivification_limit
+    target_label: "Lifetime Revivification Limit"
+    aspect: "lifetime revivifications"
+    condition: "initial score only"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "Constitution"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C6
+    source_id: spell_raise_dead
+    source_label: "Raise Dead"
+    edge_type: MODIFIES
+    target_id: abil_constitution
+    target_label: "Constitution"
+    aspect: "score reduction"
+    condition: "each revivification"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "Constitution"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C7
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: GATES
+    target_id: class_fighter
+    target_label: "Fighter"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 12
+    section: "CONSTITUTION TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C8
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: GATES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 12
+    section: "CONSTITUTION TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C9
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: GATES
+    target_id: class_monk
+    target_label: "Monk"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 12
+    section: "CONSTITUTION TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C10
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: GATES
+    target_id: class_ranger
+    target_label: "Ranger"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 12
+    section: "CONSTITUTION TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C11
+    source_id: abil_constitution
+    source_label: "Constitution"
+    edge_type: CONSTRAINS
+    target_id: sys_classes
+    target_label: "Character Class"
+    aspect: "class eligibility"
+    condition: "at the lowest scores"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "CONSTITUTION TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C12
+    source_id: rule_aging
+    source_label: "Aging"
+    edge_type: TRIGGERS
+    target_id: rule_system_shock
+    target_label: "System Shock Survival"
+    aspect: "survival check"
+    condition: ""
+    polarity: inflicts
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "Notes Regarding Constitution Table"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C13
+    source_id: rule_petrification
+    source_label: "Petrification"
+    edge_type: TRIGGERS
+    target_id: rule_system_shock
+    target_label: "System Shock Survival"
+    aspect: "survival check"
+    condition: ""
+    polarity: inflicts
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "Notes Regarding Constitution Table"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C14
+    source_id: spell_flesh_to_stone
+    source_label: "Flesh to Stone"
+    edge_type: TRIGGERS
+    target_id: rule_system_shock
+    target_label: "System Shock Survival"
+    aspect: "survival check"
+    condition: ""
+    polarity: inflicts
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "Notes Regarding Constitution Table"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C15
+    source_id: spell_polymorph_any_object
+    source_label: "Polymorph Any Object"
+    edge_type: TRIGGERS
+    target_id: rule_system_shock
+    target_label: "System Shock Survival"
+    aspect: "survival check"
+    condition: ""
+    polarity: inflicts
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "Notes Regarding Constitution Table"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: C16
+    source_id: spell_polymorph_other
+    source_label: "Polymorph Others"
+    edge_type: TRIGGERS
+    target_id: rule_system_shock
+    target_label: "System Shock Survival"
+    aspect: "survival check"
+    condition: ""
+    polarity: inflicts
+    polarity_basis: read
+    book: PHB
+    page: 12
+    section: "Notes Regarding Constitution Table"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: H1
+    source_id: abil_cha_max_henchmen
+    source_label: "Maximum Henchmen"
+    edge_type: DERIVED_FROM
+    target_id: abil_charisma
+    target_label: "Charisma"
+    aspect: "henchman ceiling"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARISMA TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: H2
+    source_id: hench_loyalty
+    source_label: "Loyalty Base"
+    edge_type: DERIVED_FROM
+    target_id: abil_charisma
+    target_label: "Charisma"
+    aspect: "loyalty base"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARISMA TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: H3
+    source_id: abil_charisma
+    source_label: "Charisma"
+    edge_type: MODIFIES
+    target_id: cbt_encounter_reactions
+    target_label: "Encounter Reactions"
+    aspect: "reaction adjustment"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 13
+    section: "CHARISMA TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: H4
+    source_id: abil_charisma
+    source_label: "Charisma"
+    edge_type: GATES
+    target_id: class_druid
+    target_label: "Druid"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARISMA TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: H5
+    source_id: abil_charisma
+    source_label: "Charisma"
+    edge_type: GATES
+    target_id: class_paladin
+    target_label: "Paladin"
+    aspect: "class eligibility"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "CHARISMA TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: H6
+    source_id: abil_charisma
+    source_label: "Charisma"
+    edge_type: CONSTRAINS
+    target_id: sys_classes
+    target_label: "Character Class"
+    aspect: "class eligibility"
+    condition: "at the lowest scores"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 13
+    section: "CHARISMA TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: H7
+    source_id: abil_cha_max_henchmen
+    source_label: "Maximum Henchmen"
+    edge_type: EXCLUDED_FROM
+    target_id: hench_mercenary
+    target_label: "Mercenary Soldier"
+    aspect: "troop numbers"
+    condition: ""
+    book: PHB
+    page: 13
+    section: "Notes Regarding Charisma Table"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The system shock trigger set C12 through C16 looks like a general rule
+  and is one, but it is already registered as GR_IMPOSED_FORM_CHANGE_SYSTEM_SHOCK. This
+  packet is its establishing source, not a new proposal. See OBS-09.
+
+# -----------------------------------------------------------------------------
+domains_touched: []
+domains_touched_note: >-
+  Still blocked on the empty domain registry. BLK-01, unchanged.
+
+candidate_domains:
+  - name: ability_scores
+    basis: the whole packet
+  - name: combat_adjustment
+    basis: S7, S8, D3 through D7
+  - name: saving_throws
+    basis: W1, D6, C3
+  - name: spell_acquisition
+    basis: I2, I3, I4, I12, I13, W9, W11, W12
+  - name: thief_function
+    basis: D8 through D12, D20
+  - name: class_eligibility
+    basis: the 24 GATES edges and the 6 CONSTRAINS edges on sys_classes
+  - name: followers_and_loyalty
+    basis: H1, H2, H7
+  - name: death_and_recovery
+    basis: C4, C5, C6
+
+domain_boundary_questions:
+  - id: DBQ-02
+    question: >-
+      Is class_eligibility a domain, or is it the shadow of a table that belongs to the
+      class and race domains? Thirty of the 84 edges in this packet are ability-to-class
+      eligibility assertions drawn from the General Information column of six tables.
+    why_it_matters: >-
+      If it is a domain it will be one of the largest in the graph and almost entirely
+      sourced from two packets. If it is not, those thirty edges distribute into whatever
+      domain owns character classes.
+    analyst_position: no recommendation
+
+# -----------------------------------------------------------------------------
+rejected_candidates:
+  - text_locus: "CHARACTER ABILITIES, p9"
+    quoted_gist: the range of these abilities is between 3 and 18
+    rejection_reason: >-
+      A bound expressed purely as magnitudes. The grain rule forbids storing it. See
+      OBS-08, where it is recorded as a source tension rather than an edge.
+
+  - text_locus: "CHARACTER ABILITIES, p9"
+    quoted_gist: >-
+      it is usually essential to survival to be exceptional in no fewer than two
+      abilities
+    rejection_reason: >-
+      Advice about character viability, not a rule. Nothing consults it.
+
+  - text_locus: "CHARACTER ABILITIES, p9"
+    quoted_gist: the referee has several generation methods suggested in the DMG
+    why_considered: >-
+      canonical nodes rule_generation_method_i through v exist, so the graph already
+      models the methods
+    rejection_reason: >-
+      The PHB points at the DMG without naming a method. A CROSS_REFERENCES edge needs a
+      target node and there is no node for the DMG as a document. The dependency that
+      matters, that scores come from a generation procedure, is carried by G1. Recorded
+      as OBS-10 because it bears on book scope.
+
+  - text_locus: "STRENGTH TABLE I, p9; and the other five General Information columns"
+    quoted_gist: minimum and maximum ability scores for each race
+    why_considered: >-
+      stated plainly in this packet, six times over, and unquestionably load-bearing
+    rejection_reason: >-
+      Deliberately deferred, not discarded. The table of contents places CHARACTER RACE
+      TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS on page 15, inside packet 04, which is
+      the authoritative and complete statement of the same facts. Extracting the racial
+      dimension from both packets would produce a duplicate edge set differing only in
+      citation. The sex dimension is NOT deferred, because it is not obviously carried by
+      Table III and because it resolves an open question from a previous packet; it is
+      extracted as S15. See OBS-07.
+
+  - text_locus: "Notes Regarding Dexterity Table II, p12"
+    quoted_gist: >-
+      the table adjusts five thief functions and is silent on climbing walls, hearing
+      noise, back stabbing, reading languages and using scrolls
+    why_considered: >-
+      an EXCLUDED_FROM edge asserting dexterity is not an input to the other five skills
+    rejection_reason: >-
+      Constitution 4.1 is explicit that the infinite set of things a rule simply does not
+      touch must not be recorded. The table's silence is not a denial. Had the text said
+      dexterity does not affect climbing, that would be an edge.
+
+  - text_locus: "Notes Regarding Constitution Table, p12"
+    quoted_gist: subtraction can never reduce any hit die below one
+    rejection_reason: >-
+      A floor expressed as a magnitude. The relationship that constitution modifies hit
+      points is C1; the floor is a value on that relationship and the grain rule excludes
+      it.
+
+  - text_locus: "Charisma, p13"
+    quoted_gist: >-
+      the half-orc and dwarf charisma maxima apply only with respect to other races
+    why_considered: a genuine conditional racial cap
+    rejection_reason: >-
+      Deferred to packet 04 with the rest of the racial minimum and maximum material, for
+      the same reason. The footnotes themselves point the reader at CHARACTER RACES.
+
+# -----------------------------------------------------------------------------
+non_edge_observations:
+  - id: OBS-07
+    topic: the packet resolves an open question from GUR-PKT-PHB-007-008-intro-r01
+    locus: "STRENGTH TABLE I, p9"
+    finding: >-
+      Strength Table I sets maximum strength by sex as well as by race across seven rows,
+      distinguishing female halfling, female gnome, female elf, female dwarf, female
+      half-elf, male halfling, female human, male gnome, male elf, female half-orc, male
+      half-elf, male dwarf and male half-orc.
+    why_it_matters: >-
+      Edge E7 of the previous GUR asserted rule_sex EXCLUDED_FROM sys_ability_scores on
+      the strength of the page 7 statement that sex makes no difference to ability, and
+      recorded its hedge, "in all but a few cases", as unresolved with the exceptions
+      unnamed. The exceptions are named two pages later and they are precisely maximum
+      strength by race. E7 and S15 are therefore both true and are not in contradiction,
+      but E7's condition field is now demonstrably imprecise: it says "except in a few
+      unstated cases" when the case is stated.
+    consequence_for_prior_artifact: >-
+      GUR-PKT-PHB-007-008-intro-r01 should be superseded by an r02 that amends E7's
+      condition and cross-references S15. This GUR does not amend it; a GUR may not edit
+      another packet's artifact.
+    also_relevant: >-
+      IDQ-03 of that GUR anticipated a conflict with Unearthed Arcana over sex-linked
+      ability treatment. That question is now sharper rather than resolved: the PHB
+      itself, in this printing, already carries sex-linked maxima, so a UA assertion may
+      be a restatement or an extension rather than an override.
+
+  - id: OBS-08
+    topic: the stated ability range does not cover the tables
+    locus: "CHARACTER ABILITIES p9, against INTELLIGENCE TABLE II p10"
+    finding: >-
+      The opening paragraph states the range of abilities is between 3 and 18.
+      Intelligence Table II carries a row for a score of 19 or more.
+    why_it_matters: >-
+      Not a defect in the transcription; both statements are in the book. It means the
+      declared range describes generated scores while tables anticipate scores raised
+      beyond it by other means. Any future edge or validator that treats 18 as a hard
+      ceiling on ability scores would be wrong.
+    recommendation: >-
+      Worth remembering when the race packet supplies racial maxima and when magical
+      ability increases are extracted. No action now.
+
+  - id: OBS-09
+    topic: this packet establishes a general rule already in the register
+    locus: "Notes Regarding Constitution Table, p12"
+    finding: >-
+      registries/general_rules.json records GR_IMPOSED_FORM_CHANGE_SYSTEM_SHOCK with
+      established_by "PHB p.12 CONSTITUTION TABLE". That is the System Shock Survival
+      note in this packet, which names aging, petrification including flesh to stone,
+      polymorph any object and polymorph others as the attack forms requiring the check.
+    why_it_matters: >-
+      Constitution 7.1 distinguishes the edge that establishes a general rule from edges
+      derived under it, and requires the establishing edge to carry an EMPTY
+      general_rule_id. Edges C12 through C16 are establishing edges and carry an empty
+      general_rule_id and pass=page-sweep, not pass=general-rule. A Builder that
+      pattern-matches these onto the general rule and stamps the ID on them would violate
+      invariant 19.
+    recommendation: >-
+      Reviewer should confirm C12 through C16 against the register rather than assume
+      they are derived edges. The register's applies_to list also names rule_lycanthropy
+      and a polymorphing wand, which this packet does not mention; those are derived
+      edges belonging to other packets.
+
+  - id: OBS-10
+    topic: ability generation procedure is out of scope for this book
+    locus: "CHARACTER ABILITIES, p9"
+    finding: >-
+      The PHB states that the referee has several methods of random generation available,
+      described in the Dungeon Masters Guide, and that the DM will tell the player which
+      to use.
+    why_it_matters: >-
+      The canonical nodes rule_generation_method_i through rule_generation_method_v exist
+      and must be sourced from the DMG, not from this book. This is the second instance
+      of the pattern recorded as OBS-02 in the preamble GUR: PHB silence is an editorial
+      scope decision. Here the book says so outright.
+    recommendation: none; recorded so a later analyst does not try to source the methods from the PHB
+
+  - id: OBS-11
+    topic: transcription defects in the source file
+    locus: multiple
+    finding: >-
+      Three defects were found while reading, none of which changed an extraction
+      outcome. Line 121-122 carries a doubled heading, "### WISDOM TABLE I" immediately
+      followed by "## Wisdom Table I", at two different heading levels. Line 237 reads
+      "raised from the deadwresurrected", which should almost certainly be "dead or
+      resurrected" or "dead/resurrected". Line 205 of the Dexterity Table II grid spans a
+      header cell across the table in a way that does not parse as a normal column.
+    why_it_matters: >-
+      Per ESCALATION_CONTRACT these are typos correctable without changing identity, so
+      they are not escalated. They are reported because the operator is transcribing by
+      hand and would want them.
+    recommendation: operator correction in the source file; no artifact depends on them
+
+  - id: OBS-12
+    topic: registry data defect noticed in passing
+    locus: rulesets/adnd1e/registries/nodes.csv
+    finding: >-
+      The node spell_petrification carries the literal string "spell_petrification" as
+      its label rather than a human label such as "Petrification".
+    why_it_matters: >-
+      Not used by any edge in this packet. Reported because the Analyst was reading the
+      registry closely and it is the kind of defect that survives indefinitely once
+      nobody is looking.
+    recommendation: registry hygiene, Architect or Integrator
+
+# -----------------------------------------------------------------------------
+unresolved_identity_questions:
+  - id: IDQ-04
+    question: >-
+      Should dexterity's effects hang off the intermediate nodes dex_reaction_adj and
+      dex_defensive_adj, as edges D1 through D6 assume, or directly off abil_dexterity?
+    bearing: D1 through D7
+    analyst_handling: >-
+      Used the intermediate nodes because they exist canonically with degree 6 and 16
+      respectively, which means the graph already models dexterity this way, and because
+      Dexterity Table I genuinely has two separately named adjustment columns. But D7
+      hangs initiative directly off abil_dexterity, because the initiative claim comes
+      from the section prose rather than from a named column. That inconsistency is real
+      and is flagged rather than smoothed over.
+
+  - id: IDQ-05
+    question: >-
+      Charisma's table columns are modelled inconsistently with dexterity's. Dexterity's
+      columns are dex_ nodes; charisma's are abil_cha_ nodes; and for two of the three
+      charisma columns a second, better connected node exists elsewhere in the graph.
+    bearing: H1, H2, H3
+    analyst_handling: >-
+      Chose the better connected node where the choice was clear, hench_loyalty at degree
+      42 over abil_cha_loyalty_base at degree 1 for H2, and cbt_encounter_reactions at
+      degree 45 over abil_cha_reaction_adj at degree 1 for H3. For H1 the choice was not
+      clear, abil_cha_max_henchmen at degree 3 against hench_max_number at degree 1, and
+      the higher was taken. All three choices are declared rather than silent. This
+      question is subsumed by ESC-2026-07-30T01.21.13.768Z.
+
+# -----------------------------------------------------------------------------
+architectural_escalations:
+  - id: ESC-2026-07-30T01.21.13.768Z
+    trigger: >-
+      ESCALATION_CONTRACT — "two canonical nodes appear ontologically equivalent and
+      merging them could affect existing edges"
+    originating: PKT-PHB-009-013-ability-scores / GUR-PKT-PHB-009-013-ability-scores-r01
+    question: >-
+      Two pairs of canonical nodes carry the same label and appear to denote the same
+      mechanic. Should they be merged, and if so which ID survives?
+    affected_canonical_ids:
+      - pair: Loyalty Base
+        ids: [abil_cha_loyalty_base, hench_loyalty]
+        degrees: [1, 42]
+      - pair: Maximum Henchmen
+        ids: [abil_cha_max_henchmen, hench_max_number]
+        degrees: [3, 1]
+    source_excerpt: >-
+      CHARISMA TABLE, PHB p13, columns "Maximum No. of Henchmen" and "Loyalty Base", with
+      the notes stating that the former is the number of non-player characters who serve
+      as permanent retainers and the latter is the adjustment to henchmen's loyalty
+      scores.
+    local_neighborhood: >-
+      Not available. No local_neighborhood.json was supplied with the packet, so the
+      Analyst can report degrees from the registry but cannot show the incident edges.
+      This escalation is therefore incomplete against the ESCALATION_CONTRACT package
+      requirements and should be completed by whoever holds the graph.
+    options_considered:
+      - merge into the hench_ node in both cases, on the grounds that the mechanic
+        belongs to the henchman subsystem and charisma is merely its input
+      - merge into the abil_cha_ node in both cases, on the grounds that these are
+        columns of the Charisma Table
+      - keep both and relate them by DERIVED_FROM, if they are genuinely at different
+        grain
+    recommended_resolution: >-
+      Merge Loyalty Base into hench_loyalty, which carries 42 edges against 1. For
+      Maximum Henchmen the Analyst does not recommend a direction; both nodes are nearly
+      unused and the choice should follow whatever convention the Architect sets for the
+      first pair.
+    expected_migration_impact: >-
+      Rewrites the endpoint on up to 43 existing edges for the first pair and 4 for the
+      second. Invariant 12 forbids duplicate edge identity, so a merge may also collapse
+      edges that become identical.
+    would_change: registry, and the canonical graph via Integrator migration
+    blocking: >-
+      Not blocking for this GUR. H1 and H2 are proposed against a declared choice, and if
+      the Architect rules the other way the fix is a single endpoint substitution.
+
+  - id: ESC-2026-0002
+    trigger: >-
+      ESCALATION_CONTRACT — "the constitution and production data disagree in a way that
+      cannot be fixed mechanically"
+    originating: PKT-PHB-009-013-ability-scores / GUR-PKT-PHB-009-013-ability-scores-r01
+    question: >-
+      Five nodes this packet must reference use prefixes that constitution 3.1 does not
+      list. Should the constitution be extended, or should the nodes be migrated to
+      approved prefixes?
+    affected_canonical_ids:
+      - str_exceptional
+      - str_open_doors
+      - str_bend_bars
+      - dex_reaction_adj
+      - dex_defensive_adj
+    wider_finding: >-
+      A prefix census over the whole registry finds 23 nodes across 12 unapproved
+      prefixes: wpn_ 7, str_ 3, death_ 2, dex_ 2, magic_ 2, and one each of align_,
+      comeliness_, cursed_, fatigue_, time_, training_, turn_. The node "comeliness"
+      additionally carries no prefix at all.
+    source_excerpt: >-
+      STRENGTH TABLE II: ABILITY ADJUSTMENTS, PHB p9, columns "Open Doors On A" and "Bend
+      Bars/Lift Gates"; and DEXTERITY TABLE I, PHB p11, columns "Reaction/Attacking
+      Adjustment" and "Defensive Adjustment".
+    options_considered:
+      - extend constitution 3.1 to approve the prefixes already in production use
+      - migrate the 23 nodes to approved prefixes, for example str_bend_bars to
+        rule_bend_bars or abil_str_bend_bars
+      - approve some and migrate others
+    recommended_resolution: >-
+      The Analyst recommends extending the constitution rather than migrating, on one
+      specific piece of evidence: the constitution's own worked examples use turn_undead
+      in section 6.2 and str_bend_bars in section 4.1, both under prefixes section 3.1
+      does not approve. The document contradicts itself, which suggests the prefix list
+      is incomplete rather than the data being wrong. This is a recommendation only.
+    expected_migration_impact: >-
+      Extending the constitution has no data impact. Migrating touches 23 nodes and every
+      edge incident to them, which an independent Integrator precondition audit dated
+      2026-07-27 measured at 379 edge rows.
+    would_change: the constitution, and on the migration option the registry and graph
+    prior_art: >-
+      This is not a new discovery. rulesets/adnd1e/reports/PRECONDITION-AUDIT-20260727.md,
+      produced by an Integrator session, records the same 379 rows and the same
+      self-contradiction. It is escalated here because this packet is the first to
+      require the nodes for new work, which changes it from an audit finding into a
+      blocker on extraction.
+    blocking: >-
+      Not blocking. The Analyst reused the existing IDs, per the instruction to reuse
+      canonical IDs rather than mint variants. Minting abil_str_bend_bars alongside
+      str_bend_bars would have created exactly the drift constitution 3.2 names as the
+      most common defect in the graph.
+
+# -----------------------------------------------------------------------------
+blocking_notes:
+  - id: BLK-01
+    severity: unchanged
+    issue: domain_registry.yaml remains an empty map at status bootstrap.
+    consequence: >-
+      Eight candidate domains recorded from this packet alone, against zero promoted
+      domains. The batch the Architect will eventually face keeps growing.
+    owner: architect
+
+  - id: BLK-02
+    severity: severe_here
+    issue: no node_registry_slice.csv and no local_neighborhood.json supplied.
+    consequence: >-
+      84 edges proposed against a graph the Analyst cannot see. abil_strength carries 51
+      existing edges, abil_dexterity 40, abil_intelligence 44, rule_hit_points 63,
+      cbt_tohit 48. A substantial fraction of this packet is likely already in the graph.
+      The Analyst can state what the page says but cannot state what is new. Both
+      escalations above are also incomplete for the same reason: ESCALATION_CONTRACT
+      requires a local graph neighborhood in the package and none can be supplied.
+    owner: packet_creator
+    recommendation: >-
+      For packets 04 and 05, which cover races and classes and will touch the same
+      high-degree nodes even harder, a neighborhood slice would materially raise the
+      quality of the result and shrink the Reviewer's dedupe burden.
+
+# -----------------------------------------------------------------------------
+completeness_statement: >-
+  All 304 lines were read before extraction. Every one of the ten tables was worked
+  through row by row, and both the explanatory prose and the notes beneath each table
+  were considered separately, since in several cases the notes carry relationships the
+  table does not, as with the fighter-only constitution bonus and the cleric bonus spell
+  availability rule. All five page markers were classified as end-of-line and the
+  resulting page split was checked against the table of contents transcribed in packet
+  01, which places Strength at 9, Intelligence at 10, Wisdom and Dexterity at 11,
+  Constitution at 12 and Charisma at 13. Every boundary agrees.
+
+  84 candidate edges are proposed and seven candidate groups are recorded as rejected
+  with reasons, one of which, the racial ability minimums and maximums, is a deliberate
+  deferral to packet 04 rather than a judgment that the material is not load-bearing.
+  That deferral is the single largest discretionary decision in this GUR and is the
+  first thing a Reviewer should check.
+
+  Two candidate nodes are proposed, both under existing approved prefixes, and both with
+  the edges that depend on them named so they can be rejected together if the node is
+  rejected. No new prefix is requested. Every other node reference is an existing
+  canonical ID with its label copied programmatically from the registry.
+
+  Authored polarity appears on exactly the three permitted edge types and nowhere else.
+  Of the 84 edges, 46 are MODIFIES, TRIGGERS or CONSTRAINS and carry polarity with
+  polarity_basis "read"; the remaining 38 carry no polarity field at all and are left to
+  the build. The authored values are 31 improves, 9 worsens and 6 inflicts. No magnitude, die expression, percentage or threshold appears in any aspect
+  or condition, which required care in this packet: the source is almost entirely
+  numbers, and the relationships had to be lifted off them.
+
+  Two architectural escalations are raised. Neither blocks this GUR. Both are incomplete
+  against the ESCALATION_CONTRACT package requirements in exactly one respect, the local
+  graph neighborhood, which the Analyst was not given.
+
+  This GUR is complete enough for the Builder to normalize without rereading the source,
+  with the same qualification as the previous packet and more force behind it:
+  deduplication against the canonical graph is mandatory, not optional, and the Analyst
+  could not perform it.
+
+# =============================================================================
+# DOWNSTREAM NOTES  (added 2026-07-30, after the GUR body was written)
+# =============================================================================
+downstream_notes:
+  purpose: >-
+    Builder and Reviewer startup does not read books/<book>/reports/, so a finding recorded
+    only there would never reach them. This block is a pointer, not a verdict.
+  dedupe_report:
+    path: books/adnd1e/phb/reports/DEDUPE-PHB-20260729.md
+    what_it_is: >-
+      Every edge proposed across all PHB GURs, compared against the 3,809-edge canonical
+      graph on three tests: exact duplicate triple, type conflict on the same ordered pair,
+      and direction conflict on the reversed pair. Across all PHB GURs, 115 of 389 proposed
+      edges duplicate a canonical triple exactly, 35 are type conflicts and 20 are direction
+      conflicts.
+    why_it_exists: >-
+      No packet was ever supplied with a local_neighborhood.json, so no Analyst could run
+      this check at extraction time. It is BLK-02, run once after the fact.
+    what_builder_should_do: >-
+      Consult it before normalising this GUR. Exact duplicates should generally be dropped
+      from the GUP; where the canonical row cites a different book, prefer adding this
+      packet's citation to the existing row over discarding a second independent witness.
+    what_reviewer_should_do: >-
+      The direction conflicts are classified in the report into four classes with a
+      disposition for each. Class B is not a conflict at all and both sides should be kept.
+      Class D is a flat PHB-versus-DMG contradiction on two rows.
+  no_verdicts_embedded: >-
+    This GUR has not been edited to mark individual edges as duplicates. Whether an
+    assertion is already held by the graph is a normalisation determination owned by
+    Builder and Reviewer; recording it in an interpretive artifact would put the decision
+    in the wrong role.
+  edges_pending_ESC_20260730_010115:
+    escalation: rulesets/adnd1e/escalations/decided/ESC-2026-07-30T05.01.15.336Z.yaml
+    refs: [G1, D1, D2, H1, H2]
+    issue: >-
+      These edges use DERIVED_FROM where the canonical graph holds the reverse relationship
+      with MODIFIES or FEEDS_INTO. Both types are licensed by constitution section 4 and
+      section 4.2 does not disambiguate this pair, so the choice is a global convention
+      question rather than a per-edge error.
+    analyst_position: >-
+      The Analyst recommends yielding to the canonical convention, and has deliberately NOT
+      flipped these edges while the escalation is open. Pre-empting a convention question
+      the Analyst itself raised would defeat the point of raising it.
+    builder_action: >-
+      Hold these refs pending DEC on ESC-2026-07-30T05.01.15.336Z. If the canonical convention is ratified
+      they are duplicates and should be dropped, not re-typed and re-proposed.

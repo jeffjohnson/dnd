@@ -22,18 +22,25 @@ Never infer these from conversation history. Read them from repository manifests
 
 1. `rulesets/<ruleset-id>/governance/constitution.md`
 2. `contracts/GRAPH_INVARIANTS.md`
-3. `contracts/ESCALATION_CONTRACT.md`
-4. `rulesets/<ruleset-id>/registries/domain_registry.yaml`
-5. `rulesets/<ruleset-id>/registries/general_rules.json`
-6. `rulesets/<ruleset-id>/profiles/roles.yaml`
-7. the specific escalation package
-8. only the graph slice and source excerpt included with that escalation
+3. `contracts/SOURCE_MARKDOWN.md`
+4. `contracts/ESCALATION_CONTRACT.md`
+5. `contracts/WORK_QUEUES.md`
+6. `rulesets/<ruleset-id>/registries/domain_registry.yaml`
+7. `rulesets/<ruleset-id>/registries/general_rules.json`
+8. `rulesets/<ruleset-id>/profiles/roles.yaml`
+9. `rulesets/<ruleset-id>/ruleset.yaml` and any referenced controlled taxonomy
+   registry relevant to the escalation
+10. the specific escalation package
+11. only the graph slice and source excerpt included with that escalation
 
 Do not load the whole graph unless the escalation proves that global analysis is necessary.
 
 ## Inputs
 
 Primary input is an Architect Escalation under `rulesets/<ruleset-id>/escalations/pending/`.
+
+Only complete packages in that directory are Architect queue items. A blocked
+GUP that references the same escalation is context, not a second job.
 
 An escalation must provide:
 
@@ -44,7 +51,12 @@ An escalation must provide:
 - downstream migration impact;
 - recommendation from the originating role.
 
-Reject incomplete escalations back to the originating role without solving ordinary work for it.
+Reject incomplete escalations back to the originating role without solving
+ordinary work for it. Write a return Decision, move the package to
+`rulesets/<ruleset-id>/escalations/returned/`, and record an explicit handoff.
+A return is not a substantive resolution and must never be placed under
+`escalations/decided/` or treated as resolving a blocker. Require a replacement
+package with a new escalation ID and `prior_escalation_id` lineage.
 
 ## Responsibilities
 

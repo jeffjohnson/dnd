@@ -1,0 +1,199 @@
+schema_version: "1.0"
+id: ESC-2026-07-30T23.25.16.825Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+constitution_version: "1.4"
+raised_by: reviewer
+decision_owner: architect
+raised_on: "2026-07-30"
+decision_id: DEC-2026-0014
+decided_on: "2026-07-30"
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Resolve the higher-authority edge schema's field-set conflict with the
+    constitutional and canonical 18-column production format.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2: the ruleset graph schema and production data disagree,
+  and REPOSITORY_STRUCTURE places schemas/adnd1e above rulesets/adnd1e in the
+  authority hierarchy. Reviewer cannot approve schema-invalid production rows
+  or alter the schema.
+
+originating_artifacts:
+  gups:
+    - GUP-PKT-PHB-009-013-ability-scores-r04
+    - GUP-PKT-PHB-013-018-races-r07
+    - GUP-PKT-PHB-018-033-classes-r04
+    - GUP-PKT-PHB-033-035-alignment-hp-languages-r02
+    - GUP-PKT-PHB-039-040-hirelings-time-distance-r02
+    - GUP-PKT-PHB-040-042-spells-intro-r02
+  reviews:
+    - REV-GUP-PKT-PHB-009-013-ability-scores-r04-r01
+    - REV-GUP-PKT-PHB-013-018-races-r07-r01
+    - REV-GUP-PKT-PHB-018-033-classes-r04-r01
+    - REV-GUP-PKT-PHB-033-035-alignment-hp-languages-r02-r01
+    - REV-GUP-PKT-PHB-039-040-hirelings-time-distance-r02-r01
+    - REV-GUP-PKT-PHB-040-042-spells-intro-r02-r01
+
+question: >-
+  Which production edge field set governs: the 18 columns required by
+  Constitution v1.4 and canonical edges_master.csv, or the incompatible
+  schemas/adnd1e/graph/edge.schema.json object requiring per-row ruleset_id and
+  book_id while rejecting the production book field? If the 18-column contract
+  remains authoritative, may the Architect direct the schema correction and
+  its regression tests without migrating canonical edge data?
+
+smallest_relevant_excerpts:
+  - path: schemas/adnd1e/graph/edge.schema.json
+    excerpt: >-
+      additionalProperties is false; required includes ruleset_id and book_id;
+      properties defines book_id but does not define book.
+  - path: rulesets/adnd1e/governance/constitution.md
+    section: "5. Required fields"
+    excerpt: >-
+      source_id, source_label, edge_type, target_id, target_label, aspect,
+      condition, polarity, polarity_basis, book, page, section, evidence, pass,
+      status, supersession_basis, general_rule_id, review_flag
+  - path: rulesets/adnd1e/governance/constitution.md
+    section: "12. Worked examples"
+    excerpt: >-
+      18 columns. edges_master.csv is authoritative for column order; any
+      example that disagrees is a defect in the constitution.
+  - path: REPOSITORY_STRUCTURE.md
+    section: "Authority hierarchy"
+    excerpt: >-
+      schemas/adnd1e is authority level 4; rulesets/adnd1e is level 5.
+
+local_graph_neighborhood:
+  canonical_file: rulesets/adnd1e/canonical/edges_master.csv
+  canonical_rows: 3809
+  canonical_header:
+    - source_id
+    - source_label
+    - edge_type
+    - target_id
+    - target_label
+    - aspect
+    - condition
+    - polarity
+    - polarity_basis
+    - book
+    - page
+    - section
+    - evidence
+    - pass
+    - status
+    - supersession_basis
+    - general_rule_id
+    - review_flag
+  reviewed_gup_csvs_checked: 6
+  reviewed_gup_header_result: >-
+    All six exact GUP edge CSVs use the same constitutional 18-column header.
+  builder_contract:
+    path: tooling/builder/src/adnd1e_builder/vocab.py
+    result: COLUMNS is the same 18-column header.
+  integrator_contract:
+    path: tooling/integrator/src/adnd1e_integrator/canonical.py
+    result: EDGE_COLUMNS resolves to the same 18-column header.
+  schema_validation_result: >-
+    Review and Approved-manifest schemas pass. Every otherwise valid Approved
+    edge row fails edge.schema.json because book is an additional property and
+    ruleset_id and book_id are missing.
+
+affected_canonical_ids: []
+affected_scope:
+  canonical_edge_rows: 3809
+  canonical_node_rows: 0
+  current_gup_bundles: 6
+  otherwise_clean_reviews_held: 4
+  current_canonical_data_change_required_under_recommendation: false
+
+options_considered:
+  - id: correct_edge_schema_to_18_columns
+    description: >-
+      Make edge.schema.json describe the existing constitutional and canonical
+      18-column production row, including book and excluding per-row ruleset_id
+      and book_id.
+    advantages:
+      - Preserves Constitution v1.4, canonical data, Builder output, and Integrator input.
+      - Requires no canonical migration.
+      - Makes schemas enforce the format already used by all production rows.
+    risks:
+      - Requires a schema edit and regression tests.
+  - id: migrate_production_to_schema_fields
+    description: >-
+      Add ruleset_id and book_id to every edge row and remove or rename book.
+    advantages:
+      - Preserves the present schema text.
+    risks:
+      - Conflicts with Constitution v1.4 citation semantics and the approved book vocabulary.
+      - Requires migration of 3,809 canonical rows, Builder, Integrator, invariants,
+        examples, GUP CSVs, and all downstream consumers.
+      - Removing book loses the PHB/DMG/UA/MM per-assertion provenance field; book_id
+        in the artifact envelope is not an equivalent cross-book row field.
+  - id: declare_schema_non_applicable_to_csv
+    description: >-
+      Treat edge.schema.json as applying only to an undocumented envelope form,
+      not production CSV rows.
+    advantages:
+      - Avoids immediate data changes.
+    risks:
+      - Contradicts the schema title "AD&D 1e Production Edge".
+      - Leaves no schema for the actual 18-column production row and makes validation ambiguous.
+
+recommended_resolution:
+  option: correct_edge_schema_to_18_columns
+  rationale: >-
+    This is the least expressive and lowest-migration resolution. The canonical
+    graph, Constitution v1.4, Builder, and Integrator agree on one 18-column
+    format. The schema alone diverges and also duplicates source_id in its
+    required list, which supports classifying the mismatch as a schema defect
+    rather than an intended new production format.
+
+expected_migration_impact:
+  constitution: no semantic change
+  schema:
+    - schemas/adnd1e/graph/edge.schema.json
+  registry: none
+  profile: none
+  canonical_edges: no row migration under the recommendation
+  canonical_nodes: none
+  tooling:
+    - Add schema tests covering the exact 18-column header and a representative production row.
+    - Validate all 3,809 canonical rows against the corrected schema.
+    - Validate GUP and Approved edge CSV rows through the same adapter.
+  artifacts_after_decision:
+    - Reviewer emits new Review revisions for the four otherwise-clean GUPs.
+    - Races and classes retain their independent Builder/Analyst revision requirements.
+
+acceptance_tests_requested:
+  - A canonical 18-column row validates against edge.schema.json.
+  - book accepts only PHB, DMG, MM, or UA.
+  - ruleset_id and book_id are not required inside each production edge row.
+  - An unexpected nineteenth column is rejected.
+  - All 3,809 current canonical rows validate without rewriting them.
+  - All six reviewed GUP CSV headers match the corrected schema adapter.
+  - No canonical graph or registry file is changed by the decision itself.
+
+constitution_registry_or_profile_change:
+  constitution_change_recommended: false
+  registry_change: false
+  profile_change: false
+  schema_change_recommended: true
+
+blocking_effect:
+  - >-
+    Ability scores, alignment/hit points, hirelings/time/distance, and spells
+    are source-correct but cannot receive Approved bundles while the effective
+    edge schema rejects their production rows.
+  - >-
+    Races independently requires G9 and G10 to become canonical updates.
+  - >-
+    Classes independently requires the omitted Monk-to-Quivering-Palm assertion,
+    ten canonical operations, and duplicate prime-requisite-node normalization.

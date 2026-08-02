@@ -1,11 +1,231 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/common/gup.schema.json",
   "title": "Graph Update Patch",
+  "$comment": "contracts/WORK_QUEUES.md 1.2 gives a GUP exactly one lineage root, selected by artifact_kind. A packet update consumes one active-leaf GUR; a decision migration consumes approved Architect Decisions and has no GUR at all. The two roots are validated separately below: a declared kind is never reinterpreted to make an invalid artifact routable.",
   "allOf": [
     {
       "$ref": "artifact-envelope.schema.json"
+    },
+    {
+      "$comment": "A decision migration must carry the alternate auditable root that stands in for GUR provenance. Suppressing the missing-GUR warning on artifact_kind alone would let any GUP bypass source lineage, so the Decision IDs, paths and checksums are required instead.",
+      "if": {
+        "properties": {
+          "artifact_kind": {
+            "const": "decision_migration"
+          }
+        },
+        "required": [
+          "artifact_kind"
+        ]
+      },
+      "then": {
+        "$ref": "#/$defs/decisionMigration"
+      }
+    },
+    {
+      "$comment": "A packet update names the GUR it consumed.",
+      "if": {
+        "properties": {
+          "artifact_kind": {
+            "const": "packet_update"
+          }
+        },
+        "required": [
+          "artifact_kind"
+        ]
+      },
+      "then": {
+        "$ref": "#/$defs/packetUpdate"
+      }
     }
   ],
   "type": "object",
-  "additionalProperties": true
+  "additionalProperties": true,
+  "properties": {
+    "artifact_kind": {
+      "$comment": "Legacy GUPs omit this and are read as packet updates only where their GUR provenance is unambiguous. identity_merge_migration is the earlier spelling of the decision-migration root, not a third root: it stays accepted here so published history remains schema-valid, and it carries no lineage requirements because artifacts written before the contract could not have met them. Whether such an artifact reaches Reviewer is a queue rule, not a structural one, and WORK_QUEUES 1.2 answers it -- it is not ready until superseded by a conforming decision_migration revision.",
+      "enum": [
+        "packet_update",
+        "decision_migration",
+        "identity_merge_migration"
+      ]
+    },
+    "approval_ready": {
+      "type": "boolean"
+    }
+  },
+  "$defs": {
+    "checksum": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "decisionId": {
+      "type": "string",
+      "pattern": "^DEC-[0-9]{4}-[0-9]{4}$"
+    },
+    "packetUpdate": {
+      "type": "object",
+      "required": [
+        "packet_id",
+        "provenance"
+      ],
+      "properties": {
+        "provenance": {
+          "type": "object",
+          "required": [
+            "gur_id"
+          ],
+          "properties": {
+            "gur_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "gur_checksum": {
+              "$ref": "#/$defs/checksum"
+            }
+          }
+        }
+      }
+    },
+    "decisionMigration": {
+      "type": "object",
+      "required": [
+        "lineage_id",
+        "revision",
+        "supersedes",
+        "authority",
+        "validation_report",
+        "validation_report_checksum",
+        "provenance"
+      ],
+      "properties": {
+        "lineage_id": {
+          "$comment": "Stable across every revision. packet_id cannot group these: independent migrations all carry cross-packet.",
+          "type": "string",
+          "minLength": 1
+        },
+        "authority": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/decisionId"
+          }
+        },
+        "validation_report": {
+          "type": "string",
+          "minLength": 1
+        },
+        "validation_report_checksum": {
+          "$ref": "#/$defs/checksum"
+        },
+        "canonical_changes": {
+          "$comment": "WORK_QUEUES 1.2 condition 6: a Decision ID never substitutes for the rows to be reviewed, so each change carries its own before-state.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "canonical_row",
+              "kind",
+              "authority",
+              "changes",
+              "before"
+            ],
+            "properties": {
+              "canonical_row": {
+                "type": "integer",
+                "minimum": 2
+              },
+              "kind": {
+                "type": "string",
+                "minLength": 1
+              },
+              "authority": {
+                "$ref": "#/$defs/decisionId"
+              },
+              "changes": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "type": "object",
+                  "required": [
+                    "from",
+                    "to"
+                  ]
+                }
+              },
+              "before": {
+                "type": "object",
+                "minProperties": 1
+              }
+            }
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "$comment": "gur_id and gur_checksum are forbidden here. Their absence is the point: this artifact's root is the Decision record, and carrying either would claim a packet lineage it does not have.",
+          "required": [
+            "decision_inputs",
+            "canonical_source",
+            "canonical_checksum",
+            "canonical_rows_read"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "gur_id"
+                ]
+              },
+              {
+                "required": [
+                  "gur_checksum"
+                ]
+              }
+            ]
+          },
+          "properties": {
+            "decision_inputs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "path",
+                  "checksum"
+                ],
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/decisionId"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "checksum": {
+                    "$ref": "#/$defs/checksum"
+                  }
+                }
+              }
+            },
+            "canonical_source": {
+              "type": "string",
+              "minLength": 1
+            },
+            "canonical_checksum": {
+              "$ref": "#/$defs/checksum"
+            },
+            "canonical_rows_read": {
+              "$comment": "The baseline the plan was made against. If it drifts, the reviewed plan is stale and must be re-issued rather than applied.",
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  }
 }

@@ -1,0 +1,261 @@
+schema_version: '1.0'
+id: ESC-2026-07-31T23.21.50.116Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.6'
+revision: 1
+supersedes: null
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    An approved Decision directs a label change to the wrong endpoint, and the
+    exact Decision scopes cannot be approved under the repository's categorical
+    prohibition on retained heuristic or unset polarity.
+  blocking_ids: []
+raised_by: reviewer
+raised_on: '2026-07-31'
+decision_owner: architect
+decision_id: DEC-2026-0019
+decided_on: '2026-08-01'
+
+originating_artifacts:
+  packet_ids:
+    - PKT-PHB-033-035-alignment-hp-languages
+    - PKT-PHB-043-054-cleric-spells
+  gur_ids: []
+  gur_note: >-
+    This is a decision_migration lineage, for which absence of a GUR is
+    intentional under ARTIFACT_LIFECYCLE 1.2 and WORK_QUEUES 1.2.
+  gup:
+    id: GUP-MIG-DEC-2026-0015-0016-r02
+    path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0015-0016-r02.yaml
+    checksum: sha256:83004cf576df2548af73fea1d32073ecd27ee69d6f8e4cea7cf8fc6aba2d72bb
+  review:
+    id: REV-GUP-MIG-DEC-2026-0015-0016-r02-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-MIG-DEC-2026-0015-0016-r02-r01.yaml
+  authority_decisions:
+    - DEC-2026-0015
+    - DEC-2026-0016
+
+exact_questions_requiring_governance:
+  - >-
+    Will the Architect issue an erratum or superseding Decision changing the
+    DEC-2026-0015 row-3283 label normalization from source_label=Taunt to
+    target_label=Taunt, so exp_level retains source_label=Caster Level?
+  - >-
+    Under GRAPH_INVARIANTS 16 and Reviewer instruction 24, how must this exact
+    Decision migration proceed when 20 touched rows would retain authored-type
+    polarity_basis values of heuristic or unset, while DEC-2026-0015 and
+    DEC-2026-0016 authorize only their enumerated identity, label, removal, and
+    page changes?
+
+smallest_relevant_source_excerpt:
+  row_3283_legacy_source:
+    path: books/adnd1e/ua/archive/legacy/extraction-batches/ua_p33_53.csv
+    line: 22
+    excerpt: >-
+      exp_level,Caster Level,MODIFIES,spell_taunt,Area of Effect,hit dice
+      affected scale with level,,UA,53,MAGIC-USER SPELLS (2ND LEVEL),TRUE,page-sweep
+    interpretation: >-
+      The Taunt node is the target. Relabelling spell_taunt therefore requires
+      target_label=Taunt; changing source_label instead relabels exp_level.
+  governing_contract_excerpts:
+    - source: contracts/GRAPH_INVARIANTS.md#polarity
+      excerpt: No Approved GUP retains polarity_basis=heuristic or polarity_basis=unset.
+    - source: agents/reviewer/INSTRUCTIONS.md#field-by-field-review
+      excerpt: Does any row retain heuristic or unset? If yes, it cannot be approved.
+    - source: rulesets/adnd1e/governance/constitution.md#6.1-polarity-basis
+      excerpt: >-
+        heuristic is resolved by Reviewer; unset is resolved by Analyst on next
+        touch; no approved patch may retain heuristic.
+
+local_graph_neighborhood:
+  row_3283:
+    baseline:
+      source_id: exp_level
+      source_label: Caster Level
+      edge_type: MODIFIES
+      target_id: spell_taunt
+      target_label: Area of Effect
+      aspect: hit dice affected scale with level
+      condition: ''
+      polarity: neutral
+      polarity_basis: unset
+      book: UA
+      page: '53'
+      section: MAGIC-USER SPELLS (2ND LEVEL)
+    post_gup_if_applied_literally:
+      source_id: exp_level
+      source_label: Taunt
+      edge_type: MODIFIES
+      target_id: spell_taunt
+      target_label: Area of Effect
+      aspect: hit dice affected scale with level
+      condition: ''
+    required_endpoint_label_result:
+      source_id: exp_level
+      source_label: Caster Level
+      edge_type: MODIFIES
+      target_id: spell_taunt
+      target_label: Taunt
+      aspect: hit dice affected scale with level
+      condition: ''
+    decision_clause:
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0015.yaml
+      line: 188
+      current: '{canonical_row: 3283, field: source_label, value: Taunt}'
+      required: '{canonical_row: 3283, field: target_label, value: Taunt}'
+  post_migration_duplicate_check:
+    exact_five_field_duplicates: 0
+    near_endpoint_type_groups:
+      - rows: [3349, 3350]
+        endpoint_type: spell_remove_paralysis OVERRIDES rule_immobile
+        resolution: >-
+          Retain both. DEC-2026-0015 expressly requires the pair to remain
+          distinct; their aspects are respectively frees affected creatures and
+          also frees held creatures, and the UA legacy batch contains both rows.
+  decision_guards_verified:
+    - row 2260 and GR_HELPLESS_TARGET_AUTOHIT remain unchanged.
+    - deferred spell_imprisonment row 3027 remains unchanged.
+    - no THE PALADIN page is changed.
+    - the row-1765 provenance locus DMG p67 is recorded for survivor row 2258.
+
+retained_polarity_blocker:
+  total_rows: 20
+  basis_counts:
+    unset: 17
+    heuristic: 3
+  authority_counts:
+    DEC-2026-0015: 16
+    DEC-2026-0016: 4
+  rows:
+    - {canonical_row: 413, kind: citation_correction, authority: DEC-2026-0016, edge_type: CONSTRAINS, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 531, kind: citation_correction, authority: DEC-2026-0016, edge_type: MODIFIES, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 532, kind: citation_correction, authority: DEC-2026-0016, edge_type: MODIFIES, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 535, kind: citation_correction, authority: DEC-2026-0016, edge_type: TRIGGERS, polarity: inflicts, polarity_basis: heuristic}
+    - {canonical_row: 1702, kind: endpoint_repoint, authority: DEC-2026-0015, edge_type: MODIFIES, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 1984, kind: endpoint_repoint, authority: DEC-2026-0015, edge_type: MODIFIES, polarity: inflicts, polarity_basis: heuristic}
+    - {canonical_row: 2215, kind: endpoint_repoint, authority: DEC-2026-0015, edge_type: TRIGGERS, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 2902, kind: endpoint_repoint, authority: DEC-2026-0015, edge_type: MODIFIES, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 2903, kind: endpoint_repoint, authority: DEC-2026-0015, edge_type: MODIFIES, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 2904, kind: endpoint_repoint, authority: DEC-2026-0015, edge_type: TRIGGERS, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 2905, kind: endpoint_repoint, authority: DEC-2026-0015, edge_type: MODIFIES, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 2906, kind: endpoint_repoint, authority: DEC-2026-0015, edge_type: MODIFIES, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 2065, kind: label_normalization, authority: DEC-2026-0015, edge_type: TRIGGERS, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 2066, kind: label_normalization, authority: DEC-2026-0015, edge_type: CONSTRAINS, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 2122, kind: label_normalization, authority: DEC-2026-0015, edge_type: TRIGGERS, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 2273, kind: label_normalization, authority: DEC-2026-0015, edge_type: MODIFIES, polarity: worsens, polarity_basis: heuristic}
+    - {canonical_row: 2612, kind: label_normalization, authority: DEC-2026-0015, edge_type: MODIFIES, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 3147, kind: label_normalization, authority: DEC-2026-0015, edge_type: CONSTRAINS, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 3283, kind: label_normalization, authority: DEC-2026-0015, edge_type: MODIFIES, polarity: neutral, polarity_basis: unset}
+    - {canonical_row: 3498, kind: label_normalization, authority: DEC-2026-0015, edge_type: MODIFIES, polarity: neutral, polarity_basis: unset}
+  why_not_mechanical_builder_work: >-
+    All 20 rows use authored-polarity edge types. The 17 unset values require
+    Analyst source interpretation on next touch, and the three heuristic values
+    require Reviewer resolution. Adding those changes to this GUP would exceed
+    both Decisions' exact authorized scopes; DEC-2026-0016 additionally requires
+    its approved migration to change exactly nine page values and no other edge
+    field.
+
+affected_canonical_ids:
+  - abil_dexterity
+  - align_change
+  - cbt_armor_class
+  - cbt_morale
+  - cbt_surprise
+  - cbt_tohit
+  - comeliness
+  - exp_level
+  - exp_level_loss
+  - item_amulet_location
+  - item_rod_lordly_might
+  - potion_philter_love
+  - rule_confused_condition
+  - rule_spell_failure
+  - rule_underwater
+  - save_matrix
+  - spell_bless
+  - spell_charm_person
+  - spell_confusion
+  - spell_disruption
+  - spell_esp
+  - spell_fire_spells
+  - spell_fireball
+  - spell_glyph_of_warding
+  - spell_hold_person
+  - spell_itching
+  - spell_melfs_acid_arrow
+  - spell_rash
+  - spell_taunt
+  - sys_alignment
+
+options_considered:
+  - option: Approve r02 exactly as emitted.
+    disposition: rejected
+    reason: >-
+      It corrupts row 3283's source label and violates the categorical polarity
+      approval rules on 20 touched rows.
+  - option: Return only a mechanical Builder correction.
+    disposition: insufficient
+    reason: >-
+      Builder can mechanically put Taunt on target_label, but doing so contradicts
+      the literal approved Decision. Builder also lacks authority and source
+      analysis to resolve 20 authored polarities.
+  - option: Create a decision-migration exception for preserved polarity fields.
+    disposition: not_recommended
+    reason: >-
+      This would weaken GRAPH_INVARIANTS 15-16 and the Reviewer's field-by-field
+      approval boundary merely to pass legacy debt through a touched-row patch.
+  - option: Architect erratum plus prerequisite polarity cleanup, then rebuild r02.
+    disposition: recommended
+    reason: >-
+      This preserves the exact DEC-2026-0015/0016 migration promises and the
+      existing no-heuristic/no-unset approval rule.
+
+recommended_resolution:
+  - >-
+    Issue an Architect erratum or superseding Decision for DEC-2026-0015 that
+    changes only row 3283's label-normalization field from source_label to
+    target_label.
+  - >-
+    Authorize and route a prerequisite source-backed polarity cleanup for the 20
+    listed rows. Analyst determines every authored polarity from source; Reviewer
+    independently resolves the three current heuristic values and verifies all
+    resulting read bases.
+  - >-
+    Integrate the approved polarity cleanup first, then have Builder emit the next
+    revision of GUP-MIG-DEC-2026-0015-0016 against the new canonical checksum and
+    corrected Decision authority. This lets DEC-2026-0016 remain an exactly
+    nine-page-only migration.
+
+expected_migration_impact:
+  current_decision_migration:
+    nodes_added: 7
+    nodes_relabelled: 9
+    endpoint_repoints: 16
+    label_normalizations: 10
+    citation_corrections: 9
+    rows_removed: 1
+    canonical_row_net_change: -1
+  prerequisite_cleanup:
+    canonical_rows_requiring_source_read: 20
+    polarity_basis_values_to_remove:
+      unset: 17
+      heuristic: 3
+    exact_polarity_values: pending Analyst and Reviewer source work
+  row_3283_erratum:
+    canonical_row_count_change: 0
+    assertion_identity_change: false
+    corrected_field: target_label
+    preserved_field: source_label
+
+change_surface:
+  constitution_change_under_recommendation: false
+  registry_change_beyond_DEC_2026_0015: false
+  controlled_profile_change: false
+  architect_decision_change: true
+  canonical_migration_change: true

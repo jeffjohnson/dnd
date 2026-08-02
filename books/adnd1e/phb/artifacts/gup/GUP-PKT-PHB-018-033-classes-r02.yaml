@@ -1,0 +1,2866 @@
+schema_version: '1.0'
+id: GUP-PKT-PHB-018-033-classes-r02
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-018-033-classes
+constitution_version: '1.2'
+provenance:
+  gur_id: GUR-PKT-PHB-018-033-classes-r01
+  gur_checksum: sha256:14ae355b51fef029f5637313f1fbb651f22d48b6589b82ea68a82fd43aba348d
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 169
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: rule_prime_requisite
+      proposed_label: ''
+      kind: rule
+      why_needed: This packet strengthens the case for it. Packet 03 saw the bonus from the ability side,
+        four times. This packet gives the class side for all ten classes, including three explicit denials,
+        which is what D2 to D4 record.
+      edges_depending_on_it:
+        - D1
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      architect_required: false
+      disposition: reviewer_may_approve
+      carried_forward: true
+      first_proposed_in: GUR-PKT-PHB-009-013-ability-scores-r01
+      returned_to_workflow_by: DEC-2026-0003
+    - proposed_id: rule_dual_class
+      proposed_label: The Character with Two Classes
+      kind: rule
+      why_needed: 'The registry holds rule_multiclass at degree 14 but nothing for the human dual-class
+        rule, which this packet gives a section of its own and which works differently: the character
+        stops advancing in the original class rather than dividing experience between classes. Collapsing
+        the two would make the graph unable to distinguish "what breaks if multi-classing changes" from
+        "what breaks if dual-classing changes".'
+      edges_depending_on_it:
+        - G3
+        - G4
+        - G5
+        - G6
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+      returned_to_workflow_by: DEC-2026-0003
+    - proposed_id: rule_tracking
+      proposed_label: Tracking
+      kind: rule
+      why_needed: Ranger tracking is a distinct procedure with its own underground and outdoor resolution,
+        and no canonical node covers it. The registry's nearest matches, item_boots_varied_tracks and
+        monster_slithering_tracker, are unrelated.
+      edges_depending_on_it:
+        - F19
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+      returned_to_workflow_by: DEC-2026-0003
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions:
+    - source_id: abil_dexterity
+      source_label: Dexterity
+      edge_type: EXCLUDED_FROM
+      target_id: cbt_armor_class
+      target_label: Armor Class
+      aspect: defensive adjustment
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F52
+    - source_id: abil_intelligence
+      source_label: Intelligence
+      edge_type: GATES
+      target_id: rule_alignment_languages
+      target_label: Alignment Languages
+      aspect: alignment tongues
+      condition: assassins at high level
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '29'
+      section: The Assassin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F42
+    - source_id: abil_strength
+      source_label: Strength
+      edge_type: EXCLUDED_FROM
+      target_id: cbt_damage
+      target_label: Damage
+      aspect: damage adjustment
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F54
+    - source_id: abil_strength
+      source_label: Strength
+      edge_type: EXCLUDED_FROM
+      target_id: cbt_tohit
+      target_label: To-Hit Roll
+      aspect: attack adjustment
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F53
+    - source_id: align_change
+      source_label: Changing Alignment
+      edge_type: TRIGGERS
+      target_id: class_followers
+      target_label: Followers
+      aspect: loss of followers
+      condition: cleric changing deity or alignment
+      polarity: inflicts
+      polarity_basis: read
+      book: PHB
+      page: '20'
+      section: The Cleric
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C10
+    - source_id: align_change
+      source_label: Changing Alignment
+      edge_type: TRIGGERS
+      target_id: class_monk_loss
+      target_label: Loss of Monk Status
+      aspect: loss of class
+      condition: on loss of lawful alignment
+      polarity: inflicts
+      polarity_basis: read
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C9
+    - source_id: align_change
+      source_label: Changing Alignment
+      edge_type: TRIGGERS
+      target_id: class_paladin_loss
+      target_label: Loss of Paladinhood
+      aspect: loss of class
+      condition: on any evil act
+      polarity: inflicts
+      polarity_basis: read
+      book: PHB
+      page: '22'
+      section: The Paladin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C8
+    - source_id: class_assassin
+      source_label: Assassin
+      edge_type: CONSTRAINS
+      target_id: exp_level
+      target_label: Experience Level
+      aspect: class level limit
+      condition: hard class ceiling, and contested for the highest ranks
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A12
+    - source_id: class_assassin
+      source_label: Assassin
+      edge_type: CONSTRAINS
+      target_id: sys_equipment
+      target_label: Equipment
+      aspect: armour and weapons permitted
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: B6
+    - source_id: class_assassin
+      source_label: Assassin
+      edge_type: CONSTRAINS
+      target_id: thief_skills
+      target_label: Thief Skills
+      aspect: effective thieving level
+      condition: two levels below assassin level
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '29'
+      section: The Assassin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F40
+    - source_id: class_assassin
+      source_label: Assassin
+      edge_type: EXCLUDED_FROM
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: spell ability
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A9
+    - source_id: class_assassin
+      source_label: Assassin
+      edge_type: GATES
+      target_id: rule_assassins_guild
+      target_label: Assassins Guild
+      aspect: guild membership
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '29'
+      section: The Assassin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F43
+    - source_id: class_assassin
+      source_label: Assassin
+      edge_type: GATES
+      target_id: rule_disguise
+      target_label: Disguise
+      aspect: disguise
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '29'
+      section: The Assassin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F41
+    - source_id: class_assassin
+      source_label: Assassin
+      edge_type: GATES
+      target_id: rule_poison_ingested
+      target_label: Ingested Poison
+      aspect: poison use
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '29'
+      section: The Assassin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F44
+    - source_id: class_assassin
+      source_label: Assassin
+      edge_type: GATES
+      target_id: xp_assassination
+      target_label: Assassination Experience
+      aspect: assassination attack
+      condition: on surprise
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '29'
+      section: The Assassin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F39
+    - source_id: class_cleric
+      source_label: Cleric
+      edge_type: CONSTRAINS
+      target_id: sys_equipment
+      target_label: Equipment
+      aspect: armour and weapons permitted
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: B1
+    - source_id: class_cleric
+      source_label: Cleric
+      edge_type: GATES
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: spell ability
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A1
+    - source_id: class_cleric
+      source_label: Cleric
+      edge_type: GATES
+      target_id: turn_undead
+      target_label: Turning Undead
+      aspect: undead turning
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '20'
+      section: The Cleric
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F1
+    - source_id: class_druid
+      source_label: Druid
+      edge_type: CONSTRAINS
+      target_id: exp_level
+      target_label: Experience Level
+      aspect: class level limit
+      condition: hard class ceiling, and contested for the highest ranks
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A11
+    - source_id: class_druid
+      source_label: Druid
+      edge_type: CONSTRAINS
+      target_id: sys_equipment
+      target_label: Equipment
+      aspect: armour and weapons permitted
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: B2
+    - source_id: class_druid
+      source_label: Druid
+      edge_type: EXCLUDED_FROM
+      target_id: turn_undead
+      target_label: Turning Undead
+      aspect: undead turning
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '21'
+      section: The Druid
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F4
+    - source_id: class_druid
+      source_label: Druid
+      edge_type: GATES
+      target_id: rule_languages
+      target_label: Languages
+      aspect: druidic and gained languages
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '21'
+      section: The Druid
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F6
+    - source_id: class_druid
+      source_label: Druid
+      edge_type: GATES
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: spell ability
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A2
+    - source_id: class_druid
+      source_label: Druid
+      edge_type: MODIFIES
+      target_id: save_matrix
+      target_label: Saving Throw Matrix
+      aspect: saving throw
+      condition: fire and lightning attacks
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '21'
+      section: The Druid
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F5
+    - source_id: class_fighter
+      source_label: Fighter
+      edge_type: EXCLUDED_FROM
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: spell ability
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A7
+    - source_id: class_fighter
+      source_label: Fighter
+      edge_type: GATES
+      target_id: hench_mercenary
+      target_label: Mercenary Soldier
+      aspect: men-at-arms attraction
+      condition: on establishing a freehold
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '22'
+      section: The Fighter
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F8
+    - source_id: class_fighter
+      source_label: Fighter
+      edge_type: GATES
+      target_id: rule_freehold
+      target_label: Freehold
+      aspect: freehold establishment
+      condition: at high level
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '22'
+      section: The Fighter
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F7
+    - source_id: class_illusionist
+      source_label: Illusionist
+      edge_type: CONSTRAINS
+      target_id: item_magic_item
+      target_label: Magic Device
+      aspect: usable magic items
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '26'
+      section: The Illusionist
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F27
+    - source_id: class_illusionist
+      source_label: Illusionist
+      edge_type: CONSTRAINS
+      target_id: sys_equipment
+      target_label: Equipment
+      aspect: armour and weapons permitted
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: B4
+    - source_id: class_illusionist
+      source_label: Illusionist
+      edge_type: GATES
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: spell ability
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A6
+    - source_id: class_magic_user
+      source_label: Magic-User
+      edge_type: CONSTRAINS
+      target_id: sys_equipment
+      target_label: Equipment
+      aspect: armour and weapons permitted
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: B3
+    - source_id: class_magic_user
+      source_label: Magic-User
+      edge_type: GATES
+      target_id: item_enchant
+      target_label: Enchanting Items
+      aspect: item enchantment
+      condition: at high level
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '25'
+      section: The Magic-User
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F25
+    - source_id: class_magic_user
+      source_label: Magic-User
+      edge_type: GATES
+      target_id: item_scribe_scroll
+      target_label: Scribing Scrolls
+      aspect: scroll scribing
+      condition: at high level
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '25'
+      section: The Magic-User
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F24
+    - source_id: class_magic_user
+      source_label: Magic-User
+      edge_type: GATES
+      target_id: rule_spell_book
+      target_label: Spell Book
+      aspect: spell book maintenance
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '25'
+      section: The Magic-User
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F23
+    - source_id: class_magic_user
+      source_label: Magic-User
+      edge_type: GATES
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: spell ability
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A5
+    - source_id: class_magic_user
+      source_label: Magic-User
+      edge_type: GATES
+      target_id: rule_stronghold
+      target_label: Stronghold
+      aspect: stronghold construction
+      condition: at high level
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '25'
+      section: The Magic-User
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F26
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: CONSTRAINS
+      target_id: exp_level
+      target_label: Experience Level
+      aspect: class level limit
+      condition: hard class ceiling, and contested for the highest ranks
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A13
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: CONSTRAINS
+      target_id: hench_hirelings
+      target_label: Hirelings
+      aspect: hiring eligibility
+      condition: below the sixth level
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F58
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: CONSTRAINS
+      target_id: item_magic_item
+      target_label: Magic Device
+      aspect: retained magic items
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F60
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: CONSTRAINS
+      target_id: money_gp
+      target_label: Money
+      aspect: retained treasure
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F59
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: CONSTRAINS
+      target_id: sys_equipment
+      target_label: Equipment
+      aspect: armour and weapons permitted
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: B7
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: EXCLUDED_FROM
+      target_id: rule_disease
+      target_label: Disease
+      aspect: disease immunity
+      condition: from the fifth level
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F57
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: EXCLUDED_FROM
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: spell ability
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A10
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: GATES
+      target_id: rule_open_hand_combat
+      target_label: Open Hand Combat
+      aspect: open hand attack
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F47
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: GATES
+      target_id: rule_stun
+      target_label: Stunning Blow
+      aspect: stunning blow
+      condition: on a sufficient attack roll
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F48
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: GATES
+      target_id: thief_skills
+      target_label: Thief Skills
+      aspect: thief function
+      condition: at identical level
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F46
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: MODIFIES
+      target_id: cbt_damage
+      target_label: Damage
+      aspect: weapon damage bonus
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F55
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: MODIFIES
+      target_id: ex_falling
+      target_label: Falling Damage
+      aspect: falling damage
+      condition: when descending near a wall
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F61
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: MODIFIES
+      target_id: save_matrix
+      target_label: Saving Throw Matrix
+      aspect: saving throw
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F56
+    - source_id: class_paladin
+      source_label: Paladin
+      edge_type: CONSTRAINS
+      target_id: item_magic_item
+      target_label: Magic Device
+      aspect: retained magic items
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '22'
+      section: The Paladin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F14
+    - source_id: class_paladin
+      source_label: Paladin
+      edge_type: CONSTRAINS
+      target_id: money_gp
+      target_label: Money
+      aspect: retained wealth
+      condition: tithe and modest living
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '22'
+      section: The Paladin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F15
+    - source_id: class_paladin
+      source_label: Paladin
+      edge_type: EXCLUDED_FROM
+      target_id: hench_mercenary
+      target_label: Mercenary Soldier
+      aspect: men-at-arms attraction
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '22'
+      section: The Paladin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F16
+    - source_id: class_paladin
+      source_label: Paladin
+      edge_type: EXCLUDED_FROM
+      target_id: rule_disease
+      target_label: Disease
+      aspect: disease immunity
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '22'
+      section: The Paladin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F11
+    - source_id: class_paladin
+      source_label: Paladin
+      edge_type: EXCLUDED_FROM
+      target_id: rule_poison_ingested
+      target_label: Ingested Poison
+      aspect: poison use
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: B9
+    - source_id: class_paladin
+      source_label: Paladin
+      edge_type: GATES
+      target_id: rule_detect_evil
+      target_label: Detect Evil
+      aspect: evil detection
+      condition: when concentrating
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '22'
+      section: The Paladin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F9
+    - source_id: class_paladin
+      source_label: Paladin
+      edge_type: GATES
+      target_id: rule_lay_on_hands
+      target_label: Lay on Hands
+      aspect: wound healing
+      condition: once per day
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '22'
+      section: The Paladin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F12
+    - source_id: class_paladin
+      source_label: Paladin
+      edge_type: GATES
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: spell ability
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A3
+    - source_id: class_paladin
+      source_label: Paladin
+      edge_type: GATES
+      target_id: turn_undead
+      target_label: Turning Undead
+      aspect: undead turning
+      condition: from third level
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '22'
+      section: The Paladin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F13
+    - source_id: class_paladin
+      source_label: Paladin
+      edge_type: MODIFIES
+      target_id: save_matrix
+      target_label: Saving Throw Matrix
+      aspect: saving throw
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '22'
+      section: The Paladin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F10
+    - source_id: class_ranger
+      source_label: Ranger
+      edge_type: CONSTRAINS
+      target_id: hench_hirelings
+      target_label: Hirelings
+      aspect: hiring eligibility
+      condition: below the eighth level
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '24'
+      section: The Ranger
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F20
+    - source_id: class_ranger
+      source_label: Ranger
+      edge_type: CONSTRAINS
+      target_id: money_gp
+      target_label: Money
+      aspect: retained wealth
+      condition: only what can be carried
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '24'
+      section: The Ranger
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F22
+    - source_id: class_ranger
+      source_label: Ranger
+      edge_type: EXCLUDED_FROM
+      target_id: hench_mercenary
+      target_label: Mercenary Soldier
+      aspect: mercenary attraction
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '24'
+      section: The Ranger
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F21
+    - source_id: class_ranger
+      source_label: Ranger
+      edge_type: GATES
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: spell ability
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A4
+    - source_id: class_ranger
+      source_label: Ranger
+      edge_type: MODIFIES
+      target_id: cbt_damage
+      target_label: Damage
+      aspect: damage bonus
+      condition: versus giant-class humanoids
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '24'
+      section: The Ranger
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F17
+    - source_id: class_ranger
+      source_label: Ranger
+      edge_type: MODIFIES
+      target_id: cbt_surprise
+      target_label: Surprise
+      aspect: surprise chance
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '24'
+      section: The Ranger
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F18
+    - source_id: class_thief
+      source_label: Thief
+      edge_type: CONSTRAINS
+      target_id: sys_equipment
+      target_label: Equipment
+      aspect: armour and weapons permitted
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: B5
+    - source_id: class_thief
+      source_label: Thief
+      edge_type: EXCLUDED_FROM
+      target_id: rule_spell_memorization
+      target_label: Spell Memorization
+      aspect: spell ability
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A8
+    - source_id: class_thief
+      source_label: Thief
+      edge_type: GATES
+      target_id: rule_languages
+      target_label: Languages
+      aspect: thieves cant
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '27'
+      section: The Thief
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F34
+    - source_id: class_thief
+      source_label: Thief
+      edge_type: GATES
+      target_id: rule_thieves_guild
+      target_label: Thieves Guild
+      aspect: guild rivalry
+      condition: at high level
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '27'
+      section: The Thief
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F38
+    - source_id: class_thief
+      source_label: Thief
+      edge_type: GATES
+      target_id: thief_backstab
+      target_label: Back Stab
+      aspect: back stabbing
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '27'
+      section: The Thief
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F29
+    - source_id: class_thief
+      source_label: Thief
+      edge_type: GATES
+      target_id: thief_skills
+      target_label: Thief Skills
+      aspect: thief function
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '27'
+      section: The Thief
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F28
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: CONSTRAINS
+      target_id: thief_pick_pockets
+      target_label: Pick Pockets
+      aspect: success chance
+      condition: victim level
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '27'
+      section: The Thief
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F35
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: GATES
+      target_id: class_followers
+      target_label: Followers
+      aspect: follower attraction
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '20'
+      section: The Cleric
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F2
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: GATES
+      target_id: hench_hirelings
+      target_label: Hirelings
+      aspect: hiring eligibility
+      condition: assassins from the fourth level
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '29'
+      section: The Assassin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F45
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: GATES
+      target_id: rule_stronghold
+      target_label: Stronghold
+      aspect: stronghold construction
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '20'
+      section: The Cleric
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F3
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: GATES
+      target_id: thief_read_languages
+      target_label: Read Languages
+      aspect: language reading
+      condition: from the fourth level
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '27'
+      section: The Thief
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F33
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: GATES
+      target_id: thief_read_scrolls
+      target_label: Use Scrolls
+      aspect: scroll use
+      condition: thieves and assassins
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE I: HIT DICE, SPELL ABILITY, AND CLASS LEVEL LIMIT'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A14
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: MODIFIES
+      target_id: cbt_armor_class
+      target_label: Armor Class
+      aspect: effective armour class
+      condition: monks
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F49
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: MODIFIES
+      target_id: cbt_surprise
+      target_label: Surprise
+      aspect: surprise chance
+      condition: monks
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F51
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: MODIFIES
+      target_id: ex_movement_rate
+      target_label: Movement Rate
+      aspect: movement rate
+      condition: monks
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F50
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: MODIFIES
+      target_id: thief_backstab
+      target_label: Back Stab
+      aspect: damage multiple
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '27'
+      section: The Thief
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F30
+    - source_id: race_demihuman
+      source_label: Demihuman
+      edge_type: GATES
+      target_id: rule_multiclass
+      target_label: Multi-Class
+      aspect: multi-class eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '33'
+      section: The Multi-Classed Character
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: G1
+    - source_id: race_human
+      source_label: Human
+      edge_type: EXCLUDED_FROM
+      target_id: rule_multiclass
+      target_label: Multi-Class
+      aspect: multi-class eligibility
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '33'
+      section: The Multi-Classed Character
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: G2
+    - source_id: race_infravision
+      source_label: Infravision
+      edge_type: CONSTRAINS
+      target_id: thief_hide_in_shadows
+      target_label: Hide in Shadows
+      aspect: concealment
+      condition: observers with infravision
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '27'
+      section: The Thief
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F37
+    - source_id: rule_multiclass
+      source_label: Multi-Class
+      edge_type: CONSTRAINS
+      target_id: rule_hit_points
+      target_label: Hit Points
+      aspect: hit dice averaging
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: Notes Regarding Character Classes Table I
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: A15
+    - source_id: rule_multiclass
+      source_label: Multi-Class
+      edge_type: CONSTRAINS
+      target_id: rule_xp_division
+      target_label: Adjustment and Division of Experience
+      aspect: experience division
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '33'
+      section: The Multi-Classed Character
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: G7
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: CONSTRAINS
+      target_id: hench_henchmen
+      target_label: Henchmen
+      aspect: retainer alignment
+      condition: paladins
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '22'
+      section: The Paladin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C11
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: GATES
+      target_id: class_assassin
+      target_label: Assassin
+      aspect: alignment eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '29'
+      section: The Assassin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C6
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: GATES
+      target_id: class_cleric
+      target_label: Cleric
+      aspect: alignment eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '20'
+      section: The Cleric
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C1
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: GATES
+      target_id: class_druid
+      target_label: Druid
+      aspect: alignment eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '21'
+      section: The Druid
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C2
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: GATES
+      target_id: class_monk
+      target_label: Monk
+      aspect: alignment eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C7
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: GATES
+      target_id: class_paladin
+      target_label: Paladin
+      aspect: alignment eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '22'
+      section: The Paladin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C3
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: GATES
+      target_id: class_ranger
+      target_label: Ranger
+      aspect: alignment eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '24'
+      section: The Ranger
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C4
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: GATES
+      target_id: class_thief
+      target_label: Thief
+      aspect: alignment eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '27'
+      section: The Thief
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: C5
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: GATES
+      target_id: rule_poison_ingested
+      target_label: Ingested Poison
+      aspect: poison use
+      condition: clerics of evil alignment only
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: B10
+    - source_id: tbl_height_weight
+      source_label: Height and Weight Tables
+      edge_type: CONSTRAINS
+      target_id: sys_equipment
+      target_label: Equipment
+      aspect: weapon usability
+      condition: small or light characters
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '19'
+      section: 'CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: B8
+    - source_id: thief_backstab
+      source_label: Back Stab
+      edge_type: MODIFIES
+      target_id: cbt_tohit
+      target_label: To-Hit Roll
+      aspect: attack roll
+      condition: striking from behind by surprise
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '27'
+      section: The Thief
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F31
+    - source_id: thief_move_silently
+      source_label: Move Silently
+      edge_type: MODIFIES
+      target_id: cbt_surprise
+      target_label: Surprise
+      aspect: surprise chance
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '27'
+      section: The Thief
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F36
+  pending_additions:
+    - source_id: abil_charisma
+      source_label: Charisma
+      edge_type: MODIFIES
+      target_id: rule_prime_requisite
+      target_label: Prime Requisite Experience Bonus
+      aspect: experience bonus
+      condition: druid with high score
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '21'
+      section: The Druid
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D1
+    - source_id: class_assassin
+      source_label: Assassin
+      edge_type: EXCLUDED_FROM
+      target_id: rule_prime_requisite
+      target_label: Prime Requisite Experience Bonus
+      aspect: experience bonus
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '29'
+      section: The Assassin
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D3
+    - source_id: class_illusionist
+      source_label: Illusionist
+      edge_type: EXCLUDED_FROM
+      target_id: rule_prime_requisite
+      target_label: Prime Requisite Experience Bonus
+      aspect: experience bonus
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '26'
+      section: The Illusionist
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D2
+    - source_id: class_monk
+      source_label: Monk
+      edge_type: EXCLUDED_FROM
+      target_id: rule_prime_requisite
+      target_label: Prime Requisite Experience Bonus
+      aspect: experience bonus
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '31'
+      section: The Monk
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: D4
+    - source_id: class_ranger
+      source_label: Ranger
+      edge_type: GATES
+      target_id: rule_tracking
+      target_label: Tracking
+      aspect: tracking
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '24'
+      section: The Ranger
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: F19
+    - source_id: race_human
+      source_label: Human
+      edge_type: GATES
+      target_id: rule_dual_class
+      target_label: The Character with Two Classes
+      aspect: dual-class eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '33'
+      section: The Character with Two Classes
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: G3
+    - source_id: rule_dual_class
+      source_label: The Character with Two Classes
+      edge_type: CONSTRAINS
+      target_id: exp_level
+      target_label: Experience Level
+      aspect: advancement in the original class
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '33'
+      section: The Character with Two Classes
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: G5
+    - source_id: rule_dual_class
+      source_label: The Character with Two Classes
+      edge_type: CONSTRAINS
+      target_id: rule_hit_points
+      target_label: Hit Points
+      aspect: hit dice on class change
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '33'
+      section: The Character with Two Classes
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: G6
+    - source_id: sys_ability_scores
+      source_label: Ability Scores
+      edge_type: GATES
+      target_id: rule_dual_class
+      target_label: The Character with Two Classes
+      aspect: class change eligibility
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: PHB
+      page: '33'
+      section: The Character with Two Classes
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: G4
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates:
+    - ref: F32
+      canonical_row: 283
+      reason: polarity_repair
+      changes:
+        polarity:
+          patch: improves
+          canonical: neutral
+        polarity_basis:
+          patch: read
+          canonical: unset
+      differences_not_applied:
+        section:
+          patch: The Thief
+          canonical: THE THIEF
+        pass:
+          patch: page-sweep
+          canonical: prose-sweep
+      detail: assertion already canonical with polarity_basis='unset'; this patch supplies an authored
+        reading. Only polarity fields are proposed for change.
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts:
+    derived: 57
+    read: 41
+duplicate_findings:
+  - grade: near_vs_canonical
+    ref: A14
+    canonical:
+      canonical_row: 300
+      canonical_index: 298
+      source_id: exp_level
+      edge_type: GATES
+      target_id: thief_read_scrolls
+      aspect: ability unlocked
+      condition: tenth level
+      book: PHB
+      page: '27'
+      section: THE THIEF
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: A14
+    canonical:
+      canonical_row: 3328
+      canonical_index: 3326
+      source_id: exp_level
+      edge_type: GATES
+      target_id: thief_read_scrolls
+      aspect: upper level thieves and assassins gain it
+      condition: ''
+      book: UA
+      page: '13'
+      section: CHARACTER CLASSES
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: B1
+    canonical:
+      canonical_row: 184
+      canonical_index: 182
+      source_id: class_cleric
+      edge_type: CONSTRAINS
+      target_id: sys_equipment
+      aspect: edged and pointed forbidden
+      condition: ''
+      book: PHB
+      page: '20'
+      section: THE CLERIC
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: B3
+    canonical:
+      canonical_row: 254
+      canonical_index: 252
+      source_id: class_magic_user
+      edge_type: CONSTRAINS
+      target_id: sys_equipment
+      aspect: very limited selection
+      condition: ''
+      book: PHB
+      page: '25'
+      section: THE MAGIC-USER
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: B5
+    canonical:
+      canonical_row: 273
+      canonical_index: 271
+      source_id: class_thief
+      edge_type: CONSTRAINS
+      target_id: sys_equipment
+      aspect: limited selection
+      condition: ''
+      book: PHB
+      page: '27'
+      section: THE THIEF
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: C3
+    canonical:
+      canonical_row: 175
+      canonical_index: 173
+      source_id: sys_alignment
+      edge_type: GATES
+      target_id: class_paladin
+      aspect: eligibility
+      condition: lawful good only
+      book: PHB
+      page: '18'
+      section: CHARACTER CLASSES
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: C3
+    canonical:
+      canonical_row: 222
+      canonical_index: 220
+      source_id: sys_alignment
+      edge_type: GATES
+      target_id: class_paladin
+      aspect: must begin and remain lawful good
+      condition: ''
+      book: PHB
+      page: '22'
+      section: THE PALADIN
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: C5
+    canonical:
+      canonical_row: 668
+      canonical_index: 666
+      source_id: sys_alignment
+      edge_type: GATES
+      target_id: class_thief
+      aspect: non-good at start
+      condition: ''
+      book: UA
+      page: '12'
+      section: CHARACTER CLASSES
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: C6
+    canonical:
+      canonical_row: 176
+      canonical_index: 174
+      source_id: sys_alignment
+      edge_type: GATES
+      target_id: class_assassin
+      aspect: eligibility
+      condition: evil only
+      book: PHB
+      page: '18'
+      section: CHARACTER CLASSES
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: C6
+    canonical:
+      canonical_row: 322
+      canonical_index: 320
+      source_id: sys_alignment
+      edge_type: GATES
+      target_id: class_assassin
+      aspect: evil required
+      condition: ''
+      book: PHB
+      page: '28'
+      section: THE ASSASSIN
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: C7
+    canonical:
+      canonical_row: 356
+      canonical_index: 354
+      source_id: sys_alignment
+      edge_type: GATES
+      target_id: class_monk
+      aspect: must be lawful
+      condition: ''
+      book: PHB
+      page: '30'
+      section: THE MONK
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F2
+    canonical:
+      canonical_row: 196
+      canonical_index: 194
+      source_id: exp_level
+      edge_type: GATES
+      target_id: class_followers
+      aspect: attracted at name level
+      condition: ''
+      book: PHB
+      page: '20'
+      section: THE CLERIC
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F2
+    canonical:
+      canonical_row: 306
+      canonical_index: 304
+      source_id: exp_level
+      edge_type: GATES
+      target_id: class_followers
+      aspect: gang of thieves attracted
+      condition: tenth level and a headquarters
+      book: PHB
+      page: '27'
+      section: THE THIEF
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F3
+    canonical:
+      canonical_row: 200
+      canonical_index: 198
+      source_id: exp_level
+      edge_type: GATES
+      target_id: rule_stronghold
+      aspect: construction option
+      condition: ''
+      book: PHB
+      page: '20'
+      section: THE CLERIC
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F10
+    canonical:
+      canonical_row: 229
+      canonical_index: 227
+      source_id: class_paladin
+      edge_type: MODIFIES
+      target_id: save_matrix
+      aspect: bonus to all saves
+      condition: ''
+      book: PHB
+      page: '23'
+      section: THE PALADIN
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F30
+    canonical:
+      canonical_row: 292
+      canonical_index: 290
+      source_id: exp_level
+      edge_type: MODIFIES
+      target_id: thief_backstab
+      aspect: damage multiplier tier
+      condition: ''
+      book: PHB
+      page: '27'
+      section: THE THIEF
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F31
+    canonical:
+      canonical_row: 293
+      canonical_index: 291
+      source_id: thief_backstab
+      edge_type: MODIFIES
+      target_id: cbt_tohit
+      aspect: bonus from behind
+      condition: ''
+      book: PHB
+      page: '27'
+      section: THE THIEF
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F33
+    canonical:
+      canonical_row: 297
+      canonical_index: 295
+      source_id: exp_level
+      edge_type: GATES
+      target_id: thief_read_languages
+      aspect: ability unlocked
+      condition: fourth level
+      book: PHB
+      page: '27'
+      section: THE THIEF
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F37
+    canonical:
+      canonical_row: 497
+      canonical_index: 495
+      source_id: race_infravision
+      edge_type: CONSTRAINS
+      target_id: thief_hide_in_shadows
+      aspect: body heat betrays the thief
+      condition: unless masked
+      book: PHB
+      page: '102'
+      section: INFRAVISION
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F41
+    canonical:
+      canonical_row: 349
+      canonical_index: 347
+      source_id: class_assassin
+      edge_type: GATES
+      target_id: rule_disguise
+      aspect: class ability
+      condition: ''
+      book: PHB
+      page: '29'
+      section: THE ASSASSIN
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F42
+    canonical:
+      canonical_row: 343
+      canonical_index: 341
+      source_id: abil_intelligence
+      edge_type: GATES
+      target_id: rule_alignment_languages
+      aspect: ability to learn
+      condition: high score required
+      book: PHB
+      page: '29'
+      section: THE ASSASSIN
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F46
+    canonical:
+      canonical_row: 382
+      canonical_index: 380
+      source_id: class_monk
+      edge_type: GATES
+      target_id: thief_skills
+      aspect: performed at equal level
+      condition: ''
+      book: PHB
+      page: '31'
+      section: THE MONK
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F47
+    canonical:
+      canonical_row: 365
+      canonical_index: 363
+      source_id: class_monk
+      edge_type: GATES
+      target_id: rule_open_hand_combat
+      aspect: class ability
+      condition: ''
+      book: PHB
+      page: '30'
+      section: THE MONK
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+  - grade: near_vs_canonical
+    ref: F51
+    canonical:
+      canonical_row: 381
+      canonical_index: 379
+      source_id: exp_level
+      edge_type: MODIFIES
+      target_id: cbt_surprise
+      aspect: harder to surprise per level
+      condition: ''
+      book: PHB
+      page: '30'
+      section: THE MONK
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+neighbourhood_conflicts:
+  - ref: A11
+    endpoints:
+      - class_druid
+      - exp_level
+    existing_edges:
+      - canonical_row: 3329
+        canonical_index: 3327
+        source_id: exp_level
+        edge_type: GATES
+        target_id: class_druid
+        aspect: abdication opens the higher discipline
+        condition: ''
+        book: UA
+        page: '17'
+        section: CHARACTER CLASSES (DRUID)
+    detail: the same node pair is already related by other edge types
+  - ref: B6
+    endpoints:
+      - class_assassin
+      - sys_equipment
+    existing_edges:
+      - canonical_row: 323
+        canonical_index: 321
+        source_id: class_assassin
+        edge_type: GATES
+        target_id: sys_equipment
+        aspect: any shield and weapon
+        condition: ''
+        book: PHB
+        page: '28'
+        section: THE ASSASSIN
+    detail: the same node pair is already related by other edge types
+  - ref: C1
+    endpoints:
+      - sys_alignment
+      - class_cleric
+    existing_edges:
+      - canonical_row: 181
+        canonical_index: 179
+        source_id: sys_alignment
+        edge_type: CONSTRAINS
+        target_id: class_cleric
+        aspect: permitted alignments
+        condition: true neutral excluded
+        book: PHB
+        page: '20'
+        section: THE CLERIC
+    detail: the same node pair is already related by other edge types
+  - ref: C2
+    endpoints:
+      - sys_alignment
+      - class_druid
+    existing_edges:
+      - canonical_row: 410
+        canonical_index: 408
+        source_id: class_druid
+        edge_type: GATES
+        target_id: sys_alignment
+        aspect: fixed to true neutral
+        condition: ''
+        book: PHB
+        page: '33'
+        section: ALIGNMENT
+    detail: the same node pair is already related by other edge types
+  - ref: C3
+    endpoints:
+      - sys_alignment
+      - class_paladin
+    existing_edges:
+      - canonical_row: 756
+        canonical_index: 754
+        source_id: sys_alignment
+        edge_type: CONSTRAINS
+        target_id: class_paladin
+        aspect: strict behavior demanded
+        condition: ''
+        book: DMG
+        page: '25'
+        section: CHANGING ALIGNMENT
+    detail: the same node pair is already related by other edge types
+  - ref: C5
+    endpoints:
+      - sys_alignment
+      - class_thief
+    existing_edges:
+      - canonical_row: 270
+        canonical_index: 268
+        source_id: sys_alignment
+        edge_type: CONSTRAINS
+        target_id: class_thief
+        aspect: neutral or evil
+        condition: neutral good rare
+        book: PHB
+        page: '27'
+        section: THE THIEF
+    detail: the same node pair is already related by other edge types
+  - ref: F1
+    endpoints:
+      - class_cleric
+      - turn_undead
+    existing_edges:
+      - canonical_row: 187
+        canonical_index: 185
+        source_id: class_cleric
+        edge_type: TRIGGERS
+        target_id: turn_undead
+        aspect: turn or command
+        condition: ''
+        book: PHB
+        page: '20'
+        section: THE CLERIC
+      - canonical_row: 1915
+        canonical_index: 1913
+        source_id: turn_undead
+        edge_type: CONSTRAINS
+        target_id: class_cleric
+        aspect: compulsion ends if the cleric falls
+        condition: ''
+        book: DMG
+        page: '66'
+        section: TURNING UNDEAD
+    detail: the same node pair is already related by other edge types
+  - ref: F9
+    endpoints:
+      - class_paladin
+      - rule_detect_evil
+    existing_edges:
+      - canonical_row: 228
+        canonical_index: 226
+        source_id: class_paladin
+        edge_type: TRIGGERS
+        target_id: rule_detect_evil
+        aspect: at will
+        condition: requires concentration
+        book: PHB
+        page: '23'
+        section: THE PALADIN
+    detail: the same node pair is already related by other edge types
+  - ref: F11
+    endpoints:
+      - class_paladin
+      - rule_disease
+    existing_edges:
+      - canonical_row: 230
+        canonical_index: 228
+        source_id: class_paladin
+        edge_type: EXCLUDES
+        target_id: rule_disease
+        aspect: immune to all forms
+        condition: ''
+        book: PHB
+        page: '23'
+        section: THE PALADIN
+    detail: the same node pair is already related by other edge types
+  - ref: F12
+    endpoints:
+      - class_paladin
+      - rule_lay_on_hands
+    existing_edges:
+      - canonical_row: 231
+        canonical_index: 229
+        source_id: class_paladin
+        edge_type: TRIGGERS
+        target_id: rule_lay_on_hands
+        aspect: healing power
+        condition: ''
+        book: PHB
+        page: '23'
+        section: THE PALADIN
+    detail: the same node pair is already related by other edge types
+  - ref: F13
+    endpoints:
+      - class_paladin
+      - turn_undead
+    existing_edges:
+      - canonical_row: 239
+        canonical_index: 237
+        source_id: class_paladin
+        edge_type: DERIVED_FROM
+        target_id: turn_undead
+        aspect: turns at reduced effective level
+        condition: ''
+        book: PHB
+        page: '23'
+        section: THE PALADIN
+    detail: the same node pair is already related by other edge types
+  - ref: F33
+    endpoints:
+      - exp_level
+      - thief_read_languages
+    existing_edges:
+      - canonical_row: 298
+        canonical_index: 296
+        source_id: exp_level
+        edge_type: MODIFIES
+        target_id: thief_read_languages
+        aspect: success chance
+        condition: ''
+        book: PHB
+        page: '27'
+        section: THE THIEF
+    detail: the same node pair is already related by other edge types
+  - ref: F35
+    endpoints:
+      - exp_level
+      - thief_pick_pockets
+    existing_edges:
+      - canonical_row: 284
+        canonical_index: 282
+        source_id: exp_level
+        edge_type: MODIFIES
+        target_id: thief_pick_pockets
+        aspect: success chance
+        condition: victim's level modifies
+        book: PHB
+        page: '27'
+        section: THE THIEF
+    detail: the same node pair is already related by other edge types
+  - ref: F36
+    endpoints:
+      - thief_move_silently
+      - cbt_surprise
+    existing_edges:
+      - canonical_row: 500
+        canonical_index: 498
+        source_id: thief_move_silently
+        edge_type: GATES
+        target_id: cbt_surprise
+        aspect: improved chance to surprise
+        condition: ''
+        book: PHB
+        page: '102'
+        section: SILENT MOVEMENT
+    detail: the same node pair is already related by other edge types
+  - ref: F42
+    endpoints:
+      - abil_intelligence
+      - rule_alignment_languages
+    existing_edges:
+      - canonical_row: 345
+        canonical_index: 343
+        source_id: abil_intelligence
+        edge_type: CONSTRAINS
+        target_id: rule_alignment_languages
+        aspect: maximum number knowable
+        condition: ''
+        book: PHB
+        page: '29'
+        section: THE ASSASSIN
+    detail: the same node pair is already related by other edge types
+  - ref: F43
+    endpoints:
+      - class_assassin
+      - rule_assassins_guild
+    existing_edges:
+      - canonical_row: 326
+        canonical_index: 324
+        source_id: rule_assassins_guild
+        edge_type: CONSTRAINS
+        target_id: class_assassin
+        aspect: membership pressure
+        condition: within guild territory
+        book: PHB
+        page: '29'
+        section: THE ASSASSIN
+    detail: the same node pair is already related by other edge types
+  - ref: F52
+    endpoints:
+      - abil_dexterity
+      - cbt_armor_class
+    existing_edges:
+      - canonical_row: 134
+        canonical_index: 132
+        source_id: abil_dexterity
+        edge_type: MODIFIES
+        target_id: cbt_armor_class
+        aspect: defensive adjustment
+        condition: ''
+        book: PHB
+        page: '11'
+        section: DEXTERITY TABLE I
+    detail: the same node pair is already related by other edge types
+  - ref: F53
+    endpoints:
+      - abil_strength
+      - cbt_tohit
+    existing_edges:
+      - canonical_row: 92
+        canonical_index: 90
+        source_id: abil_strength
+        edge_type: MODIFIES
+        target_id: cbt_tohit
+        aspect: hit probability
+        condition: ''
+        book: PHB
+        page: '9'
+        section: STRENGTH TABLE II
+    detail: the same node pair is already related by other edge types
+  - ref: F54
+    endpoints:
+      - abil_strength
+      - cbt_damage
+    existing_edges:
+      - canonical_row: 93
+        canonical_index: 91
+        source_id: abil_strength
+        edge_type: MODIFIES
+        target_id: cbt_damage
+        aspect: damage dealt
+        condition: ''
+        book: PHB
+        page: '9'
+        section: STRENGTH TABLE II
+    detail: the same node pair is already related by other edge types
+  - ref: F56
+    endpoints:
+      - class_monk
+      - save_matrix
+    existing_edges:
+      - canonical_row: 376
+        canonical_index: 374
+        source_id: class_monk
+        edge_type: FEEDS_INTO
+        target_id: save_matrix
+        aspect: uses thief table
+        condition: ''
+        book: PHB
+        page: '30'
+        section: THE MONK
+      - canonical_row: 378
+        canonical_index: 376
+        source_id: class_monk
+        edge_type: OVERRIDES
+        target_id: save_matrix
+        aspect: no damage on success
+        condition: ''
+        book: PHB
+        page: '30'
+        section: THE MONK
+    detail: the same node pair is already related by other edge types
+escalations: []
+escalations_since_decided: []
+validation_summary:
+  edges_in: 108
+  edges_compiled: 108
+  edges_rejected: 0
+  edge_additions: 98
+  edge_pending_additions: 9
+  edge_updates: 1
+  errors: 0
+  warnings: 17
+  escalations: 0
+  escalations_since_decided: 0
+  node_additions_proposed: 3
+  duplicate_findings: 24
+  neighbourhood_conflicts: 20
+validation_report: build/reports/GUP-PKT-PHB-018-033-classes-r02.validation.json

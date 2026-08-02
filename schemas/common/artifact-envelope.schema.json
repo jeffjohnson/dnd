@@ -42,6 +42,183 @@
     "constitution_version": {
       "type": "string",
       "minLength": 1
+    },
+    "revision": {
+      "$ref": "#/$defs/revision"
+    },
+    "supersedes": {
+      "$ref": "#/$defs/supersedes"
+    },
+    "handoff": {
+      "$ref": "#/$defs/handoff"
+    }
+  },
+  "$comment": "revision, supersedes and handoff are optional so artifacts published before contracts/WORK_QUEUES.md 1.0 remain valid. Queue tooling applies the contract's legacy inference when they are absent. New artifacts of every kind must carry them.",
+  "allOf": [
+    {
+      "$comment": "WORK_QUEUES 1.0: revision 2 and later must name the revision it replaces.",
+      "if": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "supersedes": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "supersedes"
+        ]
+      }
+    },
+    {
+      "$comment": "A first revision replaces nothing.",
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "supersedes": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Revision number of this artifact within its kind and packet."
+    },
+    "supersedes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "ID of the immediately prior revision this artifact replaces, or null for a first revision. Revision chains must not fork."
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "next_role",
+        "readiness",
+        "reason",
+        "blocking_ids"
+      ],
+      "properties": {
+        "next_role": {
+          "enum": [
+            "analyst",
+            "builder",
+            "reviewer",
+            "architect",
+            "integrator",
+            "none"
+          ]
+        },
+        "readiness": {
+          "enum": [
+            "ready",
+            "blocked",
+            "terminal"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "blocking_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "allOf": [
+        {
+          "$comment": "A blocked handoff must name what blocks it.",
+          "if": {
+            "properties": {
+              "readiness": {
+                "const": "blocked"
+              }
+            },
+            "required": [
+              "readiness"
+            ]
+          },
+          "then": {
+            "properties": {
+              "blocking_ids": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "$comment": "Ready and terminal work has nothing outstanding.",
+          "if": {
+            "properties": {
+              "readiness": {
+                "enum": [
+                  "ready",
+                  "terminal"
+                ]
+              }
+            },
+            "required": [
+              "readiness"
+            ]
+          },
+          "then": {
+            "properties": {
+              "blocking_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "$comment": "Terminal means no downstream role remains.",
+          "if": {
+            "properties": {
+              "readiness": {
+                "const": "terminal"
+              }
+            },
+            "required": [
+              "readiness"
+            ]
+          },
+          "then": {
+            "properties": {
+              "next_role": {
+                "const": "none"
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

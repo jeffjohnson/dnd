@@ -1,0 +1,174 @@
+schema_version: "1.0"
+id: DEC-2026-0013
+status: returned_incomplete
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-043-054-cleric-spells
+constitution_version: "1.4"
+
+decision_date: "2026-07-30"
+escalation_id: ESC-2026-07-30T15.16.18.973Z
+
+question: >-
+  Does the current spell-node identity contract require specific-spell IDs to
+  govern over broader or contradictory registry labels, and which existing
+  spell nodes would require relabeling, splitting, renaming, or edge migration?
+
+ruling: >-
+  Return the escalation as incomplete without deciding any spell identity.
+  The question is architectural because a ruling could change canonical
+  identities and migrate existing assertions, but the submitted package does
+  not contain enough evidence to choose safely. The Analyst must submit a new
+  timestamped escalation that references this return and supplies the complete
+  identity set, source and provenance evidence, local graph neighborhoods,
+  explicit options, and quantified migration impact listed below. The 47 spells
+  absent from the registry remain ordinary Builder and Reviewer node-addition
+  work and must not be included in the resubmitted governance question.
+
+rationale:
+  - >-
+    The package asserts that 27 nodes diverge but names only five. Architect
+    cannot authorize a 27-node identity migration from examples.
+  - >-
+    No source excerpt or registry-label provenance is included. Constitution
+    section 3.1 says IDs govern, but it does not prove whether a legacy ID was
+    minted incorrectly, a label was broadened incorrectly, or one aggregate
+    must be split from a specific spell.
+  - >-
+    No local edge neighborhood is supplied for any named node. Existing
+    assertion scope and migration consequences therefore cannot be evaluated.
+  - >-
+    The package recommends that IDs govern and mentions the label-governs
+    alternative, but it does not compare a split option or give a per-node
+    disposition.
+  - >-
+    Migration impact is not estimated. Relabeling or splitting a node may
+    affect registry rows, incident edge labels and endpoints, general-rule
+    membership, GUR/GUP provenance, Reviews, and future packet extraction.
+  - >-
+    A bounded registry check confirms the five named ID/label divergences and
+    confirms that GR_HELPLESS_TARGET_AUTOHIT references spell_hold_person.
+    Those checks establish that the question is real, not which migration is
+    correct.
+
+verified_scope:
+  named_registry_entries:
+    spell_charm_person: Charm
+    spell_cure_light_wounds: Curative Spells
+    spell_esp: Psionic-Related Spells
+    spell_fireball: Fire Spells
+    spell_hold_person: Held or Paralyzed
+  general_rule_reference:
+    id: GR_HELPLESS_TARGET_AUTOHIT
+    applies_to: spell_hold_person
+  identity_rulings_made: 0
+
+resubmission_requirements:
+  identity_inventory:
+    - List all 27 asserted divergent node IDs and their current labels.
+    - Classify each divergence as broader label, narrower label, different concept, or spelling-only.
+    - Propose one disposition per node: retain and relabel, rename, split, merge, or no change.
+  evidence:
+    - >-
+      Include the smallest packet source excerpt, with page and section
+      provenance, that establishes each specific spell identity under review.
+    - >-
+      Include the available provenance for each current registry label and
+      state explicitly when the legacy label has no recoverable source support.
+  local_graph_neighborhood:
+    - >-
+      Include every canonical edge incident to each listed node, with stable
+      row locator and all production fields needed to assess assertion scope.
+    - Include every general-rule, profile, registry, GUR, GUP, and Review reference to the listed IDs.
+    - Reconcile the supplied incident-edge counts against a deterministic report.
+  options:
+    - >-
+      ID governs: retain specific-spell IDs and correct labels plus every
+      duplicated edge label that follows them.
+    - >-
+      Label governs: rename or migrate IDs so current aggregate meanings remain
+      authoritative.
+    - >-
+      Split: preserve a specific spell and a distinct aggregate where source
+      and existing edge neighborhoods demonstrate both identities.
+    - Give a per-node recommendation and explain why one global rule is or is not sufficient.
+  migration_impact:
+    - Count registry rows changed, added, retired, or aliased.
+    - Count canonical edge rows relabeled, repointed, deduplicated, or otherwise migrated.
+    - Count general-rule and profile references changed.
+    - Identify affected GURs, GUPs, Reviews, and packets.
+    - State whether the constitution, registry schema, or controlled profiles would change.
+  lineage:
+    - Allocate a new escalation ID under contracts/FILE_NAMING.md.
+    - Record prior_escalation_id: ESC-2026-07-30T15.16.18.973Z.
+    - Preserve this returned package and DEC-2026-0013 unchanged.
+
+contract_changes:
+  - path: contracts/WORK_QUEUES.md
+    previous_version: "1.0"
+    new_version: "1.1"
+    change: >-
+      Define returned incomplete escalations as unresolved correction handoffs,
+      not decided blockers, and coalesce them with matching active work.
+  - path: contracts/FILE_NAMING.md
+    previous_version: "1.2"
+    new_version: "1.3"
+    change: >-
+      Preserve immutable escalation IDs across pending, returned, and decided
+      state paths.
+
+affected_contracts:
+  - contracts/WORK_QUEUES.md
+  - contracts/FILE_NAMING.md
+affected_registries: []
+affected_artifacts:
+  - agents/architect/INSTRUCTIONS.md
+  - agents/analyst/INSTRUCTIONS.md
+  - rulesets/adnd1e/escalations/returned/ESC-2026-07-30T15.16.18.973Z.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0013.yaml
+  - tooling/common/scan_agent_queues.py
+  - tooling/common/tests/test_scan_agent_queues.py
+  - future complete replacement escalation
+
+migration_required: true
+migration_scope:
+  canonical_nodes: none
+  canonical_edges: none
+  registries: none
+  existing_escalations:
+    - Move this package outside decided so it cannot be mistaken for a resolved blocker.
+  queue_tooling:
+    - Discover ready handoffs under escalations/returned.
+    - Never add a returned escalation to the decided blocker set.
+    - Coalesce a return with matching active or ready originating work.
+    - Mark a return informational after a replacement names it in prior_escalation_id.
+
+acceptance_tests:
+  - The returned escalation is no longer present in escalations/pending or escalations/decided.
+  - The returned escalation is present under escalations/returned.
+  - The returned escalation retains its immutable ID and names DEC-2026-0013.
+  - FILE_NAMING version 1.3 recognizes returned as an escalation state path.
+  - No registry, profile, constitution, schema, GUR, GUP, Review, or canonical graph file changes.
+  - A replacement escalation uses a new timestamped ID and references the returned escalation.
+  - The replacement lists exactly the full asserted divergent identity set, not five examples.
+  - Every listed identity has source or provenance evidence and a complete local graph neighborhood.
+  - Every listed identity has a proposed disposition and quantified migration impact.
+  - The 47 absent cleric spells remain outside the architectural question.
+  - Architect makes no identity ruling until the replacement package is complete.
+  - Queue tooling never treats returned_incomplete as a resolved blocker.
+  - Queue tooling coalesces this return with the active packet instead of adding a duplicate Analyst job.
+
+constitution_version_impact:
+  changed: false
+  reason: >-
+    The universal work-queue contract changes, but the adnd1e graph
+    constitution and ontology do not.
+
+follow_up_owner:
+  replacement_escalation_package: analyst
+  deterministic_neighborhood_report_if_requested: builder
+  returned_handoff_queue_support_and_tests: builder
+  queue_result_independent_validation: reviewer
+  reconsideration_after_complete_resubmission: architect
+  current_gup_or_integration_action: none

@@ -1,0 +1,128 @@
+schema_version: "1.0"
+id: ESC-2026-0005
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+constitution_version: "1.2"
+
+raised_by: architect_intake
+raised_on: "2026-07-29"
+decision_owner: architect
+decision_id: DEC-2026-0003
+
+originating_reviews:
+  - id: REV-GUP-PKT-PHB-009-013-ability-scores-r01-r01
+    packet_id: PKT-PHB-009-013-ability-scores
+    gup_id: GUP-PKT-PHB-009-013-ability-scores-r01
+  - id: REV-GUP-PKT-PHB-013-018-races-r03-r01
+    packet_id: PKT-PHB-013-018-races
+    gup_id: GUP-PKT-PHB-013-018-races-r03
+  - id: REV-GUP-PKT-PHB-018-033-classes-r01-r01
+    packet_id: PKT-PHB-018-033-classes
+    gup_id: GUP-PKT-PHB-018-033-classes-r01
+
+trigger: >-
+  Three reviews treated every absent canonical node ID as requiring Architect
+  approval, even when the GUP had already established an approved prefix and
+  kind, valid ID format, no label collision, and an isolated node-registry
+  change. The repeated interpretation blocks ordinary work across packets and
+  requires a durable workflow ruling.
+
+question: >-
+  Does every new canonical node ID require Architect approval, or may Builder
+  propose and Reviewer approve a node-registry addition under an existing
+  approved prefix and kind when identity and duplicate checks are unambiguous?
+
+governing_excerpts:
+  artifact_lifecycle: >-
+    A GUP must isolate proposed registry additions from edge changes.
+  escalation_contract: >-
+    Escalate when no existing node represents the concept and a new kind or
+    prefix may be needed.
+  architect_authority: >-
+    Architect approves new node prefixes or kinds and resolves canonical merges
+    or splits with migration consequences.
+
+affected_proposals:
+  ordinary_registration_candidates:
+    - id: rule_prime_requisite
+      reviews:
+        - REV-GUP-PKT-PHB-009-013-ability-scores-r01-r01
+        - REV-GUP-PKT-PHB-018-033-classes-r01-r01
+    - id: rule_revivification_limit
+      reviews:
+        - REV-GUP-PKT-PHB-009-013-ability-scores-r01-r01
+    - id: rule_tracking
+      reviews:
+        - REV-GUP-PKT-PHB-018-033-classes-r01-r01
+    - id: rule_dual_class
+      reviews:
+        - REV-GUP-PKT-PHB-018-033-classes-r01-r01
+  not_resolved_by_this_question:
+    - id: rule_racial_detection
+      reason: potential duplicate or grain conflict with rule_detection
+    - id: REVIEW-ESC-SUBRACE-INFRAVISION
+      reason: cross-book assertion identity and provenance conflict
+    - id: ESC-2026-07-30T01.21.13.768Z
+      reason: canonical node merge or split with migration impact
+    - id: ESC-2026-0002
+      reason: constitution and registry prefix conflict with migration impact
+    - id: REVIEW-ESC-CLASS-SPECIAL-ABILITIES
+      reason: no candidate identities, affected rows, or complete escalation package
+
+local_graph_context:
+  supplied_by_gups:
+    - >-
+      The four ordinary candidates use the existing rule_ prefix and rule kind,
+      pass ID-format validation, and report no canonical label collision.
+    - >-
+      Their node additions are already isolated from proposed edges in the
+      corresponding GUP node_changes sections.
+  limitation: >-
+    This workflow ruling does not decide whether any individual proposed node or
+    edge is source-correct. Reviewer retains that responsibility.
+
+options_considered:
+  - option: require Architect approval for every absent node ID
+    for: centralizes all registry growth
+    against: >-
+      Contradicts the lifecycle's normal node-change path, makes Architect a
+      routine extraction bottleneck, and treats use of an existing ontology as
+      ontology creation.
+  - option: use normal Builder and Reviewer approval under existing ontology
+    for: >-
+      Preserves independent source and duplicate review while reserving
+      Architect attention for actual ontology, identity, and migration questions.
+    against: requires explicit role guidance to prevent inconsistent routing
+  - option: allow Builder to register nodes without Reviewer approval
+    for: minimizes handoff delay
+    against: removes independent source and identity verification
+
+recommended_resolution: >-
+  Use normal Builder and Reviewer approval when the proposed ID uses an existing
+  approved prefix and kind and passes format, source-identity, duplicate, and
+  neighborhood checks. Continue escalating new prefixes or kinds, canonical
+  merges or splits, graph-wide migrations, and irreducible identity ambiguity.
+
+expected_migration_impact:
+  canonical_graph: none
+  node_registry: >-
+    No node is added by this ruling. Later approved GUPs may carry ordinary
+    registry additions for Integrator application.
+  workflow_artifacts: >-
+    Affected GUPs and reviews require new revisions because their current
+    blocking reason and dispositions apply the wrong authority boundary.
+
+would_change:
+  constitution: false
+  contract: contracts/ESCALATION_CONTRACT.md
+  registry: false
+  profile: false
+  canonical_graph: false
+
+blocking: true
+blocking_note: >-
+  The three current reviews are not approval-ready. This decision clears only
+  the false "new ID requires Architect" blocker; all row corrections,
+  completeness defects, and genuine escalations remain in force.

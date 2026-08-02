@@ -4,7 +4,6 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "ruleset_id",
     "source_id",
     "source_label",
     "edge_type",
@@ -14,8 +13,7 @@
     "condition",
     "polarity",
     "polarity_basis",
-    "book_id",
-    "source_id",
+    "book",
     "page",
     "section",
     "evidence",
@@ -28,7 +26,8 @@
   "properties": {
     "source_id": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9]*_[a-z0-9_]+$"
     },
     "source_label": {
       "type": "string",
@@ -86,10 +85,24 @@
         ""
       ]
     },
+    "book": {
+      "enum": [
+        "PHB",
+        "DMG",
+        "MM",
+        "UA"
+      ]
+    },
     "page": {
-      "type": [
-        "string",
-        "integer"
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:|[1-9][0-9]*)$"
+        }
       ]
     },
     "section": {
@@ -132,17 +145,6 @@
         "mm_keyword_derived",
         "grouped_entry_attribution",
         ""
-      ]
-    },
-    "ruleset_id": {
-      "const": "adnd1e"
-    },
-    "book_id": {
-      "enum": [
-        "phb",
-        "dmg",
-        "mm",
-        "ua"
       ]
     }
   }

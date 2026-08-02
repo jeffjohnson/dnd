@@ -1,0 +1,250 @@
+schema_version: "1.0"
+id: GUR-PKT-PHB-001-006-preamble-r01
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-001-006-preamble
+constitution_version: "1.2"
+
+revision: 1
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 1
+page_end: 6
+
+# =============================================================================
+# HEADLINE RESULT
+# =============================================================================
+# Zero candidate edges. Zero candidate nodes.
+#
+# This packet is front matter: title page, foreword, table of contents, table
+# index, and preface. It contains no mechanically load-bearing relationship.
+# Every candidate considered is recorded under rejected_candidates with the
+# reason it fails the core test, so the Reviewer can audit the null result
+# rather than take it on trust.
+# =============================================================================
+
+source_summary: >-
+  Front matter of the AD&D Players Handbook, pages 1-6. Title and copyright page;
+  Mike Carr's foreword dated 2 June 1978; the table of contents; the index of tables
+  and charts; and Gary Gygax's preface. The material is bibliographic, navigational,
+  and design-rationale prose. It describes the book's intent and organization and
+  states no procedure, no value, and no dependency between mechanics.
+
+reused_nodes: []
+
+candidate_nodes: []
+
+candidate_edges: []
+
+candidate_general_rules: []
+
+domains_touched: []
+
+candidate_domains: []
+
+domain_boundary_questions: []
+
+# -----------------------------------------------------------------------------
+# Candidates considered and rejected
+# -----------------------------------------------------------------------------
+# The core test: if the source rule were changed or removed, would the target
+# mechanic need review? Each item below answers no.
+# -----------------------------------------------------------------------------
+rejected_candidates:
+  - text_locus: "PREFACE, p6"
+    quoted_gist: classes carry restrictions to provide play balance
+    why_considered: names classes and restrictions, which are both mechanical concepts
+    rejection_reason: >-
+      Statement of design intent, not a rule. It identifies no specific restriction and
+      no specific class. Nothing downstream would need review if the sentence were
+      struck. The actual class restrictions appear in later packets and must be cited
+      there.
+
+  - text_locus: "PREFACE, p6"
+    quoted_gist: races are given advantages or limits to preserve the game's character
+    why_considered: names races and limits
+    rejection_reason: >-
+      Same as above. Rationale for the existence of racial modifiers, not a modifier.
+      The Character Race tables cited in the contents carry the load-bearing content.
+
+  - text_locus: "FOREWORD, p2"
+    quoted_gist: combat table detail is excluded from this book and placed in the DMG
+    why_considered: >-
+      reads as a scope relationship between two books and could be mistaken for a
+      cross-book dependency edge
+    rejection_reason: >-
+      Editorial scope statement about where text was printed. It relates two documents,
+      not two mechanics. Recorded under non_edge_observations because it bears on how
+      PHB silence should be read.
+
+  - text_locus: "PREFACE, p6"
+    quoted_gist: sub-classes, psionics and similar material are labeled optional
+    why_considered: >-
+      bears on the constitution section 8 status field, whose vocabulary is core or
+      optional
+    rejection_reason: >-
+      Governs a field value on future edges rather than asserting a relationship. It
+      creates no edge of its own. Recorded under non_edge_observations because it is
+      the book's own statement of what its optional material is.
+
+  - text_locus: "CONTENTS and TABLES AND CHARTS, p3-p5"
+    quoted_gist: section and table names with page numbers
+    why_considered: >-
+      names roughly eighty tables that will become nodes when their content is
+      extracted
+    rejection_reason: >-
+      A locator index. Naming a table is not asserting a relationship, and minting nodes
+      from an index would create identities with no extracted mechanics behind them.
+      Retained as orientation only.
+
+# -----------------------------------------------------------------------------
+# Non-edge observations for Reviewer and Architect
+# -----------------------------------------------------------------------------
+non_edge_observations:
+  - id: OBS-01
+    topic: source identity is now determinable and the registry entry is stale
+    locus: "Title page, p1"
+    finding: >-
+      The title page carries copyright 1978 TSR Games, ISBN 0-935696-01-6, and the line
+      "Custom printing b, originally based on the 9th Printing, 1983".
+    why_it_matters: >-
+      The source registry records this book as phb-legacy-unspecified with
+      edition_or_printing unspecified and provenance "legacy graph dump". This packet
+      supplies the printing basis that entry lacks. Because
+      schemas/adnd1e/books/phb/extraction_profile.yaml sets
+      edition_specific_pagination true, every page citation produced from packets
+      02-05 is only meaningful against this specific printing. Pinning the source_id
+      before further extraction protects those citations.
+    recommendation: >-
+      Architect should decide whether to register a distinct source_id for this
+      printing rather than continue citing phb-legacy-unspecified. Analyst does not
+      modify the source registry.
+    analyst_action_taken: none
+
+  - id: OBS-02
+    topic: PHB silence must not be read as denial
+    locus: "FOREWORD, p2"
+    finding: >-
+      The foreword states that some material, combat tables given as the example, was
+      deliberately withheld from this volume and placed in the Dungeon Masters Guide
+      because it falls outside player reference.
+    why_it_matters: >-
+      The Analyst instructions permit negative dependencies where the text denies a
+      relationship a reader would reasonably assume. This packet establishes that
+      absence from the PHB is an editorial decision about audience, not a mechanical
+      denial. A later packet must not yield a negative edge merely because the PHB is
+      silent on a procedure.
+    recommendation: >-
+      Reviewer should treat any negative dependency proposed from PHB silence alone as
+      unsupported unless the text denies the relationship in words.
+    analyst_action_taken: none
+
+  - id: OBS-03
+    topic: the book states its own optional material
+    locus: "PREFACE, p6"
+    finding: >-
+      The preface names sub-classes of characters and psionics as material that is
+      clearly labeled optional for inclusion, in contrast to material described as
+      essential.
+    why_it_matters: >-
+      Constitution section 8 requires every edge to carry status core or optional. This
+      is the book's own statement of the distinction. The contents place Psionics at
+      Appendix I p110 and Bards at Appendix II p117, both consistent with optional.
+    recommendation: >-
+      Carry forward as the default basis for status assignment on PHB appendix
+      material. It is not proposed as a general rule because it creates no inherited
+      edges; it governs a field value.
+    analyst_action_taken: none
+
+  - id: OBS-04
+    topic: table index usable as an extraction completeness check
+    locus: "TABLES AND CHARTS, p5"
+    finding: >-
+      The packet indexes roughly eighty named tables with page numbers, including the
+      ability score tables at pages 9-13, the race tables at 13-15, and the class
+      experience tables at 19-31.
+    why_it_matters: >-
+      Packets 02-05 cover exactly this pagination. The index gives an independent
+      checklist for confirming no table was missed, which directly addresses the
+      tables_split_across_pages hazard declared in the PHB extraction profile.
+    recommendation: >-
+      Reviewer may use this index to verify coverage of later PHB packets.
+    analyst_action_taken: none
+
+unresolved_identity_questions: []
+
+architectural_escalations: []
+
+# -----------------------------------------------------------------------------
+# Blocking notes for work that follows this packet
+# -----------------------------------------------------------------------------
+# Not escalations. Per ESCALATION_CONTRACT these are precondition and
+# re-packetization matters, recorded so they are not rediscovered.
+# -----------------------------------------------------------------------------
+blocking_notes:
+  - id: BLK-01
+    severity: blocks_packets_02_to_05
+    issue: >-
+      rulesets/adnd1e/registries/domain_registry.yaml is empty. It carries
+      status bootstrap, domains is an empty map, and its own comment reads
+      "Populate from the existing project domain list before packet work."
+    consequence: >-
+      The Analyst is required to mark domains touched and to record candidate domains
+      without promoting them. With an empty registry every domain named on a mechanical
+      packet would have to be recorded as a candidate, which pushes a large promotion
+      decision onto the Architect all at once. This packet touches no domain, so the gap
+      is not blocking here.
+    owner: architect
+
+  - id: BLK-02
+    severity: degrades_extraction_quality
+    issue: >-
+      Packets were supplied as bare markdown files without node_registry_slice.csv or
+      local_neighborhood.json.
+    consequence: >-
+      Analyst responsibilities include matching each concept against the supplied
+      registry slice and comparing candidates against the local neighborhood for
+      redundancy or contradiction. Neither is possible without those inputs. For this
+      packet the omission is harmless because there are no candidates. For packets
+      02-05, which cover abilities, races and classes against an existing 1,094-node
+      registry, extraction without a slice risks minting candidate nodes that duplicate
+      canonical ones.
+    owner: packet_creator
+
+  - id: BLK-03
+    severity: documentation
+    issue: >-
+      contracts/FILE_NAMING.md places Analyst output at work/gur, while
+      REPOSITORY_STRUCTURE.md and agents/analyst/INSTRUCTIONS.md both place it at
+      books/<ruleset-id>/<book-id>/artifacts/gur/. Only the latter directory exists.
+    consequence: >-
+      This GUR was written to artifacts/gur/ on the two-to-one agreement and the
+      on-disk layout. The same conflict affects the gup, reviews and escalations paths
+      listed in FILE_NAMING.
+    owner: architect
+
+# -----------------------------------------------------------------------------
+completeness_statement: >-
+  Every section of the packet was read in full before extraction: the title and
+  copyright page, the foreword, the complete table of contents including the
+  appendices listing, the full tables and charts index across both of its column
+  blocks, and the preface through its acknowledgements. Pages 1 through 6 are
+  accounted for, matching the {#p1} through {#p6} anchors in the source file, with no
+  gap in the anchor sequence.
+
+  The packet yields no candidate edges and no candidate nodes. This is a property of
+  the material, not an incomplete pass: front matter asserts no dependency between
+  mechanics. Five candidates were considered and rejected against the core test, and
+  each is recorded above with its reason so the null result can be audited rather than
+  assumed. No magnitude, die expression, or rule prose has been carried into any field.
+  No polarity was authored, since authored polarity applies only to MODIFIES, TRIGGERS
+  and CONSTRAINS and no edge of any type is proposed.
+
+  Four observations are preserved for the Reviewer that do not belong in the graph but
+  would be costly to rediscover, the most consequential being that the title page
+  determines the printing basis for every page citation this book will produce.
+
+  This GUR is complete enough for the Builder to process without rereading the source:
+  the correct action on it is to compile an empty patch.

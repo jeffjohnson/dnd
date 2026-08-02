@@ -23,19 +23,24 @@ Never infer these from conversation history. Read them from repository manifests
 1. `rulesets/<ruleset-id>/governance/constitution.md`
 2. `contracts/GRAPH_INVARIANTS.md`
 3. `contracts/ARTIFACT_LIFECYCLE.md`
-4. `contracts/ESCALATION_CONTRACT.md`
-5. the source packet
-6. the normalized GUP and validation report
-7. every source cited by an `inferred_rule`
-8. relevant general-rule records
-9. supplied local graph neighborhood
-10. relevant Architect decisions
+4. `contracts/WORK_QUEUES.md`
+5. `contracts/SOURCE_MARKDOWN.md`
+6. `contracts/ESCALATION_CONTRACT.md`
+7. the source packet
+8. the active-leaf normalized GUP bundle and validation report
+9. every source cited by an `inferred_rule`
+10. relevant general-rule records
+11. `rulesets/<ruleset-id>/ruleset.yaml` and any referenced controlled taxonomy
+    registry relevant to the review
+12. supplied local graph neighborhood
+13. relevant Architect decisions
 
 Do not read the Analyst or Builder conversation. Their artifacts are sufficient.
 
 ## Inputs
 
-- one GUP;
+- one Reviewer-ready active-leaf GUP bundle identified under
+  `contracts/WORK_QUEUES.md`;
 - its source GUR for traceability, not authority;
 - source packet;
 - Builder validation report;
@@ -54,12 +59,25 @@ Review every edge field by field:
 4. Is the citation precise enough to reproduce the decision?
 5. Has inherited behavior been overgeneralized?
 
+For every citation, independently derive the printed page from the original
+Markdown. Check end-of-line blocks, whole table rows, and inline paragraph splits
+according to `contracts/SOURCE_MARKDOWN.md`; do not trust the page carried through
+from the GUR or GUP.
+
 ### Identity
 
 6. Do source and target IDs identify the actual mechanics named?
 7. Is a table being confused with its rule?
 8. Is a broad node hiding a more precise mechanic?
 9. Is a candidate node duplicating an existing canonical node?
+
+A Reviewer may approve an isolated proposed node-registry addition when its
+source identity is supported, its prefix and kind are already approved, its ID
+format is valid, and canonical duplicate and neighborhood checks are clear. Do
+not use `architect_escalation` solely because the proposed ID is not yet present
+in the registry. Escalate a new prefix or kind, a canonical merge or split, a
+graph-wide migration, or an identity ambiguity the current ontology cannot
+resolve.
 
 ### Edge semantics
 
@@ -116,8 +134,13 @@ Write:
 
 ```text
 books/<ruleset-id>/<book-id>/artifacts/reviews/REV-<gup-id>-rNN.yaml
-books/<ruleset-id>/<book-id>/artifacts/approved/APPROVED-<gup-id>-rNN.edges.csv   # only when no blocking issues remain
+books/<ruleset-id>/<book-id>/artifacts/approved/APPROVED-<gup-id>-rNN.yaml       # only when no blocking issues remain
+books/<ruleset-id>/<book-id>/artifacts/approved/APPROVED-<gup-id>-rNN.edges.csv
 ```
+
+The Approved YAML is the bundle manifest. It records the Review ID, GUP ID,
+component paths, and checksums. The manifest and components form one Integrator
+job.
 
 The review must conform to `schemas/common/review.schema.json` and contain:
 
@@ -131,6 +154,10 @@ The review must conform to `schemas/common/review.schema.json` and contain:
 - source citations for every correction;
 - checksum of reviewed GUP.
 
+Every new Review records `revision`, `supersedes`, and a `handoff` naming exactly
+one next role. An approved Review hands off its Approved bundle to Integrator.
+Other dispositions name Builder, Analyst, or Architect and list blockers.
+
 ## Programmatic support
 
 You may build review tooling for:
@@ -141,6 +168,10 @@ You may build review tooling for:
 - polarity queue extraction;
 - diff generation;
 - review schema validation.
+
+Any tooling that parses packet source Markdown must use a Pandoc-compatible parser
+and pass the page-marker acceptance tests in
+`contracts/SOURCE_MARKDOWN.md`.
 
 Do not automate substantive source interpretation unless the automated result remains explicitly reviewable.
 
@@ -153,6 +184,8 @@ Do not automate substantive source interpretation unless the automated result re
 - Do not trust Builder validation as proof of source correctness.
 - Do not rely on prior conversations.
 - Do not turn review comments into free-form essays; make exact field decisions.
+- Do not move or rewrite the reviewed GUP or prior Review revisions to represent
+  queue state.
 
 ## Completion condition
 

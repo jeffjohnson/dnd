@@ -1,0 +1,373 @@
+schema_version: "1.0"
+id: ESC-2026-07-30T04.42.48.030Z
+legacy_id: ESC-2026-0007
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-007-008-intro
+constitution_version: "1.3"
+
+raised_by: builder
+raised_on: "2026-07-30"
+decision_owner: architect
+decision_id: DEC-2026-0008
+assigned_by: DEC-2026-0005
+assignment_audit_item: 3
+topic: citation_cardinality
+
+# 1. -- originating artifacts --------------------------------------------------
+originating:
+  packet_id: PKT-PHB-007-008-intro
+  gur_id: GUR-PKT-PHB-007-008-intro-r02
+  gup_id: GUP-PKT-PHB-007-008-intro-r03
+  review_id: REV-GUP-PKT-PHB-007-008-intro-r02-r01
+  affected_ref: E7
+  gup_status: blocked
+  builder_tool: adnd1e-builder 1.0.0
+
+trigger: >-
+  ESCALATION_CONTRACT 1.1, "the constitution and production data disagree in a way
+  that cannot be fixed mechanically". The Reviewer directed a citation correction that
+  the field definition and the entire canonical corpus do not admit. Builder applied the
+  correction as directed, revalidated it, and cannot resolve the disagreement without
+  changing what the `page` field means.
+
+# 2. -- the question -----------------------------------------------------------
+question: >-
+  May one edge carry several printed-page and section loci in the `page` and `section`
+  fields? Or must an assertion whose support is distributed across several pages be
+  represented as several edges, each citing one locus?
+
+why_it_needs_governance: >-
+  The answer changes a production field's meaning, not one row's content. `page` is
+  defined in the singular and every canonical row honours that. Admitting a list would
+  change the constitution's field definition, the CSV contract, the edge schema, both the
+  Builder and Reviewer citation validators, and any consumer that reads `page` as a
+  number. Builder may not widen a field's meaning to make a correction fit, and Reviewer
+  may not either.
+
+# 3. -- the exact proposed edge and all its loci -------------------------------
+proposed_edge:
+  ref: E7
+  source_id: rule_sex
+  source_label: Character Sex
+  edge_type: EXCLUDED_FROM
+  target_id: sys_ability_scores
+  target_label: Ability Scores
+  aspect: ability determination
+  condition: "except maximum score, set jointly with race"
+  polarity: negates
+  polarity_basis: derived
+  book: PHB
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ""
+  general_rule_id: ""
+  review_flag: ""
+
+  as_submitted_in_r02:
+    page: "7"
+    section: THE GAME
+  as_corrected_by_reviewer:
+    page: "7, 9, 15"
+    section: "THE GAME; STRENGTH TABLE I; CHARACTER RACE TABLE III"
+  reviewer_disposition: approved_with_revision
+  reviewer_integration_action: apply_exact_corrections
+
+# 4. -- smallest relevant source excerpts --------------------------------------
+source_excerpts:
+  - locus: "PHB p7, THE GAME"
+    in_this_packet: true
+    text: "In all but a few cases sex makes no difference to ability!"
+    role: >-
+      States the exclusion and announces an unnamed exception. This is the only locus
+      inside PKT-PHB-007-008-intro.
+  - locus: "PHB p9, STRENGTH TABLE I"
+    in_this_packet: false
+    belongs_to_packet: PKT-PHB-009-013-ability-scores
+    text: >-
+      STRENGTH TABLE I sets a maximum strength per row by sex jointly with race across
+      seven racial rows.
+    role: Identifies the exception as maximum Strength.
+  - locus: "PHB p15, CHARACTER RACE TABLE III: ABILITY SCORE MINIMUMS & MAXIMUMS"
+    in_this_packet: false
+    belongs_to_packet: PKT-PHB-013-018-races
+    text: >-
+      "the non- and part-human races must meet certain minimum ability scores, and some
+      races have lower maximum possible scores as well ... the ability score is simply
+      lowered to conform to the maximum."
+    role: Bounds the exception with the complete racial minima and maxima table.
+
+reviewer_rationale_quoted: >-
+  "Page 7 states the exclusion only with an unnamed exception. Pages 9 and 15 identify
+  that exception as the sex-and-race maximum for Strength, so all three loci are required
+  to reproduce the submitted condition."
+
+builder_position_on_the_reading: >-
+  Builder does not dispute it. The reading is correct and page 7 alone does not reproduce
+  the condition. The disagreement is not about the source; it is about whether one row
+  may hold three citations.
+
+# 5. -- current constraints ----------------------------------------------------
+current_constraints:
+  constitution:
+    version: "1.3"
+    section: 5
+    page_definition: "printed page number from the source's own footer"
+    section_definition: "section heading — preferred over page, survives repagination"
+    citation_rule: "Every edge must carry a citation. An uncited edge is rejected."
+    note: >-
+      Both definitions are singular nouns. Section 5 was not changed by the 1.2 to 1.3
+      bump; the wording is identical.
+  csv_contract:
+    file: rulesets/adnd1e/canonical/edges_master.csv
+    columns: 18
+    page_column_position: 11
+    note: >-
+      The file is comma-delimited, so a multi-page value must be quoted. Builder's writer
+      quotes it correctly, but every consumer that parses `page` as an integer breaks on
+      it.
+  edge_schema:
+    file: schemas/adnd1e/graph/edge.schema.json
+    page_type: ["string", "integer"]
+    note: >-
+      The schema is permissive enough to accept "7, 9, 15" as a string. Schema validity is
+      therefore not evidence that the value is legal; the constraint lives in the
+      constitution, not the schema. If multi-locus citation is rejected, the schema should
+      be tightened to a pattern so the check is mechanical.
+  reviewer_constraint:
+    contract: contracts/SOURCE_MARKDOWN.md
+    rule: >-
+      "Reviewer independently verifies citation pages against the original Markdown and
+      these placement rules."
+    consequence: >-
+      Pages 9 and 15 carry no marker in this packet's source.md, which contains only {#p7}
+      and {#p8}. A Reviewer verifying E7 against this packet cannot check two of its three
+      loci. The correction asks this packet to cite pages it does not contain.
+  builder_validators_fired:
+    - rule: citation_multi_locus
+      severity: error
+    - rule: page_outside_packet
+      severity: error
+      detail: "pages 9 and 15 lie outside the declared packet range 7-8"
+
+# -- evidence from the corpus --------------------------------------------------
+corpus_census:
+  method: >-
+    Every row of rulesets/adnd1e/canonical/edges_master.csv was read directly.
+  total_rows: 3809
+  page_pure_digits: 3804
+  page_empty: 5
+  page_containing_comma: 0
+  section_containing_semicolon: 0
+  finding: >-
+    Multi-locus citation has no precedent. E7 as corrected would be the first row of its
+    kind in the corpus, in both fields.
+
+# 6. -- affected canonical IDs -------------------------------------------------
+affected_canonical_ids:
+  - id: rule_sex
+    label: Character Sex
+    degree: 6
+    note: source of E7 and of S15
+  - id: sys_ability_scores
+    label: Ability Scores
+    degree: 21
+    note: target of E7
+  - id: abil_strength
+    label: Strength
+    degree: 51
+    note: target of S15, the p9 locus
+  - id: tbl_race_maximums
+    label: Race Ability Maximums
+    note: source of canonical row 164, the p15 locus
+
+# 7. -- local graph neighborhood -----------------------------------------------
+local_graph_neighborhood:
+  supplied: true
+  method: computed from canonical edges_master.csv by Builder tooling
+  decisive_finding: >-
+    Each of the three loci is already represented as its own edge, each with a single-page
+    citation. The graph already composes what the correction tries to put in one row.
+  rule_sex_incident_edges:
+    - "row 1129: rule_sex MODIFIES tbl_height_weight | DMG p12"
+    - "row 2009: rule_sex MODIFIES rule_hit_points | DMG p88"
+    - "row 2016: rule_sex GATES campaign_social_class | DMG p89"
+    - "row 2542: tbl_minor_malevolent TRIGGERS rule_sex | DMG p163"
+    - "row 2695: rule_tricks TRIGGERS rule_sex | DMG p217"
+    - "row 3405: item_girdle_femininity TRIGGERS rule_sex | UA p87"
+  the_three_loci_as_existing_assertions:
+    - locus: PHB p7 THE GAME
+      carried_by: E7 in GUP-PKT-PHB-007-008-intro-r03
+      assertion: rule_sex EXCLUDED_FROM sys_ability_scores
+      state: proposed, this packet
+    - locus: PHB p9 STRENGTH TABLE I
+      carried_by: S15 in GUR-PKT-PHB-009-013-ability-scores-r01
+      assertion: "rule_sex CONSTRAINS abil_strength, aspect 'maximum score', condition 'jointly with race'"
+      state: proposed in another packet, single-page citation p9
+    - locus: PHB p15 CHARACTER RACE TABLE III
+      carried_by: canonical row 164
+      assertion: "tbl_race_maximums CONSTRAINS sys_ability_scores, aspect 'score lowered to conform'"
+      state: already canonical, single-page citation p15
+  analyst_already_linked_them: >-
+    GUR-PKT-PHB-007-008-intro-r02 was revised specifically to name S15 in E7's condition
+    field, and its analyst_rationale states "E7 and S15 do not contradict each other. E7
+    says sex does not feed the determination of a score; S15 says sex bounds how high one
+    score may go. A reader needs both." The cross-packet relationship was recorded at
+    extraction time.
+
+# 8. -- options considered -----------------------------------------------------
+options_considered:
+  - option: A. Reject multi-locus citation; keep one citation per edge
+    mechanism: >-
+      E7 retains page 7 and section THE GAME. The exception it announces is carried by
+      S15 and by canonical row 164, each cited to its own page. The condition field already
+      names the exception qualitatively without citing it.
+    for:
+      - Preserves the field definition, the corpus, and every validator unchanged.
+      - Keeps each citation independently verifiable inside the packet that contains it,
+        which is what SOURCE_MARKDOWN requires of the Reviewer.
+      - >-
+        The composed assertion is already reachable. Impact analysis over rule_sex finds
+        both the exclusion and the bound.
+      - No migration of any kind.
+    against:
+      - E7 read in isolation announces an exception it does not cite.
+      - Depends on a reader traversing to S15 and row 164 rather than reading one row.
+  - option: B. Admit a multi-locus citation vocabulary
+    mechanism: >-
+      Amend constitution section 5 to define `page` and `section` as ordered lists with a
+      stated delimiter, tighten the edge schema to that pattern, and update the Builder and
+      Reviewer citation validators.
+    for:
+      - One row states the full support for one assertion.
+      - Honest about assertions genuinely distributed across pages.
+    against:
+      - Changes a production field's meaning for all 3,809 existing rows, none of which
+        uses it.
+      - The delimiter must not collide with CSV quoting or with section headings that
+        already contain punctuation; at least one PHB section heading contains an em dash
+        and a colon.
+      - Breaks any consumer parsing `page` as an integer.
+      - >-
+        Cross-packet citation defeats the packet boundary. A Reviewer cannot verify a locus
+        whose page is absent from the packet source, so verification would have to move
+        outside the packet or be weakened.
+      - Recurrence does not currently justify it. Across all five PHB reviews, 335 rows
+        reviewed, this is the only multi-locus correction requested.
+  - option: C. Split E7 into one edge per locus
+    mechanism: >-
+      Emit three edges from the three loci, each singly cited.
+    for: uses only existing field semantics
+    against:
+      - Two of the three already exist as S15 and canonical row 164, so this manufactures
+        duplicates of assertions that are already correct.
+      - The p9 and p15 edges would be created from a packet that does not contain those
+        pages, which is a packet-boundary violation regardless of citation shape.
+  - option: D. Add a distinct supporting-citation field
+    mechanism: >-
+      Keep `page` and `section` singular as the primary locus and add a separate optional
+      field for corroborating loci.
+    for:
+      - Primary citation stays machine-clean and singular; corroboration is not lost.
+      - No existing row changes meaning.
+    against:
+      - Adds a 19th production column, which is a larger constitutional change than the
+        problem warrants on one row.
+      - Constitution section 9 states there is no free-text note field; a corroboration
+        field risks becoming one.
+      - Still does not solve cross-packet verification.
+
+# 9. -- recommendation ---------------------------------------------------------
+recommended_resolution: >-
+  Option A. Reject multi-locus citation, and rule that an assertion's citation names the
+  single locus that states it. Direct that E7 revert to page 7 and section THE GAME.
+  The exception is not lost: it is already carried by S15 at p9 and by canonical row 164 at
+  p15, and E7's condition field names it qualitatively without citing it. The Reviewer's
+  reading is correct and its remedy is the only part Builder is contesting.
+recommendation_confidence: >-
+  High. The corpus is unanimous at 3,809 rows, section 5 is unambiguous, and the
+  distributed support the Reviewer identified is already represented as separate edges
+  with clean single-page citations.
+secondary_recommendation: >-
+  If Option A is adopted, tighten schemas/adnd1e/graph/edge.schema.json so `page` matches
+  a single-integer pattern rather than accepting any string. The schema currently accepts
+  "7, 9, 15" and so provides no protection; the only reason this was caught is a Builder
+  validator, and a defence that exists in one role's tooling is not a contract.
+
+# 10. -- migration and validator impact ---------------------------------------
+expected_migration_impact:
+  if_option_a:
+    canonical_rows_changed: 0
+    gup_rows_changed: 1
+    detail: >-
+      E7 reverts to its r02 citation. Builder emits GUP-PKT-PHB-007-008-intro-r04 with the
+      Reviewer correction withdrawn per Architect ruling. No canonical row is touched. No
+      validator changes. The intro GUP then has no remaining blocker.
+  if_option_b:
+    canonical_rows_changed: 0
+    but: >-
+      No existing row uses a list, so no data migration is needed. The cost is entirely in
+      contracts and code: constitution section 5, the CSV contract, the edge schema, the
+      Builder citation validator, the Reviewer verification step, and the page-marker
+      cross-check in adnd1e_builder verify-pages, which currently asserts that every cited
+      page is marked in the packet source. Cross-packet citation would have to be defined
+      or forbidden separately.
+  if_option_c:
+    canonical_rows_changed: 0
+    gup_rows_changed: 3
+    risk: >-
+      Creates near-duplicates of S15 and canonical row 164, which Builder's duplicate
+      detector would then report against the packets that legitimately own them.
+  if_option_d:
+    canonical_rows_changed: 3809
+    detail: >-
+      A new column means every canonical row gains an empty field, and the 18-column
+      contract, the constitution's column list, graph.json regeneration, and the Integrator
+      exporter all change. This is the most expensive option.
+
+# -- what would change ---------------------------------------------------------
+would_change:
+  constitution: >-
+    No on Option A. Yes on Options B and D, section 5 and section 12 respectively.
+  registry: false
+  profile: false
+  canonical_graph: >-
+    No on every option. This escalation changes no canonical row.
+  schemas: >-
+    Recommended on Option A, tightening `page`. Required on Options B and D.
+  contracts: >-
+    No on Option A. On Option B, SOURCE_MARKDOWN's Reviewer verification obligation and the
+    packet-boundary rule both need amendment.
+  tooling: >-
+    Builder citation validator and verify-pages on Option B; nothing on Option A.
+
+# -- related -------------------------------------------------------------------
+related:
+  - id: DEC-2026-0005
+    relation: >-
+      Assigned this package to Builder as audit item 3 and reserved ESC-2026-07-30T04.42.48.030Z for it.
+  - id: REV-GUP-PKT-PHB-007-008-intro-r02-r01
+    relation: >-
+      Source of the correction. Its other decision, rejecting E1 as a third encoding of the
+      race-to-language dependency, was applied without issue in r03.
+  - id: ESC-2026-0004
+    relation: >-
+      Also concerns whether one artifact should carry a coarse combined assertion or several
+      finer ones. Same shape of question at the citation layer rather than the identity layer.
+
+blocking: true
+blocking_note: >-
+  Blocks GUP-PKT-PHB-007-008-intro-r03 only. Its other six rows are approved by the
+  Reviewer and carry no findings, so a ruling on this one field releases the whole packet.
+  It does not block the abilities, races, or classes packets, though a ruling admitting
+  multi-locus citation would require rechecking every citation in all of them.
+
+builder_note_on_scope: >-
+  Builder applied the Reviewer's correction exactly as directed rather than refusing it,
+  and the corrected value is present in GUP-PKT-PHB-007-008-intro-r03 and its edges CSV.
+  The GUP is marked blocked rather than quietly downgraded, because a schema-valid patch is
+  not an approvable one. Builder has not altered the citation on its own authority in
+  either direction.

@@ -1,0 +1,210 @@
+schema_version: "1.0"
+id: DEC-2026-0014
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+constitution_version: "1.4"
+
+decision_date: "2026-07-30"
+escalation_id: ESC-2026-07-30T23.25.16.825Z
+
+question: >-
+  Which production edge field set governs when the adnd1e edge schema requires
+  per-row ruleset_id and book_id and rejects book, while Constitution v1.4,
+  canonical data, Builder, and Integrator use the same 18-column row?
+
+ruling: >-
+  The constitutional and canonical 18-column production edge contract governs.
+  Correct schemas/adnd1e/graph/edge.schema.json to require exactly those 18
+  fields, including the per-assertion citation field book, and to exclude
+  artifact-scope ruleset_id and book_id from each edge row. The schema retains
+  additionalProperties: false. No canonical edge, registry row, GUP row, or
+  constitutional text is migrated or rewritten by this decision.
+
+rationale:
+  - >-
+    Constitution section 5 explicitly defines the 18 production fields, and
+    section 12 names edges_master.csv as authoritative for their order.
+  - >-
+    The canonical header, Builder COLUMNS, Integrator EDGE_COLUMNS, and all six
+    reviewed GUP CSV headers are identical. Independent agreement across the
+    production pipeline is stronger evidence of the intended contract than one
+    internally inconsistent schema.
+  - >-
+    The former schema duplicated source_id in required, required ruleset_id and
+    book_id, and omitted book while rejecting additional properties. Those
+    defects cannot describe any current production row.
+  - >-
+    ruleset_id, book_id, and source_id identify artifact scope in workflow
+    envelopes. A production edge still needs book because one ruleset graph
+    combines assertions from PHB, DMG, MM, and UA and preserves that provenance
+    per row.
+  - >-
+    Migrating the 3,809-row corpus wholesale to preserve defective schema text
+    would expand the edge contract, discard the established book citation
+    vocabulary, and force unnecessary changes through every downstream
+    consumer.
+  - >-
+    Full-corpus validation exposed 53 legacy rows that are not correct
+    production data: 46 incident endpoints use the unprefixed IDs comeliness,
+    fatigue, or training already ruled invalid by DEC-2026-0004, and seven rows
+    have blank source and target labels. The migration-pending ruleset must fix
+    those rows through ordinary Builder, Reviewer, and Integrator workflow;
+    their existence is not grounds to weaken the schema.
+
+schema_disposition:
+  path: schemas/adnd1e/graph/edge.schema.json
+  additional_properties: false
+  required_fields:
+    - source_id
+    - source_label
+    - edge_type
+    - target_id
+    - target_label
+    - aspect
+    - condition
+    - polarity
+    - polarity_basis
+    - book
+    - page
+    - section
+    - evidence
+    - pass
+    - status
+    - supersession_basis
+    - general_rule_id
+    - review_flag
+  removed_row_fields:
+    - ruleset_id
+    - book_id
+  book_vocabulary:
+    - PHB
+    - DMG
+    - MM
+    - UA
+  endpoint_id_pattern:
+    source_id: "^[a-z][a-z0-9]*_[a-z0-9_]+$"
+    target_id: "^[a-z][a-z0-9]*_[a-z0-9_]+$"
+
+change_log:
+  - Correct the production edge schema to the constitutional 18-field row.
+  - Restore book as the per-row source-book field with the closed citation vocabulary.
+  - Remove artifact-scope ruleset_id and book_id from production edge rows.
+  - Enforce the approved prefixed node-ID form symmetrically on both endpoints.
+  - Preserve every other existing edge vocabulary and field constraint.
+
+exact_schema_diff:
+  required_removed:
+    - ruleset_id
+    - book_id
+    - duplicate source_id occurrence
+  required_added:
+    - book
+  properties_removed:
+    - ruleset_id
+    - book_id
+  properties_added:
+    book:
+      enum: [PHB, DMG, MM, UA]
+  properties_strengthened:
+    source_id:
+      added_pattern: "^[a-z][a-z0-9]*_[a-z0-9_]+$"
+      matches_existing_target_id_pattern: true
+  unchanged:
+    - additionalProperties remains false
+    - edge type vocabulary
+    - polarity vocabulary
+    - evidence vocabulary
+    - status vocabulary
+    - supersession basis vocabulary
+    - page cardinality rule
+    - review flag vocabulary
+
+scope_disposition:
+  artifact_envelope_fields:
+    - ruleset_id
+    - book_id
+    - source_id
+  production_edge_book_field: book
+  reason: >-
+    Artifact scope and per-assertion source-book provenance are different
+    levels of identity and must not be substituted for one another.
+
+validation_evidence:
+  canonical_rows_total: 3809
+  canonical_rows_valid: 3756
+  canonical_rows_in_known_migration_debt: 53
+  canonical_validation_errors_in_known_migration_debt: 60
+  originating_gup_bundles_validated: 6
+  originating_gup_rows_validated: 226
+  originating_gup_validation_errors: 0
+
+affected_contracts:
+  - schemas/adnd1e/graph/edge.schema.json
+affected_registries: []
+affected_artifacts:
+  - rulesets/adnd1e/escalations/decided/ESC-2026-07-30T23.25.16.825Z.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0014.yaml
+  - tooling/builder schema validation tests
+  - tooling/reviewer schema validation tests
+  - future Review revisions for the six named GUP bundles as otherwise applicable
+
+migration_required: false
+migration_scope:
+  canonical_edge_rows_changed: 0
+  canonical_node_rows_changed: 0
+  registry_rows_changed: 0
+  gup_rows_changed: 0
+  reason: >-
+    The schema is corrected to describe existing production data. Production
+    data does not migrate to match the defective schema.
+  known_preexisting_validation_debt:
+    failing_rows: 53
+    validation_errors: 60
+    unprefixed_source_endpoints: 18
+    unprefixed_target_endpoints: 28
+    blank_source_labels: 7
+    blank_target_labels: 7
+    unprefixed_ids:
+      comeliness: abil_comeliness
+      fatigue: rule_exhaustion
+      training: rule_training
+    governing_decision_for_unprefixed_ids: DEC-2026-0004
+    disposition: >-
+      Preserve schema enforcement. Builder prepares migration artifacts,
+      Reviewer confirms the mappings and label normalization, and Integrator
+      changes canonical data only after approval.
+
+acceptance_tests:
+  - edge.schema.json is a valid Draft 2020-12 schema.
+  - Its required field list contains exactly 18 unique names in canonical header order.
+  - A representative canonical 18-field row validates.
+  - The 3,756 canonical rows outside known migration debt validate without rewriting.
+  - >-
+    A full canonical audit reports exactly 60 errors across 53 rows: 46
+    unprefixed endpoints using only comeliness, fatigue, or training, plus
+    seven blank source labels and seven blank target labels.
+  - Both source_id and target_id reject unprefixed node IDs.
+  - book accepts PHB, DMG, MM, and UA and rejects other values.
+  - ruleset_id and book_id are neither required nor permitted inside a production edge row.
+  - An unexpected nineteenth field is rejected.
+  - All six originating GUP edge CSV headers match the schema field set.
+  - Every row in the six originating GUP edge CSVs validates.
+  - No canonical graph, registry, GUP, or Approved component is modified by this decision.
+  - Reviewers emit new Review revisions rather than overwriting prior Reviews.
+  - Independent races and classes revision requirements remain in force.
+
+constitution_version_impact:
+  changed: false
+  reason: >-
+    Constitution v1.4 already contains the governing production field set. This
+    corrects a subordinate ruleset schema to conform to it.
+
+follow_up_owner:
+  schema_regression_tests_and_full_corpus_validation: builder
+  known_legacy_id_and_blank_label_migration: builder
+  independent_schema_and_source_review: reviewer
+  review_revisions_for_otherwise_clean_gups: reviewer
+  approved_bundle_creation_after_review: reviewer
+  integration_after_approval: integrator

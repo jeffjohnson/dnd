@@ -1,0 +1,474 @@
+schema_version: "1.0"
+id: GUR-PKT-PHB-035-038-money-equipment-r01
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-035-038-money-equipment
+constitution_version: "1.2"
+
+revision: 1
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 35
+page_end: 38
+
+# =============================================================================
+# HEADLINE RESULT: 18 candidate edges. 0 candidate nodes. 0 escalations.
+#
+#  1. This packet is almost entirely price lists, weights and damage dice, and
+#     the grain rule removes nearly all of it. Twelve cost tables and two large
+#     weapon tables yield relationships, never values.
+#
+#  2. It needs five wpn_ nodes and both prof_ nodes, under prefixes the
+#     constitution does not approve. That is ESC-2026-0002, already open. No
+#     new escalation; the volume of work resting on it simply grows. OBS-31.
+#
+#  3. One tension with a registered general rule is flagged. OBS-30 is the most
+#     important item in this GUR.
+# =============================================================================
+
+source_summary: >-
+  Pages 35 to 38. MONEY, covering starting funds by class, coinage, and money changing,
+  banking and loans; EQUIPPING THE CHARACTER with twelve cost tables; ARMOR with the
+  armour class table; and WEAPONS, covering proficiency, weight and damage by weapon type,
+  and the general weapon data table with its to-hit adjustments by armour class and range.
+
+node_id_resolution_method: >-
+  No slice supplied. Resolved by targeted registry lookup as in every packet since 02.
+  All edges resolved onto existing canonical IDs; no candidate node was needed.
+
+candidate_nodes: []
+candidate_general_rules: []
+domains_touched: []
+domains_touched_note: BLK-01 unchanged; the domain registry is still an empty map.
+
+candidate_edges:
+  - ref: B1
+    source_id: rule_starting_money
+    source_label: "Player Character Starting Money"
+    edge_type: DERIVED_FROM
+    target_id: sys_classes
+    target_label: "Character Class"
+    aspect: "starting funds"
+    condition: ""
+    book: PHB
+    page: 35
+    section: "Starting Money"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B2
+    source_id: sys_equipment
+    source_label: "Equipment"
+    edge_type: CONSUMES
+    target_id: money_gp
+    target_label: "Money"
+    aspect: "purchase cost"
+    condition: ""
+    book: PHB
+    page: 35
+    section: "EQUIPPING THE CHARACTER"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B3
+    source_id: enc_encumbrance
+    source_label: "Encumbrance"
+    edge_type: CONSTRAINS
+    target_id: sys_equipment
+    target_label: "Equipment"
+    aspect: "carrying choice"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 35
+    section: "EQUIPPING THE CHARACTER"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B5
+    source_id: sys_equipment
+    source_label: "Equipment"
+    edge_type: MODIFIES
+    target_id: cbt_armor_class
+    target_label: "Armor Class"
+    aspect: "worn armour"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 36
+    section: "ARMOR"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B6
+    source_id: rule_shield
+    source_label: "Shield"
+    edge_type: MODIFIES
+    target_id: cbt_armor_class
+    target_label: "Armor Class"
+    aspect: "shield bonus"
+    condition: "frontal attacks, limited by shield size"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 36
+    section: "ARMOR"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B7
+    source_id: rule_shield
+    source_label: "Shield"
+    edge_type: EXCLUDED_FROM
+    target_id: cbt_armor_class
+    target_label: "Armor Class"
+    aspect: "shield bonus"
+    condition: "attacks from the right flank or rear"
+    book: PHB
+    page: 36
+    section: "ARMOR"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B8
+    source_id: item_magic_armor
+    source_label: "Magic Armor"
+    edge_type: MODIFIES
+    target_id: cbt_armor_class
+    target_label: "Armor Class"
+    aspect: "magical protection"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 36
+    section: "ARMOR CLASS TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B9
+    source_id: item_magic_armor
+    source_label: "Magic Armor"
+    edge_type: EXCLUDED_FROM
+    target_id: enc_encumbrance
+    target_label: "Encumbrance"
+    aspect: "carried weight"
+    condition: ""
+    book: PHB
+    page: 36
+    section: "ARMOR"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B10
+    source_id: prof_weapon
+    source_label: "Weapon Proficiency"
+    edge_type: DERIVED_FROM
+    target_id: sys_classes
+    target_label: "Character Class"
+    aspect: "initial weapon count"
+    condition: ""
+    book: PHB
+    page: 37
+    section: "Weapon Proficiency"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B11
+    source_id: exp_level
+    source_label: "Experience Level"
+    edge_type: MODIFIES
+    target_id: prof_weapon
+    target_label: "Weapon Proficiency"
+    aspect: "additional proficiencies"
+    condition: ""
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 37
+    section: "WEAPON PROFICIENCY TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B12
+    source_id: prof_nonproficiency_penalty
+    source_label: "Non-Proficiency Penalty"
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    target_label: "To-Hit Roll"
+    aspect: "attack roll"
+    condition: "weapon not held with proficiency"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 37
+    section: "WEAPON PROFICIENCY TABLE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B13
+    source_id: wpn_weight
+    source_label: "Weapon Weight"
+    edge_type: FEEDS_INTO
+    target_id: enc_encumbrance
+    target_label: "Encumbrance"
+    aspect: "carried weight"
+    condition: ""
+    book: PHB
+    page: 37
+    section: "WEIGHT AND DAMAGE BY WEAPON TYPE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B14
+    source_id: wpn_space_required
+    source_label: "Space Required"
+    edge_type: CONSTRAINS
+    target_id: cbt_missile
+    target_label: "Missile Fire"
+    aspect: "room to wield"
+    condition: ""
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 37
+    section: "WEIGHT AND DAMAGE BY WEAPON TYPE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B15
+    source_id: wpn_type_vs_ac
+    source_label: "Armor Class Adjustment"
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    target_label: "To-Hit Roll"
+    aspect: "attack roll"
+    condition: "by weapon type against armour class"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 38
+    section: "WEAPON TYPES, GENERAL DATA, AND \"TO HIT\" ADJUSTMENTS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B16
+    source_id: wpn_range
+    source_label: "Weapon Range"
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    target_label: "To-Hit Roll"
+    aspect: "attack roll"
+    condition: "penalty at medium and long range"
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: 38
+    section: "WEAPON TYPES, GENERAL DATA, AND \"TO HIT\" ADJUSTMENTS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B17
+    source_id: cbt_surprise
+    source_label: "Surprise"
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    target_label: "To-Hit Roll"
+    aspect: "attack roll"
+    condition: "unseen, stunned, prone or motionless opponents"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 38
+    section: "WEAPON TYPES, GENERAL DATA, AND \"TO HIT\" ADJUSTMENTS"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B18
+    source_id: wpn_stats
+    source_label: "Weapon Statistics"
+    edge_type: FEEDS_INTO
+    target_id: cbt_damage
+    target_label: "Damage"
+    aspect: "damage by weapon type"
+    condition: ""
+    book: PHB
+    page: 37
+    section: "WEIGHT AND DAMAGE BY WEAPON TYPE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+  - ref: B19
+    source_id: wpn_stats
+    source_label: "Weapon Statistics"
+    edge_type: MODIFIES
+    target_id: cbt_damage
+    target_label: "Damage"
+    aspect: "damage against larger opponents"
+    condition: "set weapons and charging mounts"
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: 37
+    section: "WEIGHT AND DAMAGE BY WEAPON TYPE"
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    general_rule_id: ""
+    supersession_basis: ""
+    review_flag: ""
+
+non_edge_observations:
+  - id: OBS-30
+    topic: a possible conflict with a registered general rule
+    locus: WEAPON TYPES GENERAL DATA AND TO HIT ADJUSTMENTS, p38
+    finding: >-
+      This page states that any weapon strikes at a bonus against an opponent's back or an
+      otherwise unseen opponent, and at a larger bonus against stunned, prone and
+      motionless opponents. That is edge B17. The general rule register holds
+      GR_HELPLESS_TARGET_AUTOHIT, established at DMG p70, under which paralyzed, held,
+      sleeping or wholly immobile targets are struck automatically, take maximum damage,
+      and gain no Dexterity benefit.
+    the_tension: >-
+      Struck automatically and struck at a bonus are different mechanics. Either the PHB
+      bonus is superseded by the DMG rule for the subset of opponents that count as wholly
+      immobile, or the two describe different states, with the PHB covering merely prone
+      or stunned and the DMG covering magical immobilisation. The second reading is more
+      likely and is supported by the register's own counter-example, which distinguishes
+      naturally sleeping targets. The Analyst cannot settle it from this packet.
+    why_it_matters: >-
+      B17 is proposed as a plain MODIFIES edge with no supersession basis, because the
+      Analyst has no authority to assert that a DMG rule overrides a PHB one, and OVERRIDES
+      requires a supersession_basis this packet cannot support. If the two do collide, B17
+      needs retyping or the general rule needs its boundary restated.
+    recommendation: >-
+      Architect or Reviewer to compare B17 against GR_HELPLESS_TARGET_AUTOHIT with the DMG
+      text in hand. This is a cross-book question and belongs under
+      rulesets/adnd1e/cross-book, which the Analyst may not open on suspicion.
+
+  - id: OBS-31
+    topic: the unapproved-prefix problem grows
+    finding: >-
+      This packet needs wpn_weight, wpn_range, wpn_space_required, wpn_stats and
+      wpn_type_vs_ac, plus prof_weapon and prof_nonproficiency_penalty. The wpn_ prefix is
+      the largest of the twelve unapproved prefixes reported in ESC-2026-0002, at seven
+      nodes.
+    why_it_matters: >-
+      ESC-2026-0002 was raised from packet 03, where five nodes under str_ and dex_ were
+      needed. Five more are needed here under wpn_. The escalation remains non-blocking,
+      but the volume of proposed work resting on unapproved identities is now material.
+    analyst_action_taken: >-
+      Reused the existing IDs. No new escalation; ESC-2026-0002 already asks the question
+      and this is further evidence for the same answer.
+
+  - id: OBS-32
+    topic: an explicit denial that is easy to lose
+    locus: ARMOR, p36
+    finding: >-
+      Magic armour negates weight, so movement does not consider any encumbrance from it.
+      That is B9.
+    why_it_matters: >-
+      A reader would certainly assume armour has weight, since the equipment tables give a
+      weight for every mundane armour type. This is what constitution 4.1 exists for, and
+      it is easy to lose because it sits in a one-line note rather than in a table.
+
+unresolved_identity_questions:
+  - id: IDQ-11
+    question: >-
+      B5 asserts sys_equipment MODIFIES cbt_armor_class for worn armour. sys_equipment is
+      an aggregate covering all equipment. Should armour have its own node?
+    bearing: B5
+    analyst_handling: >-
+      Used sys_equipment because no armour node exists; item_magic_armor covers only the
+      magical case and rule_shield only shields. Flagged rather than minting rule_armor,
+      because the registry may intend sys_equipment to carry this and a duplicate would be
+      worse than a coarse edge.
+
+  - id: IDQ-12
+    question: >-
+      Packet 03 routed dexterity's defensive effect through dex_defensive_adj. This page
+      names dexterity directly as a principal modifier of armour class. Should a second
+      edge be proposed from abil_dexterity?
+    bearing: none; no edge proposed
+    analyst_handling: >-
+      No edge proposed, because packet 03's D5 already carries the relationship through the
+      intermediate node the graph appears to prefer. Recorded so the omission is visible
+      and can be reversed if IDQ-04 is resolved the other way.
+
+architectural_escalations: []
+
+blocking_notes:
+  - id: BLK-01
+    severity: unchanged
+    issue: domain_registry.yaml remains an empty map at status bootstrap.
+    owner: architect
+  - id: BLK-02
+    severity: cumulative
+    issue: no node_registry_slice.csv and no local_neighborhood.json supplied.
+    owner: packet_creator
+
+completeness_statement: >-
+  The whole packet was read before extraction, and its page markers, headings and tables
+  were checked mechanically for sequence, duplication and column consistency before
+  reading. Every proposed edge carries a book, page and section citation and an evidence
+  class. No magnitude reached any aspect or condition field. Authored polarity appears on
+  the three permitted edge types only. The generated edge set was checked for duplicate
+  source, type and target triples before assembly and contains none. Every overlap with an
+  earlier packet was checked against the specific edge reference rather than assumed, and
+  the overlaps found are recorded rather than silently dropped. Deduplication against the
+  canonical graph remains outstanding and could not be performed at extraction time.

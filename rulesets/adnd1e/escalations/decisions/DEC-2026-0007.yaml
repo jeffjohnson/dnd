@@ -1,0 +1,108 @@
+schema_version: "1.0"
+id: DEC-2026-0007
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-009-013-ability-scores
+constitution_version: "1.4"
+
+decision_date: "2026-07-30"
+escalation_id: ESC-2026-07-30T01.21.13.768Z
+
+question: >-
+  Which canonical identity survives for the duplicate Loyalty Base and Maximum
+  Henchmen node pairs, and what migration controls are required?
+
+ruling: >-
+  Merge abil_cha_loyalty_base into hench_loyalty. Merge hench_max_number into
+  abil_cha_max_henchmen. The surviving IDs are respectively hench_loyalty and
+  abil_cha_max_henchmen. Builder must produce a migration GUP that repoints the
+  two retired-node incident rows and audits every resulting candidate collision
+  under the full five-field assertion key. Integrator may remove retired nodes
+  and apply endpoint changes only from an approved migration artifact.
+
+rationale:
+  - >-
+    Each pair represents one mechanic stated in two PHB locations, not a rule
+    and separately addressable table. Keeping both would preserve duplicate
+    identity contrary to Constitution section 3.2.
+  - >-
+    hench_loyalty has the stable 41-edge subsystem neighborhood while
+    abil_cha_loyalty_base has one incident row. Retiring the latter avoids
+    narrowing the broadly used henchman mechanic to a table-column identity.
+  - >-
+    abil_cha_max_henchmen has three incident rows and already connects the
+    Charisma input to the henchman subsystem. It is the better-established
+    Maximum Henchmen identity than the one-edge hench_max_number.
+  - >-
+    The escalation counted source/type/target triple collisions. The production
+    assertion key also includes aspect and condition, so those counts identify
+    review candidates rather than automatic duplicate collapses.
+  - >-
+    Repeated source statements belong in the provenance ledger under
+    Constitution 1.4. They do not justify multi-locus page values or duplicate
+    canonical edges.
+
+identity_merges:
+  - label: Loyalty Base
+    survivor_id: hench_loyalty
+    retired_id: abil_cha_loyalty_base
+    retired_incident_rows: 1
+    supplied_triple_collision_candidates: 4
+  - label: Maximum Henchmen
+    survivor_id: abil_cha_max_henchmen
+    retired_id: hench_max_number
+    retired_incident_rows: 1
+    supplied_triple_collision_candidates: 1
+
+assertion_key_audit:
+  fields: [source_id, edge_type, target_id, aspect, condition]
+  required_actions:
+    - Normalize the two retired IDs to their survivor IDs in a dry-run graph.
+    - Classify every resulting full-key match as an exact duplicate or conflict.
+    - Preserve distinct aspects or conditions as distinct assertions.
+    - Preserve every contributing citation and workflow origin in provenance.
+    - Return any semantic conflict that cannot be source-reviewed as a new escalation.
+  prohibited_actions:
+    - Do not collapse rows solely because source, edge type, and target match.
+    - Do not place PHB p13 and p39 together in one page field.
+    - Do not modify the unrelated hench_loyalty self-loop under this decision.
+
+affected_contracts: []
+affected_registries:
+  - rulesets/adnd1e/registries/nodes.csv
+affected_artifacts:
+  - rulesets/adnd1e/escalations/decided/ESC-2026-07-30T01.21.13.768Z.yaml
+  - rulesets/adnd1e/escalations/decisions/DEC-2026-0007.yaml
+  - books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-009-013-ability-scores-r01.yaml
+  - books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-039-040-hirelings-time-distance-r01.yaml
+  - future Builder migration GUP, Review, and Integration artifacts
+
+migration_required: true
+migration_scope:
+  registry_nodes_retired: 2
+  retired_incident_rows_to_repoint: 2
+  exact_duplicate_collapses: pending_full_assertion_key_audit
+  canonical_write: integrator_only_after_approval
+
+acceptance_tests:
+  - nodes.csv contains each survivor exactly once after integration.
+  - nodes.csv no longer contains either retired ID after integration.
+  - No canonical endpoint references a retired ID.
+  - Every post-repoint duplicate check uses all five assertion-key fields.
+  - Distinct aspect or condition values are not collapsed.
+  - PHB p13 and p39 provenance remains independently recoverable.
+  - The hench_loyalty self-loop remains outside this migration.
+  - No canonical graph file is changed directly by this Architect decision.
+
+constitution_version_impact:
+  changed: false
+  reason: >-
+    The merge applies existing identity and provenance rules. Constitution 1.4
+    independently clarifies singular citation fields.
+
+follow_up_owner:
+  migration_gup_and_full_key_audit: builder
+  source_and_collision_review: reviewer
+  registry_and_canonical_application: integrator

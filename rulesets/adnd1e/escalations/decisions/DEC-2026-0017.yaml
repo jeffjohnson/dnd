@@ -1,0 +1,126 @@
+schema_version: "1.0"
+id: DEC-2026-0017
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-043-054-cleric-spells
+constitution_version: "1.6"
+revision: 1
+supersedes: null
+handoff:
+  next_role: analyst
+  readiness: ready
+  reason: >-
+    Publish a new GUR revision that accounts for the fourteen explicit
+    caster-level scaling descriptions under Constitution 1.6. The existing r02
+    artifact remains immutable.
+  blocking_ids: []
+
+decision_date: "2026-07-31"
+escalation_id: null
+decision_basis:
+  type: direct_architect_interpretation
+  source_artifact: GUR-PKT-PHB-043-054-cleric-spells-r02
+  source_item: IDQ-14
+
+question: >-
+  When individual spell descriptions explicitly scale effects with caster
+  experience level, are those dependencies represented per spell or only
+  through a spell aggregate?
+
+ruling: >-
+  Record one exp_level MODIFIES spell_<id> candidate for each spell whose own
+  description explicitly makes an effect scale with caster experience level.
+  Preserve the dependency but omit all numeric values and formulas. Do not infer
+  the edge for other spells and do not collapse the selective set to a
+  spell-aggregate edge.
+
+rationale:
+  - >-
+    Constitution section 2 excludes magnitudes, not mechanical dependencies.
+    exp_level changing a spell effect is the same representational class as an
+    ability changing a combat mechanic: omit the formula while MODIFIES preserves
+    the impact relationship.
+  - >-
+    Only fourteen of seventy-six spells in this packet state the dependency. An
+    aggregate edge would imply broader scope and prevent impact analysis from
+    identifying which spells actually depend on experience level.
+  - >-
+    The Analyst determines which descriptions qualify and authors MODIFIES
+    polarity. The Reviewer verifies each resulting assertion against source.
+
+affected_contracts_and_registries:
+  contracts:
+    - rulesets/adnd1e/governance/constitution.md
+    - rulesets/adnd1e/ruleset.yaml
+  registries: []
+  schemas: []
+  canonical_files: []
+
+migration_required: false
+migration_scope:
+  canonical_changes: none
+  workflow_rework:
+    input_id: GUR-PKT-PHB-043-054-cleric-spells-r02
+    required_output: GUR-PKT-PHB-043-054-cleric-spells-r03
+    requirement: >-
+      Account for all fourteen descriptions identified by IDQ-14. Emit an
+      exp_level MODIFIES spell_<id> candidate for each qualifying explicit
+      dependency, or record a per-case rejection if closer source inspection
+      shows that a description does not actually express that dependency.
+    prohibited_shortcut: >-
+      Builder must not synthesize missing interpretive rows and no role may
+      generate blanket exp_level edges without explicit source support.
+
+constitution_version_impact:
+  changed: true
+  previous_version: "1.5"
+  new_version: "1.6"
+  compatibility: >-
+    Existing rows remain valid. Revalidation may identify explicit scaling
+    dependencies omitted by earlier extraction but does not invalidate unrelated
+    assertions.
+
+governance_changelog:
+  - >-
+    Constitution 1.6 distinguishes excluded numeric magnitudes from retained
+    scaling dependencies and requires selective per-spell exp_level MODIFIES
+    assertions when explicitly stated.
+  - ruleset.yaml now declares Constitution 1.6.
+
+exact_diff:
+  rulesets/adnd1e/governance/constitution.md:
+    - Change Version 1.5 to 1.6.
+    - Add section 2.1, Scaling dependencies are relationships.
+  rulesets/adnd1e/ruleset.yaml:
+    - Change constitution_version from 1.5 to 1.6.
+
+acceptance_tests:
+  - Constitution and ruleset.yaml both declare version 1.6.
+  - >-
+    Builder vocabulary declares Constitution 1.6 and accepts 1.5 GURs for
+    revalidation under the current rules.
+  - >-
+    The active-leaf cleric-spell GUR accounts for all fourteen IDQ-14 scaling
+    descriptions and includes no numeric scaling value in aspect or condition.
+  - >-
+    No exp_level-to-spell edge is generated for a spell without explicit source
+    support, and no aggregate edge substitutes for the selective set.
+  - >-
+    Reviewer independently verifies every proposed scaling dependency and its
+    authored MODIFIES polarity against the packet source.
+
+follow_up_owner: analyst
+follow_up_owners:
+  analyst:
+    - Publish GUR-PKT-PHB-043-054-cleric-spells-r03 under Constitution 1.6.
+  builder:
+    - Update Constitution-version tooling and compile the Analyst revision.
+  reviewer:
+    - Verify all explicit scaling dependencies and authored polarities.
+
+prohibited_actions:
+  - Do not mutate or overwrite GUR-PKT-PHB-043-054-cleric-spells-r02.
+  - Do not include caster-level magnitudes or formulas in graph fields.
+  - Do not infer scaling for spells whose descriptions do not state it.
