@@ -105,6 +105,8 @@ class CompileResult:
     updates: list[dict] = field(default_factory=list)
     rows_superseded: set[str] = field(default_factory=set)
     rows_pending: set[str] = field(default_factory=set)
+    #: `(ref, bucket)` pairs a Review directed out of a bucket by name.
+    rows_removed_from: set[tuple[str, str]] = field(default_factory=set)
     rejected_rows: list[dict] = field(default_factory=list)
     rejected_node_proposals: list[dict] = field(default_factory=list)
     architect_overrides: list[dict] = field(default_factory=list)
@@ -131,12 +133,30 @@ class CompileResult:
         exist.
         """
         held = self.rows_superseded | self.rows_pending
-        return [r for r in self.rows if r["ref"] not in held]
+        return [
+            r
+            for r in self.rows
+            if r["ref"] not in held
+            and (r["ref"], "additions") not in self.rows_removed_from
+        ]
 
     @property
     def pending_additions(self) -> list[dict]:
-        """Rows blocked on an Architect ruling for a proposed node."""
-        return [r for r in self.rows if r["ref"] in self.rows_pending]
+        """Rows blocked on an Architect ruling for a proposed node.
+
+        A row the Reviewer placed as a repair to a named canonical row is not
+        also an insertion waiting on that node: the assertion is already in the
+        graph, and the proposed node only renames one of its endpoints. Emitting
+        both makes one GUR candidate into two operations, which is the duplicate
+        two Reviews have had to report by hand.
+        """
+        return [
+            r
+            for r in self.rows
+            if r["ref"] in self.rows_pending
+            and r["ref"] not in self.rows_superseded
+            and (r["ref"], "pending_additions") not in self.rows_removed_from
+        ]
 
     @property
     def errors(self) -> list[Finding]:
@@ -1017,6 +1037,21 @@ class Compiler:
         """
         ref = directive.ref
 
+        # A Review can rule a row out of one bucket while keeping it in another.
+        # That is how a candidate occupying two buckets at once gets resolved,
+        # so the removal has to reach the emitted patch rather than stop here.
+        for bucket in sorted(directive.bucket.remove_from):
+            result.rows_removed_from.add((ref, bucket))
+            result.findings.append(
+                Finding(
+                    "reviewer_removed_row_from_bucket",
+                    "info",
+                    f"{ref}: {directive.review_id or 'the Review'} removed this row from "
+                    f"{bucket}; its other operation stands.",
+                    ref=ref,
+                )
+            )
+
         if directive.omits_row:
             result.rejected_rows.append(
                 {
@@ -1056,10 +1091,28 @@ class Compiler:
             )
             return None
 
+        # A Reviewer instruction this build cannot carry out must never be
+        # absorbed as a write to a field of that name, and must never pass
+        # unremarked because the same directive happens to carry no corrections.
+        # Losing a ruling silently is the failure mode; failing the build is the
+        # only honest alternative.
+        for field_name in directive.unknown_keys:
+            result.findings.append(
+                Finding(
+                    "reviewer_directive_not_understood",
+                    "error",
+                    f"{ref}: {directive.review_id or 'the Review'} gives an instruction "
+                    f"{field_name!r} that is neither an edge column nor an operation this "
+                    f"build implements. It has not been applied.",
+                    ref=ref,
+                    field_name=field_name,
+                )
+            )
+
         # Field values can arrive either as flat `exact_corrections` entries or
         # inside a bucket payload that restates the corrected row. A Review that
         # uses only the second form still corrects fields.
-        if directive.corrections or directive.bucket.field_values:
+        if directive.corrections or directive.bucket.field_values or directive.bucket.field_corrections:
             revised = dict(edge)
             applied: dict[str, dict[str, str]] = {}
             # Polarity is build-owned only on the ten types section 6.1 derives
@@ -1067,30 +1120,25 @@ class Compiler:
             # reading of the source, and the Reviewer owns readings. A correction
             # to edge_type in the same directive decides which regime applies.
             effective_type = str(
-                directive.corrections.get("edge_type", edge.get("edge_type") or "")
+                directive.corrections.get(
+                    "edge_type",
+                    directive.bucket.field_corrections.get(
+                        "edge_type", edge.get("edge_type") or ""
+                    ),
+                )
             ).strip()
             polarity_is_authored = effective_type in AUTHORED_POLARITY_TYPES
-            for field_name in directive.unknown_keys:
-                # A Reviewer instruction this build cannot carry out must never
-                # be absorbed as a write to a field of that name. Losing a
-                # ruling silently is the failure mode; failing the build is the
-                # only honest alternative.
-                result.findings.append(
-                    Finding(
-                        "reviewer_directive_not_understood",
-                        "error",
-                        f"{ref}: {directive.review_id or 'the Review'} gives an instruction "
-                        f"{field_name!r} that is neither an edge column nor an operation this "
-                        f"build implements. It has not been applied.",
-                        ref=ref,
-                        field_name=field_name,
-                    )
-                )
 
             # A Review that restates the whole corrected row inside its bucket
             # instruction is correcting those columns. They are applied first so
-            # an explicit `exact_corrections` entry still wins.
-            corrections = {**directive.bucket.field_values, **directive.corrections}
+            # an explicit `exact_corrections` entry still wins. A `replace_ref`
+            # `fields` block sits between the two: more deliberate than an echo
+            # of the row, less specific than a flat correction.
+            corrections = {
+                **directive.bucket.field_values,
+                **directive.bucket.field_corrections,
+                **directive.corrections,
+            }
             for field_name, new_value in corrections.items():
                 if field_name in directive.unknown_keys:
                     continue
@@ -1544,14 +1592,20 @@ class Compiler:
             "reason": operation,
             "changes": diff,
             "differences_not_applied": withheld,
-            "detail": (
+            # A later Review in a chain approves the placement rather than
+            # restating why the row belongs at this canonical row, and its
+            # rationale speaks to the row's contents. Where the Review carries
+            # the placement account, it is the one the Integrator needs.
+            "detail": directive.bucket.detail
+            or (
                 f"Reviewer ruled this a {operation.replace('_', ' ')} of canonical row "
                 f"{canonical_row} rather than an insertion"
                 + (f": {directive.rationale}" if directive.rationale else "")
             ),
         }
-        if directive.obsolete_row is not None:
-            entry["obsolete_conflicting_row"] = directive.obsolete_row
+        obsolete_row = directive.effective_obsolete_row
+        if obsolete_row is not None:
+            entry["obsolete_conflicting_row"] = obsolete_row
 
         result.updates.append(entry)
         result.rows_superseded.add(ref)
@@ -1575,8 +1629,8 @@ class Compiler:
                 f"{ref} emitted as a {operation} of canonical row "
                 f"{canonical_row}, changing {', '.join(sorted(diff))}"
                 + (
-                    f"; canonical row {directive.obsolete_row} is superseded"
-                    if directive.obsolete_row is not None
+                    f"; canonical row {obsolete_row} is superseded"
+                    if obsolete_row is not None
                     else ""
                 )
                 + ".",
@@ -1852,6 +1906,25 @@ class Compiler:
                     }
                 )
                 continue
+            if not escalation_id:
+                # ESCALATION_CONTRACT: "Every escalation must include: 1.
+                # escalation ID". Without it the build cannot tell an open
+                # question from one the Architect has already ruled on, so it
+                # must carry the entry forward and block. Saying that plainly
+                # turns a mystified `status: blocked` into a one-line fix for
+                # the role that owns the artifact; the Builder does not resolve
+                # escalations (invariant 27) and never guesses which one it is.
+                result.findings.append(
+                    Finding(
+                        "gur_escalation_omits_id",
+                        "warning",
+                        "A GUR architectural_escalations entry omits the escalation ID "
+                        "that ESCALATION_CONTRACT requires, so it cannot be matched "
+                        "against the decided escalations and is carried forward as "
+                        "open. If the Architect has already ruled, the GUR must name "
+                        f"the escalation ID. Topic: {item.get('topic') or item.get('question') or 'unstated'}",
+                    )
+                )
             result.escalations.append({"kind": "carried_from_gur", **item})
 
         # -- duplicates and neighbourhood ------------------------------------

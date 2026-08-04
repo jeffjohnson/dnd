@@ -1,6 +1,6 @@
 # Graph Constitution — AD&D 1e Mechanical Relationship Graph
 
-**Version 1.6.** This document is authoritative. Any conversation producing graph
+**Version 1.7.** This document is authoritative. Any conversation producing graph
 data must follow it exactly. If a rule here conflicts with a habit from another
 conversation, this document wins. Changes to this file are made only by the
 Architect conversation.
@@ -203,6 +203,35 @@ If the same assertion is stated at several loci, keep one edge and preserve the
 additional source assertions in the provenance manifest or ledger. Do not place
 multiple loci in one edge field, and do not create duplicate edges solely to
 carry additional citations.
+
+### 5.1 Edge identity
+
+The assertion key is:
+
+```
+(source_id, edge_type, target_id, aspect, condition)
+```
+
+Two edges are the same assertion when these five fields agree after canonical
+normalization. Compare canonical IDs and the controlled edge type directly.
+Compare `aspect` and `condition` case-insensitively after collapsing
+non-alphanumeric separators and surrounding whitespace. Cosmetic wording or
+punctuation changes do not create a new assertion.
+
+`ALTERNATIVE_TO` is symmetric, so its two endpoint IDs are sorted before the key
+is compared. Endpoint order remains significant for every directed edge type.
+
+An exact assertion-key match is a duplicate and must not become a second
+production edge. Edges that share source, type, and target but have genuinely
+different aspects or conditions are distinct assertions; Builder reports them
+as near matches and Reviewer determines whether each facet is independently
+supported. A paraphrase of the same facet is not distinct.
+
+Labels, polarity, citations, evidence, extraction pass, publication status, and
+other provenance or review fields are not part of identity. A disagreement in
+one of those fields is resolved on the existing assertion rather than preserved
+as another edge. When another locus restates the same assertion, retain one edge
+and record the additional locus in provenance.
 
 ---
 

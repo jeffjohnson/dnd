@@ -38,7 +38,7 @@ Independently cross-check citations against the packet source:
 
 | Module | Responsibility |
 |---|---|
-| `vocab.py` | Every controlled vocabulary and derivation table, transcribed from constitution v1.5. The single source of truth. |
+| `vocab.py` | Every controlled vocabulary and derivation table, transcribed from constitution v1.7. The single source of truth. |
 | `review.py` | Reviewer row dispositions and exact corrections, read as revision directives. |
 | `registry.py` | Node registry loading; exact / normalized-label resolution. Never merges by label. |
 | `polarity.py` | Section 6.1 derivation; validation of authored polarity on `MODIFIES`, `TRIGGERS`, `CONSTRAINS`. |
@@ -52,17 +52,34 @@ Independently cross-check citations against the packet source:
 
 ## The assertion key
 
-Invariant 12 forbids duplicate edge identity but the constitution defines no
-explicit assertion key. The key used is:
+Constitution 1.7 **section 5.1** defines edge identity. GRAPH_INVARIANTS 1.0
+invariant 12 requires each ruleset constitution to define its key and forbids
+tooling inventing, omitting or widening one, so the build implements section 5.1
+rather than choosing a key of its own:
 
     (source_id, edge_type, target_id, aspect, condition)
 
-chosen because it is the narrowest tuple under which the canonical corpus is
-duplicate-free — verified by a test that runs against the real file, so the
-claim is re-checked as the corpus grows rather than pinned to a stale count.
-Widening it would silently admit duplicates; narrowing it would collapse
-distinct assertions. `ALTERNATIVE_TO` is symmetric, so its endpoints are sorted
-before comparison.
+Comparison follows section 5.1 exactly. Canonical IDs and the controlled edge
+type are compared directly. `aspect` and `condition` are compared
+case-insensitively after collapsing non-alphanumeric separator runs, so cosmetic
+wording or punctuation changes do not create a new assertion. `ALTERNATIVE_TO`
+is the one symmetric type and its endpoints are sorted before comparison;
+endpoint order stays significant for every directed type.
+
+An exact key match is one assertion and only one may enter production. Rows
+sharing source, type and target but differing in aspect or condition are **near
+matches** — distinct assertions when the facet is genuinely source-supported,
+which is the Reviewer's call and never the build's. Paraphrase alone does not
+make a facet distinct.
+
+Labels, polarity, citations, evidence, pass, status and review metadata are not
+identity (`vocab.IDENTITY_EXCLUDED_FIELDS`). A disagreement in one of those is
+resolved on the existing assertion rather than kept as a second edge; where
+another book restates the same assertion, the extra locus goes in provenance.
+
+Tests read the governing text and compare it against what the build does, so an
+edit to either side has to move both, and the corpus is checked for exact
+duplicates against the real file rather than a pinned count.
 
 ## What the edges CSV means
 
@@ -125,6 +142,33 @@ reach an edge. Whether an assertion is already in the graph under different
 wording is a judgement about the neighbourhood, which the build cannot always
 reach on its own, so where a Review names the row the build honours it.
 
+The same instruction is written several ways across the Reviews in this
+repository, and all of them are read:
+
+| Shape | Means |
+|---|---|
+| `edge_changes.<bucket>: {remove_ref: R}` | drop R from that bucket; its other operation stands |
+| `edge_changes.<bucket>: {retain_ref: R, canonical_row: N}` | R belongs in that bucket, against row N |
+| `edge_changes.<bucket>: {replace_ref: R, fields: {...}}` | correct those columns of R |
+| `edge_changes.<bucket>: {add: {...}}` | the corrected row, restated in full |
+| `submitted_operation_records: [{canonical_row: N, ...}]` | the placement the Review is approving |
+
+A `fields` block is an authored correction and goes through the ownership check
+above, so it can set an authored polarity and cannot set a derived one. A
+restated whole row is an echo of the patch rather than a ruling, so its
+build-owned columns are ignored — otherwise every restatement would be reported
+as a Reviewer authoring a derived polarity.
+
+**A key inside a bucket instruction that is neither a column nor one of these is
+an error.** `reviewer_directive_not_understood` fails the build. An instruction
+the build cannot carry out must not be silently dropped, and it must not be
+absorbed as a write to a field of that name.
+
+**One GUR candidate is one operation.** A row the Review placed as a repair to a
+named canonical row is not also an insertion waiting on a proposed node, even
+where one of its endpoints is such a node. Emitting both turns one assertion into
+two operations — the duplicate two Reviews caught by hand.
+
 ## Review chains
 
 Pass `--review` once per Review, oldest first, when a packet has been reviewed
@@ -132,16 +176,29 @@ more than once:
 
     --review .../REV-<gup>-r01-r01.yaml --review .../REV-<gup>-r02-r01.yaml
 
-The newest Review is authoritative on disposition. Structural instructions carry
-forward, because a Reviewer states a ruling once: having said in round one that a
-row repairs canonical row 463, round two writes `approved` rather than repeating
-the number. Applying only the newest Review would turn that repair back into an
-insertion.
+The newest Review is authoritative on disposition. Corrections and placement then
+carry forward on different rules, because the two Reviews are saying different
+kinds of thing about them.
 
-Each row also carries the bucket the reviewed patch presented it in. If a Review
+**Corrections merge, later winning field by field.** Each Review judges a patch
+compiled from the same GUR, so a correction round one made is already in the
+patch round two approves. Dropping it would recompile the GUR without it and hand
+back the defect that Review fixed — an approval would undo the corrections it
+approves.
+
+**Placement does not merge.** A Review states which bucket every row belongs in,
+via `submitted_operations`, `submitted_operation_records` or an explicit
+instruction. Where the later Review states a placement it is complete and
+replaces the earlier one; merging would resurrect a canonical row number or a
+withheld field that Review deliberately dropped. Only where the later Review is
+silent about placement does the earlier one stand.
+
+Each row also carries the buckets the reviewed patch presented it in. If a Review
 approved a row as an update and the build produces an addition, that ruling has
 been lost, and `reviewer_operation_not_preserved` fails the build rather than
-shipping a second copy of an assertion the graph already holds.
+shipping a second copy of an assertion the graph already holds. A row presented
+in two buckets has no single presented operation — that is the state a Review
+resolves with `remove_ref`, not one to pick between.
 
 **A Review that returned the packet to the Analyst is answered by a new GUR.**
 That replacement drops rows the Review rejected and adds rows it demanded, so the

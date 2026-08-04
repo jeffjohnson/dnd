@@ -254,13 +254,24 @@ def _apply_update(
     patch = {c: verification.rows[update.csv_row - 1].get(c, "") for c in EDGE_COLUMNS}
 
     # Identity check. The line number alone could point at a neighbour, so the
-    # endpoints must agree independently of the declared preconditions.
-    if (current["source_id"], current["target_id"]) != (patch["source_id"], patch["target_id"]):
+    # endpoints must agree before anything is rewritten.
+    #
+    # An update may legitimately repoint or reverse an edge, and then the patch
+    # row's endpoints are the *new* ones. What the canonical row must match is
+    # the endpoint the manifest declares it currently holds: the `canonical`
+    # side of the change where one is declared, the patch value otherwise. A
+    # mistaken line number is still caught, because an undeclared endpoint has
+    # to match the patch exactly and a declared one has to match its stated
+    # precondition.
+    expected_endpoints = tuple(
+        update.changes[c]["canonical"] if c in update.changes else patch[c]
+        for c in ("source_id", "target_id"))
+    if (current["source_id"], current["target_id"]) != expected_endpoints:
         raise IntegrationError(
             f"{bundle_id}: update {update.ref} targets canonical line "
             f"{update.canonical_line} "
-            f"({current['source_id']} -> {current['target_id']}) but the patch row is "
-            f"{patch['source_id']} -> {patch['target_id']}")
+            f"({current['source_id']} -> {current['target_id']}) but the manifest expects "
+            f"{expected_endpoints[0]} -> {expected_endpoints[1]}")
 
     # Declared preconditions: every changed field must still hold its expected
     # canonical value, or the row moved under the Reviewer's feet.
@@ -326,6 +337,7 @@ class Batch:
     added: list[dict] = field(default_factory=list)
     updated: list[dict] = field(default_factory=list)
     registrations: list[dict] = field(default_factory=list)
+    registrations_without_edges: list[dict] = field(default_factory=list)
     registry_resync: list[dict] = field(default_factory=list)
     registry_preexisting_drift: list[dict] = field(default_factory=list)
     polarity_corrections: list[dict] = field(default_factory=list)
@@ -480,14 +492,25 @@ def integrate(
                     "integration_id": integration_id,
                 })
 
-        # Every registered node must actually be used, or the batch has added an
-        # approved identity that nothing references.
-        orphaned = sorted(set(registered) - {e["source_id"] for e in graph.edges}
-                          - {e["target_id"] for e in graph.edges})
-        if orphaned:
-            raise IntegrationError(
-                f"registered node(s) {orphaned} carry no edge after the batch; "
-                "a registry addition must be justified by the rows that depend on it")
+        # A registration that carries no edge is legal, not an error. The
+        # registry is the list of *approved IDs* (constitution 3.2), not a
+        # projection of the graph: it is already a strict superset, and an
+        # approved identity may sit at degree 0 until a later packet asserts a
+        # relationship for it. Refusing these would reject a Review that
+        # approved a complete named list — the cleric spell list — while only
+        # part of it has mechanical relationships drawn so far.
+        #
+        # It is still never silent: each one is recorded so the registry count
+        # moving further ahead of the node count always has a stated reason.
+        endpoints = ({e["source_id"] for e in graph.edges}
+                     | {e["target_id"] for e in graph.edges})
+        batch.registrations_without_edges = [
+            {"id": node_id,
+             "label": registration.label,
+             "kind": registration.kind,
+             "edges_depending_on_it": registration.depends}
+            for node_id, registration in sorted(registered.items())
+            if node_id not in endpoints]
 
         # -- step 8: recompute deterministic polarity ------------------------
         batch.polarity_corrections = apply_derived_polarity(graph.edges)

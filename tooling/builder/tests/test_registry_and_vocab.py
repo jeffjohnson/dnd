@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import unittest
 
+import yaml
+
 import _bootstrap
 from _bootstrap import REPO_ROOT
 
@@ -45,21 +47,44 @@ class TestVocabulary(unittest.TestCase):
 class TestConstitutionVersion(unittest.TestCase):
     """DEC-2026-0004 (wpn_), DEC-2026-0008 and DEC-2026-0017 (revalidation)."""
 
-    def test_constitution_version_is_1_6(self):
+    def test_builder_declares_the_governing_constitution_version(self):
+        """The declared version is read from governance, not pinned by hand.
+
+        Pinning the number here meant every constitution bump failed this test
+        with an assertion about a literal rather than telling anyone which file
+        had moved. Reading both sides makes the test say the real thing: the
+        Builder declares whatever the ruleset declares.
+        """
         from adnd1e_builder.vocab import CONSTITUTION_VERSION
 
-        self.assertEqual(CONSTITUTION_VERSION, "1.6")
+        ruleset = yaml.safe_load(
+            (REPO_ROOT / "rulesets" / "adnd1e" / "ruleset.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(CONSTITUTION_VERSION, str(ruleset["constitution_version"]))
+
+        constitution = (
+            REPO_ROOT / "rulesets" / "adnd1e" / "governance" / "constitution.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn(f"**Version {CONSTITUTION_VERSION}.**", constitution)
 
     def test_accepts_historical_versions_for_revalidation(self):
-        from adnd1e_builder.vocab import ACCEPTED_GUR_CONSTITUTION_VERSIONS
+        from adnd1e_builder.vocab import (
+            ACCEPTED_GUR_CONSTITUTION_VERSIONS,
+            CONSTITUTION_VERSION,
+        )
 
         # DEC-2026-0008: older GURs are revalidated under the current
-        # constitution, not rejected. DEC-2026-0017 acceptance test requires
-        # 1.5 GURs to be accepted for revalidation under 1.6.
+        # constitution, not rejected. DEC-2026-0017 requires 1.5 GURs accepted
+        # under 1.6; DEC-2026-0020 requires 1.6 GURs accepted under 1.7.
         self.assertEqual(
-            ACCEPTED_GUR_CONSTITUTION_VERSIONS, {"1.2", "1.3", "1.4", "1.5", "1.6"}
+            ACCEPTED_GUR_CONSTITUTION_VERSIONS,
+            {"1.2", "1.3", "1.4", "1.5", "1.6", "1.7"},
         )
-        self.assertIn("1.5", ACCEPTED_GUR_CONSTITUTION_VERSIONS)
+        # The current version must always be accepted, and so must the one
+        # immediately before it -- that is what "revalidated, not rejected"
+        # means for the GURs already in the repository when a version lands.
+        self.assertIn(CONSTITUTION_VERSION, ACCEPTED_GUR_CONSTITUTION_VERSIONS)
+        self.assertIn("1.6", ACCEPTED_GUR_CONSTITUTION_VERSIONS)
 
     def test_1_5_adds_no_prefix(self):
         # DEC-2026-0015 acceptance test: "Builder vocabulary declares
@@ -240,3 +265,171 @@ class TestRegistry(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAssertionKeyMatchesGovernance(unittest.TestCase):
+    """DEC-2026-0020 acceptance tests: the key is governed, not chosen.
+
+    GRAPH_INVARIANTS 1.0 invariant 12 requires each ruleset constitution to
+    define its assertion key and forbids tooling inventing, omitting or widening
+    one. These tests read the governing text and compare it with what the build
+    actually does, so a future edit to either side has to move both.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.constitution = (
+            REPO_ROOT / "rulesets" / "adnd1e" / "governance" / "constitution.md"
+        ).read_text(encoding="utf-8")
+        cls.invariants = (
+            REPO_ROOT / "contracts" / "GRAPH_INVARIANTS.md"
+        ).read_text(encoding="utf-8")
+
+    def section_5_1(self) -> str:
+        start = self.constitution.index("### 5.1 Edge identity")
+        end = self.constitution.index("## 6.", start)
+        return self.constitution[start:end]
+
+    def test_section_5_1_exists_and_names_the_five_fields(self):
+        from adnd1e_builder.vocab import ASSERTION_KEY
+
+        body = self.section_5_1()
+        self.assertEqual(
+            ASSERTION_KEY,
+            ("source_id", "edge_type", "target_id", "aspect", "condition"),
+        )
+        # The constitution states the tuple; the build must carry that tuple.
+        for name in ASSERTION_KEY:
+            self.assertIn(name, body)
+
+    def test_graph_invariants_is_versioned_and_delegates_the_key(self):
+        self.assertIn("**Version 1.0.**", self.invariants)
+        self.assertIn("Each ruleset constitution defines its assertion key", self.invariants)
+
+    def test_excluded_fields_are_exactly_the_non_key_columns(self):
+        """Every column is either identity or explicitly not identity."""
+        from adnd1e_builder.vocab import (
+            ASSERTION_KEY,
+            COLUMNS,
+            IDENTITY_EXCLUDED_FIELDS,
+        )
+
+        self.assertEqual(
+            set(ASSERTION_KEY) | IDENTITY_EXCLUDED_FIELDS, set(COLUMNS)
+        )
+        self.assertEqual(set(ASSERTION_KEY) & IDENTITY_EXCLUDED_FIELDS, set())
+
+    def test_citation_polarity_and_review_fields_are_not_identity(self):
+        from adnd1e_builder.vocab import IDENTITY_EXCLUDED_FIELDS
+
+        for excluded in ("book", "page", "section", "polarity", "polarity_basis",
+                         "source_label", "target_label", "evidence", "review_flag"):
+            self.assertIn(excluded, IDENTITY_EXCLUDED_FIELDS)
+
+    def test_alternative_to_is_the_only_symmetric_type(self):
+        from adnd1e_builder.vocab import EDGE_TYPES, SYMMETRIC_EDGE_TYPES
+
+        self.assertEqual(SYMMETRIC_EDGE_TYPES, {"ALTERNATIVE_TO"})
+        self.assertTrue(SYMMETRIC_EDGE_TYPES <= set(EDGE_TYPES))
+        self.assertIn("`ALTERNATIVE_TO` is symmetric", self.section_5_1())
+
+
+class TestAssertionKeyBehaviour(unittest.TestCase):
+    """Section 5.1 comparison rules, exercised rather than described."""
+
+    def edge(self, **overrides):
+        base = {
+            "source_id": "abil_strength", "edge_type": "GATES",
+            "target_id": "class_fighter", "aspect": "class eligibility",
+            "condition": "", "polarity": "enables", "polarity_basis": "derived",
+            "book": "PHB", "page": "9", "section": "STRENGTH", "evidence": "explicit_rule",
+            "pass": "page-sweep", "status": "core", "supersession_basis": "",
+            "general_rule_id": "", "review_flag": "", "source_label": "Strength",
+            "target_label": "Fighter",
+        }
+        base.update(overrides)
+        return base
+
+    def test_cosmetic_wording_does_not_create_a_new_assertion(self):
+        from adnd1e_builder.duplicates import assertion_key
+
+        self.assertEqual(
+            assertion_key(self.edge(aspect="Class Eligibility")),
+            assertion_key(self.edge(aspect="class  eligibility")),
+        )
+        self.assertEqual(
+            assertion_key(self.edge(aspect="class-eligibility")),
+            assertion_key(self.edge(aspect="class_eligibility")),
+        )
+
+    def test_a_different_facet_is_a_different_assertion(self):
+        from adnd1e_builder.duplicates import assertion_key
+
+        self.assertNotEqual(
+            assertion_key(self.edge(aspect="class eligibility")),
+            assertion_key(self.edge(aspect="encumbrance allowance")),
+        )
+
+    def test_a_different_condition_is_a_different_assertion(self):
+        from adnd1e_builder.duplicates import assertion_key
+
+        self.assertNotEqual(
+            assertion_key(self.edge(condition="")),
+            assertion_key(self.edge(condition="when charging")),
+        )
+
+    def test_excluded_fields_never_change_identity(self):
+        from adnd1e_builder.duplicates import assertion_key
+        from adnd1e_builder.vocab import IDENTITY_EXCLUDED_FIELDS
+
+        baseline = assertion_key(self.edge())
+        for excluded in sorted(IDENTITY_EXCLUDED_FIELDS):
+            with self.subTest(field=excluded):
+                self.assertEqual(
+                    assertion_key(self.edge(**{excluded: "something else"})), baseline
+                )
+
+    def test_alternative_to_endpoints_are_unordered(self):
+        from adnd1e_builder.duplicates import assertion_key
+
+        forward = self.edge(edge_type="ALTERNATIVE_TO", source_id="a_one", target_id="b_two")
+        reversed_ = self.edge(edge_type="ALTERNATIVE_TO", source_id="b_two", target_id="a_one")
+        self.assertEqual(assertion_key(forward), assertion_key(reversed_))
+
+    def test_directed_types_keep_endpoint_order(self):
+        from adnd1e_builder.duplicates import assertion_key
+        from adnd1e_builder.vocab import EDGE_TYPES, SYMMETRIC_EDGE_TYPES
+
+        for edge_type in sorted(set(EDGE_TYPES) - SYMMETRIC_EDGE_TYPES):
+            with self.subTest(edge_type=edge_type):
+                forward = self.edge(edge_type=edge_type, source_id="a_one", target_id="b_two")
+                reversed_ = self.edge(edge_type=edge_type, source_id="b_two", target_id="a_one")
+                self.assertNotEqual(assertion_key(forward), assertion_key(reversed_))
+
+    def test_ids_are_compared_directly_not_through_the_text_normalizer(self):
+        """Section 5.1 normalizes `aspect` and `condition` only.
+
+        Routing IDs through the text normalizer would fold two distinct IDs
+        together wherever they differed only by a separator character.
+        """
+        from adnd1e_builder.duplicates import assertion_key
+
+        key = assertion_key(self.edge())
+        self.assertEqual(key[0], "abil_strength")
+        self.assertEqual(key[1], "GATES")
+        self.assertEqual(key[2], "class_fighter")
+
+
+class TestCanonicalCorpusHasNoExactDuplicates(unittest.TestCase):
+    """DEC-2026-0020 acceptance test, measured against the live file."""
+
+    def test_zero_exact_duplicates_under_the_governed_key(self):
+        from collections import Counter
+
+        from adnd1e_builder.duplicates import CanonicalEdges, assertion_key
+
+        canonical = CanonicalEdges.load(EDGES_PATH)
+        counts = Counter(assertion_key(row) for row in canonical.rows)
+        duplicates = {key: n for key, n in counts.items() if n > 1}
+        self.assertEqual(duplicates, {}, f"{len(duplicates)} duplicate assertion key(s)")
+        self.assertEqual(sum(counts.values()), len(canonical.rows))

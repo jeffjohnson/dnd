@@ -1,0 +1,73 @@
+schema_version: "1.0"
+id: ESC-2026-08-03T22.53.22.047Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+raised_by: stakeholder
+raised_on: "2026-08-03"
+decision_owner: architect
+decision_id: DEC-2026-0022
+decided_on: "2026-08-03"
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The queue scanner retained an obsolete originating-Review handoff after a
+    later approved Decision changed the responsible role and readiness.
+  blocking_ids: []
+originating_artifacts:
+  scanner:
+    id: scan-agent-queues
+    path: tooling/common/scan-agent-queues.ps1
+    implementation_path: tooling/common/scan_agent_queues.py
+  contract:
+    id: WORK_QUEUES
+    path: contracts/WORK_QUEUES.md
+    version: "1.2"
+queue_observation:
+  observed_review:
+    id: REV-GUP-MIG-DEC-2026-0015-0016-r03-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-MIG-DEC-2026-0015-0016-r03-r01.yaml
+  resolving_decision:
+    id: DEC-2026-0021
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0021.yaml
+question: >-
+  When an approved Architect Decision resolves an escalation and changes the
+  responsible role or readiness, may the scanner continue reporting the
+  immutable originating artifact's older handoff as ready work?
+smallest_relevant_source_excerpt:
+  observed_output: >-
+    The 2026-08-03 rerun reported
+    REV-GUP-MIG-DEC-2026-0015-0016-r03-r01 as ready Analyst work after
+    DEC-2026-0021 blocked the unread DMG/UA portion and handed the current work
+    to Builder.
+  governing_gap: >-
+    WORK_QUEUES 1.2 defines immutable artifacts and Decision-migration routing
+    but does not say that the Decision resolving an escalation replaces the
+    originating artifact's earlier queue handoff.
+local_graph_neighborhood: not_applicable_queue_governance_only
+affected_canonical_ids: []
+options_considered:
+  - option: Keep both handoffs visible
+    assessment: rejected_double_counts_obsolete_work
+  - option: Rewrite the originating Review
+    assessment: rejected_violates_immutable_artifact_provenance
+  - option: Let the exact decided-escalation lineage replace the old handoff
+    assessment: approved_deterministic_and_auditable
+recommended_resolution: >-
+  Use the approved Decision's handoff only when its decided escalation exactly
+  names the active originating artifact ID and path. Preserve the original file
+  as immutable history.
+expected_migration_impact:
+  canonical_edges: 0
+  canonical_nodes: 0
+  registries: 0
+  contract_changes:
+    - contracts/WORK_QUEUES.md 1.2 to 1.3
+  tooling_changes:
+    - tooling/common/scan_agent_queues.py
+    - tooling/common/tests/test_scan_agent_queues.py
+constitution_registry_or_profile_change: false

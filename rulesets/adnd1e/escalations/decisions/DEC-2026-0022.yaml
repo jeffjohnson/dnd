@@ -1,0 +1,117 @@
+schema_version: "1.0"
+id: DEC-2026-0022
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement WORK_QUEUES 1.3 Decision handoff replacement in the shared queue
+    scanner and add the required regression tests.
+  blocking_ids: []
+
+decision_date: "2026-08-03"
+escalation_id: ESC-2026-08-03T22.53.22.047Z
+
+question: >-
+  When an approved Architect Decision resolves an escalation and changes the
+  responsible role or readiness, may the scanner continue reporting the
+  immutable originating artifact's older handoff as ready work?
+
+ruling: >-
+  No. Adopt WORK_QUEUES 1.3. If an approved Decision's decided escalation
+  exactly names an active originating artifact ID and path, the Decision
+  handoff replaces that artifact's older ready handoff for queue derivation.
+  Preserve the originating artifact byte-for-byte. Do not infer replacement
+  from free text, packet association, or timestamps. In the current repository,
+  DEC-2026-0021 replaces the ready Analyst handoff from
+  REV-GUP-MIG-DEC-2026-0015-0016-r03-r01, so that Review must not appear as
+  ready Analyst work.
+
+rationale:
+  - Immutable artifacts preserve review evidence but cannot alone represent a later governance ruling.
+  - The decided escalation provides an exact, auditable link between the originating artifact and Decision.
+  - Exact ID-and-path matching prevents unrelated Decisions from suppressing work.
+  - Showing both handoffs assigns obsolete work and double-counts one coordination lineage.
+
+affected_contracts_and_registries:
+  contracts:
+    - contracts/WORK_QUEUES.md
+  registries: []
+  schemas: []
+  canonical_files: []
+  tooling:
+    - tooling/common/scan_agent_queues.py
+    - tooling/common/tests/test_scan_agent_queues.py
+    - tooling/common/scan-agent-queues.ps1
+
+migration_required: false
+migration_scope:
+  canonical_edges_changed: 0
+  canonical_nodes_changed: 0
+  registry_rows_changed: 0
+  artifact_files_rewritten: 0
+  queue_behavior_change: >-
+    Suppress an active originating artifact's stale ready handoff when the exact
+    approved Decision lineage replaces it.
+
+implementation_requirements:
+  owner: builder
+  scanner:
+    - Load decided escalations and their approved Decisions by exact escalation_id.
+    - Resolve originating artifact IDs and paths without parsing free text.
+    - Verify the originating artifact is the active leaf before replacement.
+    - Suppress only the old ready item; retain diagnostics and history.
+    - Route ready, blocked, and terminal Decision handoffs per WORK_QUEUES 1.3.
+    - Avoid a second item when the same Decision is already ready for the same role.
+  powershell_wrapper: >-
+    No independent routing logic is required; parity remains automatic because
+    the PowerShell script delegates to the Python implementation.
+
+acceptance_tests:
+  - >-
+    With the current repository, the scanner reports Architect 0 and does not
+    report REV-GUP-MIG-DEC-2026-0015-0016-r03-r01 as ready Analyst work.
+  - DEC-2026-0021 remains visible to Builder under its current Decision-migration rule.
+  - The two active PHB GURs remain separate Builder jobs.
+  - GUP-PKT-PHB-035-038-money-equipment-r05 remains Reviewer-visible.
+  - The r03 Review remains byte-identical and available as history.
+  - A Decision with a mismatched escalation ID does not suppress the Review.
+  - A decided escalation with a mismatched originating artifact path does not suppress the Review.
+  - A Decision against a superseded originating artifact does not suppress the active leaf.
+  - A blocked replacement handoff produces blocked state and no ready item.
+  - A terminal replacement handoff produces no downstream item.
+  - Existing decision-migration lineage diagnostics remain visible.
+  - PowerShell and Python scanner outputs remain equivalent.
+  - The complete common queue-scanner test suite passes.
+
+constitution_version_impact:
+  changed: false
+  version: "1.7"
+  reason: Queue lineage changes do not alter graph ontology or assertion semantics.
+
+contract_version_impact:
+  contracts/WORK_QUEUES.md:
+    previous_version: "1.2"
+    new_version: "1.3"
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement the shared scanner change and regression tests.
+  reviewer:
+    - No Review artifact rewrite is required.
+  integrator:
+    - No canonical or registry action is required.
+
+prohibited_actions:
+  - Do not edit or replace the originating Review.
+  - Do not suppress work from packet association, free text, or file timestamps.
+  - Do not hide lineage diagnostics when replacing a handoff.
+  - Architect does not edit shared tooling implementation or tests.

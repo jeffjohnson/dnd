@@ -73,7 +73,9 @@ line 1 — so line N is edge index N-2. Reading it as a data index selects a
 *neighbouring* assertion and silently rewrites the wrong rule, which is why an
 update is accepted only when all of the following hold:
 
-1. the endpoints of the canonical row match the endpoints of the patch row;
+1. the endpoints of the canonical row match the endpoints the manifest declares
+   it currently holds — the `canonical` side of the change where the update
+   repoints or reverses an edge, the patch row's endpoints otherwise;
 2. every field named in `changes` still holds its declared `canonical` value;
 3. the patch row equals the canonical row with exactly those changes applied —
    nothing else may ride along in the CSV;
@@ -90,9 +92,15 @@ currently carrying an edge, since an approved ID may sit at degree 0.
 
 Registrations come from the approving **Review**'s `node_registry_decisions`,
 because that is the artifact that approved the identity. They are applied before
-any edge references them, may not overwrite an existing ID, must use an approved
-prefix, and must be used by at least one row: a registration that ends the batch
-with no edges aborts it.
+any edge references them, may not overwrite an existing ID, and must use an
+approved prefix.
+
+A registration need not carry an edge. The registry is a strict superset of the
+graph's nodes, and a Review may approve a complete named list — the cleric spell
+list at `INT-20260803-001` — while only part of it has mechanical relationships
+drawn so far. Those IDs sit at degree 0 until a later packet asserts one, and
+each is listed in the manifest's `registry_changes.nodes_added_without_edges`
+so the registry outrunning the node count always has a stated reason.
 
 `degree` and `roles` in the registry are a derived snapshot and are rebuilt for
 every row on every batch. `INT-20260730-001` recomputed ten node rows without
@@ -141,6 +149,9 @@ owned by DEC-2026-0004), and invariant 11 (digits in `aspect`/`condition`, 9).
 updates replaced four `unset` and two `heuristic` polarity bases with values read
 from the source, taking invariant 16 from 1,700 to 1,694.
 
+No batch since has introduced one either. `INT-20260803-001` resolved seven more
+while adding 148 rows, taking the baseline to 1,711.
+
 ## Approved bundles are never rewritten
 
 Consumption is recorded by naming a bundle's ID and checksums in the Integration
@@ -153,7 +164,7 @@ bundle to represent integration state, and `test_bundles.py` asserts it.
 
     cd tooling/integrator/tests && python -m unittest discover -s . -p "test_*.py" -t .
 
-58 tests. Several assert against the real canonical corpus, registry, and
+61 tests. Several assert against the real canonical corpus, registry, and
 constitution, so a change to those files that breaks an invariant surfaces here.
 `test_transaction.py` rewinds its temporary clone to pre-integration state, so it
 behaves identically whether or not the live repository has already applied the

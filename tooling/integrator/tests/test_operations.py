@@ -33,6 +33,8 @@ from test_transaction import clone_repo
 
 ABILITY = "APPROVED-GUP-PKT-PHB-009-013-ability-scores-r06-r01"
 SPELLS = "APPROVED-GUP-PKT-PHB-040-042-spells-intro-r04-r01"
+CLASSES = "APPROVED-GUP-PKT-PHB-018-033-classes-r09-r01"
+CLERIC_SPELLS = "APPROVED-GUP-PKT-PHB-043-054-cleric-spells-r04-r01"
 
 
 def bundle_by_id(root: Path, bundle_id: str):
@@ -134,7 +136,65 @@ class TestCompareAndSwap(unittest.TestCase):
             with self.assertRaises(IntegrationError) as caught:
                 integrate(root, RULESET_ID, [bundle_by_id(root, ABILITY)],
                           integration_id="INT-19700101-011")
-            self.assertIn("but the patch row is", str(caught.exception))
+            self.assertIn("but the manifest expects", str(caught.exception))
+            self.assertEqual({p: checksum_file(p) for p in paths.writable()}, before)
+
+    def test_declared_endpoint_change_is_applied(self):
+        """An update may repoint or reverse an edge if it declares the swap.
+
+        `APPROVED-...-classes-r09-r01` reverses `class_druid -> sys_alignment`
+        and repoints two edges from `turn_undead` to `rule_turn_undead`. The
+        canonical row must match the *declared* endpoints, not the patch's.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = clone_repo(Path(tmp))
+            paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
+            bundle = bundle_by_id(root, CLASSES)
+            rows = read_csv_rows(bundle.edges_path)
+            operations = read_operations(bundle.manifest, load_review(bundle), len(rows))
+            repoints = [u for u in operations.updates
+                        if {"source_id", "target_id"} & set(u.changes)]
+            self.assertTrue(repoints, "expected this bundle to repoint an endpoint")
+            before = CanonicalGraph.load(paths).edges
+
+            for update in repoints:
+                current = before[update.canonical_index]
+                for field in ("source_id", "target_id"):
+                    if field in update.changes:
+                        self.assertEqual(current[field], update.changes[field]["canonical"])
+
+            # The whole queue: these bundles reference each other's registrations,
+            # and the clone is rewound past all of them.
+            bundles, _ = discover(root, RULESET_ID, "phb")
+            integrate(root, RULESET_ID, bundles, integration_id="INT-19700101-017")
+            after = CanonicalGraph.load(paths).edges
+            for update in repoints:
+                row = after[update.canonical_index]
+                for field, change in update.changes.items():
+                    self.assertEqual(row[field], change["patch"], f"{update.ref}.{field}")
+
+    def test_repoint_still_catches_a_wrong_line_number(self):
+        """Declaring an endpoint change must not weaken the line-number check."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = clone_repo(Path(tmp))
+            paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
+            bundle = bundle_by_id(root, CLASSES)
+            rows = read_csv_rows(bundle.edges_path)
+            operations = read_operations(bundle.manifest, load_review(bundle), len(rows))
+            repoint = next(u for u in operations.updates
+                           if {"source_id", "target_id"} & set(u.changes))
+            before = {p: checksum_file(p) for p in paths.writable()}
+
+            self._mutate_manifest(
+                root, CLASSES,
+                lambda m: next(u for u in m["operation_index"]["updates"]
+                               if u["ref"] == repoint.ref)
+                .__setitem__("canonical_row", repoint.canonical_line + 1))
+
+            with self.assertRaises(IntegrationError) as caught:
+                integrate(root, RULESET_ID, [bundle_by_id(root, CLASSES)],
+                          integration_id="INT-19700101-018")
+            self.assertIn("but the manifest expects", str(caught.exception))
             self.assertEqual({p: checksum_file(p) for p in paths.writable()}, before)
 
     def test_undeclared_change_in_the_csv_is_refused(self):
@@ -220,12 +280,38 @@ class TestRegistryAdditions(unittest.TestCase):
             after = Registry.load(paths.registry)
             added = after.ids - before
             self.assertEqual(added, {r["id"] for r in batch.registrations})
-            # Every registered node must carry at least one edge.
+            # The registry must remain a superset of the graph's nodes.
             graph = CanonicalGraph.load(paths)
-            endpoints = {e["source_id"] for e in graph.edges} | {e["target_id"] for e in graph.edges}
-            self.assertTrue(added <= endpoints)
-            # And the registry must remain a superset of the graph's nodes.
             self.assertTrue(graph.node_ids <= after.ids)
+            # A registration need not carry an edge, but every one that does not
+            # has to be reported -- the registry outrunning the node count is
+            # never allowed to be silent.
+            endpoints = {e["source_id"] for e in graph.edges} | {e["target_id"] for e in graph.edges}
+            self.assertEqual(added - endpoints,
+                             {r["id"] for r in batch.registrations_without_edges})
+
+    def test_registration_without_edges_is_allowed_and_reported(self):
+        """Constitution 3.2: the registry lists approved IDs, not graph nodes.
+
+        The cleric spell Review approves the whole named spell list; only part of
+        it has mechanical relationships drawn so far. Refusing the remainder
+        would reject an Approved bundle over a rule no contract states.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = clone_repo(Path(tmp))
+            paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
+            bundles, _ = discover(root, RULESET_ID, "phb")
+            batch = integrate(root, RULESET_ID, bundles, integration_id="INT-19700101-019")
+
+            self.assertTrue(batch.registrations_without_edges)
+            registry = Registry.load(paths.registry)
+            graph = CanonicalGraph.load(paths)
+            for entry in batch.registrations_without_edges:
+                self.assertIn(entry["id"], registry.ids)
+                self.assertNotIn(entry["id"], graph.node_ids)
+                row = next(r for r in registry.rows if r.values["id"] == entry["id"])
+                self.assertEqual(row.values["degree"], "0")
+                self.assertEqual(row.values["roles"], "")
 
     def test_duplicate_registration_is_refused(self):
         with tempfile.TemporaryDirectory() as tmp:

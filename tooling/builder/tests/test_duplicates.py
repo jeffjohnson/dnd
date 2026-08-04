@@ -1,4 +1,8 @@
-"""Duplicate detection and the assertion key — invariant 12."""
+"""Duplicate detection and the assertion key.
+
+Constitution 1.7 section 5.1 defines edge identity; GRAPH_INVARIANTS 1.0
+invariant 12 requires tooling to implement that key rather than pick one.
+"""
 
 from __future__ import annotations
 
@@ -31,6 +35,7 @@ def edge(ref, source, edge_type, target, aspect="", condition=""):
 
 class TestAssertionKey(unittest.TestCase):
     def test_key_is_the_constitution_tuple(self):
+        # Section 5.1 names these five and only these five.
         self.assertEqual(
             ASSERTION_KEY, ("source_id", "edge_type", "target_id", "aspect", "condition")
         )

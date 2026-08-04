@@ -1,13 +1,16 @@
 """Duplicate detection and local-neighborhood conflict analysis.
 
-Invariant 12 forbids duplicate edge identity. The assertion key is defined in
-`vocab.ASSERTION_KEY`; it is the tuple under which the canonical corpus is
-duplicate-free, so widening it here would silently admit duplicates.
+Constitution 1.7 section 5.1 defines edge identity and GRAPH_INVARIANTS 1.0
+invariant 12 requires tooling to implement that key rather than choose one. The
+five fields are `vocab.ASSERTION_KEY`; widening or narrowing them here would put
+the build in breach of the constitution, not merely change a heuristic.
 
-Three grades are reported, because they need different dispositions:
+Three grades are reported, because section 5.1 gives them different dispositions:
 
-exact      identical assertion key -> the edge must not be inserted again
-near       same endpoints and type, different aspect/condition -> Reviewer call
+exact      identical assertion key -> one assertion; must not be inserted again
+near       same endpoints and type, different aspect/condition -> a distinct
+           assertion when the facet is genuinely source-supported, which is the
+           Reviewer's call and never the build's
 neighbour  same endpoints, any type/direction -> context, not a defect
 """
 
@@ -23,18 +26,36 @@ from .vocab import ASSERTION_KEY, SYMMETRIC_EDGE_TYPES
 
 
 def _normalize_text(value: str) -> str:
+    """Section 5.1 text comparison: case-folded, separator runs collapsed.
+
+    Cosmetic wording or punctuation changes do not create a new assertion, so
+    `aspect` and `condition` are compared through this. Canonical IDs and the
+    controlled edge type are compared directly and never pass through here.
+    """
     return re.sub(r"[^a-z0-9]+", " ", (value or "").lower()).strip()
 
 
 def assertion_key(edge: dict) -> tuple:
-    """The identity of an assertion, per invariant 12."""
-    key = tuple(_normalize_text(edge.get(f, "")) for f in ASSERTION_KEY)
-    if edge.get("edge_type") in SYMMETRIC_EDGE_TYPES:
+    """The identity of an assertion, per constitution 1.7 section 5.1.
+
+    The five fields are `vocab.ASSERTION_KEY`. IDs and edge type are compared
+    directly; only `aspect` and `condition` are text-normalized. Comparing IDs
+    through the text normalizer would fold two genuinely distinct IDs together
+    wherever they differed only in a separator character.
+    """
+    source = (edge.get("source_id") or "").strip()
+    target = (edge.get("target_id") or "").strip()
+    edge_type = (edge.get("edge_type") or "").strip()
+    if edge_type in SYMMETRIC_EDGE_TYPES:
         # Symmetric types assert the same thing with endpoints swapped.
-        source, edge_type, target, *rest = key
-        endpoints = tuple(sorted((source, target)))
-        return (endpoints[0], edge_type, endpoints[1], *rest)
-    return key
+        source, target = sorted((source, target))
+    return (
+        source,
+        edge_type,
+        target,
+        _normalize_text(edge.get("aspect", "")),
+        _normalize_text(edge.get("condition", "")),
+    )
 
 
 def endpoint_type_key(edge: dict) -> tuple[str, str, str]:

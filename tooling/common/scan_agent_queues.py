@@ -448,6 +448,144 @@ def _blocking_ids(document: dict[str, Any]) -> set[str]:
     return blockers
 
 
+#: Roles a handoff may name, per WORK_QUEUES "Required Handoff Metadata".
+HANDOFF_ROLES = frozenset(
+    {"analyst", "builder", "reviewer", "architect", "integrator", "none"}
+)
+
+
+def _handoff_role(document: dict[str, Any]) -> str:
+    """The role a document hands work to, or `""` when it names none.
+
+    An unrecognised role is treated as absent rather than trusted: routing work
+    to a role that does not exist would hide it from every queue.
+    """
+    handoff = document.get("handoff")
+    if not isinstance(handoff, dict):
+        return ""
+    role = str(handoff.get("next_role") or "").strip().lower()
+    return role if role in HANDOFF_ROLES else ""
+
+
+def _originating_artifact_refs(block: Any) -> list[tuple[str, str]]:
+    """Exact `(artifact id, repository path)` pairs a decided package names.
+
+    WORK_QUEUES 1.3 requires both halves before a handoff may be replaced, and
+    forbids inferring the link from free text, packet association or timestamps.
+    So only shapes that state an ID *and* a path together are read, and anything
+    naming one without the other yields nothing rather than a guess.
+
+    Escalation packages write the pair two ways, both supported here:
+
+        review: REV-...-r01              # `<kind>` plus `<kind>_path`
+        review_path: books/.../REV-...yaml
+
+        gup: {id: GUP-...-r02, path: books/.../GUP-...yaml}
+    """
+    refs: list[tuple[str, str]] = []
+    if not isinstance(block, dict):
+        return refs
+
+    def add(identifier: Any, path: Any) -> None:
+        identifier = str(identifier or "").strip()
+        path = str(path or "").strip()
+        if identifier and path:
+            refs.append((identifier, path))
+
+    for key, value in block.items():
+        if isinstance(value, dict):
+            add(value.get("id"), value.get("path"))
+        elif isinstance(value, list):
+            for entry in value:
+                if isinstance(entry, dict):
+                    add(entry.get("id"), entry.get("path"))
+        elif isinstance(value, str) and not str(key).endswith("_path"):
+            add(value, block.get(f"{key}_path"))
+    return refs
+
+
+def _handoff_replacements(
+    root: Path,
+    ruleset: str,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+    decided_packages: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Decision handoffs that replace an originating artifact's, per WORK_QUEUES 1.3.
+
+    All four conditions of the section must hold: the Decision's `escalation_id`
+    resolves to a decided package in this ruleset, that package names an
+    artifact ID and path, and the Decision carries an explicit `handoff` block.
+    Whether the named artifact is still the active leaf is settled by the caller,
+    which only suppresses an item the scan actually derived for that exact ID and
+    path -- a superseded artifact has no such item.
+    """
+    replacements: list[dict[str, Any]] = []
+    for decision_id in sorted(decisions):
+        path, document = decisions[decision_id]
+        escalation_id = str(document.get("escalation_id") or "").strip()
+        if not escalation_id:
+            continue
+        package = decided_packages.get(escalation_id)
+        if package is None:
+            continue
+        handoff = document.get("handoff")
+        if not isinstance(handoff, dict) or not handoff.get("next_role"):
+            continue
+        refs = _originating_artifact_refs(package.get("originating_artifacts"))
+        if not refs:
+            continue
+        replacements.append(
+            {
+                "decision_id": decision_id,
+                "decision_path": _relative(root, path),
+                "document": document,
+                "handoff": handoff,
+                "ruleset": ruleset,
+                "refs": refs,
+            }
+        )
+    return replacements
+
+
+def _article(word: str) -> str:
+    return "an" if word[:1].lower() in "aeiou" else "a"
+
+
+def _review_revision_roles(document: dict[str, Any]) -> list[str]:
+    """Roles a `revision_required` Review actually gives work to, in order.
+
+    `handoff.next_role` names one role, but a Review routinely gives work to
+    two: an exact correction for the Builder to apply, alongside a completeness
+    finding only the Analyst can answer. Reading either signal alone gets one of
+    the two cases wrong.
+
+    Builder work is a row-level `exact_corrections`, or a `required_gup_revisions`
+    entry that names no other role -- an unqualified revision request is the
+    Builder's by default, since the Builder emits the GUP. Where a Review carries
+    none of those, there is nothing for the Builder to apply, and compiling a
+    fresh leaf from the same GUR would either restate the patch byte for byte or
+    require inventing the assertions the Review says are missing.
+    """
+    roles: list[str] = []
+
+    builder_actionable = any(
+        row.get("exact_corrections")
+        for row in document.get("row_decisions") or []
+        if isinstance(row, dict)
+    ) or any(
+        str(entry.get("next_role") or "").strip().lower() in ("", "builder")
+        for entry in document.get("required_gup_revisions") or []
+        if isinstance(entry, dict)
+    )
+    if builder_actionable:
+        roles.append("builder")
+
+    handoff_role = _handoff_role(document)
+    if handoff_role and handoff_role != "none" and handoff_role not in roles:
+        roles.append(handoff_role)
+    return roles
+
+
 def _queue_item(
     *,
     state: str,
@@ -568,6 +706,10 @@ def scan_repository(root: Path) -> dict[str, Any]:
         return _build_result(root, ready, active, blocked, informational, diagnostics)
 
     decided_by_ruleset: dict[str, set[str]] = defaultdict(set)
+    #: Decided escalation packages by ID. WORK_QUEUES 1.3 resolves a Decision's
+    #: originating artifacts through the package it decided, so the whole
+    #: document is needed and not merely the fact that the ID is decided.
+    decided_packages_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     #: Approved Decisions by ruleset and ID, with the path they were read from so
     #: a decision migration's recorded checksum can be re-verified against it.
     decisions_by_ruleset: dict[str, dict[str, tuple[Path, dict[str, Any]]]] = defaultdict(dict)
@@ -575,6 +717,10 @@ def scan_repository(root: Path) -> dict[str, Any]:
     #: cross-book stores alike. Scope location does not change the lineage checks.
     migrations_by_ruleset: dict[str, list[Artifact]] = defaultdict(list)
     reviewed_gup_ids_global: set[str] = set()
+    #: The same Reviews, keyed by the GUP they reviewed. A migration is
+    #: cross-book, so its Review may sit in any book's store and the per-book
+    #: index cannot see it.
+    reviews_by_gup_global: dict[str, list[Artifact]] = defaultdict(list)
     rulesets_root = root / "rulesets"
     if rulesets_root.is_dir():
         for ruleset_dir in sorted(path for path in rulesets_root.iterdir() if path.is_dir()):
@@ -584,7 +730,11 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 for path in decided_dir.glob("ESC-*.yaml"):
                     document = _load_yaml(root, path, diagnostics)
                     if document:
-                        decided_by_ruleset[ruleset].add(str(document.get("id") or path.stem))
+                        escalation_id = str(document.get("id") or path.stem)
+                        decided_by_ruleset[ruleset].add(escalation_id)
+                        # WORK_QUEUES 1.3 reads `originating_artifacts` off the
+                        # decided package, so the document is kept, not just its ID.
+                        decided_packages_by_ruleset[ruleset][escalation_id] = document
             decisions_dir = ruleset_dir / "escalations" / "decisions"
             if decisions_dir.is_dir():
                 for path in sorted(decisions_dir.glob("DEC-*.yaml")):
@@ -676,6 +826,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     # A migration is cross-book, so the Review that consumes it
                     # may sit in any book's review store.
                     reviewed_gup_ids_global.add(str(reviewed_id))
+                    reviews_by_gup_global[str(reviewed_id)].append(artifact)
                 else:
                     _diag(
                         diagnostics,
@@ -910,21 +1061,51 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         review_blockers - decided_by_ruleset[ruleset]
                     )
                     if disposition == "revision_required":
-                        ready.append(
-                            _queue_item(
-                                state="ready",
-                                queue="BUILDER-REVISION",
-                                role="Builder",
-                                ruleset=ruleset,
-                                book=book,
-                                packet_id=packet_id,
-                                input_id=review_leaf.artifact_id,
-                                reason="Active Review requires a Builder revision.",
+                        # WORK_QUEUES makes a Builder job "a Review that requests
+                        # Builder revision", and `handoff.next_role` is where a
+                        # Review says whose revision it wants. Routing every
+                        # revision_required Review to Builder regardless sends
+                        # back work no Builder may perform: where the finding is
+                        # that the GUR omits source assertions, the only Builder
+                        # response is to reinterpret source, which the role
+                        # forbids, or to publish a byte-identical no-op leaf.
+                        roles = _review_revision_roles(review_leaf.data)
+                        # A Review with neither a handoff block nor any
+                        # actionable finding is legacy. The contract keeps those
+                        # valid under the legacy rules, which is the historical
+                        # Builder routing, reported as an inference.
+                        inferred = review_inferred or not roles
+                        if not roles:
+                            roles = ["builder"]
+                            _diag(
+                                diagnostics,
+                                "warning",
+                                "review_handoff_inferred",
+                                f"{review_leaf.artifact_id} requires revision but names "
+                                f"no handoff role and no actionable finding; routed to "
+                                f"Builder under the legacy rule.",
                                 path=_relative(root, review_leaf.path),
-                                components=[_relative(root, review_leaf.path)],
-                                legacy_inference=review_inferred,
+                                artifact_id=review_leaf.artifact_id,
                             )
-                        )
+                        for role in roles:
+                            ready.append(
+                                _queue_item(
+                                    state="ready",
+                                    queue=f"{role.upper()}-REVISION",
+                                    role=role.capitalize(),
+                                    ruleset=ruleset,
+                                    book=book,
+                                    packet_id=packet_id,
+                                    input_id=review_leaf.artifact_id,
+                                    reason=(
+                                        f"Active Review requires "
+                                        f"{_article(role)} {role.capitalize()} revision."
+                                    ),
+                                    path=_relative(root, review_leaf.path),
+                                    components=[_relative(root, review_leaf.path)],
+                                    legacy_inference=inferred,
+                                )
+                            )
                     elif (
                         disposition == "architect_escalation"
                         and review_blockers
@@ -1118,7 +1299,57 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         path=_relative(root, leaf.path),
                         artifact_id=leaf.artifact_id,
                     )
-                    # Either way it does not consume its authority Decisions, so
+                    # A lineage error says the leaf cannot go to Reviewer as it
+                    # stands. It does not say who fixes it. Where a Review has
+                    # already ruled on this leaf and named the role that acts
+                    # next, that ruling governs -- exactly as it does for a
+                    # packet GUP. Discarding it here republished the authority
+                    # Decisions as ready Builder work while the Review that
+                    # decided them was still asking the Analyst for the
+                    # prerequisite, and hid the Analyst's job entirely.
+                    review_leaf, _ = _active_leaf(
+                        root,
+                        reviews_by_gup_global.get(leaf.artifact_id, []),
+                        diagnostics,
+                        f"{ruleset} decision migration {lineage_id} review",
+                    )
+                    review_disposition = str(
+                        review_leaf.data.get("overall_disposition")
+                        or review_leaf.data.get("status")
+                        or ""
+                    ) if review_leaf else ""
+                    roles = (
+                        _review_revision_roles(review_leaf.data)
+                        if review_leaf and review_disposition == "revision_required"
+                        else []
+                    )
+                    if roles:
+                        # The Review is answering for these Decisions, so they
+                        # are spoken for and must not resurface as ready work.
+                        consumed_decision_ids.update(
+                            str(a) for a in leaf.data.get("authority") or []
+                        )
+                        for role in roles:
+                            ready.append(
+                                _queue_item(
+                                    state="ready",
+                                    queue=f"{role.upper()}-DECISION-MIGRATION-REVISION",
+                                    role=role.capitalize(),
+                                    ruleset=ruleset,
+                                    book=leaf.book,
+                                    packet_id=leaf.packet_id,
+                                    input_id=review_leaf.artifact_id,
+                                    reason=(
+                                        f"Active Review on {leaf.artifact_id} requires "
+                                        f"{_article(role)} {role.capitalize()} revision."
+                                    ),
+                                    path=_relative(root, review_leaf.path),
+                                    components=[_relative(root, review_leaf.path)],
+                                    legacy_inference=inferred,
+                                )
+                            )
+                        continue
+                    # Otherwise it does not consume its authority Decisions, so
                     # their Builder jobs stay visible.
                     continue
 
@@ -1224,6 +1455,88 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         components=[_relative(root, path)],
                     )
                 )
+
+    # -- WORK_QUEUES 1.3: Decision handoff replacement -------------------------
+    # An immutable artifact preserves the evidence a Review was built on, but it
+    # cannot represent a ruling made after it was written. Where an approved
+    # Decision resolved the escalation that artifact raised, the Decision's
+    # handoff is the current one and the artifact's earlier ready item is stale
+    # work. The artifact itself is untouched; only queue derivation changes.
+    for ruleset in sorted(decisions_by_ruleset):
+        for replacement in _handoff_replacements(
+            root,
+            ruleset,
+            decisions_by_ruleset[ruleset],
+            decided_packages_by_ruleset[ruleset],
+        ):
+            handoff = replacement["handoff"]
+            readiness = str(handoff.get("readiness") or "").strip().lower()
+            role = str(handoff.get("next_role") or "").strip().lower()
+            document = replacement["document"]
+            decision_id = replacement["decision_id"]
+
+            suppressed = False
+            for artifact_id, artifact_path in replacement["refs"]:
+                # Condition 3: only an item the scan derived for this exact ID
+                # and path is replaced. A Decision naming a superseded artifact
+                # matches nothing, so the active leaf keeps its own handoff.
+                remaining = [
+                    item
+                    for item in ready
+                    if not (
+                        item["InputId"] == artifact_id and item["Path"] == artifact_path
+                    )
+                ]
+                if len(remaining) != len(ready):
+                    suppressed = True
+                    ready[:] = remaining
+                    _diag(
+                        diagnostics,
+                        "info",
+                        "handoff_replaced_by_decision",
+                        f"{decision_id} resolved the escalation {artifact_id} raised, so "
+                        f"its ready handoff is superseded for queue derivation. The "
+                        f"artifact is unchanged and remains available as history.",
+                        path=artifact_path,
+                        artifact_id=artifact_id,
+                    )
+
+            if not suppressed or role in ("", "none") or readiness == "terminal":
+                continue
+
+            already_ready = any(
+                item["InputId"] == decision_id and item["Role"] == role.capitalize()
+                for item in ready
+            )
+            if already_ready:
+                # One Decision is one logical coordination job.
+                continue
+
+            item = _queue_item(
+                state="blocked" if readiness == "blocked" else "ready",
+                queue=f"{role.upper()}-DECISION",
+                role=role.capitalize(),
+                ruleset=ruleset,
+                book=str(document.get("book_id") or "") or None,
+                packet_id=str(document.get("packet_id") or "") or None,
+                input_id=decision_id,
+                reason=(
+                    f"Approved Decision replaces the originating artifact's handoff; "
+                    f"{_article(role)} {role.capitalize()} action is required."
+                ),
+                path=replacement["decision_path"],
+                components=[replacement["decision_path"]],
+            )
+            if readiness == "blocked":
+                blocking = [str(b) for b in (handoff.get("blocking_ids") or [])]
+                item["Reason"] = (
+                    "Decision handoff is blocked on: " + ", ".join(sorted(blocking))
+                    if blocking
+                    else "Decision handoff is blocked."
+                )
+                blocked.append(item)
+            else:
+                ready.append(item)
 
     # A job can be discovered through both a blocked GUP and its Review. Keep one
     # deterministic entry per role, queue, and input artifact.

@@ -1,0 +1,263 @@
+schema_version: "1.0"
+id: DEC-2026-0020
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-035-038-money-equipment
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Align Builder version constants, documentation, comments, and tests with
+    Constitution 1.7 without changing assertion-key behavior, then return the
+    current GUP to Reviewer.
+  blocking_ids: []
+
+decision_date: "2026-08-03"
+escalation_id: ESC-2026-08-03T22.03.46.999Z
+
+question: >-
+  Which fields define one production-edge assertion, and may tooling choose that
+  identity when the constitution is silent?
+
+ruling: >-
+  Adopt the normalized five-field assertion key already used by the AD&D 1e
+  Builder: source_id, edge_type, target_id, aspect, and condition. An exact key
+  match is one assertion and may appear only once in production. A shared
+  source, type, and target with a genuinely different mechanical facet or
+  condition is a near match, not automatically a duplicate, and remains subject
+  to independent Reviewer judgment. Citation and review fields do not create
+  identity. ALTERNATIVE_TO is symmetric, so its endpoints are unordered for key
+  comparison. Tooling implements the ruleset constitution's key; it does not
+  choose or widen the key independently.
+
+assertion_identity_contract:
+  fields:
+    - source_id
+    - edge_type
+    - target_id
+    - aspect
+    - condition
+  normalization:
+    ids: canonical IDs compared directly
+    edge_type: controlled value compared directly
+    aspect_and_condition: >-
+      Compare case-insensitively after replacing non-alphanumeric separator runs
+      with one space and trimming surrounding whitespace.
+    symmetric_type:
+      edge_type: ALTERNATIVE_TO
+      rule: Sort the two normalized endpoint IDs before comparison.
+    directed_types: Endpoint order remains significant.
+  duplicate_rule: >-
+    Two rows equal under the normalized key are one assertion. Do not insert a
+    second production row; preserve additional source loci in provenance.
+  near_match_rule: >-
+    Rows sharing source_id, edge_type, and target_id but differing in aspect or
+    condition may coexist only when Reviewer confirms genuinely distinct,
+    source-supported mechanical facets or activation conditions. Paraphrase
+    alone does not establish distinct identity.
+  fields_excluded_from_identity:
+    - source_label
+    - target_label
+    - polarity
+    - polarity_basis
+    - book
+    - page
+    - section
+    - evidence
+    - pass
+    - status
+    - supersession_basis
+    - general_rule_id
+    - review_flag
+  excluded_field_conflicts: >-
+    Resolve a conflict in an excluded field on the existing assertion. Do not
+    retain conflicting copies as separate edges.
+
+rationale:
+  - >-
+    Aspect and condition identify the mechanical facet and activation boundary.
+    Collapsing identity to source, type, and target would merge independent
+    dependencies and discard information required for impact analysis.
+  - >-
+    The supplied corpus measurement finds zero collisions under the normalized
+    five-field key, while a three-field key would place 61 approved rows in 55
+    collision groups and require a destructive migration.
+  - >-
+    Citation cannot be identity because the same assertion may be restated by
+    several books. Constitution section 5 already requires one edge plus an
+    additional provenance locus in that case.
+  - >-
+    Polarity, labels, and evidence describe or review an assertion; allowing them
+    into identity would preserve field disagreements as duplicate rows instead
+    of resolving them.
+  - >-
+    Case, punctuation, and separator differences carry no mechanical meaning.
+    Canonical normalization prevents cosmetic text changes from evading
+    duplicate detection.
+  - >-
+    ALTERNATIVE_TO is the only symmetric edge type. Reversing its endpoints does
+    not create a second assertion, matching the current Builder implementation.
+  - >-
+    This ruling makes existing behavior governed and stable. It does not use the
+    two packet candidates as precedent to pre-approve their source readings.
+
+packet_candidate_disposition:
+  gup:
+    id: GUP-PKT-PHB-035-038-money-equipment-r05
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-035-038-money-equipment-r05.yaml
+  candidates:
+    - ref: B20
+      key_grade: near_match
+      disposition: reviewer_decides_on_source_and_neighborhood_merits
+      baseline_row: 374
+    - ref: B24
+      key_grade: near_match
+      disposition: reviewer_decides_on_source_and_neighborhood_merits
+      baseline_row: 2798
+  no_edge_approval: >-
+    This Decision removes only the governance ambiguity. It neither approves nor
+    rejects B20 or B24 and does not cure any other source, direction, polarity,
+    or neighborhood defect the Reviewer may find.
+
+compatibility:
+  current_gur_version: "1.6"
+  current_gup_version: "1.6"
+  disposition: eligible_for_revalidation_under_1_7
+  reason: >-
+    Constitution 1.7 codifies the assertion key that built the current GUP and
+    changes no serialized edge field or duplicate result. No GUP revision is
+    required solely because of this version change. Reviewer applies this
+    Decision and Constitution 1.7 during the pending review.
+  historical_artifacts: >-
+    Existing artifacts remain immutable. Their assertions are judged under the
+    current constitution when next reviewed or touched.
+
+coordination_constraints:
+  - >-
+    Reviewer may inspect GUP-PKT-PHB-035-038-money-equipment-r05 but must not
+    approve it until Builder declares Constitution 1.7 and the Builder
+    registry/vocabulary and duplicate suites pass.
+  - >-
+    Builder does not re-emit the GUP solely for this governance change because
+    its assertion-key behavior and serialized rows are unchanged.
+  - >-
+    The current queue scanner does not surface non-migration Decision handoffs
+    to Builder. DEC-2026-0020 remains the authoritative assignment even while
+    the scanner continues to display the already-published GUP as Reviewer work.
+
+affected_contracts_and_registries:
+  contracts:
+    - contracts/GRAPH_INVARIANTS.md
+    - rulesets/adnd1e/governance/constitution.md
+    - rulesets/adnd1e/ruleset.yaml
+  registries: []
+  schemas: []
+  canonical_files: []
+  tooling_alignment:
+    - tooling/builder/README.md
+    - tooling/builder/src/adnd1e_builder/vocab.py
+    - tooling/builder/src/adnd1e_builder/duplicates.py
+    - tooling/builder/tests/test_registry_and_vocab.py
+    - tooling/builder/tests/test_duplicates.py
+
+migration_required: false
+migration_scope:
+  canonical_edges_changed: 0
+  canonical_nodes_changed: 0
+  registry_rows_changed: 0
+  approved_artifacts_invalidated: 0
+  behavior_change: none
+  governance_alignment: >-
+    Existing five-field duplicate behavior becomes the required AD&D 1e
+    contract. Builder documentation, version constants, comments, and tests must
+    cite Constitution 1.7 and no longer describe the key as a tooling choice.
+
+constitution_version_impact:
+  changed: true
+  previous_version: "1.6"
+  new_version: "1.7"
+  compatibility: >-
+    Existing graph rows remain valid. Near matches remain Reviewer work and
+    exact matches remain forbidden; the governing text now matches the behavior
+    that produced the corpus.
+
+contract_version_impact:
+  contracts/GRAPH_INVARIANTS.md:
+    previous_version: unversioned
+    new_version: "1.0"
+
+governance_changelog:
+  - Constitution 1.7 defines the normalized five-field assertion key.
+  - Constitution 1.7 defines ALTERNATIVE_TO endpoint symmetry for identity.
+  - >-
+    Constitution 1.7 distinguishes exact duplicates from source-supported near
+    matches and excludes citation and review fields from identity.
+  - >-
+    GRAPH_INVARIANTS 1.0 requires each ruleset constitution to define identity
+    and forbids tooling from choosing a different key.
+  - ruleset.yaml now declares Constitution 1.7.
+
+exact_diff:
+  rulesets/adnd1e/governance/constitution.md:
+    - Change Version 1.6 to 1.7.
+    - Add section 5.1, Edge identity.
+  contracts/GRAPH_INVARIANTS.md:
+    - Add Version 1.0 and its version-history entry.
+    - >-
+      Replace invariant 12's unresolved exception with a requirement that each
+      ruleset constitution define the assertion key and tooling implement it.
+  rulesets/adnd1e/ruleset.yaml:
+    - Change constitution_version from 1.6 to 1.7.
+
+acceptance_tests:
+  - Constitution and ruleset.yaml both declare version 1.7.
+  - GRAPH_INVARIANTS declares version 1.0.
+  - >-
+    Constitution section 5.1 names exactly source_id, edge_type, target_id,
+    aspect, and condition as assertion-key fields.
+  - >-
+    Constitution section 5.1 makes ALTERNATIVE_TO endpoint order irrelevant and
+    preserves direction for all directed edge types.
+  - >-
+    Constitution section 5.1 excludes citation, polarity, labels, evidence, and
+    review metadata from identity.
+  - >-
+    Builder ASSERTION_KEY remains exactly the five governed fields and its
+    normalization and ALTERNATIVE_TO handling match section 5.1.
+  - >-
+    Builder documentation no longer says the constitution lacks a key or that
+    tooling selected it empirically.
+  - >-
+    Builder declares Constitution 1.7, accepts historical 1.6 GURs for current
+    revalidation, and tests the governance-to-tooling match.
+  - The canonical corpus has zero exact duplicates under the governed key.
+  - No canonical graph, registry, GUR, GUP, or Review file changes in this Decision.
+  - >-
+    Reviewer treats B20 and B24 as near matches and records independent merits
+    dispositions rather than accepting or rejecting them solely on shared
+    three-field identity.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Update Constitution-version constants and accepted-version tests.
+    - Update assertion-key documentation and comments to cite section 5.1.
+    - Preserve current five-field and ALTERNATIVE_TO behavior.
+  reviewer:
+    - Review B20 and B24 on source and neighborhood merits under section 5.1.
+    - Revalidate the complete current GUP under Constitution 1.7.
+  integrator:
+    - Enforce the governed key when applying any later Approved bundle.
+
+prohibited_actions:
+  - Do not edit or replace published GUR, GUP, or Review artifacts for history.
+  - Do not treat source, type, and target alone as production identity.
+  - Do not add citation or polarity fields to the assertion key.
+  - Do not preserve paraphrases as separate edges.
+  - Do not treat this Decision as approval of B20 or B24.
+  - Architect does not edit Builder tooling or canonical graph files.

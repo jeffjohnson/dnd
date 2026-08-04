@@ -113,12 +113,14 @@ class TestRoutingInTheCompiler(unittest.TestCase):
         cls.registry = NodeRegistry.load(RULESET_ROOT / "registries" / "nodes.csv")
         cls.canonical = CanonicalEdges.load(RULESET_ROOT / "canonical" / "edges_master.csv")
         cls.gov = Governance.load(RULESET_ROOT)
-        cls.compiler = Compiler(cls.registry, cls.canonical, None, cls.gov)
         # Whichever DEC-2026-0003 proposal is still unregistered. Naming one
-        # makes the test expire the moment that node is registered.
-        cls.pending_node = _bootstrap.unregistered_returned_to_workflow(
+        # makes the test expire the moment that node is registered; once they
+        # are all registered the helper supplies a stand-in so the routing rule
+        # stays covered.
+        cls.pending_node, cls.gov = _bootstrap.unregistered_returned_to_workflow(
             cls.gov, cls.registry
         )
+        cls.compiler = Compiler(cls.registry, cls.canonical, None, cls.gov)
 
     ENVELOPE = {
         "schema_version": "1.0", "id": "GUR-PKT-PHB-900-901-fixture-r01",
@@ -159,11 +161,15 @@ class TestRoutingInTheCompiler(unittest.TestCase):
         self.assertIn("node_addition_normal_workflow", self.rules(result))
 
     def test_dependent_edge_is_informational_not_an_error(self):
+        # An unregistered proposal, derived rather than named: `rule_dual_class`
+        # was hardcoded here until the Integrator registered it, at which point
+        # the row stopped being pending and the test failed on corpus growth
+        # rather than on a defect.
         result = self.compile_gur(
-            candidate_nodes=[{"proposed_id": "rule_dual_class",
-                              "proposed_label": "The Character with Two Classes"}],
-            candidate_edges=[dict(self.EDGE, target_id="rule_dual_class",
-                                  target_label="The Character with Two Classes")],
+            candidate_nodes=[{"proposed_id": self.pending_node,
+                              "proposed_label": "Fixture Pending Proposal"}],
+            candidate_edges=[dict(self.EDGE, target_id=self.pending_node,
+                                  target_label="Fixture Pending Proposal")],
         )
         pending = [f for f in result.findings if f.rule == "endpoint_pending_registry_addition"]
         self.assertEqual([f.severity for f in pending], ["info"])
@@ -173,9 +179,10 @@ class TestRoutingInTheCompiler(unittest.TestCase):
 
     def test_pending_row_is_still_held_out_of_the_csv(self):
         result = self.compile_gur(
-            candidate_nodes=[{"proposed_id": "rule_tracking", "proposed_label": "Tracking"}],
-            candidate_edges=[dict(self.EDGE, target_id="rule_tracking",
-                                  target_label="Tracking")],
+            candidate_nodes=[{"proposed_id": self.pending_node,
+                              "proposed_label": "Fixture Pending Proposal"}],
+            candidate_edges=[dict(self.EDGE, target_id=self.pending_node,
+                                  target_label="Fixture Pending Proposal")],
         )
         self.assertEqual(len(result.pending_additions), 1)
         self.assertEqual(result.additions, [], "invariant 1 until the registry change applies")

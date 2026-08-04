@@ -1,7 +1,7 @@
 """Controlled vocabularies and derivation tables from the graph constitution.
 
 Every constant here is transcribed from
-``rulesets/adnd1e/governance/constitution.md`` v1.6. This module is the single
+``rulesets/adnd1e/governance/constitution.md`` v1.7. This module is the single
 source of truth for the compiler; nothing downstream may hard-code a vocabulary.
 
 Section references in comments point at the constitution.
@@ -9,7 +9,7 @@ Section references in comments point at the constitution.
 
 from __future__ import annotations
 
-CONSTITUTION_VERSION = "1.6"
+CONSTITUTION_VERSION = "1.7"
 
 # Versions this compiler accepts on an incoming GUR. An older GUR is compilable
 # but is *revalidated under the current constitution*, never trusted on the
@@ -33,8 +33,14 @@ CONSTITUTION_VERSION = "1.6"
 # lives in SOURCE_MARKDOWN 1.1, not in the constitution; it makes a page
 # disagreement a citation correction rather than a row defect. Neither
 # invalidates an existing row.
+#
+# 1.7 (DEC-2026-0020) adds section 5.1 and changes no row. It writes down the
+# assertion key this compiler already applied, so every row valid under 1.6 is
+# valid under 1.7 and no GUP needs re-emitting for the version change alone.
+# Historical 1.6 GURs stay compilable and are revalidated under 1.7 like any
+# other older revision.
 ACCEPTED_GUR_CONSTITUTION_VERSIONS: frozenset[str] = frozenset(
-    {"1.2", "1.3", "1.4", "1.5", "1.6"}
+    {"1.2", "1.3", "1.4", "1.5", "1.6", "1.7"}
 )
 
 # -- section 12: production column order --------------------------------------
@@ -96,8 +102,9 @@ EDGE_DIRECTION: dict[str, str] = {
     "EXCLUDED_FROM": "excluded -> excluder",
 }
 
-# ALTERNATIVE_TO is the only symmetric type; its endpoints may be swapped
-# without changing the assertion, so duplicate detection must canonicalise it.
+# Section 5.1: ALTERNATIVE_TO is the only symmetric type. Its endpoints are
+# sorted before the assertion key is compared, so reversing them does not create
+# a second assertion. Every other type is directed and endpoint order matters.
 SYMMETRIC_EDGE_TYPES: frozenset[str] = frozenset({"ALTERNATIVE_TO"})
 
 # -- section 6: polarity -------------------------------------------------------
@@ -205,13 +212,38 @@ REJECTED_PREFIXES: frozenset[str] = frozenset(
     {"str_", "dex_", "magic_", "death_", "turn_", "cursed_", "time_", "align_"}
 )
 
-# -- assertion key -------------------------------------------------------------
-# Invariant 12 forbids duplicate edge identity unless the constitution defines a
-# distinct assertion key. The constitution defines no wider key, and this tuple
-# is exactly the one under which the canonical file is duplicate-free -- checked
-# against the live file by test, not pinned to a count that goes stale as the
-# corpus grows. Widening it would silently admit duplicates.
+# -- section 5.1: assertion key ------------------------------------------------
+# Constitution 1.7 section 5.1 defines edge identity, and GRAPH_INVARIANTS 1.0
+# invariant 12 requires tooling to implement the constitution's key rather than
+# invent, omit or widen one. This tuple is that key, transcribed; it is not a
+# tooling choice, and a test asserts it against the governing text.
+#
+# Two edges equal under it after the normalization in `duplicates.py` are one
+# assertion and only one may enter production. Rows sharing source, type and
+# target but differing in aspect or condition are near matches -- distinct
+# assertions the Reviewer rules on, not duplicates the build may collapse.
 ASSERTION_KEY: tuple[str, ...] = ("source_id", "edge_type", "target_id", "aspect", "condition")
+
+# Section 5.1: fields that describe or review an assertion rather than identify
+# it. A disagreement in one of these is resolved on the existing assertion, never
+# preserved as a second edge.
+IDENTITY_EXCLUDED_FIELDS: frozenset[str] = frozenset(
+    {
+        "source_label",
+        "target_label",
+        "polarity",
+        "polarity_basis",
+        "book",
+        "page",
+        "section",
+        "evidence",
+        "pass",
+        "status",
+        "supersession_basis",
+        "general_rule_id",
+        "review_flag",
+    }
+)
 
 # Fields the Analyst may not author; the build owns them.
 BUILD_OWNED_FIELDS: frozenset[str] = frozenset({"polarity", "polarity_basis"})

@@ -1,0 +1,555 @@
+schema_version: '1.0'
+id: ESC-2026-08-03T22.03.46.999Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-035-038-money-equipment
+constitution_version: '1.6'
+raised_by: analyst
+raised_on: '2026-08-03'
+decision_owner: architect
+decision_id: DEC-2026-0020
+decided_on: '2026-08-03'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: invariant 12 defers to an assertion key the constitution never defines; the Builder chose one
+    and two live candidates now turn on it
+  blocking_ids: []
+originating_artifacts:
+  packet: PKT-PHB-035-038-money-equipment
+  gur: GUR-PKT-PHB-035-038-money-equipment-r06
+  gur_path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-035-038-money-equipment-r06.yaml
+  identity_question: IDQ-15, raised in that GUR
+  review: REV-GUP-PKT-PHB-035-038-money-equipment-r04-r01
+  review_path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-035-038-money-equipment-r04-r01.yaml
+  why_it_arose_here: The Reviewer returned the packet because the GUR had bundled five source clauses
+    into two conditions. Splitting them produced two candidates whose source, type and target already
+    appear in canonical against a different facet, which is where the question surfaced.
+question: Invariant 12 forbids duplicate edge identity 'unless the constitution explicitly defines a distinct
+  assertion key'. The constitution defines no assertion key. The Builder therefore chose one and documented
+  the choice in its own README. Should the constitution adopt that key, adopt a different one, or leave
+  the matter to tooling?
+why_this_is_architectural_and_not_a_reviewer_call: 'Two of the escalation triggers apply. The constitution
+  and the production data disagree in a way that cannot be fixed mechanically: read narrowly, invariant
+  12 is violated by 61 approved canonical rows today. And the answer changes edge semantics globally rather
+  than for one packet, because every future packet that restates a dependency from a second book meets
+  the same question. No Reviewer can settle it without legislating for the corpus.'
+the_gap:
+  invariant_text:
+    source: contracts/GRAPH_INVARIANTS.md, invariant 12
+    text: Duplicate edge identity is forbidden unless the constitution explicitly defines a distinct assertion
+      key.
+  what_the_constitution_says:
+    source: rulesets/adnd1e/governance/constitution.md section 5
+    text: If the same assertion is stated at several loci, keep one edge and preserve the additional source
+      assertions in the provenance manifest or ledger. Do not place multiple loci in one edge field, and
+      do not create duplicate edges solely to carry additional citations.
+    analyst_reading: This governs restatement of the same assertion. It does not define edge identity
+      and it does not say which fields make two assertions the same. Section 5's field table is likewise
+      silent. Nothing else in the constitution defines an assertion key. The clause invariant 12 defers
+      to has never been written.
+  what_the_tooling_does:
+    source: tooling/builder/src/adnd1e_builder/vocab.py, ASSERTION_KEY
+    key:
+    - source_id
+    - edge_type
+    - target_id
+    - aspect
+    - condition
+    builder_readme: 'tooling/builder/README.md states it plainly: ''Invariant 12 forbids duplicate edge
+      identity but the constitution defines no explicit assertion key. The key used is (source_id, edge_type,
+      target_id, aspect, condition), chosen because it is the narrowest tuple under which the canonical
+      corpus is duplicate-free.'''
+    enforcement: duplicates.py grades a match exact when the five-tuple matches, near when only the endpoints
+      and type match, and neighbour when only the endpoints match. Only exact raises the duplicate_assertion
+      error. Near is routed to the Reviewer.
+    analyst_reading: 'The Builder did the reasonable thing and said so in writing. But the justification
+      is empirical, not constitutional: the key was picked to fit the corpus. That is a governance decision
+      made by tooling, and it is the thing this escalation asks the Architect to ratify or replace.'
+corpus_measurement:
+  canonical_rows: 4109
+  collisions_under_the_five_field_key:
+    rows: 0
+    groups: 0
+    meaning: The corpus is duplicate-free under the key the Builder uses.
+  collisions_under_a_three_field_reading:
+    rows: 61
+    groups: 55
+    meaning: If invariant 12 were read as forbidding a repeated source, type and target, then this many
+      approved canonical rows are already in breach. They were extracted, reviewed and integrated under
+      the current pipeline. A ruling for the narrow reading condemns them retroactively.
+  how_measured: Both counts are computed from rulesets/adnd1e/canonical/edges_master.csv using the same
+    normalisation the Builder applies, lowercasing and collapsing non-alphanumerics. The script is reproducible
+    and the numbers move with the corpus; they are not transcribed from an earlier report.
+  a_caution_on_the_method: 'This is a mechanical count of key collisions, not a judgement that all 61
+    rows are genuinely distinct assertions. Some may be true duplicates that the dedupe passes have not
+    yet reached. The claim made here is narrower and is safe: the corpus does not obey a three-field identity
+    rule today, so that rule cannot be adopted without a migration.'
+precedent_in_approved_data:
+  note: 'Five of the fifty-five groups, chosen because they are the same shape as the two candidates under
+    escalation: one book states a dependency, another book states a different facet of it, and both rows
+    were approved.'
+  closest_precedent: exp_level MODIFIES cbt_damage. Row 364 is the monk's weapon damage bonus at PHB 30
+    and row 2797 is the cavalier's mounted damage bonus at UA 15. That is structurally identical to B24,
+    which is a PHB 37 mounted-charge facet against a UA 15 cavalier row.
+  groups:
+  - shared_identity: exp_level | MODIFIES | cbt_damage
+    rows:
+    - canonical_row: 364
+      aspect: bonus with weapons
+      condition: monk scaling
+      citation: PHB 30, THE MONK
+    - canonical_row: 2797
+      aspect: damage bonus equals level while mounted
+      condition: ''
+      citation: UA 15, CAVALIERS TABLE I
+  - shared_identity: exp_level | MODIFIES | prof_weapon
+    rows:
+    - canonical_row: 425
+      aspect: additional weapons gained
+      condition: rate varies by class
+      citation: PHB 37, WEAPON PROFICIENCY TABLE
+    - canonical_row: 2843
+      aspect: rate of gain differs by class
+      condition: ''
+      citation: UA 26, WEAPON PROFICIENCY TABLE
+  - shared_identity: abil_strength | MODIFIES | sys_experience
+    rows:
+    - canonical_row: 97
+      aspect: prime requisite bonus
+      condition: fighters at high score
+      citation: PHB 9, STRENGTH
+    - canonical_row: 206
+      aspect: prime requisite bonus
+      condition: above 15
+      citation: PHB 22, THE FIGHTER
+    - canonical_row: 221
+      aspect: prime requisite bonus
+      condition: strength and wisdom both above 15
+      citation: PHB 22, THE PALADIN
+  - shared_identity: rule_body_system | MODIFIES | abil_strength
+    rows:
+    - canonical_row: 1112
+      aspect: one point per week until cured
+      condition: ''
+      citation: DMG 14, DISEASE (OR DISORDER) TABLE
+    - canonical_row: 1122
+      aspect: chance of permanent loss
+      condition: severe attacks
+      citation: DMG 14, DISEASE (OR DISORDER) TABLE
+    - canonical_row: 1124
+      aspect: chance of loss
+      condition: chronic and severe
+      citation: DMG 14, DISEASE (OR DISORDER) TABLE
+  - shared_identity: sys_alignment | GATES | class_paladin
+    rows:
+    - canonical_row: 175
+      aspect: eligibility
+      condition: lawful good only
+      citation: PHB 18, CHARACTER CLASSES
+    - canonical_row: 222
+      aspect: must begin and remain lawful good
+      condition: ''
+      citation: PHB 22, THE PALADIN
+candidates_under_escalation:
+- candidate:
+    ref: B20
+    gur: GUR-PKT-PHB-035-038-money-equipment-r06
+    assertion: rule_stun MODIFIES cbt_tohit
+    aspect: bonus to strike
+    condition: target stunned
+    polarity: improves
+    polarity_basis: read
+    citation:
+      book: PHB
+      page: 38
+      section: WEAPON TYPES, GENERAL DATA, AND "TO HIT" ADJUSTMENTS
+    assertion_key_5: rule stun | modifies | cbt tohit | bonus to strike | target stunned
+    assertion_key_3: rule_stun | MODIFIES | cbt_tohit
+  source_excerpt:
+    book: PHB
+    page: 38
+    section: WEAPON TYPES, GENERAL DATA, AND "TO HIT" ADJUSTMENTS
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-035-038-money-equipment/source.md
+    line: 460
+    text: Any weapon strikes at +2 against an opponent's back (or similarly unseen); against stunned,
+      prone, and motionless opponents, any weapon strikes at +4.
+    what_it_supports: A stunned opponent is struck at a bonus. The clause is one of three states the sentence
+      names and the Reviewer required each to be accounted for separately.
+  baseline_row:
+    canonical_row: 374
+    source_id: rule_stun
+    source_label: Stunning Blow
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    target_label: To-Hit Roll
+    aspect: target stunned for rounds
+    condition: ''
+    polarity: neutral
+    polarity_basis: unset
+    book: PHB
+    page: '30'
+    section: THE MONK
+    evidence: explicit_rule
+    pass: prose-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  baseline_source_excerpt:
+    book: PHB
+    page: 30
+    section: THE MONK
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-018-033-classes/source.md
+    line: 1004
+    text: Open hand combat damage is shown on MONKS TABLE II below. In addition, the monk has a chance
+      to stun, or even kill, an opponent. An opponent is stunned by a monk for 1-6 (d6) melee rounds if
+      the score of the monk's "to hit" die score exceeds the minimum number required for a hit by 5 or
+      more
+    what_it_supports: How long a monk's stunning blow leaves the opponent stunned. The passage says nothing
+      about striking a stunned opponent more easily.
+  keys:
+    candidate_5: rule stun | modifies | cbt tohit | bonus to strike | target stunned
+    baseline_5: 'rule stun | modifies | cbt tohit | target stunned for rounds | '
+    shared_3: rule_stun | MODIFIES | cbt_tohit
+    distinct_under_five_fields: true
+  local_neighborhood:
+    rule_stun_incident_edges:
+    - canonical_row: 368
+      assertion: rule_open_hand_combat TRIGGERS rule_stun
+      aspect: on exceptional hit
+      condition: ''
+      citation: PHB 30, THE MONK
+    - canonical_row: 369
+      assertion: cbt_tohit GATES rule_stun
+      aspect: margin above required score
+      condition: ''
+      citation: PHB 30, THE MONK
+    - canonical_row: 371
+      assertion: rule_stun GATES rule_monk_kill
+      aspect: target must be stunned first
+      condition: ''
+      citation: PHB 30, THE MONK
+    - canonical_row: 374
+      assertion: rule_stun MODIFIES cbt_tohit
+      aspect: target stunned for rounds
+      condition: ''
+      citation: PHB 30, THE MONK
+    - canonical_row: 1763
+      assertion: spell_slow TRIGGERS rule_stun
+      aspect: target becomes easier to hit
+      condition: ''
+      citation: 'DMG 67, Special ''To Hit'' Bonuses:'
+    - canonical_row: 1815
+      assertion: rule_stun DERIVED_FROM cbt_rear_attack
+      aspect: treated as a rear attack
+      condition: ''
+      citation: 'DMG 70, Special Types Of Attacks:'
+    - canonical_row: 1843
+      assertion: rule_stun GATES cbt_pummel_grapple
+      aspect: immediate follow-up permitted
+      condition: ''
+      citation: DMG 73, GRAPPLING TABLE
+    - canonical_row: 1844
+      assertion: rule_stun EXCLUDES cbt_pummel_grapple
+      aspect: cannot counter for a round
+      condition: ''
+      citation: DMG 73, GRAPPLING TABLE
+    - canonical_row: 1856
+      assertion: cbt_overbear TRIGGERS rule_stun
+      aspect: worst result stuns for a round
+      condition: ''
+      citation: DMG 73, OVERBEARING TABLE
+    - canonical_row: 1870
+      assertion: rule_stun MODIFIES cbt_pummel_grapple
+      aspect: much easier to strike
+      condition: ''
+      citation: DMG 72, NON-LETHAL AND WEAPONLESS COMBAT PROCEDURES
+    - canonical_row: 1981
+      assertion: item_helm_telepathy TRIGGERS rule_stun
+      aspect: successful save stuns the attacker
+      condition: ''
+      citation: DMG 78, Saving Throw Dice Adjustments
+    - canonical_row: 1985
+      assertion: rule_stun MODIFIES save_matrix
+      aspect: severe penalty
+      condition: ''
+      citation: DMG 78, Saving Throw Dice Adjustments
+    - canonical_row: 2380
+      assertion: item_eyes_eagle TRIGGERS rule_stun
+      aspect: vertigo stuns the wearer
+      condition: ''
+      citation: DMG 144, TREASURE (MISCELLANEOUS MAGIC)
+    - canonical_row: 4002
+      assertion: class_monk GATES rule_stun
+      aspect: stunning blow
+      condition: on a sufficient attack roll
+      citation: PHB 30, The Monk
+    the_row_that_matters_most:
+      canonical_row: 1815
+      assertion: rule_stun DERIVED_FROM cbt_rear_attack
+      aspect: treated as a rear attack
+      citation: 'DMG 70, Special Types Of Attacks:'
+      why: 'The DMG states the same underlying mechanic a different way: a stunned opponent is treated
+        as a rear attack. The PHB gives a flat bonus instead. Whichever way invariant 12 is settled, the
+        two books'' treatments of this passage differ mechanically, which is recorded separately as OBS-50
+        in the GUR and is not what this escalation asks about.'
+  analyst_honesty_note: 'B24 is the cleaner of the two. Row 374''s aspect, ''target stunned for rounds'',
+    is arguably an ill-shaped edge to begin with: a duration is not obviously a modification of the to-hit
+    roll. If the Architect adopts the five-field key, the Reviewer still has to decide whether B20 states
+    something row 374 does not, and the Analyst''s position is that it does but would not argue hard against
+    a Reviewer who merged them. The governance question does not depend on how that goes.'
+- candidate:
+    ref: B24
+    gur: GUR-PKT-PHB-035-038-money-equipment-r06
+    assertion: rule_mount MODIFIES cbt_damage
+    aspect: damage from a charge
+    condition: attacker on a charging mount
+    polarity: improves
+    polarity_basis: read
+    citation:
+      book: PHB
+      page: 37
+      section: WEIGHT AND DAMAGE BY WEAPON TYPE
+    assertion_key_5: rule mount | modifies | cbt damage | damage from a charge | attacker on a charging
+      mount
+    assertion_key_3: rule_mount | MODIFIES | cbt_damage
+  source_excerpt:
+    book: PHB
+    page: 37
+    section: WEIGHT AND DAMAGE BY WEAPON TYPE
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-035-038-money-equipment/source.md
+    line: 354
+    text: '*This weapon does twice indicated damage against creatures of any size when it is employed
+      by an attacker riding a charging mount'
+    what_it_supports: A weapon used from a charging mount does multiplied damage. It is one of three footnotes
+      under the weapon table; the other two are the set-weapon case carried by B23.
+  baseline_row:
+    canonical_row: 2798
+    source_id: rule_mount
+    source_label: Mounted or Dismounted
+    edge_type: MODIFIES
+    target_id: cbt_damage
+    target_label: Lance Damage
+    aspect: dismounted lance loses the level bonus
+    condition: ''
+    polarity: neutral
+    polarity_basis: unset
+    book: UA
+    page: '15'
+    section: CAVALIERS TABLE I
+    evidence: explicit_rule
+    pass: page-sweep
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  baseline_source_excerpt:
+    book: UA
+    page: 15
+    section: CAVALIERS TABLE I
+    path: null
+    text: null
+    why_no_excerpt: 'No UA packet is claimed in this repository, so the Analyst cannot quote UA 15 and
+      does not have it. The row is reproduced in full above from canonical instead. This is stated rather
+      than papered over: the comparison of the two assertions rests on the canonical row''s own aspect
+      text, not on a reading of the UA source.'
+  keys:
+    candidate_5: rule mount | modifies | cbt damage | damage from a charge | attacker on a charging mount
+    baseline_5: 'rule mount | modifies | cbt damage | dismounted lance loses the level bonus | '
+    shared_3: rule_mount | MODIFIES | cbt_damage
+    distinct_under_five_fields: true
+  local_neighborhood:
+    rule_mount_incident_edges:
+    - canonical_row: 848
+      assertion: rule_mount MODIFIES ex_movement_rate
+      aspect: mounted rates by mount type
+      condition: ''
+      citation: DMG 58, OUTDOOR MOVEMENT
+    - canonical_row: 1234
+      assertion: tbl_followers_ranger GATES rule_mount
+      aspect: centaur hippogriff or pegasus
+      condition: ''
+      citation: DMG 17, CHARACTER CLASSES (FOLLOWERS)
+    - canonical_row: 1706
+      assertion: rule_terrain EXCLUDES rule_mount
+      aspect: wheeled transport cannot pass
+      condition: ''
+      citation: DMG 58, MOVEMENT MOUNTED IN MILES/DAY
+    - canonical_row: 1707
+      assertion: rule_terrain GATES rule_mount
+      aspect: wheeled transport requires them
+      condition: ''
+      citation: DMG 58, MOVEMENT MOUNTED IN MILES/DAY
+    - canonical_row: 1807
+      assertion: rule_mount MODIFIES fatigue
+      aspect: mounts tire at their own rate
+      condition: ''
+      citation: 'DMG 69, Special Note Regarding Fatigue:'
+    - canonical_row: 2798
+      assertion: rule_mount MODIFIES cbt_damage
+      aspect: dismounted lance loses the level bonus
+      condition: ''
+      citation: UA 15, CAVALIERS TABLE I
+    - canonical_row: 2799
+      assertion: rule_mount DERIVED_FROM wpn_stats
+      aspect: treated as another weapon type
+      condition: ''
+      citation: UA 15, CAVALIERS TABLE I
+    - canonical_row: 2894
+      assertion: rule_ceremony MODIFIES rule_mount
+      aspect: horses and dogs react badly
+      condition: ''
+      citation: UA 42, DRUID SPELLS (1ST LEVEL)
+    - canonical_row: 2919
+      assertion: rule_mount DERIVED_FROM rule_mount
+      aspect: trained specifically for combat
+      condition: ''
+      citation: UA 76, WARHORSES AND BARDING
+    - canonical_row: 2920
+      assertion: rule_mount CONSUMES money_gp
+      aspect: selection and training are costly
+      condition: ''
+      citation: UA 76, WARHORSES AND BARDING
+    - canonical_row: 2921
+      assertion: rule_mount EXCLUDES cbt_morale
+      aspect: does not panic at noise or sudden movement
+      condition: ''
+      citation: UA 76, WARHORSES AND BARDING
+    - canonical_row: 2963
+      assertion: rule_polearm GATES rule_mount
+      aspect: a horseman's weapon rather than a footman's
+      condition: ''
+      citation: 'UA 124, APPENDIX T: POLE ARMS'
+    the_row_that_matters_most:
+      canonical_row: 2797
+      assertion: exp_level MODIFIES cbt_damage
+      aspect: damage bonus equals level while mounted
+      citation: UA 15, CAVALIERS TABLE I
+      why: Row 2797 sits beside row 2798 in the same UA table and shares its three-field identity with
+        row 364, the monk's damage bonus at PHB 30. The corpus already holds the exact pattern B24 would
+        create, one row away from the baseline row this escalation is about.
+  analyst_position_on_this_pair: Row 2798 is a cavalier-specific penalty for losing the mount. B24 is
+    a general bonus for attacking from a charging mount. They are close to opposites and no reading merges
+    them. If the five-field key is rejected, this assertion cannot be recorded at all.
+affected_ids:
+  nodes:
+  - id: rule_stun
+    label: Stunning Blow
+    kind: rule
+    degree: 14
+  - id: cbt_tohit
+    label: To-Hit Roll
+    kind: cbt
+    degree: 53
+  - id: rule_mount
+    label: Mount
+    kind: rule
+    degree: 13
+  - id: cbt_damage
+    label: Damage
+    kind: cbt
+    degree: 70
+  canonical_rows_named:
+  - 374
+  - 1815
+  - 2797
+  - 2798
+  candidate_refs:
+  - B20
+  - B24
+  no_node_changes: No node is added, retired, relabelled or repointed by any option below. All four IDs
+    already exist in the registry and this escalation proposes no registry change.
+options_considered:
+- option: Ratify the five-field key in the constitution
+  detail: Add an explicit assertion-key clause to constitution section 5 defining edge identity as (source_id,
+    edge_type, target_id, aspect, condition), and amend invariant 12 to name it instead of deferring to
+    a clause that does not exist.
+  assessment: Recommended. It changes no data, contradicts no approved row, matches what the Builder already
+    enforces and what the Reviewer already assumes, and closes a governance gap that is currently filled
+    by a tooling comment. Both candidates then proceed as ordinary near matches for the Reviewer to judge.
+  cost: One constitution edit and one invariant edit. No migration.
+- option: Adopt a three-field identity instead
+  detail: Read edge identity as source, type and target alone.
+  assessment: Rejected. It puts 61 approved canonical rows in 55 groups into breach and would require
+    a migration that merges or deletes them, losing facets that different books state differently. It
+    would also make the Builder's current behaviour a defect rather than a gap-filler.
+  cost: A migration touching at least 61 rows, plus the loss of every second facet.
+- option: Leave the key to tooling and close IDQ-15 as answered by the Builder README
+  detail: Record that the Builder's key is authoritative in practice and change nothing.
+  assessment: Workable today and it is effectively the status quo, so nothing breaks if the Architect
+    prefers it. What it leaves behind is an invariant that points at a clause that does not exist, which
+    will be re-raised by the next Analyst who reads invariant 12 literally, and a governance rule that
+    a future tooling change could alter without a Decision.
+  cost: None now. The same question recurs.
+- option: Widen the key further, for example by adding book or page
+  detail: Make the citation part of edge identity.
+  assessment: Rejected, and worth stating because it is the obvious next step from the recommended option.
+    It would permit one assertion to be inserted once per book that states it, which is exactly what constitution
+    section 5 forbids when it says not to create duplicate edges solely to carry additional citations.
+  cost: Silent proliferation of restatements.
+recommended_resolution:
+  summary: Ratify the five-field assertion key in the constitution and amend invariant 12 to name it.
+  proposed_constitution_text:
+    location: rulesets/adnd1e/governance/constitution.md, new subsection under section 5
+    heading: 5.1 Edge identity
+    text: 'Two edges are the same assertion when they agree on source_id, edge_type, target_id, aspect
+      and condition. That tuple is the assertion key. Invariant 12 forbids a second edge with the same
+      assertion key. Two edges that share a source, type and target but state different facets are distinct
+      assertions and both are kept, each with its own citation. Citation fields are never part of the
+      assertion key: an assertion restated in a second book is one edge, and the additional locus belongs
+      in the provenance ledger.'
+  proposed_invariant_text:
+    location: contracts/GRAPH_INVARIANTS.md, invariant 12
+    from: Duplicate edge identity is forbidden unless the constitution explicitly defines a distinct assertion
+      key.
+    to: 'Duplicate edge identity is forbidden. Identity is the assertion key defined in constitution section
+      5.1: source_id, edge_type, target_id, aspect, condition.'
+  consequence_for_this_packet: B20 and B24 stop being blocked on governance and become ordinary near matches.
+    The Reviewer decides on the merits whether each states something its baseline row does not, exactly
+    as it already does for the fifty-five groups in the corpus.
+expected_migration_impact:
+  under_the_recommended_option:
+    canonical_edge_rows_changed: 0
+    identities_changed: 0
+    assertions_changed: 0
+    registry_rows_changed: 0
+    nodes_added_or_retired: 0
+    general_rule_references_changed: 0
+    approved_gups_invalidated: 0
+    tooling_changes_required: None functional. The Builder already implements this key. Its README paragraph
+      explaining that the constitution defines no key would be updated to cite 5.1, and the existing duplicate-free
+      test becomes a check of a stated rule rather than of a chosen convention.
+    constitution_changes: true
+    contract_changes:
+    - contracts/GRAPH_INVARIANTS.md, invariant 12
+    registry_schema_changes: false
+  under_the_three_field_option:
+    canonical_edge_rows_affected: 61
+    groups_affected: 55
+    field_changed: rows merged or deleted, not a field edit
+    note: Stated for completeness because the Architect should see the cost of the option the Analyst
+      is recommending against. The Analyst has not planned this migration and does not recommend it.
+blocking:
+  blocks:
+  - GUR-PKT-PHB-035-038-money-equipment-r06 refs B20 and B24 cannot be dispositioned on the merits until
+    the key is settled
+  does_not_block:
+  - the other twenty edges of GUR-PKT-PHB-035-038-money-equipment-r06, which are unaffected
+  - the Builder compiling a GUP from that GUR; near matches route to the Reviewer today
+  - any other packet or role
+analyst_position: 'The recommended option asks the Architect to write down what the pipeline already does.
+  That is deliberately unambitious. The value is not in changing behaviour but in moving a rule out of
+  a tooling comment and into governance, where a future change to it needs a Decision. The 61 existing
+  rows are the argument: the corpus has been answering this question one packet at a time for a long while,
+  and it has been answering it the same way.'
+a_correction_to_the_originating_idq: IDQ-15 as written in GUR-PKT-PHB-035-038-money-equipment-r06 says
+  invariant 12 'leaves no way to record' a second facet. That overstates it. The Builder's five-field
+  key already leaves a way, and the two candidates would be graded near rather than exact, which is a
+  Reviewer call rather than a hard error. The Analyst discovered this while assembling this package, by
+  reading duplicates.py and vocab.py rather than inferring the rule from the invariant text. The real
+  question is narrower than the one IDQ-15 asks and is the one stated above. The GUR is published and
+  is not being rewritten to hide the overstatement; this paragraph is the correction of record and the
+  Architect should treat this package, not IDQ-15, as the question.

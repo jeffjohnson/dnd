@@ -1,0 +1,409 @@
+schema_version: '1.0'
+id: ESC-2026-08-03T22.35.13.308Z
+status: pending
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.7'
+raised_by: analyst
+raised_on: '2026-08-03'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: DEC-2026-0019 step 1 cannot be completed for 16 of 20 assertions; its acceptance tests cannot
+    be satisfied as written
+  blocking_ids: []
+originating_artifacts:
+  decision: DEC-2026-0019
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0019.yaml
+  review: REV-GUP-MIG-DEC-2026-0015-0016-r03-r01
+  review_path: books/adnd1e/phb/artifacts/reviews/REV-GUP-MIG-DEC-2026-0015-0016-r03-r01.yaml
+  review_finding: MIG-R03-PREREQUISITE-NOT-INTEGRATED
+  analyst_output_so_far:
+  - GUR-PKT-PHB-033-035-alignment-hp-languages-r04, baseline row 413
+  - GUR-PKT-PHB-043-054-cleric-spells-r06, baseline rows 531, 532 and 535
+question: DEC-2026-0019 step 1 requires the Analyst to read authored polarity from bounded claimed Markdown
+  packets for twenty canonical assertions. Sixteen of them are DMG and UA rows, and this repository contains
+  no packet and no Markdown source for either book. Should the DEC-2026-0015/0016 migration wait until
+  DMG and UA are packetized, or should the prerequisite cleanup be re-scoped to the assertions whose source
+  the repository holds?
+why_this_is_architectural: An approved Decision sequences four roles across seven steps on a prerequisite
+  that cannot be produced. The Analyst cannot re-scope a Decision and cannot satisfy it, and no downstream
+  role can start until step 1 completes. Only the Architect can change what the Decision requires or how
+  it is sequenced.
+the_blocker:
+  what_the_decision_requires:
+    source_requirement: Use bounded claimed Markdown source packets conforming to contracts/SOURCE_MARKDOWN.md.
+      Legacy rows and GUP before-images locate the assertions but do not substitute for reading the source
+      rule.
+    required_result:
+      polarity_basis: read
+      authored_polarity_count: 20
+      retained_unset_count: 0
+      retained_heuristic_count: 0
+      all_other_edge_fields: unchanged
+    package_rule: Publish one GUR per bounded claimed source packet. Builder may compile those GURs into
+      separately reviewable packet-update GUPs, but must not combine the cleanup with DEC-2026-0016's
+      nine page-only changes.
+  what_the_repository_holds:
+    directory_probe:
+    - 'books/adnd1e/dmg/packets/incoming: empty'
+    - 'books/adnd1e/dmg/packets/claimed: empty'
+    - 'books/adnd1e/dmg/packets/completed: empty'
+    - 'books/adnd1e/dmg/source: empty'
+    - 'books/adnd1e/ua/packets/incoming: empty'
+    - 'books/adnd1e/ua/packets/claimed: empty'
+    - 'books/adnd1e/ua/packets/completed: empty'
+    - 'books/adnd1e/ua/source: empty'
+    markdown_files_under_dmg_and_ua: 0
+    phb_claimed_packets: 10
+    conclusion: Every DMG and UA packet directory is empty and both source directories are empty. A recursive
+      search for Markdown under either book returns 0 files. The four PHB assertions sit inside claimed
+      packets and have been completed; the other sixteen have nothing to read.
+  which_acceptance_tests_fail:
+  - test: The source-backed cleanup identifies exactly 20 baseline assertions and accounts for baseline
+      rows 413 ... 3498.
+    status: cannot pass
+    why: Four can be accounted for from source. Sixteen cannot be read at all.
+  - test: Every cleanup row uses polarity_basis read; none retains heuristic or unset.
+    status: cannot pass
+    why: Sixteen rows would retain unset or heuristic.
+  - test: Reviewer independently verifies all 20 source readings and explicitly resolves the three baseline
+      heuristic rows 535, 1984 and 2273.
+    status: partially blocked
+    why: Row 535 is PHB and is resolvable. Rows 1984 and 2273 are DMG, so the Reviewer faces the same
+      absence of source the Analyst does.
+  - test: The Approved polarity cleanup is integrated before r03 is emitted.
+    status: blocked downstream
+    why: Steps 2 through 7 are all conditioned on a step 1 that cannot complete.
+what_the_analyst_completed:
+  rows: 4
+  detail:
+  - baseline_row: 413
+    assertion: align_change CONSTRAINS sys_alignment
+    from: neutral/unset
+    to: worsens/read
+    read_from: PHB, Changing Alignment, packet page 34
+  - baseline_row: 531
+    assertion: spell_bless MODIFIES cbt_morale
+    from: neutral/unset
+    to: improves/read
+    read_from: PHB, Bless, packet page 43
+  - baseline_row: 532
+    assertion: spell_bless MODIFIES cbt_tohit
+    from: neutral/unset
+    to: improves/read
+    read_from: PHB, Bless, packet page 43
+  - baseline_row: 535
+    assertion: spell_glyph_of_warding TRIGGERS exp_level_loss
+    from: inflicts/heuristic
+    to: inflicts/read
+    read_from: PHB, Glyph of Warding, packet page 47
+    note: A confirmation rather than a correction. Recorded as OBS-54.
+  fields_changed:
+  - polarity
+  - polarity_basis
+  no_other_field_changed: Each candidate reproduces its canonical row in the other sixteen columns, including
+    page. DEC-2026-0016 owns the page corrections that touch three of these rows and DEC-2026-0019 forbids
+    combining the two scopes.
+the_sixteen_blocked_assertions:
+  count: 16
+  by_book:
+    DMG: 8
+    UA: 8
+  by_basis:
+    unset: 14
+    heuristic: 2
+  locator_note: DEC-2026-0019 warns that its row numbers identify the reviewed 3815-row baseline only.
+    Each row below therefore carries its five-field assertion key, which constitution 5.1 makes identity
+    as of DEC-2026-0020, alongside the row number it currently occupies.
+  rows:
+  - book: DMG
+    baseline_row: 1702
+    current_row_at_time_of_filing: 1702
+    assertion: rule_underwater MODIFIES spell_fireball
+    assertion_key:
+      source_id: rule_underwater
+      edge_type: MODIFIES
+      target_id: spell_fireball
+      aspect: fire-based magic is negated
+      condition: ''
+    citation: 'DMG 57, Underwater spell use:'
+    current_polarity: neutral
+    current_basis: unset
+  - book: DMG
+    baseline_row: 1984
+    current_row_at_time_of_filing: 1984
+    assertion: spell_confusion MODIFIES save_matrix
+    assertion_key:
+      source_id: spell_confusion
+      edge_type: MODIFIES
+      target_id: save_matrix
+      aspect: penalty
+      condition: ''
+    citation: DMG 78, Saving Throw Dice Adjustments
+    current_polarity: inflicts
+    current_basis: heuristic
+  - book: DMG
+    baseline_row: 2065
+    current_row_at_time_of_filing: 2065
+    assertion: spell_charm_person TRIGGERS rule_spell_failure
+    assertion_key:
+      source_id: spell_charm_person
+      edge_type: TRIGGERS
+      target_id: rule_spell_failure
+      aspect: charmed casters may botch deliberately
+      condition: ''
+    citation: DMG 104, MONSTERS AND ORGANIZATION
+    current_polarity: neutral
+    current_basis: unset
+  - book: DMG
+    baseline_row: 2066
+    current_row_at_time_of_filing: 2066
+    assertion: rule_spell_failure CONSTRAINS spell_charm_person
+    assertion_key:
+      source_id: rule_spell_failure
+      edge_type: CONSTRAINS
+      target_id: spell_charm_person
+      aspect: discourages charming spell casters for services
+      condition: ''
+    citation: DMG 104, MONSTERS AND ORGANIZATION
+    current_polarity: neutral
+    current_basis: unset
+  - book: DMG
+    baseline_row: 2122
+    current_row_at_time_of_filing: 2122
+    assertion: potion_philter_love TRIGGERS spell_charm_person
+    assertion_key:
+      source_id: potion_philter_love
+      edge_type: TRIGGERS
+      target_id: spell_charm_person
+      aspect: imbiber is charmed by the first creature seen
+      condition: ''
+    citation: DMG 127, TREASURE (POTIONS)
+    current_polarity: neutral
+    current_basis: unset
+  - book: DMG
+    baseline_row: 2215
+    current_row_at_time_of_filing: 2215
+    assertion: item_rod_lordly_might TRIGGERS spell_hold_person
+    assertion_key:
+      source_id: item_rod_lordly_might
+      edge_type: TRIGGERS
+      target_id: spell_hold_person
+      aspect: on touch at the wielder's command
+      condition: ''
+    citation: DMG 133, TREASURE (RODS, STAVES & WANDS)
+    current_polarity: neutral
+    current_basis: unset
+  - book: DMG
+    baseline_row: 2273
+    current_row_at_time_of_filing: 2273
+    assertion: item_amulet_location MODIFIES spell_esp
+    assertion_key:
+      source_id: item_amulet_location
+      edge_type: MODIFIES
+      target_id: spell_esp
+      aspect: doubles detection against the wearer
+      condition: ''
+    citation: DMG 137, TABLE (III.E.) 1.
+    current_polarity: worsens
+    current_basis: heuristic
+  - book: DMG
+    baseline_row: 2612
+    current_row_at_time_of_filing: 2612
+    assertion: spell_esp MODIFIES cbt_surprise
+    assertion_key:
+      source_id: spell_esp
+      edge_type: MODIFIES
+      target_id: cbt_surprise
+      aspect: detection greatly reduces surprise
+      condition: ''
+    citation: DMG 173, RANDOM DUNGEON GENERATION FOR SOLO PLAY
+    current_polarity: neutral
+    current_basis: unset
+  - book: UA
+    baseline_row: 2902
+    current_row_at_time_of_filing: 2902
+    assertion: spell_taunt MODIFIES cbt_armor_class
+    assertion_key:
+      source_id: spell_taunt
+      edge_type: MODIFIES
+      target_id: cbt_armor_class
+      aspect: significant penalty while squirming
+      condition: ''
+    citation: UA 54, MAGIC-USER SPELLS (2ND LEVEL)
+    current_polarity: neutral
+    current_basis: unset
+  - book: UA
+    baseline_row: 2903
+    current_row_at_time_of_filing: 2903
+    assertion: spell_taunt MODIFIES cbt_tohit
+    assertion_key:
+      source_id: spell_taunt
+      edge_type: MODIFIES
+      target_id: cbt_tohit
+      aspect: penalty while squirming
+      condition: ''
+    citation: UA 54, MAGIC-USER SPELLS (2ND LEVEL)
+    current_polarity: neutral
+    current_basis: unset
+  - book: UA
+    baseline_row: 2904
+    current_row_at_time_of_filing: 2904
+    assertion: spell_taunt TRIGGERS spell_disruption
+    assertion_key:
+      source_id: spell_taunt
+      edge_type: TRIGGERS
+      target_id: spell_disruption
+      aspect: ruins spells in the initial round
+      condition: ''
+    citation: UA 54, MAGIC-USER SPELLS (2ND LEVEL)
+    current_polarity: neutral
+    current_basis: unset
+  - book: UA
+    baseline_row: 2905
+    current_row_at_time_of_filing: 2905
+    assertion: spell_taunt MODIFIES comeliness
+    assertion_key:
+      source_id: spell_taunt
+      edge_type: MODIFIES
+      target_id: comeliness
+      aspect: cumulative loss per day to a cap
+      condition: ''
+    citation: UA 54, MAGIC-USER SPELLS (2ND LEVEL)
+    current_polarity: neutral
+    current_basis: unset
+  - book: UA
+    baseline_row: 2906
+    current_row_at_time_of_filing: 2906
+    assertion: spell_taunt MODIFIES abil_dexterity
+    assertion_key:
+      source_id: spell_taunt
+      edge_type: MODIFIES
+      target_id: abil_dexterity
+      aspect: further loss after a week
+      condition: ''
+    citation: UA 54, MAGIC-USER SPELLS (2ND LEVEL)
+    current_polarity: neutral
+    current_basis: unset
+  - book: UA
+    baseline_row: 3147
+    current_row_at_time_of_filing: 3147
+    assertion: rule_underwater CONSTRAINS spell_melfs_acid_arrow
+    assertion_key:
+      source_id: rule_underwater
+      edge_type: CONSTRAINS
+      target_id: spell_melfs_acid_arrow
+      aspect: acid is washed away in a round
+      condition: ''
+    citation: UA 82, THE ADVENTURE (UNDERWATER ADVENTURES)
+    current_polarity: neutral
+    current_basis: unset
+  - book: UA
+    baseline_row: 3283
+    current_row_at_time_of_filing: 3283
+    assertion: exp_level MODIFIES spell_taunt
+    assertion_key:
+      source_id: exp_level
+      edge_type: MODIFIES
+      target_id: spell_taunt
+      aspect: hit dice affected scale with level
+      condition: ''
+    citation: UA 53, MAGIC-USER SPELLS (2ND LEVEL)
+    current_polarity: neutral
+    current_basis: unset
+  - book: UA
+    baseline_row: 3498
+    current_row_at_time_of_filing: 3498
+    assertion: exp_level MODIFIES spell_melfs_acid_arrow
+    assertion_key:
+      source_id: exp_level
+      edge_type: MODIFIES
+      target_id: spell_melfs_acid_arrow
+      aspect: rounds of acid scale with level
+      condition: ''
+    citation: UA 54, MAGIC-USER SPELLS (2ND LEVEL)
+    current_polarity: neutral
+    current_basis: unset
+what_the_analyst_will_not_do: 'The sixteen are not guessed. For several of them a plausible value is obvious
+  from the node names before any source is opened, and spell_taunt MODIFIES cbt_armor_class is the clearest
+  case. Producing those values and labelling the basis read would satisfy every acceptance test and would
+  be a lie of exactly the kind this cleanup exists to remove: three of the twenty rows carry basis heuristic
+  today because a migration pattern-matched values into them, and the Decision''s whole purpose is to
+  replace guesses with readings.'
+options_considered:
+- option: Re-scope the prerequisite to the four PHB assertions and let the migration proceed
+  detail: Amend the cleanup's required_result to the assertions whose source the repository holds, record
+    the sixteen as a standing debt against DMG and UA packetization, and allow r03 to be emitted with
+    those sixteen still unset.
+  assessment: 'Recommended, with one qualification below. It unblocks a migration that is otherwise stalled
+    indefinitely on source that no role in this pipeline can produce, and it costs nothing that is not
+    already lost: those sixteen rows carry unset and heuristic bases today and would continue to.'
+  qualification: GRAPH_INVARIANTS 15 and 16 are the reason the Decision refused a migration exception
+    in the first place, and its rationale says a migration exception 'would weaken a categorical review
+    boundary to carry known legacy debt through modified rows'. That argument is untouched by the absence
+    of source. The Architect should decide whether re-scoping is a narrower exception than the one already
+    rejected, or the same one.
+- option: Hold the migration until DMG and UA are packetized
+  detail: Leave DEC-2026-0019 as written and treat DMG and UA packetization as the true blocker.
+  assessment: Faithful to the Decision and to invariants 15 and 16. The cost is that DEC-2026-0015, DEC-2026-0016
+    and DEC-2026-0019 all stall behind two books' worth of packetization, which is a large body of work
+    and is not scheduled anywhere the Analyst can see. Nine approved page corrections and a completed
+    identity migration wait on it.
+- option: Split the migration so the PHB-only work proceeds and the DMG and UA rows wait
+  detail: Integrate the four-row cleanup now, and let Builder emit r03 covering only the operations that
+    do not touch an assertion whose polarity is still unresolved.
+  assessment: Worth the Architect's attention because it preserves the invariant and unblocks part of
+    the work, but the Analyst cannot tell from here how much of DEC-2026-0015's identity migration would
+    survive the split. Fifteen of the sixteen blocked rows are endpoint repoints under DEC-2026-0015,
+    so the split may remove most of that Decision's substance and leave little worth integrating.
+- option: Let the Reviewer resolve the sixteen from canonical context instead of source
+  detail: Treat Reviewer judgement as a substitute for reading the page.
+  assessment: Rejected and recorded so it is visibly considered. It reproduces the heuristic-basis problem
+    under a different name and contradicts the Decision's own prohibition on inferring polarity from existing
+    values.
+recommended_resolution: 'Rule on scope rather than on values. The Analyst recommends re-scoping the prerequisite
+  to the four assertions whose source exists, recording the sixteen as an explicit standing debt tied
+  to DMG and UA packetization so they are not silently forgotten, and stating in the amending Decision
+  whether the resulting r03 may carry rows whose polarity_basis remains unset. That last point is the
+  part the Analyst cannot decide: it is a deliberate, bounded exception to GRAPH_INVARIANTS 15 and 16,
+  and DEC-2026-0019 refused a broader version of the same exception for reasons that still hold.'
+expected_migration_impact:
+  of_the_completed_work:
+    canonical_edge_rows_changed: 4
+    fields_changed:
+    - polarity
+    - polarity_basis
+    identities_changed: 0
+    assertions_changed: 0
+    registry_rows_changed: 0
+    nodes_added_or_retired: 0
+    constitution_changes: false
+    contract_changes: []
+    registry_schema_changes: false
+  of_this_escalation_itself:
+    canonical_edge_rows_changed: 0
+    note: This package asks for a scope ruling and changes no data.
+  under_the_recommended_option:
+    canonical_edge_rows_changed: 4
+    rows_left_with_unset_or_heuristic_basis: 16
+    decision_amendments:
+    - DEC-2026-0019 prerequisite_polarity_cleanup.required_result
+    - DEC-2026-0019 acceptance_tests
+    note: No canonical row changes beyond the four already prepared.
+blocking:
+  blocks:
+  - DEC-2026-0019 steps 2 through 7
+  - GUP-MIG-DEC-2026-0015-0016-r03 and therefore DEC-2026-0015 and DEC-2026-0016
+  does_not_block:
+  - GUR-PKT-PHB-033-035-alignment-hp-languages-r04 and GUR-PKT-PHB-043-054-cleric-spells-r06, which are
+    ready for the Builder now
+  - GUP-PKT-PHB-035-038-money-equipment-r05, which is with the Reviewer
+  - any other packet
+analyst_position: The four assertions this repository can support are done and are handed off. The remaining
+  sixteen are not a judgement the Analyst is declining to make; they are a reading the Analyst has no
+  page to make it from. The decision the Architect faces is whether the migration waits for two books
+  to be packetized or proceeds with a bounded and recorded exception, and that is a scope and sequencing
+  question rather than a graph question.

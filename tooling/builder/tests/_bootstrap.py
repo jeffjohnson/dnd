@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import sys
 from pathlib import Path
 
@@ -55,9 +56,24 @@ def unregistered_returned_to_workflow(governance, registry):
     """A DEC-2026-0003 ordinary node proposal the registry does not hold yet.
 
     These are consumed as bundles land, so the test asks for whichever is still
-    outstanding rather than naming one that will be registered next week.
+    outstanding rather than naming one that will be registered next week. Once
+    the last one lands there is no live case left, and the rule under test --
+    that a returned-to-workflow node is proposed rather than escalated -- still
+    has to hold for the next decision that returns one. So the fixture adds a
+    synthetic entry to a copy of governance rather than expiring.
+
+    Returns `(node_id, governance)`; the governance is the live one whenever a
+    real case exists, so the live path stays covered while it lasts.
     """
     for node_id in sorted(governance.nodes_returned_to_workflow):
         if node_id not in registry:
-            return node_id
-    raise AssertionError("every returned-to-workflow node is already registered")
+            return node_id, governance
+
+    synthetic = "rule_builder_test_returned_to_workflow"
+    assert synthetic not in registry, "synthetic fixture ID collides with the registry"
+    stand_in = copy.copy(governance)
+    stand_in.nodes_returned_to_workflow = {
+        **governance.nodes_returned_to_workflow,
+        synthetic: "DEC-2026-0003",
+    }
+    return synthetic, stand_in

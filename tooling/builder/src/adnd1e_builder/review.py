@@ -99,6 +99,25 @@ class BucketInstruction:
     field_values: dict[str, str] = field(default_factory=dict)
     #: Complete node-addition entries the Review supplies for the patch to carry.
     node_additions: tuple[dict, ...] = ()
+    #: Explicit column corrections from a `replace_ref`/`fields` instruction.
+    #: Unlike `field_values` these are authored rulings, not an echo of the row,
+    #: so they must reach the build-ownership check rather than bypass it.
+    field_corrections: dict[str, str] = field(default_factory=dict)
+    #: Keys inside a bucket instruction this parser does not implement.
+    unknown_keys: tuple[str, ...] = ()
+    #: Row the ruling supersedes, when the Review names one on the operation.
+    obsolete_row: int | None = None
+    #: The Reviewer's own account of why this row is an update. A later Review
+    #: that approves the operation carries a rationale about the row's contents,
+    #: not about its placement, so the account travels with the ruling.
+    detail: str = ""
+
+    @property
+    def states_placement(self) -> bool:
+        """The instruction decides which bucket this row lands in."""
+        return bool(
+            self.remove_from or self.target_bucket or self.canonical_row is not None
+        )
 
     @property
     def is_empty(self) -> bool:
@@ -111,20 +130,123 @@ class BucketInstruction:
             or self.differences_not_applied
             or self.field_values
             or self.node_additions
+            or self.field_corrections
+            or self.obsolete_row is not None
         )
 
 
-def _parse_bucket_instruction(corrections: dict) -> BucketInstruction:
-    """Read the `edge_changes[.bucket]` instructions out of `exact_corrections`."""
-    remove_from: set[str] = set()
-    target_bucket = ""
+#: Keys a bucket instruction may carry that are not edge columns. Anything else
+#: is a Reviewer instruction this build does not implement, and it is reported
+#: rather than ignored -- an unread `fields:` block silently discards a ruling.
+_KNOWN_INSTRUCTION_KEYS = frozenset(
+    {
+        "add",
+        "canonical_row",
+        "changes",
+        "detail",
+        "differences_not_applied",
+        "fields",
+        "obsolete_conflicting_row",
+        "reason",
+        "ref",
+        "remove_change_fields",
+        "remove_ref",
+        "replace_ref",
+        "retain_ref",
+        "set_differences_not_applied",
+    }
+)
+
+
+def _normalized_change(delta: dict) -> dict[str, str] | None:
+    """One field's change set, from either spelling a Review uses.
+
+    Reviews write the pair as `canonical`/`patch` in some places and `from`/`to`
+    in others. Both name the same two values. The emitted spelling is
+    `canonical`/`patch`, matching the diff the build computes itself, so a
+    Reviewer-supplied change set and a computed one read the same downstream.
+    """
+    if "patch" in delta or "canonical" in delta:
+        return {
+            "canonical": str(delta.get("canonical", "")),
+            "patch": str(delta.get("patch", "")),
+        }
+    if "from" in delta or "to" in delta:
+        return {"canonical": str(delta.get("from", "")), "patch": str(delta.get("to", ""))}
+    return None
+
+
+def _parse_operation_records(records) -> BucketInstruction:
+    """Read the operation ruling a Review restates in `submitted_operation_records`.
+
+    A later Review in a chain approves the operations an earlier one directed,
+    and `load_chain` lets the later disposition win wholesale. Without this the
+    approval would erase the ruling it approves: rows the Reviewer placed as
+    canonical updates would come back as insertions, which is the one outcome
+    every party has already rejected.
+
+    Only records naming a `canonical_row` are rulings. A record that restates
+    the submitted edge row is the patch's own content, not an instruction.
+    """
     canonical_row = None
     reason = ""
     changes: dict[str, dict[str, str]] = {}
-    remove_change_fields: set[str] = set()
     differences: dict[str, dict] = {}
+    obsolete_row = None
+    detail = ""
+
+    for record in records or ():
+        if not isinstance(record, dict):
+            continue
+        row_number = _as_row_number(record.get("canonical_row"))
+        if row_number is None:
+            continue
+        canonical_row = row_number
+        reason = reason or str(record.get("reason") or "").strip()
+        obsolete_row = _as_row_number(record.get("obsolete_conflicting_row")) or obsolete_row
+        detail = detail or str(record.get("detail") or "").strip()
+        for field_name, delta in (record.get("changes") or {}).items():
+            if isinstance(delta, dict):
+                normalized = _normalized_change(delta)
+                if normalized is not None:
+                    changes[str(field_name)] = normalized
+        for field_name, body in (record.get("differences_not_applied") or {}).items():
+            if isinstance(body, dict):
+                differences[str(field_name)] = dict(body)
+
+    if canonical_row is None:
+        return BucketInstruction()
+    return BucketInstruction(
+        target_bucket="updates",
+        canonical_row=canonical_row,
+        reason=reason,
+        changes=changes,
+        differences_not_applied=differences,
+        obsolete_row=obsolete_row,
+        detail=detail,
+    )
+
+
+def _parse_bucket_instruction(corrections: dict, records=None) -> BucketInstruction:
+    """Read the `edge_changes[.bucket]` instructions out of `exact_corrections`.
+
+    `submitted_operation_records` supplies the same ruling in restated form and
+    is read first, so an explicit `exact_corrections` instruction still wins.
+    """
+    prior = _parse_operation_records(records)
+    remove_from: set[str] = set()
+    target_bucket = prior.target_bucket
+    canonical_row = prior.canonical_row
+    reason = prior.reason
+    changes: dict[str, dict[str, str]] = dict(prior.changes)
+    remove_change_fields: set[str] = set()
+    differences: dict[str, dict] = dict(prior.differences_not_applied)
     field_values: dict[str, str] = {}
     node_additions: list[dict] = []
+    field_corrections: dict[str, str] = {}
+    unknown_instruction_keys: set[str] = set()
+    obsolete_row = prior.obsolete_row
+    detail = prior.detail
 
     # `node_changes.additions_proposed.add` supplies a whole proposal entry.
     node_block = corrections.get(NODE_CHANGE_KEY)
@@ -155,6 +277,24 @@ def _parse_bucket_instruction(corrections: dict) -> BucketInstruction:
 
             payload = instruction.get("add")
             payload = payload if isinstance(payload, dict) else instruction
+
+            # `replace_ref` names the row and `fields` carries the corrected
+            # columns. This is the Reviewer authoring values, so it is kept
+            # apart from the whole-row echo and handed to the ownership check.
+            for source in (instruction, payload):
+                block = source.get("fields")
+                if isinstance(block, dict):
+                    for field_name, value in block.items():
+                        field_corrections[str(field_name)] = (
+                            "" if value is None else str(value)
+                        )
+            for source in (instruction, payload):
+                unknown_instruction_keys.update(
+                    str(key)
+                    for key in source
+                    if key not in _KNOWN_INSTRUCTION_KEYS and key not in COLUMNS
+                )
+
             if instruction.get("retain_ref") or payload is not instruction or bucket == "updates":
                 target_bucket = target_bucket or bucket
             row_number = _as_row_number(payload.get("canonical_row"))
@@ -163,10 +303,9 @@ def _parse_bucket_instruction(corrections: dict) -> BucketInstruction:
             reason = reason or str(payload.get("reason") or "").strip()
             for field_name, delta in (payload.get("changes") or {}).items():
                 if isinstance(delta, dict):
-                    changes[str(field_name)] = {
-                        "from": str(delta.get("canonical", "")),
-                        "to": str(delta.get("patch", "")),
-                    }
+                    normalized = _normalized_change(delta)
+                    if normalized is not None:
+                        changes[str(field_name)] = normalized
             for field_name in payload.get("remove_change_fields") or ():
                 remove_change_fields.add(str(field_name))
             for field_name, body_ in (payload.get("set_differences_not_applied") or {}).items():
@@ -200,6 +339,10 @@ def _parse_bucket_instruction(corrections: dict) -> BucketInstruction:
         differences_not_applied=differences,
         field_values=field_values,
         node_additions=tuple(node_additions),
+        field_corrections=field_corrections,
+        unknown_keys=tuple(sorted(unknown_instruction_keys)),
+        obsolete_row=obsolete_row,
+        detail=detail,
     )
 
 
@@ -225,6 +368,9 @@ class RowDirective:
     #: `updates`. An `approved` disposition affirms that bucket, so a build that
     #: later demotes an approved update to an insertion has lost the ruling.
     presented_operation: str = ""
+    #: Every bucket the reviewed patch presented this row in. A row can occupy
+    #: two, which is itself the defect a Review sometimes rules on.
+    presented_operations: tuple[str, ...] = ()
     #: The Review that decided this row, and the GUR that Review's patch was
     #: built from. In a chain these differ per row: an early Review judged a
     #: population the Analyst has since revised, so whether a missing row is a
@@ -269,6 +415,28 @@ class RowDirective:
     def effective_operation(self) -> str:
         return self.operation or self.bucket.reason or CANONICAL_UPDATE
 
+    @property
+    def states_placement(self) -> bool:
+        """This Review decides which bucket the row belongs in.
+
+        Naming the buckets it was submitted in counts: a Review that lists a
+        row's operations has considered its placement, even where it approves
+        that placement without changing anything.
+        """
+        return bool(
+            self.presented_operation
+            or self.presented_operations
+            or self.operation
+            or self.canonical_row is not None
+            or self.bucket.states_placement
+        )
+
+    @property
+    def effective_obsolete_row(self) -> int | None:
+        if self.obsolete_row is not None:
+            return self.obsolete_row
+        return self.bucket.obsolete_row
+
 
 @dataclass(frozen=True)
 class NodeDirective:
@@ -297,20 +465,81 @@ class NodeDirective:
         return str(self.corrections.get("proposed_label") or "").strip()
 
 
-def _carry_forward(earlier: RowDirective | None, later: RowDirective) -> RowDirective:
-    """Later disposition wins; earlier structural instructions survive silence.
+def _presented_operations(row: dict) -> tuple[str, ...]:
+    """The buckets the reviewed patch put this row in, as the Review records them.
 
-    Only the instructions the later Review does not restate are inherited. A
-    later Review that names its own operation or canonical row replaces the
-    earlier one outright.
+    Reviews name this `submitted_operations` and write a list; the singular
+    `operation` key is the older spelling. Reading only one of the two loses the
+    Reviewer's account of where the row was, which is what the
+    `reviewer_operation_not_preserved` check compares against.
     """
-    if earlier is None or later.operation or later.canonical_row is not None:
+    submitted = row.get("submitted_operations")
+    if isinstance(submitted, str):
+        submitted = [submitted]
+    operations = [str(op).strip() for op in (submitted or ()) if str(op).strip()]
+    single = str(row.get("operation") or "").strip()
+    if single and single not in operations:
+        operations.append(single)
+    return tuple(operations)
+
+
+def _presented_operation(row: dict) -> str:
+    """The single bucket the row was presented in, where there is exactly one.
+
+    A row in two buckets has no single presented operation, and the checks that
+    read this must not pick one of the two arbitrarily.
+    """
+    single = str(row.get("operation") or "").strip()
+    if single:
+        return single
+    operations = _presented_operations(row)
+    return operations[0] if len(operations) == 1 else ""
+
+
+def _carry_forward(earlier: RowDirective | None, later: RowDirective) -> RowDirective:
+    """Fold an earlier Review's ruling into the later one that supersedes it.
+
+    Corrections and placement carry forward on different rules, because the two
+    Reviews say different kinds of thing about them.
+
+    *Corrections merge.* Each Review in a chain judges a patch compiled from the
+    same GUR, so an earlier Review's field corrections are already in the patch
+    the later Review approves. Dropping them would recompile the GUR without
+    them and hand back the very defects that Review fixed -- an approval would
+    undo the corrections it approves. Later wins field by field.
+
+    *Placement does not.* A Review states which bucket every row belongs in, so
+    where the later Review states a placement it is complete and replaces the
+    earlier one outright. Merging instead would resurrect a canonical row number
+    or a withheld field the later Review deliberately dropped. Only when the
+    later Review is silent about placement does the earlier one stand.
+    """
+    if earlier is None:
         return later
+
+    corrections = {**earlier.corrections, **later.corrections}
+    unknown_keys = tuple(sorted(set(earlier.unknown_keys) | set(later.unknown_keys)))
+    placement = later if later.states_placement else earlier
+    bucket = replace(
+        placement.bucket,
+        field_values={**earlier.bucket.field_values, **later.bucket.field_values},
+        field_corrections={
+            **earlier.bucket.field_corrections,
+            **later.bucket.field_corrections,
+        },
+        node_additions=later.bucket.node_additions or earlier.bucket.node_additions,
+        unknown_keys=tuple(
+            sorted(set(earlier.bucket.unknown_keys) | set(later.bucket.unknown_keys))
+        ),
+    )
     return replace(
         later,
-        operation=earlier.operation,
-        canonical_row=earlier.canonical_row,
-        obsolete_row=earlier.obsolete_row,
+        operation=placement.operation,
+        canonical_row=placement.canonical_row,
+        obsolete_row=placement.obsolete_row,
+        corrections=corrections,
+        bucket=bucket,
+        unknown_keys=unknown_keys,
     )
 
 
@@ -370,12 +599,21 @@ class ReviewDirectives:
                 and k not in BUCKET_KEYS
                 and k != NODE_CHANGE_KEY
             }
-            bucket = _parse_bucket_instruction(raw)
+            bucket = _parse_bucket_instruction(
+                raw, row.get("submitted_operation_records")
+            )
             unknown = tuple(
                 sorted(
-                    key
-                    for key in corrections
-                    if key not in COLUMNS and key not in _TOLERATED_CORRECTION_KEYS
+                    {
+                        key
+                        for key in corrections
+                        if key not in COLUMNS and key not in _TOLERATED_CORRECTION_KEYS
+                    }
+                    | {
+                        key
+                        for key in bucket.unknown_keys
+                        if key not in _TOLERATED_CORRECTION_KEYS
+                    }
                 )
             )
             directives.rows[ref] = RowDirective(
@@ -388,7 +626,8 @@ class ReviewDirectives:
                 operation=str(raw.get("operation") or "").strip(),
                 canonical_row=_as_row_number(raw.get("canonical_row")),
                 obsolete_row=_as_row_number(raw.get("obsolete_conflicting_row")),
-                presented_operation=str(row.get("operation") or "").strip(),
+                presented_operation=_presented_operation(row),
+                presented_operations=_presented_operations(row),
                 review_id=directives.review_id,
                 review_input_gur=directives.input_gur,
                 bucket=bucket,

@@ -109,6 +109,7 @@ def build_manifest(batch: Batch, root: Path, ruleset_id: str, constitution_versi
         },
         "registry_changes": {
             "nodes_added": batch.registrations,
+            "nodes_added_without_edges": batch.registrations_without_edges,
             "nodes_retired": [],
             "derived_columns_resynced": len(batch.registry_resync),
             "preexisting_drift_corrected": batch.registry_preexisting_drift,
@@ -246,6 +247,16 @@ def render_diff(batch: Batch, ruleset_id: str) -> str:
         for r in batch.registrations:
             add(f"| `{r['id']}` | {r['label']} | {r['kind']} | `{r['review_id']}` | "
                 f"{', '.join(r['edges_depending_on_it']) or '-'} |")
+        add("")
+
+    if batch.registrations_without_edges:
+        add(f"{len(batch.registrations_without_edges)} of those carry no edge yet. The "
+            "registry is the list of approved node IDs (constitution 3.2) and is already")
+        add("a superset of the graph's nodes, so an approved identity may sit at degree 0 "
+            "until a later packet asserts a relationship for it:")
+        add("")
+        for r in batch.registrations_without_edges:
+            add(f"- `{r['id']}` — {r['label']}")
         add("")
 
     if batch.updated:

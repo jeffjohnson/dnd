@@ -1,6 +1,6 @@
 # Agent Work Queue Contract
 
-**Version 1.2.**
+**Version 1.3.**
 
 ## Purpose
 
@@ -35,6 +35,41 @@ paths and checksums are provenance and must remain valid.
     be reported.
 11. `packet_id` is scope metadata, not a decision-migration revision key.
     Decision-migration revisions are grouped by their stable `lineage_id`.
+12. A later approved Architect Decision may replace the ready handoff of the
+    artifact that raised its escalation. The original artifact remains immutable;
+    queue tooling derives the current handoff from the Decision lineage.
+
+## Decision Handoff Replacement
+
+An approved Architect Decision replaces an originating artifact's ready handoff
+only when all of these conditions hold:
+
+1. the Decision's `escalation_id` resolves to a package under the same ruleset's
+   `escalations/decided/` directory;
+2. that package's `originating_artifacts` explicitly names the artifact ID and
+   repository path whose handoff is being replaced;
+3. the named artifact is still the active leaf of its kind; and
+4. the Decision has an explicit `handoff` block.
+
+Queue tooling must suppress the originating artifact's earlier ready item. It
+then applies the Decision handoff as follows:
+
+- `readiness: ready` routes the Decision to `handoff.next_role` under the
+  applicable role rule;
+- `readiness: blocked` produces blocked state, never ready state, and preserves
+  the Decision's `blocking_ids`;
+- `readiness: terminal` produces no downstream work.
+
+This rule does not rewrite, delete, or supersede the originating artifact. It
+changes queue state because the Architect has resolved the question that caused
+the earlier handoff. Free-text references do not replace a handoff: the decided
+escalation must supply the exact originating artifact ID and path. A Decision
+that does not satisfy this section leaves the existing artifact handoff intact.
+
+When the Decision is already visible as a ready item for the same role, the
+replacement does not create a second item for the originating artifact. The
+Decision is the one logical coordination job; independently ready packet GURs or
+other input bundles remain separate jobs.
 
 ## Required Handoff Metadata
 
@@ -317,9 +352,15 @@ Queue tooling must prove that:
     `decision_migration` revision;
 20. decision-migration discovery produces equivalent results from book-scoped
     GUP stores and ruleset-scoped cross-book stores.
+21. an approved Decision whose decided escalation exactly names an active Review
+    suppresses that Review's earlier ready handoff, routes only the Decision's
+    current handoff, and leaves the Review file byte-immutable.
 
 ## Version History
 
+- **1.3 - 2026-08-03:** Defined exact, provenance-backed replacement of a stale
+  originating-artifact handoff by the approved Decision that resolves its
+  escalation, without rewriting immutable artifacts or double-counting work.
 - **1.2 - 2026-07-31:** Added decision migrations as a first-class GUP lineage
   root, defined checksummed Decision and canonical provenance, separated their
   revision grouping from packet IDs, and added Builder/Reviewer queue rules and

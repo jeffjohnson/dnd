@@ -1,5 +1,7 @@
 # Graph Invariants
 
+**Version 1.0.**
+
 These invariants are executable truths. Builder and Integrator tooling must enforce them. Reviewer verifies the subset that requires source interpretation.
 
 ## Identity
@@ -18,7 +20,7 @@ These invariants are executable truths. Builder and Integrator tooling must enfo
 9. Every edge has a source citation: book plus section and/or page.
 10. Every edge has one evidence class.
 11. No magnitude, die expression, numeric bonus, threshold value, or copied rule prose appears in `aspect` or `condition`.
-12. Duplicate edge identity is forbidden unless the constitution explicitly defines a distinct assertion key.
+12. Each ruleset constitution defines its assertion key. Two edges equal under that key are duplicate identity and cannot both enter production; tooling must not invent, omit, or widen key fields.
 
 ## Polarity
 
@@ -51,3 +53,8 @@ These invariants are executable truths. Builder and Integrator tooling must enfo
 30. Only Integrator tooling mutates canonical graph artifacts.
 31. No role requires another role's conversation history.
 32. Every handoff is complete, machine-readable, and independently auditable.
+
+## Version History
+
+- **1.0 - 2026-08-03:** Made the active ruleset constitution authoritative for
+  assertion identity and prohibited tooling from choosing a different key.

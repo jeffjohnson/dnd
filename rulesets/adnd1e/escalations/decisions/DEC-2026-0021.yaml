@@ -1,0 +1,252 @@
+schema_version: "1.0"
+id: DEC-2026-0021
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Compile the two active-leaf PHB polarity GURs as separate packet updates.
+    Do not revise the combined identity/page migration yet.
+  blocking_ids: []
+
+decision_date: "2026-08-03"
+escalation_id: ESC-2026-08-03T22.35.13.308Z
+supplements: DEC-2026-0019
+
+question: >-
+  How does the DEC-2026-0015/0016 migration proceed when four required PHB
+  polarity readings are complete but the repository contains no claimed
+  Markdown packet or Markdown source for the sixteen required DMG and UA
+  readings?
+
+ruling: >-
+  Do not create an exception to GRAPH_INVARIANTS 15-16 and do not describe any
+  unread DMG or UA polarity as read. The four completed PHB assertions proceed
+  now through ordinary packet-update GUP, Review, and Integration. After those
+  four assertions are integrated, DEC-2026-0016's nine page-only corrections
+  may proceed in a new independent decision-migration lineage. The atomic
+  DEC-2026-0015 identity migration remains blocked in full until claimed DMG
+  and UA Markdown packets support all sixteen outstanding readings. The
+  existing combined migration revisions r01 through r03 and their Reviews
+  remain immutable, non-approvable history and are not a baseline for either
+  replacement lineage.
+
+rationale:
+  - >-
+    A missing source is a real dependency, not evidence for an assertion.
+    Marking a plausible value as read without a packet would make the cleanup
+    formally pass by recording false provenance.
+  - >-
+    The four PHB readings are complete, independently scoped, and already
+    published as active-leaf GURs. Holding them would not improve the sixteen
+    unavailable DMG and UA readings.
+  - >-
+    DEC-2026-0016 changes only page. Its nine assertion keys and semantic fields
+    remain fixed, and the only four page-scope assertions affected by
+    DEC-2026-0019's authored-polarity prerequisite are the completed PHB rows.
+    It can therefore proceed after those four are integrated without carrying
+    unread authored-polarity debt through a touched row.
+  - >-
+    DEC-2026-0015 expressly requires its node additions, registry relabels,
+    endpoint repoints, label normalizations, and provenance merge to ship as
+    one reviewed package. Splitting individual identity operations could leave
+    registry labels and incident edge labels inconsistent, so that migration
+    remains atomic.
+  - >-
+    The existing combined lineage cannot be narrowed by dropping prior input
+    authority: WORK_QUEUES requires a replacement revision to preserve original
+    input provenance. New independent lineages preserve both history and scope.
+
+source_availability_disposition:
+  completed_phb_cleanup:
+    gur_ids:
+      - GUR-PKT-PHB-033-035-alignment-hp-languages-r04
+      - GUR-PKT-PHB-043-054-cleric-spells-r06
+    baseline_rows: [413, 531, 532, 535]
+    assertion_count: 4
+    allowed_fields: [polarity, polarity_basis]
+    required_basis: read
+    next_sequence: [builder, reviewer, integrator]
+  blocked_source_cleanup:
+    books: [dmg, ua]
+    assertion_count: 16
+    baseline_rows:
+      - 1702
+      - 1984
+      - 2065
+      - 2066
+      - 2122
+      - 2215
+      - 2273
+      - 2612
+      - 2902
+      - 2903
+      - 2904
+      - 2905
+      - 2906
+      - 3147
+      - 3283
+      - 3498
+    readiness: blocked
+    unblock_condition: >-
+      Claimed bounded Markdown packets conforming to SOURCE_MARKDOWN exist for
+      every cited DMG and UA locus, and Analyst publishes source-read polarity
+      GURs for all sixteen stable five-field assertion keys.
+    prohibited_substitute: >-
+      Canonical values, endpoint names, legacy before-images, and Reviewer
+      inference do not substitute for reading the claimed source.
+
+lineage_disposition:
+  historical_combined_lineage:
+    lineage_id: MIG-DEC-2026-0015-0016
+    latest_artifact: GUP-MIG-DEC-2026-0015-0016-r03
+    disposition: immutable_non_approvable_history
+    action: >-
+      Do not issue r04. Do not reuse this lineage for a reduced scope because a
+      revision must preserve its original Decision inputs.
+  page_only_lineage:
+    lineage_id: MIG-DEC-2026-0016-PAGE
+    first_gup_id: GUP-MIG-DEC-2026-0016-PAGE-r01
+    authority:
+      - DEC-2026-0016
+      - DEC-2026-0019
+      - DEC-2026-0021
+    readiness: blocked_until_completed_phb_cleanup_is_integrated
+    scope: >-
+      Exactly the nine DEC-2026-0016 page replacements and no other edge,
+      node, registry, label, polarity, or provenance mutation.
+  identity_lineage:
+    lineage_id: MIG-DEC-2026-0015-IDENTITY
+    first_gup_id: GUP-MIG-DEC-2026-0015-IDENTITY-r01
+    authority:
+      - DEC-2026-0015
+      - DEC-2026-0019
+      - DEC-2026-0021
+    readiness: blocked_until_all_sixteen_dmg_ua_readings_are_integrated
+    scope: >-
+      The complete atomic DEC-2026-0015 identity migration, including the
+      DEC-2026-0019 row-3283 target-label correction, against the then-current
+      canonical checksum.
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Compile each active-leaf PHB GUR into its own polarity-only packet-update
+      GUP. Preserve every field except polarity and polarity_basis.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Independently verify the four PHB source readings and approve only
+      read-based polarity with no other changed field.
+  - step: 3
+    owner: integrator
+    action: >-
+      Integrate the separately Approved PHB cleanup bundles and publish the new
+      canonical checksum.
+  - step: 4
+    owner: builder
+    action: >-
+      Emit GUP-MIG-DEC-2026-0016-PAGE-r01 against that checksum with exactly
+      the nine page-only changes authorized by DEC-2026-0016.
+  - step: 5
+    owner: reviewer
+    action: Review the page-only migration as a fresh independent lineage.
+  - step: 6
+    owner: integrator
+    action: Integrate only the Approved page-only bundle.
+  - step: 7
+    owner: analyst
+    readiness: blocked
+    action: >-
+      When bounded DMG and UA packets exist, publish source-read GURs for the
+      sixteen outstanding assertions.
+  - step: 8
+    owner: builder
+    readiness: blocked
+    action: >-
+      After all sixteen cleanups are Approved and integrated, emit the complete
+      DEC-2026-0015 identity migration in lineage MIG-DEC-2026-0015-IDENTITY.
+
+affected_contracts_and_registries:
+  contracts: []
+  registries:
+    - rulesets/adnd1e/registries/nodes.csv
+  schemas: []
+  canonical_files:
+    - rulesets/adnd1e/canonical/edges_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+
+migration_required: true
+migration_scope:
+  architect_writes: none_to_canonical_or_registries
+  immediate_packet_cleanup:
+    assertions: 4
+    fields: [polarity, polarity_basis]
+  page_only_migration:
+    assertions: 9
+    field: page
+  blocked_identity_migration:
+    atomic: true
+    unresolved_source_assertions: 16
+  exception_to_graph_invariants: false
+
+acceptance_tests:
+  - >-
+    The two PHB packet-update GUPs collectively change exactly the stable
+    assertions at baseline rows 413, 531, 532, and 535.
+  - Every PHB cleanup result has polarity_basis read.
+  - The PHB cleanup changes no field except polarity and polarity_basis.
+  - Reviewer independently verifies all four PHB readings from claimed packets.
+  - The PHB cleanup is integrated before the page-only migration is built.
+  - >-
+    GUP-MIG-DEC-2026-0016-PAGE-r01 uses lineage_id
+    MIG-DEC-2026-0016-PAGE and checksums Decisions 0016, 0019, and 0021.
+  - The page-only migration changes exactly nine page fields and no other field.
+  - No combined-lineage r04 is emitted.
+  - >-
+    No DEC-2026-0015 identity operation is emitted until all sixteen DMG and UA
+    polarity cleanups are read-based, Approved, and integrated.
+  - >-
+    The later identity migration is complete and atomic, applies the row-3283
+    target-label correction, and uses the then-current canonical checksum.
+  - No unread assertion is assigned polarity_basis read.
+  - No canonical graph or registry file is changed by this Architect decision.
+
+constitution_version_impact:
+  changed: false
+  version: "1.7"
+  reason: >-
+    This preserves the existing authored-polarity and source-provenance
+    requirements while changing migration sequencing only.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Compile the two completed PHB cleanup GURs now.
+    - Build the independent page-only migration after their integration.
+    - Keep the atomic identity migration blocked until all sixteen readings integrate.
+  reviewer:
+    - Review the two PHB cleanup GUPs from source.
+    - Review the later page-only migration as a fresh lineage.
+  integrator:
+    - Integrate the PHB cleanup before the page-only migration.
+    - Apply no DEC-2026-0015 identity operation before its complete approval.
+  analyst:
+    - Resume the sixteen-row cleanup only when claimed DMG and UA packets exist.
+
+prohibited_actions:
+  - Do not edit Decisions 0015, 0016, or 0019.
+  - Do not edit, rename, move, delete, or approve combined migration r01-r03.
+  - Do not emit a combined-lineage r04 with reduced authority or reduced scope.
+  - Do not infer the sixteen DMG and UA polarities from canonical context.
+  - Do not mark an unread assertion polarity_basis read.
+  - Do not partially implement DEC-2026-0015.
+  - Architect does not edit canonical graph, registry, or role tooling files.

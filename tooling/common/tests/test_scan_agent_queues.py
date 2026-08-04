@@ -285,13 +285,11 @@ class QueueScannerCase(unittest.TestCase):
         self.assertEqual(exit_code, 2)
 
 
-class DecisionMigrationCase(QueueScannerCase):
-    """WORK_QUEUES 1.2 acceptance tests 12-20, ruled by DEC-2026-0018.
+class MigrationFixtureMixin:
+    """Decision-migration fixture builders, carrying no tests of their own.
 
-    A decision migration has no GUR by design. Everything here turns on whether
-    the alternate auditable root -- checksummed Decisions plus a pinned canonical
-    baseline -- is intact, because that is what earns Reviewer routing in place
-    of packet lineage.
+    Kept apart from the test class so a second suite can build the same
+    fixtures without re-running the first suite's assertions.
     """
 
     CANONICAL = "rulesets/adnd1e/canonical/edges_master.csv"
@@ -412,6 +410,16 @@ class DecisionMigrationCase(QueueScannerCase):
 
     def codes(self, result) -> list[str]:
         return [d["Code"] for d in result["Diagnostics"]]
+
+
+class DecisionMigrationCase(MigrationFixtureMixin, QueueScannerCase):
+    """WORK_QUEUES 1.2 acceptance tests 12-20, ruled by DEC-2026-0018.
+
+    A decision migration has no GUR by design. Everything here turns on whether
+    the alternate auditable root -- checksummed Decisions plus a pinned canonical
+    baseline -- is intact, because that is what earns Reviewer routing in place
+    of packet lineage.
+    """
 
     # -- 12 -----------------------------------------------------------------
     def test_valid_migration_is_one_reviewer_job_and_never_stale_gup_input(self):
@@ -666,3 +674,485 @@ class TestScannerParity(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReviewRevisionRoutingCase(QueueScannerCase):
+    """A `revision_required` Review names whose revision it wants.
+
+    Routing every such Review to Builder regardless is how a packet stalls: a
+    Review whose only finding is that the GUR omits source assertions gives the
+    Builder nothing to apply. The Builder may not reinterpret source, so its
+    only options are to publish a byte-identical no-op leaf or to invent the
+    missing rows -- and the Analyst, who can actually answer, never sees the job.
+    """
+
+    PACKET = "PKT-PHB-001-002-fixture"
+
+    def revision_review(self, *, handoff_role=None, row_corrections=None,
+                        required_revisions=None):
+        gur_id = self.gur(self.PACKET, 1)
+        gup_id = self.gup(self.PACKET, 1, gur_id)
+        document = {
+            "id": f"REV-{gup_id}-r01",
+            "packet_id": self.PACKET,
+            "revision": 1,
+            "status": "revision_required",
+            "overall_disposition": "revision_required",
+            "reviewed_gup": {"id": gup_id},
+            "row_decisions": [
+                {"ref": "B1", "disposition": "approved"},
+                {"ref": "B2", "disposition": "approved_with_revision",
+                 "exact_corrections": row_corrections or {}},
+            ],
+        }
+        if handoff_role is not None:
+            document["handoff"] = {
+                "next_role": handoff_role, "readiness": "ready", "blocking_ids": []
+            }
+        if required_revisions is not None:
+            document["required_gup_revisions"] = required_revisions
+        self.write_yaml(
+            f"books/adnd1e/phb/artifacts/reviews/REV-{gup_id}-r01.yaml", document
+        )
+        return self.scan()
+
+    def roles(self, result):
+        return sorted(
+            item["Role"] for item in result["Items"] if item["State"] == "ready"
+        )
+
+    def test_a_review_returned_to_the_analyst_is_not_builder_work(self):
+        result = self.revision_review(
+            handoff_role="analyst",
+            required_revisions=[
+                {"finding_id": "F-COMPLETENESS", "next_role": "analyst",
+                 "exact_action": "account for the omitted source clauses"}
+            ],
+        )
+        self.assertEqual(self.roles(result), ["Analyst"])
+        self.assertNotIn(
+            "Builder", [item["Role"] for item in result["Items"] if item["State"] == "ready"]
+        )
+
+    def test_a_review_with_an_exact_correction_is_builder_work(self):
+        result = self.revision_review(
+            handoff_role="builder", row_corrections={"aspect": "corrected aspect"}
+        )
+        self.assertEqual(self.roles(result), ["Builder"])
+
+    def test_a_review_may_give_work_to_both_roles(self):
+        """The real money-equipment r03 case.
+
+        One exact correction for the Builder to apply, alongside a completeness
+        finding only the Analyst can answer. Reading `handoff.next_role` alone
+        would hide the correction; reading the corrections alone would hide the
+        packet's return to the Analyst.
+        """
+        result = self.revision_review(
+            handoff_role="analyst",
+            row_corrections={"polarity": "neutral"},
+            required_revisions=[
+                {"finding_id": "F-POLARITY", "exact_action": "retain B2 as neutral"},
+                {"finding_id": "F-COMPLETENESS", "next_role": "analyst",
+                 "exact_action": "account for the omitted clauses"},
+            ],
+        )
+        self.assertEqual(self.roles(result), ["Analyst", "Builder"])
+
+    def test_an_unqualified_revision_request_belongs_to_the_builder(self):
+        """A `required_gup_revisions` entry naming no role is the Builder's.
+
+        The Builder emits the GUP, so an unqualified request to revise it is a
+        request to the Builder even where the packet also returns to the Analyst.
+        """
+        result = self.revision_review(
+            handoff_role="analyst",
+            required_revisions=[
+                {"finding_id": "F-UNQUALIFIED", "exact_action": "drop the duplicate"}
+            ],
+        )
+        self.assertEqual(self.roles(result), ["Analyst", "Builder"])
+
+    def test_a_legacy_review_with_no_handoff_still_routes_to_builder(self):
+        """Legacy artifacts remain valid and the inference is reported."""
+        result = self.revision_review()
+        self.assertEqual(self.roles(result), ["Builder"])
+        builder = [
+            item for item in result["Items"]
+            if item["Role"] == "Builder" and item["State"] == "ready"
+        ]
+        self.assertTrue(builder[0]["LegacyInference"])
+        self.assertIn(
+            "review_handoff_inferred",
+            {d["Code"] for d in result["Diagnostics"]},
+        )
+
+    def test_an_unrecognised_handoff_role_is_not_trusted(self):
+        """Routing to a role that does not exist would hide the work entirely."""
+        result = self.revision_review(handoff_role="stakeholder")
+        self.assertEqual(self.roles(result), ["Builder"])
+
+
+class TestReviewRevisionRoles(unittest.TestCase):
+    """The routing rule, read directly."""
+
+    def roles(self, document):
+        return scanner._review_revision_roles(document)
+
+    def test_no_signal_yields_no_role(self):
+        self.assertEqual(self.roles({}), [])
+
+    def test_handoff_none_is_not_a_role(self):
+        self.assertEqual(self.roles({"handoff": {"next_role": "none"}}), [])
+
+    def test_builder_is_listed_first_when_both_apply(self):
+        document = {
+            "handoff": {"next_role": "analyst"},
+            "row_decisions": [{"ref": "A1", "exact_corrections": {"aspect": "x"}}],
+        }
+        self.assertEqual(self.roles(document), ["builder", "analyst"])
+
+    def test_a_role_is_never_listed_twice(self):
+        document = {
+            "handoff": {"next_role": "builder"},
+            "row_decisions": [{"ref": "A1", "exact_corrections": {"aspect": "x"}}],
+            "required_gup_revisions": [{"finding_id": "F1"}],
+        }
+        self.assertEqual(self.roles(document), ["builder"])
+
+    def test_empty_corrections_are_not_actionable(self):
+        document = {
+            "handoff": {"next_role": "analyst"},
+            "row_decisions": [{"ref": "A1", "exact_corrections": {}}],
+        }
+        self.assertEqual(self.roles(document), ["analyst"])
+
+
+class MigrationReviewRoutingCase(MigrationFixtureMixin, QueueScannerCase):
+    """A Review on a migration leaf names who fixes it; a lineage error does not.
+
+    A drifted canonical baseline says the leaf cannot go to Reviewer as it
+    stands. It says nothing about who acts next. Treating it as "nobody has
+    consumed these Decisions" republished them as ready Builder work while the
+    Review that decided them was still asking the Analyst for a prerequisite --
+    and hid the Analyst's job entirely, so the work had no visible owner.
+    """
+
+    def stale_migration_with_review(self, *, review_handoff=None,
+                                    row_corrections=None, required_revisions=None):
+        self.decision("DEC-2026-0015")
+        gup_id = self.migration("GUP-MIG-FIXTURE-r01", ["DEC-2026-0015"])
+        if review_handoff is not None:
+            document = {
+                "id": f"REV-{gup_id}-r01",
+                "packet_id": "cross-packet",
+                "revision": 1,
+                "status": "revision_required",
+                "overall_disposition": "revision_required",
+                "reviewed_gup": {"id": gup_id},
+                "handoff": {
+                    "next_role": review_handoff, "readiness": "ready",
+                    "blocking_ids": [],
+                },
+                "row_decisions": [
+                    {"ref": "R1", "disposition": "approved_with_revision",
+                     "exact_corrections": row_corrections or {}}
+                ],
+            }
+            if required_revisions is not None:
+                document["required_gup_revisions"] = required_revisions
+            self.write_yaml(
+                f"books/adnd1e/phb/artifacts/reviews/REV-{gup_id}-r01.yaml", document
+            )
+        # Drift the baseline the migration was planned against.
+        (self.root / self.CANONICAL).write_text(
+            "source_id,edge_type,target_id\na_b,GATES,c_d\ne_f,GATES,g_h\n",
+            encoding="utf-8",
+        )
+        return gup_id, self.scan()
+
+    def ready(self, result):
+        return [i for i in result["Items"] if i["State"] == "ready"]
+
+    def ready_roles(self, result):
+        return sorted(i["Role"] for i in self.ready(result))
+
+    def test_a_stale_migration_returned_to_the_analyst_is_not_builder_work(self):
+        _, result = self.stale_migration_with_review(
+            review_handoff="analyst",
+            required_revisions=[
+                {"finding_id": "MIG-PREREQ", "next_role": "analyst",
+                 "exact_action": "integrate the prerequisite cleanup first"}
+            ],
+        )
+        self.assertEqual(self.ready_roles(result), ["Analyst"])
+        # The authority Decision must not resurface as ready Builder work while
+        # its Review is asking someone else for the prerequisite.
+        self.assertEqual(self.items(result, "BUILDER-DECISION-MIGRATION"), [])
+
+    def test_the_lineage_error_is_still_reported(self):
+        """Routing changes; truth-telling does not."""
+        gup_id, result = self.stale_migration_with_review(review_handoff="analyst")
+        self.assertIn("decision_migration_lineage_error", self.codes(result))
+        self.assertIn(gup_id, {d["ArtifactId"] for d in result["Diagnostics"]})
+        self.assertEqual(self.items(result, "REVIEWER-DECISION-MIGRATION"), [])
+
+    def test_a_migration_review_asking_the_builder_is_builder_work(self):
+        _, result = self.stale_migration_with_review(
+            review_handoff="builder",
+            row_corrections={"target_label": "Corrected Label"},
+        )
+        self.assertEqual(self.ready_roles(result), ["Builder"])
+        self.assertEqual(self.items(result, "BUILDER-DECISION-MIGRATION"), [])
+
+    def test_a_migration_review_may_give_work_to_both_roles(self):
+        _, result = self.stale_migration_with_review(
+            review_handoff="analyst",
+            row_corrections={"target_label": "Corrected Label"},
+            required_revisions=[
+                {"finding_id": "MIG-PREREQ", "next_role": "analyst",
+                 "exact_action": "integrate the prerequisite"}
+            ],
+        )
+        self.assertEqual(self.ready_roles(result), ["Analyst", "Builder"])
+
+    def test_an_unreviewed_stale_migration_still_republishes_its_decisions(self):
+        """With no Review there is no ruling to defer to.
+
+        The Decisions are genuinely unconsumed and the Builder is genuinely the
+        role that re-issues the migration, so they must stay visible.
+        """
+        _, result = self.stale_migration_with_review(review_handoff=None)
+        self.assertEqual(self.ready_roles(result), ["Builder"])
+        self.assertEqual(
+            self.items(result, "BUILDER-DECISION-MIGRATION"),
+            ["DEC-2026-0015"],
+        )
+
+
+class DecisionHandoffReplacementCase(QueueScannerCase):
+    """WORK_QUEUES 1.3, ruled by DEC-2026-0022.
+
+    An immutable artifact preserves the evidence a Review was built on, but it
+    cannot represent a ruling made after it was written. Where an approved
+    Decision resolved the escalation that artifact raised, continuing to report
+    the artifact's older handoff assigns obsolete work and double-counts one
+    coordination lineage. Replacement is queue-state only: the artifact is never
+    rewritten, and the link must be exact rather than inferred.
+    """
+
+    PACKET = "PKT-PHB-001-002-fixture"
+    ESC = "ESC-2026-08-03T22.35.13.308Z"
+
+    def review_needing_the_analyst(self, artifact_id="REV-GUP-FIXTURE-r01-r01"):
+        """A Review whose own handoff makes it ready Analyst work."""
+        gur_id = self.gur(self.PACKET, 1)
+        gup_id = self.gup(self.PACKET, 1, gur_id)
+        relative = f"books/adnd1e/phb/artifacts/reviews/{artifact_id}.yaml"
+        self.write_yaml(
+            relative,
+            {
+                "id": artifact_id,
+                "packet_id": self.PACKET,
+                "revision": 1,
+                "status": "revision_required",
+                "overall_disposition": "revision_required",
+                "reviewed_gup": {"id": gup_id},
+                "handoff": {
+                    "next_role": "analyst", "readiness": "ready", "blocking_ids": []
+                },
+                "required_gup_revisions": [
+                    {"finding_id": "F-PREREQ", "next_role": "analyst",
+                     "exact_action": "produce the prerequisite"}
+                ],
+            },
+        )
+        return artifact_id, relative
+
+    def decided_package(self, artifact_id, artifact_path, escalation_id=None):
+        escalation_id = escalation_id or self.ESC
+        self.write_yaml(
+            f"rulesets/adnd1e/escalations/decided/{escalation_id}.yaml",
+            {
+                "id": escalation_id,
+                "question": "who acts next?",
+                "originating_artifacts": {
+                    "review": artifact_id,
+                    "review_path": artifact_path,
+                },
+            },
+        )
+        return escalation_id
+
+    def decision(self, decision_id, escalation_id, *, next_role="builder",
+                 readiness="ready", blocking_ids=None):
+        self.write_yaml(
+            f"rulesets/adnd1e/escalations/decisions/{decision_id}.yaml",
+            {
+                "id": decision_id,
+                "status": "approved",
+                "ruleset_id": "adnd1e",
+                "book_id": "phb",
+                "packet_id": self.PACKET,
+                "escalation_id": escalation_id,
+                "migration_required": False,
+                "handoff": {
+                    "next_role": next_role,
+                    "readiness": readiness,
+                    "reason": "the Architect has ruled",
+                    "blocking_ids": blocking_ids or [],
+                },
+            },
+        )
+        return decision_id
+
+    def ready_ids(self, result):
+        return [i["InputId"] for i in result["Items"] if i["State"] == "ready"]
+
+    def blocked_ids(self, result):
+        return [i["InputId"] for i in result["BlockedItems"]]
+
+    def codes(self, result):
+        return [d["Code"] for d in result["Diagnostics"]]
+
+    # -- the ruling ---------------------------------------------------------
+    def test_the_decision_replaces_the_stale_ready_handoff(self):
+        artifact_id, path = self.review_needing_the_analyst()
+        esc = self.decided_package(artifact_id, path)
+        decision_id = self.decision("DEC-2026-0021", esc)
+        result = self.scan()
+        self.assertNotIn(artifact_id, self.ready_ids(result))
+        self.assertIn(decision_id, self.ready_ids(result))
+
+    def test_the_originating_artifact_is_untouched_and_diagnosed(self):
+        artifact_id, path = self.review_needing_the_analyst()
+        before = (self.root / path).read_bytes()
+        esc = self.decided_package(artifact_id, path)
+        self.decision("DEC-2026-0021", esc)
+        result = self.scan()
+        self.assertEqual((self.root / path).read_bytes(), before)
+        self.assertIn("handoff_replaced_by_decision", self.codes(result))
+
+    # -- exactness ----------------------------------------------------------
+    def test_a_mismatched_escalation_id_does_not_suppress(self):
+        artifact_id, path = self.review_needing_the_analyst()
+        self.decided_package(artifact_id, path)
+        self.decision("DEC-2026-0021", "ESC-2026-01-01T00.00.00.000Z")
+        result = self.scan()
+        self.assertIn(artifact_id, self.ready_ids(result))
+
+    def test_a_mismatched_originating_path_does_not_suppress(self):
+        artifact_id, path = self.review_needing_the_analyst()
+        esc = self.decided_package(artifact_id, "books/adnd1e/phb/artifacts/reviews/OTHER.yaml")
+        self.decision("DEC-2026-0021", esc)
+        result = self.scan()
+        self.assertIn(artifact_id, self.ready_ids(result))
+
+    def test_a_superseded_originating_artifact_does_not_suppress_the_leaf(self):
+        """Naming an older revision must not silence the active one."""
+        artifact_id, path = self.review_needing_the_analyst()
+        esc = self.decided_package(
+            "REV-GUP-FIXTURE-r00-r01",
+            "books/adnd1e/phb/artifacts/reviews/REV-GUP-FIXTURE-r00-r01.yaml",
+        )
+        self.decision("DEC-2026-0021", esc)
+        result = self.scan()
+        self.assertIn(artifact_id, self.ready_ids(result))
+
+    def test_free_text_without_a_path_does_not_suppress(self):
+        """WORK_QUEUES 1.3 forbids inferring the link from free text."""
+        artifact_id, _ = self.review_needing_the_analyst()
+        self.write_yaml(
+            f"rulesets/adnd1e/escalations/decided/{self.ESC}.yaml",
+            {
+                "id": self.ESC,
+                "originating_artifacts": {
+                    "note": f"raised while reviewing {artifact_id}",
+                    "reviews": [artifact_id],
+                },
+            },
+        )
+        self.decision("DEC-2026-0021", self.ESC)
+        result = self.scan()
+        self.assertIn(artifact_id, self.ready_ids(result))
+
+    def test_a_decision_without_a_handoff_block_does_not_suppress(self):
+        artifact_id, path = self.review_needing_the_analyst()
+        esc = self.decided_package(artifact_id, path)
+        self.write_yaml(
+            "rulesets/adnd1e/escalations/decisions/DEC-2026-0021.yaml",
+            {"id": "DEC-2026-0021", "status": "approved", "ruleset_id": "adnd1e",
+             "escalation_id": esc, "migration_required": False},
+        )
+        result = self.scan()
+        self.assertIn(artifact_id, self.ready_ids(result))
+
+    # -- readiness routing --------------------------------------------------
+    def test_a_blocked_replacement_produces_blocked_state_and_no_ready_item(self):
+        artifact_id, path = self.review_needing_the_analyst()
+        esc = self.decided_package(artifact_id, path)
+        decision_id = self.decision(
+            "DEC-2026-0021", esc, readiness="blocked", blocking_ids=["ESC-9999"]
+        )
+        result = self.scan()
+        self.assertNotIn(artifact_id, self.ready_ids(result))
+        self.assertNotIn(decision_id, self.ready_ids(result))
+        self.assertIn(decision_id, self.blocked_ids(result))
+        reason = next(
+            i["Reason"] for i in result["BlockedItems"] if i["InputId"] == decision_id
+        )
+        self.assertIn("ESC-9999", reason)
+
+    def test_a_terminal_replacement_produces_no_downstream_item(self):
+        artifact_id, path = self.review_needing_the_analyst()
+        esc = self.decided_package(artifact_id, path)
+        decision_id = self.decision("DEC-2026-0021", esc, readiness="terminal")
+        result = self.scan()
+        self.assertNotIn(artifact_id, self.ready_ids(result))
+        self.assertNotIn(decision_id, self.ready_ids(result))
+        self.assertNotIn(decision_id, self.blocked_ids(result))
+
+    def test_the_decision_is_one_job_not_two(self):
+        """A Decision already ready for the role gains no second item."""
+        artifact_id, path = self.review_needing_the_analyst()
+        esc = self.decided_package(artifact_id, path)
+        decision_id = self.decision("DEC-2026-0021", esc, next_role="builder")
+        result = self.scan()
+        self.assertEqual(self.ready_ids(result).count(decision_id), 1)
+        self.assertNotIn(artifact_id, self.ready_ids(result))
+
+
+class TestOriginatingArtifactRefs(unittest.TestCase):
+    """The resolver reads exact pairs only, in either spelling packages use."""
+
+    def refs(self, block):
+        return scanner._originating_artifact_refs(block)
+
+    def test_kind_and_kind_path_pair(self):
+        self.assertEqual(
+            self.refs({"review": "REV-X-r01", "review_path": "books/x/REV-X-r01.yaml"}),
+            [("REV-X-r01", "books/x/REV-X-r01.yaml")],
+        )
+
+    def test_nested_id_and_path_mapping(self):
+        self.assertEqual(
+            self.refs({"gup": {"id": "GUP-X-r02", "path": "books/x/GUP-X-r02.yaml"}}),
+            [("GUP-X-r02", "books/x/GUP-X-r02.yaml")],
+        )
+
+    def test_a_list_of_mappings(self):
+        self.assertEqual(
+            self.refs({"gups": [{"id": "A", "path": "p/a"}, {"id": "B", "path": "p/b"}]}),
+            [("A", "p/a"), ("B", "p/b")],
+        )
+
+    def test_an_id_without_a_path_yields_nothing(self):
+        self.assertEqual(self.refs({"reviews": ["REV-X-r01", "REV-Y-r01"]}), [])
+        self.assertEqual(self.refs({"gur": "GUR-X-r01"}), [])
+
+    def test_a_path_without_an_id_yields_nothing(self):
+        self.assertEqual(self.refs({"review_path": "books/x/REV-X-r01.yaml"}), [])
+
+    def test_a_non_mapping_yields_nothing(self):
+        self.assertEqual(self.refs(None), [])
+        self.assertEqual(self.refs(["REV-X-r01"]), [])

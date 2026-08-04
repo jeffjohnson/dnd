@@ -380,9 +380,10 @@ class TestCarriedForwardCandidates(CompilerCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.pending_node = _bootstrap.unregistered_returned_to_workflow(
+        cls.pending_node, cls.governance = _bootstrap.unregistered_returned_to_workflow(
             cls.governance, cls.registry
         )
+        cls.compiler = Compiler(cls.registry, cls.canonical, None, cls.governance)
 
     def test_carried_candidate_is_pending_not_unresolved(self):
         result = self.compile_gur(
