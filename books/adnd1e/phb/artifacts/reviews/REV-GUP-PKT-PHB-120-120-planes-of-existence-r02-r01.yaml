@@ -1,0 +1,148 @@
+schema_version: "1.0"
+id: REV-GUP-PKT-PHB-120-120-planes-of-existence-r02-r01
+status: revision_required
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-120-120-planes-of-existence
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: analyst
+  readiness: ready
+  reason: The GUR must be reissued with source-supported identity, edge semantics, and bounded aspects before Builder recompiles a new GUP leaf.
+  blocking_ids: []
+review_role: independent_reviewer
+review_date: "2026-08-11"
+reviewed_gup:
+  id: GUP-PKT-PHB-120-120-planes-of-existence-r02
+  path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-120-120-planes-of-existence-r02.yaml
+  checksum: sha256:ba9f8174a52beb89b0259fe1df548f9739ee368a3e25dc8f95657170d8472e61
+  artifact_kind: packet_update
+  revision: 2
+  supersedes: GUP-PKT-PHB-120-120-planes-of-existence-r01
+  components:
+    edges_csv:
+      path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-120-120-planes-of-existence-r02.edges.csv
+      checksum: sha256:af9f6e2596bd3eba1856bd365a48b7b760b7e6c7b122e3e30f84e2317438c995
+    validation_report:
+      path: build/reports/GUP-PKT-PHB-120-120-planes-of-existence-r02.validation.json
+      checksum: sha256:43b4981e4cb2f97c3a9f4d0f51e6078be6a1b294f5c4cb1ced59d8a7ac9912ea
+      reported_errors: 0
+input_provenance:
+  gur:
+    id: GUR-PKT-PHB-120-120-planes-of-existence-r01
+    path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-120-120-planes-of-existence-r01.yaml
+    checksum: sha256:8a72374566ca4b06be55501bda2d862b7a8b67a31eb460a6d6fdb1290d790733
+  source_packet:
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-120-120-planes-of-existence/source.md
+    checksum: sha256:91238856528f0c7ca3cb9b725e0730dd567dcef620e85f1a50688decf9b48066
+    page: "120"
+  node_registry:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:df1a98e1eed7fcee87a27d6f3de6ae87dd76f915a6159536c5b528d174e30bc4
+  canonical_graph:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:43b5be90b9110943f3369daa9e82fd78b190c5586b5ec4260f8d685bc4f0261c
+overall_disposition: revision_required
+approval_ready: false
+approved_bundle_emitted: false
+summary:
+  submitted_edges: 22
+  additions: 7
+  pending_additions: 15
+  proposed_nodes: 7
+  blocking_findings: 3
+  completeness: All 22 submitted candidate edges and all seven node proposals were reviewed against the p120 packet, GUR, node registry, and local canonical neighborhood.
+blocking_findings:
+  - id: P120-R02-B1
+    severity: blocking
+    category: source_identity_mismatch
+    refs: [M016, M019]
+    finding: >-
+      The packet attributes tirelessness and weapon-magic effects to the Ethereal
+      Plane. The GUR correctly proposes rule_ethereal_plane for that place, but
+      M016 and M019 instead emit the legacy rule_planar_travel identity. The
+      packet and the GUR's IDQ-01 distinguish a plane from travelling; the
+      submitted edges therefore attach these effects to the wrong identity.
+    required_correction: >-
+      Reissue the GUR with M016 and M019 sourced from rule_ethereal_plane. They
+      must remain pending until that proposed node is approved and registered;
+      do not repoint or relabel existing canonical rule_planar_travel.
+  - id: P120-R02-B2
+    severity: blocking
+    category: invalid_edge_semantics
+    refs: [M013]
+    finding: >-
+      EXCLUDES is reserved for an expected-but-denied dependency. The source
+      says that psychic wind can snap the silver cord, which is an affirmative
+      destructive event, not a denial of a dependency on the cord.
+    required_correction: >-
+      Re-derive M013 from the sentence in ASTRAL TRAVEL. Use an edge whose
+      source, target, direction, and polarity express the wind's affirmative
+      consequence; retain a Silver Cord endpoint only if that endpoint is
+      mechanically supported.
+  - id: P120-R02-B3
+    severity: blocking
+    category: unbounded_aspect_grain
+    refs: [M001, M002, M003, M004, M006, M007, M008, M009, M010, M011, M012, M016, M017, M018, M019, M020, M021, M022]
+    finding: >-
+      Eighteen aspects are copied prose of five to nine words. Constitution
+      section 5 permits a one-to-four-word affected facet, not copied outcome
+      language. The Builder report flags each of these warnings; they are
+      substantive grain defects rather than harmless formatting.
+    required_correction: >-
+      Reissue the GUR with each affected aspect reduced to a distinct
+      one-to-four-word facet while preserving only source-supported mechanics.
+node_decisions:
+  - {proposed_id: rule_ethereal_plane, disposition: held_for_revised_gur, rationale: "The p120 packet explicitly distinguishes the Ethereal Plane from travelling; its dependent edges require the corrected identity treatment."}
+  - {proposed_id: rule_astral_plane, disposition: held_for_revised_gur, rationale: "The packet names a mechanically distinct plane, but no registry addition is approved while its dependent edge set requires revision."}
+  - {proposed_id: rule_inner_planes, disposition: held_for_revised_gur, rationale: "Needed only through the pending revised Astral-plane relation."}
+  - {proposed_id: rule_outer_planes, disposition: held_for_revised_gur, rationale: "Needed only through the pending revised Astral and alignment relations."}
+  - {proposed_id: rule_negative_material_plane, disposition: held_for_revised_gur, rationale: "The source names it, but its submitted dependent aspect exceeds the constitution grain limit."}
+  - {proposed_id: rule_prime_material_plane, disposition: held_for_revised_gur, rationale: "Its submitted dependent aspect exceeds the constitution grain limit."}
+  - {proposed_id: rule_silver_cord, disposition: held_for_revised_gur, rationale: "The source supports a cord identity, but M013 must be semantically re-derived before the node is approved with its dependent edges."}
+edge_decisions:
+  - {ref: M001, disposition: approved_with_revision, exact_correction: {aspect: undead power source}, source_locus: "Negative Material Plane, p120"}
+  - {ref: M002, disposition: approved_with_revision, exact_correction: {aspect: interplanar movement}, source_locus: "Ethereal Plane entry, p120"}
+  - {ref: M003, disposition: approved_with_revision, exact_correction: {aspect: alignment source}, source_locus: "Astral/Outer Planes entry, p120"}
+  - {ref: M004, disposition: approved_with_revision, exact_correction: {aspect: outer-planar travel}, source_locus: "Astral Plane entry, p120"}
+  - {ref: M005, disposition: approved, source_locus: "ASTRAL TRAVEL, p120"}
+  - {ref: M006, disposition: approved_with_revision, exact_correction: {aspect: first-layer reach}, source_locus: "ASTRAL TRAVEL, p120"}
+  - {ref: M007, disposition: approved_with_revision, exact_correction: {aspect: ethereal access}, source_locus: "ETHEREAL TRAVEL, p120"}
+  - {ref: M008, disposition: approved_with_revision, exact_correction: {aspect: ethereal access}, source_locus: "ETHEREAL TRAVEL, p120"}
+  - {ref: M009, disposition: approved_with_revision, exact_correction: {aspect: astral access}, source_locus: "ASTRAL TRAVEL, p120"}
+  - {ref: M010, disposition: approved_with_revision, exact_correction: {aspect: forced displacement}, source_locus: "ETHEREAL TRAVEL, p120"}
+  - {ref: M011, disposition: approved_with_revision, exact_correction: {aspect: lost contact}, source_locus: "ETHEREAL TRAVEL, p120"}
+  - {ref: M012, disposition: approved_with_revision, exact_correction: {aspect: off-course displacement}, source_locus: "ASTRAL TRAVEL, p120"}
+  - {ref: M013, disposition: rejected, rationale: "Psychic wind snapping the cord is affirmative destruction, not EXCLUDES.", source_locus: "ASTRAL TRAVEL, p120"}
+  - {ref: M014, disposition: approved_with_revision, exact_correction: {aspect: return path}, source_locus: "ASTRAL TRAVEL and combat, p120"}
+  - {ref: M015, disposition: approved_with_revision, exact_correction: {aspect: cord severance}, source_locus: "ASTRAL TRAVEL, p120"}
+  - {ref: M016, disposition: approved_with_revision, exact_correction: {source_id: rule_ethereal_plane, source_label: Ethereal Plane, aspect: no sustenance, emission: pending_additions}, source_locus: "ETHEREAL TRAVEL, p120"}
+  - {ref: M017, disposition: approved_with_revision, exact_correction: {aspect: Prime Material casting}, source_locus: "ETHEREAL AND ASTRAL COMBAT, p120"}
+  - {ref: M018, disposition: approved_with_revision, exact_correction: {aspect: Prime Material casting}, source_locus: "ETHEREAL AND ASTRAL COMBAT, p120"}
+  - {ref: M019, disposition: approved_with_revision, exact_correction: {source_id: rule_ethereal_plane, source_label: Ethereal Plane, aspect: weapon magic, emission: pending_additions}, source_locus: "ETHEREAL AND ASTRAL COMBAT, p120"}
+  - {ref: M020, disposition: approved_with_revision, exact_correction: {aspect: actual damage}, source_locus: "ETHEREAL AND ASTRAL COMBAT, p120"}
+  - {ref: M021, disposition: approved_with_revision, exact_correction: {aspect: astral-body destruction}, source_locus: "ETHEREAL AND ASTRAL COMBAT, p120"}
+  - {ref: M022, disposition: approved_with_revision, exact_correction: {aspect: material-body loss}, source_locus: "ETHEREAL AND ASTRAL COMBAT, p120"}
+reviewer_checklist:
+  source_support_and_page_marker: passed
+  identity: failed_M016_M019
+  edge_semantics: failed_M013
+  aspect_grain: failed_18_rows
+  polarity: passed_for_submitted_nonrejected_rows
+  provenance_and_gur_checksum: passed
+  registry_and_neighborhood: passed_with_legacy_label_drift_not_repointed
+  general_rule_inheritance: not_applicable
+  canonical_files_modified: false
+  gup_files_modified: false
+required_follow_up:
+  analyst:
+    - Publish a superseding GUR that implements all exact field corrections above and re-derives M013.
+  builder:
+    - Compile a superseding GUP only from that revised GUR; do not edit this reviewed GUP.
+  reviewer:
+    - Independently review the new active leaf.
+  integrator:
+    - No action; no Approved bundle exists.

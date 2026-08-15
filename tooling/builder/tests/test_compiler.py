@@ -19,7 +19,7 @@ from adnd1e_builder.compiler import Compiler
 from adnd1e_builder.duplicates import CanonicalEdges
 from adnd1e_builder.governance import Governance
 from adnd1e_builder.emit import edges_csv, gup_document, validation_report
-from adnd1e_builder.registry import NodeRegistry
+from adnd1e_builder.registry import NodeRegistry, normalize_label
 from adnd1e_builder.vocab import AUTHORED_POLARITY_TYPES, COLUMNS
 
 REGISTRY_PATH = REPO_ROOT / "rulesets" / "adnd1e" / "registries" / "nodes.csv"
@@ -251,9 +251,18 @@ class TestIdentity(CompilerCase):
         self.assertEqual(len(result.rows), 1)
         self.assertNotIn("rule_new_thing", {r["target_id"] for r in result.rows})
 
-    def test_proposing_an_existing_node_is_an_error(self):
+    def test_proposing_an_existing_id_under_another_label_is_an_error(self):
+        """Narrowed from "proposing an existing node is an error".
+
+        Same ID under the *same* label is a duplicate proposal, not a defect:
+        the Analyst reads the source, so a node an earlier packet proposed and
+        the Integrator has since registered gets proposed again, and reuse is
+        what constitution 3.2 asks for. Same ID under a different label is the
+        case this rule was for, and it still errors. See
+        `TestProposalAlreadyCanonical` for both sides.
+        """
         result = self.compile_gur(
-            candidate_nodes=[{"proposed_id": "race_dwarf", "proposed_label": "Dwarf"}]
+            candidate_nodes=[{"proposed_id": "race_dwarf", "proposed_label": "Hill Dwarf"}]
         )
         self.assertIn("node_addition_already_canonical", self.rules(result))
 
@@ -431,6 +440,394 @@ class TestCarriedForwardCandidates(CompilerCase):
         self.assertEqual(result.node_additions, [])
 
 
+class TestPendingRowsAreLegibleOnDisk(CompilerCase):
+    """A held-back row must be readable from a file, not only from the GUP.
+
+    `GUP-PKT-PHB-119-119-alignment-graph-r02` emitted a header-only
+    `.edges.csv`, correctly: all four of its rows depended on nodes the same
+    patch proposed, and a row pointing at an unregistered node breaches
+    invariant 1. But that file hashed byte-identical to the preamble packet's
+    genuinely empty one, an Approved bundle was assembled whose operation index
+    asserted four edges the CSV did not contain, and the Integrator rejected the
+    batch at the precondition gate.
+
+    The rows were never missing. What was missing was somewhere to read them
+    from, so the difference between "nothing to emit" and "everything is
+    pending" is now visible on disk.
+    """
+
+    #: Absent from the registry, approved prefix, so it is proposable.
+    NODE = "rule_fixture_pending_endpoint"
+
+    def compile_with_pending(self):
+        return self.compile_gur(
+            candidate_nodes=[{
+                "proposed_id": self.NODE, "proposed_label": "Fixture Pending Endpoint",
+                "why_needed": "The packet names it.", "edges_depending_on_it": ["T1"],
+            }],
+            candidate_edges=[dict(BASE_EDGE, target_id=self.NODE,
+                                  target_label="Fixture Pending Endpoint")],
+        )
+
+    def test_a_wholly_pending_patch_still_emits_an_empty_edges_csv(self):
+        """The invariant 1 guarantee is unchanged, and that is the point."""
+        import csv as _csv
+
+        result = self.compile_with_pending()
+        self.assertEqual(result.additions, [])
+        self.assertEqual(len(result.pending_additions), 1)
+        rows = list(_csv.DictReader(edges_csv(result).splitlines()))
+        self.assertEqual(rows, [], "a pending row must never reach the integration input")
+
+    def test_the_pending_rows_are_emitted_in_the_same_eighteen_columns(self):
+        import csv as _csv
+
+        from adnd1e_builder.emit import pending_csv
+
+        result = self.compile_with_pending()
+        text = pending_csv(result)
+        self.assertEqual(text.splitlines()[0].split(","), list(COLUMNS))
+        rows = list(_csv.DictReader(text.splitlines()))
+        self.assertEqual([r["target_id"] for r in rows], [self.NODE])
+        self.assertEqual(set(rows[0]), set(COLUMNS))
+
+    def test_the_two_files_partition_the_compiled_rows(self):
+        """Every row lands in exactly one of them, and never in both."""
+        import csv as _csv
+
+        from adnd1e_builder.emit import pending_csv
+
+        result = self.compile_with_pending()
+        integrable = {r["target_id"] for r in _csv.DictReader(edges_csv(result).splitlines())}
+        held = {r["target_id"] for r in _csv.DictReader(pending_csv(result).splitlines())}
+        self.assertEqual(integrable & held, set())
+        self.assertEqual(len(integrable) + len(held), len(result.rows))
+
+    def test_the_file_exists_only_when_something_is_held(self):
+        """Its presence is the signal; an empty one beside a full edges CSV would not be."""
+        from adnd1e_builder.emit import write_all
+
+        with tempfile.TemporaryDirectory() as tmp:
+            gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
+            clean = self.compile_gur(candidate_edges=[dict(BASE_EDGE)])
+            written = write_all(clean, gup_dir, reports, {"ran": False})
+            self.assertEqual([p.name for p in written if p.name.endswith(".pending.csv")], [])
+
+            # Same fixture GUR, so the same GUP ID: this second publish is the
+            # overwrite the guard exists to stop, and here it is deliberate.
+            pending = self.compile_with_pending()
+            written = write_all(pending, gup_dir, reports, {"ran": False}, allow_overwrite=True)
+            self.assertEqual(
+                [p.name for p in written if p.name.endswith(".pending.csv")],
+                [f"{pending.gup_id}.pending.csv"],
+            )
+
+    def test_a_header_only_edges_csv_no_longer_hides_which_case_it_is(self):
+        """The collision that caused the rejection: two states, one hash."""
+        from adnd1e_builder.emit import pending_csv
+
+        nothing = self.compile_gur(candidate_edges=[])
+        everything_pending = self.compile_with_pending()
+        self.assertEqual(edges_csv(nothing), edges_csv(everything_pending))
+        self.assertNotEqual(pending_csv(nothing), pending_csv(everything_pending))
+
+
+class TestAPublishedRevisionIsImmutable(CompilerCase):
+    """Recompiling at an existing revision must not rewrite it.
+
+    INT-20260812-002 rejected four bundles because the checksum each Review
+    pinned for its GUP matched no file on disk: the revision had been recompiled
+    in place while the Review was open, so the reviewed content was gone. The
+    CLI already told the operator that "FILE_NAMING forbids overwriting a prior
+    revision" on the --review path, but nothing enforced it at the write.
+    """
+
+    def publish(self, gup_dir, reports, **kwargs):
+        from adnd1e_builder.emit import write_all
+
+        return write_all(
+            self.compile_gur(candidate_edges=[dict(BASE_EDGE)]),
+            gup_dir, reports, {"ran": False}, **kwargs,
+        )
+
+    def test_republishing_the_same_revision_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
+            self.publish(gup_dir, reports)
+            with self.assertRaises(FileExistsError):
+                self.publish(gup_dir, reports)
+
+    def test_the_refusal_leaves_the_published_bytes_untouched(self):
+        """The point of the guard: what a Review hashed still hashes the same."""
+        import hashlib
+
+        with tempfile.TemporaryDirectory() as tmp:
+            gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
+            written = self.publish(gup_dir, reports)
+            before = {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in written}
+            with self.assertRaises(FileExistsError):
+                self.publish(gup_dir, reports)
+            after = {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in written}
+            self.assertEqual(before, after)
+
+    def test_the_refusal_names_the_revision_and_says_to_advance(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
+            result = self.compile_gur(candidate_edges=[dict(BASE_EDGE)])
+            self.publish(gup_dir, reports)
+            with self.assertRaises(FileExistsError) as raised:
+                self.publish(gup_dir, reports)
+            message = str(raised.exception)
+            self.assertIn(result.gup_id, message)
+            self.assertIn("next revision", message)
+
+    def test_an_explicit_overwrite_is_still_possible(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
+            self.publish(gup_dir, reports)
+            self.publish(gup_dir, reports, allow_overwrite=True)
+
+    def test_a_fresh_revision_never_trips_the_guard(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
+            self.publish(gup_dir, reports)
+            other = self.compile_gur(candidate_edges=[dict(BASE_EDGE)], revision=2)
+            from adnd1e_builder.emit import write_all
+
+            written = write_all(other, gup_dir, reports, {"ran": False})
+            self.assertTrue(any(p.name.endswith(".yaml") for p in written))
+
+    def test_the_cli_exposes_the_overwrite_as_an_opt_in_flag(self):
+        """Overwriting must be something the operator asks for by name."""
+        import contextlib
+        import io
+
+        from adnd1e_builder.cli import main
+
+        captured = io.StringIO()
+        with contextlib.redirect_stdout(captured), self.assertRaises(SystemExit):
+            main(["compile", "--help"])
+        self.assertIn("--allow-overwrite", captured.getvalue())
+
+
+class TestCrossPacketCandidateTargets(CompilerCase):
+    """Endpoints another packet minted and this one reuses.
+
+    A book is not a partition: the illusionist list points at magic-user spells,
+    the magic-user list points at druid spells, and three packets reach the same
+    death rule. The Analyst declares each of these in the GUR and tells the
+    Builder not to mint a second identity for it. Before this was honoured, four
+    packets blocked on `endpoint_unresolved` for endpoints the GUR had already
+    accounted for.
+    """
+
+    #: Absent from the registry and carrying an approved prefix.
+    ELSEWHERE = "spell_fixture_minted_elsewhere"
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        assert cls.ELSEWHERE not in cls.registry, "fixture ID must be unregistered"
+        # A node whose label is unique in the registry, so a fixture ID carrying
+        # that label resolves by normalized label to exactly this node. That is
+        # the shape of the rule_death / death_character case.
+        counts: dict[str, int] = {}
+        for node in cls.registry.nodes.values():
+            counts[normalize_label(node.label)] = counts.get(normalize_label(node.label), 0) + 1
+        cls.collides_with = next(
+            node for node in cls.registry.nodes.values()
+            if counts[normalize_label(node.label)] == 1 and node.label
+        )
+
+    def declare(self, node_id, **extra):
+        return [{
+            "id": node_id,
+            "label": extra.get("label", "Minted Elsewhere"),
+            "origin": "candidate minted by GUR-PKT-PHB-000-000-other-r01, not yet canonical",
+            "used_by": ["T1"],
+            "builder_instruction": "Do not mint a second identity.",
+        }]
+
+    def edge_to(self, node_id, label="Minted Elsewhere"):
+        return [dict(BASE_EDGE, target_id=node_id, target_label=label)]
+
+    def test_a_declared_target_is_pending_rather_than_unresolved(self):
+        result = self.compile_gur(
+            cross_packet_candidate_targets=self.declare(self.ELSEWHERE),
+            candidate_edges=self.edge_to(self.ELSEWHERE),
+        )
+        self.assertIn("endpoint_pending_cross_packet_candidate", self.rules(result))
+        self.assertNotIn("endpoint_unresolved", self.rules(result))
+        self.assertEqual([f.detail for f in result.errors], [])
+        self.assertEqual(result.escalations, [])
+        # Held out of the integrable set, exactly like a row depending on a node
+        # this patch proposes: the origin packet's registration comes first.
+        self.assertEqual(result.additions, [])
+        self.assertEqual([r["ref"] for r in result.pending_additions], ["T1"])
+
+    def test_a_declared_target_is_not_re_proposed_here(self):
+        """The packet that minted the identity owns the registration.
+
+        Proposing it again would ask the Integrator to register one node from
+        two GUPs, which is the duplication the declaration exists to prevent.
+        """
+        result = self.compile_gur(
+            cross_packet_candidate_targets=self.declare(self.ELSEWHERE),
+            candidate_edges=self.edge_to(self.ELSEWHERE),
+        )
+        self.assertEqual(result.node_additions, [])
+        self.assertEqual(
+            [(d["node_id"], d["state"]) for d in result.cross_packet_dependencies],
+            [(self.ELSEWHERE, "awaiting_origin_packet")],
+        )
+
+    def test_the_declared_label_reaches_the_row(self):
+        """An empty label makes the row schema-invalid, and two reached a bundle.
+
+        The Analyst carries the label on the declaration rather than repeating
+        it on every edge that reaches the identity, so a row whose endpoint is
+        minted elsewhere legitimately arrives with `target_label` unset.
+        """
+        result = self.compile_gur(
+            cross_packet_candidate_targets=self.declare(self.ELSEWHERE),
+            candidate_edges=[dict(BASE_EDGE, target_id=self.ELSEWHERE, target_label=None)],
+        )
+        self.assertEqual(result.rows[0]["target_label"], "Minted Elsewhere")
+        self.assertIn("endpoint_label_from_cross_packet_declaration", self.rules(result))
+
+    def test_a_label_on_the_row_is_not_overwritten_by_the_declaration(self):
+        result = self.compile_gur(
+            cross_packet_candidate_targets=self.declare(self.ELSEWHERE),
+            candidate_edges=self.edge_to(self.ELSEWHERE, "Row's Own Label"),
+        )
+        self.assertEqual(result.rows[0]["target_label"], "Row's Own Label")
+
+    def test_every_emitted_row_carries_both_labels(self):
+        """The schema requires them non-empty, so the compiler must guarantee it."""
+        result = self.compile_gur(
+            cross_packet_candidate_targets=self.declare(self.ELSEWHERE),
+            candidate_edges=[dict(BASE_EDGE, target_id=self.ELSEWHERE, target_label=None)],
+        )
+        for row in result.rows:
+            self.assertTrue(row["source_label"].strip(), row)
+            self.assertTrue(row["target_label"].strip(), row)
+
+    def test_an_undeclared_missing_endpoint_still_errors(self):
+        """The guard has to be the declaration, not the mere absence of a node."""
+        result = self.compile_gur(candidate_edges=self.edge_to(self.ELSEWHERE))
+        self.assertIn("endpoint_unresolved", self.rules(result))
+        self.assertTrue(result.blocks_approval)
+
+    def test_a_declared_target_whose_label_collides_is_neither_merged_nor_escalated(self):
+        label = self.collides_with.label
+        result = self.compile_gur(
+            cross_packet_candidate_targets=self.declare("rule_fixture_collision", label=label),
+            candidate_edges=self.edge_to("rule_fixture_collision", label=label),
+        )
+        self.assertNotIn("identity_ambiguous", self.rules(result))
+        self.assertEqual(result.escalations, [])
+        # The requested identity is kept. Invariant 4 bars resolving it to the
+        # canonical node the label matches, and the declaration does not license
+        # that either -- it only says where the identity comes from.
+        self.assertEqual(result.rows[0]["target_id"], "rule_fixture_collision")
+        detail = next(
+            f.detail for f in result.findings
+            if f.rule == "endpoint_pending_cross_packet_candidate"
+        )
+        self.assertIn(self.collides_with.id, detail, "the collision stays visible to the Reviewer")
+
+    def test_an_undeclared_label_collision_still_escalates(self):
+        label = self.collides_with.label
+        result = self.compile_gur(candidate_edges=self.edge_to("rule_fixture_collision", label=label))
+        self.assertIn("identity_ambiguous", self.rules(result))
+        self.assertTrue(any(e["kind"] == "identity_resolution" for e in result.escalations))
+
+    def test_a_target_this_packet_also_proposes_is_proposed_once(self):
+        result = self.compile_gur(
+            cross_packet_candidate_targets=self.declare(self.ELSEWHERE),
+            candidate_nodes=[{
+                "proposed_id": self.ELSEWHERE,
+                "proposed_label": "Minted Elsewhere",
+                "why_needed": "Also proposed by the origin packet.",
+                "edges_depending_on_it": ["T1"],
+            }],
+            candidate_edges=self.edge_to(self.ELSEWHERE),
+        )
+        self.assertEqual([n["proposed_id"] for n in result.node_additions], [self.ELSEWHERE])
+        self.assertEqual(result.cross_packet_dependencies[0]["state"], "proposed_by_this_packet")
+        self.assertIn("endpoint_pending_registry_addition", self.rules(result))
+
+    def test_a_target_already_registered_needs_no_holding(self):
+        node = self.registry.nodes["race_dwarf"]
+        result = self.compile_gur(
+            cross_packet_candidate_targets=self.declare("race_dwarf", label=node.label),
+            candidate_edges=self.edge_to("race_dwarf", node.label),
+        )
+        self.assertEqual(result.cross_packet_dependencies[0]["state"], "already_canonical")
+        self.assertEqual([r["ref"] for r in result.additions], ["T1"])
+        self.assertEqual(result.pending_additions, [])
+
+    def test_the_declaration_order_does_not_change_the_output(self):
+        pair = self.declare(self.ELSEWHERE) + self.declare("race_dwarf", label="Dwarf")
+        forward = self.compile_gur(
+            cross_packet_candidate_targets=pair,
+            candidate_edges=self.edge_to(self.ELSEWHERE),
+        )
+        reverse = self.compile_gur(
+            cross_packet_candidate_targets=list(reversed(pair)),
+            candidate_edges=self.edge_to(self.ELSEWHERE),
+        )
+        self.assertEqual(forward.cross_packet_dependencies, reverse.cross_packet_dependencies)
+
+
+class TestProposalAlreadyCanonical(CompilerCase):
+    """A candidate the registry already carries under the same name.
+
+    The Analyst reads the source, not the registry, so a node an earlier packet
+    proposed and the Integrator has since registered gets proposed again. That
+    is not an architectural question: constitution 3.2 says reuse it, and the
+    edges already resolve. Escalating it blocked three packets on a question
+    with one answer.
+    """
+
+    def canonical_node(self):
+        return self.registry.nodes["race_dwarf"]
+
+    def propose(self, label):
+        node = self.canonical_node()
+        return dict(
+            candidate_nodes=[{
+                "proposed_id": node.id,
+                "proposed_label": label,
+                "why_needed": "The packet names it.",
+                "edges_depending_on_it": ["T1"],
+            }],
+            candidate_edges=[dict(BASE_EDGE, target_id=node.id, target_label=node.label)],
+        )
+
+    def test_same_id_and_label_is_reused_not_escalated(self):
+        node = self.canonical_node()
+        result = self.compile_gur(**self.propose(node.label))
+        self.assertIn("node_proposal_resolved_to_canonical", self.rules(result))
+        self.assertNotIn("node_addition_already_canonical", self.rules(result))
+        self.assertEqual(result.node_additions, [])
+        self.assertEqual(result.escalations, [])
+        self.assertEqual([f.detail for f in result.errors], [])
+        self.assertEqual([r["ref"] for r in result.additions], ["T1"])
+
+    def test_the_label_comparison_is_normalized(self):
+        result = self.compile_gur(**self.propose(self.canonical_node().label.upper()))
+        self.assertIn("node_proposal_resolved_to_canonical", self.rules(result))
+        self.assertEqual(result.escalations, [])
+
+    def test_same_id_under_a_different_label_still_errors(self):
+        """Reuse is licensed by the two agreeing, not by the ID being present."""
+        result = self.compile_gur(**self.propose("Something Else Entirely"))
+        self.assertIn("node_addition_already_canonical", self.rules(result))
+        self.assertTrue(any(e["kind"] == "node_registration" for e in result.escalations))
+        self.assertTrue(result.blocks_approval)
+
+
 class TestCitations(CompilerCase):
     def test_page_outside_packet_range_errors(self):
         result = self.compile_gur(candidate_edges=[dict(BASE_EDGE, page=70)])
@@ -605,6 +1002,268 @@ class TestEnvelope(CompilerCase):
         result = self.compile_gur(constitution_version="1.1")
         self.assertIn("constitution_version_mismatch", self.rules(result))
 
+
+
+class ReviewerRejectedNodeCase(CompilerCase):
+    """A node proposal the Review rejected must leave the patch.
+
+    It used to survive carrying only a recorded disposition, so the next
+    revision still asked the Integrator to register it. With its only edge
+    rejected too that registers a node at degree zero -- the defect the
+    Integrator refused the alignment-graph bundle for, and the exact shape of
+    REV-GUP-PKT-PHB-120-120-planes-of-existence-r05-r01 rejecting
+    `rule_prime_material_plane` because its only edge was rejected.
+    """
+
+    NODE = "rule_fixture_rejected_node"
+
+    def compile_with_review(self, node_disposition, row_disposition):
+        from adnd1e_builder.review import ReviewDirectives
+
+        document = dict(BASE_ENVELOPE)
+        document.update(
+            candidate_nodes=[{
+                "proposed_id": self.NODE, "proposed_label": "Fixture Rejected Node",
+                "why_needed": "The packet names it.", "edges_depending_on_it": ["T1"],
+            }],
+            candidate_edges=[dict(BASE_EDGE, ref="T1", target_id=self.NODE,
+                                  target_label="Fixture Rejected Node")],
+        )
+        review = {
+            "id": "REV-GUP-PKT-TEST-r01-r01",
+            "packet_id": document["packet_id"],
+            "reviewed_gup": {"id": "GUP-PKT-TEST-r01"},
+            "overall_disposition": "revision_required",
+            "row_decisions": [
+                {"ref": "T1", "disposition": row_disposition, "rationale": "fixture"}
+            ],
+            "node_registry_decisions": [
+                {"proposed_id": self.NODE, "disposition": node_disposition}
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            gur = Path(tmp) / "gur.yaml"
+            gur.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+            rev = Path(tmp) / "REV.yaml"
+            rev.write_text(yaml.safe_dump(review, sort_keys=False), encoding="utf-8")
+            return self.compiler.compile(
+                gur, directives=ReviewDirectives.load(rev), revision=2,
+                supersedes="GUP-PKT-PHB-999-999-fixture-r01",
+            )
+
+    def proposed(self, result):
+        return [n["proposed_id"] for n in result.node_additions]
+
+    def by_severity(self, result, severity):
+        return [f.rule for f in result.findings if f.severity == severity]
+
+    def test_a_rejected_node_with_no_surviving_row_is_dropped(self):
+        result = self.compile_with_review("rejected", "rejected")
+        self.assertNotIn(self.NODE, self.proposed(result))
+        self.assertIn("reviewer_rejected_node_dropped", self.by_severity(result, "info"))
+
+    def test_dropping_it_is_not_an_error(self):
+        """The Reviewer asked for this; it must not block the revision."""
+        result = self.compile_with_review("rejected", "rejected")
+        self.assertNotIn(
+            "reviewer_rejected_node_still_needed", self.by_severity(result, "error")
+        )
+
+    def test_a_rejected_node_a_surviving_row_needs_is_an_error(self):
+        """Dropping it would strand the row against an unregistered endpoint."""
+        result = self.compile_with_review("rejected", "approved")
+        self.assertIn(
+            "reviewer_rejected_node_still_needed", self.by_severity(result, "error")
+        )
+        self.assertIn(self.NODE, self.proposed(result))
+
+    def test_the_error_names_the_row_that_still_depends_on_it(self):
+        result = self.compile_with_review("rejected", "approved")
+        detail = next(
+            f.detail for f in result.findings
+            if f.rule == "reviewer_rejected_node_still_needed"
+        )
+        self.assertIn("T1", detail)
+
+    def test_an_approved_node_survives(self):
+        result = self.compile_with_review("approved", "approved")
+        self.assertIn(self.NODE, self.proposed(result))
+
+    def test_the_guard_stays_quiet_when_nothing_is_rejected(self):
+        result = self.compile_with_review("approved", "approved")
+        self.assertNotIn(
+            "reviewer_rejected_node_dropped", self.by_severity(result, "info")
+        )
+
+
+class BlockedRowsAreSeparableCase(CompilerCase):
+    """Two things hold a row back, and they are not interchangeable.
+
+    A row waiting on a node *this* patch proposes travels with the patch: the
+    batch that registers the node integrates the row. A row waiting on a node
+    another packet mints cannot integrate at all until that packet does.
+
+    INT-20260814-003 refused the psionics bundle over nine endpoints of the
+    second kind. They were correctly held and correctly declared under
+    `cross_packet_dependencies`, but all 203 pending rows went into one
+    undifferentiated CSV, so nothing downstream could separate the 190 rows the
+    batch could satisfy from the 13 it could not.
+    """
+
+    OWN = "rule_fixture_own_proposal"
+    OTHER = "rule_fixture_other_packet"
+
+    def compile_mixed(self):
+        return self.compile_gur(
+            candidate_nodes=[{
+                "proposed_id": self.OWN, "proposed_label": "Fixture Own Proposal",
+                "why_needed": "The packet names it.", "edges_depending_on_it": ["T1"],
+            }],
+            cross_packet_candidate_targets=[{
+                "id": self.OTHER, "label": "Fixture Other Packet",
+                "origin": "candidate minted by GUR-PKT-PHB-998-998-other-r01, not yet canonical",
+                "used_by": ["T2"],
+                "builder_instruction": "Do not mint a second identity.",
+            }],
+            candidate_edges=[
+                dict(BASE_EDGE, ref="T1", target_id=self.OWN,
+                     target_label="Fixture Own Proposal"),
+                dict(BASE_EDGE, ref="T2", target_id=self.OTHER,
+                     target_label="Fixture Other Packet"),
+            ],
+        )
+
+    def test_both_kinds_are_held_out_of_the_integration_input(self):
+        """The invariant 1 guarantee is unchanged; only the reporting splits."""
+        result = self.compile_mixed()
+        self.assertEqual(result.additions, [])
+        self.assertEqual(len(result.pending_additions), 2)
+
+    def test_the_two_kinds_are_separated(self):
+        result = self.compile_mixed()
+        self.assertEqual(
+            [r["ref"] for r in result.batch_satisfiable_additions], ["T1"]
+        )
+        self.assertEqual([r["ref"] for r in result.blocked_additions], ["T2"])
+
+    def test_the_split_partitions_the_pending_set(self):
+        result = self.compile_mixed()
+        satisfiable = {r["ref"] for r in result.batch_satisfiable_additions}
+        blocked = {r["ref"] for r in result.blocked_additions}
+        self.assertEqual(satisfiable & blocked, set())
+        self.assertEqual(
+            satisfiable | blocked, {r["ref"] for r in result.pending_additions}
+        )
+
+    def test_a_patch_waiting_only_on_itself_has_nothing_blocked(self):
+        result = self.compile_gur(
+            candidate_nodes=[{
+                "proposed_id": self.OWN, "proposed_label": "Fixture Own Proposal",
+                "why_needed": "The packet names it.", "edges_depending_on_it": ["T1"],
+            }],
+            candidate_edges=[dict(BASE_EDGE, ref="T1", target_id=self.OWN,
+                                  target_label="Fixture Own Proposal")],
+        )
+        self.assertEqual(result.blocked_additions, [])
+        self.assertEqual(len(result.batch_satisfiable_additions), 1)
+
+    def test_the_two_csvs_carry_the_two_kinds(self):
+        from adnd1e_builder.emit import blocked_csv, pending_csv
+
+        import csv as _csv
+
+        result = self.compile_mixed()
+        pending = list(_csv.DictReader(pending_csv(result).splitlines()))
+        blocked = list(_csv.DictReader(blocked_csv(result).splitlines()))
+        self.assertEqual([r["target_id"] for r in pending], [self.OWN])
+        self.assertEqual([r["target_id"] for r in blocked], [self.OTHER])
+
+    def test_the_blocked_file_exists_only_when_something_is_blocked(self):
+        """Its presence is the signal that this patch cannot integrate alone."""
+        from adnd1e_builder.emit import write_all
+
+        with tempfile.TemporaryDirectory() as tmp:
+            gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
+            mixed = self.compile_mixed()
+            written = write_all(mixed, gup_dir, reports, {"ran": False})
+            self.assertEqual(
+                [p.name for p in written if p.name.endswith(".blocked.csv")],
+                [f"{mixed.gup_id}.blocked.csv"],
+            )
+
+            clean = self.compile_gur(candidate_edges=[dict(BASE_EDGE)])
+            written = write_all(
+                clean, gup_dir, reports, {"ran": False}, allow_overwrite=True
+            )
+            self.assertEqual(
+                [p.name for p in written if p.name.endswith(".blocked.csv")], []
+            )
+
+    def test_the_gup_names_the_two_buckets_apart(self):
+        from adnd1e_builder.emit import gup_document
+
+        document = gup_document(self.compile_mixed(), {"ran": False})
+        changes = document["edge_changes"]
+        self.assertEqual([r["ref"] for r in changes["pending_additions"]], ["T1"])
+        self.assertEqual([r["ref"] for r in changes["blocked_additions"]], ["T2"])
+
+    def test_the_validation_summary_counts_them_apart(self):
+        from adnd1e_builder.emit import validation_report
+
+        summary = validation_report(self.compile_mixed(), {"ran": False})["summary"]
+        self.assertEqual(summary["edge_pending_additions"], 1)
+        self.assertEqual(summary["edge_blocked_additions"], 1)
+
+
+class LivePsionicsBlockedCase(CompilerCase):
+    """The rejection, reproduced against the published GUR."""
+
+    GUR = (
+        REPO_ROOT / "books" / "adnd1e" / "phb" / "artifacts" / "gur"
+        / "GUR-PKT-PHB-110-117-psionics-r03.yaml"
+    )
+
+    #: The nine endpoints INT-20260814-003 named, verbatim.
+    REJECTED = (
+        "spell_clairaudience", "spell_clairvoyance", "spell_dimension_door",
+        "spell_fear", "spell_feather_fall", "spell_geas", "spell_heat_metal",
+        "spell_telekinesis", "spell_teleport",
+    )
+
+    def result(self):
+        if not self.GUR.exists():  # pragma: no cover
+            self.skipTest("the psionics GUR is not present")
+        return self.compiler.compile(self.GUR)
+
+    def test_every_rejected_endpoint_lands_in_the_blocked_bucket(self):
+        result = self.result()
+        blocked = {
+            node
+            for row in result.blocked_additions
+            for node in (row["source_id"], row["target_id"])
+        }
+        for endpoint in self.REJECTED:
+            if endpoint in self.registry:  # pragma: no cover - origin has landed
+                continue
+            self.assertIn(endpoint, blocked, endpoint)
+
+    def test_no_rejected_endpoint_reaches_the_integration_input(self):
+        """The guarantee the Integrator checks: additions resolve or are held."""
+        result = self.result()
+        integrable = {
+            node
+            for row in result.additions
+            for node in (row["source_id"], row["target_id"])
+        }
+        self.assertEqual(integrable & set(self.REJECTED), set())
+
+    def test_the_blocked_set_is_far_smaller_than_the_pending_set(self):
+        """190 of 203 were always safe; only the remainder blocks the batch."""
+        result = self.result()
+        self.assertTrue(result.blocked_additions)
+        self.assertLess(
+            len(result.blocked_additions), len(result.batch_satisfiable_additions)
+        )
 
 if __name__ == "__main__":
     unittest.main()

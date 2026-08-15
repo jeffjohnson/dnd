@@ -1,0 +1,332 @@
+schema_version: '1.0'
+id: ESC-2026-08-06T02.36.49.284Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.7'
+raised_by: analyst
+raised_on: '2026-08-05'
+decision_id: DEC-2026-0027
+decided_on: '2026-08-06'
+prior_escalation_id: null
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: A ready Analyst queue item asks for work a later Decision forbids, and no role owns the prerequisite
+    that would unblock it. Only Architect can retire or re-route it.
+  blocking_ids: []
+originating_artifacts:
+  queue_item:
+    id: REV-GUP-MIG-DEC-2026-0015-0016-r03-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-MIG-DEC-2026-0015-0016-r03-r01.yaml
+    checksum: sha256:bd028559156952c2a4b863b7ca911ba4337b00e8e473b4c637e6b328310550df
+    review_date: '2026-08-02'
+    status: revision_required
+    handoff:
+      next_role: analyst
+      readiness: ready
+    queue: ANALYST-DECISION-MIGRATION-REVISION
+  reviewed_gup:
+    id: GUP-MIG-DEC-2026-0015-0016-r03
+    path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0015-0016-r03.yaml
+    checksum: sha256:2257a44ea94f01a979ff1300c6e5590fe3d16a54f29d39c03ca075dba7c4c7ce
+    frozen_by: DEC-2026-0021
+  governing_decisions:
+  - id: DEC-2026-0019
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0019.yaml
+    checksum: sha256:617218dbb42f0c366c946644dbbda08d9f7cdf64bfda7812a7fb097b4371cc29
+    role: ordered the twenty-row polarity cleanup the Review enforces
+  - id: DEC-2026-0021
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0021.yaml
+    checksum: sha256:8f46da6dd7450ecea3d86f866c47aa92ffb791127a0f175139fa9cedd66a2714
+    role: later ruling that split the twenty and blocked the sixteen
+    raised_by_escalation: ESC-2026-08-03T22.35.13.308Z
+  canonical_snapshot:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:43b5be90b9110943f3369daa9e82fd78b190c5586b5ec4260f8d685bc4f0261c
+    rows: 4118
+question: A ready Analyst queue item instructs the Analyst to publish correction GURs for all twenty DEC-2026-0019
+  assertions. Four are done and integrated; the remaining sixteen are barred by DEC-2026-0021 until claimed
+  DMG and UA packets exist, and no role in the pipeline owns the creation of those packets. How is this
+  item to be retired or re-routed, and who acquires the DMG and UA source that every downstream artifact
+  now waits on?
+why_this_is_architectural: 'This is not ordinary uncertainty and not a defect in any single artifact.
+  Three contracts interact to produce a queue state no role can leave: an immutable Review carries a ready
+  Analyst handoff; a later Decision forbids the work that handoff asks for; and the queue has no artifact
+  kind that can retire a Review whose instruction was superseded without that Review having raised an
+  escalation of its own. It also exposes an unassigned responsibility: source acquisition. ESCALATION_CONTRACT
+  lists ''the constitution and production data disagree in a way that cannot be fixed mechanically'' and
+  ''source books conflict and current supersession categories are insufficient''; this is the queue-derivation
+  analogue of both.'
+the_conflict:
+  review_requires: Publish source-backed correction GURs for all and only the 20 DEC-2026-0019 assertions.
+    (required_follow_up.analyst)
+  decision_permits: Resume the sixteen-row cleanup only when claimed DMG and UA packets exist. (DEC-2026-0021
+    follow_up_owners.analyst)
+  precedence: DEC-2026-0021 post-dates the Review by one day and is an approved Architect Decision, so
+    it governs. The Review is immutable and Reviewer-owned; the Analyst may not edit it to record that
+    it has been overtaken.
+  why_the_suppression_no_longer_applies: 'Earlier scans suppressed this item as handoff_replaced_by_decision,
+    reporting that DEC-2026-0021 resolved the escalation this Review raised. That attribution was incorrect:
+    the Review''s architectural_escalations list is empty, and DEC-2026-0021 was raised by ESC-2026-08-03T22.35.13.308Z,
+    an Analyst escalation. The current scanner requires the Decision''s escalation_id to match a blocker
+    the artifact actually raised, so the item now surfaces. The tightening looks correct; it revealed
+    a real gap rather than creating one.'
+what_the_analyst_completed:
+  rows:
+  - 413
+  - 531
+  - 532
+  - 535
+  basis_now: read
+  state: integrated
+  integration: INT-20260804-001
+  evidence:
+  - canonical_row: 413
+    source_id: align_change
+    edge_type: CONSTRAINS
+    target_id: sys_alignment
+    polarity: worsens
+    polarity_basis: read
+    book: PHB
+    page: '34'
+  - canonical_row: 531
+    source_id: spell_bless
+    edge_type: MODIFIES
+    target_id: cbt_morale
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: '43'
+  - canonical_row: 532
+    source_id: spell_bless
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    polarity: improves
+    polarity_basis: read
+    book: PHB
+    page: '43'
+  - canonical_row: 535
+    source_id: spell_glyph_of_warding
+    edge_type: TRIGGERS
+    target_id: exp_level_loss
+    polarity: inflicts
+    polarity_basis: read
+    book: PHB
+    page: '47'
+  note: Published as GUR-PKT-PHB-033-035-alignment-hp-languages-r05 and GUR-PKT-PHB-043-054-cleric-spells-r07,
+    compiled, approved and integrated. This is the whole of the twenty that DEC-2026-0021 permitted.
+the_sixteen_blocked_assertions:
+  count: 16
+  basis_split:
+    unset: 14
+    heuristic: 2
+  books:
+    DMG: 8
+    UA: 8
+  evidence:
+  - canonical_row: 1702
+    source_id: rule_underwater
+    edge_type: MODIFIES
+    target_id: spell_fireball
+    polarity: neutral
+    polarity_basis: unset
+    book: DMG
+    page: '57'
+  - canonical_row: 1984
+    source_id: spell_confusion
+    edge_type: MODIFIES
+    target_id: save_matrix
+    polarity: inflicts
+    polarity_basis: heuristic
+    book: DMG
+    page: '78'
+  - canonical_row: 2065
+    source_id: spell_charm_person
+    edge_type: TRIGGERS
+    target_id: rule_spell_failure
+    polarity: neutral
+    polarity_basis: unset
+    book: DMG
+    page: '104'
+  - canonical_row: 2066
+    source_id: rule_spell_failure
+    edge_type: CONSTRAINS
+    target_id: spell_charm_person
+    polarity: neutral
+    polarity_basis: unset
+    book: DMG
+    page: '104'
+  - canonical_row: 2122
+    source_id: potion_philter_love
+    edge_type: TRIGGERS
+    target_id: spell_charm_person
+    polarity: neutral
+    polarity_basis: unset
+    book: DMG
+    page: '127'
+  - canonical_row: 2215
+    source_id: item_rod_lordly_might
+    edge_type: TRIGGERS
+    target_id: spell_hold_person
+    polarity: neutral
+    polarity_basis: unset
+    book: DMG
+    page: '133'
+  - canonical_row: 2273
+    source_id: item_amulet_location
+    edge_type: MODIFIES
+    target_id: spell_esp
+    polarity: worsens
+    polarity_basis: heuristic
+    book: DMG
+    page: '137'
+  - canonical_row: 2612
+    source_id: spell_esp
+    edge_type: MODIFIES
+    target_id: cbt_surprise
+    polarity: neutral
+    polarity_basis: unset
+    book: DMG
+    page: '173'
+  - canonical_row: 2902
+    source_id: spell_taunt
+    edge_type: MODIFIES
+    target_id: cbt_armor_class
+    polarity: neutral
+    polarity_basis: unset
+    book: UA
+    page: '54'
+  - canonical_row: 2903
+    source_id: spell_taunt
+    edge_type: MODIFIES
+    target_id: cbt_tohit
+    polarity: neutral
+    polarity_basis: unset
+    book: UA
+    page: '54'
+  - canonical_row: 2904
+    source_id: spell_taunt
+    edge_type: TRIGGERS
+    target_id: spell_disruption
+    polarity: neutral
+    polarity_basis: unset
+    book: UA
+    page: '54'
+  - canonical_row: 2905
+    source_id: spell_taunt
+    edge_type: MODIFIES
+    target_id: comeliness
+    polarity: neutral
+    polarity_basis: unset
+    book: UA
+    page: '54'
+  - canonical_row: 2906
+    source_id: spell_taunt
+    edge_type: MODIFIES
+    target_id: abil_dexterity
+    polarity: neutral
+    polarity_basis: unset
+    book: UA
+    page: '54'
+  - canonical_row: 3147
+    source_id: rule_underwater
+    edge_type: CONSTRAINS
+    target_id: spell_melfs_acid_arrow
+    polarity: neutral
+    polarity_basis: unset
+    book: UA
+    page: '82'
+  - canonical_row: 3283
+    source_id: exp_level
+    edge_type: MODIFIES
+    target_id: spell_taunt
+    polarity: neutral
+    polarity_basis: unset
+    book: UA
+    page: '53'
+  - canonical_row: 3498
+    source_id: exp_level
+    edge_type: MODIFIES
+    target_id: spell_melfs_acid_arrow
+    polarity: neutral
+    polarity_basis: unset
+    book: UA
+    page: '54'
+  why_unreadable: Their polarity cannot be read because the repository holds no DMG or UA text. books/adnd1e/dmg/source/,
+    books/adnd1e/dmg/packets/{incoming,claimed,completed}/ and the identical UA paths contain only .gitkeep.
+    There is nothing to packetize and nothing to read.
+  blocked_downstream:
+  - GRAPH_INVARIANTS 15 and 16 cannot be satisfied for these rows.
+  - DEC-2026-0015's atomic identity migration is held in full (DEC-2026-0021).
+  - 'GUP-MIG-DEC-2026-0015-0016 r01 through r03 are frozen: DEC-2026-0021 forbids editing, renaming, moving,
+    deleting or approving them.'
+  - REV-GUP-MIG-DEC-2026-0015-0016-r03-r01 stays permanently ready in the Analyst queue.
+what_the_analyst_will_not_do: 'The Builder has stated that the Analyst must create claimed DMG and UA
+  Markdown packets for the sixteen. The Analyst declines, and the reason is evidentiary rather than procedural.
+  No DMG or UA text exists in this repository, so producing those packets would mean writing the rulebook
+  prose from recall, committing it as immutable claimed source, then reading it back as evidence and stamping
+  sixteen rows polarity_basis: read. That would place invented rules into canonical under a provenance
+  label asserting they were read from a printed page. DEC-2026-0021 already ruled that no unread polarity
+  may be described as read, and the Analyst instructions forbid using anything but the packet as evidence.
+  WORK_QUEUES defines Analyst ready work as entries already present under packets/incoming/; FILE_NAMING
+  calls that directory ''available''. The Analyst consumes source, it does not author source.'
+the_unassigned_responsibility: No role instruction, contract, or Decision assigns the acquisition and
+  packetization of a new book. Packets have so far appeared under packets/incoming/ from outside the five
+  roles. That worked while PHB was the only book in play. Now a Decision lineage is blocked on source
+  for two books nobody owns, and the Builder has begun assigning that work to the Analyst by elimination.
+  The pipeline needs this named explicitly rather than inferred.
+options_considered:
+- option: Reviewer publishes REV-GUP-MIG-DEC-2026-0015-0016-r03-r02 superseding r01
+  effect: The active Review records DEC-2026-0021, narrows required_follow_up.analyst to the four completed
+    rows, and hands off to no one pending source. The queue item clears through the ordinary revision
+    mechanism.
+  cost: Requires the Reviewer to revise a Review about a GUP that DEC-2026-0021 froze. Needs an explicit
+    ruling that revising the Review is not 'editing the migration'.
+  assessment: Cleanest within existing artifact kinds.
+- option: Extend handoff replacement to cover supersession without a raised escalation
+  effect: A Decision could name artifacts whose handoffs it supersedes, independent of which escalation
+    produced it. Generalizes beyond this case.
+  cost: A scanner and contract change owned by Builder under WORK_QUEUES; touches DEC-2026-0022 territory,
+    whose implementation is still in review.
+  assessment: Correct long-term fix; heavier and slower than this deadlock needs.
+- option: Leave the item ready and treat it as known noise
+  effect: No artifact changes.
+  cost: The Analyst queue permanently misreports one ready job, and each role that reads the scanner re-derives
+    this analysis. It already caused the Builder to assign the Analyst packet creation.
+  assessment: Not recommended; the misreport is actively producing wrong work assignments.
+- option: Analyst fabricates DMG and UA packets from recall
+  effect: Unblocks everything immediately.
+  cost: Invented rules enter canonical labelled as source-read.
+  assessment: Prohibited. Listed only to record that it was considered and refused.
+recommended_resolution: Adopt option 1 and rule on option 4's underlying gap. Direct the Reviewer to publish
+  REV-GUP-MIG-DEC-2026-0015-0016-r03-r02, superseding r01, recording DEC-2026-0021, narrowing the Analyst
+  follow-up to the four integrated rows, and handing off to no role while source is absent. Confirm that
+  revising this Review does not violate DEC-2026-0021's freeze on the migration itself. Separately, name
+  the owner of source acquisition for DMG and UA, or state that it is outside all five roles and that
+  the sixteen rows remain an accepted standing debt until source is supplied from outside the pipeline.
+  Either answer is workable; the absence of one is what leaves the queue lying.
+expected_migration_impact:
+  canonical_rows_changed: 0
+  registry_rows_changed: 0
+  nodes_added: 0
+  nodes_retired: 0
+  constitution_change: false
+  registry_change: false
+  profile_change: false
+  artifacts_created: one Review revision
+  artifacts_invalidated: 0
+  note: This escalation asks only for routing and ownership. It proposes no graph mutation. The sixteen
+    rows keep their current unset and heuristic bases until real source exists.
+blocking:
+  analyst: One ready queue item that cannot be actioned. No other Analyst work is affected.
+  builder: DEC-2026-0015's identity migration and the frozen r01-r03 lineage.
+  graph: GRAPH_INVARIANTS 15 and 16 remain unsatisfiable for sixteen canonical rows.
+analyst_position: 'The four assertions the Architect permitted are done, integrated, and verified read
+  in the current canonical file. The sixteen that remain are not deferred by choice: the evidence for
+  them does not exist in this repository. The Analyst is not asking to be released from them, and is not
+  asking to re-litigate DEC-2026-0021, which was correct. The ask is narrower: retire or re-route a queue
+  item that instructs the Analyst to do what a later Decision forbids, and say who is responsible for
+  obtaining the source that everything downstream is waiting on.'

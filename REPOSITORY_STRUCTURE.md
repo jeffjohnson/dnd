@@ -41,7 +41,19 @@ tooling/                        shared deterministic code and tests
 - the canonical nodes, edges, and generated graph;
 - cross-book conflicts and identity resolution;
 - architect escalations and decisions;
+- Builder Decision Implementation Reports and their independent Reviews;
 - integration manifests and releases.
+
+Non-migration Decision implementation lineage is stored under:
+
+```text
+rulesets/<ruleset-id>/decision-implementations/
+rulesets/<ruleset-id>/decision-implementation-reviews/
+```
+
+These are append-only artifact stores governed by `contracts/WORK_QUEUES.md`.
+They are not code-owner directories and do not grant Builder or Reviewer
+authority over ruleset governance or canonical graph state.
 
 Only Integrator mutates canonical graph state. Architect may alter governance and controlled registries through durable decisions.
 

@@ -1,0 +1,312 @@
+schema_version: "1.0"
+id: DEC-2026-0026
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-054-064-druid-spells
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Supersede migration r02 with the final combined migration r03, using
+    rule_greater_mistletoe as the default identity and preserving only the two
+    exact unread legacy polarity fields under this Decision's migration exception.
+  blocking_ids: []
+
+decision_date: "2026-08-05"
+escalation_id: ESC-2026-08-05T01.03.23.309Z
+supplements: [DEC-2026-0024, DEC-2026-0025]
+
+question: >-
+ Does the canonical/default component identity directed by DEC-2026-0024 remain
+ rule_mistletoe / Mistletoe, or must it be rule_greater_mistletoe / Greater
+ Mistletoe given the PHB distinctions and the stated default? May the exact
+ DEC-2026-0025 identity migration preserve neutral/unset polarity bases on
+ legacy rows 2665 and 2666?
+
+ruling: >-
+  rule_greater_mistletoe, label Greater Mistletoe, kind rule, is the one
+  canonical default identity. Every unqualified packet reference to "mistletoe"
+  resolves to rule_greater_mistletoe unless the text expressly identifies lesser
+  mistletoe, borrowed mistletoe, holly, or oak leaves. rule_mistletoe / Mistletoe
+  is not registered and is not an alias. This
+  Decision supersedes every rule_mistletoe identity and packet-edge instruction
+  in DEC-2026-0024 while leaving its row-1502 removal intact.
+
+  The migration may preserve exactly rows 2665 and 2666 with polarity neutral
+  and polarity_basis unset. Their identity and labels change, but no semantic or
+  polarity field changes. Reviewer approval of that narrow compare-and-swap
+  migration does not approve or validate either legacy polarity reading. No
+  ordinary packet update or unrelated migration receives this exception.
+
+rationale:
+  - >-
+    PHB 54 distinguishes greater mistletoe, properly harvested by the druid,
+    from the named lesser and borrowed alternatives. The packet establishes the
+    properly harvested form as the normal component and labels all other forms
+    as reduced-effect alternatives.
+  - >-
+    A generic rule_mistletoe node would make the default and the alternatives
+    ambiguous. A single Greater Mistletoe node expresses the stated default and
+    lets an explicit alternative remain explicit in the edge condition.
+  - >-
+    The three-field source reading on PHB 54 supports the replacement-component
+    comparisons below. Separate node identities for lesser mistletoe, borrowed
+    mistletoe, holly, and oak leaves are unnecessary until a packet needs one as
+    an endpoint rather than as an explicit condition.
+  - >-
+    Rows 2665 and 2666 cite unavailable legacy DMG text. Their polarity cannot
+    honestly become read or derived. Refusing an endpoint-only migration would
+    force an unrelated identity correction to wait on an unread source audit.
+
+default_and_exception_mapping:
+  default:
+    source_terms: [mistletoe, greater mistletoe]
+    canonical_id: rule_greater_mistletoe
+    canonical_label: Greater Mistletoe
+  explicit_exceptions:
+    - lesser mistletoe
+    - borrowed mistletoe
+    - holly
+    - oak leaves
+  handling: >-
+    Preserve an explicitly named exception verbatim in the condition of its
+    source-supported relationship. Do not silently normalize it to greater
+    mistletoe and do not register a separate exception node unless a later
+    packet requires that exception as an edge endpoint.
+  prohibited_generic_identity: rule_mistletoe
+
+packet_edge_disposition:
+  source_packet:
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-054-064-druid-spells/source.md
+    checksum: sha256:b448558b627645760f36c5fbbc299224b6c9e939d188c6acf94e67d1dd4a5a42
+    locus: {book: PHB, page: "54", section: "Notes Regarding Druid (Cleric) Spells:"}
+  M1:
+    action: omit_rejected_row
+    reason: DERIVED_FROM does not encode religious-symbol classification.
+  M2:
+    source_id: rule_greater_mistletoe
+    source_label: Greater Mistletoe
+    edge_type: FEEDS_INTO
+    target_id: rule_druid_spells
+    target_label: Druid Spells
+    aspect: material component
+    condition: spells having a material component
+    polarity: neutral
+    polarity_basis: derived
+  M3:
+    source_id: rule_greater_mistletoe
+    source_label: Greater Mistletoe
+    edge_type: MODIFIES
+    target_id: rule_spell_range
+    target_label: Spell Range
+    aspect: range
+    condition: instead of borrowed mistletoe, holly, or oak leaves
+    polarity: improves
+    polarity_basis: read
+  M4:
+    source_id: rule_greater_mistletoe
+    source_label: Greater Mistletoe
+    edge_type: MODIFIES
+    target_id: rule_spell_duration
+    target_label: Spell Duration
+    aspect: duration
+    condition: instead of lesser or borrowed mistletoe, holly, or oak leaves
+    polarity: improves
+    polarity_basis: read
+  M5:
+    source_id: rule_greater_mistletoe
+    source_label: Greater Mistletoe
+    edge_type: MODIFIES
+    target_id: rule_spell_area
+    target_label: Spell Area of Effect
+    aspect: area of effect
+    condition: instead of holly or oak leaves
+    polarity: improves
+    polarity_basis: read
+  M6:
+    source_id: rule_greater_mistletoe
+    source_label: Greater Mistletoe
+    edge_type: MODIFIES
+    target_id: save_matrix
+    target_label: Saving Throw Matrix
+    aspect: target saving throw
+    condition: instead of a substandard component when no reduced facet applies
+    polarity: worsens
+    polarity_basis: read
+
+legacy_polarity_exception:
+  applies_only_to:
+    - canonical_row: 2665
+      assertion: exp_level MODIFIES spell_call_woodland_beings
+      preserve:
+        polarity: neutral
+        polarity_basis: unset
+    - canonical_row: 2666
+      assertion: spell_call_woodland_beings TRIGGERS gen_random_encounter
+      preserve:
+        polarity: neutral
+        polarity_basis: unset
+  permitted_change_fields:
+    - source_id
+    - source_label
+    - target_id
+    - target_label
+  prohibited_change_fields:
+    - edge_type
+    - aspect
+    - condition
+    - polarity
+    - polarity_basis
+    - book
+    - page
+    - section
+    - evidence
+    - pass
+    - status
+    - supersession_basis
+    - general_rule_id
+    - review_flag
+  review_meaning: >-
+    Reviewer verifies the exact before-image and allowed ID/label delta. The
+    resulting approval is an identity-migration approval only and does not
+    waive the normal prohibition on approving unset polarity for new or
+    semantically revised assertions.
+  later_source_audit: >-
+    A claimed DMG packet containing page 44 must source-read these two polarity
+    fields in an ordinary packet lineage. This Decision never supplies a
+    substitute polarity interpretation.
+
+migration_revision:
+  superseded_gup: GUP-MIG-DEC-2026-0024-0025-r02
+  required_gup: GUP-MIG-DEC-2026-0024-0025-r03
+  lineage_id: MIG-DEC-2026-0024-0025
+  authority: [DEC-2026-0024, DEC-2026-0025, DEC-2026-0026]
+  required_node_change:
+    remove_proposal: rule_mistletoe
+    add_proposal:
+      id: rule_greater_mistletoe
+      label: Greater Mistletoe
+      kind: rule
+  retained_operations:
+    - Remove exact canonical row 1502 under DEC-2026-0024.
+    - Replace spell_call_woodland_being with spell_call_woodland_beings under DEC-2026-0025.
+    - Repoint and relabel exact canonical rows 2664, 2665, and 2666 under DEC-2026-0025.
+
+affected_contracts_and_registries:
+  contracts: []
+  registries:
+    - rulesets/adnd1e/registries/nodes.csv
+  schemas: []
+  canonical_files:
+    - rulesets/adnd1e/canonical/edges_master.csv
+    - rulesets/adnd1e/canonical/nodes_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+  packet_artifacts:
+    - books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-0025-r03.yaml
+    - books/adnd1e/phb/artifacts/reviews/REV-GUP-MIG-DEC-2026-0024-0025-r03-r01.yaml
+    - books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r02.yaml
+    - books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-054-064-druid-spells-r02.yaml
+
+migration_required: true
+migration_scope:
+  architect_writes: none_to_canonical_or_registry
+  canonical_nodes_added: 1
+  canonical_nodes_retired: 1
+  registry_rows_added: 1
+  registry_rows_retired: 1
+  canonical_edges_removed: 1
+  canonical_edges_repointed: 3
+  canonical_edges_added: 0
+  polarity_fields_changed: 0
+  legacy_aliases_retained: 0
+  exception_rows: [2665, 2666]
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Publish r03 as the active leaf of MIG-DEC-2026-0024-0025. It supersedes
+      r02, checksums all three Decisions, changes the proposed node to
+      rule_greater_mistletoe, preserves the exact legacy polarity fields, and
+      contains no rule_mistletoe proposal or reference.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Review r03 using this Decision's exact default mapping and two-row
+      identity-only polarity exception. Do not create another mistletoe
+      escalation unless a new claimed packet directly conflicts with PHB 54.
+  - step: 3
+    owner: integrator
+    action: >-
+      Integrate only the Approved r03 migration, including the Greater
+      Mistletoe registry node, the row-1502 removal, and the plural spell-ID
+      replacement; rebuild all derived canonical artifacts.
+  - step: 4
+    owner: reviewer
+    action: >-
+      Publish the required r01-r02 packet Review after integration. It replaces
+      every obsolete rule_mistletoe instruction with the exact M1-M6 dispositions
+      in this Decision and hands the remaining packet corrections to Builder.
+  - step: 5
+    owner: builder
+    action: >-
+      Publish the packet r02 against the integrated registry, using only
+      rule_greater_mistletoe and the exact M2-M6 fields above.
+
+acceptance_tests:
+  - >-
+    GUP-MIG-DEC-2026-0024-0025-r03 supersedes r02, is the active leaf of the
+    same lineage, and records exact checksummed authority for Decisions 0024,
+    0025, and 0026.
+  - The migration proposes rule_greater_mistletoe / Greater Mistletoe and no rule_mistletoe node or alias.
+  - The migration retains all DEC-2026-0024 and DEC-2026-0025 operations exactly.
+  - >-
+    Rows 2665 and 2666 change only their spell endpoint ID/label; their complete
+    non-identity fields, including polarity neutral and polarity_basis unset,
+    equal the exact before-image.
+  - Reviewer applies the two-row exception only to the migration and records its identity-only scope.
+  - >-
+    The post-migration packet Review omits M1 and contains the exact M2-M6
+    identity, type, aspect, condition, polarity, and basis values in this Decision.
+  - No GUP, Review, Approved bundle, registry row, or canonical endpoint retains rule_mistletoe.
+  - >-
+    Future unqualified packet references to mistletoe resolve to
+    rule_greater_mistletoe; explicitly named alternatives remain explicit.
+  - No new mistletoe escalation is raised from this packet absent a direct conflict in a newly claimed source packet.
+  - All applicable schema, lineage, registry, graph, and repository validations pass.
+
+constitution_version_impact:
+  changed: false
+  version: "1.7"
+  reason: >-
+    Existing node, condition, polarity, and Decision-migration rules are
+    sufficient. This establishes an AD&D 1e source identity default and one
+    bounded migration-review exception; it does not alter the ontology contract.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Publish the combined migration r03 and do not issue another r02 revision.
+    - Use rule_greater_mistletoe in the later packet r02 and omit rule_mistletoe.
+  reviewer:
+    - Review r03 under the exact two-row exception.
+    - Publish r01-r02 after integration with the exact M1-M6 disposition.
+    - Do not escalate the default mapping or preserved legacy polarity again.
+  integrator:
+    - Integrate only the Approved r03 migration.
+  analyst:
+    - Treat unqualified mistletoe as Greater Mistletoe in future packets.
+    - Preserve an explicitly named alternative instead of defaulting it.
+
+prohibited_actions:
+  - Do not register, reuse, or alias rule_mistletoe.
+  - Do not map lesser mistletoe, borrowed mistletoe, holly, or oak leaves to Greater Mistletoe.
+  - Do not change the polarity or polarity_basis of rows 2665 or 2666 in this migration.
+  - Do not treat the two-row exception as approval of unset polarity in ordinary work.
+  - Do not create another mistletoe escalation from this packet without a direct conflict in a newly claimed source packet.
+  - Architect does not edit GUP, Review, registry, canonical, or role-tooling files.

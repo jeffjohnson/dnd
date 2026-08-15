@@ -1,0 +1,284 @@
+schema_version: "1.0"
+id: DEC-2026-0028
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the retired-by-lineage Decision Implementation outcome and
+    reissue the DEC-2026-0022 implementation report with independently
+    verifiable ordinary-completion evidence.
+  blocking_ids: []
+
+decision_date: "2026-08-06"
+escalation_id: ESC-2026-08-06T05.00.31.952Z
+supplements: [DEC-2026-0022]
+
+question: >-
+  How can an approved Decision's implementation report truthfully discharge an
+  acceptance test that names a live queue artifact after that artifact has
+  completed ordinary Approval and Integration, making the literal snapshot
+  false solely because the pipeline succeeded?
+
+ruling: >-
+  The repository adopts `retired_by_lineage` as a narrowly scoped successful
+  Decision Implementation Report outcome. It applies only to an acceptance test
+  explicitly classified as a live queue snapshot. It records that the named
+  subject is no longer visible because its ordinary Approval-and-Integration
+  lineage completed; it never records that the historical queue assertion still
+  passes. The outcome requires exact, checksummed Architect authorization and
+  exact, checksummed Integration evidence for every named subject. A Reviewer
+  independently verifies it with `verified_retired_by_lineage`.
+
+  This Decision gives the required legacy authorization for DEC-2026-0022
+  acceptance tests 2, 3, and 4. Its test 1 remains an ordinary `passed` result.
+  Builder must publish a new DEC-2026-0022 implementation-report revision after
+  the shared schemas, validators, scanner, and tests implement this ruling;
+  Reviewer then independently reviews that active leaf. The immutable r04
+  report remains historical evidence and is neither edited nor treated as an
+  approval-ready implementation.
+
+rationale:
+  - >-
+    The literal queue snapshots in DEC-2026-0022 tests 2 through 4 are false
+    because their subjects completed their downstream lineages, not because the
+    scanner suppressed live work. Calling them `passed` would falsify repository
+    state; leaving them `not_run` permanently would make the approved Decision
+    impossible to complete.
+  - >-
+    A specific, checksummed authority prevents Builder or Reviewer from
+    reinterpreting an approved Decision. Exact Integration records distinguish
+    ordinary success from handoff replacement, deletion, unapproved work, or a
+    supersession with no integrated successor.
+  - >-
+    The rule is general for future explicitly structured queue-snapshot tests,
+    while the legacy authorization is intentionally limited to the precise
+    DEC-2026-0022 indices and subjects below.
+
+retired_acceptance_authorizations:
+  - decision_input:
+      id: DEC-2026-0022
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0022.yaml
+      checksum: sha256:ad74f5937d668c02544f8d610c2fae236e6022fdeb7f434f5f5b26366604923f
+    acceptance_test_index: 2
+    kind: live_queue_snapshot
+    retirement_allowed: true
+    subjects:
+      - id: DEC-2026-0021
+        path: rulesets/adnd1e/escalations/decisions/DEC-2026-0021.yaml
+        permitted_retirement_state: consumed_by_integrated_bundle
+        integration_record_path: books/adnd1e/phb/artifacts/integrated/INT-20260804-002-APPROVED-GUP-MIG-DEC-2026-0016-PAGE-r01-r01.json
+  - decision_input:
+      id: DEC-2026-0022
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0022.yaml
+      checksum: sha256:ad74f5937d668c02544f8d610c2fae236e6022fdeb7f434f5f5b26366604923f
+    acceptance_test_index: 3
+    kind: live_queue_snapshot
+    retirement_allowed: true
+    subjects:
+      - id: GUR-PKT-PHB-033-035-alignment-hp-languages
+        path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-033-035-alignment-hp-languages.yaml
+        permitted_retirement_state: consumed_by_integrated_bundle
+        integration_record_path: books/adnd1e/phb/artifacts/integrated/INT-20260804-001-APPROVED-GUP-PKT-PHB-033-035-alignment-hp-languages-r06-r01.json
+      - id: GUR-PKT-PHB-043-054-cleric-spells
+        path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-043-054-cleric-spells.yaml
+        permitted_retirement_state: consumed_by_integrated_bundle
+        integration_record_path: books/adnd1e/phb/artifacts/integrated/INT-20260804-001-APPROVED-GUP-PKT-PHB-043-054-cleric-spells-r06-r01.json
+  - decision_input:
+      id: DEC-2026-0022
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0022.yaml
+      checksum: sha256:ad74f5937d668c02544f8d610c2fae236e6022fdeb7f434f5f5b26366604923f
+    acceptance_test_index: 4
+    kind: live_queue_snapshot
+    retirement_allowed: true
+    subjects:
+      - id: GUP-PKT-PHB-035-038-money-equipment-r05
+        path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-035-038-money-equipment-r05.yaml
+        permitted_retirement_state: superseded_by_integrated_revision
+        integrated_successor_id: GUP-PKT-PHB-035-038-money-equipment-r07
+        integration_record_path: books/adnd1e/phb/artifacts/integrated/INT-20260804-001-APPROVED-GUP-PKT-PHB-035-038-money-equipment-r07-r01.json
+
+implementation_requirements:
+  contract_alignment:
+    - >-
+      Preserve WORK_QUEUES 1.6's narrow meaning: `retired_by_lineage` is valid
+      only for a `live_queue_snapshot` test and never means that the historical
+      queue assertion is presently true.
+    - >-
+      Preserve the complete checksummed evidence trail: authorizing Decision,
+      original Decision input, each subject, successor when applicable, and
+      the ordinary Integration record. Handoff replacement cannot retire a
+      subject.
+  report_schema:
+    path: schemas/common/decision-implementation.schema.json
+    requirements:
+      - Add `retired_by_lineage` to acceptance-result outcomes.
+      - >-
+        Require `retirement_authority` with exact Decision ID, path, and
+        checksum, and `retired_subjects` with all subject IDs, paths,
+        retirement states, Integration-record paths, and checksums.
+      - >-
+        Permit `approval_ready: true` only when every result is `passed` or a
+        semantically valid `retired_by_lineage` result, validation passes, and
+        the Reviewer handoff is ready without blockers.
+  review_schema:
+    path: schemas/common/decision-implementation-review.schema.json
+    requirements:
+      - Add `verified_retired_by_lineage` to acceptance dispositions.
+      - >-
+        Require the Reviewer to record and independently validate the same
+        retirement authority and subject/Integration evidence for that
+        disposition.
+      - >-
+        Permit an Approved Review to use `verified_retired_by_lineage` only for
+        a report result that is validly `retired_by_lineage`; ordinary `verified`
+        cannot approve it.
+  decision_schema:
+    path: schemas/common/architect-decision.schema.json
+    requirements:
+      - >-
+        Define structured `acceptance_test_semantics` for future Decisions:
+        one-based index, `kind: live_queue_snapshot`,
+        `retirement_allowed: true`, and the complete expected subject ID/path
+        list.
+      - >-
+        Define `retired_acceptance_authorizations` for an approved later
+        Decision: exact input Decision ID/path/checksum, acceptance-test index,
+        and complete subject list. A report cannot use an authority outside
+        this structure.
+  validator_and_tooling:
+    files:
+      - tooling/common/scan_agent_queues.py
+      - tooling/common/tests/test_scan_agent_queues.py
+    requirements:
+      - >-
+        Add semantic validation for every authority, exact Decision checksum,
+        authorized index, complete subject coverage, permitted state, successor,
+        Integration record, and Integration-record checksum.
+      - >-
+        Reject incomplete multi-subject evidence; wrong or missing checksums;
+        an unapproved, missing, self-issued, or non-authorizing Decision;
+        an unintegrated successor; handoff replacement; and use on a
+        non-snapshot acceptance test.
+      - >-
+        Preserve the ordinary queue behavior for artifacts not covered by this
+        precise rule. A valid retired result may allow the affected Decision
+        report to become Reviewer-ready, but it must not create or suppress
+        unrelated work.
+
+required_report_reissue:
+  decision: DEC-2026-0022
+  prior_report:
+    id: IMP-DEC-2026-0022-r04
+    path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0022-r04.yaml
+    disposition: immutable_historical_blocked_report
+  next_report_requirements:
+    - >-
+      Publish the immediate next active implementation-report revision for
+      DEC-2026-0022. Preserve its exact input Decision ID/path/checksum and
+      record this Decision as retirement authority for indices 2 through 4.
+    - >-
+      Record index 1 as `passed` with fresh current evidence. Record index 2
+      with the DEC-2026-0021 integration record; index 3 with both authorized
+      GUR Integration records; and index 4 with the r05-to-r07 integrated
+      successor lineage and Integration record.
+    - >-
+      Set `approval_ready: true` only after the schema, semantic validator,
+      scanner, and complete test suite validate the report. The Reviewer must
+      independently verify the four results against repository state.
+
+affected_contracts_and_registries:
+  contracts:
+    - contracts/WORK_QUEUES.md
+    - contracts/ARTIFACT_LIFECYCLE.md
+  registries: []
+  schemas:
+    - schemas/common/architect-decision.schema.json
+    - schemas/common/decision-implementation.schema.json
+    - schemas/common/decision-implementation-review.schema.json
+  governance_files: []
+  canonical_files: []
+  packet_artifacts:
+    - rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0022-r04.yaml
+
+migration_required: false
+migration_scope:
+  architect_writes: contract_and_decision_only
+  canonical_rows_changed: 0
+  registry_rows_changed: 0
+  nodes_added: 0
+  nodes_retired: 0
+  artifacts_created: 1
+  artifacts_revised: 1
+  artifacts_invalidated: 0
+  queue_derivation_change: >-
+    Validly retired live-snapshot acceptance results become Reviewer-ready
+    through a Decision Implementation Report; the rule does not alter ordinary
+    artifact queue derivation or handoff replacement.
+
+acceptance_tests:
+  - >-
+    ESC-2026-08-06T05.00.31.952Z is decided and names this Decision; its exact
+    raised review remains byte-immutable and this Decision supplements, rather
+    than edits, DEC-2026-0022.
+  - >-
+    The shared report and review schemas represent `retired_by_lineage` and
+    `verified_retired_by_lineage` only with required authority and complete
+    checksummed subject and Integration evidence.
+  - >-
+    Validator tests reject a missing, stale, self-issued, unapproved, or
+    non-authorizing authority; wrong or incomplete subject coverage; missing or
+    incorrect Integration-record checksums; unintegrated successors; handoff
+    replacement; and use for a non-snapshot acceptance test.
+  - >-
+    A valid retirement authorization accepts exactly the DEC-2026-0022 input
+    checksum, indices 2, 3, and 4, and the full subject lists recorded in this
+    Decision; it cannot authorize another index or Decision.
+  - >-
+    The next DEC-2026-0022 implementation-report revision records index 1 as
+    passed and indices 2 through 4 as retired-by-lineage, is approval-ready
+    only after complete validation, and leaves IMP-DEC-2026-0022-r04
+    byte-identical.
+  - >-
+    The independent Reviewer can approve the active report only after
+    independently verifying all retirement authority and Integration evidence;
+    a normal verified disposition cannot stand in for a retired result.
+  - >-
+    Future Architect Decisions can declare only explicitly indexed,
+    subject-complete live-queue-snapshot semantics for this outcome. All
+    applicable contract, schema, queue, and repository validations pass.
+
+constitution_version_impact:
+  changed: false
+  version: "1.7"
+  reason: >-
+    This is lifecycle evidence and queue-governance clarification. It changes
+    neither graph ontology nor controlled vocabulary.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement the three schemas, semantic validation, scanner behavior, and regression tests.
+    - Publish the next DEC-2026-0022 implementation report only after all required validation passes.
+  reviewer:
+    - Independently verify the active reissued DEC-2026-0022 report and every retirement lineage.
+    - Do not treat IMP-DEC-2026-0022-r04 as approval-ready or revise it.
+  integrator:
+    - No action. Decision Implementation Reports do not enter the Integrator queue.
+  analyst:
+    - No action. No source packet, GUR, or canonical graph interpretation is affected.
+
+prohibited_actions:
+  - Do not edit, rename, move, delete, or mark IMP-DEC-2026-0022-r04 as approved.
+  - Do not report a historical queue snapshot as `passed` after its subject has completed.
+  - Do not use retired-by-lineage for a non-snapshot acceptance test.
+  - Do not treat handoff replacement, deletion, an unapproved revision, or a merely superseded artifact as ordinary successful retirement.
+  - Do not authorize a subject or Decision by inference, broad class, or a checksum-free reference.
+  - Architect does not edit canonical graph, registry, GUR, GUP, Review, Approved, or Integration artifacts.

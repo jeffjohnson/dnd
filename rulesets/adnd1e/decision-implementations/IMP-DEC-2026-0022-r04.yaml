@@ -1,0 +1,107 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0022-r04
+artifact_kind: decision_implementation
+status: blocked
+ruleset_id: adnd1e
+constitution_version: '1.7'
+revision: 4
+supersedes: IMP-DEC-2026-0022-r03
+approval_ready: false
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0022
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0022.yaml
+  checksum: sha256:ad74f5937d668c02544f8d610c2fae236e6022fdeb7f434f5f5b26366604923f
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:f8fd667800d5b54872fff92583020292d1394c1b9f2c947c323e99a66ea53e5c
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:dc0edea1d5d38a707b79e5a72917d2d5273d7ac7c08ea7e9fad713b8842c8f19
+- path: tooling/common/scan-agent-queues.ps1
+  checksum: sha256:fdb356ffc2f40d9a40237530b287ee6fd0a5b657b13d48e0f32054d814928d7c
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'live repository check: the scanner no longer reports REV-GUP-MIG-DEC-2026-0015-0016-r03-r01
+    as ready Analyst work. The defect was that Decision handoff replacement skipped its suppression loop
+    for a migration-required Decision carrying a ready Builder handoff, so DEC-2026-0021 could not replace
+    the stale handoff. The double-count guard now runs after the suppression instead of before it. Regression:
+    test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_migration_decision_still_replaces_the_stale_handoff
+    and test_a_migration_decision_does_not_double_count_its_builder_job, which fail when the guard is
+    moved back -> Ran 2 tests in 0.031s OK'
+- acceptance_test_index: 2
+  result: not_run
+  evidence: 'DEC-2026-0021 is no longer a Builder job because its migration work completed: consumed by
+    GUP-MIG-DEC-2026-0016-PAGE-r01, approved as APPROVED-GUP-MIG-DEC-2026-0016-PAGE-r01-r01 and integrated
+    by INT-20260804-002. It left the queue by completion, not by suppression; no handoff_replaced_by_decision
+    diagnostic names it. The acceptance test as written can no longer be evaluated.'
+- acceptance_test_index: 3
+  result: not_run
+  evidence: 'Both GURs were compiled and their packet updates integrated: alignment-hp-languages r06 and
+    cleric-spells r06, approved and integrated by INT-20260804-001. They are no longer Builder jobs because
+    the Builder did them. Neither was suppressed. The acceptance test as written can no longer be evaluated.'
+- acceptance_test_index: 4
+  result: not_run
+  evidence: GUP-PKT-PHB-035-038-money-equipment-r05 was superseded by r06 and then r07 through ordinary
+    Review revision; r07 was approved and integrated by INT-20260804-001. r05 is not Reviewer-visible
+    because it is no longer the active leaf, not because it was suppressed. The acceptance test as written
+    can no longer be evaluated.
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'live repository check: REV-GUP-MIG-DEC-2026-0015-0016-r03-r01 present on disk and unmodified
+    in git status'
+- acceptance_test_index: 6
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_mismatched_escalation_id_does_not_suppress
+    -> Ran 1 tests in 0.016s OK
+- acceptance_test_index: 7
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_mismatched_originating_path_does_not_suppress,
+    test_scan_agent_queues.DecisionHandoffReplacementCase.test_free_text_without_a_path_does_not_suppress
+    -> Ran 2 tests in 0.035s OK
+- acceptance_test_index: 8
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_superseded_originating_artifact_does_not_suppress_the_leaf
+    -> Ran 1 tests in 0.016s OK
+- acceptance_test_index: 9
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_blocked_replacement_produces_blocked_state_and_no_ready_item
+    -> Ran 1 tests in 0.016s OK
+- acceptance_test_index: 10
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_terminal_replacement_produces_no_downstream_item
+    -> Ran 1 tests in 0.016s OK
+- acceptance_test_index: 11
+  result: passed
+  evidence: 'live repository check: decision_migration_lineage_error still reported'
+- acceptance_test_index: 12
+  result: passed
+  evidence: unit test test_scan_agent_queues.TestScannerParity.test_powershell_and_python_return_the_same_jobs_and_exit_code
+    -> Ran 1 tests in 15.875s OK
+- acceptance_test_index: 13
+  result: passed
+  evidence: 'live repository check: complete common queue-scanner suite passed'
+validation:
+  passed: true
+  commands:
+  - command: C:\Users\Jeff\AppData\Local\Python\pythoncore-3.14-64\python.exe -m unittest discover -s
+      . -t .
+    exit_code: 0
+    result: passed
+    summary: Ran 217 tests in 25.164s OK
+  - command: C:\Users\Jeff\AppData\Local\Python\pythoncore-3.14-64\python.exe -m unittest discover -s
+      . -t .
+    exit_code: 0
+    result: passed
+    summary: Ran 217 tests in 25.164s OK
+  validation_report: build/reports/IMP-DEC-2026-0022-r04.validation.json
+  validation_report_checksum: sha256:020189f65ece0a8faf1515a9a26bdc70870cc560d0df3337945950b1ffc8c153
+handoff:
+  next_role: architect
+  readiness: blocked
+  reason: Acceptance test 1 was genuinely false and is fixed and evidenced. Acceptance tests 2, 3 and
+    4 name artifacts that have since been approved and integrated, so no Builder action can make them
+    true and the schema admits no passing disposition for a retired subject. ESC-2026-08-06T05.00.31.952Z
+    asks how such a test is discharged.
+  blocking_ids:
+  - ESC-2026-08-06T05.00.31.952Z

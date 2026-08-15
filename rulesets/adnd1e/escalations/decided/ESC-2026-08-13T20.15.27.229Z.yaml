@@ -1,0 +1,193 @@
+schema_version: '1.0'
+id: ESC-2026-08-13T20.15.27.229Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.7'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-13'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    DEC-2026-0030 enumerates its migration in a key vocabulary the Builder
+    migration planner does not read, and names two operation kinds the planner
+    has no shape for at all. The required GUP-MIG-DEC-2026-0024-0025-r04 cannot
+    be published until the Decision is expressed in a shape the tooling reads or
+    a contract defines that shape.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. An approved Decision directs canonical work the
+  Builder cannot mechanically plan. Reading an unrecognized key as a synonym for
+  one the planner does read would be the Builder deciding what a Decision means.
+
+question: >-
+  DEC-2026-0030's operations are unambiguous to a human reader and every
+  before-image it states is exact against current canonical, but it expresses
+  them in key names the migration planner does not read, and two of its
+  operations have no planner shape in any spelling. Should DEC-2026-0030 be
+  reissued in the vocabulary the planner reads, or should a contract define the
+  Decision `canonical_migration` block so the Builder can implement the missing
+  operation kinds against a written specification?
+
+what_is_not_in_question:
+  - >-
+    The intent. Every operation DEC-2026-0030 names is legible and internally
+    consistent.
+  - >-
+    The row numbering. DEC-2026-0015 documents the convention as "1-based CSV
+    line including the header"; DEC-2026-0030's `physical_csv_row` values were
+    checked against current canonical and resolve under exactly that convention.
+  - >-
+    The data. All six before-images across the combined migration were verified
+    field-by-field against the current baseline and match exactly. Neither
+    post-migration assertion key collides, and `item_pipes_sewer` appears
+    nowhere in canonical today.
+
+evidence:
+  planner_reads:
+    module: tooling/builder/src/adnd1e_builder/decision_migration.py
+    repoint_entry_keys: [canonical_row, field, from, to, label, before_assertion]
+    node_replacement_location: canonical_migration.node_id_replacements
+  corpus_survey:
+    endpoint_repoint_entries_using_canonical_row_from_to: 19
+    decisions_using_that_shape: [DEC-2026-0015, DEC-2026-0025]
+    endpoint_repoint_entries_using_physical_csv_row_from_id_to_id: 2
+    decisions_using_that_shape: [DEC-2026-0030]
+  key_divergence:
+    - concept: canonical row number
+      established: canonical_row
+      dec_2026_0030: physical_csv_row
+    - concept: endpoint value being replaced
+      established: from
+      dec_2026_0030: from_id
+    - concept: endpoint value replacing it
+      established: to
+      dec_2026_0030: to_id
+    - concept: replacement label
+      established: label
+      dec_2026_0030: to_label
+    - concept: node identity replacement
+      established: canonical_migration.node_id_replacements (a list)
+      dec_2026_0030: top-level node_replacement (an object); DEC-2026-0025 carries
+        both, and only the canonical_migration list is machine-read
+  operations_with_no_planner_shape:
+    - key: canonical_migration.registry_row
+      effect: replace one row of rulesets/adnd1e/registries/nodes.csv
+      note: >-
+        The planner models registry work only as a consequence of
+        node_id_replacements, never as an enumerated row operation. There is no
+        alternate spelling that would make this readable.
+    - key: canonical_migration.canonical_node_row
+      effect: replace one row of rulesets/adnd1e/canonical/nodes_master.csv
+      note: >-
+        The planner has no concept of an enumerated nodes_master row operation.
+    - key: canonical_migration.required_derived_rebuilds
+      effect: rebuild nodes_master.csv and graph.json after integration
+      note: >-
+        Plausibly an Integrator instruction rather than a migration operation,
+        but the Builder should not be the role that decides which.
+  observed_planner_output_before_this_was_caught: >-
+    Planning DEC-2026-0024, 0025, 0026 and 0030 together produced
+    "rows=3 nodes=1 removals=1" -- the DEC-2026-0024/0025/0026 migration exactly,
+    with every DEC-2026-0030 operation absent. The only diagnostic was two
+    "canonical row None" errors, which name a symptom and not the cause. The node
+    replacement was dropped in complete silence.
+
+builder_action_already_taken:
+  change: >-
+    The migration planner now reports any `canonical_migration` key it does not
+    read, and any endpoint_repoint entry key it does not read, as an error that
+    blocks approval. A Decision can no longer enumerate work the planner
+    silently fails to plan.
+  files:
+    - tooling/builder/src/adnd1e_builder/decision_migration.py
+    - tooling/builder/tests/test_decision_migration.py
+  rationale: >-
+    The dangerous failure was not that the plan was wrong. It was that the plan
+    came out short and looked well-formed. Nine tests cover the loud failure,
+    including that DEC-2026-0015 and DEC-2026-0025 are not newly flagged and
+    that an unreadable Decision plans nothing at all rather than part of itself.
+  documentary_keys_declared_not_operations:
+    - row_locator
+    - canonical_source
+    - registry_source
+    - required_no_change_fields
+
+options_considered:
+  - option: Reissue DEC-2026-0030 using canonical_row / field / from / to / label
+      and canonical_migration.node_id_replacements
+    impact: >-
+      Unblocks GUP-MIG-DEC-2026-0024-0025-r04 immediately with no tooling change.
+      Leaves the registry_row and canonical_node_row operations to be expressed
+      as consequences of the node replacement, which is how DEC-2026-0025 already
+      expresses the same thing.
+    builder_preference: recommended
+  - option: Publish a contract specifying the Decision `canonical_migration` block,
+      then have the Builder implement the missing operation kinds against it
+    impact: >-
+      Fixes the root cause permanently and gives both roles one written shape to
+      conform to. Slower, and DEC-2026-0030 would likely still need reissuing to
+      match whatever the contract settles on.
+  - option: Teach the planner to accept DEC-2026-0030's key names as synonyms
+    impact: >-
+      Not recommended, and not sufficient. It would be the Builder deciding that
+      two vocabularies mean the same thing, with no contract saying so and
+      nothing to stop a third spelling next time. It also cannot express
+      registry_row or canonical_node_row, which have no planner shape to alias
+      to, so DEC-2026-0030 still could not be planned faithfully.
+
+blocked_work:
+  - id: GUP-MIG-DEC-2026-0024-0025-r04
+    blocks: >-
+      Both open Builder queue items converge on this one artifact.
+      REV-GUP-MIG-DEC-2026-0024-0025-r03-r01 requires r04 to carry the row-1502
+      removal-shape correction, and DEC-2026-0030 requires the same r04 to carry
+      the Pipes operations. DEC-2026-0030 prohibits a separate 0030-only lineage,
+      so neither can be published alone.
+  - id: GUP-PKT-PHB-117-119-bards-r04
+    blocks: >-
+      Sequenced at DEC-2026-0030 step 5, behind migration Review, Integration,
+      and REV-GUP-PKT-PHB-117-119-bards-r03-r02. Blocked by the Decision's own
+      sequence independently of this escalation.
+
+ready_when_resolved:
+  - >-
+    The row-1502 removal correction from REV-GUP-MIG-DEC-2026-0024-0025-r03-r01
+    is prepared and verified against the current baseline; its before-image
+    matches canonical row 1502 exactly.
+  - >-
+    All three DEC-2026-0024/0025/0026 repoints re-verified against the moved
+    baseline; rows 2664, 2665 and 2666 still hold their exact before-images.
+
+baseline_at_escalation:
+  canonical:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:0058d1a5fc566d6668a0a61cd748dfeb6127333a6da3d63274f7a575eb0f6894
+    rows: 4133
+    note: >-
+      DEC-2026-0030 and the r03 migration both cite the pre-Integration snapshot
+      sha256:43b5be90...; canonical has since moved. Every row those artifacts
+      name was re-located and re-verified against this baseline.
+  registry:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:c9814318d1ebcc4280a31668baa8978ad908d066dfdfc12ccb472f509b7068d0
+  nodes_master:
+    path: rulesets/adnd1e/canonical/nodes_master.csv
+    checksum: sha256:0200e725d717aa77422bb4a32cb79e9a9b1b015860a9517605ce43c8b1b880b2
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  profile_change: false
+  contract_change: possible
+  note: >-
+    Option 2 would add a contract. Option 1 changes no governance artifact.
+
+blocking: >-
+  GUP-MIG-DEC-2026-0024-0025-r04 cannot be published, which blocks the Pipes
+  migration, its Integration, and the entire Bards packet lineage behind it.

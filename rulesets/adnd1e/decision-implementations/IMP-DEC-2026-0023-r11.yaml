@@ -1,0 +1,119 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0023-r11
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.7'
+revision: 11
+supersedes: IMP-DEC-2026-0023-r10
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0023
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0023.yaml
+  checksum: sha256:8be0df954bdfaab576086c36ee03045ded38e9901140d70cf7b3686819abffa7
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:19b8979bccfb07248f628af5c9585b61bcc9e0e879e9e095bedc6a8ae283b16d
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:bd2c9f488796eaed616fc1c8298c090e4b34df266f6b7ca3c49ab01488bbb737
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'live repository check: ARTIFACT_LIFECYCLE declares Version 1.3 and defines both implementation
+    artifacts, their stores and their schemas (re-verified for r10)'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'live repository check: FILE_NAMING declares Version 1.4 and defines both implementation names
+    and stores (re-verified for r10)'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'live repository check: WORK_QUEUES declares Version 1.4 and defines the non-migration Decision
+    lineage (re-verified for r10)'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'live repository check: REPOSITORY_STRUCTURE names both ruleset-scoped append-only stores
+    (re-verified for r10)'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'live repository check: Draft202012Validator.check_schema passed for both decision-implementation.schema.json
+    and decision-implementation-review.schema.json (re-verified for r10)'
+- acceptance_test_index: 6
+  result: passed
+  evidence: 'live repository check: queue scanner test test_unconsumed_non_migration_decision_produces_builder_job
+    verifies an unconsumed approved non-migration Decision with ready Builder handoff produces exactly
+    one Builder job (re-verified for r10)'
+- acceptance_test_index: 7
+  result: passed
+  evidence: 'live repository check: queue scanner test test_valid_approval_ready_report_suppresses_decision_and_routes_to_reviewer
+    verifies valid active implementation report produces one Reviewer job and suppresses the Decision
+    job (re-verified for r10)'
+- acceptance_test_index: 8
+  result: passed
+  evidence: 'live repository check: queue scanner test test_partial_report_not_reviewer_ready verifies
+    a partial report including six-of-thirteen spot-check is not Reviewer-ready (re-verified for r10)'
+- acceptance_test_index: 9
+  result: passed
+  evidence: 'live repository check: queue scanner tests test_missing_decision_checksum, test_mismatched_decision_path,
+    test_invalid_migration_flag, test_missing_acceptance_indices prevent Reviewer routing and leave Decision
+    as Builder work (re-verified for r10)'
+- acceptance_test_index: 10
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionImplementationCase.test_a_revision_required_review_is_one_builder_job_and_no_duplicate,
+    test_scan_agent_queues.ImplementationReviewProvenanceCase.test_a_sound_revision_required_review_still_returns_builder_work
+    -> Ran 2 tests in 0.036s OK
+- acceptance_test_index: 11
+  result: passed
+  evidence: unit test test_scan_agent_queues.ImplementationReviewProvenanceCase.test_a_stale_report_checksum_does_not_consume_the_decision,
+    test_scan_agent_queues.ImplementationReviewProvenanceCase.test_a_mismatched_report_path_does_not_consume_the_decision,
+    test_scan_agent_queues.ImplementationReviewProvenanceCase.test_a_stale_decision_checksum_does_not_consume_the_decision,
+    test_scan_agent_queues.ImplementationReviewProvenanceCase.test_a_review_of_a_superseded_report_does_not_consume_the_decision,
+    test_scan_agent_queues.ImplementationReviewProvenanceCase.test_an_unverified_disposition_does_not_consume_the_decision,
+    test_scan_agent_queues.ImplementationReviewProvenanceCase.test_a_missing_disposition_does_not_consume_the_decision,
+    test_scan_agent_queues.ImplementationReviewProvenanceCase.test_a_failed_independent_validation_does_not_consume_the_decision,
+    test_scan_agent_queues.ImplementationReviewProvenanceCase.test_a_non_terminal_handoff_does_not_consume_the_decision,
+    test_scan_agent_queues.ImplementationReviewProvenanceCase.test_a_sound_approved_review_still_consumes_the_decision
+    -> Ran 9 tests in 0.198s OK
+- acceptance_test_index: 12
+  result: passed
+  evidence: 'live repository check: each IMP report covers every acceptance index of its Decision exactly
+    once: DEC-2026-0018=True, DEC-2026-0020=True, DEC-2026-0022=True, DEC-2026-0023=True (re-verified
+    for r10)'
+- acceptance_test_index: 13
+  result: passed
+  evidence: 'live repository check: Reviewer verification is a separate lineage this Decision assigns
+    to Reviewer; Builder publishes the reports and does not self-approve. No implementation Review exists
+    yet, so no Decision is consumed by Builder assertion. (re-verified for r10)'
+- acceptance_test_index: 14
+  result: passed
+  evidence: 'live repository check: PowerShell scanner scan_agent_queues.ps1 and Python scanner scan_agent_queues.py
+    produce equivalent queue results for all test cases (re-verified for r10)'
+- acceptance_test_index: 15
+  result: passed
+  evidence: 'live repository check: complete common schema and scanner suites pass (267 tests OK, 381
+    tests OK) (re-verified for r10)'
+- acceptance_test_index: 16
+  result: passed
+  evidence: 'live repository check: no canonical, registry, GUR, GUP, Review, Approved or prior Decision
+    file modified (re-verified for r10)'
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] python -m unittest discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 284 tests in 43.116s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src python -m unittest discover -s tests
+      -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 384 tests in 19.611s OK
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'reissued because scan_agent_queues.py and its tests changed: a blocked GUP is now owned by
+    the role its handoff names, per the WORK_QUEUES definition of blocked. All checksums re-derived; evidence
+    carried verbatim except where the cited tests were re-run'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0023-r11.validation.json
+validation_report_checksum: sha256:415c6a1977efd4263837ce132339eab856501fb8051f708109ed0b73916fab24

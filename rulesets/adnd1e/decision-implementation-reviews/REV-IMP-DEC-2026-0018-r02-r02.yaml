@@ -1,0 +1,107 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0018-r02-r02
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 2
+supersedes: REV-IMP-DEC-2026-0018-r02-r01
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0018-r02
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0018-r02.yaml
+  checksum: sha256:6c82db8f34185bc338bfa30cb8dd4c31053fcdd2e19aa4673dcf4a8d784ded0a
+decision_input:
+  id: DEC-2026-0018
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0018.yaml
+  checksum: sha256:32aa2cf7578886b60b729876eb7ae6d343744bf59963446fc8e46a7d2d26d7ae
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed the valid
+      decision-migration Reviewer routing and no-stale-GUR diagnostic case.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed missing, non-approved,
+      wrong-ruleset, checksum-mismatched, and non-migration Decision rejection
+      cases.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed required
+      decision-migration envelope and canonical-checksum rejection cases.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed the disqualification
+      case for decision migrations that carry GUR provenance.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed invalid-migration and
+      stale-plan routing cases, retaining authority Decisions as Builder work.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed independent
+      cross-packet migration-lineage routing coverage.
+  - acceptance_test_index: 7
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed active-leaf-only and
+      reviewed-migration suppression coverage.
+  - acceptance_test_index: 8
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed Python/PowerShell
+      scanner parity coverage.
+  - acceptance_test_index: 9
+    disposition: verified
+    evidence: >-
+      The complete Builder suite passed, including real-corpus
+      decision-migration GUP shape, schema, and validation-component coverage.
+  - acceptance_test_index: 10
+    disposition: verified
+    evidence: >-
+      The complete Builder suite passed the vocabulary and registry coverage
+      preserving DEC-2026-0017 caster-level scope and distinct source-page
+      authority.
+  - acceptance_test_index: 11
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed packet-update versus
+      legacy identity-merge-migration classification coverage.
+  - acceptance_test_index: 12
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed book-store and
+      cross-book-store decision-migration discovery equivalence coverage.
+  - acceptance_test_index: 13
+    disposition: verified
+    evidence: >-
+      All ten implementation-file SHA-256 values match current files; the
+      declared implementation inventory contains no canonical, registry,
+      Decision, or revision-01 artifact.
+independent_validation:
+  passed: true
+  commands:
+    - command: "[cwd tooling/common/tests] python -m unittest test_scan_agent_queues"
+      exit_code: 0
+      result: passed
+      summary: "Ran 168 queue-scanner routing, provenance, lineage, and parity tests; all passed."
+    - command: "[cwd tooling/common/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+      exit_code: 0
+      result: passed
+      summary: "Ran 197 common schema and queue tests; all passed."
+    - command: "[cwd tooling/builder/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+      exit_code: 0
+      result: passed
+      summary: "Ran 360 Builder compiler, migration, registry, vocabulary, and schema tests; all passed."
+overall_disposition: approved
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: Every DEC-2026-0018 acceptance test is independently verified against the exact active report.
+  blocking_ids: []

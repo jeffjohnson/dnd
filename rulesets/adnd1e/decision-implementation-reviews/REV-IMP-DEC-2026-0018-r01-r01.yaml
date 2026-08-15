@@ -1,0 +1,113 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0018-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0018-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0018-r01.yaml
+  checksum: sha256:31cd781e2875f796a4d3f00ce05ff3312c61372c5bf8fb6d6dc615fd61dd68dc
+decision_input:
+  id: DEC-2026-0018
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0018.yaml
+  checksum: sha256:32aa2cf7578886b60b729876eb7ae6d343744bf59963446fc8e46a7d2d26d7ae
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      DecisionMigrationCase independently reproduced one Reviewer job for a
+      conforming GUR-free decision_migration and no stale_gup_input diagnostic.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      Focused regression tests independently rejected missing, non-approved,
+      wrong-ruleset, checksum-stale, and non-migration Decision authority.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      Focused regression tests independently rejected each missing migration
+      envelope field and a missing canonical checksum.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      The GUR-reference disqualification regression passed; decision_migration
+      cannot carry gur_id or gur_checksum.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      Invalid-migration regressions kept the authority Decisions visible as
+      Builder work rather than consuming them.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: >-
+      Distinct lineage_id values with cross-packet scope remained independent
+      in the focused migration suite.
+  - acceptance_test_index: 7
+    disposition: verified
+    evidence: >-
+      Supersession and Review-consumption regressions exposed only the active
+      unreviewed lineage leaf to Reviewer.
+  - acceptance_test_index: 8
+    disposition: verified
+    evidence: >-
+      TestScannerParity independently matched Python and PowerShell jobs,
+      diagnostics, components, and exit code.
+  - acceptance_test_index: 9
+    disposition: verified
+    evidence: >-
+      GUP-MIG-DEC-2026-0015-0016-r02 produced zero common GUP schema errors;
+      its named validation report exists and its recorded checksum equals
+      sha256:648a37df9014cfbd816938d435af58035c8da0c074f1aa395c6b449db8a1ddd9.
+  - acceptance_test_index: 10
+    disposition: verified
+    evidence: >-
+      vocab.py and its tests attribute Constitution 1.6 scaling to
+      DEC-2026-0017 and packet-page authority to SOURCE_MARKDOWN 1.1 and
+      DEC-2026-0016; the focused Builder suite passed.
+  - acceptance_test_index: 11
+    disposition: verified
+    evidence: >-
+      Current packet GUPs declare packet_update; the immutable
+      identity_merge_migration artifact remains non-ready and the live scanner
+      emits legacy_migration_spelling.
+  - acceptance_test_index: 12
+    disposition: verified
+    evidence: >-
+      The focused cross-book-store regression produced the same migration job
+      as the equivalent book-scoped store.
+  - acceptance_test_index: 13
+    disposition: verified
+    evidence: >-
+      The implementation manifest contains no canonical, registry, Decision,
+      or r01 artifact path; repository status shows no such protected file
+      modified by this implementation.
+independent_validation:
+  passed: true
+  commands:
+    - command: >-
+        [cwd tooling/common/tests] python -m unittest
+        test_scan_agent_queues.DecisionMigrationCase
+        test_scan_agent_queues.DecisionHandoffReplacementCase
+        test_scan_agent_queues.DecisionImplementationCase
+        test_scan_agent_queues.TestImplementationReportValidation
+        test_scan_agent_queues.TestScannerParity
+        test_common_schemas.TestSchemasAreWellFormed
+      exit_code: 0
+      result: passed
+      summary: Ran 81 focused common lineage, schema, and parity tests; all passed.
+    - command: >-
+        [cwd tooling/builder/tests] python -m unittest
+        test_decision_migration test_registry_and_vocab test_duplicates
+      exit_code: 0
+      result: passed
+      summary: Ran 81 focused Builder migration, governance, and duplicate tests; all passed.
+overall_disposition: approved
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: Every DEC-2026-0018 acceptance test was independently verified.
+  blocking_ids: []

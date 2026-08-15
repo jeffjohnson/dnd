@@ -1,0 +1,606 @@
+schema_version: '1.0'
+id: GUR-PKT-UA-015-015-cavaliers-r01
+status: proposed
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-015-015-cavaliers
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.3
+- contracts/WORK_QUEUES.md 1.6
+- contracts/ARTIFACT_LIFECYCLE.md 1.4
+- contracts/GRAPH_INVARIANTS.md 1.1
+- rulesets/adnd1e/governance/constitution.md 1.7
+- rulesets/adnd1e/escalations/decisions/DEC-2026-0029.yaml
+analyst_pass: page-sweep
+citation_code: UA
+page_start: 15
+page_end: 15
+packet_source_checksum: sha256:7a1585780866090295eb5affbc29fe651828beed9943cff11c9368a304682443
+packet_source_checksum_basis: lf_normalized
+source_summary: The claimed packet opens with CAVALIERS TABLE I, the cavalier's experience, hit dice and
+  level title progression with its zero-level grades and its footnote on first-level hit dice, followed
+  by prose on the lance, parry, armor preference and mounted attacks. A second heading, CHARACTER CLASSES
+  (CAVALIER), then introduces horsemanship, steed selection, ability-score training, advancement training
+  and fear immunity, and the file is cut mid-sentence. Extraction is confined to the material before that
+  second heading; see BLK-01.
+node_id_resolution_method: Two passes. Every endpoint was looked up in nodes.csv, then every canonical
+  row cited to UA 15 and every canonical row touching class_cavalier on any page was pulled and compared
+  assertion by assertion before anything was emitted. That comparison is what kept seven assertions out
+  of this GUR and what located the page-boundary problem in BLK-01. Three concepts had no identity anywhere
+  and are proposed below.
+grain_decisions:
+- 'The whole of CAVALIERS TABLE I is magnitudes: experience thresholds, dice expressions, and the flat
+  gains. Each column is recorded as a lookup relationship to the table, never as a value.'
+- The footnote's two dice expressions reduce to the facet 'entry path dice'. Which dice, and how many,
+  are magnitudes.
+- '''300,000 experience points per level for each level beyond the 12th'' reduces to ''flat cost beyond
+  table''. Both the amount and the threshold are dropped.'
+- The shield parry's reduction and its per-plus increment are magnitudes; M008 records only that a shield
+  extends the parry to a second opponent.
+- The armor preference list is an ordering, not a set of values. M010 records that the class constrains
+  which armor types are worn; the ranking itself is not representable as an aspect and is not forced into
+  one.
+candidate_nodes:
+- proposed_id: tbl_cavaliers_i
+  proposed_label: Cavaliers Table I
+  kind: tbl
+  why_needed: 'The table is consulted as a unit for three separate things: experience threshold, hit dice,
+    and level title. 3.2 says a rule and its separately addressable table are two nodes joined by DERIVED_FROM
+    when they are referenced apart, which is the case here. The registry already holds tbl_rangers_i and
+    tbl_followers_ranger on the same pattern. Canonical cites the section name CAVALIERS TABLE I on seven
+    rows but has no node for the table itself.'
+  edges_depending_on_it:
+  - M001
+  - M002
+  - M003
+- proposed_id: rule_level_title
+  proposed_label: Level Title
+  kind: rule
+  why_needed: The table's fourth column, plus the line setting the title for every level above the table's
+    last row. Nothing in the registry represents level titles, though every class table in the corpus
+    has the column.
+  edges_depending_on_it:
+  - M003
+  - M004
+- proposed_id: rule_zero_level_progression
+  proposed_label: Zero Level Progression
+  kind: rule
+  why_needed: 'The table''s two grades below first level, and the footnote that makes first-level hit
+    dice depend on whether the character passed through them. This is the node the canonical UA 15 hit-point
+    row needs and does not have: that row is sourced from exp_level while carrying the source_label ''Zero
+    Level Progression'', so the label is doing identity work the ID cannot support. The stem matches the
+    label already in canonical rather than inventing a new name. See the pair 2 finding and IDQ-01.'
+  edges_depending_on_it:
+  - M006
+  - M007
+reused_nodes:
+- cbt_attack_matrix
+- cbt_attacks_per_round
+- cbt_parry
+- class_cavalier
+- exp_level
+- item_magic_armor
+- race_elf
+- race_half_elf
+- rule_hit_points
+- rule_mount
+- rule_shield
+- sys_armor
+- sys_experience
+cross_packet_candidate_targets: []
+candidate_general_rules: []
+domains_touched:
+- character-classes
+- combat
+domains_touched_note: The table and the zero-level grades are class progression; the lance, parry, armor
+  and mounted-attack material is combat. The page sits on the boundary and neither domain covers it alone.
+candidate_domains:
+- name: mounted combat
+  observed_here: Lance damage while mounted, the dismounted lance, mounted attack level, and the horsemanship
+    progression past the page boundary form a cluster with its own vocabulary.
+  promotion_status: Not adopted. 15 requires recurrence across several packets and this is the first UA
+    packet in the repository.
+domain_boundary_questions: []
+candidate_edges:
+- ref: M001
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: DERIVED_FROM
+  target_id: tbl_cavaliers_i
+  target_label: Cavaliers Table I
+  aspect: level threshold
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_hit_points
+  source_label: Hit Points
+  edge_type: DERIVED_FROM
+  target_id: tbl_cavaliers_i
+  target_label: Cavaliers Table I
+  aspect: hit dice by level
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_level_title
+  source_label: Level Title
+  edge_type: DERIVED_FROM
+  target_id: tbl_cavaliers_i
+  target_label: Cavaliers Table I
+  aspect: title by level
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: rule_level_title
+  target_label: Level Title
+  aspect: title advancement
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: sys_experience
+  target_label: Experience Points
+  aspect: flat cost beyond table
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The table stops at its last row and the following line sets a fixed cost for every
+    level after it. Distinct from the canonical row about the negative starting total, which is about
+    where the table begins rather than where it ends. Both thresholds and the amount are magnitudes and
+    are dropped.
+- ref: M006
+  source_id: rule_zero_level_progression
+  source_label: Zero Level Progression
+  edge_type: GATES
+  target_id: class_cavalier
+  target_label: Cavalier
+  aspect: class entry
+  condition: lesser ability
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: rule_zero_level_progression
+  source_label: Zero Level Progression
+  edge_type: MODIFIES
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: entry path dice
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'The footnote branches on the route to first level, not on the level. A character
+    who came up through the two zero-level grades rolls a different kind and number of dice at first level
+    than one who did not. See the pair 2 finding: this is the source-backed form of the assertion the
+    canonical UA 15 row states against exp_level.'
+- ref: M008
+  source_id: rule_shield
+  source_label: Shield
+  edge_type: MODIFIES
+  target_id: cbt_parry
+  target_label: Parry
+  aspect: second opponent
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: cbt_parry
+  source_label: Parry
+  edge_type: CONSTRAINS
+  target_id: cbt_attacks_per_round
+  target_label: Attacks Per Melee Round
+  aspect: attack forfeited
+  condition: cavalier parries
+  polarity: worsens
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: CONSTRAINS
+  target_id: sys_armor
+  target_label: Armor
+  aspect: armor types worn
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'The page states a ranked preference and an outright refusal to wear leather, studded
+    leather or padded armor. CONSTRAINS rather than MODIFIES per 4.2: it forbids cases without altering
+    any value.'
+- ref: M011
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: CONSTRAINS
+  target_id: item_magic_armor
+  target_label: Magic Armor
+  aspect: preference still applies
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'Recorded separately because the page goes out of its way to say the ranking is not
+    overridden by enchantment: a lesser type of ordinary armor is worn ahead of a better-enchanted type
+    the cavalier ranks lower. Without this row a reader would reasonably assume magic armor is exempt
+    from M010.'
+- ref: M012
+  source_id: rule_mount
+  source_label: Mount
+  edge_type: MODIFIES
+  target_id: cbt_attack_matrix
+  target_label: Attack Matrix
+  aspect: effective attack level
+  condition: human cavalier
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M013
+  source_id: race_elf
+  source_label: Elf
+  edge_type: EXCLUDED_FROM
+  target_id: cbt_attack_matrix
+  target_label: Attack Matrix
+  aspect: mounted attack bonus
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M014
+  source_id: race_half_elf
+  source_label: Half-Elf
+  edge_type: EXCLUDED_FROM
+  target_id: cbt_attack_matrix
+  target_label: Attack Matrix
+  aspect: mounted attack bonus
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The parenthesis 'but not an elf or a half-elf' denies a benefit the surrounding text
+    would otherwise extend to every cavalier, which is the case 4.1 reserves EXCLUDED_FROM for.
+canonical_duplicates_not_for_emission:
+- finding: Canonical holds twelve rows cited to UA 15, seven of them under CAVALIERS TABLE I. The fresh
+    reading confirms all seven, so none is re-emitted.
+  confirmed_assertions:
+  - class_cavalier CONSTRAINS prof_weapon | 'lance proficiency required at first level'
+  - class_cavalier MODIFIES cbt_parry | 'all to-hit bonuses apply to the parry'
+  - exp_level MODIFIES sys_experience | 'begins at a negative total'
+  - exp_level MODIFIES rule_hit_points | 'different dice if entering via the ranks'
+  - exp_level MODIFIES cbt_damage | 'damage bonus equals level while mounted'
+  - rule_mount MODIFIES cbt_damage | 'dismounted lance loses the level bonus'
+  - rule_mount DERIVED_FROM wpn_stats | 'treated as another weapon type'
+  basis: '5.1: an exact assertion-key match must not become a second production edge, and a paraphrase
+    of the same facet is not distinct. Each was read from the page first and matched to canonical afterwards.'
+  note_on_the_fourth: The fourth is the DEC-2026-0029 pair 2 row. It is confirmed as an accurate reading
+    of the footnote's content, but the finding below concludes its source endpoint is wrong. It is not
+    re-emitted here and no canonical edit is proposed by this GUR.
+near_matches_vs_canonical:
+- ref: M005
+  proposed_aspect: flat cost beyond table
+  proposed_condition: ''
+  canonical_aspect: begins at a negative total
+  canonical_condition: ''
+  canonical_locus: UA 15 CAVALIERS TABLE I
+dec_2026_0029_pair_2_finding:
+  question_from_decision: Do the UA 15 and PHB 34 exp_level MODIFIES rule_hit_points rows assert the same
+    affected facet under the same condition, or separate facets?
+  ua_15_reading: 'CAVALIERS TABLE I lists two grades below first level, Horseman and Lancer, each with
+    its own hit dice, and carries the footnote: ''If qualification for 1st level required progression
+    through the two 0-level grades, then hit dice for 1st level are 3d4 + 1, but in all other cases 1d10
+    + 3 applies.'' The rule branches at a single level on the route the character took to reach it.'
+  phb_34_reading: 'Read from the claimed packet PKT-PHB-033-035-alignment-hp-languages. CHARACTER HIT
+    POINTS states the general progression: ''At 1st level a character has but one hit die (exception:
+    rangers and monks begin with two dice each). At each successive level another hit die is gained.''
+    The rule is about gaining a die per level.'
+  determination: Separate facets. Two assertions, not one.
+  reasoning: One die per level and which die at one level are different claims. The PHB rule says how
+    hit dice accumulate across a career; the UA footnote says nothing about accumulation and instead makes
+    a single level's dice depend on entry path. Neither is a paraphrase of the other under 5.1.
+  recommended_outcome: Retain both as assertions, but revise the UA row's source endpoint. This is the
+    Decision's second permitted outcome, 'revise one or both assertions to conforming source-backed facets'.
+  defect_the_reading_proves: The UA row is sourced from exp_level. The page does not say experience level
+    varies the dice; it says the entry path does. The row carries source_label 'Zero Level Progression',
+    which names the thing that actually varies them, but GRAPH_INVARIANTS 4 holds that labels do not determine
+    identity, so as stored the row asserts something the page does not support. This is the one place
+    in either pair where the source reading proves an action is required.
+  proposed_correction: 'M007 of this GUR states the assertion against the correct source: rule_zero_level_progression
+    MODIFIES rule_hit_points, aspect ''entry path dice''. If it is approved, the canonical row exp_level
+    MODIFIES rule_hit_points | ''different dice if entering via the ranks'' | UA 15 becomes an unsupported
+    duplicate of it and should be retired through the ordinary lifecycle, which is the Decision''s fourth
+    permitted outcome. That retirement is recommended, not performed: only the Integrator edits canonical,
+    and it should follow rather than accompany the node''s approval.'
+  aspect_conformance: The UA row's aspect runs six words. Its production lineage traces to migrations/adnd1e/legacy-import/original/edges_master.csv,
+    where it appears with the same aspect, book, page and section but with target hit_points rather than
+    rule_hit_points; the target was renamed corpus-wide during migration and no hit_points endpoint survives
+    in canonical. Matching the row to its antecedent therefore requires reading through that rename. That
+    is a lineage fact rather than the text-similarity inference the Decision prohibits, so the row is
+    exception-eligible. It is recorded explicitly because the Decision's eligibility test is provenance-based
+    and this row cannot be matched to root_provenance_path on endpoints alone.
+  evidence_basis: Read from this claimed packet and from the claimed PHB packet only. No archive extraction
+    batch, canonical row, or endpoint name was used as source evidence. The legacy import file was consulted
+    solely to establish production lineage for the exception test.
+cross_packet_grain_conflict:
+  id: XGC-01
+  subject: a third UA 15 hit-point assertion that cannot be expressed
+  locus: '''Cavaliers gain 3 h.p. per level after the 10th.'''
+  statement: This is a genuine exp_level MODIFIES rule_hit_points assertion, and it is not in canonical.
+    Canonical already holds exp_level MODIFIES rule_hit_points | 'flat gain past name level' | condition
+    'beyond 9th level' | PHB 22 FIGHTERS TABLE I. The two rules differ only in the threshold and the amount,
+    both of which are magnitudes barred from aspect and condition by constitution 5 and GRAPH_INVARIANTS
+    11.
+  consequence: Any conforming aspect for the cavalier rule is a paraphrase of 'flat gain past name level',
+    and its condition cannot carry the distinguishing threshold. Under the 5.1 assertion key the UA rule
+    is therefore either an illegal duplicate of the PHB row or unrepresentable. No edge is emitted for
+    it.
+  why_it_matters: The grain rule is working as designed for values, but here it collapses two rules that
+    genuinely differ. The graph cannot currently record that the cavalier's flat gain starts at a different
+    level and is a different size from the fighter's. Filtering status core would also not separate them,
+    since the PHB row is core and the UA row would be optional, and status is not part of the assertion
+    key.
+  analyst_position: 'Escalated rather than solved. Three routes exist and choosing among them is an Architect
+    decision: allow the class to appear in the condition, which is qualitative and not a magnitude; treat
+    book and status as identity-bearing for this case; or accept that per-class variants of a general
+    rule are out of scope for the graph. Recorded here because DEC-2026-0029 named two candidate pairs
+    and this is a third collision found on one of the pages it sent me to read.'
+  owner: architect
+source_identity_conflicts:
+  checked: Every source name explicitly present in this packet, per SOURCE_MARKDOWN 1.3.
+  found: 'One, and it is the subject of the pair 2 finding: the canonical UA 15 hit-point row carries
+    source_label ''Zero Level Progression'' on node exp_level. The packet names the zero-level grades
+    directly, in the table''s two sub-first-level rows and in the footnote, so the packet supports the
+    label as a concept and does not support it as a property of experience level.'
+  disposition: Handled as an identity correction proposal, M007, rather than as a label dispute. SOURCE_MARKDOWN
+    1.3 makes the current packet canonical for directly stated source identity, and the packet states
+    this one directly.
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: prefix for the zero-level grades
+  question: rule_ was chosen for rule_zero_level_progression. exp_ was the alternative, since the registry's
+    exp_ family holds exp_level and exp_level_loss and the concept is part of the experience track.
+  analyst_position: rule_, because the thing being named is a qualification procedure rather than a measure
+    of experience, and because putting it under exp_ risks the exact confusion the pair 2 finding is correcting,
+    where a route to a level was recorded as a property of level. Cheap to rename before integration;
+    nothing else depends on it.
+  affects:
+  - M006
+  - M007
+- id: IDQ-02
+  subject: no node exists for any mundane weapon
+  question: 'The lance is central to this page: proficiency with it is required at entry, it carries a
+    damage bonus that scales with level while mounted, and a heavy lance used on foot is treated as an
+    awl pike while a lighter one is treated as a spear. The registry has no node for a lance, an awl pike
+    or a spear, and no prefix for a mundane weapon at all. item_ holds magic items, wpn_ holds weapon
+    statistics such as wpn_speed_factor and wpn_range, and sword_ holds intelligent-sword mechanics.'
+  analyst_position: Nothing was minted. The Analyst may not mint a prefix, and forcing a lance into item_
+    or wpn_ would misuse a stem whose meaning 3.1 states explicitly. The assertions that survive without
+    the node are recorded, and the one that does not, the dismounted lance being treated as a different
+    weapon type, is already carried in canonical as rule_mount DERIVED_FROM wpn_stats. The cost is that
+    the graph cannot answer which weapon any of this concerns. Raised as ESC-CAND-02.
+  affects: []
+architectural_escalations:
+- id: ESC-CAND-01
+  subject: source_id for steward-extracted, non-legacy packets
+  statement: 'This packet is recorded under ua-legacy-unspecified because that is the only source_id registered
+    for UA and an Analyst may not add a registry entry. Its registered provenance is ''legacy graph dump'',
+    which is false for this packet: the text was supplied fresh by the repository source steward under
+    DEC-2026-0029.'
+  why_it_matters: DEC-2026-0029 forbids legacy canonical data and archive extraction batches as source-read
+    evidence, and this packet exists specifically to supply evidence that is not legacy. A reader who
+    takes source_id at face value would conclude the opposite of what is true, on the one reading where
+    that distinction decides whether the work is admissible. Raised identically in the DMG 64 GUR; one
+    registry change resolves both.
+  analyst_position: Register a source_id whose provenance names steward intake, and record which packets
+    were extracted under it.
+  owner: architect
+- id: ESC-CAND-02
+  subject: the graph has no way to name a mundane weapon
+  statement: 'Constitution 3.1 offers item_ for magic items and item classes, wpn_ for weapon properties
+    and statistics, and sword_ for intelligent-sword mechanics. None names an ordinary weapon. The registry
+    confirms the gap: all 162 item_ nodes are magic items, and all seven wpn_ nodes are statistics.'
+  why_it_matters: Weapon-specific rules are common across all four books, and this page alone carries
+    four of them about the lance. Without a stem they are either dropped, as here, or quietly attached
+    to whichever existing node is nearest, which is how drift starts.
+  analyst_position: A new prefix is needed and only the Architect may add one. Recorded rather than worked
+    around.
+  owner: architect
+- id: ESC-CAND-03
+  subject: see cross_packet_grain_conflict XGC-01
+  statement: The cavalier's flat hit-point gain past a threshold cannot be distinguished from the fighter's
+    under the 5.1 assertion key, because the only difference between them is magnitudes.
+  why_it_matters: A real rule on a page this Decision sent me to read cannot be entered into the graph.
+    Full statement and the three candidate routes are in XGC-01.
+  owner: architect
+non_edge_observations:
+- id: OBS-01
+  topic: this is the repository's first UA packet
+  finding: books/adnd1e/ua held no claimed packet and no GUR before this one, though canonical carries
+    a large body of UA edges from the legacy import, including twelve on this page and twenty touching
+    class_cavalier.
+  why_it_matters: Every UA row now in canonical predates packet-backed extraction and Reviewer verification.
+    This is the first UA locus read under the current contracts.
+- id: OBS-02
+  topic: the page marker was missing on first delivery
+  finding: The incoming file arrived with no {#pN} marker and could not be claimed. The steward supplied
+    {#p15} on the opening heading and the packet was claimed from the corrected file.
+  why_it_matters: 'Recorded so the claim history is legible: the immutable claimed copy matches the corrected
+    incoming file, not the first delivery.'
+- id: OBS-03
+  topic: canonical cites WEAPON SPECIALIZATION to UA 15 but the packet has no such section
+  finding: Five canonical rows are cited to UA 15 under section WEAPON SPECIALIZATION. The claimed packet
+    contains no weapon specialization material at all; it runs from CAVALIERS TABLE I into the cavalier
+    prose.
+  why_it_matters: 'Either those five rows are miscited, or the packet does not cover the whole of printed
+    page 15. The two possibilities have opposite remedies and this packet cannot distinguish them, because
+    a packet can only show what it contains. Raised alongside BLK-01, which points the same way: the packet''s
+    boundaries and the printed page''s boundaries may not coincide.'
+- id: OBS-04
+  topic: the file ends mid-sentence
+  finding: The last line is cut at 'This 90% immunity is in addition to any'. The remainder is on a later
+    printed page.
+  why_it_matters: That material is inside the deferred region anyway, so it changes nothing about this
+    GUR. Recorded for whoever extracts the rest.
+blocking_notes:
+- id: BLK-01
+  subject: the packet asserts page 15 for material canonical cites to page 16
+  statement: The packet carries exactly one marker, {#p15}, on the opening heading. Under SOURCE_MARKDOWN
+    1.3 that assignment persists to the end of the file, so the packet asserts that every line is printed
+    page 15. A second heading, CHARACTER CLASSES (CAVALIER), appears part way down with no marker on it.
+  evidence_against_taking_that_at_face_value:
+  - 'Canonical holds two rows whose section is exactly CHARACTER CLASSES (CAVALIER) and whose page is
+    16: class_cavalier MODIFIES save_matrix and class_cavalier MODIFIES save_spell. The material those
+    rows describe is in this file, after that heading.'
+  - The prose either side of the heading is continuous on one topic. The line before it ends on mounted
+    attacks and the line after it opens 'All cavaliers are virtually born and bred to the saddle', which
+    reads as a running head captured at a column or page break rather than a new section.
+  why_it_is_not_resolved_here: SOURCE_MARKDOWN 1.3 makes the packet authoritative for page attribution
+    over conflicting canonical values, so the contract's default is to cite everything to 15. But that
+    clause presumes the packet's markers are complete, and the evidence above says a marker is missing
+    rather than that canonical is wrong. The contract's own remedy for that case is to return the packet
+    for correction rather than prefer either value. Guessing where the boundary falls is prohibited outright.
+  what_was_done: Extraction is confined to the material before the CHARACTER CLASSES (CAVALIER) heading,
+    whose page 15 attribution is not in doubt under any reading. That region contains the whole of the
+    DEC-2026-0029 pair 2 locus, so the Decision's question is answered in full and is not blocked by this.
+  what_is_deferred: The horsemanship progression by level, unicorn and flying steeds, mount alignment
+    and acceptance, steed worth and its hit-point bonus, the strength, dexterity and constitution percentile
+    training, advancement training requirements, and saving throws and fear immunity. Roughly half the
+    file, and none of it is in canonical except the two save rows cited to 16.
+  what_would_unblock_it: A {#p16} marker at the correct boundary, or steward confirmation that the whole
+    file is printed page 15 and the two canonical rows are miscited. Either resolves it; the Analyst may
+    not decide between them.
+  owner: repository_source_steward
+completeness_statement: 'The claimed packet was parsed with pandoc 3.10 to JSON AST rather than by line
+  splitting, as SOURCE_MARKDOWN 1.3 requires, and both headings, the Pandoc table and both list blocks
+  were inspected. Extraction is complete for the region before the CHARACTER CLASSES (CAVALIER) heading
+  and deliberately absent after it; BLK-01 states why and what is deferred. Within the extracted region
+  every candidate was checked against all twelve canonical rows cited to UA 15 and all twenty touching
+  class_cavalier before emission. Material deliberately not emitted: the seven assertions canonical already
+  holds, recorded above as confirmations; the cavalier''s flat hit-point gain, which XGC-01 shows cannot
+  be expressed without colliding with the PHB 22 row; and the lance''s weapon-type rules, which have no
+  node to attach to. All 14 edges carry status optional, since constitution 8 makes Unearthed Arcana optional
+  in its entirety. The DEC-2026-0029 pair 2 comparison is answered in full above.'
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: Analyst extraction complete for the region this packet unambiguously attributes to page 15,
+    and the DEC-2026-0029 pair 2 finding is complete. BLK-01 defers the rest of the file pending a steward
+    correction; it blocks no edge in this GUR.
+  blocking_ids: []

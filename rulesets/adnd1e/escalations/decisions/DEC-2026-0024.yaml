@@ -1,0 +1,318 @@
+schema_version: "1.0"
+id: DEC-2026-0024
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-054-064-druid-spells
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Build a decision-migration GUP that atomically registers rule_mistletoe and
+    removes the malformed DMG row, then revise the blocked druid-spells packet
+    GUP after that migration is integrated.
+  blocking_ids: []
+
+decision_date: "2026-08-04"
+escalation_id: ESC-2026-08-04T14.11.17.750Z
+
+question: >-
+  Should the PHB concept be registered as rule_mistletoe and canonical CSV row
+  1502 be migrated from the class_druid endpoint labelled "Druid Mistletoe",
+  or does druidic mistletoe require a different identity or representation?
+
+ruling: >-
+  Register rule_mistletoe, label Mistletoe, kind rule, as the canonical identity
+  for the named druidic spell component and religious implement. Do not reuse
+  class_druid, rule_holy_symbol, spell_component_material, or spell_components
+  as its identity. Remove physical CSV row 1502 from the canonical graph instead
+  of repointing it: changing its source endpoint would preserve a DERIVED_FROM
+  classification misuse and would treat unread legacy DMG text as a valid
+  relationship. The removal rejects the encoded assertion, not the possibility
+  that a future claimed DMG packet may support a different legal relationship.
+
+identity_disposition:
+  canonical_id: rule_mistletoe
+  canonical_label: Mistletoe
+  kind: rule
+  prefix: rule_
+  registry_action: add
+  distinct_from:
+    - id: class_druid
+      reason: A character class is not the named component or implement.
+    - id: rule_holy_symbol
+      reason: The cleric implement is analogous but not the same source concept.
+    - id: spell_component_material
+      reason: The general material-component category is broader than mistletoe.
+    - id: spell_components
+      reason: The aggregate component system is broader than mistletoe.
+  ontology_change_required: false
+  reason: >-
+    The existing rule_ prefix and rule kind already cover named rules,
+    procedures, and mechanically significant implements. The PHB preamble gives
+    mistletoe its own incident relationships, so an explicit identity is
+    warranted without adding a new prefix or kind.
+
+legacy_row_disposition:
+  canonical_source:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    escalation_snapshot_checksum: sha256:efc6b6efe3a4de9072081f3c18d68f44a2efda91e0acffce13a4946f568829c7
+  physical_csv_row: 1502
+  action: remove_exact_before_image
+  before:
+    source_id: class_druid
+    source_label: Druid Mistletoe
+    edge_type: DERIVED_FROM
+    target_id: spell_component_material
+    target_label: Material Component
+    aspect: consumed very slowly
+    condition: ""
+    polarity: neutral
+    polarity_basis: derived
+    book: DMG
+    page: "40"
+    section: SPELL CASTING
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ""
+    general_rule_id: ""
+    review_flag: ""
+  replacement_edge: null
+  reasons:
+    - >-
+      source_id resolves to the Druid class while source_label names mistletoe,
+      so the row violates canonical endpoint identity and label consistency.
+    - >-
+      DERIVED_FROM represents computation or lookup lineage under Constitution
+      1.7. Repointing the source to rule_mistletoe would still use it as a type
+      or classification relation.
+    - >-
+      The DMG page-40 source is not present in a claimed Markdown packet. Its
+      wording must not be reinterpreted, transferred, or assigned to a new edge
+      from the legacy row alone.
+  unaffected_canonical_row:
+    physical_csv_row: 2648
+    action: no_change
+    reason: >-
+      Its DMG page-41 assertion is not re-extracted by this Decision. Its note
+      that symbols and mistletoe are not consumed may inform duplicate and
+      conflict review, but does not authorize an endpoint split without source.
+
+packet_disposition:
+  existing_gup: GUP-PKT-PHB-054-064-druid-spells-r01
+  existing_review: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01
+  required_routing_review: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r02
+  required_revision: GUP-PKT-PHB-054-064-druid-spells-r02
+  sequence_constraint: >-
+    After the Approved DEC-2026-0024 migration is integrated, Reviewer publishes
+    the required routing Review revision. Builder then publishes the packet GUP
+    revision against that integrated canonical and registry state. The packet
+    revision references rule_mistletoe as registered and must not propose a
+    duplicate registry addition.
+  relationship_disposition:
+    M1:
+      action: omit_rejected_row
+      reason: DERIVED_FROM does not encode classification as a religious symbol.
+    M2:
+      action: revise
+      exact_assertion:
+        source_id: rule_mistletoe
+        source_label: Mistletoe
+        edge_type: FEEDS_INTO
+        target_id: rule_druid_spells
+        target_label: Druid Spells
+        aspect: material component
+        condition: spells having a material component
+        polarity: neutral
+        polarity_basis: derived
+      reason: >-
+        The PHB states that the spells assume the use of mistletoe. FEEDS_INTO
+        represents an input to the spell procedure without asserting aggregate
+        expenditure. Explicit consumption by an individual spell, if modeled,
+        requires that spell's own source-supported relationship.
+    M3:
+      action: apply_reviewer_exact_correction
+      required_condition: borrowed mistletoe, holly, or oak leaves
+    M4:
+      action: accept_reviewer_semantic_disposition
+    M5:
+      action: apply_reviewer_exact_correction
+      required_condition: holly or oak leaves
+    M6:
+      action: accept_reviewer_semantic_disposition
+  remaining_review_corrections: >-
+    Apply every non-architectural correction in the existing Review, including
+    the spell_call_woodland_being identity correction, thirteen aspect
+    corrections, counts, provenance, escalation linkage, and validation state.
+
+review_validation_observation:
+  owner: reviewer
+  artifact: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01.yaml
+  issue: >-
+    The current file declares handoff.readiness ready while handoff.blocking_ids
+    contains the escalation ID. The common artifact envelope requires a ready
+    handoff to have no blocking IDs.
+  exact_owner_correction:
+    handoff.readiness: ready
+    handoff.blocking_ids: []
+  reason: >-
+    The escalation is the payload routed to Architect, not a blocker preventing
+    that ready handoff. The architectural_escalations section retains the exact
+    escalation linkage.
+  authority_boundary: >-
+    Architect does not edit the Reviewer-owned artifact. Reviewer must make the
+    structural correction according to its publication state and rerun the
+    common schema suite.
+  post_migration_routing_revision: >-
+    After migration integration, Reviewer publishes
+    REV-GUP-PKT-PHB-054-064-druid-spells-r01-r02 as the active Review revision,
+    superseding r01-r01. It records DEC-2026-0024 and the migration Integration
+    provenance, removes the resolved architectural blocker, and hands the exact
+    packet corrections to Builder. This new active Review is required because
+    WORK_QUEUES leaves the escalation-originating Review handoff suppressed by
+    its Decision.
+
+source_audit_follow_up:
+  owner: analyst
+  readiness: blocked_until_claimed_packet_exists
+  source_locus:
+    book: DMG
+    page: "40"
+    section: SPELL CASTING
+  requirement: >-
+    When a bounded claimed DMG Markdown packet contains this locus, analyze it
+    fresh under the then-current constitution. Do not use the removed legacy row
+    as source authority. Any resulting relationship enters the ordinary
+    GUR/GUP/Review lifecycle and may use rule_mistletoe only if the source
+    supports that identity.
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Emit GUP-MIG-DEC-2026-0024-r01 with artifact_kind decision_migration,
+      checksummed Decision provenance, the current canonical baseline, one
+      rule_mistletoe registry addition, and the exact row-1502 removal.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Independently verify the Decision migration, including the exact
+      before-image, absence of a replacement edge, and absence of unrelated
+      graph or registry changes.
+  - step: 3
+    owner: integrator
+    action: >-
+      Integrate only an Approved migration bundle, add rule_mistletoe, remove
+      the exact malformed row, and rebuild derived canonical artifacts.
+  - step: 4
+    owner: reviewer
+    action: >-
+      After migration integration, publish the r01-r02 Review revision that
+      records the Decision and Integration provenance and routes the resolved
+      packet correction to Builder with no architectural blocker.
+  - step: 5
+    owner: builder
+    action: >-
+      Publish the druid-spells packet GUP revision implementing this Decision
+      and all exact Reviewer corrections.
+  - step: 6
+    owner: reviewer
+    action: >-
+      Review the revised packet against the claimed PHB Markdown, the integrated
+      registry, this Decision, and the prior Review's exact corrections.
+  - step: 7
+    owner: integrator
+    action: Integrate only a subsequently Approved packet bundle.
+
+affected_contracts_and_registries:
+  contracts:
+    - rulesets/adnd1e/governance/constitution.md
+  registries:
+    - rulesets/adnd1e/registries/nodes.csv
+  schemas: []
+  canonical_files:
+    - rulesets/adnd1e/canonical/edges_master.csv
+    - rulesets/adnd1e/canonical/nodes_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+
+migration_required: true
+migration_scope:
+  architect_writes: none_to_canonical_or_registries
+  canonical_edges_removed: 1
+  canonical_edges_repointed: 0
+  canonical_edges_added: 0
+  canonical_nodes_added: 1
+  registry_rows_added: 1
+  packet_edges_decided: [M1, M2, M3, M4, M5, M6]
+  approved_artifacts_invalidated: 0
+
+acceptance_tests:
+  - >-
+    The decision-migration GUP declares artifact_kind decision_migration and
+    checksums DEC-2026-0024 through provenance.decision_inputs.
+  - >-
+    The migration uses the then-current canonical checksum and records the exact
+    full before-image of physical CSV row 1502.
+  - >-
+    The migration adds exactly one registry identity: rule_mistletoe, label
+    Mistletoe, kind rule.
+  - >-
+    The migration removes exactly the malformed class_druid/Druid Mistletoe
+    DERIVED_FROM spell_component_material assertion and adds no replacement edge.
+  - The migration does not change physical CSV row 2648.
+  - Reviewer independently verifies the migration before an Approved bundle exists.
+  - Integrator changes canonical and registry state only from that Approved bundle.
+  - >-
+    The Reviewer-owned r01-r01 Review passes the common artifact envelope after
+    its ready handoff has an empty blocking_ids list.
+  - >-
+    After migration integration, Review r01-r02 supersedes r01-r01, records the
+    resolved Decision and Integration provenance, and routes packet revision to Builder.
+  - >-
+    The packet r02 is based on the post-migration canonical and registry state,
+    references rule_mistletoe as existing, and proposes no duplicate node row.
+  - Packet r02 omits M1 and implements M2 exactly as ruled above.
+  - Packet r02 applies the Review's exact M3 and M5 condition corrections.
+  - Packet r02 applies every remaining exact correction in the r01 Review.
+  - >-
+    No DMG page-40 assertion or provenance is transferred to a PHB edge, and no
+    unread DMG relationship is marked as source-read.
+  - All applicable schema, graph, registry, lineage, and repository tests pass.
+
+constitution_version_impact:
+  changed: false
+  version: "1.7"
+  reason: >-
+    This applies existing identity, DERIVED_FROM, FEEDS_INTO, provenance, and
+    ownership rules. It changes data and routing, not the ontology contract.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Build the atomic Decision migration first.
+    - Revise the packet GUP only after migration integration.
+  reviewer:
+    - Review the Decision migration independently.
+    - Correct the invalid ready handoff in Review r01-r01 within Reviewer authority.
+    - Publish the post-migration r01-r02 routing Review revision.
+    - Review the later packet revision and all prior exact corrections.
+  integrator:
+    - Integrate the Approved migration before the packet revision proceeds.
+    - Integrate the packet only after a new Approved review bundle exists.
+  analyst:
+    - Perform no immediate work; revisit DMG page 40 only from a claimed packet.
+
+prohibited_actions:
+  - Do not repoint row 1502 while preserving DERIVED_FROM or its remaining fields.
+  - Do not treat DERIVED_FROM as a classification or type relation.
+  - Do not reuse class_druid or rule_holy_symbol as the mistletoe identity.
+  - Do not encode aggregate mistletoe use with CONSUMES.
+  - Do not change row 2648 without a separate source-supported artifact.
+  - Do not transfer DMG provenance to the PHB packet relationships.
+  - Do not publish packet r02 against the pre-migration canonical baseline.
+  - Architect does not edit canonical graph, registry, GUP, Review, or role tooling files.

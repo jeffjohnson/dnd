@@ -92,6 +92,19 @@ class NodeRegistry:
     def get(self, node_id: str) -> Node | None:
         return self.nodes.get(node_id)
 
+    def row_of(self, node_id: str) -> int | None:
+        """The 1-based CSV line, header included, or None if absent.
+
+        A Decision that names a registry row by number was written against one
+        registry state; comparing the number back is how a migration notices
+        the file moved underneath it rather than merging whatever now sits
+        there. `nodes` preserves CSV order, so position is the row.
+        """
+        for position, existing in enumerate(self.nodes, start=2):
+            if existing == node_id:
+                return position
+        return None
+
     def resolve(self, requested_id: str, label: str = "") -> Resolution:
         """Resolve a candidate node reference to a canonical ID."""
         requested = (requested_id or "").strip()

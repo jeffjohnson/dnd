@@ -1,0 +1,190 @@
+schema_version: '1.0'
+id: GUP-PKT-PHB-119-119-alignment-graph-r01
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-119-119-alignment-graph
+constitution_version: '1.7'
+artifact_kind: packet_update
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 0 edge addition(s), 0 update(s), 4 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-PHB-119-119-alignment-graph-r01
+  gur_checksum: sha256:6387c7ef3fb0a14bc0754f3253cdbe6bc42a780bcd60058338e8d25d96f2bc9c
+  gur_constitution_version: '1.7'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 381
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: rule_alignment_ethical_axis
+      proposed_label: Ethical Axis
+      kind: rule
+      why_needed: 'One of the two coordinates the appendix says the graph plots alignments on, running
+        from lawful through neutral to chaotic. It is load-bearing rather than descriptive: align_change
+        CONSTRAINS sys_alignment is conditioned ''along like axis only'' (PHB 34) and spell_detect_balance
+        FEEDS_INTO sys_alignment ''detects the neutral axis specifically'' (UA 42). Both assertions presuppose
+        an axis that nothing in the graph currently names. Stem follows the existing rule_alignment_*
+        family; see IDQ-01.'
+      edges_depending_on_it:
+        - M001
+        - M003
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: rule_alignment_moral_axis
+      proposed_label: Moral Axis
+      kind: rule
+      why_needed: The appendix's second coordinate, running from good through neutral to evil. Minted
+        with the ethical axis because the two are stated together and because an alignment is only determined
+        once both are read. item_crown_might GATES sys_alignment is keyed to 'an ethical alignment' (DMG
+        157), which is a distinction that only means something if the moral axis is separately identified.
+      edges_depending_on_it:
+        - M002
+        - M004
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions: []
+  pending_additions:
+    - source_id: rule_alignment_ethical_axis
+      source_label: Ethical Axis
+      edge_type: FEEDS_INTO
+      target_id: rule_alignment_graph
+      target_label: Alignment Graph
+      aspect: the graph's horizontal coordinate
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '119'
+      section: 'APPENDIX III: CHARACTER ALIGNMENT GRAPH'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+    - source_id: rule_alignment_moral_axis
+      source_label: Moral Axis
+      edge_type: FEEDS_INTO
+      target_id: rule_alignment_graph
+      target_label: Alignment Graph
+      aspect: the graph's vertical coordinate
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '119'
+      section: 'APPENDIX III: CHARACTER ALIGNMENT GRAPH'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: DERIVED_FROM
+      target_id: rule_alignment_ethical_axis
+      target_label: Ethical Axis
+      aspect: the lawful to chaotic component
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '119'
+      section: 'APPENDIX III: CHARACTER ALIGNMENT GRAPH'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: DERIVED_FROM
+      target_id: rule_alignment_moral_axis
+      target_label: Moral Axis
+      aspect: the good to evil component
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '119'
+      section: 'APPENDIX III: CHARACTER ALIGNMENT GRAPH'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts: {}
+duplicate_findings: []
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 4
+  edges_compiled: 4
+  edges_rejected: 0
+  edge_additions: 0
+  edge_pending_additions: 4
+  edge_updates: 0
+  errors: 0
+  warnings: 2
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 2
+  cross_packet_dependencies: 0
+  duplicate_findings: 0
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-PHB-119-119-alignment-graph-r01.validation.json

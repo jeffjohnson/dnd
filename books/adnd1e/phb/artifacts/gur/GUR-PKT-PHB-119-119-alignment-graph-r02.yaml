@@ -1,0 +1,300 @@
+schema_version: '1.0'
+id: GUR-PKT-PHB-119-119-alignment-graph-r02
+status: published
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-119-119-alignment-graph
+constitution_version: '1.7'
+revision: 2
+supersedes: GUR-PKT-PHB-119-119-alignment-graph-r01
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.3
+- contracts/WORK_QUEUES.md 1.6
+- contracts/ARTIFACT_LIFECYCLE.md 1.4
+- contracts/GRAPH_INVARIANTS.md 1.1
+- rulesets/adnd1e/governance/constitution.md 1.7
+- rulesets/adnd1e/escalations/decisions/DEC-2026-0029.yaml
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 119
+page_end: 119
+packet_source_checksum: sha256:3b0dd1a4f7e64c350869028b469e8f3758477a2e2e2b4c9047d8c682891904e2
+packet_source_checksum_basis: lf_normalized
+source_summary: 'PHB 119, Appendix III. The smallest packet in the book at 903 bytes: one descriptive
+  paragraph and two tables. The paragraph states that the graph plots the nine alignments on two axes,
+  ethical running lawful to chaotic and moral running good to evil, with absolute neutrality at the centre.
+  The first table is the three-by-three grid of alignments; the second gives the extreme descriptor at
+  each of the four corners.'
+node_id_resolution_method: No registry slice was supplied. Every node in canonical and in the registry
+  was matched against the alignment vocabulary of this packet, and all 4,118 canonical edges touching
+  sys_alignment were read. Two facts governed the extraction. First, rule_alignment_graph already exists
+  with five edges, so this appendix defines a node the graph is already using rather than introducing
+  one. Second, no node exists for either axis or for any of the nine alignment values; alignment values
+  are carried as condition text on sys_alignment edges throughout. The two axes are therefore proposed
+  and the nine values are not; see OBS-05.
+grain_decisions:
+- decision: The nine alignments do not become nodes.
+  basis: 'Constitution 3.2 reuse-over-mint and the established shape of the graph. sys_alignment carries
+    108 edges and expresses every alignment value as condition text: ''lawful good only'', ''evil only'',
+    ''must remain neutral'', ''non-lawful'', ''non-good at start''. Not one of the nine exists as a node.'
+  how_applied: The appendix supplies no mechanic that attaches to an individual alignment. It supplies
+    the structure the values sit in, which is what was extracted. Minting nine value nodes would change
+    how those 108 edges are expressed, which is an ontology change and not the Analyst's to make; the
+    question is recorded in OBS-05 with a position rather than improvised here.
+- decision: The four corner descriptors do not become nodes.
+  basis: The core test. Saintly, Beatific, Diabolic and Demoniac name the extremity of a corner and nothing
+    reads them. No node in canonical or the registry matches any of the four.
+  how_applied: Declined and recorded in OBS-02. What the corners do carry mechanically, that the graph
+    is a space in which alignments are more or less distant, is recorded in OBS-03.
+- decision: Status is core.
+  basis: Constitution 8, which flags what the text marks a DM option. Nothing in this appendix is optional;
+    every character has an alignment and the axes are how it is stated.
+  how_applied: All four edges carry status core.
+- decision: No magnitude appears in any aspect or condition.
+  basis: Constitution 2 and GRAPH_INVARIANTS 11.
+  how_applied: The counts in the source, nine alignments, two axes, four corners, appear only in the source
+    summary and the observations. No aspect names a number, a position or a coordinate value.
+candidate_nodes:
+- proposed_id: rule_alignment_ethical_axis
+  proposed_label: Ethical Axis
+  kind: rule
+  why_needed: 'One of the two coordinates the appendix says the graph plots alignments on, running from
+    lawful through neutral to chaotic. It is load-bearing rather than descriptive: align_change CONSTRAINS
+    sys_alignment is conditioned ''along like axis only'' (PHB 34) and spell_detect_balance FEEDS_INTO
+    sys_alignment ''detects the neutral axis specifically'' (UA 42). Both assertions presuppose an axis
+    that nothing in the graph currently names. Stem follows the existing rule_alignment_* family; see
+    IDQ-01.'
+  edges_depending_on_it:
+  - M001
+  - M003
+- proposed_id: rule_alignment_moral_axis
+  proposed_label: Moral Axis
+  kind: rule
+  why_needed: The appendix's second coordinate, running from good through neutral to evil. Minted with
+    the ethical axis because the two are stated together and because an alignment is only determined once
+    both are read. item_crown_might GATES sys_alignment is keyed to 'an ethical alignment' (DMG 157),
+    which is a distinction that only means something if the moral axis is separately identified.
+  edges_depending_on_it:
+  - M002
+  - M004
+reused_nodes:
+- rule_alignment_graph
+- sys_alignment
+cross_packet_candidate_targets: []
+candidate_general_rules: []
+domains_touched:
+- alignment
+domains_touched_note: domain_registry.yaml remains at 0.1, status bootstrap, with an empty domains map.
+  alignment is recorded as a candidate label only and is not asserted to be official; see candidate_domains.
+candidate_domains:
+- proposed: alignment
+  why: 'Unlike planar, proposed by GUR-PKT-PHB-120-120-planes-of-existence-r01 from a single appendix,
+    this label already recurs. sys_alignment sits at degree 108 and the cluster around it spans this packet
+    and at least PHB 18, 20, 24, 27, 28, 29, 30, 33, 34, 40, 43, 50 and 117, plus rule_alignment_graph,
+    rule_alignment_languages, rule_alignment_change, align_change, rule_recognition, spell_know_alignment,
+    spell_detect_evil and sword_alignment. Recorded, not promoted: constitution 15 reserves adoption to
+    the Architect and this GUR does not assert the label is official.'
+domain_boundary_questions: []
+candidate_edges:
+- ref: M001
+  source_id: rule_alignment_ethical_axis
+  source_label: Ethical Axis
+  edge_type: FEEDS_INTO
+  target_id: rule_alignment_graph
+  target_label: Alignment Graph
+  aspect: the graph's horizontal coordinate
+  condition: ''
+  book: PHB
+  page: 119
+  section: 'APPENDIX III: CHARACTER ALIGNMENT GRAPH'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_alignment_moral_axis
+  source_label: Moral Axis
+  edge_type: FEEDS_INTO
+  target_id: rule_alignment_graph
+  target_label: Alignment Graph
+  aspect: the graph's vertical coordinate
+  condition: ''
+  book: PHB
+  page: 119
+  section: 'APPENDIX III: CHARACTER ALIGNMENT GRAPH'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: sys_alignment
+  source_label: Alignment
+  edge_type: DERIVED_FROM
+  target_id: rule_alignment_ethical_axis
+  target_label: Ethical Axis
+  aspect: the ethical component
+  condition: ''
+  book: PHB
+  page: 119
+  section: 'APPENDIX III: CHARACTER ALIGNMENT GRAPH'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'Not redundant with the FEEDS_INTO edge above. That edge says the axis is a coordinate
+    of the diagram; this one says a character''s alignment is read off the axis. The dependants differ:
+    rule_character_actions FEEDS_INTO rule_alignment_graph records drift on the diagram, while align_change
+    CONSTRAINS sys_alignment is conditioned on the axis itself. Constitution 4.2 forbids recording two
+    types for one dependency; these are two dependencies between different pairs of nodes.'
+- ref: M004
+  source_id: sys_alignment
+  source_label: Alignment
+  edge_type: DERIVED_FROM
+  target_id: rule_alignment_moral_axis
+  target_label: Moral Axis
+  aspect: the moral component
+  condition: ''
+  book: PHB
+  page: 119
+  section: 'APPENDIX III: CHARACTER ALIGNMENT GRAPH'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+canonical_duplicates_not_for_emission:
+- assertion: rule_alignment_graph -[FEEDS_INTO]-> sys_alignment
+  canonical_row: 1643
+  canonical_aspect: graph defines the oppositions
+  canonical_locus: 'DMG p23, Major Divisions:'
+  packet_aspect: the nine alignments are its cells
+  packet_locus: 'PHB p119, APPENDIX III: CHARACTER ALIGNMENT GRAPH'
+  why_not_emitted: Withheld by hand rather than by key. The appendix's sentence that the graph plots the
+    nine alignments is the same assertion the canonical DMG 23 row already makes as 'graph defines the
+    oppositions'. The two wordings would not collide on the constitution 5.1 key, so an automatic check
+    would have passed them both; emitting it would have restated one fact twice. If the Reviewer wants
+    the PHB locus recorded for an assertion currently sourced only to the DMG, the right instrument is
+    a citation correction on the existing row, not a second edge.
+near_matches_vs_canonical: []
+source_identity_conflicts:
+  rule: contracts/SOURCE_MARKDOWN.md 1.3, Source Identity Authority.
+  conflicts: []
+  analyst_view: None. The packet names the alignment graph, the two axes and the nine alignments, and
+    the one of those that already has an identity, rule_alignment_graph, is labelled 'Alignment Graph'
+    and matches the packet exactly. The duplicate identity found during the probe, align_change against
+    rule_alignment_change, is a defect between two canonical rows and not a conflict between canonical
+    and this packet, so it is recorded in OBS-04 rather than here.
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: 'prefix for the two axis nodes: align_ or rule_alignment_'
+  question: The alignment subsystem is split across two prefixes. rule_ holds rule_alignment_graph, rule_alignment_change
+    and rule_alignment_languages. align_ holds exactly one node, align_change, which is itself a duplicate
+    of rule_alignment_change (OBS-04). Both were available for the axes.
+  analyst_position: Minted as rule_alignment_ethical_axis and rule_alignment_moral_axis. The rule_alignment_*
+    stem is the established family, matches the node these axes attach to, and does not grow a one-member
+    prefix whose only occupant may be withdrawn when the duplicate is resolved. If the Architect instead
+    rules that align_ is the correct home for the subsystem, these two are cheap to rename before integration,
+    since nothing else depends on them yet.
+  affects:
+  - M001
+  - M002
+  - M003
+  - M004
+architectural_escalations: []
+non_edge_observations:
+- id: OBS-01
+  topic: the appendix is a diagram and the packet renders it as prose
+  finding: In the printed book Appendix III is a graph. The packet supplies a descriptive paragraph stating
+    what the graph plots, followed by the grid and the corner list as markdown tables.
+  why_it_matters: The four edges are read from the paragraph, and the paragraph describes a picture rather
+    than reproducing printed sentences. The relationships it states are exactly what the two tables show
+    independently, so the extraction does not rest on the paragraph alone. Recorded so the Reviewer does
+    not weigh the paragraph's precise wording as printed rules language. Treated as source under SOURCE_MARKDOWN
+    1.3 Incoming Packet Authority; not re-authored.
+- id: OBS-02
+  topic: the four corner descriptors yield nothing
+  finding: Saintly, Beatific, Diabolic and Demoniac are given for Lawful Good, Chaotic Good, Lawful Evil
+    and Chaotic Evil. No node in canonical or the registry matches any of the four and no rule reads them.
+  why_it_matters: Declined under the core test. Listed so a later extractor can see the second table was
+    read and considered rather than skipped.
+- id: OBS-03
+  topic: this appendix is the geometry two DMG assertions already depend on
+  finding: 'Naming the corners as extremes makes the graph a space with distance in it. Two canonical
+    edges already measure that distance: sys_alignment MODIFIES hench_loyalty, ''penalty grows with places
+    removed'' (DMG 37), and sys_alignment TRIGGERS cbt_damage, ''touching the talisman injures by alignment
+    distance'' (DMG 155).'
+  why_it_matters: 'Both assertions are unsupported by anything in the graph today: nothing says what a
+    place is or what distance is measured along. The two axes proposed here are the first structure capable
+    of carrying that, but this packet does not itself state a distance rule, so no edge is drawn to either.
+    Whoever claims the DMG alignment chapter should start from here.'
+- id: OBS-04
+  topic: align_change and rule_alignment_change are a duplicate identity at canonical
+  finding: 'Both exist, both are labelled ''Changing Alignment'', and both carry a CONSTRAINS edge to
+    sys_alignment about voluntary change being limited by axis, cited to PHB 34, differing only in wording:
+    ''voluntary change limited / along like axis only'' against ''voluntary change / outside limited axes''.
+    align_change holds 11 edges, mostly DMG; rule_alignment_change holds 7, mostly PHB.'
+  why_it_matters: Constitution 3.2 calls drift the single most common defect in this graph, and this is
+    a clean instance of the same concept under two prefixes. It predates this packet and no migration
+    is proposed here, which is the Architect's call. It is reported because it was found while resolving
+    prefixes for this packet's own nodes and it decided IDQ-01.
+- id: OBS-05
+  topic: the nine alignment values are not nodes, and this is where that would be challenged
+  finding: Alignment values appear throughout the graph only as condition text on sys_alignment edges.
+    This appendix is the one place in the PHB that enumerates all nine as a closed set, so it is the natural
+    occasion to ask whether they should be nodes.
+  why_it_matters: The answer taken here is no, on two grounds. The packet attaches no mechanic to any
+    individual alignment, so each of the nine fails the core test on this evidence alone; and minting
+    them would change how 108 existing edges express their conditions, which is an ontology change reserved
+    to the Architect.
+  why_no_escalation_was_opened: 'The question does not block this GUR: the four edges stand whichever
+    way it is ruled, because they describe the axes rather than the values. OBS-56 of GUR-PKT-PHB-033-035-alignment-hp-languages-r04
+    records that an architectural_escalations entry written before its ID was allocated blocked two GUPs,
+    and that a non-blocking question belongs outside that section. It is recorded here instead, with a
+    position, for whoever claims the DMG alignment chapter.'
+- id: OBS-06
+  topic: neutral is a value on both axes and that ambiguity is already load-bearing
+  finding: 'The paragraph places absolute neutrality at the centre, which is the cell where both axes
+    read neutral. Neutral therefore names three different things: a point on the ethical axis, a point
+    on the moral axis, and the alignment at their intersection.'
+  why_it_matters: Two canonical edges turn on the distinction. spell_detect_balance FEEDS_INTO sys_alignment
+    'detects the neutral axis specifically' (UA 42) is only meaningful because there is more than one
+    neutral, and sys_alignment GATES class_bard 'must remain neutral' (PHB 117) does not on its face say
+    which. No edge is drawn, because the ambiguity is a property of the vocabulary rather than a relationship,
+    but it is the strongest argument available for the OBS-05 question and the Reviewer should see the
+    two together.
+- id: OBS-ASPECT-02
+  topic: revision 2 exists only to bring aspects within constitution 5
+  finding: The Builder graded aspect_word_count as an error under DEC-2026-0029 and returned this packet.
+    2 of this GUR's aspects ran to five words or more.
+  why_it_matters: Each replacement names the facet the cited section touches, re-derived from that section
+    in the claimed source rather than produced by shortening the previous string, as DEC-2026-0029 requires.
+    This packet was not returned; the rows were graded warning before the Decision and would fail on the
+    next compile, so they are corrected now rather than left to bounce. No edge was added, dropped or
+    re-pointed; the set was re-checked against canonical and against itself with no collision.
+  owner: analyst
+blocking_notes:
+- id: BLK-02
+  note: No node_registry_slice.csv, local_neighborhood.json or general_rule_slice.json accompanied this
+    packet. The whole of nodes_master.csv, registries/nodes.csv and edges_master.csv were read directly
+    to establish what the alignment subsystem already contains.
+  impact: Does not block this GUR.
+completeness_statement: The paragraph and both tables were read and considered in full. Every candidate
+  edge cites PHB 119 and the appendix heading. No aspect or condition contains a magnitude. No authored
+  polarity appears, because all four edges are FEEDS_INTO or DERIVED_FROM, whose polarity is deterministic
+  and is the Builder's to set. Candidates were checked against canonical on the constitution 5.1 assertion
+  key and on the source-type-target triple, and one further candidate was withheld by hand where the key
+  check would not have caught the restatement; see canonical_duplicates_not_for_emission. The nine alignments
+  and the four corner descriptors were deliberately not minted; see OBS-05 and OBS-02.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []

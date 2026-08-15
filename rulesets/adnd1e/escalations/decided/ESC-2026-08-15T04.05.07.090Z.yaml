@@ -1,0 +1,115 @@
+schema_version: '1.0'
+id: ESC-2026-08-15T04.05.07.090Z
+status: decided
+ruleset_id: adnd1e
+book_id: cross-book
+source_id: multiple
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-08-15'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: Repository owner requests reversal of an already-integrated identity migration.
+  blocking_ids: []
+trigger: 'ESCALATION_CONTRACT 1.2: two canonical identities were merged, the surviving identity is disputed,
+  and reversing it would rewrite already-integrated approved assertions.'
+reconsiders: DEC-2026-0030
+originating_artifacts:
+  prior_decision: rulesets/adnd1e/escalations/decisions/DEC-2026-0030.yaml
+  prior_escalation: ESC-2026-08-13T01.33.19.782Z, raised by reviewer
+  integrating_migration: GUP-MIG-DEC-2026-0024-0025-r05, integrated
+  packet_that_supplied_the_evidence: books/adnd1e/phb/packets/claimed/PKT-PHB-117-119-bards/
+question: DEC-2026-0030 renamed item_pipes_sewers, label Pipes of the Sewers, to item_pipes_sewer, label
+  Pipes of the Sewer, on the authority of a claimed PHB packet. Both canonical assertions for this item
+  are cited to DMG 152, not to the PHB. Does Incoming Packet Authority extend to renaming an item whose
+  defining locus is a different book, where the current packet only mentions it in passing? If not, which
+  identity survives, and must DMG 152 be packetized before reversal?
+source_excerpt: 'PKT-PHB-117-119-bards/source.md, PHB 119 BARDS. The sole packet-backed occurrence anywhere
+  in the repository, one mention, in a list of musical items a bard may use: "Pipes of the Sewer - Double
+  number of rats in one-half the usual time."
+
+
+  No claimed packet covers DMG 152. The item''s two canonical assertions are both cited to DMG 152 TREASURE
+  (MISCELLANEOUS MAGIC), which is where the item is defined and where all of its recorded mechanics live.'
+local_graph_neighborhood:
+  current_registry_row: item_pipes_sewer | Pipes of the Sewer | item
+  current_canonical_rows:
+  - item_pipes_sewer TRIGGERS gen_random_encounter | aspect 'attracts rats within range' | DMG 152
+  - cbt_encounter_distance MODIFIES item_pipes_sewer | aspect 'delay scales with how far the rats must
+    travel' | DMG 152
+  defining_locus: DMG 152 TREASURE (MISCELLANEOUS MAGIC). Both assertions live there. The PHB packet neither
+    defines the item nor states any mechanical relationship this graph records; its single line is a cross-reference
+    telling the reader a bard may use the item.
+  integration_state: Fully integrated. item_pipes_sewers no longer appears in nodes.csv, edges_master.csv
+    or nodes_master.csv. Reversal is a new migration, not a withdrawal.
+  legacy_evidence_note: Legacy DMG extraction data spells it Pipes of the Sewers in seven places. Recorded
+    as provenance only. SOURCE_MARKDOWN 1.3 excludes legacy data as source-read evidence, so it cannot
+    settle this and is deliberately not offered as the basis for reversal.
+affected_canonical_ids:
+- item_pipes_sewer
+- gen_random_encounter
+- cbt_encounter_distance
+repository_owner_stated_preference:
+  stated_on: '2026-08-15'
+  request: Reverse DEC-2026-0030; use the plural terminal noun to match the DMG.
+  literal_id_given: item_pipes_of sewers
+  analyst_note: 'Read as a request for the plural rather than for a new stem shape. Two observations.
+    The literal string contains a space and is not a legal snake_case ID. More substantively, inserting
+    ''of'' would break a unanimous corpus convention: of the 124 item_ nodes whose label contains '' of
+    '', zero carry ''_of_'' in the ID, including item_amulet_life for Amulet of Life Protection and item_bag_holding
+    for Bag of Holding. If reversal is approved, item_pipes_sewers is the form consistent with both the
+    prior identity and the corpus.'
+options_considered:
+- option: Reverse to item_pipes_sewers now, on contract grounds
+  basis: SOURCE_MARKDOWN 1.3 Source Identity Authority states the precedence 'applies only to source material
+    directly present in the current packet' and 'does not authorize a worker to infer a renamed concept
+    in another packet or source.' A one-line mention in a PHB appendix is arguably not the direct naming
+    of a DMG item that the clause contemplates.
+  impact: One registry row, one canonical node row, two canonical edges re-pointed, nodes_master and graph
+    rebuilt. Requires no new source packet.
+- option: Defer until DMG 152 is packetized, then decide on both readings
+  basis: SOURCE_MARKDOWN 1.3 prescribes preserving both packet readings and escalating when two current
+    packets give incompatible direct names. That path needs a second packet, which does not exist.
+  impact: No change now. The repository owner has paused DMG and UA intake until PHB work completes, so
+    this defers for an unknown period with a disputed identity live in canonical.
+- option: Uphold DEC-2026-0030
+  basis: The PHB packet is the only packet-backed spelling in the repository.
+  impact: No change. Leaves the graph naming a DMG item from a PHB mention, against the repository owner's
+    reading of the DMG.
+recommended_resolution: Reverse to item_pipes_sewers on the contract ground in option 1, recording that
+  DMG 152 will confirm or correct it when that page is packetized. The question is which locus governs
+  an identity, not which spelling appears in an unread book, so it can be decided now without DMG source.
+  If the Architect instead holds that only a claimed packet may settle a spelling, option 2 is correct
+  and the reversal must wait. The Analyst does not have standing to choose between those two readings
+  of SOURCE_MARKDOWN 1.3.
+expected_migration_impact: 'Identity-only, mirroring DEC-2026-0030 in reverse: 1 registry row replaced,
+  1 canonical node row replaced, 2 canonical edges re-pointed with their endpoint labels, nodes_master
+  and graph rebuilt. No edge type, aspect, condition, polarity, citation, evidence, pass or status changes.
+  No assertion added or removed.'
+governance_impact:
+  constitution_change: false
+  registry_change: true
+  profile_change: false
+  prior_decision_reversed: DEC-2026-0030, already integrated
+blocking: Blocks no Analyst artifact. The bards packet GUP sits with Builder under DEC-2026-0030 and will
+  need re-planning if this is reversed, so deciding before Builder revises M048 avoids a second rewrite
+  of the same row.
+baseline:
+  canonical_edges:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:c64127c41487f7d090d11ec485a7e8d348caceb5b90c4cc8ac645bb398aa6fc9
+  nodes_registry:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:4c8898e6eb27573d6f229fe1d0ea6da9786ee8572f3cf279710d8d59a291bf0e
+
+decision_id: DEC-2026-0037
+decided_on: '2026-08-15'
+resolution: >-
+  DEC-2026-0037 supersedes DEC-2026-0031. The PHB Bards list is a secondary
+  mention rather than the DMG item's defining locus. The current singular
+  identity is replaced by item_pipes_of_sewers / Pipes of the Sewers through an
+  identity-only direct-v1 migration. The `of` token is deliberate; `the` remains
+  omitted; no general item-ID normalization follows from this decision.

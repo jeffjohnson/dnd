@@ -1,0 +1,183 @@
+schema_version: '1.0'
+id: DEC-2026-0033
+status: approved
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-014-016-cavalier
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Align the compiler with the v1.8 mundane-weapon prefix before the Analyst
+    republishes the Cavalier recommendation.
+  blocking_ids: []
+
+decision_date: '2026-08-14'
+escalation_id: ESC-2026-08-14T04.18.33.975Z
+resolved_escalations:
+  - ESC-2026-08-14T04.18.33.975Z
+  - ESC-2026-08-14T04.18.34.112Z
+
+question: >-
+  How are ordinary weapons represented without widening the magic-item namespace,
+  and can a class identity distinguish a class-specific flat hit-point progression
+  without carrying a prohibited magnitude?
+
+ruling: >-
+  Add `weapon_` as the dedicated identity prefix for a mundane weapon, weapon
+  category, or source-named weapon family. `wpn_` remains only for a weapon
+  property or statistic, and `item_` remains only for a magic item or item class.
+  A qualitative class identity is a permitted `condition` discriminator when it
+  identifies a class-specific facet; it is not a magnitude. The UA Cavalier
+  progression is therefore representable as an `exp_level MODIFIES
+  rule_hit_points` assertion with aspect `flat gain past level` and condition
+  `cavalier`, omitting both the amount and threshold.
+
+rationale:
+  - >-
+    A mundane weapon is a recurring, source-named identity across the corpus.
+    Widening `item_` would erase the existing magic-item namespace boundary,
+    while `wpn_` correctly continues to name properties such as range and speed
+    factor rather than the weapon being described.
+  - >-
+    Existing canonical conditions already use qualitative class membership,
+    including `fighter classes only` and `monks`. A class name distinguishes the
+    applicable rule without smuggling a number into identity.
+  - >-
+    The five-field assertion key remains unchanged. Status does not distinguish
+    the UA assertion from PHB; the class condition does.
+
+constitution_amendment:
+  release: '1.8'
+  changed_sections:
+    - '3.1 Format: weapon_ is a mundane-weapon namespace.'
+    - '3.1 Format: wpn_ remains a weapon-property/statistic namespace.'
+  rejected_alternatives:
+    - Widen item_ to ordinary weapons.
+    - Use wpn_ for a named mundane weapon.
+    - Treat weapon-specific rules as outside graph scope.
+
+migration_required: false
+migration_scope:
+  architect_writes: constitution_ruleset_and_decision_only
+  immediate_canonical_rows_changed: 0
+  registry_rows_changed: 0
+  nodes_added: 0
+  nodes_retired: 0
+  approved_assertions_rewritten: 0
+  deferred_packet_work: >-
+    New mundane-weapon nodes and the UA progression assertion require a
+    source-backed GUR revision followed by the ordinary packet lifecycle.
+
+implementation_requirements:
+  builder_owned_files:
+    - tooling/builder/src/adnd1e_builder/vocab.py
+    - tooling/builder/tests/test_registry_and_vocab.py
+  requirements:
+    - >-
+      Set the current compiler constitution version to 1.8, accept 1.8 GURs,
+      and retain revalidation of the previously supported GUR versions.
+    - Add `weapon_` to the closed prefix vocabulary.
+    - >-
+      Keep `wpn_` as an approved prefix and `dex_` and `str_` as rejected bare
+      prefixes. The new `abil_dex_` and `abil_str_` forms are valid by their
+      approved `abil_` prefix, not by reopening `dex_` or `str_`.
+    - >-
+      Add focused vocabulary tests that accept weapon_lance and
+      abil_dex_reaction_adjustment while rejecting dex_reaction_adj and
+      str_exceptional as new proposed identities.
+
+affected_artifacts:
+  active_gur_to_supersede:
+    id: GUR-PKT-UA-014-016-cavalier-r01
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-014-016-cavalier-r01.yaml
+    checksum: sha256:ef4405623a7e172a24d269837dc2d6c781cee7a0c0aa3fa3a197d44199005c80
+  required_successor_gur:
+    id: GUR-PKT-UA-014-016-cavalier-r02
+    owner: analyst
+    prerequisite: Approved Decision Implementation Review for DEC-2026-0033
+    requirements:
+      - Use constitution_version '1.8' and the source identity specified by DEC-2026-0034.
+      - >-
+        Reconsider the source-named lance, awl pike, and spear relationships
+        under `weapon_`; do not mint every weapon in a list unless the packet
+        supplies a load-bearing, individually represented relationship.
+      - >-
+        Include the class-conditioned hit-point assertion only if the direct UA
+        text supports the facet, using no amount or threshold in aspect or
+        condition.
+      - >-
+        Replace any retired ability identity with the DEC-2026-0032 survivor
+        when its migration has been Integrated; do not edit r01 in place.
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Implement the v1.8 prefix vocabulary and publish the required Decision
+      Implementation Report for this non-migration Decision.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Independently review the implementation report and approve it only after
+      every vocabulary and repository acceptance test is evidenced.
+  - step: 3
+    owner: analyst
+    action: >-
+      Publish GUR-PKT-UA-014-016-cavalier-r02. It supersedes r01 and applies
+      this ruling, DEC-2026-0032 when integrated, and DEC-2026-0034.
+  - step: 4
+    owner: builder
+    action: >-
+      Compile only the r02 GUR through the ordinary packet-update lifecycle.
+
+acceptance_tests:
+  - The Constitution and ruleset manifest declare v1.8 and define weapon_ separately from wpn_ and item_.
+  - >-
+    The Builder vocabulary accepts constitution v1.8, weapon_lance, and the
+    approved ability-mechanic forms without admitting bare dex_ or str_ forms.
+  - >-
+    A Decision Implementation Report names this exact Decision checksum,
+    accounts for every acceptance test, and has an independent Approved Review.
+  - >-
+    The UA r02 GUR supersedes r01, contains no numeric magnitude or threshold
+    in the Cavalier progression assertion, and retains source-backed node and
+    edge selection by the Analyst.
+  - All applicable schema, vocabulary, queue, and repository tests pass.
+
+constitution_version_impact:
+  changed: true
+  from: '1.7'
+  to: '1.8'
+  rationale: >-
+    Constitution 3.1 now adds weapon_ and preserves the separate meanings of
+    item_ and wpn_. DEC-2026-0032 is the other member of this same v1.8 release.
+
+governance_changelog:
+  - >-
+    Constitution 1.8 adds weapon_ for mundane weapon identities while retaining
+    wpn_ for properties and item_ for magic items and item classes.
+  - >-
+    A qualitative class identity is confirmed as a valid condition discriminator
+    when it distinguishes a class-specific rule facet.
+exact_diff:
+  rulesets/adnd1e/governance/constitution.md:
+    - 'Add weapon_ to the section 3.1 prefix table and its namespace boundary.'
+  rulesets/adnd1e/ruleset.yaml:
+    - 'constitution_version: 1.7 -> 1.8.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0033.yaml:
+    - 'Record weapon and class-condition rulings plus Builder implementation requirements.'
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement the vocabulary change and publish its Decision Implementation Report.
+    - Do not compile the superseded UA r01 GUR.
+  reviewer:
+    - Independently review the non-migration Decision implementation.
+  analyst:
+    - Publish the required source-backed UA r02 GUR after the implementation review.

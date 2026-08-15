@@ -1,0 +1,73 @@
+schema_version: '1.0'
+id: ESC-2026-08-14T04.18.34.386Z
+status: decided
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-legacy-unspecified
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.7'
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-08-14'
+decision_id: DEC-2026-0034
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: A registry entry's provenance contradicts a governing Decision's evidence rule.
+  blocking_ids: []
+gur_candidate_ref: GUR-PKT-DMG-064-064-missile-discharge-r02 ESC-CAND-01 and GUR-PKT-UA-014-016-cavalier-r01
+  ESC-CAND-01
+trigger: 'ESCALATION_CONTRACT 1.2: the constitution and production data disagree in a way that cannot
+  be fixed mechanically. The Analyst may not add a registry entry, and the only available source_id asserts
+  something false about this evidence.'
+originating_artifacts:
+  gur_ids:
+  - GUR-PKT-DMG-064-064-missile-discharge-r02
+  - GUR-PKT-UA-014-016-cavalier-r01
+  gur_paths:
+  - books/adnd1e/dmg/artifacts/gur/GUR-PKT-DMG-064-064-missile-discharge-r02.yaml
+  - books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-014-016-cavalier-r01.yaml
+  packet_paths:
+  - books/adnd1e/dmg/packets/claimed/PKT-DMG-064-064-missile-discharge/
+  - books/adnd1e/ua/packets/claimed/PKT-UA-014-016-cavalier/
+  related_decision: DEC-2026-0029, which commissioned both packets
+question: 'Both packets are recorded under a source_id whose registered provenance is ''legacy graph dump''.
+  That is false: the text was supplied fresh by the repository source steward. Should a source_id be registered
+  whose provenance names steward intake, and should the existing packets be re-pointed to it?'
+source_excerpt: 'rulesets/adnd1e/registries/sources.yaml records four source_ids, one per book, each with
+  provenance ''legacy graph dump''. DEC-2026-0029 prohibited_actions: "Do not use archive extraction batches,
+  legacy canonical data, endpoint names, or inference as source-read evidence."'
+local_graph_neighborhood:
+  registered_sources:
+  - phb-legacy-unspecified
+  - dmg-legacy-unspecified
+  - mm-legacy-unspecified
+  - ua-legacy-unspecified
+  why_it_matters_here_specifically: DEC-2026-0029 commissioned these two packets precisely to supply evidence
+    that is not legacy, and forbids legacy material as source-read evidence. A reader who takes source_id
+    at face value would conclude the opposite of what is true, on the one reading where that distinction
+    decides whether the work is admissible.
+  scope: The same mismatch sits under every PHB packet already integrated. This is the first packet where
+    the label actively contradicts the governing Decision, which is why it is raised now rather than earlier.
+affected_canonical_ids: []
+options_considered:
+- option: Register per-book steward source_ids and re-point the new packets
+  impact: Registry addition plus a manifest and GUR field change on the two new packets. Existing integrated
+    PHB work keeps its current source_id and the corpus carries two provenance classes, which is accurate.
+- option: Correct the provenance text on the four existing source_ids instead
+  impact: One registry edit and no packet changes, but it makes the field a lie in the other direction
+    for the genuinely legacy-derived rows, which are the large majority.
+- option: Leave as is and rely on the packet manifests
+  impact: No change. Both manifests and both GURs already carry a source_id_note recording the discrepancy
+    in full, so the risk is a reader who checks the registry and not the manifest.
+recommended_resolution: The first option. It is the only one that leaves both provenance claims true,
+  and the distinction it preserves is exactly the one DEC-2026-0029 turns on.
+expected_migration_impact: Registry addition of one source_id per book as needed. Field updates to two
+  packet manifests and two GURs, both pre-integration. No canonical row changes.
+governance_impact:
+  constitution_change: false
+  registry_change: true
+  profile_change: false
+blocking: Blocks no current artifact. Both packets are claimed and both GURs are ready for Builder under
+  the existing source_id, with the discrepancy recorded in the manifest and the GUR so the work cannot
+  be mistaken for legacy-derived.

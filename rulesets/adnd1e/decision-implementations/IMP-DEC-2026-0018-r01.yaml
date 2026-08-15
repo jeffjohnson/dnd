@@ -1,0 +1,111 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0018-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0018
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0018.yaml
+  checksum: sha256:32aa2cf7578886b60b729876eb7ae6d343744bf59963446fc8e46a7d2d26d7ae
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:7187c87c7339b02eb431956a7ca2114f0d7a410c1bf8f97eb6681961ca34cced
+- path: tooling/common/scan-agent-queues.ps1
+  checksum: sha256:fdb356ffc2f40d9a40237530b287ee6fd0a5b657b13d48e0f32054d814928d7c
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:d80b7a49c61b8618f757c11617f7b0c12e2815155543bce9fdfb736170f1f9fa
+- path: tooling/builder/src/adnd1e_builder/decision_migration.py
+  checksum: sha256:dad4e00f1bcc65812547b845f64ce4945b40106d989959a7baeb6158c89aff0c
+- path: tooling/builder/src/adnd1e_builder/emit.py
+  checksum: sha256:9df5e819b9d01da596c7e8962766402d4043fd521f9bf6a57da80d6c9aa71ae7
+- path: tooling/builder/src/adnd1e_builder/migration.py
+  checksum: sha256:3c452b65505e4b52788133d6ca3faf2439e483bed5d0cb99ae29a334807771dd
+- path: tooling/builder/tests/test_decision_migration.py
+  checksum: sha256:2fe6ed9c19262e2b5a899e1af9ea0f9e0afdb78c52af6389dc73a0fedf7c39c7
+- path: tooling/builder/src/adnd1e_builder/vocab.py
+  checksum: sha256:8cab2abe84c01cf8aa4a3b729cedcaf84a37e3c0fef8f504f53afb6494b0907a
+- path: tooling/builder/tests/test_registry_and_vocab.py
+  checksum: sha256:a6ae13d43e489fe211f2e9f71fc901c34a62db50daa3eb7e23fc4783d7b40843
+- path: schemas/common/gup.schema.json
+  checksum: sha256:5e0d8f5c6e85d6342500593e523ff6bc5d8a5a8146ff572e3c1db6daae714de5
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_valid_migration_is_one_reviewer_job_and_never_stale_gup_input
+    -> Ran 1 test in 0.015s OK
+- acceptance_test_index: 2
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_missing_decision_prevents_review,
+    test_scan_agent_queues.DecisionMigrationCase.test_non_approved_decision_prevents_review, test_scan_agent_queues.DecisionMigrationCase.test_wrong_ruleset_decision_prevents_review,
+    test_scan_agent_queues.DecisionMigrationCase.test_checksum_mismatch_prevents_review, test_scan_agent_queues.DecisionMigrationCase.test_decision_not_requiring_migration_prevents_review
+    -> Ran 5 tests in 0.074s OK
+- acceptance_test_index: 3
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_each_missing_envelope_field_prevents_review,
+    test_scan_agent_queues.DecisionMigrationCase.test_missing_canonical_checksum_prevents_review -> Ran
+    2 tests in 0.073s OK
+- acceptance_test_index: 4
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_a_gur_reference_disqualifies_a_decision_migration
+    -> Ran 1 test in 0.016s OK
+- acceptance_test_index: 5
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_invalid_migration_does_not_consume_its_decisions,
+    test_scan_agent_queues.MigrationReviewRoutingCase.test_an_unreviewed_stale_migration_still_republishes_its_decisions
+    -> Ran 2 tests in 0.029s OK
+- acceptance_test_index: 6
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_two_cross_packet_migrations_with_distinct_lineage_ids_are_independent
+    -> Ran 1 test in 0.021s OK
+- acceptance_test_index: 7
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_only_the_active_leaf_of_a_lineage_is_reviewer_ready,
+    test_scan_agent_queues.DecisionMigrationCase.test_a_reviewed_decision_migration_is_not_reviewer_ready
+    -> Ran 2 tests in 0.033s OK
+- acceptance_test_index: 8
+  result: passed
+  evidence: unit test test_scan_agent_queues.TestScannerParity.test_powershell_and_python_return_the_same_jobs_and_exit_code
+    -> Ran 1 test in 15.260s OK
+- acceptance_test_index: 9
+  result: passed
+  evidence: 'live repository check: GUP-MIG-DEC-2026-0015-0016-r02 validates against schemas/common/gup.schema.json
+    (0 errors) and names existing checksummed report build/reports/GUP-MIG-DEC-2026-0015-0016-r02.validation.json'
+- acceptance_test_index: 10
+  result: passed
+  evidence: 'live repository check: vocab.py and test_registry_and_vocab.py attribute 1.6 scaling to DEC-2026-0017
+    and page authority to SOURCE_MARKDOWN 1.1 / DEC-2026-0016'
+- acceptance_test_index: 11
+  result: passed
+  evidence: 'live repository check: newest packet GUP GUP-PKT-PHB-054-064-druid-spells-r01 declares artifact_kind
+    packet_update; GUP-MIG-DEC-2026-0007-r01 is absent from ready work and carries legacy_migration_spelling'
+- acceptance_test_index: 12
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_cross_book_store_produces_the_same_job_as_a_book_store
+    -> Ran 1 test in 0.016s OK
+- acceptance_test_index: 13
+  result: passed
+  evidence: 'live repository check: git status shows no modification to canonical, registry, Decision
+    or rNN=01 artifacts'
+validation:
+  passed: true
+  commands:
+  - command: C:\Users\Jeff\AppData\Local\Python\pythoncore-3.14-64\python.exe -m unittest discover -s
+      . -t .
+    exit_code: 0
+    result: passed
+    summary: Ran 161 tests in 23.827s OK
+  - command: C:\Users\Jeff\AppData\Local\Python\pythoncore-3.14-64\python.exe -m unittest discover -s
+      . -t .
+    exit_code: 0
+    result: passed
+    summary: Ran 354 tests in 14.382s OK
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: every Decision acceptance test is implemented and evidenced
+  blocking_ids: []

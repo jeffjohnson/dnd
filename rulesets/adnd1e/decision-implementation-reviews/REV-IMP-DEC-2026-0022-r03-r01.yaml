@@ -1,0 +1,54 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0022-r03-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0022-r03
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0022-r03.yaml
+  checksum: sha256:0a216b8906451a0a95a8bb549b79899133f5df60b118d09c44db227e5d0cf610
+decision_input:
+  id: DEC-2026-0022
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0022.yaml
+  checksum: sha256:ad74f5937d668c02544f8d610c2fae236e6022fdeb7f434f5f5b26366604923f
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: failed, evidence: "Live queue assigns REV-GUP-MIG-DEC-2026-0015-0016-r03-r01 to Analyst, contrary to the required exact handoff replacement."}
+  - {acceptance_test_index: 2, disposition: failed, evidence: "Live queue does not retain DEC-2026-0021 as a Builder decision-migration job."}
+  - {acceptance_test_index: 3, disposition: failed, evidence: "The two PHB polarity GURs are no longer separate Builder jobs; their approved r06 packet updates are already integrated."}
+  - {acceptance_test_index: 4, disposition: failed, evidence: "The cited money-equipment packet GUP is no longer Reviewer-visible; its Approved bundle is already integrated."}
+  - {acceptance_test_index: 5, disposition: verified, evidence: "The originating Review remains at its immutable path, has no git-status modification, and hashes to sha256:bd028559156952c2a4b863b7ca911ba4337b00e8e473b4c637e6b328310550df."}
+  - {acceptance_test_index: 6, disposition: verified, evidence: "Focused scanner suite passed mismatched-escalation-ID non-suppression coverage."}
+  - {acceptance_test_index: 7, disposition: verified, evidence: "Focused scanner suite passed mismatched-originating-path and free-text non-suppression coverage."}
+  - {acceptance_test_index: 8, disposition: verified, evidence: "Focused scanner suite passed superseded-originating-artifact non-suppression coverage."}
+  - {acceptance_test_index: 9, disposition: verified, evidence: "Focused scanner suite passed blocked replacement routing with no ready item."}
+  - {acceptance_test_index: 10, disposition: verified, evidence: "Focused scanner suite passed terminal replacement routing with no downstream item."}
+  - {acceptance_test_index: 11, disposition: verified, evidence: "Live queue retains the pre-existing decision_migration_lineage_error diagnostic."}
+  - {acceptance_test_index: 12, disposition: verified, evidence: "Focused scanner suite passed Python/PowerShell parity coverage."}
+  - {acceptance_test_index: 13, disposition: verified, evidence: "The complete common schema and queue suite passed 214 tests."}
+revision_findings:
+  - id: DEC-0022-LIVE-ACCEPTANCE-STATE-STALE
+    severity: blocking
+    required_action: >-
+      Reconcile the scanner's live handoff-replacement behavior with DEC-2026-0022
+      and reissue the implementation report with only currently true acceptance
+      results. Do not alter the immutable originating Review.
+    owner: builder
+independent_validation:
+  passed: false
+  commands:
+    - {command: "[cwd repository] python tooling/common/scan_agent_queues.py --root . --all", exit_code: 1, result: failed, summary: "Live queue violates DEC-2026-0022 acceptance tests 1 through 4 as recorded above."}
+    - {command: "[cwd tooling/common/tests] python -m unittest test_scan_agent_queues", exit_code: 0, result: passed, summary: "Ran 185 focused queue-scanner tests; all passed."}
+    - {command: "[cwd tooling/common/tests] python -m unittest discover -s . -p 'test_*.py' -t .", exit_code: 0, result: passed, summary: "Ran 214 common schema and queue tests; all passed."}
+overall_disposition: revision_required
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: Four live DEC-2026-0022 acceptance tests are false despite passing fixture regressions; Builder must reissue a report supported by current evidence.
+  blocking_ids: []

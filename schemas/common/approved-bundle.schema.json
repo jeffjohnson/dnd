@@ -2,10 +2,90 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.invalid/schemas/common/approved-bundle.schema.json",
   "title": "Approved Bundle Manifest",
-  "$comment": "contracts/WORK_QUEUES.md 1.0: an Approved bundle is one manifest plus its edge, node and report components. Components are never separate Integrator jobs, so the manifest is the single artifact that names them and pins their checksums.",
+  "$comment": "contracts/WORK_QUEUES.md 1.9: an Approved bundle is one manifest plus checksummed components. Packet updates use an edge CSV. Direct decision-migration models pin their exact reviewed GUP YAML and validation report, so an Integrator never invents operations from prose or an absent CSV.",
   "allOf": [
     {
       "$ref": "artifact-envelope.schema.json"
+    },
+    {
+      "if": {
+        "properties": {
+          "artifact_kind": {
+            "const": "decision_migration"
+          }
+        },
+        "required": [
+          "artifact_kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "operation_model"
+        ],
+        "properties": {
+          "operation_model": {
+            "enum": ["decision_migration_v1", "decision_migration_v2"]
+          },
+          "approves": {
+            "required": [
+              "review_id",
+              "review_checksum",
+              "gup_id",
+              "gup_checksum"
+            ]
+          },
+          "components": {
+            "maxItems": 2,
+            "allOf": [
+              {
+                "contains": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "const": "decision_migration"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "minContains": 1,
+                "maxContains": 1
+              },
+              {
+                "contains": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "const": "validation"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "minContains": 1,
+                "maxContains": 1
+              },
+              {
+                "not": {
+                  "contains": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "edges"
+                      }
+                    },
+                    "required": [
+                      "kind"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
     }
   ],
   "type": "object",
@@ -16,6 +96,18 @@
     "components"
   ],
   "properties": {
+    "artifact_kind": {
+      "enum": [
+        "packet_update",
+        "decision_migration"
+      ]
+    },
+    "operation_model": {
+      "enum": [
+        "decision_migration_v1",
+        "decision_migration_v2"
+      ]
+    },
     "id": {
       "type": "string",
       "pattern": "^APPROVED-GUP-.+-r[0-9]{2}-r[0-9]{2}$",
@@ -70,7 +162,8 @@
               "edges",
               "nodes",
               "report",
-              "validation"
+              "validation",
+              "decision_migration"
             ]
           },
           "path": {

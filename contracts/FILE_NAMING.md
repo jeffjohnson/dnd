@@ -1,6 +1,6 @@
 # File Naming and State
 
-**Version 1.3.**
+**Version 1.5.**
 
 Use stable identifiers rather than chat titles.
 
@@ -12,6 +12,8 @@ Review:       REV-<gup-id>-rNN
 Approved:     APPROVED-<gup-id>-rNN
 Escalation:   ESC-YYYY-MM-DDTHH.mm.ss.fffZ
 Decision:     DEC-YYYY-NNNN
+Implementation: IMP-<decision-id>-rNN
+Implementation Review: REV-<implementation-id>-rNN
 Integration:  INT-YYYYMMDD-NNN
 ```
 
@@ -26,6 +28,8 @@ APPROVED-GUP-PKT-DMG-070-071-helpless-targets-r01-r01.yaml
 APPROVED-GUP-PKT-DMG-070-071-helpless-targets-r01-r01.edges.csv
 ESC-2026-07-30T00.57.31.482Z.yaml
 DEC-2026-0042.yaml
+IMP-DEC-2026-0042-r01.yaml
+REV-IMP-DEC-2026-0042-r01-r01.yaml
 INT-20260727-003/
 ```
 
@@ -89,13 +93,37 @@ Artifact-kind folders do **not** represent pending work:
 - `artifacts/reviews`: immutable Review revisions
 - `artifacts/approved`: immutable Approved bundles
 - `artifacts/integrated`: immutable book-scoped integration copies
+- `rulesets/<ruleset-id>/decision-implementations`: immutable Builder reports
+  for non-migration Architect Decisions
+- `rulesets/<ruleset-id>/decision-implementation-reviews`: immutable Reviewer
+  dispositions of those reports
 
 Queue state is derived from revision and provenance lineage under
 `contracts/WORK_QUEUES.md`. Do not create `pending`, `processed`, or
 `superseded` subdirectories by moving published artifacts.
 
+### Architect Decision Reissues
+
+An Architect Decision reissue receives a new stable Decision ID, not an `-rNN`
+filename suffix. It records its position in the Decision lineage using the
+ordinary YAML envelope:
+
+```yaml
+id: DEC-YYYY-NNNN
+revision: 2
+supersedes: DEC-YYYY-NNNN
+```
+
+The predecessor file remains immutable at its original filename. See
+`contracts/WORK_QUEUES.md` for the conditions under which a Decision reissue is
+the active governance leaf.
+
 ## Version history
 
+- **1.5 - 2026-08-13:** Defined new-ID naming for immutable Architect Decision
+  reissues.
+- **1.4 - 2026-08-04:** Added ruleset-scoped Decision Implementation Report and
+  Implementation Review names and stores.
 - **1.3 - 2026-07-30:** Added `returned/` to the escalation state paths while
   preserving immutable IDs across state transitions.
 - **1.2 - 2026-07-30:** Added Approved bundle naming, explicit supersession, and

@@ -1,0 +1,150 @@
+schema_version: "1.0"
+id: ESC-2026-08-04T14.11.17.750Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-054-064-druid-spells
+constitution_version: "1.7"
+raised_by: reviewer
+raised_on: "2026-08-04"
+decision_owner: architect
+decision_id: DEC-2026-0024
+decided_on: "2026-08-04"
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Decide the canonical identity and migration for mistletoe before the six
+    preamble rows can be compiled against a neighborhood-clear node.
+  blocking_ids: []
+
+originating_artifacts:
+  packet:
+    id: PKT-PHB-054-064-druid-spells
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-054-064-druid-spells/packet.yaml
+    checksum: sha256:36b7997d2d3935084c90cbdc0817e75ced9948347a9f877f25805fd900bc9feb
+  source:
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-054-064-druid-spells/source.md
+    checksum: sha256:b448558b627645760f36c5fbbc299224b6c9e939d188c6acf94e67d1dd4a5a42
+  gur:
+    id: GUR-PKT-PHB-054-064-druid-spells-r01
+    path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-054-064-druid-spells-r01.yaml
+    checksum: sha256:381df04cbc98ec260800dfbe24bb741c23aca0ce647517f5c800737a15fe68b7
+  gup:
+    id: GUP-PKT-PHB-054-064-druid-spells-r01
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-054-064-druid-spells-r01.yaml
+    checksum: sha256:a5b2fa9f635f04744fe2621a9695c80154f41f494846cf2536e3089cf17111a7
+  review:
+    id: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01.yaml
+  canonical_snapshot:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:efc6b6efe3a4de9072081f3c18d68f44a2efda91e0acffce13a4946f568829c7
+  node_registry:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:df1a98e1eed7fcee87a27d6f3de6ae87dd76f915a6159536c5b528d174e30bc4
+
+question: >-
+  Should the PHB concept be registered as rule_mistletoe and canonical row
+  1502 be migrated from the class_druid endpoint labelled "Druid Mistletoe" to
+  that node, or does the ruleset require a different identity or representation
+  for druidic mistletoe?
+
+smallest_relevant_source_excerpt:
+  phb_page_54: >-
+    The source identifies mistletoe as the druid religious symbol and says
+    druid spells with material components assume its use; lesser substitutes
+    reduce spell effectiveness.
+  canonical_row_1502: >-
+    class_druid, labelled "Druid Mistletoe", DERIVED_FROM
+    spell_component_material, with aspect "consumed very slowly" (DMG 40).
+  canonical_row_2648: >-
+    rule_holy_symbol EXCLUDED_FROM spell_components, with aspect stating that
+    symbols and mistletoe are not consumed (DMG 41).
+
+local_graph_neighborhood:
+  proposed_node:
+    id: rule_mistletoe
+    label: Mistletoe
+    kind: rule
+    registry_state: absent
+    dependent_refs: [M1, M2, M3, M4, M5, M6]
+  canonical_rows:
+    - row: 183
+      assertion: rule_holy_symbol FEEDS_INTO rule_cleric_spells
+      relevance: Existing analogue for a religious symbol supplying a spell system.
+    - row: 446
+      assertion: rule_druid_spells CONSUMES spell_component_material
+      relevance: Existing aggregate material-component relationship for druid spells.
+    - row: 1502
+      assertion: class_druid DERIVED_FROM spell_component_material
+      source_label: Druid Mistletoe
+      relevance: >-
+        The endpoint ID resolves to the Druid class while the serialized label
+        and aspect describe mistletoe; the proposed node would expose two
+        identities for the same concept unless this row is governed.
+    - row: 2648
+      assertion: rule_holy_symbol EXCLUDED_FROM spell_components
+      relevance: Its aspect explicitly distinguishes symbols and mistletoe from consumed components.
+  proposed_packet_relationships:
+    - M1 attempts to classify Mistletoe as a Holy Symbol with DERIVED_FROM.
+    - M2 attempts to model mistletoe as a consumed resource.
+    - M3 through M6 model the effects of component quality.
+
+affected_canonical_ids:
+  - class_druid
+  - rule_mistletoe
+  - rule_druid_spells
+  - rule_holy_symbol
+  - spell_component_material
+  - spell_components
+
+options_considered:
+  - option: Approve rule_mistletoe as an isolated node and leave row 1502 unchanged
+    assessment: >-
+      rejected_identity_drift; the graph would retain a class_druid assertion
+      whose label names the newly registered concept.
+  - option: Reuse class_druid for the PHB mistletoe mechanic
+    assessment: >-
+      rejected_wrong_identity; a character class is not the graded material
+      component described on PHB 54.
+  - option: Register rule_mistletoe and migrate canonical row 1502 to that endpoint
+    assessment: >-
+      preferred_identity_repair; it gives the source concept one explicit node
+      and repairs the existing endpoint/label mismatch through an authorized
+      compare-and-swap migration.
+  - option: Defer all mistletoe identity work until a current DMG page-40 packet is claimed
+    assessment: >-
+      viable_but_blocking; the legacy canonical citation cannot be independently
+      reread today, but its endpoint/label mismatch is visible without
+      reinterpreting the legacy extraction.
+
+recommended_resolution: >-
+  Approve rule_mistletoe as the canonical identity for the graded druidic
+  component, authorize a compare-and-swap migration of canonical row 1502 from
+  class_druid/Druid Mistletoe to rule_mistletoe/Mistletoe while preserving its
+  other fields pending a claimed DMG source audit, and require the packet GUP to
+  record that Decision. Reject M1 because DERIVED_FROM does not express
+  classification. Independently revise M2 away from CONSUMES because canonical
+  row 2648 explicitly says mistletoe is not consumed; the existing
+  rule_holy_symbol FEEDS_INTO rule_cleric_spells neighborhood supports the
+  analogous rule_mistletoe FEEDS_INTO rule_druid_spells form.
+
+expected_migration_impact:
+  canonical_edges: 1
+  canonical_nodes: 1
+  registries: 1
+  approved_artifacts_invalidated: 0
+  packet_gup_revisions:
+    - register the decided mistletoe identity and Decision provenance
+    - compile or defer M2 through M6 under the decided identity
+  note: >-
+    The one canonical edge count is the row-1502 endpoint/label migration. The
+    node and registry counts describe the same new rule_mistletoe identity, not
+    two separate nodes.
+
+constitution_registry_or_profile_change:
+  constitution: false
+  registry: true
+  profile: false

@@ -1,0 +1,269 @@
+schema_version: "1.0"
+id: DEC-2026-0029
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Update the Builder governance assertion for GRAPH_INVARIANTS 1.1 and verify
+    the legacy-scope rule. The targeted source-reading work remains conditional
+    on external DMG and UA packet intake and must resume through the ordinary
+    packet lifecycle, not a replacement queue handoff.
+  blocking_ids: []
+
+decision_date: "2026-08-12"
+escalation_id: ESC-2026-08-12T15.47.52.687Z
+supplements: [DEC-2026-0027]
+
+question: >-
+  Does the one-to-four-word aspect cap and the prohibition on copied rule prose
+  retroactively invalidate the legacy 13-field migrated canonical rows that
+  predate Reviewer-governed source work, and how should the two candidate
+  assertion-key collisions be handled?
+
+ruling: >-
+  The current grain requirements bind every proposed GUP row and every revised
+  row. They do not retroactively invalidate a canonical row solely because its
+  aspect exceeds four words or repeats rule prose when its production lineage
+  is rooted in the pre-Review 13-field migration at
+  migrations/adnd1e/legacy-import/original/edges_master.csv. That exception is
+  historical conformance debt, not a license to carry a nonconforming aspect
+  into new or revised work. It applies only to the word-count and copied-prose
+  requirements; numeric and magnitude prohibitions remain universal.
+
+  No corpus-wide aspect rewrite is authorized. Mechanical truncation is
+  prohibited because it changes an assertion key while deciding, without source
+  reading, what facet the row asserts.
+
+  The two reported pairs are candidate identity collisions, not established
+  duplicate assertions. Their source texts must be read before any row is
+  changed. Existing PHB packets provide two loci; the repository source steward
+  must first supply conforming bounded DMG page 64 and UA page 15 packets. Once
+  those packets are claimed, Analyst determines separately whether each pair
+  states one facet or two. Only a source-backed ordinary lifecycle may revise,
+  retain, merge, or retire the affected assertions.
+
+rationale:
+  - >-
+    The escalation's count establishes substantial historical conformance debt,
+    but its measurement finds only two candidate groups among 4,115 normalized
+    endpoint-and-condition groups. The cost and semantic risk of re-deriving
+    1,919 aspects are disproportionate to the unproven present correctness
+    impact.
+  - >-
+    An aspect is part of the assertion key. Selecting a shorter phrase is an
+    interpretation of the cited rule and may merge or split assertions. Builder
+    cannot make that source judgment, and Architect does not extract source.
+  - >-
+    The two candidates span PHB with DMG and UA. The PHB source packets exist,
+    but DMG and UA source remains an external input dependency under DEC-2026-0027.
+    Legacy canonical text and extraction batches are not source-read evidence.
+  - >-
+    A provenance-bound exception keeps the requirement enforceable for new work
+    without pretending that unreviewed historical rows were authored under a
+    rule that did not govern their migration.
+
+legacy_conformance_scope:
+  governed_requirements:
+    - Constitution section 5: aspect is one to four words.
+    - GRAPH_INVARIANTS 11: copied rule prose is prohibited in aspect or condition.
+  root_provenance_path: migrations/adnd1e/legacy-import/original/edges_master.csv
+  eligible_rows: >-
+    Only rows whose first production lineage antecedent is the pre-Review,
+    13-field legacy import rooted at root_provenance_path. Eligibility is
+    provenance-based; it is not inferred from pass, row number, text length,
+    or visual similarity to historical data.
+  exception_limited_to:
+    - aspect word-count breaches
+    - copied rule prose in aspect or condition
+  never_exempt:
+    - magnitudes
+    - die expressions
+    - numeric bonuses
+    - threshold values
+    - any newly proposed or revised row
+  required_behavior_on_touch: >-
+    A source-backed revision must comply with the current grain requirements,
+    preserve immutable prior artifacts, and follow the normal Analyst, Builder,
+    Reviewer, and Integrator lifecycle. No worker may mechanically truncate or
+    silently normalize an excepted row.
+
+implementation_requirements:
+  builder_owned_files:
+    - tooling/builder/tests/test_registry_and_vocab.py
+  requirements:
+    - >-
+      Replace the hard-coded GRAPH_INVARIANTS 1.0 expectation with the current
+      1.1 version, and assert that the legacy migration conformance scope
+      preserves the current assertion-key delegation.
+    - >-
+      Add focused coverage that new or revised rows remain subject to the
+      one-to-four-word and copied-prose requirements, while the historical
+      exception is provenance-bound and cannot be inferred from pass, row
+      location, or aspect text.
+    - >-
+      Do not relax tooling validation for a nonconforming proposed GUP. The
+      existing grain validator remains the enforcement mechanism for new and
+      revised work.
+
+candidate_identity_investigation:
+  disposition: deferred_pending_conforming_source_packets
+  statement: >-
+    These pairs are candidates because their current assertion keys differ by
+    aspect with the same source ID, edge type, target ID, and empty condition.
+    They are not approved merges, and no row is changed by this Decision.
+  pair_1:
+    subject: equipment cost relationship
+    rows:
+      - source_id: sys_equipment
+        edge_type: CONSUMES
+        target_id: money_gp
+        aspect: acquisition cost at DM adjudication
+        condition: ""
+        book: DMG
+        page: "64"
+        section: MISSILE DISCHARGE
+      - source_id: sys_equipment
+        edge_type: CONSUMES
+        target_id: money_gp
+        aspect: purchase cost
+        condition: ""
+        book: PHB
+        page: "35"
+        section: EQUIPPING THE CHARACTER
+        packet_id: PKT-PHB-035-038-money-equipment
+    required_sources:
+      - existing claimed PHB packet PKT-PHB-035-038-money-equipment
+      - bounded incoming DMG packet covering printed page 64
+  pair_2:
+    subject: experience-level hit-point relationship
+    rows:
+      - source_id: exp_level
+        edge_type: MODIFIES
+        target_id: rule_hit_points
+        aspect: different dice if entering via the ranks
+        condition: ""
+        book: UA
+        page: "15"
+        section: CAVALIERS TABLE I
+      - source_id: exp_level
+        edge_type: MODIFIES
+        target_id: rule_hit_points
+        aspect: hit dice gained
+        condition: ""
+        book: PHB
+        page: "34"
+        section: CHARACTER HIT POINTS
+        packet_id: PKT-PHB-033-035-alignment-hp-languages
+    required_sources:
+      - existing claimed PHB packet PKT-PHB-033-035-alignment-hp-languages
+      - bounded incoming UA packet covering printed page 15
+  analyst_question: >-
+    For each pair, identify from the two supplied loci whether the rules assert
+    the same affected facet under the same condition, or separate facets. Do
+    not infer identity from endpoints, labels, or legacy aspect wording. State
+    a conforming one-to-four-word aspect only where source supports it.
+  permitted_outcomes_after_source_reading:
+    - retain both assertions with distinct conforming facets or conditions
+    - revise one or both assertions to conforming source-backed facets
+    - merge duplicate assertions through approved normal lifecycle
+    - retire an unsupported or duplicate assertion through approved normal lifecycle
+  prohibited_before_source_reading:
+    - changing, merging, retiring, or de-duplicating any listed canonical row
+    - using legacy canonical rows or archive extraction batches as source-read evidence
+    - mechanically truncating either aspect
+
+affected_contracts_and_registries:
+  contracts:
+    - contracts/GRAPH_INVARIANTS.md
+    - contracts/SOURCE_MARKDOWN.md
+  tooling:
+    - tooling/builder/tests/test_registry_and_vocab.py
+  registries: []
+  schemas: []
+  governance_files: []
+  canonical_files: []
+  packet_artifacts:
+    - books/adnd1e/phb/packets/claimed/PKT-PHB-033-035-alignment-hp-languages/packet.yaml
+    - books/adnd1e/phb/packets/claimed/PKT-PHB-035-038-money-equipment/packet.yaml
+
+migration_required: false
+migration_scope:
+  architect_writes: contract_and_decision_only
+  immediate_canonical_rows_changed: 0
+  registry_rows_changed: 0
+  nodes_added: 0
+  nodes_retired: 0
+  approved_assertions_rewritten: 0
+  deferred_source_dependent_rows: 4
+  deferred_outcome: >-
+    Zero to four listed rows may later change only if source-backed Analyst work
+    proves an actual identity or assertion defect. This Decision authorizes no
+    corpus-wide conformance rewrite.
+
+acceptance_tests:
+  - >-
+    GRAPH_INVARIANTS is version 1.1 and scopes the aspect-word-count and copied
+    prose requirements by legacy-import provenance while preserving the numeric
+    prohibitions for every row.
+  - >-
+    Builder validation rejects a five-word or copied-prose aspect in every new
+    or revised GUP row, including a revision of a provenance-excepted legacy row.
+  - >-
+    No canonical row changes solely because it is counted among the 1,919
+    historical word-count breaches, and no GUP uses mechanical truncation to
+    produce a conforming aspect.
+  - >-
+    The candidate investigation uses the exact two pairs and four loci named in
+    this Decision. It makes no endpoint-only identity inference and changes no
+    row before conforming DMG page 64 and UA page 15 packets are claimed.
+  - >-
+    After those packets are available, any correction is source-backed,
+    individually reviewed, checksummed, and integrated through the ordinary
+    lifecycle; it does not use a bulk decision migration.
+  - >-
+    Builder updates the governed GRAPH_INVARIANTS assertion and focused
+    legacy-scope coverage in tooling/builder/tests/test_registry_and_vocab.py;
+    the complete Builder and common test suites pass.
+  - All applicable contract, schema, queue, and repository validations pass.
+
+constitution_version_impact:
+  changed: false
+  version: "1.7"
+  reason: >-
+    The Constitution's grain requirements remain unchanged. GRAPH_INVARIANTS
+    now records their non-retroactive, provenance-bound application to the
+    earlier unreviewed migration corpus.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Update the governed GRAPH_INVARIANTS test and add the required focused legacy-scope coverage.
+    - Run the complete Builder and common test suites and publish the Decision Implementation Report.
+    - Keep enforcing current grain validation for all new and revised GUP rows.
+    - Do not mechanically truncate or rewrite a legacy aspect.
+  repository_source_steward:
+    - Supply lawful bounded incoming Pandoc Markdown packets for DMG printed page 64 and UA printed page 15.
+    - Do not use legacy extraction batches, reconstructed prose, or canonical rows as packet source text.
+  analyst:
+    - After the two packets are claimed, perform the two source comparisons specified above.
+    - Publish source-backed GUR revisions only for the rows that the reading proves require action.
+  reviewer:
+    - Verify any later correction against both cited source loci and the current grain requirements.
+  integrator:
+    - Apply only later Approved packet-update bundles; this Decision changes no canonical row directly.
+
+prohibited_actions:
+  - Do not treat a legacy pass value, line number, or long aspect by itself as proof of exception eligibility.
+  - Do not weaken the four-word cap or copied-prose prohibition for new or revised work.
+  - Do not launch a corpus-wide cleanup or decision migration for the 1,919 historical rows.
+  - Do not change the four candidate rows until claimed DMG and UA packets support a fresh reading.
+  - Do not use archive extraction batches, legacy canonical data, endpoint names, or inference as source-read evidence.
+  - Architect does not edit canonical graph, registry, GUR, GUP, Review, Approved, or Integration artifacts.

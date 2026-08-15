@@ -109,15 +109,34 @@ def check_field(field_name: str, value: str) -> list[dict[str, str]]:
 
 
 def check_aspect_length(value: str) -> list[dict[str, str]]:
-    """Section 5 caps `aspect` at four words. Advisory, not an invariant."""
+    """Section 5 caps `aspect` at four words, and that is an invariant.
+
+    This was graded advisory, on the reading that an overlong facet is untidy
+    rather than wrong. Two things say otherwise. Invariant 11 forbids copied
+    rule prose in `aspect`, and length is the only mechanical signature of it
+    this module has -- a Reviewer blocked three packets in one pass for
+    "aspects of five to nine words copied from the source", which is that
+    invariant, found by hand, after the compiler had already measured it and
+    called it a warning. And `aspect` is part of the assertion key in section
+    5, so a prose aspect is not cosmetic: two edges asserting the same facet in
+    different words read as distinct assertions and both enter production.
+
+    A Builder cannot fix this. Rewording a facet is reading the source, which
+    is the Analyst's to do. What the Builder owes is to stop declaring such a
+    patch approval-ready.
+    """
     words = (value or "").split()
     if len(words) > ASPECT_MAX_WORDS:
         return [
             {
                 "rule": "aspect_word_count",
-                "severity": "warning",
+                "severity": "error",
                 "field": "aspect",
-                "detail": f"aspect is {len(words)} words, constitution section 5 says 1-4: {value!r}",
+                "detail": (
+                    f"aspect is {len(words)} words, constitution section 5 says 1-4: {value!r}. "
+                    f"An aspect this long is copied prose rather than a named facet "
+                    f"(invariant 11), and aspect is part of the assertion key."
+                ),
             }
         ]
     return []

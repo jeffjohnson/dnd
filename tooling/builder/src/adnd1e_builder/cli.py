@@ -108,8 +108,9 @@ def plan_decision_migration(args) -> int:
     root: Path = args.repo_root.resolve()
     ruleset_root = root / "rulesets" / args.ruleset
     canonical_path = ruleset_root / "canonical" / "edges_master.csv"
+    registry_path = ruleset_root / "registries" / "nodes.csv"
     canonical = CanonicalEdges.load(canonical_path)
-    registry = NodeRegistry.load(ruleset_root / "registries" / "nodes.csv")
+    registry = NodeRegistry.load(registry_path)
 
     plan = plan_from_decisions(
         canonical, list(args.decision), registry, repo_root=root, ruleset_id=args.ruleset
@@ -143,19 +144,33 @@ def plan_decision_migration(args) -> int:
         "canonical_rows_read": len(canonical.rows),
         "validation_report": str(report_path.relative_to(root)).replace("\\", "/"),
         "validation_report_checksum": "",
+        # The registry is the second baseline a direct migration writes to.
+        # Recorded unconditionally so the numbers in a report and a GUP always
+        # come from the same read, and consumed only by the direct model.
+        "registry_source": str(registry_path.relative_to(root)).replace("\\", "/"),
+        "registry_checksum": f"sha256:{sha256_of(registry_path)}",
+        "registry_rows_read": len(registry.nodes),
     }
 
     tool = {"name": TOOL_NAME, "version": TOOL_VERSION}
     # The report is written first because the GUP pins it by checksum. Doing it
     # the other way round would mean hashing a file that does not exist yet.
-    report = validation_report(plan, gup_id, envelope, tool, test_result)
+    report = validation_report(
+        plan, gup_id, envelope, tool, test_result, operation_model=args.operation_model
+    )
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n"
     )
     envelope["validation_report_checksum"] = f"sha256:{sha256_of(report_path)}"
 
-    document = to_gup(plan, gup_id, envelope, tool, test_result)
+    try:
+        document = to_gup(
+            plan, gup_id, envelope, tool, test_result, operation_model=args.operation_model
+        )
+    except ValueError as mismatch:
+        print(str(mismatch), file=sys.stderr)
+        return 2
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(_dump(document), encoding="utf-8", newline="\n")
 
@@ -415,6 +430,12 @@ def main(argv: list[str] | None = None) -> int:
         type=int,
         help="GUP revision number; defaults to the GUR's revision",
     )
+    compile_cmd.add_argument(
+        "--allow-overwrite",
+        action="store_true",
+        help="rewrite a revision that already exists. Only for a revision nothing has "
+        "consumed; a Review may already pin the published checksum.",
+    )
 
     pages_cmd = sub.add_parser(
         "verify-pages",
@@ -446,6 +467,13 @@ def main(argv: list[str] | None = None) -> int:
     dec_cmd.add_argument("--lineage-id", default="",
                          help="stable across revisions; defaults to MIG-<decision ids>")
     dec_cmd.add_argument("--revision", type=int, default=1)
+    dec_cmd.add_argument(
+        "--operation-model",
+        choices=["decision_migration_v1", "decision_migration_v2"],
+        default=None,
+        help="declare the WORK_QUEUES 1.8 direct operation model. Refused when the "
+        "plan contains an operation the model does not execute.",
+    )
     dec_cmd.add_argument("--supersedes", default="")
     dec_cmd.add_argument("--book", default="phb")
     dec_cmd.add_argument("--source-id", default="phb-legacy-unspecified")
@@ -527,7 +555,13 @@ def main(argv: list[str] | None = None) -> int:
             gur_path, directives=directives, revision=revision, supersedes=supersedes
         )
         report_dir = root / "build" / "reports"
-        written = write_all(result, gup_dir, report_dir, test_result)
+        try:
+            written = write_all(
+                result, gup_dir, report_dir, test_result, allow_overwrite=args.allow_overwrite
+            )
+        except FileExistsError as clash:
+            print(str(clash), file=sys.stderr)
+            return 2
 
         print(
             f"{result.gup_id}: status={result.status} "

@@ -1,0 +1,64 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0018-r11-r02
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: "1.8"
+revision: 2
+supersedes: REV-IMP-DEC-2026-0018-r11-r01
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0018-r11
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0018-r11.yaml
+  checksum: sha256:167658e73c1ce18c352431e9d6030c6f9f89442e8026ecfb889847fdfca2e084
+decision_input:
+  id: DEC-2026-0018
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0018.yaml
+  checksum: sha256:32aa2cf7578886b60b729876eb7ae6d343744bf59963446fc8e46a7d2d26d7ae
+implementation_inventory:
+  declared_files: 10
+  checksum_matches: 3
+  checksum_mismatches:
+    - tooling/common/scan_agent_queues.py
+    - tooling/common/tests/test_scan_agent_queues.py
+    - tooling/builder/src/adnd1e_builder/decision_migration.py
+    - tooling/builder/src/adnd1e_builder/emit.py
+    - tooling/builder/tests/test_decision_migration.py
+    - tooling/builder/src/adnd1e_builder/vocab.py
+    - tooling/builder/tests/test_registry_and_vocab.py
+  noncanonical_scope: requires_reissued_report
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: "The current Builder suite passes and retains Decision-migration coverage."}
+  - {acceptance_test_index: 2, disposition: verified, evidence: "The current Builder suite passes and retains invalid-provenance coverage."}
+  - {acceptance_test_index: 3, disposition: verified, evidence: "The current Builder suite passes and retains envelope/checksum-rejection coverage."}
+  - {acceptance_test_index: 4, disposition: verified, evidence: "The current Builder suite passes and retains GUR-provenance disqualification coverage."}
+  - {acceptance_test_index: 5, disposition: verified, evidence: "The current Builder suite passes and retains stale-migration routing coverage."}
+  - {acceptance_test_index: 6, disposition: verified, evidence: "The current Builder suite passes and retains independent cross-packet lineage coverage."}
+  - {acceptance_test_index: 7, disposition: verified, evidence: "The current Builder suite passes and retains active-leaf routing coverage."}
+  - {acceptance_test_index: 8, disposition: failed, evidence: "The current common suite has unrelated active-artifact failures, so its full independent validation cannot be reported as passing."}
+  - {acceptance_test_index: 9, disposition: verified, evidence: "Builder suite: Ran 435 tests in 38.466s, OK."}
+  - {acceptance_test_index: 10, disposition: failed, evidence: "The report's file inventory is stale, so its claimed current vocabulary attribution cannot be approved as a checksummed implementation result."}
+  - {acceptance_test_index: 11, disposition: failed, evidence: "The implementation report no longer pins the current scanner and emitter state used by live packet-update queue behavior."}
+  - {acceptance_test_index: 12, disposition: failed, evidence: "The report's scanner checksum is stale; its former parity evidence is no longer a current implementation record."}
+  - {acceptance_test_index: 13, disposition: failed, evidence: "Seven of ten declared implementation-file checksums are stale."}
+independent_validation:
+  passed: false
+  commands:
+    - {command: "[cwd D:/analysis/dnd] python -m unittest discover -s tooling/common/tests -p 'test_common_schemas.py'", exit_code: 1, result: failed, summary: "Ran 30 tests; unrelated failures remain in the prior r01 Review schema and an Analyst-owned UA GUR handoff."}
+    - {command: "[cwd D:/analysis/dnd] PYTHONPATH=tooling/builder/src python -m unittest discover -s tooling/builder/tests -p 'test_*.py'", exit_code: 0, result: passed, summary: "Ran 435 tests in 38.466s: OK."}
+overall_disposition: revision_required
+revision_required:
+  owner: builder
+  exact_action: >-
+    Publish the next implementation-report revision with a current checksum for
+    every declared file, current acceptance evidence, and no claim that a
+    failed common suite passed. Do not rewrite IMP-DEC-2026-0018-r11 or its
+    prior Review revisions.
+  reviewer_structural_correction: >-
+    This r02 supersedes the schema-invalid r01 and omits its unsupported
+    independent_validation.spot_check property.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: Reissue the stale implementation report with a current inventory and validation evidence.
+  blocking_ids: []

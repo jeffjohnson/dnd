@@ -1,0 +1,118 @@
+schema_version: "1.0"
+id: ESC-2026-08-14T15.40.47.819Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.8"
+revision: 1
+supersedes: null
+decision_id: DEC-2026-0035
+decided_on: "2026-08-14"
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    GUP-MIG-DEC-2026-0024-0025-r04 faithfully implements the four governing
+    Decisions, but no current Approved-bundle encoding can ask the Integrator
+    to execute its node retirement/replacement and canonical-row removal.
+  blocking_ids: []
+
+origin:
+  gup_id: GUP-MIG-DEC-2026-0024-0025-r04
+  gup_path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-0025-r04.yaml
+  gup_checksum: sha256:fd5eb12b545d7d241dfeb9777de786e4aaf6be61a8f6d30f4dd48feb62292e6e
+  review_id: REV-GUP-MIG-DEC-2026-0024-0025-r04-r01
+  authority_decisions:
+    - {id: DEC-2026-0024, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0024.yaml}
+    - {id: DEC-2026-0025, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0025.yaml}
+    - {id: DEC-2026-0026, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0026.yaml}
+    - {id: DEC-2026-0031, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0031.yaml}
+
+originating_artifacts:
+  gup:
+    id: GUP-MIG-DEC-2026-0024-0025-r04
+    path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-0025-r04.yaml
+  review:
+    id: REV-GUP-MIG-DEC-2026-0024-0025-r04-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-MIG-DEC-2026-0024-0025-r04-r01.yaml
+
+question: >-
+  What approved-bundle operation model authorizes the Integrator to apply the
+  exact combined migration: one new registry node, two registry/node identity
+  replacements, five endpoint repoints, and one canonical-row removal?
+
+source_excerpt:
+  - path: books/adnd1e/phb/packets/claimed/PKT-PHB-054-064-druid-spells/source.md
+    locus: "PHB 54, Notes Regarding Druid (Cleric) Spells"
+    text: >-
+      Greater mistletoe is the properly harvested default; lesser and borrowed
+      mistletoe, holly, and oak leaves are separately named alternatives.
+  - path: books/adnd1e/phb/packets/claimed/PKT-PHB-054-064-druid-spells/source.md
+    locus: "PHB 59, Call Woodland Beings"
+    text: "The claimed packet heading is plural: Call Woodland Beings."
+  - path: books/adnd1e/phb/packets/claimed/PKT-PHB-117-119-bards/source.md
+    locus: "PHB 119, miscellaneous musical magic items"
+    text: "The claimed packet names Pipes of the Sewer."
+
+verified_migration_scope:
+  canonical_baseline:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:0058d1a5fc566d6668a0a61cd748dfeb6127333a6da3d63274f7a575eb0f6894
+    rows: 4133
+  registry_addition:
+    id: rule_greater_mistletoe
+    label: Greater Mistletoe
+    kind: rule
+  identity_replacements:
+    - {retired_id: spell_call_woodland_being, canonical_id: spell_call_woodland_beings, rows: [2664, 2665, 2666]}
+    - {retired_id: item_pipes_sewers, canonical_id: item_pipes_sewer, rows: [2479, 2480]}
+  canonical_removal:
+    row: 1502
+    replacement_edge: null
+  independent_checks:
+    before_images_match_current_canonical: true
+    all_retired_incident_endpoints_enumerated: true
+    resulting_five_field_key_collisions: 0
+    resulting_retired_endpoints: 0
+    nonidentity_changes: 0
+
+integration_capability_gap:
+  current_bundle_discovery: >-
+    tooling/integrator/src/adnd1e_integrator/bundles.py refuses every manifest
+    without a companion .edges.csv component.
+  current_operation_model: >-
+    tooling/integrator/src/adnd1e_integrator/operations.py supports additions,
+    pending additions, and edge-CSV compare-and-swap updates only. It has no
+    representation for registry/node identity replacement or canonical-row
+    removal.
+  consequence: >-
+    An Approved manifest for r04 could not be discovered or applied
+    mechanically. Publishing one would violate the Reviewer completion
+    condition by leaving the Integrator to invent an execution path.
+
+options_considered:
+  - option: Approve r04 with a prose mechanical_application section.
+    impact: The current Integrator ignores it and still rejects the bundle; no executable job exists.
+  - option: Encode the migration as ordinary edge updates alone.
+    impact: Cannot remove row 1502 or retire/replace registry and canonical-node identities.
+  - option: Architect defines an approved decision-migration bundle/applier operation set.
+    impact: Preserves the exact bounded Decision scope and gives Builder and Integrator a testable, non-interpretive path.
+
+recommended_resolution: >-
+  Define and assign the smallest executable decision-migration operation set for
+  exact registry addition, identity replacement/retirement, endpoint repoint,
+  and exact canonical-row removal. Require Builder to reissue r04 in that
+  representation and Integrator to validate it transactionally before a
+  subsequent Reviewer approval.
+expected_migration_impact:
+  registry_rows_added: 1
+  registry_rows_replaced: 2
+  canonical_endpoint_repoints: 5
+  canonical_rows_removed: 1
+  relationship_semantics_reinterpreted: 0
+  aliases_created: 0
+governance_change_required: true
+constitution_change_required: false
+registry_change_required: true

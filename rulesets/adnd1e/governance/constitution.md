@@ -1,6 +1,6 @@
 # Graph Constitution — AD&D 1e Mechanical Relationship Graph
 
-**Version 1.7.** This document is authoritative. Any conversation producing graph
+**Version 1.8.** This document is authoritative. Any conversation producing graph
 data must follow it exactly. If a rule here conflicts with a habit from another
 conversation, this document wins. Changes to this file are made only by the
 Architect conversation.
@@ -60,7 +60,7 @@ a general rule with that scope; inherited edges then follow section 7.1.
 
 | Prefix | Kind | Example |
 |---|---|---|
-| `abil_` | ability score | `abil_constitution` |
+| `abil_` | ability score or derived ability mechanic | `abil_constitution` |
 | `class_` | character class | `class_paladin` |
 | `race_` | race or subrace | `race_half_elf` |
 | `rule_` | named rule or procedure | `rule_system_shock` |
@@ -84,12 +84,26 @@ a general rule with that scope; inherited edges then follow section 7.1.
 | `money_` | currency | `money_gp` |
 | `prof_` | proficiency | `prof_specialization` |
 | `wpn_` | weapon property or weapon statistic | `wpn_speed_factor` |
+| `weapon_` | mundane weapon, weapon category, or source-named weapon family | `weapon_lance` |
 | `thief_` | thief skill | `thief_open_locks` |
 
 Use a plural or otherwise category-specific stem when a source assertion applies
 to a spell family rather than one spell. A family node and a specific spell are
 different identities; for example, `spell_fire_spells` does not broaden or alias
 `spell_fireball`.
+
+For a derived ability mechanic, use
+`abil_<three-letter ability abbreviation>_<snake_case rule name>`. The approved
+ability abbreviations are `str`, `dex`, `con`, `int`, `wis`, and `cha`; for
+example, `abil_dex_reaction_adjustment` and `abil_str_exceptional`. Full-name
+base-score identities such as `abil_strength` and `abil_dexterity` remain
+unchanged. The abbreviated form is for the mechanic derived from a score, not a
+replacement spelling for the score itself.
+
+`weapon_` names the mundane weapon identity. `wpn_` remains reserved for a
+weapon property or statistic, such as range, speed factor, or weight. Do not use
+`item_` for a mundane weapon merely because it is equipment: `item_` remains
+the magic-item and item-class namespace.
 
 ### 3.2 Canonical registry
 

@@ -1,0 +1,59 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0018-r04-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0018-r04
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0018-r04.yaml
+  checksum: sha256:077de6b00d6414407c9919d1b0060cf67bf3df21a8f96d26b4d132db42882739
+decision_input:
+  id: DEC-2026-0018
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0018.yaml
+  checksum: sha256:32aa2cf7578886b60b729876eb7ae6d343744bf59963446fc8e46a7d2d26d7ae
+implementation_inventory:
+  declared_files: 10
+  checksum_matches: 10
+  noncanonical_scope: verified
+structural_findings:
+  - severity: blocking
+    path: validation
+    finding: >-
+      The decision-implementation schema permits only passed and commands in
+      validation. The report adds validation_report and
+      validation_report_checksum, so it is not schema-valid.
+    required_correction: >-
+      Publish r05 superseding r04 and remove validation.validation_report and
+      validation.validation_report_checksum; retain the passed validation
+      commands and their outcomes.
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: "Focused queue-scanner suite passed the conforming decision-migration Reviewer-routing case without stale_gup_input."}
+  - {acceptance_test_index: 2, disposition: verified, evidence: "Focused queue-scanner suite passed missing, status, ruleset, checksum, and migration-requirement Decision-provenance rejection cases."}
+  - {acceptance_test_index: 3, disposition: verified, evidence: "Focused queue-scanner suite passed missing decision-migration envelope and canonical-checksum rejection cases."}
+  - {acceptance_test_index: 4, disposition: verified, evidence: "Focused queue-scanner suite passed the decision-migration GUR-provenance disqualification case."}
+  - {acceptance_test_index: 5, disposition: verified, evidence: "Focused queue-scanner suite passed invalid-migration and stale-baseline routing, retaining authority Decisions as Builder work."}
+  - {acceptance_test_index: 6, disposition: verified, evidence: "Focused queue-scanner suite passed distinct cross-packet decision-migration lineage coverage."}
+  - {acceptance_test_index: 7, disposition: verified, evidence: "Focused queue-scanner suite passed active-leaf-only and reviewed-migration suppression coverage."}
+  - {acceptance_test_index: 8, disposition: verified, evidence: "Focused queue-scanner suite passed Python/PowerShell parity coverage."}
+  - {acceptance_test_index: 9, disposition: verified, evidence: "Full Builder suite passed current decision-migration schema and validation-component coverage."}
+  - {acceptance_test_index: 10, disposition: verified, evidence: "Full Builder suite passed governance attribution coverage for Constitution 1.6 scaling and SOURCE_MARKDOWN page authority."}
+  - {acceptance_test_index: 11, disposition: verified, evidence: "Live queue scan classifies current packet GUPs as packet_update and retains the legacy identity_merge_migration diagnostic outside Reviewer readiness."}
+  - {acceptance_test_index: 12, disposition: verified, evidence: "Focused queue-scanner suite passed equivalent book-store and cross-book-store discovery coverage."}
+  - {acceptance_test_index: 13, disposition: verified, evidence: "All ten declared implementation-file SHA-256 values match and the declared inventory contains no canonical, registry, Decision, or r01 artifact."}
+independent_validation:
+  passed: false
+  commands:
+    - {command: "[cwd D:/analysis/dnd] local Draft202012Validator report check", exit_code: 1, result: failed, summary: "IMP-DEC-2026-0018-r04 has two unexpected validation properties: validation_report and validation_report_checksum."}
+    - {command: "[cwd tooling/common/tests] python -m unittest test_scan_agent_queues", exit_code: 0, result: passed, summary: "Ran 188 focused queue-scanner tests; all passed."}
+    - {command: "[cwd tooling/common/tests] python -m unittest discover -s . -p 'test_*.py' -t .", exit_code: 0, result: passed, summary: "Ran 217 common schema and queue tests; all passed."}
+    - {command: "[cwd tooling/builder/tests] PYTHONPATH=../src python -m unittest discover -s . -p 'test_*.py' -t .", exit_code: 0, result: passed, summary: "Ran 370 Builder compiler, migration, registry, vocabulary, and schema tests; all passed."}
+overall_disposition: revision_required
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: The implementation behavior is independently verified, but r04 itself is structurally invalid under the declared report schema.
+  blocking_ids: []

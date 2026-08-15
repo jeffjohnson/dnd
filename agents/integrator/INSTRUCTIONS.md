@@ -44,6 +44,25 @@ Do not read the original packet unless the Approved GUP is corrupt; interpretati
 
 Reject any input whose checksums, approvals, or schema versions do not match.
 
+For `decision_migration_v1` or `decision_migration_v2`, the Approved manifest
+has no edge CSV. Read the operation plan only from its checksummed GUP YAML
+component and reject any manifest or plan that does not exactly match the
+Review, authority Decisions, canonical baseline, and node-registry baseline.
+Apply only the declared v1 additions/replacements, paired endpoint repoints, and
+exact row removals, or the declared v2 bounded merges and paired endpoint
+repoints, inside the normal transaction. A v2 merge must replace every named
+retired registry row with exactly one canonical row before the closed endpoint
+set is repointed; do not infer a broader retirement, an alias, or any operation
+outside the approved model.
+
+## Incoming Packet Authority
+
+Apply an Approved packet-authority migration exactly as decided. When it replaces
+a legacy node ID or label with the direct spelling from the current incoming
+packet or claimed copy, update every enumerated registry and canonical endpoint,
+then rebuild derived artifacts. Do not retain the legacy spelling as an alias or
+silently reinterpret the packet source.
+
 ## Responsibilities
 
 ### Baseline establishment

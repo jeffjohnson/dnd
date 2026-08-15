@@ -1,0 +1,154 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0023-r01-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0023-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0023-r01.yaml
+  checksum: sha256:8f18bb2cdf8c8e7d059b4ddc63a670683eebb53429d34da60cea0450523652c9
+decision_input:
+  id: DEC-2026-0023
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0023.yaml
+  checksum: sha256:8be0df954bdfaab576086c36ee03045ded38e9901140d70cf7b3686819abffa7
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      ARTIFACT_LIFECYCLE.md declares Version 1.3 and defines both implementation
+      artifacts, their stores, lifecycle, and schemas.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      FILE_NAMING.md declares Version 1.4 and defines both immutable artifact
+      names and ruleset-scoped stores.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      WORK_QUEUES.md declares Version 1.4 and defines Builder report, independent
+      Review, revision, consumption, diagnostic, and role-queue behavior.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: REPOSITORY_STRUCTURE.md names both ruleset-scoped append-only stores.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      Draft202012Validator accepted both new schemas; direct validation produced
+      zero schema errors for each of the four active implementation reports.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: >-
+      A focused regression produced exactly one Builder job for an unconsumed,
+      approved, ready non-migration Decision.
+  - acceptance_test_index: 7
+    disposition: verified
+    evidence: >-
+      A focused regression produced one Reviewer job for a valid approval-ready
+      active report and suppressed the separate Decision job.
+  - acceptance_test_index: 8
+    disposition: verified
+    evidence: >-
+      A focused partial-report regression withheld Reviewer routing and retained
+      the Decision as Builder work.
+  - acceptance_test_index: 9
+    disposition: verified
+    evidence: >-
+      Focused report regressions rejected stale Decision provenance, mismatched
+      paths, missing or stale implementation files, repeated or out-of-range
+      acceptance indices, and a failed approval-ready result.
+  - acceptance_test_index: 10
+    disposition: verified
+    evidence: >-
+      A focused regression produced one Builder implementation-revision job from
+      a revision-required Review with no duplicate Decision job.
+  - acceptance_test_index: 11
+    disposition: failed
+    evidence: >-
+      The scanner consumes any schema-shaped approved Review grouped by report
+      ID without verifying reviewed_implementation.path/checksum or the repeated
+      Decision provenance. In an isolated fixture, replacing the Review's report
+      checksum with sha256:0000000000000000000000000000000000000000000000000000000000000000
+      still yielded no ready Decision, no Reviewer job, and no diagnostic. Exact
+      provenance is therefore not enforced as the Decision's only consumption
+      boundary.
+  - acceptance_test_index: 12
+    disposition: verified
+    evidence: >-
+      An independent audit matched each report's acceptance indices exactly to
+      its Decision: 0018=1..13, 0020=1..11, 0022=1..13, and 0023=1..16.
+  - acceptance_test_index: 13
+    disposition: verified
+    evidence: >-
+      Reviewer independently dispositioned every acceptance index in all four
+      active implementation lineages and published one Review per report; the
+      DEC-2026-0023 lineage is returned for the independently found defect.
+  - acceptance_test_index: 14
+    disposition: verified
+    evidence: >-
+      TestScannerParity independently matched Python and PowerShell jobs,
+      diagnostics, components, and exit code.
+  - acceptance_test_index: 15
+    disposition: verified
+    evidence: >-
+      The complete common suite passed 161 tests earlier in this Review run;
+      the focused 81-test lineage, schema, and parity subset also passed.
+  - acceptance_test_index: 16
+    disposition: verified
+    evidence: >-
+      The implementation report names only shared queue tooling and its tests;
+      it does not name or authorize changes to canonical graph, registry, GUR,
+      GUP, Review, Approved, or prior Decision artifacts.
+required_revisions:
+  - finding_id: F-DEC0023-REVIEW-PROVENANCE
+    acceptance_test_index: 11
+    exact_action: >-
+      Before an implementation Review changes queue state, validate that it is
+      the active Review leaf for the exact active report; that
+      reviewed_implementation ID, path, and SHA-256 checksum match that report;
+      that decision_input ID, path, and SHA-256 checksum match the report and
+      immutable Decision; and that its dispositions, independent validation,
+      overall disposition, and handoff satisfy WORK_QUEUES 1.4. An invalid or
+      stale Review must emit a diagnostic and must not consume the Decision or
+      suppress the valid active report's Reviewer job.
+  - finding_id: F-DEC0023-REVIEW-PROVENANCE-TESTS
+    acceptance_test_index: 11
+    exact_action: >-
+      Add regression coverage for stale or mismatched report checksum and path,
+      stale or mismatched Decision provenance, and a Review targeting a
+      non-active report leaf. Publish IMP-DEC-2026-0023-r02 as the immediate
+      successor to r01 with updated file checksums and independent evidence.
+independent_validation:
+  passed: false
+  commands:
+    - command: >-
+        [cwd tooling/common/tests] python -m unittest
+        test_scan_agent_queues.DecisionMigrationCase
+        test_scan_agent_queues.DecisionHandoffReplacementCase
+        test_scan_agent_queues.DecisionImplementationCase
+        test_scan_agent_queues.TestImplementationReportValidation
+        test_scan_agent_queues.TestScannerParity
+        test_common_schemas.TestSchemasAreWellFormed
+      exit_code: 0
+      result: passed
+      summary: Ran 81 focused common lineage, schema, and parity tests; all passed.
+    - command: >-
+        [isolated temporary fixture] set reviewed_implementation.checksum to
+        sha256:0000000000000000000000000000000000000000000000000000000000000000,
+        then call scan_agent_queues.scan_repository on the fixture
+      exit_code: 0
+      result: failed
+      summary: >-
+        Scanner returned ready_ids=[] and diagnostics=[]; the stale Approved
+        Review incorrectly consumed the Decision.
+overall_disposition: revision_required
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Enforce exact implementation-Review provenance before Decision consumption
+    and add the missing negative regression coverage.
+  blocking_ids: []

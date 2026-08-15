@@ -1,0 +1,395 @@
+schema_version: '1.0'
+id: GUR-PKT-PHB-122-122-division-of-treasure-r03
+status: published
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-122-122-division-of-treasure
+constitution_version: '1.7'
+revision: 3
+supersedes: GUR-PKT-PHB-122-122-division-of-treasure-r02
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.3
+- contracts/WORK_QUEUES.md 1.6
+- contracts/ARTIFACT_LIFECYCLE.md 1.4
+- contracts/GRAPH_INVARIANTS.md 1.1
+- rulesets/adnd1e/governance/constitution.md 1.7
+- rulesets/adnd1e/escalations/decisions/DEC-2026-0029.yaml
+- books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-122-122-division-of-treasure-r03-r01.yaml
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 122
+page_end: 122
+packet_source_checksum: sha256:860baf0c6a236dbdf4e9d2c7ac2e8c33bf6e6b55d2dbeb6e22046583f4e92cc9
+packet_source_checksum_basis: lf_normalized
+source_summary: 'PHB 122, Appendix V. One printed page in three parts: three named agreements for splitting
+  treasure, three modifiers that adjust a character''s eligibility, and three schemes for parcelling magic
+  items followed by a dicing procedure for choosing among the parcels.'
+node_id_resolution_method: No registry slice was supplied. Every named mechanic was searched by ID and
+  by label in the registry and canonical nodes_master. Three endpoints had no identity and are proposed.
+grain_decisions:
+- decision: Every edge in this GUR carries status optional.
+  basis: Constitution 8, which flags as optional anything the text marks a DM option, and whose stated
+    purpose is that filtering on core yields a rules-as-written game.
+  how_applied: The appendix is titled SUGGESTED AGREEMENTS and closes by saying variations are of course
+    possible and that a system should be agreed before play. Nothing here binds a table that chooses a
+    different split. This is the first packet in the repository to use the optional flag, so it is called
+    out rather than applied silently; if the Reviewer reads a player agreement as core rules-as-written,
+    every row flips together.
+- decision: The three agreements and three magic-item schemes are not separate nodes.
+  basis: Constitution 2 and 3. They are alternative arithmetic for one procedure, and the difference between
+    them is entirely in the numbers.
+  how_applied: One node, rule_treasure_division, carries the procedure. Which agreement is in force appears
+    as an edge condition where it changes the dependency, as on the shares-by-level edge.
+- decision: No magnitude appears in any aspect or condition.
+  basis: Constitution 2 and GRAPH_INVARIANTS 11.
+  how_applied: The halves, quarters and multiples that fill this appendix are all removed; the aspects
+    name which facet is touched, such as counted as a part character.
+candidate_nodes:
+- proposed_id: rule_treasure_division
+  proposed_label: Division of Treasure
+  kind: rule
+  why_needed: The whole subject of this appendix. It is the procedure that converts a party's recovered
+    treasure into an individual character's share, and it is therefore what actually feeds xp_treasure.
+    Three named systems, three modifiers and three magic-item schemes all attach to it. Nothing in the
+    registry represents it; rule_treasure_placement is the DMG's rule for where treasure sits, not how
+    it is split.
+  edges_depending_on_it:
+  - M001
+  - M002
+  - M003
+  - M004
+  - M005
+  - M006
+  - M007
+  - M008
+  - M009
+  - M010
+  - M011
+- proposed_id: rule_death
+  proposed_label: Death
+  kind: rule
+  why_needed: Also proposed by GUR-PKT-PHB-100-109-playing-the-game-r01. The second modifier here turns
+    on incapacity or death bounding which treasure a character may share in.
+  edges_depending_on_it:
+  - M007
+reused_nodes:
+- exp_level
+- hench_henchmen
+- item_magic_item
+- money_gp
+- rule_dual_class
+- rule_multiclass
+- xp_treasure
+cross_packet_candidate_targets:
+- id: rule_death
+  label: Death
+  origin: candidate minted by GUR-PKT-PHB-100-109-playing-the-game-r01, not yet canonical
+  used_by:
+  - M007
+  builder_instruction: Do not mint a second identity.
+candidate_general_rules: []
+domains_touched:
+- economy
+- class
+domains_touched_note: domain_registry.yaml remains at 0.1, status bootstrap, with an empty domains map.
+candidate_domains: []
+domain_boundary_questions: []
+candidate_edges:
+- ref: M001
+  source_id: rule_treasure_division
+  source_label: Division of Treasure
+  edge_type: FEEDS_INTO
+  target_id: xp_treasure
+  target_label: Experience for Treasure
+  aspect: the individual share
+  condition: ''
+  book: PHB
+  page: 122
+  section: 'Agreements:'
+  evidence: inferred_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: inferred_rule, not explicit_rule. This appendix never mentions experience; it divides
+    treasure. The link is necessary given the EXPERIENCE section on page 106, which awards points for
+    treasure gained by a character rather than by the party. Both loci are cited in provenance and the
+    Reviewer should check the inference.
+  inference_locus: PHB p106 EXPERIENCE
+- ref: M002
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: rule_treasure_division
+  target_label: Division of Treasure
+  aspect: shares by level
+  condition: the shares-by-level agreement
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 122
+  section: 'Agreements:'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_multiclass
+  source_label: Multi-Class
+  edge_type: MODIFIES
+  target_id: rule_treasure_division
+  target_label: Division of Treasure
+  aspect: level calculation
+  condition: ''
+  book: PHB
+  page: 122
+  section: 'Agreements:'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: neutral
+  polarity_basis: read
+- ref: M004
+  source_id: rule_dual_class
+  source_label: The Character with Two Classes
+  edge_type: CONSTRAINS
+  target_id: rule_treasure_division
+  target_label: Division of Treasure
+  aspect: shares by class
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 122
+  section: 'Agreements:'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Reuses the existing rule_dual_class rather than minting a variant for the appendix's
+    phrase 'the character with two classes'. Constitution 3.2 requires reuse, and drift of exactly this
+    kind is named there as the graph's most common defect.
+- ref: M005
+  source_id: hench_henchmen
+  source_label: Henchmen
+  edge_type: MODIFIES
+  target_id: rule_treasure_division
+  target_label: Division of Treasure
+  aspect: fractional divisor
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 122
+  section: 'Modifiers:'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: hench_henchmen
+  source_label: Henchmen
+  edge_type: EXCLUDED_FROM
+  target_id: rule_treasure_division
+  target_label: Division of Treasure
+  aspect: bonus share
+  condition: ''
+  book: PHB
+  page: 122
+  section: 'Modifiers:'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: rule_death
+  source_label: Death
+  edge_type: CONSTRAINS
+  target_id: rule_treasure_division
+  target_label: Division of Treasure
+  aspect: treasure gained before death
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 122
+  section: 'Modifiers:'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: item_magic_item
+  source_label: Magic Device
+  edge_type: FEEDS_INTO
+  target_id: rule_treasure_division
+  target_label: Division of Treasure
+  aspect: items parcelled
+  condition: ''
+  book: PHB
+  page: 122
+  section: 'Magical Treasure:'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: money_gp
+  source_label: Money
+  edge_type: FEEDS_INTO
+  target_id: rule_treasure_division
+  target_label: Division of Treasure
+  aspect: balancing the parcels
+  condition: ''
+  book: PHB
+  page: 122
+  section: 'Magical Treasure:'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: rule_treasure_division
+  target_label: Division of Treasure
+  aspect: rolls when dicing
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 122
+  section: 'Magical Treasure:'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M011
+  source_id: hench_henchmen
+  source_label: Henchmen
+  edge_type: CONSTRAINS
+  target_id: rule_treasure_division
+  target_label: Division of Treasure
+  aspect: rolls for a henchman
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 122
+  section: 'Magical Treasure:'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+canonical_duplicates_not_for_emission: []
+near_matches_vs_canonical: []
+source_identity_conflicts:
+  rule: contracts/SOURCE_MARKDOWN.md 1.3, Source Identity Authority.
+  conflicts: []
+  analyst_view: No titled entry in this packet collides with a canonical label.
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: the appendix's two-classed character resolves to the existing rule_dual_class
+  question: The footnote gives multi-classed and two-classed characters different share rules and refers
+    the reader to the section THE CHARACTER WITH TWO CLASSES. A first pass proposed minting rule_two_class
+    from the packet's own wording.
+  analyst_position: Withdrawn before publication. rule_dual_class already exists in both the registry
+    and canonical and is the same concept, so it is reused unchanged. Recorded because SOURCE_MARKDOWN
+    1.3 makes the packet canonical for a name, and a reader comparing the appendix's wording to the node
+    label should know the difference was considered and judged to be wording rather than identity.
+  affects:
+  - M004
+architectural_escalations: []
+non_edge_observations:
+- id: OBS-01
+  topic: this appendix is the missing link between treasure and experience
+  finding: The EXPERIENCE section on page 106 awards experience points for treasure gained by a character.
+    This appendix is the only place in the book that says how a party's recovered treasure becomes an
+    individual character's holding.
+  why_it_matters: xp_treasure FEEDS_INTO exp_level already exists in canonical from the DMG. The edge
+    proposed here sits upstream of it and is the reason a character's share, rather than the party's haul,
+    is what converts. It is the only inferred_rule edge in the GUR and the one most worth the Reviewer's
+    attention.
+- id: OBS-02
+  topic: the forfeiture modifier has no endpoint
+  finding: A character who obstructs the party, attacks its members, or causes a member's death forfeits
+    part or all of a share.
+  why_it_matters: No edge is proposed. The trigger is a judgment about player conduct rather than a mechanic,
+    and there is no node for it; sys_alignment is the nearest existing endpoint and would be wrong, since
+    the rule turns on behaviour toward the party and not on alignment. Recorded so the omission is visible
+    rather than silent.
+- id: OBS-03
+  topic: the packet is one printed page and carries one marker
+  finding: A single {#p122} marker on the appendix heading, which under SOURCE_MARKDOWN 1.3 rule 1 places
+    the whole heading and, by the persistence rule, everything after it on page 122.
+  why_it_matters: The printed contents places Appendix V at 122 and lists nothing after it, so there is
+    no following marker to bound the assignment. Every edge in this GUR cites 122 and no inference was
+    needed.
+- id: OBS-04
+  topic: a mint was avoided by probing the registry before proposing
+  finding: rule_two_class was drafted as a candidate node from the appendix's phrasing and withdrawn when
+    rule_dual_class was found already registered at degree 25.
+  why_it_matters: Constitution 3.2 names singular and plural variants and same-concept-different-prefix
+    pairs as the commonest source of drift, and this packet was supplied without the registry slice that
+    would normally prevent it. Recorded as evidence that the missing input in BLK-02 has real consequences,
+    not just procedural ones.
+- id: OBS-ASPECT-02
+  topic: revision 2 exists only to bring aspects within constitution 5
+  finding: The Builder graded aspect_word_count as an error under DEC-2026-0029 and returned this packet.
+    10 of this GUR's aspects ran to five words or more.
+  why_it_matters: Each replacement names the facet the cited section touches, re-derived from that section
+    in the claimed source rather than produced by shortening the previous string, as DEC-2026-0029 requires.
+    This packet was not returned; the rows were graded warning before the Decision and would fail on the
+    next compile, so they are corrected now rather than left to bounce. No edge was added, dropped or
+    re-pointed; the set was re-checked against canonical and against itself with no collision.
+  owner: analyst
+- id: OBS-REV-R03
+  topic: two modifier-semantic corrections and the inference premise
+  finding: REV P122-R03-B1 and B2. Multi-class levels and the henchman fraction both change the number
+    the division produces, so FEEDS_INTO and CONSTRAINS understated them; both are now MODIFIES with authored
+    neutral polarity read from the text, which sets no direction of benefit. M001 now carries its inference
+    premise explicitly.
+  why_it_matters: M001 is the only inferred_rule row in this GUR. The appendix never mentions experience;
+    the link exists because EXPERIENCE on page 106 awards points for treasure gained by a character rather
+    than by the party. That premise is now on the row as inference_locus rather than only in prose, so
+    a later reader can check the inference against both loci without re-reading the GUR narrative.
+  owner: analyst
+blocking_notes:
+- id: BLK-02
+  note: No node_registry_slice.csv, local_neighborhood.json or general_rule_slice.json accompanied this
+    packet.
+  impact: Does not block this GUR.
+completeness_statement: All three sections, all nine numbered items and the closing dicing procedure were
+  read and considered. Every candidate edge cites PHB 122 and a section. No aspect or condition contains
+  a magnitude. Authored polarity appears only on MODIFIES and CONSTRAINS, always with basis read. Every
+  edge carries status optional for the reason given in the first grain decision. One edge is classified
+  inferred_rule and is called out in OBS-01. One modifier is deliberately not represented; see OBS-02.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []

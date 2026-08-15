@@ -1,0 +1,913 @@
+schema_version: '1.0'
+id: GUR-PKT-DMG-064-064-missile-discharge-r01
+status: proposed
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-legacy-unspecified
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.3
+- contracts/WORK_QUEUES.md 1.6
+- contracts/ARTIFACT_LIFECYCLE.md 1.4
+- contracts/GRAPH_INVARIANTS.md 1.1
+- rulesets/adnd1e/governance/constitution.md 1.7
+- rulesets/adnd1e/escalations/decisions/DEC-2026-0029.yaml
+analyst_pass: page-sweep
+citation_code: DMG
+page_start: 64
+page_end: 64
+packet_source_checksum: sha256:0b5c2c4ec345ec160bf232cdb7427083a7da34624acab7b18787b0fb913bceca
+packet_source_checksum_basis: lf_normalized
+source_summary: 'DMG 64, the missile discharge portion of the combat chapter. Four topics: how strength
+  and dexterity bear on missile fire, the note that dexterity gives no armor class benefit against giant-hurled
+  and machine-thrown missiles, the cover and concealment adjustment table, and the grenade-like missile
+  rules covering acid, holy and unholy water, oil, poison, boulders, and where a thrown container lands
+  when the attack misses. The page''s final paragraph is cut mid-sentence by the page boundary.'
+node_id_resolution_method: 'Every endpoint was looked up in rulesets/adnd1e/registries/nodes.csv before
+  any node was proposed. Fourteen concepts resolved to existing IDs, several of which were not obvious:
+  the Dexterity Attacking Adjustment named on the page is already abil_dexterity_reaction_attacking_adjustment,
+  cover and concealment already exist as rule_cover and rule_concealment, and the orifice-delivered poison
+  case matches the existing rule_poison_insinuated. Four concepts had no ID and are proposed below.'
+grain_decisions:
+- The cover and concealment table is entirely magnitudes. The relationship recorded is that cover and
+  concealment adjust the target's armor class under missile fire; the percentages and the bonus values
+  stay out of aspect and condition.
+- Container sizes, areas of effect, splash and direct-hit damage, burn durations, the fourteen-pound-per-point
+  drop rule and the scatter dice are all magnitudes. Each is recorded as the facet touched, never the
+  value.
+- '''Beyond 1 foot is medium and beyond 2 feet is long'' reduces to the condition ''medium or long range''.
+  The two thresholds and the two to-hit penalties are dropped.'
+- The armor class example in the giant-missile note, a character at -2 dropping to 0, is an illustration
+  of M006 and yields no separate assertion.
+candidate_nodes:
+- proposed_id: monster_giant
+  proposed_label: Giants
+  kind: monster
+  why_needed: 'The page treats giants as a category with a shared missile profile: their thrown missiles
+    have a stated size, their boulders have a stated size, and they are one of the two things that negate
+    a target''s dexterity armor class bonus. The registry holds eight monster_*_giant nodes, but all of
+    them are giant vermin, Ant Giant through Wasp Giant. None is the giant humanoid family this page means.
+    3.1 permits a creature family node.'
+  edges_depending_on_it:
+  - M007
+  - M027
+- proposed_id: rule_acid
+  proposed_label: Acid
+  kind: rule
+  why_needed: One of the four grenade contents with a tabled area, splash and direct-hit effect. The registry
+    has spell_melfs_acid_arrow and item_oil_acid_resistance but no node for acid as a substance, which
+    is what the table row is about. Parallel to the existing rule_holy_water and rule_oil.
+  edges_depending_on_it:
+  - M016
+  - M017
+- proposed_id: cbt_missile_scatter
+  proposed_label: Missile Scatter
+  kind: cbt
+  why_needed: 'The Misses paragraph is a self-contained procedure: distance off target, direction off
+    target, an optional short-range die, and a re-reading of the direction table when the target is a
+    wall. It is invoked from two places on this page alone, the missed container and the torch used to
+    light spilled oil, so it is referenced apart from the throw itself and is a node rather than a property
+    of one.'
+  edges_depending_on_it:
+  - M030
+  - M031
+  - M032
+- proposed_id: cbt_dropped_object
+  proposed_label: Dropped Object
+  kind: cbt
+  why_needed: '''A dropped boulder (or any heavy weight) will do damage as follows'' states a rule about
+    dropped weights in general, not about boulders. The registry''s nearest node is ex_falling, which
+    is damage to a creature that falls, the opposite direction. Kept distinct from cbt_grenade_missile
+    because nothing is thrown and no container breaks.'
+  edges_depending_on_it:
+  - M029
+reused_nodes:
+- abil_dexterity_defensive_adjustment
+- abil_dexterity_reaction_attacking_adjustment
+- abil_strength
+- cbt_armor_class
+- cbt_damage
+- cbt_grenade_missile
+- cbt_initiative
+- cbt_missile
+- item_saving_throw
+- rule_concealment
+- rule_cover
+- rule_flaming_oil
+- rule_holy_water
+- rule_poison_insinuated
+- rule_siege_engine
+- rule_spell_casting
+- save_poison
+- sys_equipment
+- wpn_range
+cross_packet_candidate_targets: []
+candidate_general_rules: []
+domains_touched:
+- combat
+domains_touched_note: One domain. The equipment-cost sentence touches the economy, but it is an adjudication
+  note inside a combat rule rather than an economic procedure.
+candidate_domains:
+- name: missile combat
+  observed_here: Missile fire, grenade-like missiles, cover and concealment, scatter and siege missiles
+    form a cluster that barely touches the melee rules on the surrounding pages.
+  promotion_status: Not adopted. 15 requires recurrence across several packets and this is the first DMG
+    packet in the repository.
+domain_boundary_questions: []
+candidate_edges:
+- ref: M001
+  source_id: abil_strength
+  source_label: Strength
+  edge_type: EXCLUDED_FROM
+  target_id: cbt_missile
+  target_label: Missile Fire
+  aspect: hit and damage bonus
+  condition: ordinary missile weapons
+  book: DMG
+  page: 64
+  section: COMBAT (MISSILE DISCHARGE)
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'The page denies a dependency every reader carries over from melee. EXCLUDED_FROM
+    rather than EXCLUDES per 4.1: strength is simply not an input to the missile attack, it does not actively
+    prevent anything.'
+- ref: M002
+  source_id: sys_equipment
+  source_label: Equipment
+  edge_type: GATES
+  target_id: abil_strength
+  target_label: Strength
+  aspect: missile bonus application
+  condition: special weapons obtained
+  book: DMG
+  page: 64
+  section: COMBAT (MISSILE DISCHARGE)
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The same sentence's positive half. The bonus applies only if the character equips
+    purpose-made heavier weapons, so equipment is a binary precondition.
+- ref: M003
+  source_id: abil_strength
+  source_label: Strength
+  edge_type: EXCLUDED_FROM
+  target_id: wpn_range
+  target_label: Weapon Range
+  aspect: effective range
+  condition: ''
+  book: DMG
+  page: 64
+  section: COMBAT (MISSILE DISCHARGE)
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: '''In no event will it add to the effective range of the character''s weapon.'' Bounds
+    M002: the special weapon buys hit and damage, never distance.'
+- ref: M004
+  source_id: abil_dexterity_reaction_attacking_adjustment
+  source_label: Reaction/Attacking Adjustment
+  edge_type: MODIFIES
+  target_id: cbt_initiative
+  target_label: Initiative
+  aspect: initiative die roll
+  condition: missile discharge
+  polarity: neutral
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: COMBAT (MISSILE DISCHARGE)
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'Polarity neutral and read, not improves: the page calls it a penalty and bonus in
+    the same breath, so the direction is not fixed by the rule.'
+- ref: M005
+  source_id: abil_dexterity_reaction_attacking_adjustment
+  source_label: Reaction/Attacking Adjustment
+  edge_type: MODIFIES
+  target_id: cbt_missile
+  target_label: Missile Fire
+  aspect: to hit chance
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: COMBAT (MISSILE DISCHARGE)
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: abil_dexterity_defensive_adjustment
+  source_label: Dexterity Defensive Adjustment
+  edge_type: EXCLUDED_FROM
+  target_id: cbt_armor_class
+  target_label: Armor Class
+  aspect: armor class bonus
+  condition: giant or machine missiles
+  book: DMG
+  page: 64
+  section: Special Note Regarding Giant And Machine Missiles
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Recorded once rather than as a mirrored EXCLUDES from the giant and the siege engine.
+    4.1 states the two types are not inverses and the corpus holds no mirrored pairs; the causes are carried
+    in the condition.
+- ref: M007
+  source_id: monster_giant
+  source_label: Giants
+  edge_type: RESOLVED_BY
+  target_id: cbt_missile
+  target_label: Missile Fire
+  aspect: hurled boulders
+  condition: ''
+  book: DMG
+  page: 64
+  section: Special Note Regarding Giant And Machine Missiles
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: rule_siege_engine
+  source_label: Siege Engines
+  edge_type: RESOLVED_BY
+  target_id: cbt_missile
+  target_label: Missile Fire
+  aspect: machine missiles
+  condition: ''
+  book: DMG
+  page: 64
+  section: Special Note Regarding Giant And Machine Missiles
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: rule_cover
+  source_label: Cover
+  edge_type: MODIFIES
+  target_id: cbt_armor_class
+  target_label: Armor Class
+  aspect: armor class bonus
+  condition: missile fire
+  polarity: improves
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: Missile Fire Cover And Concealment Adjustments
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: rule_concealment
+  source_label: Concealment
+  edge_type: MODIFIES
+  target_id: cbt_armor_class
+  target_label: Armor Class
+  aspect: armor class bonus
+  condition: missile fire
+  polarity: improves
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: Missile Fire Cover And Concealment Adjustments
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Kept separate from M009. The page tabulates cover and concealment at different rates
+    and defines them differently, hard substances that protect against soft substances that screen, so
+    they are two mechanics not one.
+- ref: M011
+  source_id: rule_cover
+  source_label: Cover
+  edge_type: CROSS_REFERENCES
+  target_id: rule_spell_casting
+  target_label: Casting a Spell
+  aspect: cover against spells
+  condition: ''
+  book: DMG
+  page: 64
+  section: Missile Fire Cover And Concealment Adjustments
+  evidence: explicit_reference
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M012
+  source_id: cbt_missile
+  source_label: Missile Fire
+  edge_type: CROSS_REFERENCES
+  target_id: cbt_grenade_missile
+  target_label: Grenade-Like Missiles
+  aspect: related procedure
+  condition: ''
+  book: DMG
+  page: 64
+  section: COMBAT (MISSILE DISCHARGE)
+  evidence: explicit_reference
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M013
+  source_id: cbt_grenade_missile
+  source_label: Grenade-Like Missiles
+  edge_type: RESOLVED_BY
+  target_id: item_saving_throw
+  target_label: Item Saving Throw
+  aspect: container breakage
+  condition: missile hits
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M014
+  source_id: cbt_grenade_missile
+  source_label: Grenade-Like Missiles
+  edge_type: GATES
+  target_id: cbt_damage
+  target_label: Damage
+  aspect: damage occurs
+  condition: container breaks
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M015
+  source_id: rule_flaming_oil
+  source_label: Flaming Oil
+  edge_type: GATES
+  target_id: cbt_damage
+  target_label: Damage
+  aspect: oil damage
+  condition: oil alight
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'The page''s one exception to M014: a broken oil container does nothing until the
+    oil is burning.'
+- ref: M016
+  source_id: rule_acid
+  source_label: Acid
+  edge_type: MODIFIES
+  target_id: cbt_grenade_missile
+  target_label: Grenade-Like Missiles
+  aspect: area of effect
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M017
+  source_id: rule_acid
+  source_label: Acid
+  edge_type: MODIFIES
+  target_id: cbt_damage
+  target_label: Damage
+  aspect: direct hit and splash
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M018
+  source_id: rule_holy_water
+  source_label: Holy Water
+  edge_type: MODIFIES
+  target_id: cbt_grenade_missile
+  target_label: Grenade-Like Missiles
+  aspect: area of effect
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M019
+  source_id: rule_holy_water
+  source_label: Holy Water
+  edge_type: MODIFIES
+  target_id: cbt_damage
+  target_label: Damage
+  aspect: direct hit and splash
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M020
+  source_id: rule_flaming_oil
+  source_label: Flaming Oil
+  edge_type: MODIFIES
+  target_id: cbt_grenade_missile
+  target_label: Grenade-Like Missiles
+  aspect: area of effect
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M021
+  source_id: rule_flaming_oil
+  source_label: Flaming Oil
+  edge_type: MODIFIES
+  target_id: cbt_damage
+  target_label: Damage
+  aspect: direct hit and splash
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M022
+  source_id: rule_flaming_oil
+  source_label: Flaming Oil
+  edge_type: TRIGGERS
+  target_id: cbt_damage
+  target_label: Damage
+  aspect: continuing burn
+  condition: splashed or struck
+  polarity: inflicts
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Distinct from M021. The footnotes give oil a second, later application of damage
+    that the other three contents do not have; the durations and amounts are magnitudes and are dropped.
+- ref: M023
+  source_id: cbt_grenade_missile
+  source_label: Grenade-Like Missiles
+  edge_type: TRIGGERS
+  target_id: save_poison
+  target_label: Saving Throw vs Poison
+  aspect: splash avoidance
+  condition: container breaks nearby
+  polarity: neutral
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The page routes every splash, acid and oil included, through the poison save. Recorded
+    as written; see OBS-04.
+- ref: M024
+  source_id: rule_poison_insinuated
+  source_label: Insinuated Poison
+  edge_type: MODIFIES
+  target_id: cbt_grenade_missile
+  target_label: Grenade-Like Missiles
+  aspect: breakage requirement
+  condition: hurled into orifice
+  polarity: neutral
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M025
+  source_id: cbt_grenade_missile
+  source_label: Grenade-Like Missiles
+  edge_type: RESOLVED_BY
+  target_id: item_saving_throw
+  target_label: Item Saving Throw
+  aspect: stoppered breakage
+  condition: hurled into orifice
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: A second, different resolution from M013. The ordinary case uses the BLOW CRUSHING
+    column; a stoppered container delivered to an orifice uses BLOW NORMAL. Which column is a magnitude-free
+    procedural difference, so these are two assertions rather than one.
+- ref: M026
+  source_id: wpn_range
+  source_label: Weapon Range
+  edge_type: MODIFIES
+  target_id: cbt_grenade_missile
+  target_label: Grenade-Like Missiles
+  aspect: to hit chance
+  condition: medium or long range
+  polarity: worsens
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M027
+  source_id: monster_giant
+  source_label: Giants
+  edge_type: MODIFIES
+  target_id: cbt_grenade_missile
+  target_label: Grenade-Like Missiles
+  aspect: boulder size
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M028
+  source_id: rule_siege_engine
+  source_label: Siege Engines
+  edge_type: MODIFIES
+  target_id: cbt_grenade_missile
+  target_label: Grenade-Like Missiles
+  aspect: boulder size
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M029
+  source_id: cbt_dropped_object
+  source_label: Dropped Object
+  edge_type: MODIFIES
+  target_id: cbt_damage
+  target_label: Damage
+  aspect: weight and drop distance
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The page gives two interchangeable computations for the same quantity. Both are magnitudes,
+    so one edge records the dependency and OBS-05 records that an alternate method exists.
+- ref: M030
+  source_id: cbt_grenade_missile
+  source_label: Grenade-Like Missiles
+  edge_type: TRIGGERS
+  target_id: cbt_missile_scatter
+  target_label: Missile Scatter
+  aspect: off target placement
+  condition: attack misses
+  polarity: neutral
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M031
+  source_id: cbt_missile_scatter
+  source_label: Missile Scatter
+  edge_type: MODIFIES
+  target_id: cbt_grenade_missile
+  target_label: Grenade-Like Missiles
+  aspect: impact point
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M032
+  source_id: rule_flaming_oil
+  source_label: Flaming Oil
+  edge_type: RESOLVED_BY
+  target_id: cbt_missile_scatter
+  target_label: Missile Scatter
+  aspect: torch placement
+  condition: lighting spilled oil
+  book: DMG
+  page: 64
+  section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Read from the clause 'use above procedures for misses', which is complete before
+    the page's truncation point. Nothing after the truncation is used; see OBS-03.
+canonical_duplicates_not_for_emission:
+- canonical_assertion: sys_equipment CONSUMES money_gp | aspect 'acquisition cost at DM adjudication'
+    | condition '' | DMG 64 MISSILE DISCHARGE
+  locus_on_this_page: 'Strength Bonus Considerations: ''he or she must obtain the special weapon or weapons,
+    and this is within the realm of your adjudication as DM as to where and how it will be obtained, and
+    how much cost will be involved.'''
+  decision: Not re-proposed. The page states exactly the assertion already in canonical, and 5.1 forbids
+    a second production edge on an exact assertion key. The reading confirms the existing row rather than
+    replacing it.
+  dec_2026_0029_pair: 1
+near_matches_vs_canonical:
+- ref: M001
+  proposed_aspect: hit and damage bonus
+  proposed_condition: ordinary missile weapons
+  canonical_aspect: does not apply by default
+  canonical_condition: ''
+  canonical_locus: DMG 64 MISSILE DISCHARGE
+- ref: M002
+  proposed_aspect: missile bonus application
+  proposed_condition: special weapons obtained
+  canonical_aspect: must be specially equipped to benefit
+  canonical_condition: ''
+  canonical_locus: DMG 64 MISSILE DISCHARGE
+- ref: M003
+  proposed_aspect: effective range
+  proposed_condition: ''
+  canonical_aspect: never extends range
+  canonical_condition: ''
+  canonical_locus: DMG 64 MISSILE DISCHARGE
+- ref: M005
+  proposed_aspect: to hit chance
+  proposed_condition: ''
+  canonical_aspect: attack adjustment
+  canonical_condition: ''
+  canonical_locus: PHB 11 Notes Regarding Dexterity Table I
+- ref: M009
+  proposed_aspect: armor class bonus
+  proposed_condition: missile fire
+  canonical_aspect: large bonus scaling with coverage
+  canonical_condition: ''
+  canonical_locus: 'DMG 64 Missile Fire Cover And Concealment Adjustments:'
+- ref: M010
+  proposed_aspect: armor class bonus
+  proposed_condition: missile fire
+  canonical_aspect: smaller bonus scaling with screening
+  canonical_condition: ''
+  canonical_locus: 'DMG 64 Missile Fire Cover And Concealment Adjustments:'
+dec_2026_0029_pair_1_finding:
+  question_from_decision: Do the DMG 64 and PHB 35 sys_equipment CONSUMES money_gp rows assert the same
+    affected facet under the same condition, or separate facets?
+  dmg_64_reading: The sentence is about a weapon that is not on any price list. A character who wants
+    strength bonus on missile fire must obtain a purpose-made heavier weapon, and the page hands where,
+    how and at what price to the DM. Its content is the absence of a stated cost.
+  phb_35_reading: Read from the claimed packet PKT-PHB-035-038-money-equipment. EQUIPPING THE CHARACTER
+    introduces BASIC EQUIPMENT AND SUPPLIES COSTS, a price list in gold and silver pieces, and says 'Often
+    there will not be sufficient funds to purchase everything desired.' Its content is that listed goods
+    have a published price paid from funds.
+  determination: Separate facets. Two assertions, not one.
+  reasoning: The two rows are near complements. One says the price is printed, the other says there is
+    no printed price and the DM sets it. Merging them would delete the only thing the DMG sentence contributes.
+    Neither aspect is a paraphrase of the other under 5.1.
+  recommended_outcome: Retain both, unchanged. This is the first of the Decision's permitted outcomes
+    and it requires no canonical edit.
+  aspect_conformance: The DMG row's aspect runs five words. Its production lineage was traced to migrations/adnd1e/legacy-import/original/edges_master.csv,
+    where it appears verbatim with the same endpoints, aspect, book, page and section, and it also appears
+    in the derived by-book file and in original/addnd_graph.json. It is therefore eligible for the legacy
+    conformance exception, and because the reading proves no action is required the row is not touched
+    and no revision obligation is triggered.
+  evidence_basis: Read from this claimed packet and from the claimed PHB packet only. No archive extraction
+    batch, canonical row, or endpoint name was used as source evidence. The legacy import file was consulted
+    solely to establish production lineage for the exception test, which is a provenance question, not
+    a reading of the rule.
+source_identity_conflicts:
+  checked: Every source name explicitly present in this packet, per SOURCE_MARKDOWN 1.3.
+  found: One. The canonical DMG 64 row carries source_label 'Special Heavy Weapons' on node sys_equipment.
+    The page never uses that phrase; it says 'special weapons' and describes 'a heavier missile or a more
+    powerful bow and heavier arrows or larger sling missiles'. The label is a coinage.
+  disposition: Not a defect under GRAPH_INVARIANTS 4, which holds that labels do not determine identity,
+    and not an identity conflict, because the packet supplies no competing ID stem. Recorded for the Reviewer
+    rather than acted on. See OBS-06.
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: money_gp is labelled 'Money'
+  question: The DMG page says only 'how much cost will be involved' and names no coin. The assertion it
+    supports is about money, and the registry's only currency node is money_gp, whose label is the generic
+    'Money'. Either the ID is wrong for the label or the label is wrong for the ID.
+  analyst_position: Not raised by anything this packet proposes, since no edge here targets money_gp.
+    Recorded because pair 1 turns on that node and the Reviewer will be looking at it. The mismatch is
+    pre-existing and corpus-wide, and resolving it is a migration, not a packet decision.
+  affects: []
+- id: IDQ-02
+  subject: which poison node the grenade rules attach to
+  question: The page distinguishes contact poison from poison delivered into an ingestive or respiratory
+    orifice. The registry has rule_poison_ingested, rule_poison_insinuated, rule_poison_use, rule_poison_detection,
+    rule_poison_study, tbl_poisons and monster_poison, but no node for contact poison.
+  analyst_position: M024 uses rule_poison_insinuated for the orifice case, which is what insinuated means
+    and is the closest existing identity. The contact-poison branch is not recorded as an edge at all
+    rather than forced onto a node that does not mean it. If the Reviewer wants that branch in the graph
+    it needs a node first.
+  affects:
+  - M024
+architectural_escalations:
+- id: ESC-CAND-01
+  subject: source_id for steward-extracted, non-legacy packets
+  statement: 'This packet is recorded under dmg-legacy-unspecified because that is the only source_id
+    registered for the DMG and an Analyst may not add a registry entry. Its registered provenance is ''legacy
+    graph dump'', which is false for this packet: the text was supplied fresh by the repository source
+    steward under DEC-2026-0029.'
+  why_it_matters: DEC-2026-0029 forbids legacy canonical data and archive extraction batches as source-read
+    evidence, and this packet exists specifically to supply evidence that is not legacy. A reader who
+    takes source_id at face value would conclude the opposite of what is true, on the one reading where
+    that distinction decides whether the work is admissible. The same mismatch already sits under every
+    PHB packet, so the fix is a registry change, not a packet field.
+  analyst_position: Register a source_id whose provenance names steward intake, and record which packets
+    were extracted under it. Raised here rather than earlier because this is the first packet where the
+    label actively contradicts the governing Decision.
+  owner: architect
+non_edge_observations:
+- id: OBS-01
+  topic: this is the repository's first DMG packet
+  finding: books/adnd1e/dmg held no claimed packet and no GUR before this one, though canonical carries
+    a large body of DMG edges from the legacy import.
+  why_it_matters: Every DMG row now in canonical predates packet-backed extraction and Reviewer verification.
+    This page is the first DMG locus read under the current contracts, so there is no prior packet-derived
+    neighborhood to compare against and the comparison had to be made against legacy-provenance rows.
+- id: OBS-02
+  topic: the page marker was missing on first delivery
+  finding: The incoming file arrived with no {#pN} marker. Under SOURCE_MARKDOWN 1.3 that leaves every
+    citation on the page unresolvable, and deriving the page from the filename is explicitly prohibited.
+    The packet was not claimed until the steward supplied the marker.
+  why_it_matters: 'Recorded so the claim history is legible: the immutable claimed copy is taken from
+    the corrected file, and its checksum matches the corrected incoming file, not the first delivery.'
+- id: OBS-03
+  topic: the page ends mid-sentence
+  finding: The Lighting Oil paragraph is cut at 'it still could land in the puddle of oil or oil covered'.
+    The remainder is on printed page 65 and is not in this packet.
+  why_it_matters: M032 is read from the clause before the cut, which is complete on its own. Nothing beyond
+    the cut is used. Whatever the sentence goes on to say about oil-covered targets is unextracted and
+    will need page 65.
+- id: OBS-04
+  topic: every splash is resolved by the poison save
+  finding: '''All creatures within three feet of the impact and breaking point of the container missile
+    must save versus poison or be splashed with the contents.'' The save applies whatever the container
+    held, including acid, holy water and burning oil.'
+  why_it_matters: M023 records this as written. It is a mechanically odd choice that a reader could easily
+    mistake for an extraction error, so it is flagged rather than quietly normalized to a dexterity or
+    breath-weapon save.
+- id: OBS-05
+  topic: dropped weights have two interchangeable damage formulas
+  finding: Damage is either one point per pound-increment per foot of drop between two thresholds, or
+    a flat die roll per pound-increment, at the DM's choice.
+  why_it_matters: Both are magnitudes, so the choice cannot be represented in aspect or condition, and
+    the two formulas share endpoints and facet. Recording them as two edges would produce a paraphrase
+    duplicate under 5.1. M029 records the dependency once.
+- id: OBS-06
+  topic: two references on the page have no node to point at
+  finding: '''See also GRENADE-LIKE MISSILES and Special To Hit Bonuses'' and ''(See MONSTER MANUAL for
+    giants'' abilities.)''. The first half of the first reference is M012. Special ''To Hit'' Bonuses
+    has no node in the registry, and the Monster Manual reference points out of this ruleset''s packetized
+    material entirely.'
+  why_it_matters: Both are explicit_reference material that would ordinarily become CROSS_REFERENCES edges.
+    Neither is emitted, because 5 requires a citation to a real target and an Analyst must not invent
+    an endpoint to carry a reference.
+- id: OBS-07
+  topic: registry prefix drift noticed during the node probe
+  finding: nodes.csv contains prefixes absent from constitution 3.1, including bare 'comeliness', 'training',
+    'magic', 'death', 'fatigue', 'cursed', 'turn' and 'align', plus str_ and dex_ nodes duplicating the
+    abil_ family. abil_strength_exceptional and str_exceptional are the same concept twice.
+  why_it_matters: Pre-existing and out of scope for this packet, which touches none of them. Recorded
+    once because the probe surfaced it and 3.2 calls drift the most common defect in this graph.
+blocking_notes: []
+completeness_statement: 'Every block of printed page 64 was read from the claimed packet, parsed with
+  pandoc 3.10 to JSON AST rather than by line splitting, as SOURCE_MARKDOWN 1.3 requires. All four Pandoc
+  tables and both list blocks were inspected. The page carries exactly one page marker, on the opening
+  heading, so all 32 edges cite page 64 with no inline split to resolve. Material deliberately not emitted:
+  the equipment-cost assertion, which already exists in canonical and is recorded above; the contact-poison
+  branch and two textual references, which have no node to attach to; and anything past the page''s truncation
+  point. The DEC-2026-0029 pair 1 comparison is answered above and requires no canonical change.'
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []

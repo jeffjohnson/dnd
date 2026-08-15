@@ -253,8 +253,37 @@ class TestGupBundles(unittest.TestCase):
                     with self.subTest(bundle=path.name, row=number):
                         self.assertEqual([e.message for e in errors], [])
 
-    def test_every_approved_bundle_row_validates(self):
+    def superseded_gup_ids(self):
+        """GUP IDs a later revision replaces, read from the GUP store."""
+        import re
+
+        import yaml
+
+        superseded = set()
+        for path in (REPO_ROOT / "books" / "adnd1e" / "phb" / "artifacts" / "gup").glob("GUP-*.yaml"):
+            document = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            if document.get("supersedes"):
+                superseded.add(str(document["supersedes"]))
+        return superseded
+
+    def live_approved_bundles(self):
+        """Approved bundles that can still be integrated.
+
+        A bundle packaging a superseded GUP is immutable history that the queue
+        scanner no longer offers to the Integrator, so validating it forever
+        means a defect fixed in a later revision keeps the suite red for good.
+        The leaf GUP check above is already scoped this way.
+        """
+        superseded = self.superseded_gup_ids()
+        live = []
         for path in sorted(APPROVED_DIR.glob("APPROVED-*.edges.csv")):
+            packaged = path.name[len("APPROVED-"):].rsplit("-r", 1)[0]
+            if packaged not in superseded:
+                live.append(path)
+        return live
+
+    def test_every_approved_bundle_row_validates(self):
+        for path in self.live_approved_bundles():
             with path.open(encoding="utf-8", newline="") as handle:
                 for number, row in enumerate(csv.DictReader(handle), start=2):
                     errors = list(self.validator.iter_errors(row))

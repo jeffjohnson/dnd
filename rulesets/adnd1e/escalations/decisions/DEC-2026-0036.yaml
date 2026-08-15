@@ -1,0 +1,302 @@
+schema_version: '1.0'
+id: DEC-2026-0036
+status: approved
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-legacy-unspecified
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.8'
+revision: 2
+supersedes: DEC-2026-0032
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Re-plan the three exact ability-ID merges against the current integrated
+    baseline and publish GUP-MIG-DEC-2026-0032-r01 under the bounded
+    decision_migration_v2 model. Do not compile the successor DMG GUR first.
+  blocking_ids: []
+
+decision_date: '2026-08-14'
+escalation_id: ESC-2026-08-14T23.13.08.212Z
+
+question: >-
+  How must DEC-2026-0032 be reissued after the integrated r05 migration shifted
+  its physical canonical and registry locators, and which direct operation model
+  may execute its already decided two-retired-IDs-to-one-new-ID merges?
+
+ruling: >-
+  Supersede DEC-2026-0032 with this current-baseline reissue. Its three survivor
+  identities and the `abil_<three-letter ability abbreviation>_<snake_case rule
+  name>` convention are retained without semantic change. Correct every listed
+  canonical and registry locator below and require
+  `operation_model: decision_migration_v2`. Version 2 is the bounded direct-YAML
+  merge model in WORK_QUEUES 1.9: it authorizes only these three closed
+  two-retired-IDs-to-one-previously-absent-ID registry merges and their complete,
+  paired endpoint repoints. It does not authorize aliases, non-endpoint edits,
+  arbitrary row changes, removals, or a general locator-policy change.
+
+rationale:
+  - >-
+    The r05 migration removed canonical line 1502 and changed the registry, so
+    DEC-2026-0032's former physical locators no longer identify the assertions
+    or registry row it approved. The exact-before-image planner correctly
+    refuses to infer a shift.
+  - >-
+    Recomputing the locators against the current baseline preserves the complete
+    7, 17, and 9-row incident sets. The underlying identities, labels, kinds,
+    and mechanics have not changed.
+  - >-
+    A two-to-one merge is not a one-to-one replacement. The existing v1 direct
+    model intentionally rejects it, so executing this Decision requires the
+    separately constrained v2 model rather than treating a merge as a sequence
+    of replacements.
+  - >-
+    Assertion-key locators are preferable for a future general policy, but the
+    current merge planner consumes exact physical locations and this reissue
+    makes no unreviewed tooling or policy change beyond the bounded operation
+    required here.
+
+operation_model:
+  name: decision_migration_v2
+  authority_source: >-
+    The checksummed GUP YAML is the sole executable operation source. The
+    Approved manifest names that reviewed GUP and its validation report by
+    checksum and never restates or extends the plan.
+  permitted_operations:
+    - >-
+      One or more `node_changes.merges`, each with at least two distinct retired
+      IDs, one previously absent canonical ID, exact retired registry rows and
+      labels, `merge_retired_rows_into_one`, and a closed incident set.
+    - >-
+      Only the paired endpoint-ID/label repoint for every enumerated incident
+      row, each against a complete 18-field before-image.
+  prohibited_operations:
+    - A one-to-one replacement, addition, relabel, canonical removal, alias, or non-endpoint mutation.
+    - An inferred retired identity, registry row, endpoint, or locator adjustment.
+    - A row selection by label, prefix, or any unenumerated semantic similarity.
+
+canonical_migration:
+  node_id_merges:
+    - canonical_id: abil_dex_reaction_adjustment
+      canonical_label: Reaction/Attacking Adjustment
+      kind: abil
+      retired_nodes:
+        - id: dex_reaction_adj
+          label: Reaction/Attacking Adjustment
+          registry_csv_row: 73
+        - id: abil_dexterity_reaction_attacking_adjustment
+          label: Reaction/Attacking Adjustment
+          registry_csv_row: 9
+      incident_canonical_rows: [682, 1722, 1723, 1744, 1745, 1746, 3841]
+      expected_incident_row_count: 7
+      registry_action: merge_retired_rows_into_one
+      require_no_remaining_retired_endpoints: true
+    - canonical_id: abil_dex_defensive_adjustment
+      canonical_label: Dexterity Defensive Adjustment
+      kind: abil
+      retired_nodes:
+        - id: dex_defensive_adj
+          label: Dexterity Defensive Adjustment
+          registry_csv_row: 72
+        - id: abil_dexterity_defensive_adjustment
+          label: Dexterity Defensive Adjustment
+          registry_csv_row: 8
+      incident_canonical_rows: [355, 592, 683, 763, 764, 1391, 1392, 1393, 1394, 1747, 1748, 1765, 1812, 2311, 2937, 2978, 3842]
+      expected_incident_row_count: 17
+      registry_action: merge_retired_rows_into_one
+      require_no_remaining_retired_endpoints: true
+    - canonical_id: abil_str_exceptional
+      canonical_label: Exceptional Strength
+      kind: abil
+      retired_nodes:
+        - id: str_exceptional
+          label: Exceptional Strength
+          registry_csv_row: 1071
+        - id: abil_strength_exceptional
+          label: Exceptional Strength
+          registry_csv_row: 12
+      incident_canonical_rows: [27, 102, 1171, 1173, 2198, 2407, 2987, 3836, 3837]
+      expected_incident_row_count: 9
+      registry_action: merge_retired_rows_into_one
+      require_no_remaining_retired_endpoints: true
+  counts:
+    node_merges: 3
+    retired_registry_rows: 6
+    canonical_registry_rows_added: 3
+    canonical_rows_repointed: 33
+    canonical_rows_label_normalized_without_repoint: 0
+    new_registry_rows: 0
+
+operation_contract:
+  applies_only_to: DEC-2026-0036
+  planner_requirements:
+    - >-
+      Read `canonical_migration.node_id_merges`; reject an absent, malformed,
+      partial, or otherwise unsupported merge rather than plan it as a no-op.
+    - >-
+      Require at least two distinct retired nodes per merge; require the
+      canonical ID to be absent from the baseline registry; and require every
+      retired node to match its declared registry row and label.
+    - >-
+      Resolve every listed one-based canonical CSV row, including the header;
+      require exactly one retired endpoint in every row; discover all baseline
+      rows incident on either retired ID; and require exact equality with the
+      declared set.
+    - >-
+      Change only that retired endpoint ID and its corresponding endpoint label.
+      Preserve every other canonical field byte-for-value and retain the full
+      before-image in the GUP.
+    - >-
+      Replace the retired registry rows with exactly one canonical row, create
+      no alias, rebuild nodes_master and graph, and reject duplicate assertion
+      keys or any surviving retired ID in planned or derived output.
+  integrator_requirements:
+    - >-
+      Validate the reviewed GUP, Approved manifest, authority Decision,
+      canonical baseline, registry baseline, every before-image, and every
+      closed incident set before snapshotting state.
+    - >-
+      Apply every registry merge and paired endpoint repoint in one transaction;
+      restore canonical and registry files byte-for-byte on any failure.
+  prohibited_inference:
+    - Do not adjust a locator or registry row from a former Decision baseline.
+    - Do not discover another identity by matching a label or prefix.
+    - Do not add an alias, change a non-endpoint field, or widen the operation to another ability mechanic.
+    - Do not compile a packet GUR containing any retired ID after Integration.
+
+baseline:
+  canonical_edges:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:3f39ae7753211eac78fad1f910e548a1cfa21e4de697599736e899cf3b61fa5c
+    rows: 4132
+  nodes_registry:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:f4134caa1ac80da733dca8a2db31ff7a1696f7c52bb1458ffcdff1b2300aab94
+    rows: 1163
+
+migration_required: true
+migration_scope:
+  operation_model: decision_migration_v2
+  required_gup: GUP-MIG-DEC-2026-0032-r01
+  registry_rows_replaced: 6
+  registry_rows_added: 3
+  canonical_edges_repointed: 33
+  canonical_edges_added: 0
+  canonical_edges_removed: 0
+  aliases_retained: 0
+  required_derived_rebuilds:
+    - rulesets/adnd1e/canonical/nodes_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+
+affected_artifacts:
+  superseded_decision:
+    id: DEC-2026-0032
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0032.yaml
+    reason: Its physical baseline locators are stale after r05 Integration.
+  active_gur_to_supersede_after_integration:
+    id: GUR-PKT-DMG-064-064-missile-discharge-r02
+    path: books/adnd1e/dmg/artifacts/gur/GUR-PKT-DMG-064-064-missile-discharge-r02.yaml
+    checksum: sha256:d62a48176f67d01ad79be3bf795804d89224d138bd95105830bb868c3ca710ff
+  required_successor_gur:
+    id: GUR-PKT-DMG-064-064-missile-discharge-r03
+    owner: analyst
+    constraint: >-
+      Publish only after this migration is Integrated. It supersedes r02, uses
+      the three surviving ability IDs wherever r02 used a retired ID, and records
+      its fresh steward source identity under DEC-2026-0034.
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Extend the decision-migration serializer and direct-model guard to select
+      `decision_migration_v2` only for this bounded merge shape. Re-plan this
+      Decision against the stated baseline and publish the exact r01 GUP and
+      validation report; no edge CSV is created.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Verify all three merge identities, the 33-row closed incident set, current
+      registry rows, full before-images, v2-only operation arrays, and absence
+      of every retired identity before publishing the exact Approved component
+      pair.
+  - step: 3
+    owner: integrator
+    action: >-
+      Extend direct-migration discovery, validation, transaction execution, and
+      integration provenance for v2 merges. Integrate only the approved r01
+      bundle and rebuild the required derived artifacts.
+  - step: 4
+    owner: analyst
+    action: >-
+      Publish GUR-PKT-DMG-064-064-missile-discharge-r03 only after Integration.
+      Do not revise r02 in place or use a retired ability identity.
+
+acceptance_tests:
+  - >-
+    The Builder emits `decision_migration_v2` only for the bounded merge shape
+    and rejects a duplicate retired ID, existing canonical ID, registry
+    row/label mismatch, missing or extra incident row, or non-merge operation.
+  - >-
+    The common GUP and Approved-bundle schemas accept a fully populated v2 plan
+    and component pair, and reject incomplete merge members, a nonempty v1-only
+    operation array, an edge CSV, or missing registry provenance.
+  - >-
+    Planning this Decision produces exactly three registry merges and 33 paired
+    endpoint repoints, preserves every other edge field, creates no duplicate
+    assertion key, and leaves none of the six retired IDs in planned or derived
+    output.
+  - >-
+    Integrator discovery treats a valid v2 Approved bundle as one job with no
+    edge CSV; preconditions and transaction rollback reject a baseline drift,
+    stale before-image, incomplete incident set, or surviving retired identity.
+  - >-
+    The subsequent DMG GUR revision is source-derived, supersedes r02, and uses
+    only the three surviving ability IDs.
+  - All applicable schema, graph, registry, migration, queue, and repository tests pass.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This reissue preserves the already approved derived-ability convention; it
+    changes executable locators and the direct migration model only.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.9 and ARTIFACT_LIFECYCLE 1.7 define the direct-YAML v2 bounded
+    merge model without changing v1.
+  - >-
+    This Decision is the active leaf for the DEC-2026-0032 lineage. A migration
+    must cite DEC-2026-0036 alone and its current baseline.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.8 -> 1.9; add decision_migration_v2 and merge acceptance tests.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.6 -> 1.7; record the v2 direct-YAML lifecycle.'
+  schemas/common/gup.schema.json:
+    - 'Add the narrowly constrained decision_migration_v2 plan schema.'
+  schemas/common/approved-bundle.schema.json:
+    - 'Allow the same exact two-component direct bundle form for v2.'
+  agents/builder/INSTRUCTIONS.md:
+    - 'Specify the v2 bounded merge authoring limit.'
+  agents/reviewer/INSTRUCTIONS.md:
+    - 'Specify independent v2 merge verification.'
+  agents/integrator/INSTRUCTIONS.md:
+    - 'Specify transactional v2 merge execution.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0036.yaml:
+    - 'Reissue DEC-2026-0032 with the current baseline and corrected locators.'
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement only v2 selection and serialization required to publish the named r01 GUP.
+    - Do not infer an incident endpoint or shift a locator outside this Decision.
+  reviewer:
+    - Reject an incomplete merge, any non-v2 operation, or any operation not measured against this baseline.
+  integrator:
+    - Implement only the v2 bounded merge path and retain v1 behavior unchanged.
+  analyst:
+    - Wait for a successful Integration record before issuing the required DMG GUR successor.

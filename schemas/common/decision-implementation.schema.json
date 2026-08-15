@@ -1,0 +1,377 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/common/decision-implementation.schema.json",
+  "title": "Decision Implementation Report",
+  "$comment": "WORK_QUEUES 1.6: Builder evidence for one approved non-migration Architect Decision. Independent Review, not this report alone, completes the Decision. A live_queue_snapshot acceptance test whose subject completed ordinary Approval and Integration is discharged with retired_by_lineage, which asserts the completed lineage and never that the historical queue state still holds.",
+  "allOf": [
+    {
+      "$ref": "artifact-envelope.schema.json"
+    },
+    {
+      "if": {
+        "properties": {
+          "approval_ready": {
+            "const": true
+          }
+        },
+        "required": [
+          "approval_ready"
+        ]
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "proposed"
+          },
+          "acceptance_results": {
+            "items": {
+              "properties": {
+                "result": {
+                  "enum": [
+                    "passed",
+                    "retired_by_lineage"
+                  ]
+                }
+              }
+            }
+          },
+          "validation": {
+            "properties": {
+              "passed": {
+                "const": true
+              }
+            }
+          },
+          "handoff": {
+            "properties": {
+              "next_role": {
+                "const": "reviewer"
+              },
+              "readiness": {
+                "const": "ready"
+              },
+              "blocking_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "id",
+    "status",
+    "ruleset_id",
+    "constitution_version",
+    "artifact_kind",
+    "revision",
+    "supersedes",
+    "handoff",
+    "approval_ready",
+    "decision_input",
+    "implemented_by",
+    "implementation_files",
+    "acceptance_results",
+    "validation"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^IMP-DEC-[0-9]{4}-[0-9]{4}-r[0-9]{2}$"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "blocked"
+      ]
+    },
+    "artifact_kind": {
+      "const": "decision_implementation"
+    },
+    "approval_ready": {
+      "type": "boolean"
+    },
+    "decision_input": {
+      "$ref": "#/$defs/decisionInput"
+    },
+    "implemented_by": {
+      "const": "builder"
+    },
+    "implementation_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/checksummedFile"
+      }
+    },
+    "acceptance_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/acceptanceResult"
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "passed",
+        "commands"
+      ],
+      "properties": {
+        "passed": {
+          "type": "boolean"
+        },
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/commandResult"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "acceptanceResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "$comment": "WORK_QUEUES 1.6: retired_by_lineage carries its own evidence, and carrying it on any other result would let a passing test smuggle in an unchecked authority.",
+      "required": [
+        "acceptance_test_index",
+        "result",
+        "evidence"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "result": {
+                "const": "retired_by_lineage"
+              }
+            },
+            "required": [
+              "result"
+            ]
+          },
+          "then": {
+            "required": [
+              "retirement_authority",
+              "retired_subjects"
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "retirement_authority"
+                  ]
+                },
+                {
+                  "required": [
+                    "retired_subjects"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "properties": {
+        "acceptance_test_index": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "result": {
+          "enum": [
+            "passed",
+            "failed",
+            "not_run",
+            "retired_by_lineage"
+          ]
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retirement_authority": {
+          "$ref": "#/$defs/retirementAuthority"
+        },
+        "retired_subjects": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/retiredSubject"
+          }
+        }
+      }
+    },
+    "retirementAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "$comment": "The approved Architect Decision permitting this retirement. Recorded by exact checksum so a report cannot rest on an authority that has since been rewritten, and cannot authorize itself.",
+      "required": [
+        "id",
+        "path",
+        "checksum",
+        "authorized_acceptance_test_index"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/decisionId"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^rulesets/[a-z0-9-]+/escalations/decisions/DEC-[0-9]{4}-[0-9]{4}\\.yaml$"
+        },
+        "checksum": {
+          "$ref": "#/$defs/checksum"
+        },
+        "authorized_acceptance_test_index": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "retiredSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "$comment": "One artifact the snapshot named. superseded_by_integrated_revision additionally requires the integrated successor, because a merely superseded artifact is not retired.",
+      "required": [
+        "id",
+        "path",
+        "retirement_state",
+        "integration_record_path",
+        "integration_record_checksum"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "retirement_state": {
+                "const": "superseded_by_integrated_revision"
+              }
+            },
+            "required": [
+              "retirement_state"
+            ]
+          },
+          "then": {
+            "required": [
+              "integrated_successor_id"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retirement_state": {
+          "enum": [
+            "consumed_by_integrated_bundle",
+            "superseded_by_integrated_revision"
+          ]
+        },
+        "integrated_successor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "integration_record_path": {
+          "type": "string",
+          "pattern": "^books/[a-z0-9-]+/[a-z0-9-]+/artifacts/integrated/INT-.+\\.json$"
+        },
+        "integration_record_checksum": {
+          "$ref": "#/$defs/checksum"
+        }
+      }
+    },
+    "checksum": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "decisionId": {
+      "type": "string",
+      "pattern": "^DEC-[0-9]{4}-[0-9]{4}$"
+    },
+    "decisionInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "checksum"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/decisionId"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^rulesets/[a-z0-9-]+/escalations/decisions/DEC-[0-9]{4}-[0-9]{4}\\.yaml$"
+        },
+        "checksum": {
+          "$ref": "#/$defs/checksum"
+        }
+      }
+    },
+    "checksummedFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "checksum"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checksum": {
+          "$ref": "#/$defs/checksum"
+        }
+      }
+    },
+    "commandResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "exit_code",
+        "result",
+        "summary"
+      ],
+      "properties": {
+        "command": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exit_code": {
+          "type": "integer"
+        },
+        "result": {
+          "enum": [
+            "passed",
+            "failed"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

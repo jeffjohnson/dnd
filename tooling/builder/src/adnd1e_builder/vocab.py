@@ -1,7 +1,7 @@
 """Controlled vocabularies and derivation tables from the graph constitution.
 
 Every constant here is transcribed from
-``rulesets/adnd1e/governance/constitution.md`` v1.7. This module is the single
+``rulesets/adnd1e/governance/constitution.md`` v1.8. This module is the single
 source of truth for the compiler; nothing downstream may hard-code a vocabulary.
 
 Section references in comments point at the constitution.
@@ -9,7 +9,7 @@ Section references in comments point at the constitution.
 
 from __future__ import annotations
 
-CONSTITUTION_VERSION = "1.7"
+CONSTITUTION_VERSION = "1.8"
 
 # Versions this compiler accepts on an incoming GUR. An older GUR is compilable
 # but is *revalidated under the current constitution*, never trusted on the
@@ -39,8 +39,16 @@ CONSTITUTION_VERSION = "1.7"
 # valid under 1.7 and no GUP needs re-emitting for the version change alone.
 # Historical 1.6 GURs stay compilable and are revalidated under 1.7 like any
 # other older revision.
+#
+# 1.8 (DEC-2026-0032 and DEC-2026-0033, one release) only *widens* section 3.1:
+# `weapon_` is added for the mundane weapon identity, and `abil_` is extended to
+# cover derived ability mechanics under an abbreviated stem. Neither retires a
+# prefix nor changes any row-level rule, so every row valid under 1.7 stays
+# valid under 1.8 and no GUP needs re-emitting for the version change alone.
+# The node IDs the two Decisions retire are handled as reviewed migrations, not
+# by this compiler rejecting rows that were valid when written.
 ACCEPTED_GUR_CONSTITUTION_VERSIONS: frozenset[str] = frozenset(
-    {"1.2", "1.3", "1.4", "1.5", "1.6", "1.7"}
+    {"1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8"}
 )
 
 # -- section 12: production column order --------------------------------------
@@ -201,7 +209,24 @@ NODE_PREFIXES: frozenset[str] = frozenset(
         # Added at constitution 1.3 by DEC-2026-0004: "weapon property or weapon
         # statistic". The seven existing wpn_ nodes keep their IDs unchanged.
         "wpn_",
+        # Added at constitution 1.8 by DEC-2026-0033: the mundane weapon
+        # identity itself. `wpn_` stays reserved for a property or statistic of
+        # a weapon (range, speed factor, weight), and `item_` stays the
+        # magic-item and item-class namespace -- a mundane weapon is not an
+        # `item_` merely because it is equipment.
+        "weapon_",
     }
+)
+
+# -- section 3.1: derived ability mechanics (constitution 1.8) -----------------
+# DEC-2026-0032 extends `abil_` from "ability score" to "ability score or
+# derived ability mechanic" and fixes the derived form as
+# `abil_<abbreviation>_<snake_case rule name>`, e.g. `abil_dex_reaction_adjustment`.
+# The abbreviation names the score a mechanic derives from; it is not an
+# alternate spelling for the score itself, so `abil_strength` and
+# `abil_dexterity` keep their full-name identities.
+ABILITY_ABBREVIATIONS: frozenset[str] = frozenset(
+    {"str", "dex", "con", "int", "wis", "cha"}
 )
 
 # DEC-2026-0004 rejected str_, dex_, magic_, death_, turn_, cursed_, time_ and

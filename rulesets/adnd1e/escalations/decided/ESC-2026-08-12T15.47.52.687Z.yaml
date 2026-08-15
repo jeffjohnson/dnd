@@ -1,0 +1,252 @@
+schema_version: 1.0
+id: ESC-2026-08-12T15.47.52.687Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: 1.7
+raised_by: builder
+raised_date: 2026-08-12
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The constitution caps `aspect` at four words and invariant 11 forbids copied rule prose there.
+    Builder now enforces both as errors, which matches what Reviewer approves. It does not match
+    canonical, where 1,919 of 4,118 rows breach the cap. Builder may not reword those: the text is
+    read from source, and canonical belongs to the Integrator. Only the Architect can say what the
+    legacy rows are.
+  blocking_ids: []
+
+originating_artifacts:
+  builder_change:
+    file: tooling/builder/src/adnd1e_builder/grain.py
+    change: >-
+      `aspect_word_count` raised from warning to error, on the reading that the four-word cap in
+      constitution section 5 is a rule and that an aspect of copied prose is the mechanical
+      signature of the invariant 11 breach.
+  reviews_that_prompted_it:
+    - id: REV-GUP-PKT-PHB-119-119-alignment-graph-r01-r01
+      finding: two derived-from aspects exceed the one-to-four-word grain limit
+    - id: REV-GUP-PKT-PHB-120-120-planes-of-existence-r02-r01
+      finding: >-
+        P120-R02-B3, blocking: eighteen aspects are copied prose of five to nine words
+    - id: REV-GUP-PKT-PHB-122-122-division-of-treasure-r02-r01
+      finding: >-
+        P122-R02-B1, blocking: ten aspects copy five-to-eight-word prose rather than naming a
+        one-to-four-word affected facet
+  gups_blocked_by_the_change:
+    - GUP-PKT-PHB-064-079-magic-user-spells-1-4-r03
+    - GUP-PKT-PHB-079-094-magic-user-spells-5-9-r03
+    - GUP-PKT-PHB-094-100-illusionist-spells-r03
+    - GUP-PKT-PHB-100-109-playing-the-game-r03
+    - GUP-PKT-PHB-110-117-psionics-r02
+    - GUP-PKT-PHB-117-119-bards-r02
+
+question: >-
+  Constitution section 5 caps `aspect` at one to four words, and invariant 11 forbids copied rule
+  prose in `aspect` or `condition`. 1,919 of 4,118 canonical rows (46 percent) breach the cap.
+  Every one of them arrived through the legacy 13-field migration; work authored under Review
+  conforms almost perfectly. Builder has begun rejecting new patches that breach it. What is the
+  disposition of the 1,919 legacy rows: are they debt to be re-derived, or accepted history the
+  rule does not reach retroactively?
+
+why_this_is_architectural: >-
+  This is the constitution and production data disagreeing in a way that cannot be fixed
+  mechanically, which the escalation contract names explicitly. Builder cannot resolve it in either
+  direction. Shortening 1,919 aspects means deciding what each row asserts, which is reading source
+  and belongs to the Analyst; writing them into edges_master.csv belongs to the Integrator; and
+  relaxing the rule to match the data would be Builder rewriting the constitution to make its own
+  corpus valid. The choice also determines whether a future migration rewrites approved assertions.
+
+source_excerpt:
+  constitution_section_5_field_table: "| `aspect` | which facet is touched. 1-4 words. **No magnitudes.** |"
+  constitution_section_5_assertion_key: "(source_id, edge_type, target_id, aspect, condition)"
+  graph_invariant_11: >-
+    No magnitude, die expression, numeric bonus, threshold value, or copied rule prose appears in
+    `aspect` or `condition`.
+  note: >-
+    No rulebook text is in question. The governing text is the constitution and the invariant list,
+    quoted exactly as they stand at constitution_version 1.7.
+
+evidence:
+  canonical_rows: 4118
+  rows_over_four_words: 1919
+  share: "46 percent"
+  distribution_by_extraction_pass:
+    - pass: page-sweep
+      rows: 2618
+      over_four_words: 1534
+      share: "58 percent"
+    - pass: prose-sweep
+      rows: 1010
+      over_four_words: 170
+      share: "16 percent"
+    - pass: mm-statblock
+      rows: 176
+      over_four_words: 28
+      share: "15 percent"
+    - pass: section-sweep
+      rows: 112
+      over_four_words: 68
+      share: "60 percent"
+    - pass: spell-scan
+      rows: 99
+      over_four_words: 70
+      share: "70 percent"
+    - pass: item-scan
+      rows: 69
+      over_four_words: 29
+      share: "42 percent"
+    - pass: table-skim
+      rows: 18
+      over_four_words: 15
+      share: "83 percent"
+  reviewer_approved_work:
+    bundles_examined: every APPROVED-GUP-PKT-* edge bundle in books/adnd1e/phb/artifacts/approved
+    rows: 342
+    over_four_words: 1
+    the_one_exception:
+      bundle: APPROVED-GUP-PKT-PHB-035-038-money-equipment
+      aspect: penalty at medium and long range
+      words: 6
+    reading: >-
+      The rule is current practice, not a new standard. What breaches it is the migrated corpus,
+      which no Reviewer ever passed.
+
+measured_impact_on_the_assertion_key:
+  claim_being_tested: >-
+    Because `aspect` is part of the assertion key, two edges stating one facet in different prose
+    read as two assertions and both enter production.
+  method: >-
+    Group every canonical row by (source_id, edge_type, target_id, normalized condition) and count
+    the groups whose members differ only in `aspect` where at least one aspect is over four words.
+  groups_in_canonical: 4115
+  groups_at_risk: 2
+  rows_at_risk: 4
+  detail:
+    - endpoints: sys_equipment -CONSUMES-> money_gp
+      aspects: ["acquisition cost at DM adjudication", "purchase cost"]
+    - endpoints: exp_level -MODIFIES-> rule_hit_points
+      aspects: ["different dice if entering via the ranks", "hit dice gained"]
+  honest_reading: >-
+    The mechanism is real but the measured damage is four rows. 4,115 groups for 4,118 rows means
+    the tuple is already almost perfectly unique, so prose aspects are not, today, splitting
+    assertions at scale. Builder raised this expecting graph-wide corruption and did not find it.
+    The debt is conformance, not correctness, and the recommendation below reflects that rather
+    than the alarm the row count first suggested.
+
+local_graph_neighborhood:
+  note: >-
+    The affected rows are spread across the whole PHB corpus rather than one neighborhood. The only
+    rows with a demonstrated correctness consequence are the four above.
+  most_affected_canonical_ids: [sys_equipment, money_gp, exp_level, rule_hit_points]
+
+affected_canonical_ids: [sys_equipment, money_gp, exp_level, rule_hit_points]
+
+options_considered:
+  - option: A
+    summary: Grandfather the legacy rows and state the rule's scope explicitly.
+    detail: >-
+      Record that the four-word cap binds work authored under Review from constitution 1.7 forward,
+      and that migrated rows predating it are accepted history. Builder keeps rejecting new
+      breaches. Nothing in canonical changes.
+    cost: One contract note. No canonical rewrite.
+    risk: >-
+      The graph permanently contains rows that would be rejected if proposed today, and a reader
+      cannot tell conformant rows from grandfathered ones without checking the extraction pass.
+  - option: B
+    summary: Re-derive all 1,919 aspects, packet by packet, through the normal pipeline.
+    detail: >-
+      Each affected packet returns to the Analyst to name the facet each row touches in four words
+      or fewer, then recompiles, is reviewed, and is integrated.
+    cost: >-
+      1,919 rows of Analyst source-reading plus a full Review and Integration cycle per packet. This
+      is the largest single item of work anyone has proposed in this repository.
+    risk: >-
+      Rewrites 1,919 approved assertions. Every re-derivation is a fresh interpretation of source
+      and can change what a row asserts, so it is not a formatting pass.
+  - option: C
+    summary: Shorten the aspects mechanically in tooling.
+    detail: Builder truncates or compresses each aspect to four words by rule.
+    cost: Low.
+    risk: >-
+      Rejected on its face. Choosing which four words carry the facet is deciding what the row
+      asserts, which is reinterpreting source and is prohibited to Builder. It would also silently
+      change assertion keys on 1,919 approved rows.
+  - option: D
+    summary: Fix only the rows where prose demonstrably splits one assertion.
+    detail: >-
+      Return the two groups above to the Analyst to determine whether each pair is one assertion or
+      two, and correct only those four rows.
+    cost: Four rows, one Analyst pass.
+    risk: Leaves the conformance gap untouched; addresses only the measured correctness harm.
+
+recommended_resolution: >-
+  A together with D, and explicitly not B.
+
+  D first, because it is the only part with a demonstrated correctness consequence and it costs one
+  Analyst pass on four rows. A second, because the 46 percent is a conformance gap in rows that no
+  Reviewer ever passed, and buying conformance through B means re-interpreting 1,919 approved
+  assertions - a far larger risk to the graph's meaning than the untidiness it removes.
+
+  Builder's request of the Architect under A is narrow: state the rule's scope so that the
+  disagreement is recorded rather than latent. Without that, every future audit rediscovers 1,919
+  apparent invariant violations and has to re-derive that they are grandfathered.
+
+  If the Architect prefers B, Builder recommends it be sequenced per packet behind the packets
+  already returning to the Analyst for grain, so the same source reading serves both.
+
+expected_migration_impact:
+  under_option_a_and_d:
+    canonical_rows_changed: 4
+    registry_rows_changed: 0
+    nodes_added: 0
+    nodes_retired: 0
+    approved_assertions_rewritten: 4
+    contracts_changed: 1
+  under_option_b:
+    canonical_rows_changed: 1919
+    registry_rows_changed: 0
+    approved_assertions_rewritten: 1919
+    note: >-
+      Every rewritten row changes its assertion key, so duplicate detection and any downstream
+      reference to the old key must be re-derived.
+
+would_change:
+  constitution: false
+  registry: false
+  profile: false
+  contracts:
+    - path: contracts/GRAPH_INVARIANTS.md
+      change: >-
+        Under option A, a scope note on invariant 11 recording that migrated rows predating
+        constitution 1.7 are accepted history and that the invariant binds work authored under
+        Review from 1.7 forward.
+
+builder_position: >-
+  Builder has already raised `aspect_word_count` to an error and will not lower it again without a
+  Decision saying to: it matches invariant 11, and it matches what the Reviewer blocks. Six packets
+  are correctly blocked to the Analyst as a result, which is the intended effect - the alternative
+  was handing the Reviewer patches that a mechanical check had already condemned.
+
+  Builder has touched no canonical row and proposes none under any option. Under D the correction
+  is an Analyst reading followed by an ordinary migration; under B the same, at scale.
+
+  Builder also records that it overstated this problem when it first surfaced. The row count
+  suggested graph-wide duplicate corruption; measurement found four rows. The escalation is raised
+  on the conformance disagreement, which is real and is an explicit escalation trigger, and not on
+  a correctness emergency that does not exist.
+
+decision:
+  id: DEC-2026-0029
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0029.yaml
+  decided_on: "2026-08-12"
+  summary: >-
+    Preserved the pre-Review migration corpus as provenance-bound conformance
+    debt for aspect word count and copied prose only; current validation remains
+    mandatory for new and revised work. No bulk migration is authorized. The
+    two candidate identity pairs require DMG and UA source packets and a later
+    source-backed ordinary lifecycle before any canonical row may change.

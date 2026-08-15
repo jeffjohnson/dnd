@@ -1,0 +1,47 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0018-r03-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0018-r03
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0018-r03.yaml
+  checksum: sha256:a43b022f8c6da2a1c3b5f08870b2f746e2561555abd9a5c49840e49a1e63f19f
+decision_input:
+  id: DEC-2026-0018
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0018.yaml
+  checksum: sha256:32aa2cf7578886b60b729876eb7ae6d343744bf59963446fc8e46a7d2d26d7ae
+implementation_inventory:
+  declared_files: 10
+  checksum_matches: 10
+  noncanonical_scope: verified
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: "Focused scanner suite passed valid decision-migration Reviewer routing without a stale-GUR diagnostic."}
+  - {acceptance_test_index: 2, disposition: verified, evidence: "Focused scanner suite passed all five invalid Decision-provenance rejection cases."}
+  - {acceptance_test_index: 3, disposition: verified, evidence: "Focused scanner suite passed missing envelope and canonical-checksum rejection coverage."}
+  - {acceptance_test_index: 4, disposition: verified, evidence: "Focused scanner suite passed decision-migration GUR-provenance disqualification coverage."}
+  - {acceptance_test_index: 5, disposition: verified, evidence: "Focused scanner suite passed invalid-migration and stale-plan routing, retaining authority Decisions as Builder work."}
+  - {acceptance_test_index: 6, disposition: verified, evidence: "Focused scanner suite passed distinct cross-packet decision-migration lineage coverage."}
+  - {acceptance_test_index: 7, disposition: verified, evidence: "Focused scanner suite passed active-leaf-only and reviewed-migration suppression coverage."}
+  - {acceptance_test_index: 8, disposition: verified, evidence: "Focused scanner suite passed Python/PowerShell parity coverage."}
+  - {acceptance_test_index: 9, disposition: verified, evidence: "Full Builder suite passed current decision-migration schema and validation-component coverage."}
+  - {acceptance_test_index: 10, disposition: verified, evidence: "Full Builder suite passed distinct scaling and packet-page-authority vocabulary coverage."}
+  - {acceptance_test_index: 11, disposition: verified, evidence: "Focused scanner suite passed packet_update versus legacy identity_merge_migration classification coverage."}
+  - {acceptance_test_index: 12, disposition: verified, evidence: "Focused scanner suite passed equivalent book-store and cross-book-store migration discovery coverage."}
+  - {acceptance_test_index: 13, disposition: verified, evidence: "All ten declared implementation-file SHA-256 values match; the inventory contains no canonical, registry, Decision, or r01 artifact."}
+independent_validation:
+  passed: true
+  commands:
+    - {command: "[cwd tooling/common/tests] python -m unittest test_scan_agent_queues", exit_code: 0, result: passed, summary: "Ran 185 focused queue-scanner tests; all passed."}
+    - {command: "[cwd tooling/common/tests] python -m unittest discover -s . -p 'test_*.py' -t .", exit_code: 0, result: passed, summary: "Ran 214 common schema and queue tests; all passed."}
+    - {command: "[cwd tooling/builder/tests] python -m unittest discover -s . -p 'test_*.py' -t .", exit_code: 0, result: passed, summary: "Ran 370 Builder compiler, migration, registry, vocabulary, and schema tests; all passed."}
+overall_disposition: approved
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: Every DEC-2026-0018 acceptance test is independently verified against the exact active r03 report.
+  blocking_ids: []

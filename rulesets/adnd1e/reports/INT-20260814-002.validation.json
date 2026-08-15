@@ -1,0 +1,275 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20260814-002",
+  "ruleset_id": "adnd1e",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-08-15T03:18:23.014Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:1bae8be901b0b1a10472fb4fb580b9d5ab7611f075b7c4b57bfd5551dba47d3a actual=sha256:1bae8be901b0b1a10472fb4fb580b9d5ab7611f075b7c4b57bfd5551dba47d3a"
+        },
+        {
+          "check": "component checksum matches: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:cf110e3b42d3cea5a7860b661ed0b41873778605589a2d521e69a6a3453371ec actual=sha256:cf110e3b42d3cea5a7860b661ed0b41873778605589a2d521e69a6a3453371ec"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-120-120-planes-of-existence-r06.yaml: declared=sha256:0316e6f0e012703ae6ed42739d4d6342ea8221bfeefc52dd8763417d3b95aaa1 actual=sha256:0316e6f0e012703ae6ed42739d4d6342ea8221bfeefc52dd8763417d3b95aaa1"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=20 actual=20"
+        },
+        {
+          "check": "review approved-row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "review approved 20 row(s), CSV carries 20"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "reviewer did not modify GUP files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "gup_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 5, 'pending_additions': 15, 'updates': 0, 'node_registrations': 6}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 1700,
+      "by_invariant": {
+        "3": 19,
+        "11": 9,
+        "16": 1672
+      },
+      "affected_rows": 1674,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 1700,
+      "by_invariant": {
+        "3": 19,
+        "11": 9,
+        "16": 1672
+      }
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 4132,
+    "edges_after": 4152,
+    "edges_updated_in_place": 0,
+    "nodes_before": 1145,
+    "nodes_after": 1151,
+    "registry_before": 1163,
+    "registry_after": 1169,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "rule_ethereal_plane",
+        "label": "Ethereal Plane",
+        "kind": "rule",
+        "basis": "PHB p120 directly names the plane and its mechanical travel/combat effects.",
+        "edges_depending_on_it": [
+          "M002",
+          "M016",
+          "M017",
+          "M019",
+          "M020"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "review_id": "REV-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "integration_id": "INT-20260814-002"
+      },
+      {
+        "id": "rule_astral_plane",
+        "label": "Astral Plane",
+        "kind": "rule",
+        "basis": "PHB p120 directly names the plane and its mechanical travel/combat effects.",
+        "edges_depending_on_it": [
+          "M004",
+          "M005",
+          "M006",
+          "M014",
+          "M018",
+          "M021"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "review_id": "REV-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "integration_id": "INT-20260814-002"
+      },
+      {
+        "id": "rule_inner_planes",
+        "label": "The Inner Planes",
+        "kind": "rule",
+        "basis": "PHB p120 directly names the plane grouping.",
+        "edges_depending_on_it": [
+          "M005"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "review_id": "REV-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "integration_id": "INT-20260814-002"
+      },
+      {
+        "id": "rule_outer_planes",
+        "label": "The Outer Planes",
+        "kind": "rule",
+        "basis": "PHB p120 directly names the plane grouping.",
+        "edges_depending_on_it": [
+          "M003",
+          "M006"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "review_id": "REV-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "integration_id": "INT-20260814-002"
+      },
+      {
+        "id": "rule_negative_material_plane",
+        "label": "Negative Material Plane",
+        "kind": "rule",
+        "basis": "PHB p120 directly names the plane and undead-power relationship.",
+        "edges_depending_on_it": [
+          "M001"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "review_id": "REV-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "integration_id": "INT-20260814-002"
+      },
+      {
+        "id": "rule_silver_cord",
+        "label": "Silver Cord",
+        "kind": "rule",
+        "basis": "PHB p120 directly names the cord and its astral-travel/death effects.",
+        "edges_depending_on_it": [
+          "M013",
+          "M014",
+          "M015"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "review_id": "REV-GUP-PKT-PHB-120-120-planes-of-existence-r06-r01",
+        "integration_id": "INT-20260814-002"
+      }
+    ],
+    "registry_derived_resync": 13,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

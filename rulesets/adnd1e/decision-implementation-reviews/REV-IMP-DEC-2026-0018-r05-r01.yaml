@@ -1,0 +1,57 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0018-r05-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0018-r05
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0018-r05.yaml
+  checksum: sha256:b793dfaa5423a7b98b4b53c0e6c416156dc6fe47e5af027cdbac7b7a7dedd972
+decision_input:
+  id: DEC-2026-0018
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0018.yaml
+  checksum: sha256:32aa2cf7578886b60b729876eb7ae6d343744bf59963446fc8e46a7d2d26d7ae
+implementation_inventory:
+  declared_files: 10
+  checksum_matches: 10
+  noncanonical_scope: verified
+validation_evidence_findings:
+  - severity: blocking
+    finding: >-
+      Both validation commands record exit_code 0 and result passed but their
+      summaries say "Ran 261 tests ... FAILED". This is not an exact,
+      internally consistent record of the command outcome.
+    required_correction: >-
+      Publish r06 superseding r05 with the exact validation command outcomes.
+      A passed command with exit code 0 must have an accurate passing summary,
+      and the updated attached validation-report checksum must match.
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: "Focused queue-scanner coverage passes conforming decision-migration Reviewer routing without stale_gup_input."}
+  - {acceptance_test_index: 2, disposition: verified, evidence: "Focused queue-scanner coverage passes all invalid Decision-provenance rejection cases."}
+  - {acceptance_test_index: 3, disposition: verified, evidence: "Focused queue-scanner coverage passes missing decision-migration envelope and canonical-checksum rejection cases."}
+  - {acceptance_test_index: 4, disposition: verified, evidence: "Focused queue-scanner coverage passes decision-migration GUR-provenance disqualification."}
+  - {acceptance_test_index: 5, disposition: verified, evidence: "Focused queue-scanner coverage retains authority Decisions as Builder work for invalid or stale migrations."}
+  - {acceptance_test_index: 6, disposition: verified, evidence: "Focused queue-scanner coverage passes independent cross-packet lineage routing."}
+  - {acceptance_test_index: 7, disposition: verified, evidence: "Focused queue-scanner coverage passes active-leaf and reviewed-migration suppression."}
+  - {acceptance_test_index: 8, disposition: verified, evidence: "Focused queue-scanner coverage passes Python/PowerShell parity."}
+  - {acceptance_test_index: 9, disposition: verified, evidence: "The full Builder suite passes current decision-migration schema and validation-component coverage."}
+  - {acceptance_test_index: 10, disposition: verified, evidence: "Current Builder vocabulary and tests retain the required DEC-2026-0017 and SOURCE_MARKDOWN governance attribution."}
+  - {acceptance_test_index: 11, disposition: verified, evidence: "Live queue scan classifies packet GUPs as packet_update and retains legacy identity_merge_migration outside Reviewer readiness."}
+  - {acceptance_test_index: 12, disposition: verified, evidence: "Focused queue-scanner coverage passes equivalent book-store and cross-book-store discovery."}
+  - {acceptance_test_index: 13, disposition: verified, evidence: "All ten declared implementation-file SHA-256 values match; none is canonical, registry, Decision, or r01 data."}
+independent_validation:
+  passed: false
+  commands:
+    - {command: "[cwd D:/analysis/dnd] implementation-report validation-evidence audit", exit_code: 1, result: failed, summary: "The two passed validation commands contradict their FAILED summaries."}
+    - {command: "[cwd tooling/common/tests] python -m unittest discover -s . -p 'test_*.py' -t .", exit_code: 0, result: passed, summary: "Ran 261 common schema and queue tests; all passed."}
+    - {command: "[cwd tooling/builder/tests] PYTHONPATH=../src python -m unittest discover -s . -p 'test_*.py' -t .", exit_code: 0, result: passed, summary: "Ran 370 Builder compiler, migration, registry, vocabulary, and schema tests; all passed."}
+overall_disposition: revision_required
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: Implementation behavior is verified, but r05 does not truthfully record its own validation outcomes.
+  blocking_ids: []

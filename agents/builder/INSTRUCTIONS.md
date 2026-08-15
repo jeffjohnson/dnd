@@ -43,6 +43,15 @@ Never infer these from conversation history. Read them from repository manifests
 
 Builder should not need the full source packet for interpretation. Citations may be carried through and checked structurally.
 
+## Incoming Packet Authority
+
+When the active GUR, Review, or Architect Decision identifies a direct name in
+the current incoming packet or claimed copy, preserve that packet-derived
+spelling, grammatical number, label, and ID stem. An older registry or canonical
+ID that differs is legacy drift, not an automatic duplicate to reuse. Do not
+silently normalize back to the legacy name: report the exact neighborhood and
+implement an approved identity migration only when its Decision supplies one.
+
 ## Responsibilities
 
 ### Compiler behavior
@@ -115,7 +124,7 @@ The migration must:
 
 ## Outputs
 
-For each GUR write:
+For a packet update write:
 
 ```text
 books/<ruleset-id>/<book-id>/artifacts/gup/GUP-<packet-id>-rNN.yaml
@@ -127,6 +136,17 @@ The YAML, edge CSV, and validation report are one logical bundle. Every new GUP
 records `revision`, `supersedes` (null for the first GUP), and a `handoff`.
 Approval-ready output hands off to Reviewer. Blocked output names the next role
 and every blocking escalation or artifact ID.
+
+For a `decision_migration_v1` or `decision_migration_v2`, write the GUP YAML and
+its validation report but do not create a synthetic edge CSV. Pin both the
+canonical edge and node-registry baselines in provenance. Version 1 may contain
+only the registry-addition/replacement, paired endpoint-repoint, and exact-row-
+removal operations defined by `contracts/WORK_QUEUES.md`. Version 2 may contain
+only bounded `node_changes.merges` operations and their closed, paired endpoint
+repoints; all other direct-operation arrays must be empty. Every operation must
+carry complete before-state and exact approved Decision authority. Do not select
+an operation model merely because a planner can render it: refuse and escalate a
+Decision whose required operation is outside the model it authorizes.
 
 The GUP must conform to `schemas/common/gup.schema.json` composed with `schemas/<ruleset-id>/graph/gup.schema.json` and contain:
 

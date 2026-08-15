@@ -1,0 +1,103 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0018-r02-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0018-r02
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0018-r02.yaml
+  checksum: sha256:dfd9e640667be53f6874e636a55c3a5042673f3d2128e69b5c4ec87efc0e7688
+decision_input:
+  id: DEC-2026-0018
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0018.yaml
+  checksum: sha256:32aa2cf7578886b60b729876eb7ae6d343744bf59963446fc8e46a7d2d26d7ae
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      [cwd tooling/common/tests] python -m unittest test_scan_agent_queues
+      passed all 168 tests, including the valid decision-migration routing case.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      The same dedicated queue-scanner suite passed all missing, non-approved,
+      wrong-ruleset, checksum-mismatched, and non-migration Decision rejection cases.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      The dedicated queue-scanner suite passed the required decision-migration
+      envelope and canonical-checksum rejection regressions.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      The dedicated queue-scanner suite passed the regression that disqualifies
+      a decision migration carrying GUR provenance.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      The dedicated queue-scanner suite passed invalid-migration and stale-GUP
+      routing regressions, leaving its governing Decision visible to Builder.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: >-
+      The dedicated queue-scanner suite passed the independent-lineage test for
+      two cross-packet migrations sharing packet_id but not lineage_id.
+  - acceptance_test_index: 7
+    disposition: verified
+    evidence: >-
+      The dedicated queue-scanner suite passed active-leaf-only and
+      reviewed-migration suppression regressions.
+  - acceptance_test_index: 8
+    disposition: verified
+    evidence: >-
+      The dedicated queue-scanner suite passed TestScannerParity, confirming
+      equivalent Python and PowerShell queue results.
+  - acceptance_test_index: 9
+    disposition: verified
+    evidence: >-
+      [cwd tooling/builder/tests] python -m unittest discover -s . -p
+      "test_*.py" -t . passed 360 tests, including the real-corpus decision
+      migration shape, report, and schema regressions.
+  - acceptance_test_index: 10
+    disposition: verified
+    evidence: >-
+      The current vocab and registry/vocabulary tests retain DEC-2026-0017's
+      caster-level scope while documenting packet page authority separately in
+      SOURCE_MARKDOWN; the complete Builder suite passed.
+  - acceptance_test_index: 11
+    disposition: verified
+    evidence: >-
+      The dedicated queue-scanner suite passed the packet-update versus legacy
+      decision-migration classification regressions.
+  - acceptance_test_index: 12
+    disposition: verified
+    evidence: >-
+      The dedicated queue-scanner suite passed the book-store/cross-book-store
+      equivalence regression for decision-migration discovery.
+  - acceptance_test_index: 13
+    disposition: verified
+    evidence: >-
+      Every one of the nine declared implementation-file SHA-256 values matches
+      the current file. The declared implementation inventory contains no
+      canonical, registry, Decision, or revision-01 artifact.
+independent_validation:
+  passed: true
+  commands:
+    - command: "[cwd tooling/common/tests] python -m unittest test_scan_agent_queues"
+      exit_code: 0
+      result: passed
+      summary: "Ran 168 queue-scanner routing, provenance, lineage, and parity tests; all passed."
+    - command: "[cwd tooling/builder/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+      exit_code: 0
+      result: passed
+      summary: "Ran 360 Builder compiler, decision-migration, registry, vocabulary, and schema tests; all passed."
+overall_disposition: approved
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: Every DEC-2026-0018 acceptance test is independently verified against the exact active report.
+  blocking_ids: []

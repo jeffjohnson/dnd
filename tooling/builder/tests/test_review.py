@@ -674,6 +674,134 @@ class TestReviewerApprovedIdentityMigration(ReviewCase):
         self.assertEqual(result.rows[0]["source_id"], self.LEGACY)
 
 
+
+class ReviewDecisionKeyCase(unittest.TestCase):
+    """A Review states its rulings under one of two key names.
+
+    The loader read `row_decisions` only. Seventeen published Reviews use
+    `edge_decisions`, and every one of them loaded zero row rulings -- so a
+    revision built from one would silently keep the rows the Reviewer rejected
+    and look perfectly clean doing it. Both spellings carry the same entry
+    shape; only the vintage differs.
+    """
+
+    ENTRY = {
+        "ref": "M001",
+        "disposition": "rejected",
+        "rationale": "not supported by the source",
+    }
+
+    def write(self, document):
+        import tempfile
+
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        path = Path(temp.name) / "REV-GUP-PKT-TEST-r01-r01.yaml"
+        base = {
+            "id": "REV-GUP-PKT-TEST-r01-r01",
+            "packet_id": "PKT-TEST",
+            "reviewed_gup": {"id": "GUP-PKT-TEST-r01"},
+            "overall_disposition": "revision_required",
+        }
+        base.update(document)
+        path.write_text(yaml.safe_dump(base, sort_keys=False), encoding="utf-8")
+        return path
+
+    def test_row_decisions_are_read(self):
+        directives = ReviewDirectives.load(self.write({"row_decisions": [self.ENTRY]}))
+        self.assertEqual(directives.rows["M001"].disposition, "rejected")
+
+    def test_edge_decisions_are_read(self):
+        """The spelling that silently loaded nothing."""
+        directives = ReviewDirectives.load(self.write({"edge_decisions": [self.ENTRY]}))
+        self.assertEqual(directives.rows["M001"].disposition, "rejected")
+
+    def test_both_spellings_carry_exact_corrections(self):
+        for key in ("row_decisions", "edge_decisions"):
+            with self.subTest(key=key):
+                entry = dict(self.ENTRY, disposition="approved_with_revision",
+                             exact_corrections={"page": "115"})
+                directives = ReviewDirectives.load(self.write({key: [entry]}))
+                self.assertEqual(directives.rows["M001"].corrections, {"page": "115"})
+
+    def test_a_review_using_both_keys_reads_every_ruling(self):
+        directives = ReviewDirectives.load(
+            self.write(
+                {
+                    "row_decisions": [self.ENTRY],
+                    "edge_decisions": [dict(self.ENTRY, ref="M002")],
+                }
+            )
+        )
+        self.assertEqual(sorted(directives.rows), ["M001", "M002"])
+
+    def test_an_unread_decision_key_is_reported(self):
+        directives = ReviewDirectives.load(
+            self.write({"assertion_decisions": [self.ENTRY]})
+        )
+        self.assertEqual(directives.unread_decision_keys, ["assertion_decisions"])
+        self.assertEqual(directives.rows, {})
+
+    def test_a_known_decision_key_is_not_reported(self):
+        directives = ReviewDirectives.load(
+            self.write(
+                {
+                    "edge_decisions": [self.ENTRY],
+                    "node_registry_decisions": [
+                        {"proposed_id": "rule_x", "disposition": "approved"}
+                    ],
+                }
+            )
+        )
+        self.assertEqual(directives.unread_decision_keys, [])
+
+    def test_an_unread_key_survives_a_review_chain(self):
+        first = self.write({"edge_decisions": [self.ENTRY]})
+        second = self.write({"assertion_decisions": [self.ENTRY]})
+        merged = ReviewDirectives.load_chain([first, second])
+        self.assertIn("assertion_decisions", merged.unread_decision_keys)
+
+
+class LiveReviewSpellingCase(unittest.TestCase):
+    """Every published Review must load the rulings it states."""
+
+    @staticmethod
+    def reviews():
+        root = Path(__file__).resolve().parents[3]
+        return sorted((root / "books" / "adnd1e" / "phb" / "artifacts" / "reviews").glob("REV-*.yaml"))
+
+    def test_both_spellings_are_present_in_the_corpus(self):
+        """If this stops being true the compatibility is still required."""
+        spellings = set()
+        for path in self.reviews():
+            document = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            for key in ("row_decisions", "edge_decisions"):
+                if document.get(key):
+                    spellings.add(key)
+        self.assertEqual(spellings, {"row_decisions", "edge_decisions"})
+
+    def test_no_published_review_states_rulings_the_loader_cannot_read(self):
+        offenders = {}
+        for path in self.reviews():
+            directives = ReviewDirectives.load(path)
+            if directives.unread_decision_keys:
+                offenders[path.name] = directives.unread_decision_keys
+        self.assertEqual(offenders, {})
+
+    def test_every_review_that_states_rulings_loads_them(self):
+        """The defect in one assertion: rulings on disk, none in the directives."""
+        empty = []
+        for path in self.reviews():
+            document = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            stated = sum(
+                len(document.get(key) or []) for key in ("row_decisions", "edge_decisions")
+            )
+            if not stated:
+                continue
+            if not ReviewDirectives.load(path).rows:
+                empty.append(path.name)
+        self.assertEqual(empty, [])
+
 if __name__ == "__main__":
     unittest.main()
 

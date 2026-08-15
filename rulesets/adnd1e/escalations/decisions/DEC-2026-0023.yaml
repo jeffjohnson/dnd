@@ -1,0 +1,248 @@
+schema_version: "1.0"
+id: DEC-2026-0023
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the WORK_QUEUES 1.4 non-migration Decision lineage and publish
+    complete implementation reports for Decisions 0018, 0020, 0022, and 0023.
+  blocking_ids: []
+
+decision_date: "2026-08-04"
+escalation_id: ESC-2026-08-04T01.21.40.168Z
+
+question: >-
+  What durable artifact consumes an approved Architect Decision when its ready
+  Builder handoff changes schemas, documentation, tests, or tooling but requires
+  no canonical decision-migration GUP?
+
+ruling: >-
+  Adopt Decision Implementation Reports and independent Decision Implementation
+  Reviews as the uniform completion lineage for non-migration Builder Decisions.
+  Builder publishes one checksummed report for exactly one immutable Decision,
+  enumerates every implementation file, accounts for every Decision acceptance
+  test, and records exact validation commands and results. Reviewer independently
+  verifies the exact active report and every acceptance test. Only an Approved
+  implementation Review consumes the Decision. File existence, version strings,
+  passing tests, or a Builder completion claim alone do not consume it.
+
+rationale:
+  - >-
+    The current contract has a complete consumption rule for migration Decisions
+    and none for non-migration Decisions. Therefore queue state for Decisions
+    0018, 0020, and 0022 is not derivable from repository lineage.
+  - >-
+    A Decision-specific predicate such as a version constant or one test command
+    is not uniform and would force queue tooling to interpret each Decision's
+    prose. The scanner must validate artifacts, not understand implementation.
+  - >-
+    Naming an expected file on the Decision and treating its existence as
+    completion would be self-certification, cannot include a checksum known only
+    after implementation, and cannot prove all acceptance criteria passed.
+  - >-
+    One Builder report plus one independent Review mirrors the existing
+    GUP/Review separation while remaining lighter than an Approved bundle and
+    Integration record. No Integrator is needed because canonical and registry
+    state do not change.
+  - >-
+    Exact Decision, report, file, and checksum links preserve append-only history
+    and allow past non-migration Decisions to be completed without editing them.
+
+contract_change:
+  contracts/ARTIFACT_LIFECYCLE.md:
+    previous_version: "1.2"
+    new_version: "1.3"
+    change: >-
+      Define the Builder report and independent Review lifecycle for
+      non-migration Architect Decisions.
+  contracts/FILE_NAMING.md:
+    previous_version: "1.3"
+    new_version: "1.4"
+    change: >-
+      Add IMP-<decision-id>-rNN and REV-<implementation-id>-rNN names and their
+      ruleset-scoped append-only stores.
+  contracts/WORK_QUEUES.md:
+    previous_version: "1.3"
+    new_version: "1.4"
+    change: >-
+      Define Builder discovery, report validity, Reviewer routing, revision
+      handling, approved consumption, diagnostics, and acceptance tests.
+  REPOSITORY_STRUCTURE.md:
+    version_impact: unversioned
+    change: Add the two ruleset-scoped implementation artifact stores.
+
+artifact_contract:
+  implementation_report:
+    artifact_kind: decision_implementation
+    id_pattern: IMP-DEC-YYYY-NNNN-rNN
+    schema: schemas/common/decision-implementation.schema.json
+    store: rulesets/<ruleset-id>/decision-implementations/
+    owner: builder
+    one_decision_per_lineage: true
+    required_provenance:
+      - exact Decision ID
+      - exact repository path
+      - SHA-256 checksum of the immutable Decision
+      - every implementation file path and SHA-256 checksum
+      - every one-based Decision acceptance-test index exactly once
+      - exact validation commands, exit codes, results, and summaries
+    approval_boundary: >-
+      approval_ready true requires every acceptance result and validation command
+      to pass and a ready Reviewer handoff. Partial spot-checks remain non-ready.
+  implementation_review:
+    artifact_kind: decision_implementation_review
+    id_pattern: REV-IMP-DEC-YYYY-NNNN-rNN-rNN
+    schema: schemas/common/decision-implementation-review.schema.json
+    store: rulesets/<ruleset-id>/decision-implementation-reviews/
+    owner: reviewer
+    required_provenance:
+      - exact active implementation-report ID, path, and SHA-256 checksum
+      - exact Decision ID, path, and SHA-256 checksum
+      - independent disposition of every acceptance-test index
+      - independent validation commands and outcomes
+    consumption_boundary: >-
+      Only overall_disposition approved with all indices verified, passed
+      independent validation, and a terminal handoff consumes the Decision.
+
+queue_rules:
+  builder_ready: >-
+    An approved Decision with a ready Builder handoff and
+    migration_required false is Builder work until a structurally valid active
+    implementation report consumes the assignment for Review.
+  reviewer_ready: >-
+    A structurally valid, approval-ready active implementation report with no
+    Review is one Reviewer job.
+  revision_required: >-
+    A revision-required implementation Review is one Builder revision job and
+    suppresses the separate Decision job.
+  completed: >-
+    An Approved implementation Review with exact active-report and Decision
+    checksums consumes the Decision and creates no Integrator job.
+  invalid_or_stale: >-
+    Invalid or checksum-stale reports and Reviews are diagnostics and do not
+    consume the Decision.
+
+current_decision_disposition:
+  retrospective_reports_required:
+    - decision_id: DEC-2026-0018
+      current_claim: implemented_with_six_of_thirteen_acceptance_criteria_spot_checked
+      required_action: >-
+        Builder accounts for all thirteen acceptance tests in an approval-ready
+        IMP report; Reviewer independently verifies all thirteen.
+    - decision_id: DEC-2026-0020
+      current_claim: implemented_and_verified
+      required_action: >-
+        Builder publishes a complete IMP report for every acceptance test;
+        Reviewer independently verifies it.
+    - decision_id: DEC-2026-0022
+      current_claim: implemented_and_verified
+      required_action: >-
+        Builder publishes a complete IMP report for every acceptance test;
+        Reviewer independently verifies it.
+    - decision_id: DEC-2026-0023
+      current_claim: not_yet_implemented
+      required_action: >-
+        Builder implements this Decision and publishes its own complete IMP
+        report after the scanner, schema tests, and documentation align.
+  immutable_decisions: >-
+    Do not edit Decisions 0018, 0020, or 0022 to add a completion field. Their
+    exact checksums are the roots of the retrospective implementation lineages.
+
+affected_contracts_and_registries:
+  contracts:
+    - contracts/ARTIFACT_LIFECYCLE.md
+    - contracts/FILE_NAMING.md
+    - contracts/WORK_QUEUES.md
+    - REPOSITORY_STRUCTURE.md
+  registries: []
+  schemas:
+    - schemas/common/decision-implementation.schema.json
+    - schemas/common/decision-implementation-review.schema.json
+  canonical_files: []
+  tooling:
+    - tooling/common/scan_agent_queues.py
+    - tooling/common/tests/test_scan_agent_queues.py
+    - tooling/common/tests/test_common_schemas.py
+
+migration_required: false
+migration_scope:
+  canonical_edges_changed: 0
+  canonical_nodes_changed: 0
+  registry_rows_changed: 0
+  existing_decisions_rewritten: 0
+  retrospective_implementation_reports: 4
+  retrospective_implementation_reviews: 4
+  integrator_work: none
+
+acceptance_tests:
+  - ARTIFACT_LIFECYCLE declares version 1.3 and defines both implementation artifacts.
+  - FILE_NAMING declares version 1.4 and defines both names and stores.
+  - WORK_QUEUES declares version 1.4 and defines the complete non-migration lineage.
+  - REPOSITORY_STRUCTURE names both ruleset-scoped append-only stores.
+  - Both new common schemas are valid Draft 2020-12 schemas.
+  - >-
+    An unconsumed approved non-migration Decision with a ready Builder handoff
+    produces exactly one Builder job.
+  - >-
+    A valid approval-ready active implementation report produces exactly one
+    Reviewer job and suppresses the Decision's separate Builder job.
+  - >-
+    A partial report, including a six-of-thirteen spot-check, is not
+    Reviewer-ready.
+  - >-
+    Missing or mismatched Decision IDs, paths, checksums, approval status,
+    ruleset, handoff, migration flag, acceptance indices, file checksums, or
+    validation results prevent Reviewer routing and leave the Decision as
+    Builder work.
+  - >-
+    A revision-required implementation Review produces exactly one Builder
+    revision job and no duplicate Decision job.
+  - >-
+    An Approved implementation Review with exact active-report and Decision
+    provenance consumes the Decision and creates no Integrator job.
+  - >-
+    IMP reports for Decisions 0018, 0020, 0022, and 0023 each account for every
+    acceptance test in their respective Decision exactly once.
+  - >-
+    Reviewer independently verifies every acceptance test in each of the four
+    implementation lineages; Builder test summaries alone are insufficient.
+  - The PowerShell and Python scanners remain equivalent.
+  - The complete common schema and scanner suites pass.
+  - No canonical graph, registry, GUR, GUP, Review, Approved, or prior Decision file changes.
+
+constitution_version_impact:
+  changed: false
+  version: "1.7"
+  reason: >-
+    This changes universal workflow provenance and queue completion, not graph
+    ontology, edge semantics, or ruleset data.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement WORK_QUEUES 1.4 in the shared Python scanner.
+    - Add common schema and queue acceptance tests.
+    - Publish IMP reports for Decisions 0018, 0020, 0022, and 0023.
+    - Account for all acceptance tests; do not submit partial spot-checks as ready.
+  reviewer:
+    - Independently review all four IMP reports against their immutable Decisions.
+    - Publish one implementation Review per active IMP report.
+  analyst: []
+  integrator: []
+
+prohibited_actions:
+  - Do not edit Decisions 0018, 0020, or 0022 to record completion.
+  - Do not infer completion from file content, version constants, or tests alone.
+  - Do not let Builder self-approve an implementation report.
+  - Do not combine several Decisions in one implementation report.
+  - Do not create an Approved GUP or Integrator job for this lineage.
+  - Do not alter canonical graph or registry files for this Decision.
+  - Architect does not edit shared tooling implementation or tests.

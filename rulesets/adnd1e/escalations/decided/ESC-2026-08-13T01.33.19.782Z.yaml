@@ -1,0 +1,61 @@
+schema_version: '1.0'
+id: ESC-2026-08-13T01.33.19.782Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.7'
+raised_by: reviewer
+decision_owner: architect
+raised_on: '2026-08-13'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: Incoming Packet Authority requires a durable identity/label resolution before M048 can be integrated.
+  blocking_ids: []
+trigger: 'ESCALATION_CONTRACT 1.2: existing canonical data must change to resolve an incoming-packet identity/spelling conflict.'
+originating_artifacts:
+  gup_id: GUP-PKT-PHB-117-119-bards-r03
+  gup_path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-117-119-bards-r03.yaml
+  gup_checksum: sha256:6d31ef63f36ba1c592eb8a78cfe25ccc35b28daef26969fb5a3240a2d35a7ea6
+  review_id: REV-GUP-PKT-PHB-117-119-bards-r03-r01
+question: The incoming PHB packet names the magical item “Pipes of the Sewer” (singular), while the canonical registry and two DMG canonical rows use item_pipes_sewers labelled “Pipes of the Sewers” (plural). What canonical identity/label must govern, and what migration is required?
+source_excerpt: 'PHB p119 BARDS: “Pipes of the Sewer — Double number of rats in one-half the usual time.”'
+local_graph_neighborhood:
+  canonical_node:
+    id: item_pipes_sewers
+    label: Pipes of the Sewers
+    kind: item
+  affected_canonical_rows:
+  - DMG p152 item_pipes_sewers TRIGGERS gen_random_encounter
+  - DMG p152 cbt_encounter_distance MODIFIES item_pipes_sewers
+  proposed_row: 'M048: class_bard MODIFIES item_pipes_sewers'
+affected_canonical_ids:
+- item_pipes_sewers
+- gen_random_encounter
+- cbt_encounter_distance
+options_considered:
+- option: Retain the existing plural label
+  impact: Leaves a verified incoming-packet spelling conflict in canonical data.
+- option: Correct the existing node label to “Pipes of the Sewer” and update affected canonical edge labels
+  impact: Preserves one item identity and makes packet-derived provenance render consistently.
+- option: Mint a singular node
+  impact: Creates duplicate identity and is not recommended.
+recommended_resolution: Retain one identity, item_pipes_sewers, but direct a migration correcting its stored label and every affected canonical edge label to “Pipes of the Sewer”.
+expected_migration_impact: Registry-label and canonical-edge-label migration only; no mechanical edge relation is added, removed, or reinterpreted.
+governance_impact:
+  constitution_change: false
+  registry_change: true
+  profile_change: false
+blocking: M048 and therefore the active Bards GUP cannot be mechanically integrated until the identity/label decision is durable.
+
+decision:
+  id: DEC-2026-0030
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0030.yaml
+  decided_on: "2026-08-12"
+  summary: >-
+    Replaced the legacy plural identity with item_pipes_sewer / Pipes of the
+    Sewer, as required by the current packet's direct name. Builder must issue
+    an exact identity-only Decision migration before the Reviewer and Builder
+    revise the blocked Bards packet lineage.

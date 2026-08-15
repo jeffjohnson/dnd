@@ -1,0 +1,119 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0018-r10
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.7'
+revision: 10
+supersedes: IMP-DEC-2026-0018-r09
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0018
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0018.yaml
+  checksum: sha256:32aa2cf7578886b60b729876eb7ae6d343744bf59963446fc8e46a7d2d26d7ae
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:19b8979bccfb07248f628af5c9585b61bcc9e0e879e9e095bedc6a8ae283b16d
+- path: tooling/common/scan-agent-queues.ps1
+  checksum: sha256:fdb356ffc2f40d9a40237530b287ee6fd0a5b657b13d48e0f32054d814928d7c
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:bd2c9f488796eaed616fc1c8298c090e4b34df266f6b7ca3c49ab01488bbb737
+- path: tooling/builder/src/adnd1e_builder/decision_migration.py
+  checksum: sha256:d164b40503674d83df82d28504bbca5767bd5a989e6d1052a73d4c4c14639a89
+- path: tooling/builder/src/adnd1e_builder/emit.py
+  checksum: sha256:3819252d360fe9b87f30a2b2633cd3604a107fdade9c0e7921a7eed6e7304504
+- path: tooling/builder/src/adnd1e_builder/migration.py
+  checksum: sha256:3c452b65505e4b52788133d6ca3faf2439e483bed5d0cb99ae29a334807771dd
+- path: tooling/builder/tests/test_decision_migration.py
+  checksum: sha256:0c7fce4d24b6a526c0351b5dd6c3e46db2b9f094346b11b6b4033d98813ad992
+- path: tooling/builder/src/adnd1e_builder/vocab.py
+  checksum: sha256:8cab2abe84c01cf8aa4a3b729cedcaf84a37e3c0fef8f504f53afb6494b0907a
+- path: tooling/builder/tests/test_registry_and_vocab.py
+  checksum: sha256:88cf4944de68d4691385345557f69dad0969e24eff81a73456b9dc80fa428af2
+- path: schemas/common/gup.schema.json
+  checksum: sha256:5e0d8f5c6e85d6342500593e523ff6bc5d8a5a8146ff572e3c1db6daae714de5
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_valid_migration_is_one_reviewer_job_and_never_stale_gup_input
+    -> Ran 1 tests in 0.016s OK
+- acceptance_test_index: 2
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_missing_decision_prevents_review,
+    test_scan_agent_queues.DecisionMigrationCase.test_non_approved_decision_prevents_review, test_scan_agent_queues.DecisionMigrationCase.test_wrong_ruleset_decision_prevents_review,
+    test_scan_agent_queues.DecisionMigrationCase.test_checksum_mismatch_prevents_review, test_scan_agent_queues.DecisionMigrationCase.test_decision_not_requiring_migration_prevents_review
+    -> Ran 5 tests in 0.077s OK
+- acceptance_test_index: 3
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_each_missing_envelope_field_prevents_review,
+    test_scan_agent_queues.DecisionMigrationCase.test_missing_canonical_checksum_prevents_review -> Ran
+    2 tests in 0.073s OK
+- acceptance_test_index: 4
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_a_gur_reference_disqualifies_a_decision_migration
+    -> Ran 1 tests in 0.016s OK
+- acceptance_test_index: 5
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_invalid_migration_does_not_consume_its_decisions,
+    test_scan_agent_queues.MigrationReviewRoutingCase.test_an_unreviewed_stale_migration_still_republishes_its_decisions
+    -> Ran 2 tests in 0.029s OK
+- acceptance_test_index: 6
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_two_cross_packet_migrations_with_distinct_lineage_ids_are_independent
+    -> Ran 1 tests in 0.021s OK
+- acceptance_test_index: 7
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_only_the_active_leaf_of_a_lineage_is_reviewer_ready,
+    test_scan_agent_queues.DecisionMigrationCase.test_a_reviewed_decision_migration_is_not_reviewer_ready
+    -> Ran 2 tests in 0.034s OK
+- acceptance_test_index: 8
+  result: passed
+  evidence: unit test test_scan_agent_queues.TestScannerParity.test_powershell_and_python_return_the_same_jobs_and_exit_code
+    -> Ran 1 tests in 36.906s OK
+- acceptance_test_index: 9
+  result: passed
+  evidence: 'live repository check: GUP-MIG-DEC-2026-0015-0016-r02 validates against schemas/common/gup.schema.json
+    (0 errors) and names existing checksummed report build/reports/GUP-MIG-DEC-2026-0015-0016-r02.validation.json'
+- acceptance_test_index: 10
+  result: passed
+  evidence: 'live repository check: vocab.py attributes constitution 1.6 section 2.1 scaling to DEC-2026-0017,
+    and packet-over-legacy page authority to DEC-2026-0016 in SOURCE_MARKDOWN 1.1; test_registry_and_vocab.py
+    carries both attributions and pins the contract at its current version 1.3'
+- acceptance_test_index: 11
+  result: passed
+  evidence: 'live repository check: the seven most recently emitted packet GUPs, through GUP-PKT-PHB-119-119-alignment-graph-r01,
+    each declare artifact_kind packet_update; GUP-MIG-DEC-2026-0007-r01 is absent from ready work and
+    carries legacy_migration_spelling'
+- acceptance_test_index: 12
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionMigrationCase.test_cross_book_store_produces_the_same_job_as_a_book_store
+    -> Ran 1 tests in 0.017s OK
+- acceptance_test_index: 13
+  result: passed
+  evidence: 'live repository check: canonical edges_master.csv, registries/nodes.csv and DEC-2026-0018.yaml
+    carry identical checksums before and after this implementation (43b5be90b911, df1a98e1eed7, 32aa2cf75788);
+    no r01 artifact of this Decision''s lineage was rewritten. Canonical and the registry do carry uncommitted
+    Integrator work that predates this implementation and is untouched by it, which a bare git status
+    would have misreported'
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] python -m unittest discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 285 tests in 51.604s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src python -m unittest discover -s tests
+      -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 392 tests in 20.560s OK
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'reissued because tests/test_registry_and_vocab.py changed under DEC-2026-0029: the governed
+    GRAPH_INVARIANTS pin moved to 1.1 and the provenance-bound legacy grain scope gained coverage. All
+    checksums re-derived; evidence carried verbatim except where the cited tests were re-run'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0018-r10.validation.json
+validation_report_checksum: sha256:ca7ae2accbf1263ec67e3322369d074333e722bca7166fb8eeb8a7188b7d2c73

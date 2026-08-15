@@ -1,0 +1,89 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0020-r01-r02
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 2
+supersedes: REV-IMP-DEC-2026-0020-r01-r01
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0020-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0020-r01.yaml
+  checksum: sha256:a66e86b1b1e6bcfca11cdf041e200bb661448ce6035aa5bedc3e49d32177e508
+decision_input:
+  id: DEC-2026-0020
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0020.yaml
+  checksum: sha256:ecccc70890c4519dc54873aaf35c53a822c0d437a3f345b3d681d332724fbd64
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: Constitution and ruleset.yaml both declare version 1.7.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: GRAPH_INVARIANTS.md declares Version 1.0.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      Constitution section 5.1 defines exactly source_id, edge_type, target_id,
+      aspect, and condition as the assertion key.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      Section 5.1 and the passing Builder assertion-key tests make
+      ALTERNATIVE_TO symmetric while retaining endpoint order for every directed type.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      Section 5.1 excludes labels, polarity, citations, evidence, and review
+      metadata; the governed key and IDENTITY_EXCLUDED_FIELDS partition all production columns.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: >-
+      ASSERTION_KEY is the governed five-field tuple. assertion_key compares IDs
+      and edge type directly, normalizes aspect and condition only, and sorts
+      ALTERNATIVE_TO endpoints.
+  - acceptance_test_index: 7
+    disposition: verified
+    evidence: >-
+      tooling/builder/README.md describes the key as Constitution section 5.1's
+      governed rule and does not describe it as an empirical tooling choice.
+  - acceptance_test_index: 8
+    disposition: verified
+    evidence: >-
+      vocab.py declares Constitution 1.7, accepts historical 1.6 GURs for
+      revalidation, and the governance-to-tooling regression passed.
+  - acceptance_test_index: 9
+    disposition: verified
+    evidence: >-
+      The passing live-corpus assertion-key regression found zero exact duplicate
+      keys across the current 4118 canonical rows.
+  - acceptance_test_index: 10
+    disposition: verified
+    evidence: >-
+      All five implementation-file SHA-256 values match the active report; its
+      declared implementation inventory contains only Builder documentation,
+      code, and tests, with no canonical, registry, GUR, GUP, or Review artifact.
+  - acceptance_test_index: 11
+    disposition: verified
+    evidence: >-
+      GUP-PKT-PHB-035-038-money-equipment-r07 records B20 and B24 separately as
+      near-versus-canonical candidates, and its independent Review records their
+      source and neighborhood merits rather than deciding either from three-field identity.
+independent_validation:
+  passed: true
+  commands:
+    - command: "[cwd tooling/builder/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+      exit_code: 0
+      result: passed
+      summary: "Ran 360 Builder compiler, assertion-key, duplicate, registry, and schema tests; all passed."
+    - command: "[cwd tooling/common/tests] python -m unittest test_scan_agent_queues"
+      exit_code: 0
+      result: passed
+      summary: "Ran 168 queue-scanner lineage and implementation-report routing tests; all passed."
+overall_disposition: approved
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: Every DEC-2026-0020 acceptance test is independently verified against the current report revision.
+  blocking_ids: []

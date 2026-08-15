@@ -67,7 +67,8 @@ def validation_report(result: CompileResult, test_result: dict) -> dict:
             "edges_compiled": len(result.rows),
             "edges_rejected": result.edges_in - len(result.rows),
             "edge_additions": len(result.additions),
-            "edge_pending_additions": len(result.pending_additions),
+            "edge_pending_additions": len(result.batch_satisfiable_additions),
+            "edge_blocked_additions": len(result.blocked_additions),
             "edge_updates": len(result.updates),
             "errors": len(result.errors),
             "warnings": len(result.warnings),
@@ -77,6 +78,7 @@ def validation_report(result: CompileResult, test_result: dict) -> dict:
             "node_proposals_rejected": len(result.rejected_node_proposals),
             "direction_findings": len(result.direction_findings),
             "node_additions_proposed": len(result.node_additions),
+            "cross_packet_dependencies": len(result.cross_packet_dependencies),
             "duplicate_findings": len(result.duplicate_findings),
             "neighbourhood_conflicts": len(result.conflict_findings),
         },
@@ -87,6 +89,7 @@ def validation_report(result: CompileResult, test_result: dict) -> dict:
         "findings_by_rule": dict(sorted(by_rule.items())),
         "findings": [f.as_dict() for f in result.findings],
         "duplicates": result.duplicate_findings,
+        "cross_packet_dependencies": result.cross_packet_dependencies,
         "neighbourhood_conflicts": result.conflict_findings,
         "escalations": result.escalations,
         "escalations_since_decided": result.resolved_escalations,
@@ -136,6 +139,12 @@ def gup_document(result: CompileResult, test_result: dict) -> dict:
         "node_changes": {
             "additions_proposed": result.node_additions,
             "proposals_rejected_by_decision": result.rejected_node_proposals,
+            "cross_packet_dependencies": result.cross_packet_dependencies,
+            "cross_packet_note": (
+                "Identities another packet minted and this one reuses, as the GUR declares them. "
+                "They are not proposals: the originating packet owns the registration, and rows "
+                "reaching them are held pending until it is applied."
+            ),
             "note": (
                 "Registry changes are isolated from edge insertions (Builder instruction 13). "
                 "Builder may not mint node identity; each addition requires an Architect decision."
@@ -144,7 +153,13 @@ def gup_document(result: CompileResult, test_result: dict) -> dict:
         "edge_changes": {
             "additions": [edge_row(row) | {"ref": row["ref"]} for row in result.additions],
             "pending_additions": [
-                edge_row(row) | {"ref": row["ref"]} for row in result.pending_additions
+                edge_row(row) | {"ref": row["ref"]}
+                for row in result.batch_satisfiable_additions
+            ],
+            # Held for a node another packet mints. Named apart so the Approved
+            # bundle cannot merge them in with the rows this batch can satisfy.
+            "blocked_additions": [
+                edge_row(row) | {"ref": row["ref"]} for row in result.blocked_additions
             ],
             "pending_note": (
                 "These rows reference a node this patch only proposes. They satisfy every other "
@@ -203,12 +218,81 @@ def edges_csv(result: CompileResult) -> str:
     return buffer.getvalue()
 
 
-def write_all(result: CompileResult, gup_dir: Path, report_dir: Path, test_result: dict) -> list[Path]:
+def pending_csv(result: CompileResult) -> str:
+    """The rows held out of `.edges.csv`, in the same 18 columns.
+
+    A patch whose every row depends on a node it also proposes emits a
+    header-only `.edges.csv`, because a row pointing at an unregistered node
+    would breach invariant 1. That is correct and it is also indistinguishable,
+    on disk, from a patch with nothing to say: the alignment-graph GUP's empty
+    edge CSV hashed byte-identical to the preamble GUP's, and an Approved bundle
+    was assembled from it whose operation index asserted four edges the CSV did
+    not contain. The Integrator caught it at the precondition gate.
+
+    The rows were never missing -- they are in the GUP under
+    `edge_changes.pending_additions`, complete and cited. What was missing was a
+    file to read them from. This is that file. It is not an integration input:
+    the Integrator applies `.edges.csv`, and these rows enter canonical only
+    once the registry change they depend on is applied and the Reviewer carries
+    them into the Approved bundle.
+    """
+    return _rows_csv(result.batch_satisfiable_additions)
+
+
+def blocked_csv(result: CompileResult) -> str:
+    """Pending rows another packet has to land before these can integrate.
+
+    Split out from `.pending.csv` because the two are not interchangeable and
+    the Approved bundle has to treat them differently. A row waiting on a node
+    this patch proposes travels with the patch; a row waiting on a node another
+    packet mints cannot integrate until that packet does.
+
+    INT-20260814-003 refused the psionics bundle over exactly this: nine
+    endpoints minted by the magic-user and druid packets, correctly held and
+    correctly declared under `cross_packet_dependencies`, but merged into one
+    undifferentiated CSV where nothing downstream could separate the 190 rows
+    the batch could satisfy from the 13 it could not.
+    """
+    return _rows_csv(result.blocked_additions)
+
+
+def _rows_csv(rows) -> str:
+    buffer = io.StringIO(newline="")
+    writer = csv.DictWriter(buffer, fieldnames=list(COLUMNS), lineterminator="\n")
+    writer.writeheader()
+    for row in rows:
+        writer.writerow(edge_row(row))
+    return buffer.getvalue()
+
+
+def write_all(
+    result: CompileResult,
+    gup_dir: Path,
+    report_dir: Path,
+    test_result: dict,
+    allow_overwrite: bool = False,
+) -> list[Path]:
+    """Publish a GUP. A revision that already exists is never rewritten.
+
+    A published revision is immutable. A Reviewer may already have hashed it,
+    and rewriting it in place leaves that Review pinning content that no longer
+    exists anywhere -- INT-20260812-002 rejected four bundles for exactly that,
+    with the declared checksums matching no file on disk. Recompiling at an
+    existing `--revision` used to clobber silently, so the damage was invisible
+    until the Integrator refused the bundle.
+    """
     gup_dir.mkdir(parents=True, exist_ok=True)
     report_dir.mkdir(parents=True, exist_ok=True)
 
     gup_path = gup_dir / f"{result.gup_id}.yaml"
     csv_path = gup_dir / f"{result.gup_id}.edges.csv"
+
+    if gup_path.exists() and not allow_overwrite:
+        raise FileExistsError(
+            f"{result.gup_id} is already published at {gup_path}. A published revision is "
+            f"immutable -- a Review may already pin its checksum. Publish the next revision "
+            f"instead, or pass allow_overwrite only for a revision nothing has consumed."
+        )
     report_path = report_dir / f"{result.gup_id}.validation.json"
 
     gup_path.write_text(_dump(gup_document(result, test_result)), encoding="utf-8", newline="\n")
@@ -218,4 +302,18 @@ def write_all(result: CompileResult, gup_dir: Path, report_dir: Path, test_resul
         encoding="utf-8",
         newline="\n",
     )
-    return [gup_path, csv_path, report_path]
+    written = [gup_path, csv_path, report_path]
+
+    # Written only when there is something to hold, so its presence is itself
+    # the signal that `.edges.csv` is short by design rather than by accident.
+    if result.batch_satisfiable_additions:
+        pending_path = gup_dir / f"{result.gup_id}.pending.csv"
+        pending_path.write_text(pending_csv(result), encoding="utf-8", newline="\n")
+        written.append(pending_path)
+    # Its presence is the signal that this patch cannot integrate on its own,
+    # however complete it otherwise looks.
+    if result.blocked_additions:
+        blocked_path = gup_dir / f"{result.gup_id}.blocked.csv"
+        blocked_path.write_text(blocked_csv(result), encoding="utf-8", newline="\n")
+        written.append(blocked_path)
+    return written

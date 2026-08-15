@@ -1,6 +1,6 @@
 # Artifact Lifecycle
 
-**Version 1.2.**
+**Version 1.7.**
 
 Artifact files are durable, append-only records. Their directories preserve
 artifact kind, not current queue state. Role readiness, revision leaves,
@@ -91,14 +91,27 @@ against, and the complete before-state and delta for every canonical mutation.
 Its authority IDs are not sufficient provenance by themselves. Exact required
 fields and queue semantics are defined by `contracts/WORK_QUEUES.md`.
 
+A new decision migration that applies direct registry or canonical operations
+declares `operation_model: decision_migration_v1` or
+`operation_model: decision_migration_v2`. It pins both the canonical edge and
+node-registry baselines, carries the executable operation plan only in its GUP
+YAML, and has no edge CSV merely to satisfy packet-update conventions. Version
+1 covers additions, one-to-one replacements, endpoint repoints, and exact
+no-replacement removals. Version 2 covers only a bounded two-or-more-retired
+IDs-to-one-new-ID merge and its exact endpoint repoints. The Approved manifest
+references that exact GUP YAML and validation report as checksummed components;
+it does not restate or translate the operations.
+
 A GUP is not approved merely because it is schema-valid.
 
 For a packet update, the GUP YAML, edge CSV, and validation report are one
 artifact bundle and one Reviewer job. For a decision migration, the GUP YAML and
 validation report are required components; edge or node CSV components are
 included only when the GUP declares them. Canonical row changes may be carried
-directly in the decision-migration YAML. Every new revision names the immediately
-prior GUP in `supersedes`.
+directly in the decision-migration YAML. A `decision_migration_v1` or
+`decision_migration_v2` Approved bundle consists of its manifest plus the exact
+reviewed migration GUP YAML and validation report; it must not add a synthetic
+edge CSV. Every new revision names the immediately prior GUP in `supersedes`.
 
 ## 4. Review
 
@@ -133,7 +146,48 @@ Created only for architectural questions. It may:
 
 The decision must identify affected artifacts and whether a constitution version bump is required.
 
-## 6. Integration Batch
+An Architect Decision is immutable after publication. A correction to executable
+migration instructions is published as a new Decision ID with a later
+`revision` and `supersedes` naming the immediately prior Decision ID. The active
+Decision-reissue leaf is the only Decision that can authorize the replacement
+migration; the predecessor remains at its original path as history. The exact
+lineage validity and queue behavior are defined in `contracts/WORK_QUEUES.md`.
+
+## 6. Decision Implementation
+
+A non-migration Architect Decision may assign Builder work such as schema,
+documentation, validator, or queue-tool alignment without authorizing a
+canonical graph migration. That work is completed through two immutable,
+ruleset-scoped artifacts:
+
+1. Builder publishes a Decision Implementation Report under
+   `rulesets/<ruleset-id>/decision-implementations/`.
+2. Reviewer publishes an independent Decision Implementation Review under
+   `rulesets/<ruleset-id>/decision-implementation-reviews/`.
+
+The implementation report consumes exactly one immutable Decision by ID, path,
+and SHA-256 checksum. It records every implementation file and checksum,
+accounts for every Decision acceptance test, and records the exact validation
+commands and outcomes. It is not a GUP and never enters the Integrator queue.
+
+The implementation Review consumes the exact active implementation-report leaf
+by ID, path, and checksum and independently dispositions every Decision
+acceptance test. Only an Approved implementation Review completes the Decision.
+A Builder claim by itself is not completion.
+
+An implementation report may use `retired_by_lineage` only for a live
+queue-snapshot acceptance test whose named subject completed ordinary Approval
+and Integration. The report and its independent Review must preserve exact
+Architect authority and checksummed Integration evidence; this outcome does not
+restate the old queue snapshot as passing. Its required structure, validation,
+and review disposition are defined in `contracts/WORK_QUEUES.md`.
+
+Exact schemas, naming, and queue behavior follow
+`schemas/common/decision-implementation.schema.json`,
+`schemas/common/decision-implementation-review.schema.json`,
+`contracts/FILE_NAMING.md`, and `contracts/WORK_QUEUES.md`.
+
+## 7. Integration Batch
 
 Created by Integrator after applying one or more Approved GUPs.
 
@@ -151,6 +205,18 @@ An Integration manifest consumes each Approved bundle by ID and checksum.
 
 ## Version History
 
+- **1.7 - 2026-08-14:** Recorded the bounded direct-YAML
+  `decision_migration_v2` node-ID merge path and its no-edge-CSV bundle form.
+- **1.6 - 2026-08-14:** Defined the checked, direct-YAML
+  `decision_migration_v1` bundle path for exact registry and canonical
+  operations that do not have an edge CSV representation.
+- **1.5 - 2026-08-13:** Recorded immutable Architect Decision reissues for
+  corrections to executable migration instructions.
+- **1.4 - 2026-08-06:** Recorded the checksummed retired-by-lineage outcome for
+  Decision Implementation acceptance tests tied to completed queue subjects.
+
+- **1.3 - 2026-08-04:** Added reviewed Decision Implementation Reports as the
+  completion lineage for non-migration Builder Decisions.
 - **1.2 - 2026-07-31:** Defined packet updates and decision migrations as the
   two GUP lineage roots, with checksummed Decision and canonical provenance and
   kind-specific bundle components.

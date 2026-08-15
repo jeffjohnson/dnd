@@ -1,0 +1,67 @@
+schema_version: '1.0'
+id: ESC-2026-08-14T04.18.34.112Z
+status: decided
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-014-016-cavalier
+constitution_version: '1.7'
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-08-14'
+decision_id: DEC-2026-0033
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: The constitution and production data disagree in a way that cannot be fixed mechanically.
+  blocking_ids: []
+gur_candidate_ref: GUR-PKT-UA-014-016-cavalier-r01 ESC-CAND-03 and XGC-01
+trigger: 'ESCALATION_CONTRACT 1.2: the constitution and production data disagree in a way that cannot
+  be fixed mechanically.'
+originating_artifacts:
+  gur_id: GUR-PKT-UA-014-016-cavalier-r01
+  gur_path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-014-016-cavalier-r01.yaml
+  related_decision: DEC-2026-0029, whose pair 2 sent the Analyst to this page
+question: A rule on UA 15 cannot be entered into the graph. The cavalier's flat hit-point gain past a
+  level threshold differs from the fighter's only in the threshold and the amount, both of which are magnitudes
+  barred from aspect and condition. Under the 5.1 assertion key the UA rule is therefore either an illegal
+  duplicate of the existing PHB 22 row or unrepresentable. Which?
+source_excerpt: 'UA 15 CAVALIERS TABLE I: "Cavaliers gain 3 h.p. per level after the 10th."
+
+  The canonical counterpart is PHB 22 FIGHTERS TABLE I, already in the graph.'
+local_graph_neighborhood:
+  existing_canonical_row: exp_level MODIFIES rule_hit_points | aspect 'flat gain past name level' | condition
+    'beyond 9th level' | PHB 22 FIGHTERS TABLE I | status core
+  row_that_cannot_be_written: exp_level MODIFIES rule_hit_points | aspect would be a paraphrase of 'flat
+    gain past name level' | condition cannot carry the distinguishing threshold | UA 15 | status optional
+  why_status_does_not_separate_them: The PHB row is core and the UA row would be optional, but status
+    is not part of the 5.1 assertion key, so filtering on it does not prevent the collision.
+  third_row_on_the_same_endpoints: exp_level MODIFIES rule_hit_points | 'different dice if entering via
+    the ranks' | UA 15. That is DEC-2026-0029 pair 2 and is addressed separately in the cavalier GUR's
+    pair 2 finding; it is not this question.
+affected_canonical_ids:
+- exp_level
+- rule_hit_points
+- class_cavalier
+options_considered:
+- option: Allow the class to appear in condition, for example condition 'cavalier'
+  impact: 'No constitution change: a class name is qualitative, not a magnitude, and conditions already
+    carry ''fighter classes only'' and ''monks'' elsewhere in canonical. Smallest change and consistent
+    with existing practice.'
+- option: Make book or status identity-bearing in the 5.1 assertion key
+  impact: Constitution 5.1 change with corpus-wide effect. Would re-open every cross-book assertion currently
+    deduplicated on the five-field key. High risk for one rule.
+- option: Accept that per-class variants of a general rule are out of scope
+  impact: No change. Makes the omission deliberate, but the graph then silently misrepresents the cavalier
+    as following the fighter's progression.
+recommended_resolution: The first option. Canonical already conditions rows on class membership, so this
+  needs no contract change and no migration; it only needs confirming that a class name in condition is
+  a legitimate discriminator rather than a magnitude smuggled in by another name.
+expected_migration_impact: None. Under the recommended option one new edge becomes writable in a later
+  revision of the cavalier GUR. No existing row changes.
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  profile_change: false
+blocking: Blocks no current artifact. The assertion is omitted from GUR-PKT-UA-014-016-cavalier-r01 rather
+  than deferred, and its absence is recorded in that GUR's XGC-01 and completeness statement.

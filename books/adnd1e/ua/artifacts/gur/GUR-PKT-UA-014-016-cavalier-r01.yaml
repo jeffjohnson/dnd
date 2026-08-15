@@ -1,0 +1,1819 @@
+schema_version: '1.0'
+id: GUR-PKT-UA-014-016-cavalier-r01
+status: proposed
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-014-016-cavalier
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.3
+- contracts/WORK_QUEUES.md 1.6
+- contracts/ARTIFACT_LIFECYCLE.md 1.4
+- contracts/GRAPH_INVARIANTS.md 1.1
+- rulesets/adnd1e/governance/constitution.md 1.7
+- rulesets/adnd1e/escalations/decisions/DEC-2026-0029.yaml
+analyst_pass: page-sweep
+citation_code: UA
+page_start: 14
+page_end: 16
+packet_source_checksum: sha256:39b4dd6e5cde1b7f9897c167e71ef0089e3f2d90e64914cf84a9da2a274e51ec
+packet_source_checksum_basis: lf_normalized
+replaces_packet:
+  packet_id: PKT-UA-015-015-cavaliers
+  its_gur: GUR-PKT-UA-015-015-cavaliers-r01
+  reason: The earlier packet was a page-15 extract whose page attribution could not be trusted past its
+    second heading, and half of it was deferred under BLK-01. The steward replaced it with the complete
+    class across printed pages 14 to 16, with the running headers that caused the ambiguity removed and
+    three markers supplied. All fourteen edges of the earlier GUR are re-derived here from the replacement
+    packet; none is carried across.
+  disposition_of_the_earlier_gur: Withdrawn by GUR-PKT-UA-015-015-cavaliers-r02, which supersedes r01
+    with an empty candidate set and a handoff that produces no Builder job. Both revisions remain at their
+    stable paths.
+source_summary: The complete cavalier class from Unearthed Arcana, spanning printed pages 14 to 16. Page
+  14 covers entry requirements, service and social class, the zero-level Horseman and Lancer grades, racial
+  access, preferred weapons and the weapons-of-choice bonus progression. Page 15 carries CAVALIERS TABLE
+  I and its footnote, the lance, parry, armor preference, mounted attacks, horsemanship by level, steed
+  selection, ability-score training, advancement training, and fear and mind-effect immunity. Page 16
+  covers functioning at negative hit points, healing, armorial bearing, hospitality, the code of chivalry
+  and its enforcement, battlefield behaviour, and what changes for neutral and evil cavaliers.
+node_id_resolution_method: Two passes. Every endpoint was looked up in nodes.csv, then every canonical
+  row cited to UA 14, 15 and 16 and every canonical row touching class_cavalier on any page, twenty in
+  all, was pulled and compared assertion by assertion before anything was emitted. Where canonical already
+  names a concept, that identity is reused, including str_exceptional over abil_strength_exceptional on
+  dominance grounds. Ten concepts had no identity anywhere and are proposed below.
+page_attribution_method: 'Parsed with pandoc 3.10 to JSON AST. Three markers. {#p14} and {#p15} sit at
+  the end of headings and take their whole heading under SOURCE_MARKDOWN 1.3 rule 1. The third is inline,
+  mid-paragraph, and splits under rule 3: the text through ''This 90% immunity is in addition to any''
+  remains on page 15, and ''saving throw for the cavalier, if applicable'' onward begins page 16, with
+  every following block on 16. That split is load-bearing, because the saving-throw and illusion assertions
+  fall on the page-16 side of it while the fear and mind-effect immunity that introduces them falls on
+  15.'
+grain_decisions:
+- 'The whole of CAVALIERS TABLE I is magnitudes: experience thresholds, dice expressions and flat gains.
+  Each column is recorded as a lookup relationship to the table, never a value.'
+- The weapons-of-choice bonus list gives a level and a plus for each of seven entries. The relationship
+  recorded is that level improves the weapon-of-choice bonus; the levels and the pluses are dropped.
+- The armor preference list and the eight-item battlefield charge priority are orderings, not values.
+  Neither is representable as an aspect, and neither is forced into one; the constraint each expresses
+  is recorded instead.
+- '''as if the character were 5 levels higher'', the 85% saddle chances, the 1% per level increment, the
+  2d10 percentile roll, the 18/00 ceiling and the +2 hit points per hit die are all magnitudes.'
+- The negative-hit-point range and the healing bonus are magnitudes; M059 and M060 record only that a
+  good-aligned cavalier functions below zero and heals faster.
+candidate_nodes:
+- proposed_id: tbl_cavaliers_i
+  proposed_label: Cavaliers Table I
+  kind: tbl
+  why_needed: 'The table is consulted as a unit for three separate things: experience threshold, hit dice,
+    and level title. 3.2 says a rule and its separately addressable table are two nodes joined by DERIVED_FROM
+    when referenced apart, which is the case here. The registry already holds tbl_rangers_i on the same
+    pattern. Canonical cites the section name on seven rows but has no node for the table.'
+  edges_depending_on_it:
+  - M016
+  - M017
+  - M018
+- proposed_id: rule_level_title
+  proposed_label: Level Title
+  kind: rule
+  why_needed: The table's fourth column, plus the line setting the title for every level above the table's
+    last row. Nothing in the registry represents level titles, though every class table in the corpus
+    has the column.
+  edges_depending_on_it:
+  - M018
+  - M019
+- proposed_id: rule_zero_level_progression
+  proposed_label: Zero Level Progression
+  kind: rule
+  why_needed: 'The two grades below first level, described in full on page 14 and restated in the page
+    15 footnote. This is the node the canonical UA 15 hit-point row needs and does not have: that row
+    is sourced from exp_level while carrying source_label ''Zero Level Progression'', so the label does
+    identity work the ID cannot support. The stem matches the label already in canonical rather than inventing
+    a name. See the pair 2 finding.'
+  edges_depending_on_it:
+  - M004
+  - M005
+  - M006
+- proposed_id: rule_chivalric_code
+  proposed_label: Code of Chivalry
+  kind: rule
+  why_needed: Named on page 14 as 'a code of chivalry (described below)' and set out in full on page 16,
+    where it constrains conduct, weapons, battlefield behaviour and experience awards, and where failing
+    it costs knighthood. Referenced from three separate pages of this packet, so it is a node rather than
+    a property of the class.
+  edges_depending_on_it:
+  - M003
+  - M009
+  - M065
+  - M066
+  - M067
+  - M068
+- proposed_id: rule_weapon_of_choice
+  proposed_label: Weapon of Choice
+  kind: rule
+  why_needed: 'The page names the mechanic in quotation marks, ''weapons of choice'', and returns to it
+    for the attack-rate rule and the constraint that the same weapon must be kept at higher levels. Distinct
+    from prof_weapon, which is ordinary proficiency: a cavalier is proficient in many weapons and has
+    exactly three weapons of choice.'
+  edges_depending_on_it:
+  - M010
+  - M011
+  - M012
+  - M013
+  - M014
+  - M015
+- proposed_id: rule_armorial_bearing
+  proposed_label: Armorial Bearing
+  kind: rule
+  why_needed: The device worn on the shield to identify the cavalier in battle and tournament, and the
+    reason it may be covered or must be revealed. Kept distinct from the existing rule_battleflag, which
+    the page introduces separately as the lance pennon and its duplicate held by retainers; canonical
+    attaches territory and dishonor to the flag, neither of which the shield device carries. If the Reviewer
+    judges them one concept, rule_battleflag is the survivor and M061 should re-point to it.
+  edges_depending_on_it:
+  - M061
+- proposed_id: monster_pegasus
+  proposed_label: Pegasus
+  kind: monster
+  why_needed: One of the three steeds unlocked by level. No node exists.
+  edges_depending_on_it:
+  - M035
+- proposed_id: monster_hippogriff
+  proposed_label: Hippogriff
+  kind: monster
+  why_needed: One of the three steeds unlocked by level. No node exists.
+  edges_depending_on_it:
+  - M036
+- proposed_id: monster_griffon
+  proposed_label: Griffon
+  kind: monster
+  why_needed: One of the three steeds unlocked by level, and the page extends it to 'a similar creature
+    (DM's judgment)'. No node exists. The registry already holds monster_horse and monster_unicorn for
+    the other two mounts on this page, so these three complete a family the graph has half of.
+  edges_depending_on_it:
+  - M037
+reused_nodes:
+- abil_constitution
+- abil_dexterity
+- abil_intelligence
+- abil_strength
+- abil_wisdom
+- campaign_social_class
+- cbt_attack_matrix
+- cbt_attacks_per_round
+- cbt_damage
+- cbt_parry
+- cbt_tohit
+- class_cavalier
+- ex_movement_rate
+- exp_level
+- exp_level_loss
+- hench_henchmen
+- item_magic_armor
+- item_magic_weapon
+- monster_unicorn
+- prof_weapon
+- psi_attack_blast
+- race_elf
+- race_half_elf
+- rule_alignment_change
+- rule_battleflag
+- rule_ceremony
+- rule_fear
+- rule_hit_points
+- rule_hospitality
+- rule_mount
+- rule_poison_use
+- rule_sex
+- rule_shield
+- save_matrix
+- spell_beguiling_charm_hypnosis_suggestion_spells
+- spell_hold_person
+- spell_magic_jar
+- spell_sleep
+- str_exceptional
+- sys_ability_scores
+- sys_alignment
+- sys_armor
+- sys_experience
+- tbl_race_maximums
+- training
+cross_packet_candidate_targets: []
+candidate_general_rules: []
+domains_touched:
+- character-classes
+- combat
+- campaign
+domains_touched_note: Three. Class progression on 14 and 15, combat in the weapons-of-choice, parry and
+  mounted attack material, and campaign in the social class, heraldry, hospitality and code material on
+  16. A full class entry crosses domains by nature.
+candidate_domains:
+- name: mounted combat
+  observed_here: Lance damage while mounted, the dismounted lance, mounted attack level, saddle security,
+    urged speed and four steed types form a cluster with its own vocabulary.
+  promotion_status: Not adopted. 15 requires recurrence across several packets and this is the first UA
+    packet in the repository.
+- name: chivalry and station
+  observed_here: Social class entry, sponsorship, the code, heraldry, hospitality and battlefield compulsion.
+    Distinct from combat and from class progression, and largely absent from the core books.
+  promotion_status: Not adopted. Likely to recur in the UA class entries, so worth watching.
+domain_boundary_questions: []
+candidate_edges:
+- ref: M001
+  source_id: abil_intelligence
+  source_label: Intelligence
+  edge_type: GATES
+  target_id: class_cavalier
+  target_label: Cavalier
+  aspect: minimum score
+  condition: ''
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: abil_wisdom
+  source_label: Wisdom
+  edge_type: GATES
+  target_id: class_cavalier
+  target_label: Cavalier
+  aspect: minimum score
+  condition: ''
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Canonical carries the strength, dexterity and constitution minimums from this same
+    sentence but not the intelligence and wisdom minimums, which the sentence states in the same breath.
+- ref: M003
+  source_id: rule_chivalric_code
+  source_label: Code of Chivalry
+  edge_type: CONSTRAINS
+  target_id: class_cavalier
+  target_label: Cavalier
+  aspect: conduct required
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_zero_level_progression
+  source_label: Zero Level Progression
+  edge_type: GATES
+  target_id: class_cavalier
+  target_label: Cavalier
+  aspect: low born entry
+  condition: ''
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: rule_zero_level_progression
+  source_label: Zero Level Progression
+  edge_type: MODIFIES
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: entry path dice
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Cited to 14 rather than 15. Page 14 states the rule in full, naming both grades,
+    both routes and the dice each yields; the page 15 table footnote restates it. 5 says keep one edge
+    and record the additional locus in provenance, which is done in additional_loci below.
+- ref: M006
+  source_id: rule_zero_level_progression
+  source_label: Zero Level Progression
+  edge_type: CONSTRAINS
+  target_id: class_cavalier
+  target_label: Cavalier
+  aspect: special abilities withheld
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: abil_constitution
+  source_label: Constitution
+  edge_type: MODIFIES
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: bonus timing
+  condition: cavalier entry grade
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: CONSTRAINS
+  target_id: prof_weapon
+  target_label: Weapon Proficiency
+  aspect: proficiency order
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'Distinct from the canonical row about the lance being required at first level. This
+    is the ordering rule: a listed preferred weapon must be mastered before any other may be learned.'
+- ref: M009
+  source_id: rule_chivalric_code
+  source_label: Code of Chivalry
+  edge_type: CONSTRAINS
+  target_id: prof_weapon
+  target_label: Weapon Proficiency
+  aspect: distance weapons avoided
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: rule_weapon_of_choice
+  target_label: Weapon of Choice
+  aspect: to hit bonus
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M011
+  source_id: rule_weapon_of_choice
+  source_label: Weapon of Choice
+  edge_type: MODIFIES
+  target_id: cbt_tohit
+  target_label: To-Hit Roll
+  aspect: chosen weapon bonus
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M012
+  source_id: rule_weapon_of_choice
+  source_label: Weapon of Choice
+  edge_type: EXCLUDED_FROM
+  target_id: cbt_damage
+  target_label: Damage
+  aspect: to hit bonus
+  condition: ''
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: '''The plus to hit does not apply to damage.'' A denial of exactly the dependency
+    a reader carries over from magic weapons, which is what 4.1 reserves EXCLUDED_FROM for.'
+- ref: M013
+  source_id: rule_weapon_of_choice
+  source_label: Weapon of Choice
+  edge_type: EXCLUDED_FROM
+  target_id: item_magic_weapon
+  target_label: Magic Weapon
+  aspect: hitting magic immune
+  condition: ''
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M014
+  source_id: rule_weapon_of_choice
+  source_label: Weapon of Choice
+  edge_type: MODIFIES
+  target_id: cbt_attacks_per_round
+  target_label: Attacks Per Melee Round
+  aspect: effective level
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M015
+  source_id: rule_weapon_of_choice
+  source_label: Weapon of Choice
+  edge_type: CONSTRAINS
+  target_id: class_cavalier
+  target_label: Cavalier
+  aspect: same weapon retained
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 14
+  section: THE CAVALIER
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M016
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: DERIVED_FROM
+  target_id: tbl_cavaliers_i
+  target_label: Cavaliers Table I
+  aspect: level threshold
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M017
+  source_id: rule_hit_points
+  source_label: Hit Points
+  edge_type: DERIVED_FROM
+  target_id: tbl_cavaliers_i
+  target_label: Cavaliers Table I
+  aspect: hit dice by level
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M018
+  source_id: rule_level_title
+  source_label: Level Title
+  edge_type: DERIVED_FROM
+  target_id: tbl_cavaliers_i
+  target_label: Cavaliers Table I
+  aspect: title by level
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M019
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: rule_level_title
+  target_label: Level Title
+  aspect: title advancement
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M020
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: sys_experience
+  target_label: Experience Points
+  aspect: flat cost beyond table
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Distinct from the canonical row about the negative starting total, which is about
+    where the table begins rather than where it ends.
+- ref: M021
+  source_id: rule_shield
+  source_label: Shield
+  edge_type: MODIFIES
+  target_id: cbt_parry
+  target_label: Parry
+  aspect: second opponent
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M022
+  source_id: cbt_parry
+  source_label: Parry
+  edge_type: CONSTRAINS
+  target_id: cbt_attacks_per_round
+  target_label: Attacks Per Melee Round
+  aspect: attack forfeited
+  condition: cavalier parries
+  polarity: worsens
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M023
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: CONSTRAINS
+  target_id: sys_armor
+  target_label: Armor
+  aspect: armor types worn
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'CONSTRAINS rather than MODIFIES per 4.2: the page forbids leather, studded leather
+    and padded outright and ranks the rest, without altering any value.'
+- ref: M024
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: CONSTRAINS
+  target_id: item_magic_armor
+  target_label: Magic Armor
+  aspect: preference still applies
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Recorded separately because the page says the ranking is not overridden by enchantment.
+    Without this row a reader would reasonably assume magic armor is exempt from M023.
+- ref: M025
+  source_id: rule_mount
+  source_label: Mount
+  edge_type: MODIFIES
+  target_id: cbt_attack_matrix
+  target_label: Attack Matrix
+  aspect: effective attack level
+  condition: human cavalier
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M026
+  source_id: race_elf
+  source_label: Elf
+  edge_type: EXCLUDED_FROM
+  target_id: cbt_attack_matrix
+  target_label: Attack Matrix
+  aspect: mounted attack bonus
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M027
+  source_id: race_half_elf
+  source_label: Half-Elf
+  edge_type: EXCLUDED_FROM
+  target_id: cbt_attack_matrix
+  target_label: Attack Matrix
+  aspect: mounted attack bonus
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M028
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: MODIFIES
+  target_id: rule_mount
+  target_label: Mount
+  aspect: thrown from saddle
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M029
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: rule_mount
+  target_label: Mount
+  aspect: saddle security
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M030
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: GATES
+  target_id: rule_mount
+  target_label: Mount
+  aspect: rapid mounting
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M031
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: ex_movement_rate
+  target_label: Movement Rate
+  aspect: mount speed urged
+  condition: cavalier urges mount
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M032
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: GATES
+  target_id: monster_unicorn
+  target_label: Unicorn
+  aspect: steed handling
+  condition: female elven cavalier
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M033
+  source_id: race_elf
+  source_label: Elf
+  edge_type: GATES
+  target_id: monster_unicorn
+  target_label: Unicorn
+  aspect: steed handling
+  condition: female cavalier
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M034
+  source_id: rule_sex
+  source_label: Character Sex
+  edge_type: CONSTRAINS
+  target_id: monster_unicorn
+  target_label: Unicorn
+  aspect: steed handling
+  condition: female only
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The page says 'a female elven cavalier (and only a female elf)'. Three conditions
+    must hold at once, level, race and sex, and each is recorded against the mechanic that carries it
+    rather than compressed into one edge.
+- ref: M035
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: GATES
+  target_id: monster_pegasus
+  target_label: Pegasus
+  aspect: steed handling
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M036
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: GATES
+  target_id: monster_hippogriff
+  target_label: Hippogriff
+  aspect: steed handling
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M037
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: GATES
+  target_id: monster_griffon
+  target_label: Griffon
+  aspect: steed handling
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M038
+  source_id: sys_alignment
+  source_label: Alignment
+  edge_type: CONSTRAINS
+  target_id: rule_mount
+  target_label: Mount
+  aspect: mount acceptance
+  condition: opposed alignment
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M039
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: MODIFIES
+  target_id: rule_mount
+  target_label: Mount
+  aspect: steed worth judged
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M040
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: MODIFIES
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: selected steed bonus
+  condition: steed chosen
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M041
+  source_id: training
+  source_label: Training
+  edge_type: MODIFIES
+  target_id: abil_strength
+  target_label: Strength
+  aspect: percentile gain
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M042
+  source_id: training
+  source_label: Training
+  edge_type: MODIFIES
+  target_id: abil_dexterity
+  target_label: Dexterity
+  aspect: percentile gain
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M043
+  source_id: training
+  source_label: Training
+  edge_type: MODIFIES
+  target_id: abil_constitution
+  target_label: Constitution
+  aspect: percentile gain
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M044
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: sys_ability_scores
+  target_label: Ability Scores
+  aspect: percentile increase
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M045
+  source_id: exp_level_loss
+  source_label: Level Loss
+  edge_type: MODIFIES
+  target_id: sys_ability_scores
+  target_label: Ability Scores
+  aspect: percentile loss
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M046
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: OVERRIDES
+  target_id: tbl_race_maximums
+  target_label: Racial Ability Maximums
+  aspect: score ceiling
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: explicit_replacement
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: '''even if doing so violates limitations based on race or sex.'' The text sets the
+    limit aside by name, which is explicit_replacement rather than optional_variant.'
+- ref: M047
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: OVERRIDES
+  target_id: rule_sex
+  target_label: Character Sex
+  aspect: score ceiling
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: explicit_replacement
+  general_rule_id: ''
+  review_flag: ''
+- ref: M048
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: CROSS_REFERENCES
+  target_id: str_exceptional
+  target_label: Exceptional Strength
+  aspect: percentile strength
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_reference
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: str_exceptional is the dominant identity in canonical at 7 uses against 2 for abil_strength_exceptional.
+    Both are live and carry the identical label; see IDQ-02.
+- ref: M050
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: MODIFIES
+  target_id: training
+  target_label: Training
+  aspect: self sufficient
+  condition: at higher levels
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M051
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: DERIVED_FROM
+  target_id: save_matrix
+  target_label: Saving Throw Matrix
+  aspect: saves as a fighter
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'Targets save_matrix rather than class_fighter, mirroring canonical''s own class_cavalier
+    DERIVED_FROM cbt_attack_matrix for the parallel attack rule on page 14. Distinct from the page 16
+    class_cavalier MODIFIES save_matrix row: one says which table is used, the other that bonuses apply
+    on top of it.'
+- ref: M052
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: EXCLUDES
+  target_id: rule_fear
+  target_label: Fear or Religious Awe
+  aspect: immunity
+  condition: ''
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M053
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: EXCLUDES
+  target_id: rule_fear
+  target_label: Fear or Religious Awe
+  aspect: allied aura
+  condition: good aligned
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'A second, different assertion from M052: the cavalier''s own immunity and the radius
+    within which allies share it are separately stated and separately lost, since the page later strips
+    the aura from neutral and evil cavaliers but not the personal immunity.'
+- ref: M054
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: MODIFIES
+  target_id: spell_beguiling_charm_hypnosis_suggestion_spells
+  target_label: Beguiling, Charm, Hypnosis, and Suggestion Spells
+  aspect: mind effect resistance
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The registry's existing family node covers beguiling, charm, hypnosis and suggestion
+    exactly as the page lists them, so one edge is used rather than four against specific spells. Domination
+    and possession are also listed and have no node; see OBS-05.
+- ref: M055
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: MODIFIES
+  target_id: spell_hold_person
+  target_label: Held or Paralyzed
+  aspect: mind effect resistance
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M056
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: MODIFIES
+  target_id: spell_magic_jar
+  target_label: Magic Jar
+  aspect: mind effect resistance
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M057
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: MODIFIES
+  target_id: spell_sleep
+  target_label: Sleep
+  aspect: mind effect resistance
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M058
+  source_id: class_cavalier
+  source_label: Cavalier
+  edge_type: MODIFIES
+  target_id: psi_attack_blast
+  target_label: Psionic Blast
+  aspect: mind effect resistance
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: UA
+  page: 15
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M061
+  source_id: rule_armorial_bearing
+  source_label: Armorial Bearing
+  edge_type: DERIVED_FROM
+  target_id: campaign_social_class
+  target_label: Social Class and Rank
+  aspect: device of station
+  condition: ''
+  book: UA
+  page: 16
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M062
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: GATES
+  target_id: rule_battleflag
+  target_label: Battle Flag
+  aspect: pennon unlocked
+  condition: ''
+  book: UA
+  page: 16
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: rule_battleflag already exists and canonical carries its territory and dishonor consequences
+    from this same paragraph. Only the level gate is new.
+- ref: M064
+  source_id: sys_alignment
+  source_label: Alignment
+  edge_type: CONSTRAINS
+  target_id: rule_hospitality
+  target_label: Hospitality
+  aspect: same alignment only
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 16
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M065
+  source_id: rule_chivalric_code
+  source_label: Code of Chivalry
+  edge_type: CONSTRAINS
+  target_id: class_cavalier
+  target_label: Cavalier
+  aspect: battlefield control
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 16
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: '''cavaliers cannot be controlled in battle situations. They will charge any enemy
+    in sight'' with a stated order of preference. The eight-item priority list is an ordering, not a set
+    of values, and is not representable as an aspect; the constraint itself is.'
+- ref: M066
+  source_id: rule_chivalric_code
+  source_label: Code of Chivalry
+  edge_type: MODIFIES
+  target_id: sys_experience
+  target_label: Experience Points
+  aspect: award reduced
+  condition: code violated
+  polarity: worsens
+  polarity_basis: read
+  book: UA
+  page: 16
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M067
+  source_id: rule_ceremony
+  source_label: Druidic Ceremony
+  edge_type: GATES
+  target_id: rule_chivalric_code
+  target_label: Code of Chivalry
+  aspect: knighthood oath
+  condition: ''
+  book: UA
+  page: 16
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M068
+  source_id: rule_chivalric_code
+  source_label: Code of Chivalry
+  edge_type: GATES
+  target_id: class_cavalier
+  target_label: Cavalier
+  aspect: knighthood retained
+  condition: ''
+  book: UA
+  page: 16
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M069
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: rule_alignment_change
+  target_label: Changing Alignment
+  aspect: penalty free window
+  condition: early levels
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 16
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M070
+  source_id: sys_alignment
+  source_label: Alignment
+  edge_type: GATES
+  target_id: rule_poison_use
+  target_label: Use of Poison
+  aspect: poison use
+  condition: evil cavaliers
+  book: UA
+  page: 16
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Canonical already holds sys_alignment GATES rule_poison_use with aspect 'poison use'
+    and condition 'evil clerics'. The same facet is restated here for a different class, so the facet
+    name is reused and the condition carries the difference, which is what 5.1 distinguishes assertions
+    by.
+- ref: M071
+  source_id: sys_alignment
+  source_label: Alignment
+  edge_type: CONSTRAINS
+  target_id: hench_henchmen
+  target_label: Henchmen
+  aspect: follower types limited
+  condition: neutral or evil cavalier
+  polarity: neutral
+  polarity_basis: read
+  book: UA
+  page: 16
+  section: CAVALIERS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+additional_loci:
+- ref: M005
+  primary: UA 14 THE CAVALIER
+  also_stated_at: UA 15 CAVALIERS TABLE I, the table footnote
+  basis: '5: if the same assertion is stated at several loci, keep one edge and preserve the additional
+    assertions here. Page 14 is primary because it states the rule in full.'
+canonical_duplicates_not_for_emission:
+- finding: Canonical holds 32 rows cited to UA 14, 15 and 16. The fresh reading confirms all 27 that fall
+    inside this packet's scope, and none is re-emitted. The remaining five are the WEAPON SPECIALIZATION
+    rows discussed in page_attribution_findings.
+  confirmed_at_ua_14:
+  - class_cavalier EXCLUDED_FROM sys_experience | 'no prime requisite so no bonus'
+  - abil_strength GATES class_cavalier | 'high minimum score'
+  - abil_dexterity GATES class_cavalier | 'high minimum score'
+  - abil_constitution GATES class_cavalier | 'high minimum score'
+  - class_cavalier DERIVED_FROM cbt_attack_matrix | 'attacks as a fighter'
+  - class_cavalier EXCLUDED_FROM prof_specialization | 'cavaliers and paladins are barred'
+  - rule_service GATES class_cavalier | 'must serve some higher cause'
+  - campaign_social_class GATES class_cavalier | 'immediate entry requires noble birth'
+  - rule_sponsorship GATES class_cavalier | 'a higher authority must vouch for low-born entrants'
+  - campaign_social_class TRIGGERS exp_level | 'must progress through Horseman and Lancer'
+  - class_paladin EXCLUDED_FROM prof_specialization | 'barred as a cavalier subclass'
+  confirmed_at_ua_15:
+  - class_cavalier CONSTRAINS prof_weapon | 'lance proficiency required at first level'
+  - class_cavalier MODIFIES cbt_parry | 'all to-hit bonuses apply to the parry'
+  - exp_level MODIFIES sys_experience | 'begins at a negative total'
+  - exp_level MODIFIES rule_hit_points | 'different dice if entering via the ranks'
+  - exp_level MODIFIES cbt_damage | 'damage bonus equals level while mounted'
+  - rule_mount MODIFIES cbt_damage | 'dismounted lance loses the level bonus'
+  - rule_mount DERIVED_FROM wpn_stats | 'treated as another weapon type'
+  confirmed_at_ua_16:
+  - class_cavalier MODIFIES save_matrix | 'bonuses against certain attack forms'
+  - class_cavalier MODIFIES save_spell | 'bonus against all illusions'
+  - sys_alignment OVERRIDES rule_hit_points | 'may function below zero'
+  - rule_hit_points CONSTRAINS sys_alignment | 'how far below zero the cavalier may function'
+  - sys_alignment MODIFIES rule_hp_recovery | 'extra points per week of rest'
+  - campaign_social_class GATES rule_hospitality | 'cavaliers may expect full hospitality'
+  - campaign_social_class FEEDS_INTO cbt_encounter_reactions | 'bearing must be revealed to those who
+    understand it'
+  - rule_battleflag GATES campaign_territory | 'pennon marks the cavalier's holding'
+  - rule_battleflag TRIGGERS rule_dishonor | 'must be regained'
+  caught_only_by_pulling_the_whole_page:
+  - The first pass filtered canonical on rows naming class_cavalier and found twenty. Pulling every row
+    cited to UA 14, 15 and 16 instead found 32, and the twelve extra included rule_hospitality, rule_battleflag,
+    rule_dishonor and cbt_encounter_reactions, four nodes this packet would otherwise have duplicated.
+    Three proposed edges were withdrawn as paraphrases as a result, and one proposed node, rule_hospitality,
+    turned out to exist already.
+  also_stated_here_but_canonically_cited_to_ua_12:
+  - sys_alignment GATES class_cavalier | 'non-evil at start' — page 14 states the good-alignment entry
+    requirement, canonical cites it to the CHARACTER CLASSES overview on page 12. One assertion, two loci;
+    not re-emitted.
+  - race_any CONSTRAINS class_cavalier and race_subrace GATES class_cavalier — page 14 restates the racial
+    access rule in more detail than page 12. Not re-emitted.
+  basis: 5.1 for the exact and paraphrase cases, and 5 for the multiple-loci case. Each assertion was
+    read from the page first and matched to canonical afterwards.
+near_matches_vs_canonical:
+- ref: M007
+  proposed_aspect: bonus timing
+  proposed_condition: cavalier entry grade
+  canonical_aspect: per-die adjustment
+  canonical_condition: ''
+  canonical_locus: PHB 12 CONSTITUTION TABLE
+- ref: M007
+  proposed_aspect: bonus timing
+  proposed_condition: cavalier entry grade
+  canonical_aspect: raised ceiling
+  canonical_condition: fighter classes only
+  canonical_locus: PHB 12 CONSTITUTION TABLE
+- ref: M008
+  proposed_aspect: proficiency order
+  proposed_condition: ''
+  canonical_aspect: lance proficiency required at first level
+  canonical_condition: ''
+  canonical_locus: UA 15 CAVALIERS TABLE I
+- ref: M020
+  proposed_aspect: flat cost beyond table
+  proposed_condition: ''
+  canonical_aspect: begins at a negative total
+  canonical_condition: ''
+  canonical_locus: UA 15 CAVALIERS TABLE I
+- ref: M031
+  proposed_aspect: mount speed urged
+  proposed_condition: cavalier urges mount
+  canonical_aspect: movement rate
+  canonical_condition: monks
+  canonical_locus: PHB 30 The Monk
+- ref: M070
+  proposed_aspect: poison use
+  proposed_condition: evil cavaliers
+  canonical_aspect: poison use
+  canonical_condition: evil clerics
+  canonical_locus: 'PHB 19 CHARACTER CLASSES TABLE II: ARMOR AND WEAPONS PERMITTED'
+- ref: M071
+  proposed_aspect: follower types limited
+  proposed_condition: neutral or evil cavalier
+  canonical_aspect: retainer alignment
+  canonical_condition: paladins
+  canonical_locus: PHB 24 The Paladin
+page_attribution_findings:
+  subject: the earlier packet's page-boundary problem, now resolved
+  finding: The replacement packet's inline {#p16} marker falls inside the saving-throw paragraph. The
+    two canonical rows cited to UA 16, class_cavalier MODIFIES save_matrix and class_cavalier MODIFIES
+    save_spell, describe exactly the text on the page-16 side of that marker. Those citations are correct.
+  correction_to_the_earlier_analysis: The GUR for the withdrawn PKT-UA-015-015-cavaliers reasoned from
+    the CHARACTER CLASSES (CAVALIER) running head that the boundary fell there, roughly half way up the
+    file. It does not; it falls much later, inside the saving-throw paragraph. The inference that the
+    packet's single page-15 marker could not be right was correct, and the inference about where the true
+    boundary lay was wrong. Both are recorded because the second is the reason SOURCE_MARKDOWN 1.3 forbids
+    guessing a boundary rather than returning the packet.
+  open_question_not_resolved_by_this_packet: Canonical cites five WEAPON SPECIALIZATION rows to UA 15.
+    This packet is scoped to the cavalier class rather than to whole printed pages, so its silence on
+    weapon specialization is not evidence either way about where that section sits. The question stays
+    open until the UA book is packetized in full.
+dec_2026_0029_pair_2_finding:
+  status: Re-derived from the replacement packet. The conclusion is unchanged from the withdrawn GUR,
+    and is now supported by the fuller page 14 statement of the rule rather than by the page 15 footnote
+    alone.
+  question_from_decision: Do the UA 15 and PHB 34 exp_level MODIFIES rule_hit_points rows assert the same
+    affected facet under the same condition, or separate facets?
+  ua_reading: 'Page 14: a low-born entrant ''begins first as a 0-level Horseman, then a 0-level Lancer,
+    and finally becomes a 1st-level Armiger'', accumulating d4 rolls at each step, ''In contrast, a character
+    whose social standing qualifies him or her for immediate entrance begins as a 1st-level Armiger with
+    1d10 + 3 hit points.'' The page 15 footnote restates it. The rule branches at a single level on the
+    route the character took to reach it.'
+  phb_34_reading: 'Read from the claimed packet PKT-PHB-033-035-alignment-hp-languages. CHARACTER HIT
+    POINTS states the general progression: ''At 1st level a character has but one hit die (exception:
+    rangers and monks begin with two dice each). At each successive level another hit die is gained.'''
+  determination: Separate facets. Two assertions, not one.
+  reasoning: One die per level and which die at one level are different claims. The PHB rule is about
+    how hit dice accumulate across a career; the UA rule says nothing about accumulation and instead makes
+    a single level's dice depend on entry path. Neither is a paraphrase of the other under 5.1.
+  recommended_outcome: Retain both as assertions, but revise the UA row's source endpoint. The Decision's
+    second permitted outcome.
+  defect_the_reading_proves: The canonical UA row is sourced from exp_level. Neither page says experience
+    level varies the dice; both say the entry path does. The row carries source_label 'Zero Level Progression',
+    which names the thing that actually varies them, but GRAPH_INVARIANTS 4 holds that labels do not determine
+    identity. As stored the row asserts something the source does not support. This is the one place in
+    either pair where the reading proves an action is required.
+  proposed_correction: 'M005 states the assertion against the correct source: rule_zero_level_progression
+    MODIFIES rule_hit_points, aspect ''entry path dice'', cited to UA 14 where the rule is stated in full.
+    If approved, the canonical row exp_level MODIFIES rule_hit_points | ''different dice if entering via
+    the ranks'' | UA 15 becomes an unsupported duplicate and should be retired through the ordinary lifecycle,
+    the Decision''s fourth permitted outcome. Recommended, not performed: only the Integrator edits canonical,
+    and the retirement should follow the node''s approval rather than accompany it.'
+  aspect_conformance: The UA row's aspect runs six words. Its production lineage traces to migrations/adnd1e/legacy-import/original/edges_master.csv,
+    where it appears with the same aspect, book, page and section but with target hit_points rather than
+    rule_hit_points; the target was renamed corpus-wide during migration and no hit_points endpoint survives.
+    Matching the row to its antecedent therefore requires reading through that rename, which is a lineage
+    fact rather than the text-similarity inference the Decision prohibits. The row is exception-eligible.
+    Recorded explicitly because the eligibility test is provenance-based and this row cannot be matched
+    on endpoints alone.
+  evidence_basis: Read from this claimed packet and from the claimed PHB packet only. No archive extraction
+    batch, canonical row, or endpoint name was used as source evidence. The legacy import file was consulted
+    solely to establish production lineage for the exception test.
+cross_packet_grain_conflict:
+  id: XGC-01
+  subject: a third UA hit-point assertion that cannot be expressed
+  locus: 'UA 15: ''Cavaliers gain 3 h.p. per level after the 10th.'''
+  statement: A genuine exp_level MODIFIES rule_hit_points assertion, not in canonical. Canonical already
+    holds exp_level MODIFIES rule_hit_points | 'flat gain past name level' | condition 'beyond 9th level'
+    | PHB 22 FIGHTERS TABLE I. The two rules differ only in the threshold and the amount, both magnitudes
+    barred from aspect and condition by constitution 5 and GRAPH_INVARIANTS 11.
+  consequence: Any conforming aspect for the cavalier rule is a paraphrase of 'flat gain past name level',
+    and its condition cannot carry the distinguishing threshold. Under the 5.1 assertion key the UA rule
+    is therefore either an illegal duplicate of the PHB row or unrepresentable. No edge is emitted for
+    it.
+  why_it_matters: The grain rule is working as designed for values, but here it collapses two rules that
+    genuinely differ. The graph cannot record that the cavalier's flat gain starts at a different level
+    and is a different size from the fighter's. Filtering status core would not separate them either,
+    since status is not part of the assertion key.
+  analyst_position: 'Escalated rather than solved. Three routes exist and choosing among them is an Architect
+    decision: allow the class to appear in the condition, which is qualitative and not a magnitude; treat
+    book and status as identity-bearing for this case; or accept that per-class variants of a general
+    rule are out of scope. Recorded because DEC-2026-0029 named two candidate pairs and this is a third
+    collision found on a page it sent me to read.'
+  owner: architect
+source_identity_conflicts:
+  checked: Every source name explicitly present in this packet, per SOURCE_MARKDOWN 1.3.
+  found: 'One, the subject of the pair 2 finding: the canonical UA 15 hit-point row carries source_label
+    ''Zero Level Progression'' on node exp_level. This packet names the zero-level grades directly and
+    at length on page 14, so it supports the label as a concept and does not support it as a property
+    of experience level.'
+  disposition: Handled as an identity correction proposal, M005, rather than as a label dispute. SOURCE_MARKDOWN
+    1.3 makes the current packet canonical for directly stated source identity, and the packet states
+    this one directly.
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: prefix for the zero-level grades
+  question: rule_ was chosen for rule_zero_level_progression. exp_ was the alternative, since the registry's
+    exp_ family holds exp_level and exp_level_loss.
+  analyst_position: rule_, because the thing named is a qualification procedure rather than a measure
+    of experience, and because putting it under exp_ risks the exact confusion the pair 2 finding is correcting,
+    where a route to a level was recorded as a property of level.
+  affects:
+  - M004
+  - M005
+  - M006
+- id: IDQ-02
+  subject: duplicate ability-adjustment identities and the naming convention
+  question: 'nodes.csv holds three pairs of duplicate identities carrying identical labels: dex_reaction_adj
+    against abil_dexterity_reaction_attacking_adjustment, dex_defensive_adj against abil_dexterity_defensive_adjustment,
+    and str_exceptional against abil_strength_exceptional. Canonical usage is 6 to 1, 16 to 1 and 7 to
+    2.'
+  steward_stated_preference: 'The repository owner has stated a target convention of abil_<three-letter
+    ability abbreviation>_<snake_case rule name>, giving abil_dex_reaction_adjustment, abil_dex_defensive_adjustment
+    and abil_str_exceptional, and has asked that new work follow it. Recorded here as input to the migration
+    decision, not applied: renaming canonical node IDs is an Architect Decision plus an Integrator transaction,
+    and it would also touch constitution 3.1, whose prefix table gives abil_ with examples in the unabbreviated
+    form abil_constitution.'
+  analyst_position: This GUR proposes none of the three and uses the dominant existing form, str_exceptional,
+    at M048, so nothing here depends on the outcome. No new node proposed in this packet takes an abil_
+    stem, so the convention has nothing to bind to yet; it will apply to the first new ability node proposed
+    after the Decision.
+  affects:
+  - M048
+- id: IDQ-03
+  subject: no node exists for any mundane weapon
+  question: 'Page 14 names eleven preferred weapons and page 15 gives the lance three separate rules,
+    including that a heavy lance used on foot is treated as an awl pike and a lighter one as a spear.
+    The registry has no node for any of them and no prefix for a mundane weapon: item_ holds magic items,
+    wpn_ holds statistics, sword_ holds intelligent-sword mechanics.'
+  analyst_position: Nothing was minted; the Analyst may not mint a prefix. The weapons-of-choice mechanic
+    is captured as rule_weapon_of_choice, which is the mechanic rather than the weapons, so M010 to M015
+    survive the gap. What does not survive is which weapons any of it concerns, and the preferred-weapon
+    list on page 14. Raised as ESC-CAND-02.
+  affects:
+  - M008
+  - M010
+  - M011
+  - M012
+  - M013
+  - M014
+  - M015
+architectural_escalations:
+- id: ESC-CAND-01
+  subject: source_id for steward-extracted, non-legacy packets
+  statement: This packet is recorded under ua-legacy-unspecified because that is the only source_id registered
+    for UA and an Analyst may not add a registry entry. Its registered provenance is 'legacy graph dump',
+    which is false for this packet.
+  why_it_matters: DEC-2026-0029 forbids legacy canonical data and archive extraction batches as source-read
+    evidence, and this packet exists to supply evidence that is not legacy. A reader taking source_id
+    at face value would conclude the opposite of what is true, on the one reading where that distinction
+    decides admissibility. Raised identically in the DMG 64 GUR; one registry change resolves both.
+  analyst_position: Register a source_id whose provenance names steward intake, and record which packets
+    were extracted under it.
+  owner: architect
+- id: ESC-CAND-02
+  subject: the graph has no way to name a mundane weapon
+  statement: 'Constitution 3.1 offers item_ for magic items and item classes, wpn_ for weapon properties
+    and statistics, and sword_ for intelligent-sword mechanics. None names an ordinary weapon. The registry
+    confirms the gap: all 162 item_ nodes are magic items and all seven wpn_ nodes are statistics.'
+  why_it_matters: Weapon-specific rules are common across all four books, and this class alone carries
+    a preferred-weapon list of eleven and four separate lance rules. Without a stem they are dropped,
+    as here, or quietly attached to whichever node is nearest, which is how drift starts.
+  analyst_position: A new prefix is needed and only the Architect may add one.
+  owner: architect
+- id: ESC-CAND-03
+  subject: see cross_packet_grain_conflict XGC-01
+  statement: The cavalier's flat hit-point gain past a threshold cannot be distinguished from the fighter's
+    under the 5.1 assertion key, because the only difference is magnitudes.
+  why_it_matters: A real rule on a page this Decision sent me to read cannot be entered into the graph.
+    Full statement and the three candidate routes are in XGC-01.
+  owner: architect
+non_edge_observations:
+- id: OBS-01
+  topic: this packet replaces one claimed earlier in the same session
+  finding: PKT-UA-015-015-cavaliers was claimed from a page-15 extract whose attribution could not be
+    trusted past its second heading. The steward replaced it with the complete class across pages 14 to
+    16, with transcribed running headers removed and three markers supplied.
+  why_it_matters: Both claimed packets remain on disk and immutable. The earlier GUR is withdrawn by its
+    own r02 so the Builder sees one job, not two overlapping ones. Nothing from the earlier GUR is carried
+    across unread; all fourteen of its edges were re-derived here.
+- id: OBS-02
+  topic: the legacy page citations for this class are accurate
+  finding: All twenty canonical class_cavalier rows that fall inside pages 14 to 16 sit on the page the
+    markers give, including the two page-16 rows whose placement prompted the earlier packet's blocking
+    note.
+  why_it_matters: The working hypothesis going into this packet was that legacy UA page numbers were unreliable.
+    For this class they are not. Recorded so the UA book sweep does not start from an assumption this
+    packet contradicts.
+- id: OBS-03
+  topic: the class is optional in its entirety
+  finding: All 67 edges carry status optional. Constitution 8 states that Unearthed Arcana is optional
+    in its entirety, so no per-assertion judgement was made.
+  why_it_matters: Worth stating because several of these rules modify core mechanics directly, including
+    the racial ability maximums at M046 and the sex-based limits at M047. Filtering status core must drop
+    them, and 8 warns that excluding optional material changes which version of a rule is active.
+- id: OBS-04
+  topic: high comeliness bounds the mind-effect resistance and is not recorded
+  finding: The 90% resistance covers a named list of mind-affecting powers 'but not the effects of high
+    comeliness'.
+  why_it_matters: Neither EXCLUDES nor EXCLUDED_FROM reads correctly here. The page is not saying the
+    cavalier prevents comeliness, nor that the cavalier is not an input to it; it is bounding a resistance
+    that is itself not a node. Recorded rather than forced into an edge type that would misstate it. It
+    bounds M054 to M058.
+- id: OBS-05
+  topic: two named mind-affecting powers have no node
+  finding: The resistance list names beguiling, charm, domination, hold, hypnosis, magic jar, possession,
+    sleep, suggestion and the psionic mind blast. Domination and possession have no node in the registry;
+    the rest are covered by M054 to M058, with the existing family node spell_beguiling_charm_hypnosis_suggestion_spells
+    matching four of the names exactly.
+  why_it_matters: Two of ten named powers are absent from the resistance in the graph. Not minted, because
+    both are concepts from elsewhere in the corpus and this packet is not their defining locus.
+- id: OBS-06
+  topic: the paladin is now a cavalier subclass
+  finding: Page 14 says 'members of the paladin sub-class (see hereafter)'. Canonical already records
+    class_paladin DERIVED_FROM class_cavalier, cited to UA 12.
+  why_it_matters: Confirmed, not re-emitted. Flagged because it is a structural change UA makes to a core
+    class, and anything reasoning about paladins across the two books needs to know the parent changed.
+- id: OBS-07
+  topic: a code violation can cost the class itself
+  finding: '''the cavalier becomes a mere fighter, though weapon specialization is not gained and the
+    privilege of weapons of choice is retained.'' M068 records the gate; the residue the ex-cavalier keeps
+    and loses is not recorded.'
+  why_it_matters: The residue is a state of the character after the class is lost, not a relationship
+    between two mechanics, and there is no node for a former cavalier. Recorded in case the Reviewer reads
+    M068 as the whole of the rule.
+blocking_notes: []
+completeness_statement: 'Every block of the claimed packet was read, parsed with pandoc 3.10 to JSON AST
+  rather than by line splitting, as SOURCE_MARKDOWN 1.3 requires; both headings, the two Pandoc tables,
+  all three list blocks and the line-block code of conduct were inspected. All three page markers were
+  resolved under 1.3, including the inline rule 3 split inside the saving-throw paragraph, and every edge
+  cites one page accordingly: 15 on page 14, 42 on page 15, 10 on page 16. Every candidate was checked
+  against all 32 canonical rows cited to these three pages before emission. Material deliberately not
+  emitted: the 27 assertions canonical already holds, recorded above as confirmations; the cavalier''s
+  flat hit-point gain, which XGC-01 shows cannot be expressed without colliding with the PHB 22 row; the
+  preferred-weapon list and the lance weapon-type rules, which have no node to attach to; the comeliness
+  bound and the two mind-affecting powers with no node; and the eight-item charge priority and the armor
+  preference ranking, which are orderings rather than assertions. All 67 edges carry status optional per
+  constitution 8. The DEC-2026-0029 pair 2 comparison is answered in full above and is now supported by
+  the page 14 statement of the rule rather than the page 15 footnote alone.'
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []

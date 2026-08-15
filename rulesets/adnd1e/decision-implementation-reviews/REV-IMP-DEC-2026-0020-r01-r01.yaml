@@ -1,0 +1,102 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0020-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0020-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0020-r01.yaml
+  checksum: sha256:698a810f0de13c14afc974d783b0b0e9a45135c7177a240b3b5d2cc9d15f995d
+decision_input:
+  id: DEC-2026-0020
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0020.yaml
+  checksum: sha256:ecccc70890c4519dc54873aaf35c53a822c0d437a3f345b3d681d332724fbd64
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      constitution.md declares Version 1.7 and ruleset.yaml declares
+      constitution_version 1.7.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: GRAPH_INVARIANTS.md declares Version 1.0.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      Constitution section 5.1 names exactly source_id, edge_type, target_id,
+      aspect, and condition as the assertion key.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      Section 5.1 and Builder tests make ALTERNATIVE_TO symmetric while leaving
+      every other edge type directed.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      Section 5.1 excludes labels, polarity, citations, evidence, and review
+      metadata; the governed key plus IDENTITY_EXCLUDED_FIELDS accounts for all
+      eighteen production columns without overlap.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: >-
+      ASSERTION_KEY is the governed five-field tuple; assertion_key compares IDs
+      and edge type directly, normalizes only aspect and condition, and sorts
+      ALTERNATIVE_TO endpoints.
+  - acceptance_test_index: 7
+    disposition: verified
+    evidence: >-
+      A case-insensitive negative search found no claim in Builder documentation
+      that the constitution lacks a key or that tooling selected it empirically.
+  - acceptance_test_index: 8
+    disposition: verified
+    evidence: >-
+      Builder declares Constitution 1.7, accepts 1.6 for current revalidation,
+      and its governance-to-tooling tests passed.
+  - acceptance_test_index: 9
+    disposition: verified
+    evidence: >-
+      The canonical-corpus duplicate regression loaded all 4109 rows and found
+      zero duplicate governed assertion keys.
+  - acceptance_test_index: 10
+    disposition: verified
+    evidence: >-
+      The implementation manifest contains only Builder documentation, code,
+      and tests; no canonical graph, registry, GUR, GUP, or Review artifact was
+      changed by this Decision implementation.
+  - acceptance_test_index: 11
+    disposition: verified
+    evidence: >-
+      The independent r07 money/equipment Review judged B20 and B24 separately
+      on PHB source and canonical-neighborhood merits: B20 differs from rows 369
+      and 374 by target-state facet, while B24 differs from optional UA row 2798
+      by charging-mount facet. Neither was decided on three-field identity.
+independent_validation:
+  passed: true
+  commands:
+    - command: >-
+        [cwd tooling/builder/tests] python -m unittest
+        test_decision_migration test_registry_and_vocab test_duplicates
+      exit_code: 0
+      result: passed
+      summary: Ran 81 focused Builder migration, governance, and duplicate tests; all passed.
+    - command: >-
+        [cwd tooling/common/tests] python -m unittest
+        test_scan_agent_queues.DecisionMigrationCase
+        test_scan_agent_queues.DecisionHandoffReplacementCase
+        test_scan_agent_queues.DecisionImplementationCase
+        test_scan_agent_queues.TestImplementationReportValidation
+        test_scan_agent_queues.TestScannerParity
+        test_common_schemas.TestSchemasAreWellFormed
+      exit_code: 0
+      result: passed
+      summary: Ran 81 focused common lineage, schema, and parity tests; all passed.
+overall_disposition: approved
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: Every DEC-2026-0020 acceptance test was independently verified.
+  blocking_ids: []

@@ -19,7 +19,7 @@ import yaml
 
 from . import direction, grain, polarity as polarity_mod
 from .duplicates import CanonicalEdges, intra_patch_duplicates, self_edges
-from .registry import ID_FORMAT, NodeRegistry, prefix_of
+from .registry import ID_FORMAT, NodeRegistry, normalize_label, prefix_of
 from .review import ReviewDirectives, RowDirective
 from .governance import Governance
 from .vocab import (
@@ -109,6 +109,9 @@ class CompileResult:
     rows_removed_from: set[tuple[str, str]] = field(default_factory=set)
     rejected_rows: list[dict] = field(default_factory=list)
     rejected_node_proposals: list[dict] = field(default_factory=list)
+    #: Node IDs another packet minted that this packet reuses, as the GUR
+    #: declares them. Not proposals: the originating packet owns the identity.
+    cross_packet_dependencies: list[dict] = field(default_factory=list)
     architect_overrides: list[dict] = field(default_factory=list)
     direction_findings: list[dict] = field(default_factory=list)
     resolved_escalations: list[dict] = field(default_factory=list)
@@ -159,6 +162,43 @@ class CompileResult:
         ]
 
     @property
+    def _awaiting_origin_ids(self) -> set[str]:
+        return {
+            dependency["node_id"]
+            for dependency in self.cross_packet_dependencies
+            if dependency.get("state") == "awaiting_origin_packet"
+        }
+
+    @property
+    def blocked_additions(self) -> list[dict]:
+        """Pending rows another packet has to land before these can integrate.
+
+        Two things hold a row back and they are not interchangeable. A row
+        waiting on a node *this* patch proposes travels with it: the batch that
+        registers the node integrates the row. A row waiting on a node another
+        packet mints cannot integrate at all until that packet does.
+
+        INT-20260814-003 refused the psionics bundle for nine endpoints of the
+        second kind. They were correctly held and correctly declared, but the
+        Approved bundle merged all 203 pending rows into one CSV, so nothing
+        downstream could tell the 190 safe ones from the 13 that were not.
+        """
+        awaiting = self._awaiting_origin_ids
+        if not awaiting:
+            return []
+        return [
+            row
+            for row in self.pending_additions
+            if {row.get("source_id"), row.get("target_id")} & awaiting
+        ]
+
+    @property
+    def batch_satisfiable_additions(self) -> list[dict]:
+        """Pending rows the same batch registers a node for."""
+        blocked = {id(row) for row in self.blocked_additions}
+        return [row for row in self.pending_additions if id(row) not in blocked]
+
+    @property
     def errors(self) -> list[Finding]:
         return [f for f in self.findings if f.severity == "error"]
 
@@ -205,16 +245,24 @@ class CompileResult:
             }
 
         if self.errors:
-            refs = sorted({f.ref for f in self.errors if f.ref})
             rules = sorted({f.rule for f in self.errors})
+            refs = sorted({f.ref for f in self.errors if f.ref})
             return {
                 "next_role": "analyst",
                 "readiness": "blocked",
                 "reason": (
                     f"{len(self.errors)} validation error(s) the Builder will not silently "
                     f"rewrite: {', '.join(rules)}"
+                    + (f"; affected rows {', '.join(refs)}" if refs else "")
                 ),
-                "blocking_ids": refs or rules,
+                # The artifact whose revision unblocks this, which is the GUR.
+                # Candidate-edge refs went here once, and they are neither an
+                # escalation nor an artifact: no Decision can ever resolve an
+                # `M003`, so the queue scanner had a permanently unresolvable
+                # blocker and the packet sat waiting on nothing nameable. The
+                # refs are not lost -- every finding carries its own, and they
+                # are listed in the reason.
+                "blocking_ids": [self.gur_id] if self.gur_id else [],
             }
 
         return {
@@ -363,6 +411,70 @@ class Compiler:
             if proposed and proposed.get("proposed_label"):
                 return str(proposed["proposed_label"])
         return (edge.get(f"{role}_label") or "").strip()
+
+    def _drop_reviewer_rejected_nodes(
+        self, directives: ReviewDirectives, candidate_edges: list, result: CompileResult
+    ) -> None:
+        """Remove proposals the Review rejected.
+
+        A rejected proposal used to stay in the patch carrying only a recorded
+        disposition, so the next revision still asked the Integrator to register
+        it. With its only edge rejected too, that registers a node at degree
+        zero -- the defect the Integrator refused the alignment-graph bundle
+        for. REV-GUP-PKT-PHB-120-120-planes-of-existence-r05-r01 is the same
+        shape: `rule_prime_material_plane` is rejected because its only edge is.
+
+        A rejected proposal that some surviving row still points at is a
+        different situation and an error: dropping it would strand that row
+        against an unregistered endpoint, so the Reviewer is told rather than
+        the conflict being resolved here.
+        """
+        rejected = {
+            proposed_id
+            for proposed_id, directive in directives.nodes.items()
+            if directive.disposition == "rejected"
+        }
+        if not rejected:
+            return
+
+        surviving = {
+            edge.get("ref")
+            for edge in candidate_edges
+            if (ruling := directives.rows.get(edge.get("ref"))) is None
+            or ruling.disposition != "rejected"
+        }
+        kept = []
+        for addition in result.node_additions:
+            proposed_id = addition["proposed_id"]
+            if proposed_id not in rejected:
+                kept.append(addition)
+                continue
+            depending = sorted(
+                ref for ref in addition.get("edges_depending_on_it") or [] if ref in surviving
+            )
+            if depending:
+                kept.append(addition)
+                result.findings.append(
+                    Finding(
+                        "reviewer_rejected_node_still_needed",
+                        "error",
+                        f"{directives.review_id or 'the Review'} rejects proposed node "
+                        f"{proposed_id!r}, but {', '.join(depending)} still depend(s) on it. "
+                        f"Dropping it would leave those rows pointing at an unregistered "
+                        f"endpoint.",
+                    )
+                )
+                continue
+            result.findings.append(
+                Finding(
+                    "reviewer_rejected_node_dropped",
+                    "info",
+                    f"proposed node {proposed_id!r} is withdrawn: "
+                    f"{directives.review_id or 'the Review'} rejected it and no surviving row "
+                    f"depends on it.",
+                )
+            )
+        result.node_additions[:] = kept
 
     def _apply_node_directives(
         self, directives: ReviewDirectives, result: CompileResult
@@ -752,6 +864,62 @@ class Compiler:
             )
             return node_id
 
+        dependency = next(
+            (
+                d
+                for d in result.cross_packet_dependencies
+                if d["node_id"] == node_id and d["state"] == "awaiting_origin_packet"
+            ),
+            None,
+        )
+        if dependency is not None:
+            # The GUR named the packet this identity comes from. The row is held
+            # exactly like one depending on a node this patch proposes: it is
+            # not integrable until the origin packet's node is registered, and
+            # it is not a defect. Where the label also matches an existing
+            # canonical node, that stays visible here -- the question of whether
+            # the two are the same concept belongs to the packet that minted the
+            # identity, and is not answered by silently merging them (invariant 4).
+            result.rows_pending.add(ref)
+            # The Analyst puts the label on the declaration rather than on each
+            # edge, because the identity is minted elsewhere and one declaration
+            # serves every row that reaches it. Carrying it onto the row is not
+            # inventing a label: it is the label declared for this exact ID. Not
+            # carrying it emitted `target_label` empty, which fails the edge
+            # schema -- two such rows reached an Approved bundle.
+            if not label and dependency["label"]:
+                edge[f"{role}_label"] = dependency["label"]
+                result.findings.append(
+                    Finding(
+                        "endpoint_label_from_cross_packet_declaration",
+                        "info",
+                        f"{role}_label for {node_id} taken from the GUR's cross-packet "
+                        f"declaration, which carries {dependency['label']!r}. The edge left it "
+                        f"empty because the identity is minted in another packet.",
+                        ref=ref,
+                        field_name=f"{role}_label",
+                    )
+                )
+            collision = (
+                f" Label {label!r} also matches canonical {resolution.resolved_id!r}; that "
+                f"identity question belongs to the proposal in the origin packet, so this "
+                f"patch neither merges nor re-proposes it."
+                if resolution.method == "normalized_label"
+                else ""
+            )
+            result.findings.append(
+                Finding(
+                    "endpoint_pending_cross_packet_candidate",
+                    "info",
+                    f"{role}_id {node_id!r} is a candidate minted elsewhere and declared by the "
+                    f"GUR as a cross-packet target ({dependency['origin'] or 'origin unrecorded'}). "
+                    f"The row is held pending until that node is registered." + collision,
+                    ref=ref,
+                    field_name=f"{role}_id",
+                )
+            )
+            return node_id
+
         if resolution.method == "normalized_label":
             result.findings.append(
                 Finding(
@@ -803,8 +971,56 @@ class Compiler:
         )
         return None
 
+    def _record_cross_packet_targets(self, gur: dict, result: CompileResult) -> None:
+        """Node identities another packet minted that this packet reuses.
+
+        A book is not a partition. The illusionist list points at magic-user
+        spells, the magic-user list points at druid spells, and three packets
+        reach the same death rule. The Analyst declares each such endpoint in
+        `cross_packet_candidate_targets`, naming the GUR that minted it and
+        instructing the Builder not to mint a second identity for it.
+
+        Builder honours that by holding the dependent row out of the integrable
+        set until the originating packet's node is registered -- the same
+        treatment a row gets when it depends on a node *this* patch proposes.
+        What it must not do is either of the alternatives: minting a duplicate
+        identity, or rejecting the edge as unresolvable when the Analyst has
+        already said where the identity comes from.
+
+        These are recorded as dependencies, not as node additions. The packet
+        that minted the identity owns the proposal, and asking the Integrator
+        to register the same node from two GUPs would be the double
+        registration the declaration exists to prevent.
+        """
+        also_proposed_here = {
+            (c.get("proposed_id") or "").strip() for c in (gur.get("candidate_nodes") or [])
+        }
+        for target in gur.get("cross_packet_candidate_targets") or []:
+            node_id = (target.get("id") or "").strip()
+            if not node_id:
+                continue
+            if node_id in self.registry:
+                state = "already_canonical"
+            elif node_id in also_proposed_here:
+                state = "proposed_by_this_packet"
+            else:
+                state = "awaiting_origin_packet"
+            result.cross_packet_dependencies.append(
+                {
+                    "node_id": node_id,
+                    "label": (target.get("label") or "").strip(),
+                    "origin": (target.get("origin") or "").strip(),
+                    "used_by": list(target.get("used_by") or []),
+                    "state": state,
+                    "builder_instruction": (target.get("builder_instruction") or "").strip(),
+                }
+            )
+        result.cross_packet_dependencies.sort(key=lambda d: d["node_id"])
+
     def _compile_node_additions(self, gur: dict, result: CompileResult) -> None:
         """Proposed registry changes, isolated from edge insertions (instruction 13)."""
+        self._record_cross_packet_targets(gur, result)
+
         # A candidate first proposed by an earlier packet and still awaiting a
         # ruling is carried forward rather than re-proposed. It is pending, not
         # unknown, and its dependent edges must say so.
@@ -903,6 +1119,32 @@ class Compiler:
                     )
                 )
                 continue
+
+            if proposed_id in self.registry:
+                canonical_label = self.registry.nodes[proposed_id].label
+                if not label or normalize_label(label) == normalize_label(canonical_label):
+                    # Same ID, same label. An earlier packet proposed this node
+                    # and it has since been registered; the Analyst, reading the
+                    # source rather than the registry, proposed it again. There
+                    # is nothing to add and nothing to decide -- constitution 3.2
+                    # says reuse it, and the ID is the identity (invariant 4), so
+                    # the endpoints already resolve against the registry. Asking
+                    # the Architect whether to add a node that is present, under
+                    # the name it is present under, would block the packet on a
+                    # question with one answer.
+                    result.findings.append(
+                        Finding(
+                            "node_proposal_resolved_to_canonical",
+                            "info",
+                            f"proposed node {proposed_id!r} is already canonical under the same "
+                            f"label {canonical_label!r}. Reused rather than proposed again "
+                            f"(constitution 3.2); its edges resolve against the registry.",
+                        )
+                    )
+                    continue
+                # Same ID, different label. That is a real conflict rather than a
+                # duplicate proposal, and it falls through to the error below.
+
             entry = {
                 "proposed_id": proposed_id,
                 "proposed_label": label,
@@ -1711,6 +1953,16 @@ class Compiler:
                         f"review carries an unrecognised disposition for {name}",
                     )
                 )
+            for key in sorted(set(directives.unread_decision_keys)):
+                result.findings.append(
+                    Finding(
+                        "review_decision_key_not_read",
+                        "error",
+                        f"review {directives.review_id} states rulings under {key!r}, which "
+                        f"this compiler does not read. Applying the revision would silently "
+                        f"ignore them.",
+                    )
+                )
             # A Review that returned the packet to the Analyst is answered by a
             # new GUR revision. That replacement legitimately drops rows the
             # Review rejected and adds rows it demanded, so the Review covers
@@ -1790,6 +2042,7 @@ class Compiler:
                 directives, candidate_edges, result
             )
             self._apply_node_directives(directives, result)
+            self._drop_reviewer_rejected_nodes(directives, candidate_edges, result)
 
         for edge in candidate_edges:
             ref = edge.get("ref")

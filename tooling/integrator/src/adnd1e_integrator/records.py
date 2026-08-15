@@ -239,14 +239,60 @@ def render_diff(batch: Batch, ruleset_id: str) -> str:
     if batch.registrations:
         add("## Node registry additions")
         add("")
-        add("Registered before the edges that depend on them, per each manifest's")
-        add("`node_operations.sequencing`.")
+        if any(r.get("basis") == "decision_migration" for r in batch.registrations):
+            add("Registered on the authority of the Decision named against each row. A")
+            add("packet registration is instead sequenced before the edges depending on it,")
+            add("per that manifest's `node_operations.sequencing`.")
+        else:
+            add("Registered before the edges that depend on them, per each manifest's")
+            add("`node_operations.sequencing`.")
         add("")
         add("| Node | Label | Kind | Approved by | Depends |")
         add("|---|---|---|---|---|")
         for r in batch.registrations:
+            # Rendering runs after the transaction has committed, so a missing
+            # optional field must not be able to abort the record write.
             add(f"| `{r['id']}` | {r['label']} | {r['kind']} | `{r['review_id']}` | "
-                f"{', '.join(r['edges_depending_on_it']) or '-'} |")
+                f"{', '.join(r.get('edges_depending_on_it') or []) or '-'} |")
+        add("")
+
+    if batch.node_replacements:
+        add("## Node identity replacements")
+        add("")
+        add("`decision_migration_v1`: each retires one approved ID and registers its")
+        add("replacement. No alias is retained, so a replacement is net zero in the registry.")
+        add("")
+        add("| Retired | Replacement | Authority | Incident rows |")
+        add("|---|---|---|---|")
+        for r in batch.node_replacements:
+            add(f"| `{r['retired_id']}` ({r['retired_label']}) | "
+                f"`{r['canonical_id']}` ({r['canonical_label']}) | `{r['authority']}` | "
+                f"{', '.join(str(x) for x in r['incident_rows']) or '-'} |")
+        add("")
+
+    if batch.repoints:
+        add("## Endpoint repoints")
+        add("")
+        add("Each changes one endpoint ID and its paired label by compare-and-swap against")
+        add("a complete 18-field before-image. No other field is touched.")
+        add("")
+        add("| Row | Field | From | To | Authority |")
+        add("|---|---|---|---|---|")
+        for r in batch.repoints:
+            for name, delta in sorted(r["changes"].items()):
+                add(f"| {r['canonical_row']} | `{name}` | {delta['from']} | {delta['to']} | "
+                    f"`{r['authority']}` |")
+        add("")
+
+    if batch.removals:
+        add("## Canonical rows removed")
+        add("")
+        add("Exact no-replacement removals, applied after the repoints in descending row")
+        add("order so earlier physical locators cannot shift.")
+        add("")
+        for r in batch.removals:
+            add(f"- row {r['canonical_row']} — {r['assertion']} ({r['citation']}), "
+                f"authority `{r['authority']}`")
         add("")
 
     if batch.registrations_without_edges:

@@ -1,0 +1,408 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/common/decision-implementation-review.schema.json",
+  "title": "Decision Implementation Review",
+  "$comment": "WORK_QUEUES 1.6: independent Reviewer disposition of one exact active Decision Implementation Report. A retired_by_lineage report result is approved only with verified_retired_by_lineage, which repeats the authority and Integration checks independently; an ordinary verified disposition cannot stand in for it.",
+  "allOf": [
+    {
+      "$ref": "artifact-envelope.schema.json"
+    },
+    {
+      "if": {
+        "properties": {
+          "overall_disposition": {
+            "const": "approved"
+          }
+        },
+        "required": [
+          "overall_disposition"
+        ]
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "approved"
+          },
+          "acceptance_dispositions": {
+            "items": {
+              "properties": {
+                "disposition": {
+                  "enum": [
+                    "verified",
+                    "verified_retired_by_lineage"
+                  ]
+                }
+              }
+            }
+          },
+          "independent_validation": {
+            "properties": {
+              "passed": {
+                "const": true
+              }
+            }
+          },
+          "handoff": {
+            "properties": {
+              "next_role": {
+                "const": "none"
+              },
+              "readiness": {
+                "const": "terminal"
+              },
+              "blocking_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "overall_disposition": {
+            "const": "revision_required"
+          }
+        },
+        "required": [
+          "overall_disposition"
+        ]
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "revision_required"
+          },
+          "handoff": {
+            "properties": {
+              "next_role": {
+                "const": "builder"
+              },
+              "readiness": {
+                "const": "ready"
+              },
+              "blocking_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "id",
+    "status",
+    "ruleset_id",
+    "constitution_version",
+    "artifact_kind",
+    "revision",
+    "supersedes",
+    "handoff",
+    "reviewed_by",
+    "reviewed_implementation",
+    "decision_input",
+    "acceptance_dispositions",
+    "independent_validation",
+    "overall_disposition"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^REV-IMP-DEC-[0-9]{4}-[0-9]{4}-r[0-9]{2}-r[0-9]{2}$"
+    },
+    "status": {
+      "enum": [
+        "approved",
+        "revision_required"
+      ]
+    },
+    "artifact_kind": {
+      "const": "decision_implementation_review"
+    },
+    "reviewed_by": {
+      "const": "reviewer"
+    },
+    "reviewed_implementation": {
+      "$ref": "#/$defs/implementationInput"
+    },
+    "decision_input": {
+      "$ref": "#/$defs/decisionInput"
+    },
+    "acceptance_dispositions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "acceptance_test_index",
+          "disposition",
+          "evidence"
+        ],
+        "properties": {
+          "acceptance_test_index": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "disposition": {
+            "enum": [
+              "verified",
+              "failed",
+              "verified_retired_by_lineage"
+            ]
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1
+          },
+          "verified_retirement_authority": {
+            "$ref": "#/$defs/retirementAuthority"
+          },
+          "verified_retired_subjects": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/retiredSubject"
+            }
+          }
+        },
+        "$comment": "verified_retired_by_lineage carries the Reviewer's own re-derivation of the retirement evidence. Requiring it here is what stops a Review from approving a retired result by simply asserting it looked right.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "disposition": {
+                  "const": "verified_retired_by_lineage"
+                }
+              },
+              "required": [
+                "disposition"
+              ]
+            },
+            "then": {
+              "required": [
+                "verified_retirement_authority",
+                "verified_retired_subjects"
+              ]
+            },
+            "else": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "verified_retirement_authority"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "verified_retired_subjects"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "independent_validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "passed",
+        "commands"
+      ],
+      "properties": {
+        "passed": {
+          "type": "boolean"
+        },
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/commandResult"
+          }
+        }
+      }
+    },
+    "overall_disposition": {
+      "enum": [
+        "approved",
+        "revision_required"
+      ]
+    }
+  },
+  "$defs": {
+    "checksum": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "decisionId": {
+      "type": "string",
+      "pattern": "^DEC-[0-9]{4}-[0-9]{4}$"
+    },
+    "decisionInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "checksum"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/decisionId"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^rulesets/[a-z0-9-]+/escalations/decisions/DEC-[0-9]{4}-[0-9]{4}\\.yaml$"
+        },
+        "checksum": {
+          "$ref": "#/$defs/checksum"
+        }
+      }
+    },
+    "implementationInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "checksum"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^IMP-DEC-[0-9]{4}-[0-9]{4}-r[0-9]{2}$"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^rulesets/[a-z0-9-]+/decision-implementations/IMP-DEC-[0-9]{4}-[0-9]{4}-r[0-9]{2}\\.yaml$"
+        },
+        "checksum": {
+          "$ref": "#/$defs/checksum"
+        }
+      }
+    },
+    "commandResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "exit_code",
+        "result",
+        "summary"
+      ],
+      "properties": {
+        "command": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exit_code": {
+          "type": "integer"
+        },
+        "result": {
+          "enum": [
+            "passed",
+            "failed"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "retirementAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "$comment": "The approved Architect Decision permitting this retirement. Recorded by exact checksum so a report cannot rest on an authority that has since been rewritten, and cannot authorize itself.",
+      "required": [
+        "id",
+        "path",
+        "checksum",
+        "authorized_acceptance_test_index"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/decisionId"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^rulesets/[a-z0-9-]+/escalations/decisions/DEC-[0-9]{4}-[0-9]{4}\\.yaml$"
+        },
+        "checksum": {
+          "$ref": "#/$defs/checksum"
+        },
+        "authorized_acceptance_test_index": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "retiredSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "$comment": "One artifact the snapshot named. superseded_by_integrated_revision additionally requires the integrated successor, because a merely superseded artifact is not retired.",
+      "required": [
+        "id",
+        "path",
+        "retirement_state",
+        "integration_record_path",
+        "integration_record_checksum"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "retirement_state": {
+                "const": "superseded_by_integrated_revision"
+              }
+            },
+            "required": [
+              "retirement_state"
+            ]
+          },
+          "then": {
+            "required": [
+              "integrated_successor_id"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retirement_state": {
+          "enum": [
+            "consumed_by_integrated_bundle",
+            "superseded_by_integrated_revision"
+          ]
+        },
+        "integrated_successor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "integration_record_path": {
+          "type": "string",
+          "pattern": "^books/[a-z0-9-]+/[a-z0-9-]+/artifacts/integrated/INT-.+\\.json$"
+        },
+        "integration_record_checksum": {
+          "$ref": "#/$defs/checksum"
+        }
+      }
+    }
+  }
+}

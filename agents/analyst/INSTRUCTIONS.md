@@ -56,6 +56,15 @@ complete replacement escalation with a new timestamped ID and
 `prior_escalation_id`. When the related packet is already active, the return is
 context for that work rather than a second Analyst job.
 
+## Incoming Packet Authority
+
+For a mechanic explicitly named in the current incoming packet or its immutable
+claimed copy, use that packet as the canonical source for spelling, grammatical
+number, source label, and candidate ID stem. Do not normalize its name to a
+conflicting legacy registry or canonical identity. Record the packet-derived
+identity and exact legacy conflict for Builder and Reviewer; a required canonical
+migration is decided by Architect, not inferred from legacy text.
+
 ## Core test
 
 For every candidate edge ask:

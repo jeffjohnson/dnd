@@ -1,0 +1,353 @@
+schema_version: "1.0"
+id: DEC-2026-0030
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Add the exact Pipes of the Sewer identity migration to the next revision of
+    the existing combined DEC-2026-0024/0025/0026 migration, then revise the
+    blocked Bards packet GUP against the integrated singular canonical identity.
+  blocking_ids: []
+
+decision_date: "2026-08-12"
+escalation_id: ESC-2026-08-13T01.33.19.782Z
+supplements: [DEC-2026-0024, DEC-2026-0025, DEC-2026-0026]
+
+question: >-
+  When the current claimed PHB packet directly names the item "Pipes of the
+  Sewer," does that source identity govern over legacy item_pipes_sewers /
+  "Pipes of the Sewers," and what exact migration is required?
+
+ruling: >-
+  item_pipes_sewer, label Pipes of the Sewer, kind item, is the one canonical
+  identity. item_pipes_sewers / Pipes of the Sewers is an incorrect legacy form
+  and must be replaced, not retained as an alias, duplicate, or alternate
+  spelling. The word "Pipes" remains plural; only the directly named terminal
+  noun and the corresponding ID stem are singular.
+
+  The current incoming packet and immutable claimed copy are canonical for
+  direct spelling, grammatical number, source label, and canonical ID stem.
+  Legacy registry and canonical data cannot overrule that reading. This is an
+  identity-only migration: every affected edge retains its exact type, aspect,
+  condition, polarity, citation, evidence, pass, and status. No mechanical
+  relationship is added, removed, or reinterpreted.
+
+rationale:
+  - >-
+    The packet directly names the item at PHB 119 under BARDS as "Pipes of the
+    Sewer." The plural legacy terminal word is not supported by the active
+    source packet.
+  - >-
+    `agents/architect/INSTRUCTIONS.md` and `contracts/SOURCE_MARKDOWN.md`
+    require current incoming and claimed packet authority for direct identity.
+    A label-only change would leave an ID stem that contradicts that authority.
+  - >-
+    Keeping both IDs would create duplicate identity for one named item, and an
+    alias would preserve an explicitly incorrect canonical form for later work.
+  - >-
+    Existing `item_` vocabulary and kind are sufficient. This corrects data and
+    applies established source-precedence policy; it does not add ontology.
+
+source_identity_authority:
+  contract: contracts/SOURCE_MARKDOWN.md
+  source_packet:
+    id: PKT-PHB-117-119-bards
+    packet_path: books/adnd1e/phb/packets/claimed/PKT-PHB-117-119-bards/packet.yaml
+    source_path: books/adnd1e/phb/packets/claimed/PKT-PHB-117-119-bards/source.md
+    source_checksum: sha256:8736de88cef4642300f8347117d1ae49b84b8c82ba93c28d81996f0f010704c8
+    locus:
+      book: PHB
+      page: "119"
+      section: BARDS
+      direct_name: Pipes of the Sewer
+  conflicting_legacy_identity:
+    id: item_pipes_sewers
+    label: Pipes of the Sewers
+    source_status: unpacketized_legacy_canonical_data
+
+node_replacement:
+  retired_id: item_pipes_sewers
+  retired_label: Pipes of the Sewers
+  canonical_id: item_pipes_sewer
+  canonical_label: Pipes of the Sewer
+  kind: item
+  registry_action: replace_one_row
+  canonical_nodes_master_action: replace_one_row
+  alias_action: prohibited
+  require_no_remaining_retired_identity: true
+
+canonical_migration:
+  canonical_source:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    escalation_snapshot_checksum: sha256:43b5be90b9110943f3369daa9e82fd78b190c5586b5ec4260f8d685bc4f0261c
+  registry_source:
+    path: rulesets/adnd1e/registries/nodes.csv
+    escalation_snapshot_checksum: sha256:df1a98e1eed7fcee87a27d6f3de6ae87dd76f915a6159536c5b528d174e30bc4
+  registry_row:
+    physical_csv_row: 228
+    from: {id: item_pipes_sewers, label: Pipes of the Sewers, kind: item}
+    to: {id: item_pipes_sewer, label: Pipes of the Sewer, kind: item}
+  canonical_node_row:
+    physical_csv_row: 732
+    from: {id: item_pipes_sewers, label: Pipes of the Sewers, kind: item}
+    to: {id: item_pipes_sewer, label: Pipes of the Sewer, kind: item}
+  endpoint_repoints:
+    - physical_csv_row: 2479
+      field: source_id
+      from_id: item_pipes_sewers
+      from_label: Pipes of the Sewers
+      to_id: item_pipes_sewer
+      to_label: Pipes of the Sewer
+      before_assertion:
+        source_id: item_pipes_sewers
+        source_label: Pipes of the Sewers
+        edge_type: TRIGGERS
+        target_id: gen_random_encounter
+        target_label: Rats
+        aspect: attracts rats within range
+        condition: ""
+        polarity: neutral
+        polarity_basis: unset
+        book: DMG
+        page: "152"
+        section: TREASURE (MISCELLANEOUS MAGIC)
+        evidence: explicit_rule
+        pass: page-sweep
+        status: core
+        supersession_basis: ""
+        general_rule_id: ""
+        review_flag: ""
+    - physical_csv_row: 2480
+      field: target_id
+      from_id: item_pipes_sewers
+      from_label: Pipes of the Sewers
+      to_id: item_pipes_sewer
+      to_label: Pipes of the Sewer
+      before_assertion:
+        source_id: cbt_encounter_distance
+        source_label: Distance
+        edge_type: MODIFIES
+        target_id: item_pipes_sewers
+        target_label: Pipes of the Sewers
+        aspect: delay scales with how far the rats must travel
+        condition: ""
+        polarity: neutral
+        polarity_basis: unset
+        book: DMG
+        page: "152"
+        section: TREASURE (MISCELLANEOUS MAGIC)
+        evidence: explicit_rule
+        pass: page-sweep
+        status: core
+        supersession_basis: ""
+        general_rule_id: ""
+        review_flag: ""
+  required_no_change_fields:
+    - edge_type
+    - aspect
+    - condition
+    - polarity
+    - polarity_basis
+    - book
+    - page
+    - section
+    - evidence
+    - pass
+    - status
+    - supersession_basis
+    - general_rule_id
+    - review_flag
+  required_derived_rebuilds:
+    - rulesets/adnd1e/canonical/nodes_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+
+combined_migration_revision:
+  lineage_id: MIG-DEC-2026-0024-0025
+  superseded_gup: GUP-MIG-DEC-2026-0024-0025-r03
+  required_gup: GUP-MIG-DEC-2026-0024-0025-r04
+  authority_decisions: [DEC-2026-0024, DEC-2026-0025, DEC-2026-0026, DEC-2026-0030]
+  rationale: >-
+    The active r03 migration already requires a revision because its canonical
+    baseline is stale. A separate DEC-2026-0030 migration planned from the same
+    baseline would create competing, mutually stale migration jobs. r04 must
+    preserve every exact operation from Decisions 0024, 0025, and 0026 and add
+    only the exact Pipes identity operations in this Decision.
+
+packet_disposition:
+  existing_gup:
+    id: GUP-PKT-PHB-117-119-bards-r03
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-117-119-bards-r03.yaml
+    checksum: sha256:6d31ef63f36ba1c592eb8a78cfe25ccc35b28daef26969fb5a3240a2d35a7ea6
+  existing_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r03-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r03-r01.yaml
+    checksum: sha256:a87d7d252ddf1e1946f1314ae5f2b4993fbf519a5152e5e199c48fba3d1cf99a
+  post_migration_review_revision: REV-GUP-PKT-PHB-117-119-bards-r03-r02
+  required_packet_gup_revision: GUP-PKT-PHB-117-119-bards-r04
+  M048:
+    action: revise_after_migration
+    exact_assertion:
+      source_id: class_bard
+      source_label: Bard
+      edge_type: MODIFIES
+      target_id: item_pipes_sewer
+      target_label: Pipes of the Sewer
+      aspect: superior for a bard
+      condition: ""
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: "119"
+      section: BARDS
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ""
+      general_rule_id: ""
+      review_flag: ""
+  M028: >-
+    Preserve the Reviewer-supplied `item_stringed_instrument` correction in the
+    post-migration Review and the subsequent packet GUP revision. This Decision
+    neither changes nor reopens that separate correction.
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Publish GUP-MIG-DEC-2026-0024-0025-r04 in lineage MIG-DEC-2026-0024-0025.
+      It supersedes r03, uses artifact_kind decision_migration, records exact
+      checksummed authority for Decisions 0024, 0025, 0026, and 0030, plans
+      against the then-current canonical baseline, preserves all prior approved
+      Decision operations, and adds only the node/label operations enumerated
+      here.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Independently verify the direct PHB name, the exact registry/node rows,
+      both endpoint before-images, no non-identity deltas, no retained old ID or
+      alias, and no unrelated migration operation.
+  - step: 3
+    owner: integrator
+    action: >-
+      Integrate only an Approved migration bundle; replace the registry and
+      canonical node identity, repoint/relabel both endpoints, and rebuild the
+      required derived canonical artifacts.
+  - step: 4
+    owner: reviewer
+    action: >-
+      After Integration, publish REV-GUP-PKT-PHB-117-119-bards-r03-r02,
+      superseding r01. Record this Decision and Integration provenance, replace
+      the resolved M048 escalation with its exact post-migration assertion,
+      preserve M028's supplied correction, and hand the packet revision to
+      Builder.
+  - step: 5
+    owner: builder
+    action: >-
+      Publish GUP-PKT-PHB-117-119-bards-r04 against the integrated canonical
+      and registry state. It supersedes r03, applies M048 and M028 exactly as
+      supplied, and proposes neither pipes identity as a registry addition.
+  - step: 6
+    owner: reviewer
+    action: >-
+      Review r04 against the claimed PHB packet, the integrated singular
+      identity, the r03-r02 Review, and all retained exact dispositions.
+  - step: 7
+    owner: integrator
+    action: Integrate only the subsequent Approved Bards packet bundle.
+
+affected_contracts_and_registries:
+  contracts:
+    - contracts/SOURCE_MARKDOWN.md
+  role_instructions:
+    - agents/architect/INSTRUCTIONS.md
+  registries:
+    - rulesets/adnd1e/registries/nodes.csv
+  schemas: []
+  canonical_files:
+    - rulesets/adnd1e/canonical/edges_master.csv
+    - rulesets/adnd1e/canonical/nodes_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+  packet_artifacts:
+    - books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-117-119-bards-r03.yaml
+    - books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r03-r01.yaml
+
+migration_required: true
+migration_scope:
+  architect_writes: decision_only
+  registry_rows_replaced: 1
+  canonical_nodes_replaced: 1
+  canonical_edges_repointed: 2
+  canonical_edges_added: 0
+  canonical_edges_removed: 0
+  canonical_edge_semantics_changed: 0
+  aliases_retained: 0
+  packet_edges_decided: [M048]
+  approved_artifacts_invalidated: 0
+
+acceptance_tests:
+  - >-
+    GUP-MIG-DEC-2026-0024-0025-r04 supersedes r03 in the same lineage, uses
+    artifact_kind decision_migration, records exact checked authority for
+    Decisions 0024, 0025, 0026, and 0030, and plans against the then-current
+    canonical baseline.
+  - >-
+    The migration replaces exactly registry row 228 and canonical-node row 732
+    from item_pipes_sewers / Pipes of the Sewers to item_pipes_sewer / Pipes of
+    the Sewer, with kind item preserved.
+  - >-
+    The migration repoints and relabels exactly canonical edge rows 2479 and
+    2480, preserving every non-identity field in their complete before-images.
+  - >-
+    No canonical registry, node, endpoint, edge label, or generated graph data
+    retains item_pipes_sewers or Pipes of the Sewers, and no alias is created.
+  - >-
+    The migration creates no duplicate five-field assertion key and no unrelated
+    registry, canonical node, or edge change.
+  - >-
+    REV-GUP-PKT-PHB-117-119-bards-r03-r02 supersedes r01 only after migration
+    Integration, records Decision and Integration provenance, resolves M048 with
+    the exact singular identity, and preserves M028's supplied correction.
+  - >-
+    GUP-PKT-PHB-117-119-bards-r04 supersedes r03, references item_pipes_sewer
+    as an existing identity, applies M048 exactly, and proposes no duplicate
+    pipes node.
+  - All applicable schema, graph, registry, lineage, and repository tests pass.
+
+constitution_version_impact:
+  changed: false
+  version: "1.7"
+  reason: >-
+    Existing node identity and source-authority policy are sufficient. This
+    corrects one legacy identity and routes its normal migration; it does not
+    alter ontology, edge semantics, or controlled vocabulary.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Add this Decision to GUP-MIG-DEC-2026-0024-0025-r04 before revising the Bards packet GUP.
+    - Preserve every exact DEC-2026-0024, DEC-2026-0025, and DEC-2026-0026 migration operation.
+    - Do not retain item_pipes_sewers or create an alias.
+  reviewer:
+    - Independently review the identity-only migration and publish r03-r02 only after Integration.
+    - Preserve the separate M028 correction while replacing M048 with the exact singular identity.
+  integrator:
+    - Integrate only an Approved migration and later Approved Bards packet bundle.
+  analyst:
+    - Use item_pipes_sewer / Pipes of the Sewer for this directly named item in future packet work.
+
+prohibited_actions:
+  - Do not retain item_pipes_sewers or Pipes of the Sewers as an alias, duplicate, or zero-degree node.
+  - Do not apply a label-only migration while retaining the incorrect plural ID stem.
+  - Do not alter any non-identity field of rows 2479 or 2480 in this migration.
+  - Do not issue a competing DEC-2026-0030-only migration lineage.
+  - Do not publish the Bards r04 GUP against pre-migration registry or canonical state.
+  - Do not reopen or change M028 except to carry its existing Reviewer-supplied correction forward.
+  - Architect does not edit canonical graph, registry, GUP, Review, Approved, Integration, or role-tooling files.

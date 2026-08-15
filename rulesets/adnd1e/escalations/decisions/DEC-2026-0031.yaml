@@ -1,0 +1,299 @@
+schema_version: '1.0'
+id: DEC-2026-0031
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.7'
+revision: 2
+supersedes: DEC-2026-0030
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the Decision-reissue queue rule, then publish the one combined
+    migration revision using the executable Pipes operations below.
+  blocking_ids: []
+
+decision_date: '2026-08-13'
+escalation_id: ESC-2026-08-13T20.15.27.229Z
+
+question: >-
+  How must the approved Pipes of the Sewer identity migration be expressed when
+  DEC-2026-0030 uses operation keys the Builder's migration planner does not
+  read, while published Decisions must remain immutable?
+
+ruling: >-
+  Reissue DEC-2026-0030 as this immutable Decision, using only the established
+  executable `canonical_migration` vocabulary: `node_id_replacements` and
+  `endpoint_repoints` with `canonical_row`, `field`, `from`, `to`, `label`, and
+  `before_assertion`. The canonical identity remains item_pipes_sewer / Pipes of
+  the Sewer. item_pipes_sewers / Pipes of the Sewers is retired with no alias.
+  This Decision supersedes DEC-2026-0030 solely because its migration operations
+  were mechanically unreadable; its source-identity ruling and downstream Bards
+  sequence remain otherwise unchanged.
+
+rationale:
+  - >-
+    The claimed PHB Bards packet directly names Pipes of the Sewer on PHB 119.
+    Incoming Packet Authority therefore controls its spelling, grammatical
+    number, source label, and canonical ID stem over unpacketized legacy data.
+  - >-
+    The Builder's planner already validates and executes the exact operation
+    shape used below. Treating DEC-2026-0030's different keys as synonyms would
+    make the Builder interpret Architect intent without a governing contract.
+  - >-
+    `node_id_replacements` intentionally derives the registry and
+    nodes-master replacement. Those are consequences of the identity migration,
+    not separate Builder-selected operations.
+  - >-
+    Rewriting DEC-2026-0030 would invalidate its recorded provenance. The
+    Decision-reissue lineage added to the contracts preserves history while
+    selecting this corrected operational record.
+
+source_context:
+  current_packet:
+    id: PKT-PHB-117-119-bards
+    packet_path: books/adnd1e/phb/packets/claimed/PKT-PHB-117-119-bards/packet.yaml
+    source_path: books/adnd1e/phb/packets/claimed/PKT-PHB-117-119-bards/source.md
+    source_checksum: sha256:8736de88cef4642300f8347117d1ae49b84b8c82ba93c28d81996f0f010704c8
+    locus:
+      book: PHB
+      page: '119'
+      section: BARDS
+      direct_name: Pipes of the Sewer
+  retired_legacy_identity:
+    id: item_pipes_sewers
+    label: Pipes of the Sewers
+    source_status: unpacketized_legacy_canonical_data
+
+canonical_migration:
+  node_id_replacements:
+    - retired_id: item_pipes_sewers
+      retired_label: Pipes of the Sewers
+      canonical_id: item_pipes_sewer
+      canonical_label: Pipes of the Sewer
+      kind: item
+      registry_action: replace_one_row
+      require_no_remaining_retired_endpoints: true
+  endpoint_repoints:
+    - canonical_row: 2479
+      field: source_id
+      from: item_pipes_sewers
+      to: item_pipes_sewer
+      label: Pipes of the Sewer
+      before_assertion:
+        source_id: item_pipes_sewers
+        source_label: Pipes of the Sewers
+        edge_type: TRIGGERS
+        target_id: gen_random_encounter
+        target_label: Rats
+        aspect: attracts rats within range
+        condition: ''
+        polarity: neutral
+        polarity_basis: unset
+        book: DMG
+        page: '152'
+        section: TREASURE (MISCELLANEOUS MAGIC)
+        evidence: explicit_rule
+        pass: page-sweep
+        status: core
+        supersession_basis: ''
+        general_rule_id: ''
+        review_flag: ''
+    - canonical_row: 2480
+      field: target_id
+      from: item_pipes_sewers
+      to: item_pipes_sewer
+      label: Pipes of the Sewer
+      before_assertion:
+        source_id: cbt_encounter_distance
+        source_label: Distance
+        edge_type: MODIFIES
+        target_id: item_pipes_sewers
+        target_label: Pipes of the Sewers
+        aspect: delay scales with how far the rats must travel
+        condition: ''
+        polarity: neutral
+        polarity_basis: unset
+        book: DMG
+        page: '152'
+        section: TREASURE (MISCELLANEOUS MAGIC)
+        evidence: explicit_rule
+        pass: page-sweep
+        status: core
+        supersession_basis: ''
+        general_rule_id: ''
+        review_flag: ''
+  counts:
+    canonical_rows_repointed: 2
+    canonical_rows_label_normalized_without_repoint: 0
+    new_registry_rows: 0
+    registry_rows_replaced: 1
+    canonical_node_ids_replaced: 1
+
+combined_migration_revision:
+  lineage_id: MIG-DEC-2026-0024-0025
+  superseded_gup: GUP-MIG-DEC-2026-0024-0025-r03
+  required_gup: GUP-MIG-DEC-2026-0024-0025-r04
+  authority_decisions: [DEC-2026-0024, DEC-2026-0025, DEC-2026-0026, DEC-2026-0031]
+  rationale: >-
+    The active r03 migration already requires a revision. The r04 revision must
+    retain every operation authorized by Decisions 0024, 0025, and 0026, and add
+    only the two Pipes endpoint repoints and one identity replacement above.
+    DEC-2026-0030 is superseded and must not appear in r04 authority or
+    decision-input provenance.
+
+packet_disposition:
+  existing_gup:
+    id: GUP-PKT-PHB-117-119-bards-r03
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-117-119-bards-r03.yaml
+  existing_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r03-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r03-r01.yaml
+  resolved_review_correction:
+    id: M048
+    replacement_assertion:
+      source_id: class_bard
+      source_label: Bard
+      edge_type: MODIFIES
+      target_id: item_pipes_sewer
+      target_label: Pipes of the Sewer
+      aspect: enables rat attraction
+      condition: ''
+      polarity: neutral
+      polarity_basis: unset
+      book: PHB
+      page: '119'
+      section: BARDS
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+  separate_review_correction:
+    id: M028
+    instruction: >-
+      Preserve the Reviewer-supplied item_stringed_instrument correction. This
+      reissue does not change or reopen that separate correction.
+
+migration_required: true
+migration_scope:
+  architect_writes: decisions_and_contracts_only
+  registry_rows_replaced: 1
+  canonical_nodes_replaced: 1
+  canonical_edges_repointed: 2
+  canonical_edges_added: 0
+  aliases_retained: 0
+  required_derived_rebuilds:
+    - rulesets/adnd1e/canonical/nodes_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+  affected_contracts:
+    - contracts/WORK_QUEUES.md
+    - contracts/ARTIFACT_LIFECYCLE.md
+    - contracts/FILE_NAMING.md
+  builder_tooling:
+    - tooling/common/scan_agent_queues.py
+    - tooling/common/tests/test_scan_agent_queues.py
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Implement WORK_QUEUES 1.7 Decision-reissue leaf derivation in the shared
+      queue scanner and tests. A valid DEC-2026-0031 superseding DEC-2026-0030
+      leaves only DEC-2026-0031 as the ready Builder decision-migration job;
+      malformed, cross-ruleset, migration-flag-changing, missing-predecessor, or
+      forked reissues report a lineage error and suppress neither ready job.
+  - step: 2
+    owner: builder
+    action: >-
+      Publish GUP-MIG-DEC-2026-0024-0025-r04. It supersedes r03, uses
+      artifact_kind decision_migration, records exact checksummed authority for
+      Decisions 0024, 0025, 0026, and 0031, and plans against the then-current
+      canonical baseline.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review the combined migration. Confirm that only the two
+      named Pipes endpoints and the one registry identity replacement are added
+      to the pre-existing r04 correction scope.
+  - step: 4
+    owner: integrator
+    action: >-
+      Integrate the approved r04 migration, rebuild derived canonical artifacts,
+      and publish Integration provenance.
+  - step: 5
+    owner: reviewer
+    action: >-
+      After Integration, publish REV-GUP-PKT-PHB-117-119-bards-r03-r02,
+      superseding r01. Resolve M048 with the exact singular identity and retain
+      M028's supplied correction.
+  - step: 6
+    owner: builder
+    action: >-
+      Publish GUP-PKT-PHB-117-119-bards-r04 against the integrated registry and
+      canonical state. It uses item_pipes_sewer as an existing identity and does
+      not propose another Pipes node.
+
+acceptance_tests:
+  - >-
+    WORK_QUEUES 1.7 recognizes a new-ID Architect Decision reissue through its
+    revision and supersedes lineage without rewriting the predecessor file.
+  - >-
+    Queue scanner tests prove that a valid same-ruleset, same-migration-flag
+    Decision reissue produces only the leaf Builder job, while missing,
+    non-approved, cross-ruleset, changed-flag, and forked reissues are lineage
+    errors that leave prior work visible.
+  - >-
+    Planning Decisions 0024, 0025, 0026, and 0031 produces one node identity
+    replacement and exactly two Pipes endpoint repoints at canonical rows 2479
+    and 2480, with no migration_instruction_not_understood or
+    migration_repoint_key_not_understood diagnostic.
+  - >-
+    GUP-MIG-DEC-2026-0024-0025-r04 supersedes r03 in the same lineage and names
+    Decisions 0024, 0025, 0026, and 0031 as exact checked authority inputs.
+  - >-
+    The migration replaces item_pipes_sewers / Pipes of the Sewers with
+    item_pipes_sewer / Pipes of the Sewer in the registry, canonical nodes, and
+    exactly the two enumerated canonical endpoints; no alias or retired endpoint
+    remains.
+  - >-
+    The migration preserves every unlisted field in both endpoint rows, produces
+    no duplicate five-field assertion key, and changes no unrelated identity.
+  - >-
+    The Bards Review and GUP revisions occur only after the migration Integration
+    and apply M048 and M028 exactly as specified.
+  - All applicable schema, graph, registry, lineage, and repository tests pass.
+
+constitution_version_impact:
+  changed: false
+  current_version: '1.7'
+  rationale: >-
+    This corrects migration execution and Decision lineage only. It introduces no
+    ontology, edge-semantics, or constitutional change.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement and test Decision-reissue leaf derivation before publishing r04.
+    - Use DEC-2026-0031, not DEC-2026-0030, in r04 authority and provenance.
+    - Preserve every exact DEC-2026-0024, DEC-2026-0025, and DEC-2026-0026 operation.
+  reviewer:
+    - Review r04 as one combined migration and reject any retained retired Pipes identity.
+  integrator:
+    - Apply only the approved r04 mutation set and rebuild derived canonical outputs.
+
+governance_change_summary:
+  contracts_versioned:
+    - contracts/WORK_QUEUES.md 1.6 -> 1.7
+    - contracts/ARTIFACT_LIFECYCLE.md 1.4 -> 1.5
+    - contracts/FILE_NAMING.md 1.4 -> 1.5
+  exact_effect: >-
+    A later Architect Decision with a new ID, later revision, and supersedes
+    predecessor is the leaf only after same-ruleset, same-migration-flag,
+    approved, unforked validation. It replaces the predecessor for queue and
+    migration authority derivation only; the predecessor bytes and path remain
+    unchanged.

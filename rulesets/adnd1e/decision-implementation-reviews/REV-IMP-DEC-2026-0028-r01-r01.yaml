@@ -1,0 +1,44 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0028-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0028-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0028-r01.yaml
+  checksum: sha256:d8eb6be49d0e390d1cfd29c9d87c83ff5e252700f1b361db9bc234d62dbdb2e7
+decision_input:
+  id: DEC-2026-0028
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0028.yaml
+  checksum: sha256:368749c4bae0f1c61cbfc0a874f1e73c302258192c6836accb5cd1088b2f1064
+implementation_inventory:
+  declared_files: 6
+  checksum_matches: 6
+  noncanonical_scope: verified
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: "The decided escalation is immutable in escalations/decided, DEC-2026-0028 names it, and the Decision supplements rather than edits DEC-2026-0022."}
+  - {acceptance_test_index: 2, disposition: verified, evidence: "Current report and review schemas require exact retirement authority and complete Integration evidence, and the full common suite validates active artifacts."}
+  - {acceptance_test_index: 3, disposition: verified, evidence: "Current common suite passes rejection coverage for invalid authority, incomplete subjects, incorrect Integration evidence, unintegrated successors, replacement, and non-snapshot use."}
+  - {acceptance_test_index: 4, disposition: verified, evidence: "DEC-2026-0028 authorizes only the exact DEC-2026-0022 checksum, indices 2 through 4, and its complete declared subject sets; current semantic tests pass."}
+  - {acceptance_test_index: 5, disposition: verified, evidence: "IMP-DEC-2026-0022-r06 has index 1 passed and 2 through 4 valid retired_by_lineage results with complete checksummed authority and Integration evidence; r04 remains immutable history."}
+  - {acceptance_test_index: 6, disposition: verified, evidence: "The review schema requires verified_retired_by_lineage plus the Reviewer's own authority and subject evidence; current regression coverage rejects an ordinary verified substitute."}
+  - {acceptance_test_index: 7, disposition: verified, evidence: "Architect Decision schema constrains indexed, complete live_queue_snapshot semantics; common suite 261 and Builder suite 370 both pass."}
+independent_validation:
+  passed: true
+  commands:
+    - {command: "[cwd D:/analysis/dnd] local schema, checksum, acceptance-index, and retirement-lineage audit", exit_code: 0, result: passed, summary: "All six declared file checksums, report schema, exact authorization, and Integration-record provenance checks passed."}
+    - {command: "[cwd tooling/common/tests] python -m unittest discover -s . -p 'test_*.py' -t .", exit_code: 0, result: passed, summary: "Ran 261 common schema and queue tests; all passed."}
+    - {command: "[cwd tooling/builder/tests] PYTHONPATH=../src python -m unittest discover -s . -p 'test_*.py' -t .", exit_code: 0, result: passed, summary: "Ran 370 Builder compiler, migration, registry, vocabulary, and schema tests; all passed."}
+overall_disposition: approved
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: Every DEC-2026-0028 acceptance test is independently verified against the exact active r01 report.
+  blocking_ids: []

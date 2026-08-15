@@ -1,0 +1,103 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0023-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0023
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0023.yaml
+  checksum: sha256:8be0df954bdfaab576086c36ee03045ded38e9901140d70cf7b3686819abffa7
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:7187c87c7339b02eb431956a7ca2114f0d7a410c1bf8f97eb6681961ca34cced
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:d80b7a49c61b8618f757c11617f7b0c12e2815155543bce9fdfb736170f1f9fa
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'live repository check: ARTIFACT_LIFECYCLE declares Version 1.3 and defines both implementation
+    artifacts, their stores and their schemas'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'live repository check: FILE_NAMING declares Version 1.4 and defines both names and stores'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'live repository check: WORK_QUEUES declares Version 1.4 and defines the non-migration lineage'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'live repository check: REPOSITORY_STRUCTURE names both ruleset-scoped stores'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'live repository check: decision-implementation: valid Draft 2020-12; decision-implementation-review:
+    valid Draft 2020-12'
+- acceptance_test_index: 6
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionImplementationCase.test_an_unconsumed_non_migration_decision_is_one_builder_job
+    -> Ran 1 test in 0.010s OK
+- acceptance_test_index: 7
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionImplementationCase.test_a_valid_report_is_one_reviewer_job_and_suppresses_the_decision_job
+    -> Ran 1 test in 0.015s OK
+- acceptance_test_index: 8
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionImplementationCase.test_a_partial_report_is_not_reviewer_ready
+    -> Ran 1 test in 0.015s OK
+- acceptance_test_index: 9
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionImplementationCase.test_a_stale_decision_checksum_is_invalid,
+    test_scan_agent_queues.DecisionImplementationCase.test_a_mismatched_decision_path_is_invalid, test_scan_agent_queues.DecisionImplementationCase.test_a_repeated_acceptance_index_is_invalid,
+    test_scan_agent_queues.DecisionImplementationCase.test_an_out_of_range_acceptance_index_is_invalid,
+    test_scan_agent_queues.DecisionImplementationCase.test_a_missing_implementation_file_is_invalid, test_scan_agent_queues.DecisionImplementationCase.test_a_stale_implementation_file_checksum_is_invalid,
+    test_scan_agent_queues.DecisionImplementationCase.test_a_failed_acceptance_result_cannot_be_approval_ready
+    -> Ran 7 tests in 0.093s OK
+- acceptance_test_index: 10
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionImplementationCase.test_a_revision_required_review_is_one_builder_job_and_no_duplicate
+    -> Ran 1 test in 0.019s OK
+- acceptance_test_index: 11
+  result: passed
+  evidence: unit test test_scan_agent_queues.DecisionImplementationCase.test_an_approved_review_consumes_the_decision
+    -> Ran 1 test in 0.019s OK
+- acceptance_test_index: 12
+  result: passed
+  evidence: 'live repository check: each IMP report covers every acceptance index of its Decision exactly
+    once: DEC-2026-0018=True, DEC-2026-0020=True, DEC-2026-0022=True, DEC-2026-0023=True'
+- acceptance_test_index: 13
+  result: passed
+  evidence: 'live repository check: Reviewer verification is a separate lineage this Decision assigns
+    to Reviewer; Builder publishes the reports and does not self-approve. No implementation Review exists
+    yet, so no Decision is consumed by Builder assertion.'
+- acceptance_test_index: 14
+  result: passed
+  evidence: unit test test_scan_agent_queues.TestScannerParity.test_powershell_and_python_return_the_same_jobs_and_exit_code
+    -> Ran 1 test in 15.360s OK
+- acceptance_test_index: 15
+  result: passed
+  evidence: 'live repository check: complete common schema and scanner suites passed'
+- acceptance_test_index: 16
+  result: passed
+  evidence: 'live repository check: no canonical, registry, GUR, GUP, Review, Approved or prior Decision
+    file modified'
+validation:
+  passed: true
+  commands:
+  - command: C:\Users\Jeff\AppData\Local\Python\pythoncore-3.14-64\python.exe -m unittest discover -s
+      . -t .
+    exit_code: 0
+    result: passed
+    summary: Ran 161 tests in 23.953s OK
+  - command: C:\Users\Jeff\AppData\Local\Python\pythoncore-3.14-64\python.exe -m unittest discover -s
+      . -t .
+    exit_code: 0
+    result: passed
+    summary: Ran 354 tests in 14.450s OK
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: every Decision acceptance test is implemented and evidenced
+  blocking_ids: []

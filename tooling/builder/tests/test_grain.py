@@ -53,10 +53,31 @@ class TestAspectLength(unittest.TestCase):
     def test_four_words_is_allowed(self):
         self.assertEqual(grain.check_aspect_length("one two three four"), [])
 
-    def test_five_words_warns(self):
+    def test_five_words_is_an_error(self):
+        """Raised from warning: invariant 11 and the assertion key both bind.
+
+        As a warning this let eight packets reach the Reviewer carrying 466
+        overlong aspects, and the Reviewer blocked them by hand.
+        """
         findings = grain.check_aspect_length("one two three four five")
-        self.assertEqual(findings[0]["severity"], "warning")
+        self.assertEqual(findings[0]["severity"], "error")
         self.assertEqual(findings[0]["rule"], "aspect_word_count")
+
+    def test_the_detail_names_what_is_wrong_and_why_it_matters(self):
+        detail = grain.check_aspect_length("one two three four five")[0]["detail"]
+        self.assertIn("invariant 11", detail)
+        self.assertIn("assertion key", detail)
+
+    def test_the_constitution_boundary_is_exactly_four(self):
+        self.assertEqual(grain.check_aspect_length("one two three four"), [])
+        self.assertEqual(len(grain.check_aspect_length("one two three four five")), 1)
+
+    def test_an_overlong_aspect_blocks_approval_rather_than_only_annotating(self):
+        errors = [
+            f for f in grain.check_edge("the lawful to chaotic component", "")
+            if f["severity"] == "error"
+        ]
+        self.assertEqual([f["rule"] for f in errors], ["aspect_word_count"])
 
 
 class TestConstitutionExamples(unittest.TestCase):

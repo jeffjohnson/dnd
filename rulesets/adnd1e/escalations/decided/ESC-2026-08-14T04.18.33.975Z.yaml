@@ -1,0 +1,74 @@
+schema_version: '1.0'
+id: ESC-2026-08-14T04.18.33.975Z
+status: decided
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-014-016-cavalier
+constitution_version: '1.7'
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-08-14'
+decision_id: DEC-2026-0033
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: A new node prefix may be required; only the Architect may add one.
+  blocking_ids: []
+gur_candidate_ref: GUR-PKT-UA-014-016-cavalier-r01 ESC-CAND-02
+trigger: 'ESCALATION_CONTRACT 1.2: no existing node ID represents the concept and a new kind or prefix
+  may be needed.'
+originating_artifacts:
+  gur_id: GUR-PKT-UA-014-016-cavalier-r01
+  gur_path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-014-016-cavalier-r01.yaml
+  packet_path: books/adnd1e/ua/packets/claimed/PKT-UA-014-016-cavalier/
+  also_raised_in: GUR-PKT-UA-015-015-cavaliers-r01 IDQ-02, now withdrawn
+question: The graph has no way to name an ordinary weapon. Constitution 3.1 offers item_ for magic items
+  and item classes, wpn_ for weapon properties and statistics, and sword_ for intelligent-sword mechanics;
+  none names a mundane weapon such as a lance, an awl pike or a spear. Should a new prefix be added, should
+  item_ be widened to cover ordinary weapons, or are weapon-specific rules out of scope for the graph?
+source_excerpt: 'UA 15 CAVALIERS TABLE I: "A heavy lance used while dismounted is treated as an awl pike,
+  with respect to all specifications except length, weight, and speed factor. A medium or light lance
+  used while dismounted is treated as a spear."
+
+  UA 14 THE CAVALIER: "These weapons are the lance (required of the 1st-level Armiger), long sword, broad
+  sword, bastard sword, short sword, horseman''s mace, horseman''s flail, horseman''s military pick, dagger,
+  scimitar, and javelin."'
+local_graph_neighborhood:
+  registry_census: 'nodes.csv holds 1,162 nodes. All 162 item_ nodes are magic items. All seven wpn_ nodes
+    are statistics: wpn_length, wpn_range, wpn_space_required, wpn_speed_factor, wpn_stats, wpn_type_vs_ac,
+    wpn_weight. All seven sword_ nodes are intelligent-sword mechanics.'
+  nearest_existing_handling: Canonical carries rule_mount DERIVED_FROM wpn_stats, aspect 'treated as another
+    weapon type', cited to UA 15. That is the dismounted-lance rule expressed without naming any weapon,
+    which is the only route currently available and loses which weapon is meant.
+  scope_beyond_this_packet: PHB 35 BASIC EQUIPMENT AND SUPPLIES COSTS lists roughly forty mundane arms
+    by name, and DMG 64 distinguishes bows, arrows and sling missiles by weight class. This is a corpus-wide
+    gap, not a cavalier problem.
+affected_canonical_ids:
+- wpn_stats
+- rule_mount
+- prof_weapon
+- sys_equipment
+options_considered:
+- option: Add a new prefix for mundane weapons, for example wpns_ or arm_
+  impact: Constitution 3.1 change. No existing row is rewritten; new nodes become available to future
+    packets. Weapon-specific rules across all four books become expressible.
+- option: Widen item_ to cover ordinary equipment as well as magic items
+  impact: Constitution 3.1 wording change and no migration, but it makes the 162 existing item_ nodes
+    ambiguous as a class and removes the ability to filter magic items by prefix.
+- option: Rule weapon-specific rules out of scope
+  impact: No change. Makes the current silence deliberate rather than accidental, and the graph permanently
+    cannot answer which weapon a rule concerns.
+recommended_resolution: 'Add a dedicated prefix. The gap is corpus-wide and already costs real assertions:
+  this packet alone drops an eleven-weapon preference list and two lance substitution rules. Widening
+  item_ is cheaper but destroys the magic-item class boundary, which more rules depend on than the weapon
+  rules being recovered.'
+expected_migration_impact: 'None to existing rows under the recommended option. Purely additive: a prefix
+  entry in constitution 3.1, then ordinary GUP registry additions as packets need them.'
+governance_impact:
+  constitution_change: true
+  registry_change: false
+  profile_change: false
+blocking: Blocks no current artifact. GUR-PKT-UA-014-016-cavalier-r01 is complete and ready for Builder;
+  the affected assertions were omitted rather than deferred, and are listed in its IDQ-03 so they can
+  be added by a later revision if a prefix is approved.

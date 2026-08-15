@@ -1,0 +1,167 @@
+schema_version: '1.0'
+id: ESC-2026-08-14T23.13.08.212Z
+status: decided
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-legacy-unspecified
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-14'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    DEC-2026-0032 cannot be planned. Its 33 canonical row locators and one
+    registry row locator were written against the pre-r05 baseline, and the
+    integrated r05 migration removed canonical row 1502, shifting every later
+    row by one. The merge operation it requires is implemented and its semantic
+    content is verified correct; only the locators are stale.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. An approved Decision directs canonical work whose
+  enumerated targets no longer resolve. Applying it as written would repoint
+  assertions nobody ruled on, and adjusting the numbers would be the Builder
+  reinterpreting an Architect Decision.
+
+question: >-
+  DEC-2026-0032 enumerates 33 canonical rows and six registry rows by physical
+  position against baseline sha256:0058d1a5. The integrated r05 migration has
+  since removed canonical row 1502, so every locator above it is off by one and
+  registry row 1070 now holds a different node. Should DEC-2026-0032 be reissued
+  with locators recomputed against the current baseline, and should row-numbered
+  Decisions generally move to the assertion-key locator form DEC-2026-0016
+  already uses?
+
+what_is_not_in_question:
+  - >-
+    The ruling. The three merges, their surviving identities, and the
+    `abil_<abbrev>_<rule>` convention are unchanged and correct.
+  - >-
+    The semantic content. Every retired ID, label, and kind still matches the
+    registry apart from the one moved row, and the discovered incident sets are
+    the same size the Decision declares -- 7, 17 and 9 rows, 33 in total.
+  - >-
+    The merge operation itself. It is implemented, tested, and reads
+    DEC-2026-0032 rather than ignoring it, as the Decision required.
+
+evidence:
+  baseline_at_decision:
+    canonical: sha256:0058d1a5fc566d6668a0a61cd748dfeb6127333a6da3d63274f7a575eb0f6894
+    registry: sha256:c9814318d1ebcc4280a31668baa8978ad908d066dfdfc12ccb472f509b7068d0
+    canonical_rows: 4133
+  baseline_now:
+    canonical: sha256:3f39ae7753211eac78fad1f910e548a1cfa21e4de697599736e899cf3b61fa5c
+    registry: sha256:f4134caa1ac80da733dca8a2db31ff7a1696f7c52bb1458ffcdff1b2300aab94
+    canonical_rows: 4132
+    cause: >-
+      GUP-MIG-DEC-2026-0024-0025-r05 was integrated. It removed canonical row
+      1502 with no replacement, added rule_greater_mistletoe to the registry,
+      and replaced two node identities.
+  shift_confirmed: >-
+    For all three merges, taking each declared incident row and subtracting one
+    where the row number exceeds 1502 reproduces the discovered incident set
+    exactly. The Decision is internally consistent; only its frame of reference
+    moved.
+  planner_result: >-
+    Planning DEC-2026-0032 against the current baseline produces 13 errors and
+    plans nothing: 10 rows that no longer hold a retired endpoint, 2 incident
+    sets that are not closed, and 1 registry row that moved. No partial plan is
+    emitted, because repointing some rows while stranding the rest would leave a
+    retired identity in canonical.
+  registry_row_moved:
+    declared: {row: 1070, id: str_exceptional}
+    actual: {row: 1070, id: str_bend_bars}
+    note: str_exceptional now sits at row 1071.
+
+systemic_finding:
+  observation: >-
+    Every unintegrated Decision that names canonical rows by physical position
+    was invalidated by one row removal, silently and all at once. DEC-2026-0015
+    is affected identically: its locators no longer resolve either, and 30
+    Builder tests now skip because the Decisions they check describe a corpus
+    that no longer exists.
+  why_it_matters: >-
+    The damage is not detected by the removing migration, which is correct in
+    isolation. It surfaces only when the next Decision is planned, and only
+    because the planner compares full before-images. A migration that repointed
+    without before-images would have applied 33 wrong rows silently.
+  existing_better_form: >-
+    DEC-2026-0016 locates its rows by assertion rather than by number, and the
+    planner comment on `_plan_citation_revisions` already records why: an
+    assertion key survives renumbering. That form is immune to this failure.
+  builder_recommendation: >-
+    Reissue DEC-2026-0032 with corrected locators now, and consider making the
+    assertion-key form the default for future row-scoped Decisions. The Builder
+    is not asking to change any existing Decision unilaterally.
+
+options_considered:
+  - option: Reissue DEC-2026-0032 with locators recomputed against the current baseline
+    impact: >-
+      Unblocks the migration immediately. The reissue lineage from WORK_QUEUES
+      1.7 already exists for exactly this, and the corrected numbers are
+      mechanically derivable and independently checkable.
+    builder_preference: recommended
+  - option: Reissue using assertion-key locators instead of row numbers
+    impact: >-
+      Also unblocks it, and the result cannot be invalidated by a later removal.
+      More work for the Architect, and the merge operation would need to accept
+      an assertion-located incident set, which is Builder work this escalation
+      does not assume.
+  - option: Let the Builder shift the locators by one
+    impact: >-
+      Not recommended and not offered as a fallback. The shift is verifiable
+      today, but it is still the Builder deciding what an Architect Decision
+      meant, and the same reasoning would license adjusting a Decision after any
+      corpus change.
+
+builder_work_completed:
+  summary:
+    - >-
+      `node_id_merges` is implemented as a bounded operation: at least two
+      distinct retired IDs, a survivor absent from the registry, every retired
+      node matching its declared registry row/label, every declared row
+      resolving and holding exactly one retired endpoint, and the discovered
+      incident set matching the declared one exactly.
+    - >-
+      Every check refuses rather than repairs, and a refused merge plans nothing
+      at all -- a partial plan would repoint some rows and strand the others.
+    - >-
+      21 tests cover it, including the duplicate retired ID, existing survivor,
+      registry row/label mismatch, missing and extra incident rows, out-of-range
+      rows, self-contradicting counts, and malformed entries the Decision names.
+  files:
+    - tooling/builder/src/adnd1e_builder/decision_migration.py
+    - tooling/builder/src/adnd1e_builder/registry.py
+    - tooling/builder/tests/test_decision_migration.py
+
+blocked_work:
+  - id: GUP-MIG-DEC-2026-0032-r01
+    blocks: >-
+      Cannot be published. Behind it: the Reviewer step, Integration, and the
+      Analyst's required GUR-PKT-DMG-064-064-missile-discharge-r03, which
+      DEC-2026-0032 sequences after Integration.
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  contract_change: possible
+  note: >-
+    Only if the Architect adopts the assertion-key locator form as a general
+    rule. Reissuing DEC-2026-0032 alone changes no governance artifact.
+
+blocking: >-
+  DEC-2026-0032 produces no migration, so the three ability-identity merges and
+  the DMG missile-discharge packet lineage behind them cannot proceed.
+
+decision_id: DEC-2026-0036
+decided_on: '2026-08-14'
+resolution: >-
+  DEC-2026-0036 supersedes DEC-2026-0032, preserves its three semantic identity
+  rulings, and replaces every stale physical locator with one measured against
+  the current integrated baseline. It also establishes the separately bounded
+  decision_migration_v2 direct model, because v1 correctly does not authorize a
+  two-retired-IDs-to-one-new-ID merge. No general assertion-key locator policy is
+  adopted by this resolution.

@@ -44,6 +44,44 @@ ARCHITECT_ESCALATION = "architect_escalation"
 
 DISPOSITIONS = frozenset({APPROVED, APPROVED_WITH_REVISION, REJECTED, ARCHITECT_ESCALATION})
 
+#: The two spellings a Review uses for its per-row rulings. The entry shape is
+#: identical; which one appears depends on when the Review was written.
+ROW_DECISION_KEYS = ("row_decisions", "edge_decisions")
+
+#: The same for rulings on proposed nodes.
+NODE_DECISION_KEYS = ("node_registry_decisions", "node_decisions")
+
+#: Bulk rulings. A Review that approves most of a large packet says so once
+#: under a policy block listing every ref it covers, rather than repeating an
+#: entry per row, and then states only the exceptions individually. Eleven
+#: published Reviews do this -- the psionics Review covers 216 of its 218 rows
+#: this way -- so not reading them made almost every row look undecided.
+ROW_POLICY_KEY = "field_decision_policy"
+NODE_POLICY_KEY = "node_registry_policy"
+
+#: Every top-level `*_policy` key this loader accounts for.
+KNOWN_POLICY_KEYS = frozenset({ROW_POLICY_KEY, NODE_POLICY_KEY})
+
+#: Every top-level `*_decisions` key this loader accounts for. Anything else is
+#: reported rather than ignored: an unread ruling is one that silently does not
+#: apply, which looks exactly like a clean revision.
+KNOWN_DECISION_KEYS = frozenset(
+    set(ROW_DECISION_KEYS)
+    | set(NODE_DECISION_KEYS)
+    | {
+        "node_addition_decisions",
+        "node_replacement_decisions",
+        "canonical_change_decisions",
+        "canonical_removal_decisions",
+        # Migration-review rulings. A decision_migration is planned from the
+        # Decision record, not compiled through these directives, so the packet
+        # compiler is not their consumer and not reading them here hides
+        # nothing from anyone.
+        "node_relabel_decisions",
+        "component_decisions",
+    }
+)
+
 CANONICAL_UPDATE = "canonical_update"
 CANONICAL_MIGRATION = "canonical_migration"
 CANONICAL_OPERATIONS = frozenset({CANONICAL_UPDATE, CANONICAL_MIGRATION})
@@ -543,6 +581,76 @@ def _carry_forward(earlier: RowDirective | None, later: RowDirective) -> RowDire
     )
 
 
+def _policy_disposition(block: dict, directives=None, key: str = "") -> str:
+    """The disposition a bulk policy block carries, normalized.
+
+    Reviews phrase these in prose -- "approved as submitted", "approved as
+    submitted except where an explicit row decision overrides it" -- so the
+    text is read only far enough to confirm it is an approval. Anything that
+    does not begin that way is reported rather than guessed at, because a bulk
+    block covers hundreds of rows and mistaking its meaning is expensive.
+    """
+    text = str(block.get("disposition") or "").strip().lower()
+    if text.startswith(APPROVED):
+        return APPROVED
+    if directives is not None:
+        directives.unknown_dispositions.append(f"{key}: {block.get('disposition')!r}")
+    return ""
+
+
+def _policy_entries(document: dict, directives=None) -> list[dict]:
+    """Per-ref rulings expanded from the row policy block, if there is one."""
+    block = document.get(ROW_POLICY_KEY)
+    if not isinstance(block, dict):
+        return []
+    disposition = _policy_disposition(block, directives, ROW_POLICY_KEY)
+    if not disposition:
+        return []
+    return [
+        {"ref": str(ref), "disposition": disposition, "rationale": block.get("rationale") or ""}
+        for ref in block.get("applies_to") or []
+    ]
+
+
+def _ruling_entries(document: dict, directives=None) -> list[dict]:
+    """Per-row rulings, from every shape a Review uses to state them.
+
+    Three shapes are on disk. `row_decisions` and `edge_decisions` both hold a
+    list of entries -- same shape, different vintage -- and six Reviews instead
+    put a single mapping under `edge_decisions` that applies one disposition to
+    an `approved_refs` list. Expanding the bulk form here means every consumer
+    works on one shape.
+
+    Reading only `row_decisions` meant seventeen Reviews loaded no rulings at
+    all, so a revision built from one silently kept the rows the Reviewer had
+    rejected while looking perfectly clean.
+    """
+    # Policy first: an explicit per-row ruling later in the list overwrites
+    # it, which is exactly what the 'except where an explicit row decision
+    # overrides it' wording asks for.
+    entries: list[dict] = list(_policy_entries(document, directives))
+    for key in ROW_DECISION_KEYS:
+        block = document.get(key)
+        if isinstance(block, dict):
+            refs = block.get("approved_refs") or block.get("refs") or []
+            if not refs and directives is not None:
+                directives.unread_decision_keys.append(key)
+                continue
+            shared = {
+                name: value
+                for name, value in block.items()
+                if name not in ("approved_refs", "refs")
+            }
+            entries.extend({**shared, "ref": str(ref)} for ref in refs)
+            continue
+        for entry in block or []:
+            if isinstance(entry, dict):
+                entries.append(entry)
+            elif directives is not None:
+                directives.unread_decision_keys.append(key)
+    return entries
+
+
 @dataclass
 class ReviewDirectives:
     review_id: str
@@ -557,6 +665,11 @@ class ReviewDirectives:
     #: Reviewer rulings on proposed nodes, keyed by proposed ID.
     nodes: dict[str, NodeDirective] = field(default_factory=dict)
     unknown_dispositions: list[str] = field(default_factory=list)
+    #: Top-level `*_decisions` keys this loader does not read. A Review states
+    #: its rulings under a key name, so an unread key is a ruling that silently
+    #: does not apply -- the revision comes out looking clean while ignoring
+    #: what the Reviewer asked for.
+    unread_decision_keys: list[str] = field(default_factory=list)
     #: Earlier Reviews in the chain, oldest first, whose rulings are folded in.
     superseded_reviews: list[str] = field(default_factory=list)
 
@@ -584,7 +697,13 @@ class ReviewDirectives:
             input_gur=str(input_gur or ""),
         )
 
-        for row in document.get("row_decisions") or []:
+        for key in sorted(document):
+            if key.endswith("_decisions") and key not in KNOWN_DECISION_KEYS:
+                directives.unread_decision_keys.append(key)
+            if key.endswith("_policy") and key not in KNOWN_POLICY_KEYS:
+                directives.unread_decision_keys.append(key)
+
+        for row in _ruling_entries(document, directives):
             ref = row.get("ref")
             if not ref:
                 continue
@@ -634,7 +753,22 @@ class ReviewDirectives:
                 unknown_keys=unknown,
             )
 
-        for node in document.get("node_registry_decisions") or []:
+        node_policy = document.get(NODE_POLICY_KEY)
+        node_rulings: list[dict] = []
+        if isinstance(node_policy, dict):
+            disposition = _policy_disposition(node_policy, directives, NODE_POLICY_KEY)
+            if disposition:
+                node_rulings.extend(
+                    {"proposed_id": str(node_id), "disposition": disposition}
+                    for node_id in node_policy.get("applies_to") or []
+                )
+        node_rulings.extend(
+            entry
+            for key in NODE_DECISION_KEYS
+            for entry in (document.get(key) or [])
+            if isinstance(entry, dict)
+        )
+        for node in node_rulings:
             # A decision may rule on one proposal or on a group of them, as the
             # DEC-2026-0004 identity block does. Both shapes carry the same
             # instruction, so both are indexed by every ID they name.
@@ -681,6 +815,7 @@ class ReviewDirectives:
             merged.packet_id = later.packet_id or merged.packet_id
             merged.input_gur = later.input_gur or merged.input_gur
             merged.unknown_dispositions.extend(later.unknown_dispositions)
+            merged.unread_decision_keys.extend(later.unread_decision_keys)
             merged.superseded_reviews.append(merged.review_id)
             for ref, directive in later.rows.items():
                 merged.rows[ref] = _carry_forward(merged.rows.get(ref), directive)

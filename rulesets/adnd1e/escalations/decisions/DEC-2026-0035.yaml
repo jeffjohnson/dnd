@@ -1,0 +1,339 @@
+schema_version: "1.0"
+id: DEC-2026-0035
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.8"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Reissue the combined migration as r05 using the checked
+    decision_migration_v1 direct-operation model. The r04 semantic plan is
+    complete but cannot be approved or integrated under the former edge-CSV-only
+    bundle contract.
+  blocking_ids: []
+
+decision_date: "2026-08-14"
+escalation_id: ESC-2026-08-14T15.40.47.819Z
+
+question: >-
+  What Approved-bundle operation model may authorize the Integrator to apply
+  the already reviewed combined migration of one registry addition, two node
+  identity replacements, five endpoint repoints, and one canonical-row removal
+  when no edge CSV can represent the complete operation set?
+
+ruling: >-
+  Adopt the narrow `decision_migration_v1` model defined by WORK_QUEUES 1.8 and
+  the common GUP and Approved-bundle schemas. The executable plan is the exact,
+  checksummed reviewed decision-migration GUP YAML; an Approved manifest names
+  that plan and its validation report as components and never repeats, infers,
+  or translates its operations. No edge CSV is present for this model. The
+  Integrator may execute only: an approved registry addition, a one-row registry
+  identity replacement with retirement, a paired endpoint-ID/label compare-and-
+  swap against an enumerated full before-image, and an exact no-replacement row
+  removal. This authorizes the existing combined semantic scope only; it does
+  not create aliases, reinterpret any relationship, or authorize a general
+  node-retirement mechanism.
+
+rationale:
+  - >-
+    The r04 Review independently approved all nine semantic operations and
+    verified every before-image against the current 4,133-row canonical
+    baseline. Its only blocker is mechanical execution, not source authority or
+    graph meaning.
+  - >-
+    An edge CSV can represent additions and ordinary compare-and-swap updates,
+    but cannot truthfully encode registry identity replacement, retirement, and
+    an exact deletion. Treating a prose note as an executable instruction would
+    make the Integrator invent operations after Review.
+  - >-
+    The GUP already provides the right audit boundary: exact authority Decisions,
+    full before-images, operation deltas, and validation provenance. Referencing
+    that immutable file by checksum prevents a separately authored Approved
+    manifest from widening or changing the plan.
+  - >-
+    Both source identities remain governed by claimed PHB packets: Greater
+    Mistletoe, Call Woodland Beings, and Pipes of the Sewer. This Decision only
+    supplies the missing mechanical path to apply their previously decided
+    migrations.
+
+operation_model:
+  name: decision_migration_v1
+  authority_source: >-
+    The checksummed GUP YAML component is the sole operation source. The
+    manifest is provenance and routing metadata, not a second operation plan.
+  approved_manifest:
+    artifact_kind: decision_migration
+    operation_model: decision_migration_v1
+    required_components:
+      - kind: decision_migration
+        path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-0025-r05.yaml
+        meaning: Exact reviewed direct-operation GUP YAML.
+      - kind: validation
+        path: build/reports/GUP-MIG-DEC-2026-0024-0025-r05.validation.json
+        meaning: Exact Builder validation report named by the reviewed GUP.
+    prohibited_components: [edges]
+    required_approval_checksums: [approves.gup_checksum, approves.review_checksum]
+  preconditions:
+    - >-
+      The manifest, Review, GUP component, validation report, and every Decision
+      input checksum match their declared immutable repository files.
+    - >-
+      The GUP's canonical edge baseline path, checksum, and row count match the
+      current canonical file, and its node-registry path, checksum, and row
+      count match the current registry before a snapshot is taken.
+    - >-
+      Every direct operation is within this model's schema, carries authority
+      listed by the GUP, and has a complete 18-field canonical before-image.
+    - >-
+      Each node replacement's incident rows equal the complete current set of
+      endpoints using its retired ID; every such row is an enumerated paired
+      endpoint repoint.
+  execution_order:
+    - >-
+      Validate all component, baseline, before-image, authority, incident-set,
+      and post-plan collision conditions in memory before any canonical or
+      registry write.
+    - >-
+      Inside one transaction, register each approved addition and replace each
+      named registry row only after confirming the new ID is absent, the retired
+      ID is present, and no alias is retained.
+    - >-
+      Apply enumerated endpoint repoints against their baseline line numbers and
+      full before-images. Change only the one endpoint ID and its paired label.
+    - >-
+      Remove exact no-replacement rows after repoints, in descending baseline
+      line order, so earlier physical row locators cannot shift.
+    - >-
+      Verify that retired IDs remain nowhere in registry, canonical endpoints,
+      nodes master, or generated graph; rebuild all derived canonical outputs;
+      then run the full invariant and regression suite before committing.
+  prohibited_actions:
+    - Infer an unlisted endpoint repoint from a retired ID.
+    - Retain a retired ID as an alias, duplicate registry row, or generated node.
+    - Apply any label, polarity, citation, evidence, or other non-enumerated
+      field change.
+    - Treat a replacement, merge, or removal shape outside this schema as
+      decision_migration_v1.
+
+governance_changes:
+  contracts:
+    - path: contracts/WORK_QUEUES.md
+      version: "1.8"
+      change: Defines the direct operation model, the no-edge-CSV Approved bundle, and required integration tests.
+    - path: contracts/ARTIFACT_LIFECYCLE.md
+      version: "1.6"
+      change: Defines the direct-YAML lifecycle and component provenance.
+  schemas:
+    - path: schemas/common/gup.schema.json
+      change: Validates decision_migration_v1 operations, full before-images, registry provenance, and paired endpoint fields.
+    - path: schemas/common/approved-bundle.schema.json
+      change: Validates the direct migration component pair and forbids an edge CSV for this artifact kind.
+  instructions:
+    - agents/builder/INSTRUCTIONS.md
+    - agents/reviewer/INSTRUCTIONS.md
+    - agents/integrator/INSTRUCTIONS.md
+  constitution_changed: false
+  registry_changed_by_architect: false
+
+migration_required: true
+migration_scope:
+  lineage_id: MIG-DEC-2026-0024-0025
+  superseded_gup: GUP-MIG-DEC-2026-0024-0025-r04
+  required_gup: GUP-MIG-DEC-2026-0024-0025-r05
+  prior_authority_decisions:
+    - DEC-2026-0024
+    - DEC-2026-0025
+    - DEC-2026-0026
+    - DEC-2026-0031
+  required_authority_decisions:
+    - DEC-2026-0024
+    - DEC-2026-0025
+    - DEC-2026-0026
+    - DEC-2026-0031
+    - DEC-2026-0035
+  direct_operations:
+    registry_additions: 1
+    registry_replacements: 2
+    canonical_endpoint_repoints: 5
+    canonical_row_removals: 1
+    aliases_created: 0
+    semantic_reinterpretations: 0
+  exact_identity_scope:
+    - action: add
+      id: rule_greater_mistletoe
+      label: Greater Mistletoe
+      kind: rule
+      authority: DEC-2026-0026
+    - action: replace
+      retired_id: spell_call_woodland_being
+      canonical_id: spell_call_woodland_beings
+      canonical_label: Call Woodland Beings
+      canonical_rows: [2664, 2665, 2666]
+      authority: DEC-2026-0025
+    - action: replace
+      retired_id: item_pipes_sewers
+      canonical_id: item_pipes_sewer
+      canonical_label: Pipes of the Sewer
+      canonical_rows: [2479, 2480]
+      authority: DEC-2026-0031
+    - action: remove_exact_before_image
+      canonical_row: 1502
+      replacement_edge: null
+      authority: DEC-2026-0024
+  required_derived_rebuilds:
+    - rulesets/adnd1e/canonical/nodes_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Extend the decision-migration planner, serializer, validation report, and
+      tests to emit and validate decision_migration_v1, including node-registry
+      provenance and no operation annotations that the direct schema forbids.
+  - step: 2
+    owner: builder
+    action: >-
+      Publish r05, superseding r04 in the same lineage. Replan from the current
+      canonical and registry baselines; retain the exact r04 semantic operation
+      set and add this Decision only as operation-model authority. Do not publish
+      an edge CSV for r05.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review r05's source-identity scope, both baselines, every
+      before-image, every retired endpoint set, and the direct model. On approval
+      publish the no-edge-CSV Approved manifest with exactly the two required
+      components and checksums.
+  - step: 4
+    owner: integrator
+    action: >-
+      Extend Approved-bundle discovery, direct-operation validation, transaction
+      reporting, and rollback tests for decision_migration_v1 before applying
+      the Approved r05 bundle. Update the Integrator-owned README to remove the
+      stale claim that node retirement is unexercised.
+  - step: 5
+    owner: integrator
+    action: >-
+      Integrate only the approved r05 operation plan and publish normal
+      integration provenance. Do not alter r04, its Review, the Decisions, or a
+      packet artifact to represent completion.
+
+implementation_files:
+  builder:
+    - tooling/builder/src/adnd1e_builder/decision_migration.py
+    - tooling/builder/tests/test_decision_migration.py
+    - tooling/builder/tests/test_edge_schema.py
+  integrator:
+    - tooling/integrator/src/adnd1e_integrator/bundles.py
+    - tooling/integrator/src/adnd1e_integrator/operations.py
+    - tooling/integrator/src/adnd1e_integrator/integrate.py
+    - tooling/integrator/src/adnd1e_integrator/records.py
+    - tooling/integrator/tests/test_bundles.py
+    - tooling/integrator/tests/test_operations.py
+    - tooling/integrator/tests/test_transaction.py
+    - tooling/integrator/README.md
+  reviewer_outputs:
+    - books/adnd1e/phb/artifacts/reviews/REV-GUP-MIG-DEC-2026-0024-0025-r05-r01.yaml
+    - books/adnd1e/phb/artifacts/approved/APPROVED-GUP-MIG-DEC-2026-0024-0025-r05-r01.yaml
+
+acceptance_tests:
+  - >-
+    The common GUP schema accepts a fully populated decision_migration_v1 plan
+    and the common Approved-bundle schema accepts only its exact GUP and
+    validation components, while r04 and existing packet bundles remain valid
+    historical artifacts.
+  - >-
+    The schemas reject a direct operation lacking registry provenance, an
+    18-field before-image, a paired endpoint ID/label delta, an approved-plan
+    checksum, or the required direct GUP/validation component pair.
+  - >-
+    GUP-MIG-DEC-2026-0024-0025-r05 supersedes r04 in the same lineage, has the
+    five required Decision inputs with exact checksums, uses
+    operation_model decision_migration_v1, and has no edge CSV.
+  - >-
+    r05's direct operation counts are exactly one registry addition, two
+    registry replacements, five endpoint repoints, and one no-replacement row
+    removal; it changes no other semantic field and creates no alias.
+  - >-
+    The Reviewer can independently prove that every r05 before-image and
+    incident endpoint set matches both current baselines, including the two-row
+    DEC-2026-0026 identity-only polarity exception.
+  - >-
+    The r05 Approved manifest is one discoverable Integrator bundle despite no
+    edge CSV; a packet-update manifest without an edge CSV remains rejected.
+  - >-
+    Integrator preconditions reject mismatched GUP, Review, validation report,
+    authority Decision, canonical baseline, registry baseline, duplicate key,
+    incomplete incident set, unlisted field delta, and any retained retired ID
+    before canonical files are written.
+  - >-
+    A valid dry run reports exactly the declared one addition, two replacements,
+    five repoints, and one removal. A committed integration leaves
+    rule_greater_mistletoe registered; removes spell_call_woodland_being and
+    item_pipes_sewers from registry, nodes, and endpoints; and leaves row 1502
+    absent with no replacement edge.
+  - >-
+    Each direct-operation failure, including one introduced after earlier
+    in-memory mutations, restores the canonical edge file, nodes master, graph
+    JSON, and node registry byte-for-byte.
+  - >-
+    All Builder, Reviewer, Integrator, common-schema, graph, registry, queue,
+    and repository validations applicable to the changed components pass.
+  - >-
+    r04, REV-GUP-MIG-DEC-2026-0024-0025-r04-r01, and Decisions 0024, 0025,
+    0026, and 0031 remain byte-immutable history; r05 is the only active
+    migration leaf authorized to proceed.
+
+constitution_version_impact:
+  changed: false
+  current_version: "1.8"
+  rationale: >-
+    This is an artifact-operation and transactional-integration contract. It
+    does not add an ontology kind, prefix, edge type, role, source rule, or
+    constitutional semantic rule.
+
+governance_changelog:
+  - "WORK_QUEUES 1.8 adds decision_migration_v1 and its queue/integration tests."
+  - "ARTIFACT_LIFECYCLE 1.6 records direct-YAML migration component provenance."
+  - "Common schemas reject direct migrations whose plan or Approved bundle is incomplete."
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - "1.7 -> 1.8; add the direct decision-migration operation and Approved-bundle contract."
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - "1.5 -> 1.6; add direct-YAML decision-migration lifecycle requirements."
+  schemas/common/gup.schema.json:
+    - "Add the decision_migration_v1 operation and baseline schema."
+  schemas/common/approved-bundle.schema.json:
+    - "Add the no-edge-CSV decision-migration manifest component schema."
+  agents/builder/INSTRUCTIONS.md:
+    - "Distinguish direct decision-migration output from packet-update output."
+  agents/reviewer/INSTRUCTIONS.md:
+    - "Specify review and emission of direct decision-migration bundles."
+  agents/integrator/INSTRUCTIONS.md:
+    - "Specify exact-plan validation and transactional direct-operation execution."
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Publish r05 only after the planner and schema validations implement this exact model.
+    - Preserve r04's approved semantic operation set exactly; do not issue a separate migration lineage.
+  reviewer:
+    - Do not approve r05 without both baseline checksums and the two required manifest components.
+    - Do not recreate an edge CSV merely to satisfy the former packet bundle convention.
+  integrator:
+    - Do not apply r05 until the direct-operation applier and rollback tests pass.
+    - Do not infer an operation, preserve an alias, or repair source semantics during integration.
+
+prohibited_actions:
+  - Do not modify any canonical, registry, GUP, Review, or Approved artifact in this Decision publication step.
+  - Do not reissue DEC-2026-0031; its semantic decision and planner vocabulary remain correct.
+  - Do not treat the former r04 Review's architectural execution blocker as a source or identity defect.
+  - Do not extend decision_migration_v1 to arbitrary row edits, merges, aliases, or removals with replacement without a new Architect Decision.

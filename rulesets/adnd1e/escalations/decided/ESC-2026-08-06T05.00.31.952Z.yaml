@@ -1,0 +1,233 @@
+schema_version: "1.0"
+id: ESC-2026-08-06T05.00.31.952Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+raised_by: builder
+raised_date: "2026-08-06"
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Builder cannot discharge DEC-2026-0022 acceptance tests 2, 3 and 4 truthfully
+    or falsely. Each names a live artifact that has since completed its lineage,
+    and the report schema admits no disposition for an acceptance test whose
+    subject legitimately retired.
+  blocking_ids: []
+
+originating_artifacts:
+  review: REV-IMP-DEC-2026-0022-r03-r01
+  review_path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0022-r03-r01.yaml
+  review_finding: DEC-0022-LIVE-ACCEPTANCE-STATE-STALE
+  related_context_not_replaced:
+    - DEC-2026-0022 is the Decision under implementation and keeps its own handoff.
+    - DEC-2026-0018 and DEC-2026-0023 share the same report mechanism and the same exposure.
+    - >-
+      These are named as context only. They are deliberately not given as
+      id-and-path pairs, because WORK_QUEUES 1.3 would read that as replacing
+      their handoffs.
+
+question: >-
+  How is an approved Decision's acceptance test discharged when the test names a
+  specific live artifact and queue position, and that artifact has since
+  completed its lineage through ordinary Approval and Integration?
+
+  Concretely: DEC-2026-0022 acceptance tests 2, 3 and 4 assert that
+  DEC-2026-0021 remains Builder-visible, that two named PHB GURs remain separate
+  Builder jobs, and that GUP-PKT-PHB-035-038-money-equipment-r05 remains
+  Reviewer-visible. All four subjects have been approved and integrated. The
+  literal assertions are now false, and they are false because the pipeline did
+  the work, not because the implementation regressed.
+
+why_this_is_architectural: >-
+  The decision-implementation schema requires every acceptance result to be
+  `passed` before a report may be approval-ready. Builder therefore has only two
+  moves, and both are wrong. Recording `passed` asserts a queue state the
+  repository does not hold, which is the exact defect the Reviewer just returned.
+  Recording `failed` or `not_run` makes DEC-2026-0022 permanently
+  undischargeable, because no future Builder action can restore an integrated
+  artifact to an un-integrated queue position.
+
+  Builder may not decide that an acceptance test means something other than what
+  it says, and may not edit an approved Decision to restate it. Only the
+  Architect can say how a snapshot-bound acceptance test is satisfied after its
+  subject retires. The question is general: it recurs for every Decision whose
+  acceptance tests cite live queue contents.
+
+source_excerpt:
+  note: >-
+    No rulebook source is involved. The governing text is the Decision's own
+    acceptance list, quoted exactly.
+  decision: DEC-2026-0022
+  acceptance_tests_at_issue:
+    - index: 2
+      text: DEC-2026-0021 remains visible to Builder under its current Decision-migration rule.
+    - index: 3
+      text: The two active PHB GURs remain separate Builder jobs.
+    - index: 4
+      text: GUP-PKT-PHB-035-038-money-equipment-r05 remains Reviewer-visible.
+  schema_constraint:
+    path: schemas/common/decision-implementation.schema.json
+    text: >-
+      if approval_ready is true, then acceptance_results items require
+      result: {const: passed}
+
+local_graph_neighborhood:
+  note: >-
+    No canonical assertion is involved. The equivalent neighborhood is the
+    lineage each named subject has since travelled, which is what makes the
+    acceptance tests unsatisfiable as written.
+  subject_disposition:
+    - subject: DEC-2026-0021
+      acceptance_index: 2
+      current_state: consumed
+      consumed_by: GUP-MIG-DEC-2026-0016-PAGE-r01
+      approved_bundle: APPROVED-GUP-MIG-DEC-2026-0016-PAGE-r01-r01
+      integration_record: INT-20260804-002-APPROVED-GUP-MIG-DEC-2026-0016-PAGE-r01-r01.json
+    - subject: GUR-PKT-PHB-033-035-alignment-hp-languages
+      acceptance_index: 3
+      current_state: consumed
+      consumed_by: GUP-PKT-PHB-033-035-alignment-hp-languages-r06
+      approved_bundle: APPROVED-GUP-PKT-PHB-033-035-alignment-hp-languages-r06-r01
+      integration_record: INT-20260804-001-APPROVED-GUP-PKT-PHB-033-035-alignment-hp-languages-r06-r01.json
+    - subject: GUR-PKT-PHB-043-054-cleric-spells
+      acceptance_index: 3
+      current_state: consumed
+      consumed_by: GUP-PKT-PHB-043-054-cleric-spells-r06
+      approved_bundle: APPROVED-GUP-PKT-PHB-043-054-cleric-spells-r06-r01
+      integration_record: INT-20260804-001-APPROVED-GUP-PKT-PHB-043-054-cleric-spells-r06-r01.json
+    - subject: GUP-PKT-PHB-035-038-money-equipment-r05
+      acceptance_index: 4
+      current_state: superseded_then_integrated
+      superseded_by: GUP-PKT-PHB-035-038-money-equipment-r06, then r07
+      approved_bundle: APPROVED-GUP-PKT-PHB-035-038-money-equipment-r07-r01
+      integration_record: INT-20260804-001-APPROVED-GUP-PKT-PHB-035-038-money-equipment-r07-r01.json
+  verified_not_suppressed: >-
+    None of the four left the queue by handoff replacement. The live scan emits
+    handoff_replaced_by_decision only for the exact ID-and-path pairs a decided
+    escalation names, and no such diagnostic names any subject above.
+
+affected_canonical_ids: []
+
+affected_artifacts:
+  decisions_exposed_to_the_same_question:
+    - DEC-2026-0018
+    - DEC-2026-0022
+    - DEC-2026-0023
+  reports_awaiting_this_answer:
+    - IMP-DEC-2026-0022-r04
+
+related_defect_already_fixed:
+  finding: DEC-0022-LIVE-ACCEPTANCE-STATE-STALE, acceptance test 1
+  note: >-
+    Acceptance test 1 was genuinely false and is not part of this question.
+    The scanner skipped Decision handoff replacement entirely for a
+    migration-required Decision carrying a ready Builder handoff, so
+    DEC-2026-0021 could not retire the stale Analyst handoff on
+    REV-GUP-MIG-DEC-2026-0015-0016-r03-r01. The guard that prevents
+    double-counting the Builder item was running before the suppression loop
+    instead of after it. Fixed in tooling/common/scan_agent_queues.py with a
+    regression test that fails when the guard is moved back; acceptance test 1
+    now holds live. This escalation asks only about tests 2, 3 and 4.
+
+options_considered:
+  - option: A
+    summary: Read a snapshot acceptance test as satisfied by the property it protected.
+    detail: >-
+      Tests 2 to 4 exist to prove the handoff-replacement change does not
+      over-suppress unrelated work. Discharge them by verifying that property
+      against the current corpus: no active artifact's ready item is suppressed
+      except by an exact Decision ID-and-path link.
+    cost: >-
+      Requires an explicit rule that Builder may generalize a named subject to
+      the property under test. Without one this is Builder reinterpreting an
+      approved Decision.
+  - option: B
+    summary: Record the tests as failed or not_run and leave the Decision undischarged.
+    detail: Literal, truthful, and permanent.
+    cost: >-
+      DEC-2026-0022 can never be completed, and it stays in the Builder queue
+      forever as an approved Decision with no approval-ready report.
+  - option: C
+    summary: Architect re-issues DEC-2026-0022 with acceptance tests restated corpus-independently.
+    detail: >-
+      A revision whose tests name behaviors and fixtures rather than live queue
+      contents, superseding only the acceptance list.
+    cost: One Decision revision; the implementation itself does not change.
+  - option: D
+    summary: Add a schema disposition for a retired subject.
+    detail: >-
+      Extend the report schema with a result such as `superseded_by_lineage`,
+      admissible in an approval-ready report when evidence names the integration
+      record that retired the subject.
+    cost: >-
+      Schema and contract change affecting every future implementation report;
+      broader than the immediate problem but fixes the whole class.
+
+recommended_resolution: >-
+  Option C for DEC-2026-0022 now, and Option D as the general rule.
+
+  C is the narrowest thing that unblocks the present item without Builder
+  reinterpreting an approved Decision: the acceptance list is restated so it
+  tests scanner behavior rather than a queue snapshot, and the implementation
+  under review is unchanged and already passing.
+
+  D is worth deciding at the same time because the exposure is structural. Any
+  Decision whose acceptance tests cite live artifacts becomes undischargeable the
+  moment the pipeline advances, and a report that pins file checksums already
+  goes stale whenever a shared tooling file is edited later. Naming an explicit
+  disposition for a subject retired by integration, with the integration record
+  as required evidence, keeps a report honest without freezing the corpus.
+
+  Builder does not recommend Option A. It requires exactly the judgment the
+  Builder role is barred from making.
+
+expected_migration_impact:
+  canonical_rows_changed: 0
+  registry_rows_changed: 0
+  nodes_added: 0
+  nodes_retired: 0
+  artifacts_created: >-
+    One superseding Decision revision under Option C, or one schema and contract
+    revision plus reissued reports under Option D.
+  artifacts_invalidated: none
+  note: >-
+    No graph data is affected under any option. This is queue and evidence
+    governance only.
+
+would_change:
+  constitution: false
+  registry: false
+  profile: false
+  contracts:
+    - contracts/WORK_QUEUES.md under Option D
+    - contracts/ARTIFACT_LIFECYCLE.md under Option D
+  schemas:
+    - schemas/common/decision-implementation.schema.json under Option D
+  reason: >-
+    Options A, B and C need no contract change. Option D changes what an
+    approval-ready implementation report may assert, which is contract and
+    schema surface.
+
+builder_position: >-
+  Builder has fixed the one real defect the Reviewer found and will publish
+  IMP-DEC-2026-0022-r04 recording the true current state: acceptance test 1
+  passing with fresh evidence, tests 2 to 4 not_run with the integration record
+  that retired each subject, and approval_ready false. Builder will not record a
+  passing result for an assertion the repository does not hold, and will not
+  restate an approved Decision's acceptance tests on its own authority.
+
+decision:
+  id: DEC-2026-0028
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0028.yaml
+  decided_on: "2026-08-06"
+  summary: >-
+    Adopted the narrowly scoped retired-by-lineage outcome for live
+    queue-snapshot acceptance tests, with exact checksummed Architect authority
+    and ordinary Integration lineage. DEC-2026-0022 indices 2, 3, and 4 are
+    explicitly authorized; Builder owns schema, validation, scanner, test, and
+    implementation-report revision work.

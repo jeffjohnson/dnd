@@ -1,0 +1,640 @@
+schema_version: '1.0'
+id: GUR-PKT-PHB-120-120-planes-of-existence-r02
+status: published
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-120-120-planes-of-existence
+constitution_version: '1.7'
+revision: 2
+supersedes: GUR-PKT-PHB-120-120-planes-of-existence-r01
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.3
+- contracts/WORK_QUEUES.md 1.6
+- contracts/ARTIFACT_LIFECYCLE.md 1.4
+- contracts/GRAPH_INVARIANTS.md 1.1
+- rulesets/adnd1e/governance/constitution.md 1.7
+- rulesets/adnd1e/escalations/decisions/DEC-2026-0029.yaml
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 120
+page_end: 120
+packet_source_checksum: sha256:91238856528f0c7ca3cb9b725e0730dd567dcef620e85f1a50688decf9b48066
+packet_source_checksum_basis: lf_normalized
+source_summary: 'PHB 120, Appendix IV. A numbered list of twenty-five planes in two divisions, the Inner
+  Planes 1 to 8 and the Outer Planes 9 to 25, followed by four short sections: ethereal travel, astral
+  travel, and combat on either plane. The list is largely cosmology; the four sections are mechanics.'
+node_id_resolution_method: No registry slice was supplied. The registry was probed for every plane, travel
+  and hazard term in the packet. rule_ether_cyclone, rule_psychic_wind, rule_planar_travel, spell_astral_spell,
+  spell_plane_shift and spell_negative_plane_protection already exist and are reused; seven endpoints
+  had no identity and are proposed.
+grain_decisions:
+- decision: The twenty-five named planes do not each become a node.
+  basis: Constitution 1 and the core test. Twenty-one of them are named and given an alignment and nothing
+    else; changing or removing one would not require review of any other mechanic.
+  how_applied: 'Four planes are minted because mechanics attach to them: the Negative Material as the
+    power source for undead, the Prime Material and the Ethereal and Astral as the endpoints of the travel
+    and spell-casting asymmetries. The two divisions are minted because the Astral''s defining limitation
+    is stated against the Inner Planes and the alignment claim against the Outer. The remaining nineteen
+    are recorded in OBS-02 rather than minted.'
+- decision: Status is core, not optional.
+  basis: Constitution 8, which flags what the text marks a DM option. The appendix's remark that how real
+    each plane is depends on the referee's development is about campaign construction, not about whether
+    the travel and combat rules apply.
+  how_applied: Ethereal and astral travel are reached by core spells and items, so their mechanics are
+    not separable from the core game.
+- decision: No magnitude appears in any aspect or condition.
+  basis: Constitution 2 and GRAPH_INVARIANTS 11.
+  how_applied: The layer counts, the 666 layers of the Abyss and the sixteen first levels, are all removed.
+candidate_nodes:
+- proposed_id: rule_ethereal_plane
+  proposed_label: Ethereal Plane
+  kind: rule
+  why_needed: 'The appendix gives it a numbered entry, its own travel section and its own combat rules,
+    and makes it mechanically distinct from the Astral: it permeates all the Inner Planes, spells cast
+    from it reach the Prime Material, and damage taken on it is real. rule_planar_travel exists but is
+    the activity, not the place; see IDQ-01.'
+  edges_depending_on_it:
+  - M002
+  - M017
+  - M020
+- proposed_id: rule_astral_plane
+  proposed_label: Astral Plane
+  kind: rule
+  why_needed: 'Numbered entry with its own travel and combat sections, and defined against the Ethereal
+    at every point: it touches only the Prime Material and the first layers of the Outer Planes, spells
+    cast from it do not reach the Prime Material, and its damage destroys the astral body rather than
+    the traveller.'
+  edges_depending_on_it:
+  - M004
+  - M005
+  - M006
+  - M009
+  - M014
+  - M018
+  - M021
+- proposed_id: rule_inner_planes
+  proposed_label: The Inner Planes
+  kind: rule
+  why_needed: 'The appendix''s own first division, entries 1 to 8. Load-bearing because the Astral Plane''s
+    defining limitation is stated against it: the Astral does not touch any Inner Plane other than the
+    Prime Material.'
+  edges_depending_on_it:
+  - M005
+- proposed_id: rule_outer_planes
+  proposed_label: The Outer Planes
+  kind: rule
+  why_needed: The appendix's second division, entries 9 to 25, and named as the source of alignment and
+    the home of the deities. It is the endpoint the alignment system is sourced to.
+  edges_depending_on_it:
+  - M003
+  - M006
+- proposed_id: rule_negative_material_plane
+  proposed_label: Negative Material Plane
+  kind: rule
+  why_needed: Named as the source of power for undead, which is a mechanical dependency rather than cosmology.
+    spell_negative_plane_protection already exists in the registry and implies the plane it protects against.
+  edges_depending_on_it:
+  - M001
+- proposed_id: rule_prime_material_plane
+  proposed_label: Prime Material Plane
+  kind: rule
+  why_needed: The only Inner Plane the Astral touches, and the plane spells may or may not be cast into
+    depending on which of the two transitive planes the caster occupies. Both asymmetries need it as an
+    endpoint.
+  edges_depending_on_it:
+  - M022
+- proposed_id: rule_silver_cord
+  proposed_label: Silver Cord
+  kind: rule
+  why_needed: The mechanism that ties an astral traveller to the material body. Snapping it kills irrevocably,
+    and the appendix names both what can snap it and what merely destroys the astral body.
+  edges_depending_on_it:
+  - M013
+  - M014
+  - M015
+reused_nodes:
+- cbt_melee
+- item_magic_item
+- monster_undead
+- rule_ether_cyclone
+- rule_hit_points
+- rule_planar_travel
+- rule_psionic_use
+- rule_psychic_wind
+- rule_rest
+- rule_spell_casting
+- rule_time
+- spell_astral_spell
+- sys_alignment
+cross_packet_candidate_targets:
+- id: rule_death
+  label: Death
+  origin: candidate minted by GUR-PKT-PHB-100-109-playing-the-game-r01 and reused by GUR-PKT-PHB-122-122-division-of-treasure-r01,
+    not yet canonical
+  used_by:
+  - M015
+  - M022
+  builder_instruction: Do not mint a second identity. Three packets in this book now depend on it.
+candidate_general_rules: []
+domains_touched:
+- planar
+- magic
+- combat
+domains_touched_note: domain_registry.yaml remains at 0.1, status bootstrap, with an empty domains map.
+  planar is recorded as a candidate label only and is not asserted to be official; see candidate_domains.
+candidate_domains:
+- proposed: planar
+  why: 'This appendix, the astral and ethereal spells across three spell chapters, spell_plane_shift,
+    item_amulet_planes and gen_lower_planes form a coherent cluster that no existing label covers. Recorded,
+    not promoted: constitution 15 requires a candidate domain to recur across multiple packets before
+    adoption, and this is the first packet to propose it.'
+domain_boundary_questions: []
+candidate_edges:
+- ref: M001
+  source_id: rule_negative_material_plane
+  source_label: Negative Material Plane
+  edge_type: GATES
+  target_id: monster_undead
+  target_label: Undead
+  aspect: source of their power
+  condition: ''
+  book: PHB
+  page: 120
+  section: 'THE INNER PLANES: 1–8'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_ethereal_plane
+  source_label: Ethereal Plane
+  edge_type: GATES
+  target_id: rule_planar_travel
+  target_label: Ethereal Plane
+  aspect: movement between planes
+  condition: ''
+  book: PHB
+  page: 120
+  section: 'THE INNER PLANES: 1–8'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_outer_planes
+  source_label: The Outer Planes
+  edge_type: FEEDS_INTO
+  target_id: sys_alignment
+  target_label: Alignment
+  aspect: source of alignment
+  condition: ''
+  book: PHB
+  page: 120
+  section: 'THE OUTER PLANES: 9–25'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_astral_plane
+  source_label: Astral Plane
+  edge_type: GATES
+  target_id: rule_planar_travel
+  target_label: Ethereal Plane
+  aspect: movement to the Outer
+  condition: ''
+  book: PHB
+  page: 120
+  section: 'THE OUTER PLANES: 9–25'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: rule_astral_plane
+  source_label: Astral Plane
+  edge_type: EXCLUDED_FROM
+  target_id: rule_inner_planes
+  target_label: The Inner Planes
+  aspect: does not touch them
+  condition: other than the Prime Material
+  book: PHB
+  page: 120
+  section: ASTRAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: rule_astral_plane
+  source_label: Astral Plane
+  edge_type: CONSTRAINS
+  target_id: rule_outer_planes
+  target_label: The Outer Planes
+  aspect: layers reached
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 120
+  section: ASTRAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: item_magic_item
+  source_label: Magic Device
+  edge_type: GATES
+  target_id: rule_planar_travel
+  target_label: Ethereal Plane
+  aspect: ointment and items
+  condition: ''
+  book: PHB
+  page: 120
+  section: ETHEREAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: rule_psionic_use
+  source_label: Use of Psionic Powers
+  edge_type: GATES
+  target_id: rule_planar_travel
+  target_label: Ethereal Plane
+  aspect: psionic discipline
+  condition: ''
+  book: PHB
+  page: 120
+  section: ETHEREAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: spell_astral_spell
+  source_label: Astral Spell
+  edge_type: GATES
+  target_id: rule_astral_plane
+  target_label: Astral Plane
+  aspect: means of reaching it
+  condition: ''
+  book: PHB
+  page: 120
+  section: ASTRAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: rule_ether_cyclone
+  source_label: Ether Cyclone
+  edge_type: TRIGGERS
+  target_id: rule_planar_travel
+  target_label: Ethereal Plane
+  aspect: carried to another plane
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: PHB
+  page: 120
+  section: ETHEREAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M011
+  source_id: rule_ether_cyclone
+  source_label: Ether Cyclone
+  edge_type: CONSUMES
+  target_id: rule_time
+  target_label: Time
+  aspect: time out of touch
+  condition: ''
+  book: PHB
+  page: 120
+  section: ETHEREAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M012
+  source_id: rule_psychic_wind
+  source_label: Psychic Wind
+  edge_type: TRIGGERS
+  target_id: rule_planar_travel
+  target_label: Ethereal Plane
+  aspect: blown off course
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: PHB
+  page: 120
+  section: ASTRAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M013
+  source_id: rule_psychic_wind
+  source_label: Psychic Wind
+  edge_type: EXCLUDES
+  target_id: rule_silver_cord
+  target_label: Silver Cord
+  aspect: can snap the cord
+  condition: ''
+  book: PHB
+  page: 120
+  section: ASTRAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M014
+  source_id: rule_silver_cord
+  source_label: Silver Cord
+  edge_type: GATES
+  target_id: rule_astral_plane
+  target_label: Astral Plane
+  aspect: sustains the traveller's return
+  condition: ''
+  book: PHB
+  page: 120
+  section: ASTRAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M015
+  source_id: rule_silver_cord
+  source_label: Silver Cord
+  edge_type: TRIGGERS
+  target_id: rule_death
+  target_label: Death
+  aspect: snapping kills irrevocably
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: PHB
+  page: 120
+  section: ASTRAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M016
+  source_id: rule_planar_travel
+  source_label: Ethereal Plane
+  edge_type: EXCLUDES
+  target_id: rule_rest
+  target_label: Rest and Nourishment
+  aspect: food, drink and sleep
+  condition: ''
+  book: PHB
+  page: 120
+  section: ETHEREAL TRAVEL
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M017
+  source_id: rule_ethereal_plane
+  source_label: Ethereal Plane
+  edge_type: GATES
+  target_id: rule_spell_casting
+  target_label: Casting a Spell
+  aspect: casting to the Prime
+  condition: ''
+  book: PHB
+  page: 120
+  section: ETHEREAL AND ASTRAL COMBAT
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M018
+  source_id: rule_astral_plane
+  source_label: Astral Plane
+  edge_type: EXCLUDES
+  target_id: rule_spell_casting
+  target_label: Casting a Spell
+  aspect: casting to the Prime
+  condition: ''
+  book: PHB
+  page: 120
+  section: ETHEREAL AND ASTRAL COMBAT
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Paired deliberately with the Ethereal GATES edge above. The appendix states the two
+    in one sentence as a contrast, and the asymmetry is the load-bearing part; recording only one side
+    would lose it.
+- ref: M019
+  source_id: rule_planar_travel
+  source_label: Ethereal Plane
+  edge_type: MODIFIES
+  target_id: item_magic_item
+  target_label: Magic Device
+  aspect: weapons that stay magical
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 120
+  section: ETHEREAL AND ASTRAL COMBAT
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M020
+  source_id: rule_ethereal_plane
+  source_label: Ethereal Plane
+  edge_type: MODIFIES
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: damage taken there
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 120
+  section: ETHEREAL AND ASTRAL COMBAT
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M021
+  source_id: rule_astral_plane
+  source_label: Astral Plane
+  edge_type: CONSTRAINS
+  target_id: cbt_melee
+  target_label: Melee Combat
+  aspect: what an attacker destroys
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 120
+  section: ETHEREAL AND ASTRAL COMBAT
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M022
+  source_id: rule_prime_material_plane
+  source_label: Prime Material Plane
+  edge_type: TRIGGERS
+  target_id: rule_death
+  target_label: Death
+  aspect: the body left behind
+  condition: the traveller is astral
+  polarity: inflicts
+  polarity_basis: read
+  book: PHB
+  page: 120
+  section: ETHEREAL AND ASTRAL COMBAT
+  evidence: explicit_rule
+  pass: page-sweep
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+canonical_duplicates_not_for_emission: []
+near_matches_vs_canonical: []
+source_identity_conflicts:
+  rule: contracts/SOURCE_MARKDOWN.md 1.3, Source Identity Authority.
+  conflicts:
+  - canonical_id: rule_planar_travel
+    canonical_label: Ethereal Plane
+    packet_usage: The packet names 'the Ethereal Plane' as a place and 'ethereal travel' as an activity,
+      and treats them as different things across two sections.
+    packet_locus: PHB p120, ETHEREAL TRAVEL
+  analyst_view: rule_planar_travel carries the label 'Ethereal Plane' while its ID names the activity.
+    The ID is the identity under GRAPH_INVARIANTS 4, so it is reused unchanged for the activity, and rule_ethereal_plane
+    is minted for the place. The stored label is drift and will collide conceptually with the new node;
+    Builder and Reviewer should surface it. No migration is proposed here.
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: rule_planar_travel is the activity; rule_ethereal_plane is the place
+  question: rule_planar_travel exists at canonical and is labelled 'Ethereal Plane'. This packet needs
+    both a node for the act of travelling and nodes for the two transitive planes, because the mechanics
+    differ by which plane you are on, not by the act of travelling.
+  analyst_position: Reuse rule_planar_travel for the activity and mint rule_ethereal_plane and rule_astral_plane
+    for the places. The alternative, folding the Astral into rule_planar_travel, would make the two spell-casting
+    edges contradict each other, since one plane permits casting into the Prime Material and the other
+    forbids it.
+  affects:
+  - M002
+  - M004
+  - M005
+  - M006
+  - M007
+  - M008
+  - M009
+  - M010
+  - M012
+  - M014
+  - M016
+  - M017
+  - M018
+  - M019
+  - M020
+  - M021
+architectural_escalations: []
+non_edge_observations:
+- id: OBS-01
+  topic: the two transitive planes are defined entirely by contrast
+  finding: 'Every mechanical statement about the Astral is paired with the opposite statement about the
+    Ethereal: what each touches, whether spells reach the Prime Material from it, and whether damage taken
+    is real or falls on a projected body.'
+  why_it_matters: 'Three edge pairs in this GUR are only meaningful together. If a Reviewer rejects one
+    side of a pair the other becomes misleading rather than merely incomplete, so they should be dispositioned
+    as pairs: the GATES and EXCLUDES on rule_spell_casting, and the MODIFIES and CONSTRAINS on damage.'
+- id: OBS-02
+  topic: nineteen named planes yield nothing and are not minted
+  finding: The Seven Heavens, Twin Paradises, Elysium, the Happy Hunting Grounds, Olympus, Gladsheim,
+    Limbo, Pandemonium, the Abyss, Tarterus, Hades, Gehenna, the Nine Hells, Acheron, Nirvana and Arcadia
+    are each given a name and an alignment and nothing further. The four Elemental Planes and the Positive
+    Material are named with a sentence of description and no mechanic.
+  why_it_matters: They fail the core test in this packet. Several will earn nodes from the DMG or Monster
+    Manual, where demons, devils and elementals are given planar origins that do carry mechanics. Listed
+    here so a later extractor can see they were considered and why they were declined, rather than assuming
+    the appendix was skimmed.
+- id: OBS-03
+  topic: the alignment claim is the appendix's one link to a core subsystem
+  finding: The Outer Planes are named as the source of alignment, described as religious, philosophical
+    and ethical ideals, and as the homes of the deities.
+  why_it_matters: sys_alignment is one of the graph's most connected nodes and its inbound edges are almost
+    all about how alignment constrains a character. This is the only edge so far that says where alignment
+    comes from, which makes it structurally unusual and worth the Reviewer's check.
+- id: OBS-ASPECT-02
+  topic: revision 2 exists only to bring aspects within constitution 5
+  finding: The Builder graded aspect_word_count as an error under DEC-2026-0029 and returned this packet.
+    18 of this GUR's aspects ran to five words or more.
+  why_it_matters: Each replacement names the facet the cited section touches, re-derived from that section
+    in the claimed source rather than produced by shortening the previous string, as DEC-2026-0029 requires.
+    This packet was not returned; the rows were graded warning before the Decision and would fail on the
+    next compile, so they are corrected now rather than left to bounce. No edge was added, dropped or
+    re-pointed; the set was re-checked against canonical and against itself with no collision.
+  owner: analyst
+blocking_notes:
+- id: BLK-02
+  note: No node_registry_slice.csv, local_neighborhood.json or general_rule_slice.json accompanied this
+    packet. The registry was probed directly by pattern for plane, astral, ethereal, cord, cyclone and
+    psychic terms.
+  impact: Does not block this GUR.
+completeness_statement: All twenty-five numbered entries and all four prose sections were read and considered.
+  Every candidate edge cites PHB 120 and a section. No aspect or condition contains a magnitude. Authored
+  polarity appears only on MODIFIES, TRIGGERS and CONSTRAINS, always with basis read. Candidates were
+  checked against canonical on the constitution 5.1 assertion key and on the source-type-target triple.
+  Nineteen named planes were deliberately not minted; see OBS-02.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []

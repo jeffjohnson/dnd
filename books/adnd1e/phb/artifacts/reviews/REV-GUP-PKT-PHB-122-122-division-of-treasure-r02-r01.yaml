@@ -1,0 +1,95 @@
+schema_version: "1.0"
+id: REV-GUP-PKT-PHB-122-122-division-of-treasure-r02-r01
+status: revision_required
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-122-122-division-of-treasure
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: analyst
+  readiness: ready
+  reason: The GUR needs bounded aspects and source-supported re-derivation of the asserted modifier relationships before Builder recompiles a new leaf.
+  blocking_ids: []
+review_role: independent_reviewer
+review_date: "2026-08-11"
+reviewed_gup:
+  id: GUP-PKT-PHB-122-122-division-of-treasure-r02
+  path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-122-122-division-of-treasure-r02.yaml
+  checksum: sha256:89c3c17a76d225953e27caa228c29c1290cd998814129139620c43e0ac43ccad
+  artifact_kind: packet_update
+  revision: 2
+  supersedes: GUP-PKT-PHB-122-122-division-of-treasure-r01
+  components:
+    edges_csv: {path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-122-122-division-of-treasure-r02.edges.csv, checksum: sha256:0fa94297f85977bb52d120ca01bcd42822b247b77241c1aded19de48c6227f8c}
+    validation_report: {path: build/reports/GUP-PKT-PHB-122-122-division-of-treasure-r02.validation.json, checksum: sha256:02d0000eef4316d95edbdb4262085d14e8a37b9b34dafc4493789623ab131ded, reported_errors: 0}
+input_provenance:
+  gur: {id: GUR-PKT-PHB-122-122-division-of-treasure-r01, path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-122-122-division-of-treasure-r01.yaml, checksum: sha256:0ea92c504e20fa4de3a0766b55cc564eb79887da45d0997b63d36378b301d0d1}
+  source_packet: {path: books/adnd1e/phb/packets/claimed/PKT-PHB-122-122-division-of-treasure/source.md, checksum: sha256:860baf0c6a236dbdf4e9d2c7ac2e8c33bf6e6b55d2dbeb6e22046583f4e92cc9, page: "122"}
+overall_disposition: revision_required
+approval_ready: false
+approved_bundle_emitted: false
+summary:
+  submitted_edges: 11
+  additions: 0
+  pending_additions: 11
+  proposed_nodes: 2
+  completeness: Every submitted candidate edge and both proposed nodes were checked against the complete p122 packet and the source-aware GUR.
+blocking_findings:
+  - id: P122-R02-B1
+    severity: blocking
+    category: unbounded_aspect_grain
+    refs: [M001, M003, M004, M005, M006, M007, M008, M009, M010, M011]
+    finding: Ten aspects copy five-to-eight-word prose rather than naming a one-to-four-word affected facet required by constitution section 5.
+    required_correction: Reissue the GUR with the exact bounded facets recorded in edge_decisions.
+  - id: P122-R02-B2
+    severity: blocking
+    category: modifier_semantics_not_rederived
+    refs: [M003, M005]
+    finding: >-
+      The source says how multi-class levels are counted and how henchmen count in a
+      divisor. Those are changes to the division calculation, not independent inputs
+      flowing into the procedure; M003 FEEDS_INTO and M005 CONSTRAINS do not state
+      the supported relationship.
+    required_correction: Reissue M003 and M005 as source-backed MODIFIES relationships with read-based polarity.
+  - id: P122-R02-B3
+    severity: blocking
+    category: inferred_rule_provenance_incomplete
+    refs: [M001]
+    finding: >-
+      The p122 packet does not mention experience. M001 is honestly marked inferred,
+      but its necessary p106 experience-award premise must be included as an exact
+      cited source locus in the revised GUR rather than only described in rationale.
+    required_correction: Add the bounded p106 source citation and re-evaluate whether the inference remains mechanically necessary.
+node_decisions:
+  - {proposed_id: rule_treasure_division, disposition: held_for_revised_gur, rationale: "The p122 packet supports a procedure identity, but no node is approved independently of its flawed dependent edge set."}
+  - {proposed_id: rule_death, disposition: held_for_origin_packet, rationale: "This packet correctly does not mint a second identity; its origin remains the Playing the Game packet."}
+edge_decisions:
+  - {ref: M001, disposition: approved_with_revision, exact_correction: {aspect: individual award, add_inference_locus: "PHB p106 EXPERIENCE"}, source_locus: "p122 Agreements plus required p106 premise"}
+  - {ref: M002, disposition: approved, source_locus: "p122 Agreements"}
+  - {ref: M003, disposition: approved_with_revision, exact_correction: {edge_type: MODIFIES, aspect: level calculation, polarity: neutral, polarity_basis: read}, source_locus: "p122 Agreements footnote"}
+  - {ref: M004, disposition: approved_with_revision, exact_correction: {aspect: permitted-class share}, source_locus: "p122 Agreements footnote"}
+  - {ref: M005, disposition: approved_with_revision, exact_correction: {edge_type: MODIFIES, aspect: fractional divisor, polarity: neutral, polarity_basis: read}, source_locus: "p122 Modifiers"}
+  - {ref: M006, disposition: approved_with_revision, exact_correction: {aspect: bonus-share eligibility}, source_locus: "p122 Modifiers"}
+  - {ref: M007, disposition: approved_with_revision, exact_correction: {aspect: pre-death treasure}, source_locus: "p122 Modifiers"}
+  - {ref: M008, disposition: approved_with_revision, exact_correction: {aspect: item parcels}, source_locus: "p122 Magical Treasure"}
+  - {ref: M009, disposition: approved_with_revision, exact_correction: {aspect: parcel balancing}, source_locus: "p122 Magical Treasure"}
+  - {ref: M010, disposition: approved_with_revision, exact_correction: {aspect: magic-item rolls}, source_locus: "p122 Magical Treasure"}
+  - {ref: M011, disposition: approved_with_revision, exact_correction: {aspect: single magic roll}, source_locus: "p122 Magical Treasure"}
+reviewer_checklist:
+  source_support_and_page_marker: passed
+  identity: passed_with_cross_packet_rule_death_deferred
+  edge_semantics: failed_M003_M005
+  aspect_grain: failed_10_rows
+  polarity: failed_M003_M005
+  inferred_rule_provenance: failed_M001
+  optional_status: passed
+  canonical_files_modified: false
+  gup_files_modified: false
+required_follow_up:
+  analyst: ["Publish a superseding GUR with the three finding corrections and all exact bounded facets."]
+  builder: ["Compile a superseding GUP only from the revised GUR; do not edit this reviewed GUP."]
+  reviewer: ["Independently review the new active leaf."]
+  integrator: ["No action; no Approved bundle exists."]

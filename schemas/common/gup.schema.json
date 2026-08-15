@@ -38,6 +38,38 @@
       "then": {
         "$ref": "#/$defs/packetUpdate"
       }
+    },
+    {
+      "$comment": "WORK_QUEUES 1.8 direct v1 operations are an explicit, narrow executable model. Published older migrations remain structurally valid history until a current revision declares the model.",
+      "if": {
+        "properties": {
+          "operation_model": {
+            "const": "decision_migration_v1"
+          }
+        },
+        "required": [
+          "operation_model"
+        ]
+      },
+      "then": {
+        "$ref": "#/$defs/directDecisionMigrationV1"
+      }
+    },
+    {
+      "$comment": "WORK_QUEUES 1.9 direct v2 is the separate bounded node-ID merge model.",
+      "if": {
+        "properties": {
+          "operation_model": {
+            "const": "decision_migration_v2"
+          }
+        },
+        "required": [
+          "operation_model"
+        ]
+      },
+      "then": {
+        "$ref": "#/$defs/directDecisionMigrationV2"
+      }
     }
   ],
   "type": "object",
@@ -53,6 +85,12 @@
     },
     "approval_ready": {
       "type": "boolean"
+    },
+    "operation_model": {
+      "enum": [
+        "decision_migration_v1",
+        "decision_migration_v2"
+      ]
     }
   },
   "$defs": {
@@ -224,6 +262,333 @@
               "minimum": 0
             }
           }
+        }
+      }
+    },
+    "edgeRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "source_label",
+        "edge_type",
+        "target_id",
+        "target_label",
+        "aspect",
+        "condition",
+        "polarity",
+        "polarity_basis",
+        "book",
+        "page",
+        "section",
+        "evidence",
+        "pass",
+        "status",
+        "supersession_basis",
+        "general_rule_id",
+        "review_flag"
+      ],
+      "properties": {
+        "source_id": {"type": "string"},
+        "source_label": {"type": "string"},
+        "edge_type": {"type": "string"},
+        "target_id": {"type": "string"},
+        "target_label": {"type": "string"},
+        "aspect": {"type": "string"},
+        "condition": {"type": "string"},
+        "polarity": {"type": "string"},
+        "polarity_basis": {"type": "string"},
+        "book": {"type": "string"},
+        "page": {"type": "string"},
+        "section": {"type": "string"},
+        "evidence": {"type": "string"},
+        "pass": {"type": "string"},
+        "status": {"type": "string"},
+        "supersession_basis": {"type": "string"},
+        "general_rule_id": {"type": "string"},
+        "review_flag": {"type": "string"}
+      }
+    },
+    "fieldChange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {"type": "string"},
+        "to": {"type": "string"}
+      }
+    },
+    "directDecisionMigrationV1": {
+      "type": "object",
+      "required": [
+        "artifact_kind",
+        "operation_model",
+        "node_changes",
+        "canonical_changes",
+        "canonical_removals",
+        "provenance"
+      ],
+      "properties": {
+        "artifact_kind": {"const": "decision_migration"},
+        "operation_model": {"const": "decision_migration_v1"},
+        "provenance": {
+          "type": "object",
+          "required": [
+            "registry_source",
+            "registry_checksum",
+            "registry_rows_read"
+          ],
+          "properties": {
+            "registry_source": {"type": "string", "minLength": 1},
+            "registry_checksum": {"$ref": "#/$defs/checksum"},
+            "registry_rows_read": {"type": "integer", "minimum": 0}
+          }
+        },
+        "node_changes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "additions_proposed",
+            "relabels",
+            "replacements"
+          ],
+          "properties": {
+            "additions_proposed": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "proposed_id",
+                  "proposed_label",
+                  "kind",
+                  "basis",
+                  "authority",
+                  "action"
+                ],
+                "properties": {
+                  "proposed_id": {"type": "string", "minLength": 1},
+                  "proposed_label": {"type": "string", "minLength": 1},
+                  "kind": {"type": "string", "minLength": 1},
+                  "basis": {"type": "string", "minLength": 1},
+                  "authority": {"$ref": "#/$defs/decisionId"},
+                  "action": {"const": "add_to_nodes_csv_after_approval"}
+                }
+              }
+            },
+            "relabels": {
+              "type": "array",
+              "maxItems": 0
+            },
+            "replacements": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "retired_id",
+                  "retired_label",
+                  "canonical_id",
+                  "canonical_label",
+                  "kind",
+                  "registry_action",
+                  "require_no_remaining_retired_endpoints",
+                  "authority",
+                  "incident_canonical_rows"
+                ],
+                "properties": {
+                  "retired_id": {"type": "string", "minLength": 1},
+                  "retired_label": {"type": "string", "minLength": 1},
+                  "canonical_id": {"type": "string", "minLength": 1},
+                  "canonical_label": {"type": "string", "minLength": 1},
+                  "kind": {"type": "string", "minLength": 1},
+                  "registry_action": {"const": "replace_one_row"},
+                  "require_no_remaining_retired_endpoints": {"const": true},
+                  "authority": {"$ref": "#/$defs/decisionId"},
+                  "incident_canonical_rows": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {"type": "integer", "minimum": 2}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "canonical_changes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "canonical_row",
+              "kind",
+              "authority",
+              "changes",
+              "touches_assertion_identity",
+              "before"
+            ],
+            "properties": {
+              "canonical_row": {"type": "integer", "minimum": 2},
+              "kind": {"const": "endpoint_repoint"},
+              "authority": {"$ref": "#/$defs/decisionId"},
+              "changes": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["source_id", "source_label"],
+                    "properties": {
+                      "source_id": {"$ref": "#/$defs/fieldChange"},
+                      "source_label": {"$ref": "#/$defs/fieldChange"}
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["target_id", "target_label"],
+                    "properties": {
+                      "target_id": {"$ref": "#/$defs/fieldChange"},
+                      "target_label": {"$ref": "#/$defs/fieldChange"}
+                    }
+                  }
+                ]
+              },
+              "touches_assertion_identity": {"const": true},
+              "before": {"$ref": "#/$defs/edgeRecord"}
+            }
+          }
+        },
+        "canonical_removals": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "canonical_row",
+              "replacement_edge",
+              "authority",
+              "action",
+              "before"
+            ],
+            "properties": {
+              "canonical_row": {"type": "integer", "minimum": 2},
+              "replacement_edge": {"type": "null"},
+              "authority": {"$ref": "#/$defs/decisionId"},
+              "action": {"const": "remove_exact_before_image"},
+              "before": {"$ref": "#/$defs/edgeRecord"}
+            }
+          }
+        }
+      }
+    },
+    "directDecisionMigrationV2": {
+      "type": "object",
+      "required": [
+        "artifact_kind",
+        "operation_model",
+        "node_changes",
+        "canonical_changes",
+        "canonical_removals",
+        "provenance"
+      ],
+      "properties": {
+        "artifact_kind": {"const": "decision_migration"},
+        "operation_model": {"const": "decision_migration_v2"},
+        "provenance": {
+          "$ref": "#/$defs/directDecisionMigrationV1/properties/provenance"
+        },
+        "node_changes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "additions_proposed",
+            "relabels",
+            "replacements",
+            "merges"
+          ],
+          "properties": {
+            "additions_proposed": {
+              "type": "array",
+              "maxItems": 0
+            },
+            "relabels": {
+              "type": "array",
+              "maxItems": 0
+            },
+            "replacements": {
+              "type": "array",
+              "maxItems": 0
+            },
+            "merges": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "canonical_id",
+                  "canonical_label",
+                  "kind",
+                  "retired_nodes",
+                  "registry_action",
+                  "require_no_remaining_retired_endpoints",
+                  "authority",
+                  "incident_canonical_rows"
+                ],
+                "properties": {
+                  "canonical_id": {"type": "string", "minLength": 1},
+                  "canonical_label": {"type": "string", "minLength": 1},
+                  "kind": {"type": "string", "minLength": 1},
+                  "retired_nodes": {
+                    "type": "array",
+                    "minItems": 2,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["id", "label", "registry_csv_row"],
+                      "properties": {
+                        "id": {"type": "string", "minLength": 1},
+                        "label": {"type": "string", "minLength": 1},
+                        "registry_csv_row": {"type": "integer", "minimum": 2}
+                      }
+                    }
+                  },
+                  "registry_action": {"const": "merge_retired_rows_into_one"},
+                  "require_no_remaining_retired_endpoints": {"const": true},
+                  "authority": {"$ref": "#/$defs/decisionId"},
+                  "incident_canonical_rows": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {"type": "integer", "minimum": 2}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "canonical_changes": {
+          "allOf": [
+            {"$ref": "#/$defs/directDecisionMigrationV1/properties/canonical_changes"},
+            {"minItems": 1}
+          ]
+        },
+        "canonical_removals": {
+          "allOf": [
+            {"$ref": "#/$defs/directDecisionMigrationV1/properties/canonical_removals"},
+            {"maxItems": 0}
+          ]
         }
       }
     }

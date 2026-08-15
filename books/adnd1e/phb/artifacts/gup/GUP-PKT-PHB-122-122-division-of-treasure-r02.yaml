@@ -1,0 +1,348 @@
+schema_version: '1.0'
+id: GUP-PKT-PHB-122-122-division-of-treasure-r02
+status: proposed
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-122-122-division-of-treasure
+constitution_version: '1.7'
+artifact_kind: packet_update
+revision: 2
+supersedes: GUP-PKT-PHB-122-122-division-of-treasure-r01
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 0 edge addition(s), 0 update(s), 11 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-PHB-122-122-division-of-treasure-r01
+  gur_checksum: sha256:0ea92c504e20fa4de3a0766b55cc564eb79887da45d0997b63d36378b301d0d1
+  gur_constitution_version: '1.7'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 381
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: rule_treasure_division
+      proposed_label: Division of Treasure
+      kind: rule
+      why_needed: The whole subject of this appendix. It is the procedure that converts a party's recovered
+        treasure into an individual character's share, and it is therefore what actually feeds xp_treasure.
+        Three named systems, three modifiers and three magic-item schemes all attach to it. Nothing in
+        the registry represents it; rule_treasure_placement is the DMG's rule for where treasure sits,
+        not how it is split.
+      edges_depending_on_it:
+        - M001
+        - M002
+        - M003
+        - M004
+        - M005
+        - M006
+        - M007
+        - M008
+        - M009
+        - M010
+        - M011
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: rule_death
+      proposed_label: Death
+      kind: rule
+      why_needed: Also proposed by GUR-PKT-PHB-100-109-playing-the-game-r01. The second modifier here
+        turns on incapacity or death bounding which treasure a character may share in.
+      edges_depending_on_it:
+        - M007
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with:
+        - death_character
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies:
+    - node_id: rule_death
+      label: Death
+      origin: candidate minted by GUR-PKT-PHB-100-109-playing-the-game-r01, not yet canonical
+      used_by:
+        - M007
+      state: proposed_by_this_packet
+      builder_instruction: Do not mint a second identity.
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions: []
+  pending_additions:
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: MODIFIES
+      target_id: rule_treasure_division
+      target_label: Division of Treasure
+      aspect: number of rolls when dicing for magic
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '122'
+      section: 'Magical Treasure:'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M010
+    - source_id: exp_level
+      source_label: Experience Level
+      edge_type: MODIFIES
+      target_id: rule_treasure_division
+      target_label: Division of Treasure
+      aspect: shares by level
+      condition: the shares-by-level agreement
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '122'
+      section: 'Agreements:'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: hench_henchmen
+      source_label: Henchmen
+      edge_type: CONSTRAINS
+      target_id: rule_treasure_division
+      target_label: Division of Treasure
+      aspect: a single roll when dicing for magic
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '122'
+      section: 'Magical Treasure:'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M011
+    - source_id: hench_henchmen
+      source_label: Henchmen
+      edge_type: CONSTRAINS
+      target_id: rule_treasure_division
+      target_label: Division of Treasure
+      aspect: counted as a part character
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '122'
+      section: 'Modifiers:'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M005
+    - source_id: hench_henchmen
+      source_label: Henchmen
+      edge_type: EXCLUDED_FROM
+      target_id: rule_treasure_division
+      target_label: Division of Treasure
+      aspect: cannot gain a bonus share
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: PHB
+      page: '122'
+      section: 'Modifiers:'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M006
+    - source_id: item_magic_item
+      source_label: Magic Device
+      edge_type: FEEDS_INTO
+      target_id: rule_treasure_division
+      target_label: Division of Treasure
+      aspect: items must be parcelled into shares
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '122'
+      section: 'Magical Treasure:'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M008
+    - source_id: money_gp
+      source_label: Money
+      edge_type: FEEDS_INTO
+      target_id: rule_treasure_division
+      target_label: Division of Treasure
+      aspect: money balances an uneven magic-item parcel
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '122'
+      section: 'Magical Treasure:'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M009
+    - source_id: rule_death
+      source_label: Death
+      edge_type: CONSTRAINS
+      target_id: rule_treasure_division
+      target_label: Division of Treasure
+      aspect: eligible only for treasure gained before the death
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '122'
+      section: 'Modifiers:'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M007
+    - source_id: rule_dual_class
+      source_label: The Character with Two Classes
+      edge_type: CONSTRAINS
+      target_id: rule_treasure_division
+      target_label: Division of Treasure
+      aspect: shares only for the class currently permitted
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: PHB
+      page: '122'
+      section: 'Agreements:'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+    - source_id: rule_multiclass
+      source_label: Multi-Class
+      edge_type: FEEDS_INTO
+      target_id: rule_treasure_division
+      target_label: Division of Treasure
+      aspect: how a multi-classed character's levels are counted
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '122'
+      section: 'Agreements:'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+    - source_id: rule_treasure_division
+      source_label: Division of Treasure
+      edge_type: FEEDS_INTO
+      target_id: xp_treasure
+      target_label: Experience for Treasure
+      aspect: the individual share is what is awarded
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: PHB
+      page: '122'
+      section: 'Agreements:'
+      evidence: inferred_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts: {}
+duplicate_findings:
+  - grade: near
+    ref: M002
+    conflicts_with:
+      - M010
+    detail: 2 edges share endpoints and type (exp_level MODIFIES rule_treasure_division) but differ in
+      aspect or condition; Reviewer must confirm they are distinct assertions rather than one restated
+  - grade: near
+    ref: M005
+    conflicts_with:
+      - M011
+    detail: 2 edges share endpoints and type (hench_henchmen CONSTRAINS rule_treasure_division) but differ
+      in aspect or condition; Reviewer must confirm they are distinct assertions rather than one restated
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 11
+  edges_compiled: 11
+  edges_rejected: 0
+  edge_additions: 0
+  edge_pending_additions: 11
+  edge_updates: 0
+  errors: 0
+  warnings: 11
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 2
+  cross_packet_dependencies: 1
+  duplicate_findings: 2
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-PHB-122-122-division-of-treasure-r02.validation.json

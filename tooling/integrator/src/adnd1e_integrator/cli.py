@@ -58,6 +58,8 @@ def cmd_queue(args) -> int:
         ],
         "integrated": [{"bundle_id": b.bundle_id, "integration_id": i}
                        for b, i in queue["integrated"]],
+        "superseded": [{"bundle_id": b.bundle_id, "gup_id": b.gup_id}
+                       for b in queue["superseded"]],
         "diagnostics": queue["diagnostics"],
     }
     print(json.dumps(payload, indent=2))

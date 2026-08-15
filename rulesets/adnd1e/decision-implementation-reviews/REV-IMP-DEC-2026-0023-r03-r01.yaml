@@ -1,0 +1,150 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0023-r03-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0023-r03
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0023-r03.yaml
+  checksum: sha256:658e4a6abb493d89f79ab0a7b7c51a5e6939b669ecd5488d0e64e34142b31452
+decision_input:
+  id: DEC-2026-0023
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0023.yaml
+  checksum: sha256:8be0df954bdfaab576086c36ee03045ded38e9901140d70cf7b3686819abffa7
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      ARTIFACT_LIFECYCLE is version 1.3 and explicitly defines the Builder
+      Decision Implementation and independent Reviewer Implementation Review
+      lifecycle.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      FILE_NAMING is version 1.4 and names both immutable implementation
+      artifact forms and their ruleset-scoped stores.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      WORK_QUEUES is version 1.4 and defines Builder discovery, Reviewer
+      routing, revision-required return, and Approved Review consumption for
+      non-migration Decisions.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      REPOSITORY_STRUCTURE names rulesets/<ruleset-id>/decision-implementations/
+      and rulesets/<ruleset-id>/decision-implementation-reviews/.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      Draft202012Validator.check_schema passed for both
+      decision-implementation.schema.json and
+      decision-implementation-review.schema.json.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed all 168 tests,
+      including the unconsumed non-migration Decision Builder-routing coverage.
+  - acceptance_test_index: 7
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed all 168 tests,
+      including valid active-report Reviewer routing and Decision-job
+      suppression coverage.
+  - acceptance_test_index: 8
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed all 168 tests,
+      including partial-report non-readiness coverage.
+  - acceptance_test_index: 9
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed all 168 tests,
+      including invalid Decision provenance, acceptance-index, implementation
+      checksum, handoff, and validation-result rejection coverage.
+  - acceptance_test_index: 10
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed all 168 tests,
+      including revision-required Implementation Review Builder routing without
+      a duplicate Decision job.
+  - acceptance_test_index: 11
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed all 168 tests,
+      including exact active-report and Decision provenance checks before an
+      Approved Implementation Review consumes a Decision.
+  - acceptance_test_index: 12
+    disposition: verified
+    evidence: >-
+      Independent YAML inspection confirmed complete one-based acceptance-index
+      coverage for active reports IMP-DEC-2026-0018-r02,
+      IMP-DEC-2026-0020-r01, IMP-DEC-2026-0022-r02, and
+      IMP-DEC-2026-0023-r03 against their respective Decisions.
+  - acceptance_test_index: 13
+    disposition: verified
+    evidence: >-
+      The first three active reports have independent Reviewer artifacts; this
+      Review independently dispositions the fourth. The reviewed report records
+      Builder as its publisher and cannot self-consume DEC-2026-0023.
+  - acceptance_test_index: 14
+    disposition: verified
+    evidence: >-
+      The independent focused queue-scanner suite passed all 168 tests,
+      including the Python/PowerShell parity test.
+  - acceptance_test_index: 15
+    disposition: failed
+    evidence: >-
+      Independent complete suites do not pass in the current repository. The
+      common suite ran 197 tests and errored while parsing
+      GUP-MIG-DEC-2026-0024-0025-r02.yaml: validation_report_checksum is the
+      incomplete scalar "sha256:". The Builder suite ran 360 tests and failed
+      four tests: TestArtifactShape.test_gup_records_authority_and_carries_the_before_state
+      and three TestDec0016CitationCorrections tests.
+  - acceptance_test_index: 16
+    disposition: verified
+    evidence: >-
+      The reviewed report's checksummed implementation inventory contains only
+      tooling/common/scan_agent_queues.py and
+      tooling/common/tests/test_scan_agent_queues.py; it declares no canonical,
+      registry, GUR, GUP, Review, Approved, or prior-Decision artifact change.
+independent_validation:
+  passed: false
+  commands:
+    - command: "[cwd tooling/common/tests] python -m unittest test_scan_agent_queues"
+      exit_code: 0
+      result: passed
+      summary: "Ran 168 focused queue-scanner tests; all passed."
+    - command: "[cwd tooling/common/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+      exit_code: 1
+      result: failed
+      summary: "Ran 197 common tests; one YAML parsing error on the incomplete r02 migration GUP."
+    - command: "[cwd tooling/builder/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+      exit_code: 1
+      result: failed
+      summary: "Ran 360 Builder tests; four failures, including the DEC-2026-0016 citation-correction coverage."
+overall_disposition: revision_required
+required_builder_action:
+  - >-
+    Restore passing complete common and Builder suites without modifying
+    canonical, registry, GUR, GUP, Review, Approved, or prior-Decision files
+    merely to satisfy this non-migration implementation lineage.
+  - >-
+    Do not claim the incomplete GUP-MIG-DEC-2026-0024-0025-r02 as
+    Reviewer-ready: complete or replace its Builder-owned validation component
+    and rebase it on the current canonical baseline under its own migration
+    lineage.
+  - >-
+    Publish the next IMP-DEC-2026-0023 revision with refreshed exact file
+    checksums and complete passing validation evidence after both suites pass.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    DEC-2026-0023 acceptance test 15 cannot be independently verified until
+    the complete common and Builder suites pass.
+  blocking_ids: []

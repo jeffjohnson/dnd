@@ -1,0 +1,107 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0023-r04-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0023-r04
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0023-r04.yaml
+  checksum: sha256:7e8a8f243013c58d071157b88e599d39a15e1f224530630449b00cd1bac88ef2
+decision_input:
+  id: DEC-2026-0023
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0023.yaml
+  checksum: sha256:8be0df954bdfaab576086c36ee03045ded38e9901140d70cf7b3686819abffa7
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: "ARTIFACT_LIFECYCLE is version 1.3 and defines both implementation artifacts."
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: "FILE_NAMING is version 1.4 and defines both implementation names and stores."
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: "WORK_QUEUES is version 1.4 and defines the non-migration implementation lineage."
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: "REPOSITORY_STRUCTURE names both ruleset-scoped implementation stores."
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: "Draft202012Validator.check_schema passed for both implementation schemas."
+  - acceptance_test_index: 6
+    disposition: failed
+    evidence: >-
+      The submitted index 6 evidence repeats schema validation, which belongs to
+      index 5; it does not account for the required unconsumed non-migration
+      Decision Builder-routing acceptance test.
+  - acceptance_test_index: 7
+    disposition: failed
+    evidence: >-
+      The submitted index 7 evidence describes index 6's unconsumed-Decision
+      case, not the required valid active-report Reviewer routing and Decision
+      suppression case.
+  - acceptance_test_index: 8
+    disposition: failed
+    evidence: >-
+      The submitted index 8 evidence describes index 7's active-report routing
+      case, not the required partial-report non-readiness case.
+  - acceptance_test_index: 9
+    disposition: failed
+    evidence: >-
+      The submitted index 9 evidence describes index 8's partial-report case,
+      not the required invalid-report provenance and Builder-restoration cases.
+  - acceptance_test_index: 10
+    disposition: verified
+    evidence: "Focused queue-scanner coverage passed the revision-required Review Builder-routing cases."
+  - acceptance_test_index: 11
+    disposition: verified
+    evidence: "Focused queue-scanner coverage passed exact-provenance Approved Review consumption cases."
+  - acceptance_test_index: 12
+    disposition: verified
+    evidence: "Independent YAML inspection confirmed complete acceptance-index coverage for all four active implementation reports."
+  - acceptance_test_index: 13
+    disposition: verified
+    evidence: "Independent Review lineages exist for the first three reports; this Review independently dispositions the fourth."
+  - acceptance_test_index: 14
+    disposition: failed
+    evidence: >-
+      The submitted index 14 evidence concerns separate PHB packet GUPs rather
+      than the required Python/PowerShell scanner-parity acceptance test.
+  - acceptance_test_index: 15
+    disposition: verified
+    evidence: "Independent complete common and Builder suites passed: 197 tests and 360 tests respectively."
+  - acceptance_test_index: 16
+    disposition: verified
+    evidence: "Both declared implementation-file checksums match and neither path is a prohibited data artifact."
+independent_validation:
+  passed: true
+  commands:
+    - command: "[cwd tooling/common/tests] python -m unittest test_scan_agent_queues"
+      exit_code: 0
+      result: passed
+      summary: "Ran 168 focused queue-scanner tests; all passed."
+    - command: "[cwd tooling/common/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+      exit_code: 0
+      result: passed
+      summary: "Ran 197 common schema and queue tests; all passed."
+    - command: "[cwd tooling/builder/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+      exit_code: 0
+      result: passed
+      summary: "Ran 360 Builder compiler, migration, registry, vocabulary, and schema tests; all passed."
+overall_disposition: revision_required
+required_builder_action:
+  - >-
+    Publish IMP-DEC-2026-0023-r05 with the exact DEC-2026-0023 acceptance-test
+    mapping: restore the missing evidence for indices 6 through 9 and 14, and
+    remove the shifted and unrelated evidence currently recorded at those indices.
+  - >-
+    Preserve the current implementation-file checksums and successful validation
+    evidence unless a real implementation change is necessary.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: The report's acceptance-test evidence is materially misindexed, so it does not account for every DEC-2026-0023 acceptance test as required.
+  blocking_ids: []

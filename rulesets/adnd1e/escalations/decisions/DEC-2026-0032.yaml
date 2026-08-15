@@ -1,0 +1,267 @@
+schema_version: '1.0'
+id: DEC-2026-0032
+status: approved
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-legacy-unspecified
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the exact node-ID merge operation, publish its decision migration,
+    and do not compile the pre-migration DMG recommendation.
+  blocking_ids: []
+
+decision_date: '2026-08-14'
+escalation_id: ESC-2026-08-14T04.18.34.249Z
+
+question: >-
+  Which identity survives for each duplicated ability-adjustment mechanic, and
+  how can two retired node IDs be merged into that identity without permitting
+  the Builder to infer an unbounded canonical rewrite?
+
+ruling: >-
+  Adopt the repository owner's derived-ability naming convention:
+  `abil_<three-letter ability abbreviation>_<snake_case rule name>`. The three
+  canonical identities are `abil_dex_reaction_adjustment`,
+  `abil_dex_defensive_adjustment`, and `abil_str_exceptional`. Each merges the
+  two exact retired identities enumerated below. The six retired IDs have no
+  aliases. This is an identity-only migration: every affected edge retains its
+  type, aspect, condition, polarity, citation, evidence, pass, status, and
+  review fields.
+
+rationale:
+  - >-
+    The duplicate pairs have identical labels and the same mechanical meaning;
+    retaining any existing member would preserve an unapproved `dex_` or `str_`
+    namespace and conflict with the owner's stated convention.
+  - >-
+    `abil_strength` and the other full-name base-score IDs retain their current
+    identities. The abbreviation convention applies only to a derived mechanic,
+    so it does not introduce a competing spelling for a base score.
+  - >-
+    Two-to-one consolidation is not a sequence of ordinary replacements. The
+    current planner supports only one retired node to one successor; accepting
+    a second retirement silently would invite duplicated registry or canonical
+    state. The Builder must implement and validate the bounded operation below.
+
+constitution_amendment:
+  release: '1.8'
+  changed_sections:
+    - '3.1 Format: abil_ includes derived ability mechanics.'
+    - '3.1 Format: derived mechanics use abil_<three-letter abbreviation>_<rule name>.'
+  retained_identities:
+    - abil_strength
+    - abil_dexterity
+    - abil_constitution
+    - abil_intelligence
+    - abil_wisdom
+    - abil_charisma
+
+canonical_migration:
+  node_id_merges:
+    - canonical_id: abil_dex_reaction_adjustment
+      canonical_label: Reaction/Attacking Adjustment
+      kind: abil
+      retired_nodes:
+        - id: dex_reaction_adj
+          label: Reaction/Attacking Adjustment
+          registry_csv_row: 73
+        - id: abil_dexterity_reaction_attacking_adjustment
+          label: Reaction/Attacking Adjustment
+          registry_csv_row: 9
+      incident_canonical_rows: [682, 1723, 1724, 1745, 1746, 1747, 3842]
+      expected_incident_row_count: 7
+      registry_action: merge_retired_rows_into_one
+      require_no_remaining_retired_endpoints: true
+    - canonical_id: abil_dex_defensive_adjustment
+      canonical_label: Dexterity Defensive Adjustment
+      kind: abil
+      retired_nodes:
+        - id: dex_defensive_adj
+          label: Dexterity Defensive Adjustment
+          registry_csv_row: 72
+        - id: abil_dexterity_defensive_adjustment
+          label: Dexterity Defensive Adjustment
+          registry_csv_row: 8
+      incident_canonical_rows: [355, 592, 683, 763, 764, 1391, 1392, 1393, 1394, 1748, 1749, 1766, 1813, 2312, 2938, 2979, 3843]
+      expected_incident_row_count: 17
+      registry_action: merge_retired_rows_into_one
+      require_no_remaining_retired_endpoints: true
+    - canonical_id: abil_str_exceptional
+      canonical_label: Exceptional Strength
+      kind: abil
+      retired_nodes:
+        - id: str_exceptional
+          label: Exceptional Strength
+          registry_csv_row: 1070
+        - id: abil_strength_exceptional
+          label: Exceptional Strength
+          registry_csv_row: 12
+      incident_canonical_rows: [27, 102, 1171, 1173, 2199, 2408, 2988, 3837, 3838]
+      expected_incident_row_count: 9
+      registry_action: merge_retired_rows_into_one
+      require_no_remaining_retired_endpoints: true
+  counts:
+    node_merges: 3
+    retired_registry_rows: 6
+    canonical_registry_rows_added: 3
+    canonical_rows_repointed: 33
+    canonical_rows_label_normalized_without_repoint: 0
+    new_registry_rows: 0
+
+operation_contract:
+  applies_only_to: DEC-2026-0032
+  planner_requirements:
+    - >-
+      Read `canonical_migration.node_id_merges`; reject the Decision rather than
+      ignore the key until this operation is implemented.
+    - >-
+      Require at least two distinct retired nodes per merge; require that the
+      canonical ID is absent from the baseline registry and that every retired
+      node matches its declared registry row, label, and kind.
+    - >-
+      Resolve every listed one-based canonical CSV row, including the header;
+      require that it references exactly one of the merge's retired IDs in its
+      source_id or target_id field. Discover all baseline rows incident on either
+      retired ID and require an exact set match with `incident_canonical_rows`.
+    - >-
+      Change only the retired endpoint ID and its corresponding endpoint label.
+      Preserve all other columns byte-for-value. Rebuild nodes_master and graph
+      from the planned result, then reject duplicate five-field assertion keys.
+    - >-
+      Replace the two retired registry rows with one canonical row. Reject a
+      plan if a retired ID survives in the planned registry, canonical endpoints,
+      nodes_master, or graph output.
+  prohibited_inference:
+    - Do not discover additional identities by matching labels or prefixes.
+    - Do not add aliases, change a non-endpoint field, or widen the operation to another ability mechanic.
+    - Do not compile a packet GUR containing any retired ID after this migration is integrated.
+
+baseline:
+  canonical_edges:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:0058d1a5fc566d6668a0a61cd748dfeb6127333a6da3d63274f7a575eb0f6894
+  nodes_registry:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:c9814318d1ebcc4280a31668baa8978ad908d066dfdfc12ccb472f509b7068d0
+
+migration_required: true
+migration_scope:
+  architect_writes: constitution_ruleset_and_decision_only
+  registry_rows_replaced: 6
+  registry_rows_added: 3
+  canonical_edges_repointed: 33
+  canonical_edges_added: 0
+  aliases_retained: 0
+  required_derived_rebuilds:
+    - rulesets/adnd1e/canonical/nodes_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+  builder_tooling:
+    - tooling/builder/src/adnd1e_builder/decision_migration.py
+    - tooling/builder/src/adnd1e_builder/vocab.py
+    - tooling/builder/tests/test_decision_migration.py
+    - tooling/builder/tests/test_registry_and_vocab.py
+
+affected_artifacts:
+  active_gur_to_supersede_after_integration:
+    id: GUR-PKT-DMG-064-064-missile-discharge-r02
+    path: books/adnd1e/dmg/artifacts/gur/GUR-PKT-DMG-064-064-missile-discharge-r02.yaml
+    checksum: sha256:d62a48176f67d01ad79be3bf795804d89224d138bd95105830bb868c3ca710ff
+  required_successor_gur:
+    id: GUR-PKT-DMG-064-064-missile-discharge-r03
+    owner: analyst
+    constraint: >-
+      Publish only after this migration has been Integrated. It supersedes r02,
+      uses the surviving ability IDs wherever r02 used a retired ID, and records
+      its fresh steward source identity under DEC-2026-0034.
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Implement the exact `node_id_merges` planner operation and v1.8 ability
+      vocabulary. The current r02 DMG GUR is superseded by the Decision handoff;
+      do not compile it.
+  - step: 2
+    owner: builder
+    action: >-
+      Publish one decision-migration GUP rooted in this Decision, planned against
+      the stated baseline, with the complete before-state and delta for all 33
+      enumerated endpoint changes and all registry changes.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Verify the exact three merges, the 33-row closed incident set, no changed
+      field beyond endpoint IDs and labels, and no surviving retired identity.
+  - step: 4
+    owner: integrator
+    action: >-
+      Integrate only the approved migration and rebuild the required derived
+      artifacts.
+  - step: 5
+    owner: analyst
+    action: >-
+      Publish the required r03 DMG GUR after Integration. Do not revise r02 in
+      place or use a retired ability identity in any new recommendation.
+
+acceptance_tests:
+  - >-
+    Builder recognizes `node_id_merges` and rejects a missing, unknown, partial,
+    or malformed merge operation rather than planning it as a no-op.
+  - >-
+    Focused tests reject a duplicate retired ID, an existing canonical ID, a
+    registry row/label/kind mismatch, a missing or extra incident row, and an
+    incident row that does not contain a listed retired endpoint.
+  - >-
+    Planning this Decision produces exactly three registry merges and 33 endpoint
+    repoints, changes no other field, has no duplicate assertion key, and leaves
+    none of the six retired IDs in planned canonical or derived output.
+  - >-
+    The compiler accepts constitution v1.8 and the approved `abil_` convention,
+    while bare `dex_` and `str_` remain rejected prefixes for new identities.
+  - >-
+    The subsequent DMG GUR revision is source-derived, supersedes r02, and uses
+    only the three surviving ability IDs.
+  - All applicable schema, graph, registry, migration, and repository tests pass.
+
+constitution_version_impact:
+  changed: true
+  from: '1.7'
+  to: '1.8'
+  rationale: >-
+    Constitution 3.1 now distinguishes full-name base ability scores from their
+    abbreviated derived mechanics. DEC-2026-0033 is the other member of this
+    same v1.8 constitution release.
+
+governance_changelog:
+  - >-
+    Constitution 1.8 establishes the canonical derived-ability-mechanic form
+    and authorizes the three bounded ability-identity merges.
+  - >-
+    The migration planner receives an exact two-or-more-retired-IDs-to-one-new-ID
+    operation; it may not infer a merge from labels or prefixes.
+exact_diff:
+  rulesets/adnd1e/governance/constitution.md:
+    - 'Version 1.7 -> 1.8.'
+    - 'Expand abil_ to include derived ability mechanics and state the abbreviated convention.'
+  rulesets/adnd1e/ruleset.yaml:
+    - 'constitution_version: 1.7 -> 1.8.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0032.yaml:
+    - 'Add the three exact node merges and their 33-row migration contract.'
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement only the bounded planner semantics authorized above.
+    - Publish the decision migration before compiling replacement packet work.
+  reviewer:
+    - Reject any merge with an incomplete incident-row set or non-identity mutation.
+  integrator:
+    - Apply only the approved decision-migration bundle.
+  analyst:
+    - Reissue the named DMG GUR only after Integration.

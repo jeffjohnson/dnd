@@ -1,0 +1,102 @@
+schema_version: "1.0"
+id: REV-GUP-MIG-DEC-2026-0024-r01-r01
+status: rejected
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: "2026-08-05"
+reviewed_gup:
+  id: GUP-MIG-DEC-2026-0024-r01
+  path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-r01.yaml
+  checksum: sha256:cbf777445c7a5687cde51eadaf14e468841f7ffcb97ce4b9c7a9dd300cc28c5b
+  artifact_kind: decision_migration
+  lineage_id: MIG-DEC-2026-0024
+  revision: 1
+  supersedes: null
+  validation_report:
+    path: build/reports/GUP-MIG-DEC-2026-0024-r01.validation.json
+    expected_checksum: sha256:bb62735da76999a601798450672b6b5da987b00115c6d9c9a200f9e4548bfcd4
+    actual_checksum: sha256:bb62735da76999a601798450672b6b5da987b00115c6d9c9a200f9e4548bfcd4
+    checksum_matches: true
+    reported_errors: 0
+    reported_warnings: 0
+input_provenance:
+  submitted_authority_decision:
+    id: DEC-2026-0024
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0024.yaml
+    expected_checksum: sha256:22a03555edf71ddf1b901fa6a15b1be05661952b2bd95b329e0707e1314a5cd7
+    actual_checksum: sha256:22a03555edf71ddf1b901fa6a15b1be05661952b2bd95b329e0707e1314a5cd7
+  canonical_graph:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    expected_checksum: sha256:43b5be90b9110943f3369daa9e82fd78b190c5586b5ec4260f8d685bc4f0261c
+    actual_checksum: sha256:43b5be90b9110943f3369daa9e82fd78b190c5586b5ec4260f8d685bc4f0261c
+    rows_read: 4118
+overall_disposition: rejected
+approval_ready: false
+approved_bundle_emitted: false
+summary:
+  operations_reviewed: 2
+  approved_operations: 0
+  rejected_submission_scope: 1
+node_addition_decisions:
+  - proposed_id: rule_mistletoe
+    disposition: rejected
+    rationale: >-
+      DEC-2026-0025 supplements DEC-2026-0024 and expressly requires one
+      combined DEC-2026-0024/0025 migration; it prohibits an individual
+      DEC-2026-0024 migration. The generic identity is also the subject of
+      ESC-2026-08-05T01.03.23.309Z.
+canonical_removal_decisions:
+  - canonical_row: 1502
+    disposition: approved
+    rationale: >-
+      The exact before-image and no-replacement deletion conform to
+      DEC-2026-0024, but this operation cannot be integrated separately from
+      DEC-2026-0025's required one-node replacement and three endpoint repoints.
+rejection_finding:
+  id: MIG-0024-STANDALONE-CONTRADICTS-DEC0025
+  category: governing_decision_scope
+  rationale: >-
+    DEC-2026-0025's combined_authority_required and explicit Builder
+    prohibition supersede the separate submission path. Approving this bundle
+    would create two incompatible migrations against the same row-1502
+    baseline.
+architectural_escalations:
+  - id: ESC-2026-08-05T01.03.23.309Z
+    relevance: The combined migration's proposed generic mistletoe identity requires Decision clarification.
+completeness_statement:
+  result: complete_review_of_submitted_r01
+  notes:
+    - The row-1502 deletion itself was checked against the exact current before-image.
+    - The GUP is rejected as a standalone migration; no Builder revision of this separate lineage is requested.
+reviewer_checklist:
+  decision_checksum: pass
+  validation_report_checksum: pass
+  canonical_baseline_checksum_and_rows: pass
+  source_identity: pass_but_deferred_to_combined_escalation
+  row_1502_before_image: pass
+  row_1502_replacement_edge: pass_null
+  governing_combined_scope: fail_standalone_submission
+  canonical_files_modified: false
+  registry_files_modified: false
+validation:
+  independent_common_suite:
+    command: "[cwd tooling/common/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+    exit_code: 0
+    result: passed
+    summary: "Ran 197 common schema and queue tests; all passed."
+  independent_builder_suite:
+    command: "[cwd tooling/builder/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+    exit_code: 0
+    result: passed
+    summary: "Ran 360 Builder tests; all passed."
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: This standalone migration is rejected; the governing combined migration remains the only permissible path.
+  blocking_ids: []

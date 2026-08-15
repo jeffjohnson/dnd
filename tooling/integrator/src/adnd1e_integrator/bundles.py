@@ -30,7 +30,7 @@ class Bundle:
     bundle_id: str
     book_id: str
     manifest_path: Path | None
-    edges_path: Path
+    edges_path: Path | None
     review_id: str
     review_path: Path
     gup_id: str
@@ -46,8 +46,18 @@ class Bundle:
     def is_legacy(self) -> bool:
         return self.manifest_path is None
 
+    @property
+    def is_direct_migration(self) -> bool:
+        """WORK_QUEUES 1.8 `decision_migration_v1`: the plan is a GUP YAML.
+
+        This bundle shape carries no edge CSV at all -- an edge CSV cannot
+        encode registry identity replacement, retirement, or exact deletion --
+        so the operation plan is read from the checksummed GUP component.
+        """
+        return (self.manifest or {}).get("operation_model") == "decision_migration_v1"
+
     def component_records(self, root: Path) -> list[dict]:
-        records = [{
+        records = [] if self.edges_path is None else [{
             "kind": "edges",
             "path": self.edges_path.relative_to(root).as_posix(),
             "checksum": checksum_file(self.edges_path),
@@ -87,11 +97,24 @@ def discover(root: Path, ruleset_id: str, book_id: str) -> tuple[list[Bundle], l
         edges_path = edge_files.get(stem)
 
         if edges_path is None:
-            diagnostics.append(f"{stem}: manifest present with no .edges.csv component")
-            continue
+            # WORK_QUEUES 1.8 rule 31: a decision_migration_v1 manifest is a
+            # complete job with no edge CSV. Rule 32 keeps every other manifest
+            # missing its CSV a diagnostic, so the exemption is read from the
+            # declared operation model rather than from the file simply being
+            # absent.
+            declared = load_yaml(manifest_path) if manifest_path is not None else None
+            if not declared or declared.get("operation_model") != "decision_migration_v1":
+                diagnostics.append(f"{stem}: manifest present with no .edges.csv component")
+                continue
 
         if manifest_path is not None:
             bundle = _from_manifest(stem, book_id, manifest_path, edges_path, reviews, diagnostics)
+            if bundle is not None and bundle.is_direct_migration and edges_path is not None:
+                # Rule 33: an edge CSV in this shape means the manifest and the
+                # reviewed GUP disagree about what the plan is.
+                diagnostics.append(
+                    f"{stem}: decision_migration_v1 manifest carries a forbidden edge CSV")
+                continue
         else:
             bundle = _from_legacy(stem, book_id, edges_path, reviews, diagnostics)
         if bundle is not None:
@@ -180,16 +203,44 @@ def integrated_bundle_ids(root: Path, ruleset_id: str) -> dict[str, str]:
     return consumed
 
 
+def superseded_gup_ids(root: Path, ruleset_id: str, book_id: str) -> set[str]:
+    """GUP ids that a later revision supersedes, per that book's GUP directory."""
+    gup_dir = root / "books" / ruleset_id / book_id / "artifacts" / "gup"
+    if not gup_dir.exists():
+        return set()
+    superseded = set()
+    for path in sorted(gup_dir.glob("GUP-*.yaml")):
+        data = load_yaml(path) or {}
+        if data.get("supersedes"):
+            superseded.add(str(data["supersedes"]))
+    return superseded
+
+
 def ready_queue(root: Path, ruleset_id: str, book_ids: list[str]) -> dict:
-    """The Integrator queue: ready bundles, already-integrated bundles, diagnostics."""
+    """The Integrator queue: ready bundles, already-integrated bundles, diagnostics.
+
+    WORK_QUEUES 3 and 6: only the active leaf creates work. A bundle inherits
+    that from the GUP it packages, so a bundle whose GUP a later revision
+    supersedes is history, not a job -- the same rule the common queue scanner
+    applies.
+
+    Without this, "not yet integrated" was read as "ready", and a superseded
+    bundle stayed in the batch permanently. Its preconditions can never be
+    satisfied once its successor ships, so a single retired bundle with drifted
+    provenance would block every future integration of the whole ruleset.
+    """
     consumed = integrated_bundle_ids(root, ruleset_id)
-    ready, done, diagnostics = [], [], []
+    ready, done, superseded, diagnostics = [], [], [], []
     for book_id in book_ids:
         found, book_diagnostics = discover(root, ruleset_id, book_id)
         diagnostics.extend(book_diagnostics)
+        retired = superseded_gup_ids(root, ruleset_id, book_id)
         for bundle in found:
             if bundle.bundle_id in consumed:
                 done.append((bundle, consumed[bundle.bundle_id]))
+            elif bundle.gup_id in retired:
+                superseded.append(bundle)
             else:
                 ready.append(bundle)
-    return {"ready": ready, "integrated": done, "diagnostics": diagnostics}
+    return {"ready": ready, "integrated": done, "superseded": superseded,
+            "diagnostics": diagnostics}

@@ -1,0 +1,92 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0029-r02
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.7'
+revision: 2
+supersedes: IMP-DEC-2026-0029-r01
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0029
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0029.yaml
+  checksum: sha256:bbcc615f195f1c80002a34eb249943f048c607fb166214776618ca2f5267457b
+implementation_files:
+- path: tooling/builder/tests/test_registry_and_vocab.py
+  checksum: sha256:88cf4944de68d4691385345557f69dad0969e24eff81a73456b9dc80fa428af2
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'live repository check: contracts/GRAPH_INVARIANTS.md declares Version 1.1 and carries a Legacy
+    Migration Conformance Scope section rooted at migrations/adnd1e/legacy-import/original/edges_master.csv,
+    stating the exception is determined by provenance and never by extraction pass, row location or word
+    count, and listing magnitudes, die expressions, numeric bonuses and threshold values as never exempt.
+    The assertion-key delegation to the ruleset constitution is unchanged -> Ran 4 tests in 0.000s OK'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'unit tests: the entry requirement is unchanged for new and revised rows. test_the_validator_still_rejects_a_long_aspect
+    rejects a five-word aspect; test_the_validator_rejects_it_even_when_it_copies_an_excepted_row rejects
+    ''acquisition cost at DM adjudication'' taken verbatim from an excepted canonical row, so being legacy
+    does not make an aspect admissible; test_the_validator_has_no_provenance_input_at_all pins check_aspect_length
+    to a single value parameter, so there is no argument through which any caller could grant the exception.
+    Live: five active-leaf packet GUPs are blocked on aspect_word_count and routed to the Analyst -> Ran
+    5 tests in 0.000s OK'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'live repository check: canonical edges_master.csv is sha256:43b5be90b9110943f3369daa9e82fd78b190c5586b5ec4260f8d685bc4f0261c,
+    unchanged throughout this implementation. No active-leaf packet GUP proposes a canonical row removal,
+    and no GUP emitted by this Builder truncates or rewrites an aspect: the compiler rejects a nonconforming
+    aspect and has no code path that shortens one. Of the 1,919 historical word-count breaches, zero rows
+    changed.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'live repository check: the two candidate pairs and four loci are exactly those named in DEC-2026-0029,
+    reported by Builder from an endpoint-and-condition grouping and stated as candidates rather than duplicates.
+    No bounded incoming packet exists for DMG printed page 64 or UA printed page 15: books/adnd1e/dmg
+    and books/adnd1e/ua contain only archive legacy extraction batches, which this Decision prohibits
+    as source-read evidence. Builder proposes no change, merge, retirement or de-duplication of any of
+    the four rows. The one pre-existing reference is GUP-PKT-PHB-035-038-money-equipment-r07 ref B2, which
+    is the already-approved provenance of the PHB half of pair 1 rather than a pending change to it.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'live repository check: DEC-2026-0029 records migration_required false, so the queue scanner
+    raises no decision-migration job for it and Builder has planned none. Any later correction to the
+    four rows will arrive as an ordinary packet update from a claimed DMG or UA packet, reviewed and integrated
+    individually. No bulk decision migration exists or is proposed.'
+- acceptance_test_index: 6
+  result: passed
+  evidence: 'unit tests plus the complete suites: tooling/builder/tests/test_registry_and_vocab.py now
+    pins GRAPH_INVARIANTS at 1.1 and adds TestLegacyGrainConformanceScope, eight focused tests covering
+    the provenance-bound scope and the unchanged entry requirement. Each was mutation-tested: removing
+    the import locus, the determined-by-provenance statement, any one of the three excluded proxies, the
+    numeric carve-out, or the revision binding each produces a failure, and adding a provenance argument
+    to check_aspect_length produces a failure. The contract file was not modified by the mutation harness
+    -> Ran 8 tests in 0.000s OK'
+- acceptance_test_index: 7
+  result: passed
+  evidence: 'live repository check: builder and common suites pass; the PowerShell and Python queue scanners
+    agree on a quiet tree (TestScannerParity, 1 test OK); the escalation ID audit reports 25 files, 20
+    timestamp-form, 5 legacy, ok; the queue scan reports one error diagnostic, decision_migration_lineage_error
+    on GUP-MIG-DEC-2026-0015-0016-r03, which predates this Decision, is unrelated to it, and is sequenced
+    behind Analyst work by REV-GUP-MIG-DEC-2026-0015-0016-r03-r01'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  blocking_ids: []
+  reason: the governed GRAPH_INVARIANTS assertion is at 1.1 and the provenance-bound legacy scope is covered
+    by eight mutation-tested checks; the grain validator is unchanged and provably cannot grant the exception
+validation_report: build/reports/IMP-DEC-2026-0029-r02.validation.json
+validation_report_checksum: sha256:48a3320bb7c47ed736c837d69c77a80e34e50a426ccad049f3ca06a836f02b92
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] python -m unittest discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 285 tests in 51.373s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src python -m unittest discover -s tests
+      -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 392 tests in 20.327s OK

@@ -1,0 +1,124 @@
+schema_version: '1.0'
+id: DEC-2026-0034
+status: approved
+ruleset_id: adnd1e
+book_id: cross-book
+source_id: multiple
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+decision_date: '2026-08-14'
+escalation_id: ESC-2026-08-14T04.18.34.386Z
+
+question: >-
+  How is the registry to record fresh packets supplied by the repository source
+  steward when the only existing per-book source IDs truthfully describe legacy
+  graph-dump provenance?
+
+ruling: >-
+  Register `dmg-steward-intake` and `ua-steward-intake`, each with provenance
+  `repository source steward intake`. The legacy source IDs remain unchanged and
+  continue to describe legacy-derived material. Claimed packets are immutable;
+  do not edit their manifests. Instead, the Analyst must publish successor GURs
+  that retain the exact claimed packet path and source checksum while declaring
+  the corresponding steward-intake source ID and this Decision as the provenance
+  reconciliation authority.
+
+rationale:
+  - >-
+    Editing the legacy registry entries would falsely recast legacy evidence as
+    steward-provided source text. Maintaining both source identities makes both
+    provenance claims true.
+  - >-
+    Editing a claimed packet would violate the append-only packet lifecycle and
+    invalidate its checksum-backed source history. A successor GUR is the proper
+    immutable record of the corrected source classification.
+  - >-
+    DEC-2026-0029 requires fresh source reading for these packets. The source
+    registry must not contradict that governing evidence rule.
+
+registry_change:
+  path: rulesets/adnd1e/registries/sources.yaml
+  added_sources:
+    - source_id: dmg-steward-intake
+      book_id: dmg
+      citation_code: DMG
+      edition_or_printing: unspecified
+      provenance: repository source steward intake
+    - source_id: ua-steward-intake
+      book_id: ua
+      citation_code: UA
+      edition_or_printing: unspecified
+      provenance: repository source steward intake
+  retained_sources:
+    - dmg-legacy-unspecified
+    - ua-legacy-unspecified
+
+affected_artifacts:
+  - id: GUR-PKT-DMG-064-064-missile-discharge-r02
+    path: books/adnd1e/dmg/artifacts/gur/GUR-PKT-DMG-064-064-missile-discharge-r02.yaml
+    source_checksum: sha256:d62a48176f67d01ad79be3bf795804d89224d138bd95105830bb868c3ca710ff
+    successor: GUR-PKT-DMG-064-064-missile-discharge-r03
+    source_id: dmg-steward-intake
+  - id: GUR-PKT-UA-014-016-cavalier-r01
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-014-016-cavalier-r01.yaml
+    source_checksum: sha256:ef4405623a7e172a24d269837dc2d6c781cee7a0c0aa3fa3a197d44199005c80
+    successor: GUR-PKT-UA-014-016-cavalier-r02
+    source_id: ua-steward-intake
+
+migration_required: false
+migration_scope:
+  architect_writes: source_registry_and_decision_only
+  immediate_canonical_rows_changed: 0
+  registry_rows_added: 2
+  packet_manifests_changed: 0
+  existing_gurs_changed: 0
+  required_successor_gurs: 2
+
+sequence:
+  - step: 1
+    owner: analyst
+    action: >-
+      After the prerequisite Decisions' Builder and Integration steps, publish
+      the two exact successor GURs listed above. Preserve their source-packet
+      checksum and path, set their steward-intake source ID, and record this
+      Decision as the reconciliation authority.
+  - step: 2
+    owner: builder
+    action: >-
+      Process only the successor GUR leaves. Do not alter a claimed packet or
+      infer a source-provenance change for another packet.
+
+acceptance_tests:
+  - >-
+    sources.yaml contains the two added source IDs with their exact book,
+    citation code, unspecified edition, and steward-intake provenance.
+  - The four legacy source IDs retain their original provenance and values.
+  - >-
+    Each successor GUR supersedes its stated predecessor, preserves its exact
+    claimed packet checksum and path, and declares only its matching new source ID.
+  - No claimed packet, legacy GUR, canonical row, or historical source registry entry is rewritten.
+
+constitution_version_impact:
+  changed: false
+  current_version: '1.8'
+  rationale: Source provenance is registry metadata, not graph ontology.
+
+registry_changelog:
+  - 'Add dmg-steward-intake without changing dmg-legacy-unspecified.'
+  - 'Add ua-steward-intake without changing ua-legacy-unspecified.'
+exact_diff:
+  rulesets/adnd1e/registries/sources.yaml:
+    - 'Add two per-book steward-intake source records.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0034.yaml:
+    - 'Record immutable-packet preservation and successor-GUR provenance requirements.'
+
+follow_up_owner: analyst
+follow_up_owners:
+  analyst:
+    - Publish the two successor GURs after their decision-specific prerequisites.
+    - Do not mutate a claimed packet or reuse a legacy source ID for fresh steward intake.
+  builder:
+    - Process only active successor GUR leaves.

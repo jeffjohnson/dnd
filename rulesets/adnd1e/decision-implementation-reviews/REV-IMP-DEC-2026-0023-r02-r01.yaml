@@ -1,0 +1,125 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0023-r02-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0023-r02
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0023-r02.yaml
+  checksum: sha256:79b994c004caf82b5e5f6253b623674eac5f2d67bde58011a8c08f1b8c4b74af
+decision_input:
+  id: DEC-2026-0023
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0023.yaml
+  checksum: sha256:8be0df954bdfaab576086c36ee03045ded38e9901140d70cf7b3686819abffa7
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: ARTIFACT_LIFECYCLE.md is Version 1.3 and defines both implementation artifacts.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: FILE_NAMING.md is Version 1.4 and defines both append-only implementation artifact names.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: WORK_QUEUES.md is Version 1.4 and defines the complete non-migration implementation lineage.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: REPOSITORY_STRUCTURE.md names both ruleset-scoped append-only implementation stores.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: The two new common schemas parse as Draft 2020-12 schemas and are exercised by the common suite.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: The complete queue-scanner suite passed the unconsumed non-migration Decision regression.
+  - acceptance_test_index: 7
+    disposition: verified
+    evidence: The complete queue-scanner suite passed the valid-report Reviewer-routing regression.
+  - acceptance_test_index: 8
+    disposition: verified
+    evidence: The complete queue-scanner suite passed the partial-report non-readiness regression.
+  - acceptance_test_index: 9
+    disposition: verified
+    evidence: >-
+      The complete queue-scanner suite passed invalid-report provenance,
+      acceptance-index, implementation-file-checksum, and failed-validation
+      regressions.
+  - acceptance_test_index: 10
+    disposition: verified
+    evidence: The complete queue-scanner suite passed revision-required implementation Review routing.
+  - acceptance_test_index: 11
+    disposition: verified
+    evidence: >-
+      The complete queue-scanner suite passed exact implementation-Review
+      provenance regressions for stale report or Decision checksums and paths,
+      non-active report leaves, failed validation, incomplete dispositions, and
+      non-terminal handoffs.
+  - acceptance_test_index: 12
+    disposition: verified
+    evidence: >-
+      Direct inventory confirms the four report lineages enumerate their
+      Decision acceptance-test indices exactly once: 0018=1..13, 0020=1..11,
+      0022=1..13, and 0023=1..16.
+  - acceptance_test_index: 13
+    disposition: verified
+    evidence: >-
+      This independent Review dispositions every active r02 report index for
+      DEC-2026-0023; the other three Decision implementation lineages retain
+      their separate Reviewer artifacts rather than Builder self-approval.
+  - acceptance_test_index: 14
+    disposition: verified
+    evidence: TestScannerParity passed within the complete queue-scanner suite.
+  - acceptance_test_index: 15
+    disposition: failed
+    evidence: >-
+      [cwd tooling/common/tests] python -m unittest discover -s . -p
+      "test_*.py" -t . ran 197 tests and failed because the immutable
+      REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01 has a ready handoff with a
+      non-empty blocking_ids list. The common schema-and-scanner suites do not
+      currently pass.
+  - acceptance_test_index: 16
+    disposition: verified
+    evidence: >-
+      The implementation report names only shared queue tooling and tests; it
+      authorizes no canonical graph, registry, GUR, GUP, Review, Approved, or
+      prior Decision mutation.
+required_revisions:
+  - finding_id: F-DEC0023-COMMON-SUITE-FAILURE
+    acceptance_test_index: 15
+    exact_action: >-
+      Do not claim the complete common schema-and-scanner suites passed while
+      REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01 fails the common artifact
+      envelope. After the DEC-2026-0024/0025 migration is approved and
+      integrated, the Reviewer-owned r01-r02 routing Review must supersede that
+      invalid Review as directed by DEC-2026-0024; then Builder must publish the
+      immediate IMP-DEC-2026-0023 successor with fresh checksums and a passing
+      complete common-suite result.
+  - finding_id: F-DEC0023-VALIDATION-CWD
+    acceptance_test_index: 15
+    exact_action: >-
+      Record reproducible validation commands with their test-root working
+      directory. The submitted root command, python -m unittest discover -s .
+      -t ., discovers zero tests and exits 1 at repository root.
+independent_validation:
+  passed: false
+  commands:
+    - command: "[cwd tooling/common/tests] python -m unittest test_scan_agent_queues"
+      exit_code: 0
+      result: passed
+      summary: "Ran 168 queue-scanner tests; all passed."
+    - command: "[cwd tooling/common/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+      exit_code: 1
+      result: failed
+      summary: "Ran 197 common tests; one legacy-artifact envelope failure remains."
+    - command: "[cwd repository root] python -m unittest discover -s . -t ."
+      exit_code: 1
+      result: failed
+      summary: "Ran 0 tests; no tests were discovered from the recorded working directory."
+overall_disposition: revision_required
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: DEC-2026-0023 requires a fresh implementation report only after complete common-suite validation passes.
+  blocking_ids: []

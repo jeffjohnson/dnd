@@ -76,23 +76,94 @@ class TestConstitutionVersion(unittest.TestCase):
         # DEC-2026-0008: older GURs are revalidated under the current
         # constitution, not rejected. DEC-2026-0017 requires 1.5 GURs accepted
         # under 1.6; DEC-2026-0020 requires 1.6 GURs accepted under 1.7.
-        self.assertEqual(
-            ACCEPTED_GUR_CONSTITUTION_VERSIONS,
-            {"1.2", "1.3", "1.4", "1.5", "1.6", "1.7"},
-        )
-        # The current version must always be accepted, and so must the one
-        # immediately before it -- that is what "revalidated, not rejected"
-        # means for the GURs already in the repository when a version lands.
+        #
+        # The set is asserted by its rule rather than by a literal. Pinning the
+        # membership meant a constitution bump failed here with "these two sets
+        # differ", which says nothing about what went wrong; and the literal was
+        # what a bump was most likely to update carelessly, so it guarded the
+        # weakest thing. The rule is: nothing is ever dropped, and every version
+        # from the oldest accepted through the current one is contiguous.
         self.assertIn(CONSTITUTION_VERSION, ACCEPTED_GUR_CONSTITUTION_VERSIONS)
-        self.assertIn("1.6", ACCEPTED_GUR_CONSTITUTION_VERSIONS)
+        for required in ("1.2", "1.3", "1.4", "1.5", "1.6", "1.7"):
+            self.assertIn(
+                required,
+                ACCEPTED_GUR_CONSTITUTION_VERSIONS,
+                f"{required} was accepted before and revalidation never drops a version",
+            )
+
+        def as_number(text):
+            major, _, minor = text.partition(".")
+            return (int(major), int(minor))
+
+        ordered = sorted(ACCEPTED_GUR_CONSTITUTION_VERSIONS, key=as_number)
+        self.assertEqual(
+            ordered[-1],
+            CONSTITUTION_VERSION,
+            "the current constitution version must be the newest accepted one",
+        )
+        numbers = [as_number(v) for v in ordered]
+        self.assertEqual(
+            numbers,
+            [(1, n) for n in range(numbers[0][1], numbers[-1][1] + 1)],
+            "accepted versions must be contiguous; a gap would silently reject a GUR",
+        )
+
+    def constitution_prefixes(self) -> set[str]:
+        """The prefix column of the section 3.1 table, read from governance."""
+        import re
+
+        text = (REPO_ROOT / "rulesets" / "adnd1e" / "governance" / "constitution.md").read_text(
+            encoding="utf-8"
+        )
+        section = text.split("| Prefix | Kind | Example |", 1)[1]
+        found = set()
+        for line in section.splitlines():
+            if not line.startswith("|"):
+                if found:
+                    break
+                continue
+            cell = line.split("|")[1].strip()
+            match = re.fullmatch(r"`([a-z]+_)`", cell)
+            if match:
+                found.add(match.group(1))
+        return found
+
+    def test_the_prefix_set_is_exactly_the_constitution_table(self):
+        """The closed set is closed by governance, not by a count in a test.
+
+        This replaces an assertion that the set had 25 members. A count cannot
+        distinguish "the Architect added `weapon_` at 1.8" from "someone widened
+        the vocabulary to make a row fit", which is the thing worth catching,
+        and it failed on every legitimate bump with a message about integers.
+        """
+        self.assertEqual(NODE_PREFIXES, self.constitution_prefixes())
 
     def test_1_5_adds_no_prefix(self):
         # DEC-2026-0015 acceptance test: "Builder vocabulary declares
         # Constitution 1.5 without adding a new prefix." The 1.5 change is the
-        # meaning of `spell_`, not the size of the closed set. 1.6 likewise
-        # touches sections 2.1 and 5 and leaves the prefix table alone.
-        self.assertEqual(len(NODE_PREFIXES), 25)
+        # meaning of `spell_`, not the size of the closed set.
         self.assertIn("spell_", NODE_PREFIXES)
+
+    def test_1_8_separates_the_mundane_weapon_from_its_statistics(self):
+        # DEC-2026-0033: `weapon_` is the mundane weapon identity, `wpn_` stays
+        # a weapon property or statistic, and `item_` stays the magic-item
+        # namespace. All three coexist; none replaces another.
+        for prefix in ("weapon_", "wpn_", "item_"):
+            self.assertIn(prefix, NODE_PREFIXES)
+
+    def test_1_8_derived_ability_mechanics_use_the_six_abbreviations(self):
+        # DEC-2026-0032: `abil_<abbrev>_<rule>` names a mechanic derived from a
+        # score. The full-name score identities are untouched, so no new prefix
+        # appears and `abil_` still covers both.
+        from adnd1e_builder.vocab import ABILITY_ABBREVIATIONS
+
+        self.assertEqual(
+            ABILITY_ABBREVIATIONS, {"str", "dex", "con", "int", "wis", "cha"}
+        )
+        # DEC-2026-0004 rejected `str_` and `dex_` as prefixes. The abbreviation
+        # is a stem *inside* `abil_`, and must not have reintroduced them.
+        for rejected in ("str_", "dex_"):
+            self.assertNotIn(rejected, NODE_PREFIXES)
 
     def test_1_6_scaling_rule_exists(self):
         # Constitution 1.6 section 2.1, ruled by DEC-2026-0017. The Builder
@@ -108,12 +179,18 @@ class TestConstitutionVersion(unittest.TestCase):
 
     def test_page_authority_lives_in_the_source_markdown_contract(self):
         # DEC-2026-0016 raises SOURCE_MARKDOWN to 1.1 and puts packet-over-legacy
-        # page precedence there. That contract is the one `pagemarkers.py`
+        # page precedence there. DEC-2026-0025 raises it to 1.2 and adds
+        # source-identity authority. DEC-2026-0027 raises it to 1.3 and names the
+        # external source steward, which matters to the Builder because it is the
+        # rule forbidding a missing locus from being routed back to the Analyst as
+        # if it were readable work. That contract is the one `pagemarkers.py`
         # implements, so this is the Builder's dependency rather than the
         # constitution prose, which states the rule by reference.
         text = (REPO_ROOT / "contracts" / "SOURCE_MARKDOWN.md").read_text(encoding="utf-8")
-        self.assertIn("**Version 1.1.**", text)
+        self.assertIn("**Version 1.3.**", text)
         self.assertIn("Page Authority and Conflicts", text)
+        self.assertIn("Source Identity Authority and Conflicts", text)
+        self.assertIn("External Source Intake", text)
 
     def test_version_matches_ruleset_yaml(self):
         text = (REPO_ROOT / "rulesets" / "adnd1e" / "ruleset.yaml").read_text(encoding="utf-8")
@@ -303,7 +380,10 @@ class TestAssertionKeyMatchesGovernance(unittest.TestCase):
             self.assertIn(name, body)
 
     def test_graph_invariants_is_versioned_and_delegates_the_key(self):
-        self.assertIn("**Version 1.0.**", self.invariants)
+        # 1.1 (DEC-2026-0029) scoped the grain requirements by provenance. The
+        # delegation this test guards is untouched by that, and the version is
+        # pinned so a future edit to either has to move both.
+        self.assertIn("**Version 1.1.**", self.invariants)
         self.assertIn("Each ruleset constitution defines its assertion key", self.invariants)
 
     def test_excluded_fields_are_exactly_the_non_key_columns(self):
@@ -332,6 +412,107 @@ class TestAssertionKeyMatchesGovernance(unittest.TestCase):
         self.assertEqual(SYMMETRIC_EDGE_TYPES, {"ALTERNATIVE_TO"})
         self.assertTrue(SYMMETRIC_EDGE_TYPES <= set(EDGE_TYPES))
         self.assertIn("`ALTERNATIVE_TO` is symmetric", self.section_5_1())
+
+
+class TestLegacyGrainConformanceScope(unittest.TestCase):
+    """DEC-2026-0029: the grain cap binds new work, not the migrated corpus.
+
+    46 percent of canonical breaches the four-word `aspect` cap. Every one of
+    those rows arrived through the pre-Review 13-field import; work authored
+    under Review conforms at 341 of 342 rows. The Architect scoped the rule
+    rather than authorising a 1,919-row rewrite, because choosing a shorter
+    phrase decides what a row asserts and that is source reading.
+
+    The scope is **provenance-bound**. That is the part worth guarding: it is
+    tempting to treat a long aspect, or a legacy-looking `pass` value, as proof
+    a row is exempt, and the Decision prohibits exactly that. Builder's own
+    escalation used `pass` as the proxy, which is why the rule says what it
+    says.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.invariants = (
+            REPO_ROOT / "contracts" / "GRAPH_INVARIANTS.md"
+        ).read_text(encoding="utf-8")
+
+    def scope_section(self) -> str:
+        start = self.invariants.index("## Legacy Migration Conformance Scope")
+        return self.invariants[start : self.invariants.index("## Version History", start)]
+
+    def test_the_exception_names_the_import_it_is_rooted_in(self):
+        """An exception without a locus is an exception anyone can claim."""
+        self.assertIn(
+            "migrations/adnd1e/legacy-import/original/edges_master.csv", self.scope_section()
+        )
+
+    def test_eligibility_is_provenance_and_never_inferred(self):
+        body = self.scope_section()
+        self.assertIn("determined by provenance", body)
+        for proxy in ("extraction pass", "row location", "word count"):
+            self.assertIn(
+                proxy, body,
+                f"the scope must name {proxy!r} as something that does not establish eligibility",
+            )
+
+    def test_new_and_revised_rows_are_still_bound(self):
+        body = self.scope_section()
+        self.assertIn("every proposed\nGUP row and every revision", body)
+        self.assertIn("must reject", body)
+
+    def test_the_numeric_prohibitions_are_never_excepted(self):
+        body = self.scope_section()
+        for universal in ("magnitudes", "die expressions", "numeric bonuses", "threshold values"):
+            self.assertIn(universal, body)
+
+    def test_the_validator_still_rejects_a_long_aspect(self):
+        """The contract scoped the rule; it did not soften the enforcement.
+
+        A proposed row is new work whatever it resembles, so nothing about the
+        historical exception may reach the validator.
+        """
+        from adnd1e_builder import grain
+
+        findings = grain.check_aspect_length("different dice if entering via the ranks")
+        self.assertEqual([f["severity"] for f in findings], ["error"])
+
+    def test_the_validator_rejects_it_even_when_it_copies_an_excepted_row(self):
+        """Verbatim from canonical, and still not admissible as new work.
+
+        This is the exact aspect DEC-2026-0029 leaves standing in canonical. A
+        row proposing it today is a revision, and the Decision says a revision
+        of an excepted row must conform.
+        """
+        from adnd1e_builder import grain
+
+        excepted = "acquisition cost at DM adjudication"
+        self.assertTrue(
+            any(f["severity"] == "error" for f in grain.check_aspect_length(excepted)),
+            "an excepted legacy aspect must not become admissible by being legacy",
+        )
+
+    def test_the_validator_has_no_provenance_input_at_all(self):
+        """The strongest guarantee available: it cannot grant the exception.
+
+        `check_aspect_length` takes one string. There is no argument through
+        which a caller could pass provenance, so no future edit can quietly
+        teach the entry check to exempt a row.
+        """
+        import inspect
+
+        from adnd1e_builder import grain
+
+        parameters = list(inspect.signature(grain.check_aspect_length).parameters)
+        self.assertEqual(parameters, ["value"])
+        for name in ("pass", "provenance", "legacy", "row", "index"):
+            self.assertNotIn(name, parameters)
+
+    def test_grain_still_rejects_magnitudes_in_a_short_aspect(self):
+        """Never-exempt requirements are independent of the word count."""
+        from adnd1e_builder import grain
+
+        rules = {f["rule"] for f in grain.check_field("aspect", "2d6 damage")}
+        self.assertIn("grain_die_expression", rules)
 
 
 class TestAssertionKeyBehaviour(unittest.TestCase):

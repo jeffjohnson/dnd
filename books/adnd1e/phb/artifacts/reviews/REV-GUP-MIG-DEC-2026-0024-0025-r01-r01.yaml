@@ -1,0 +1,195 @@
+schema_version: "1.0"
+id: REV-GUP-MIG-DEC-2026-0024-0025-r01-r01
+status: revision_required
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: "2026-08-04"
+reviewed_gup:
+  id: GUP-MIG-DEC-2026-0024-0025-r01
+  path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-0025-r01.yaml
+  checksum: sha256:917d2e74503400fe7002ae3545c6c44e17d71bffe61aa21f97c6cabf4e078efb
+  artifact_kind: decision_migration
+  lineage_id: MIG-DEC-2026-0024-0025
+  revision: 1
+  supersedes: null
+  validation_report:
+    path: D:/analysis/dnd/build/reports/GUP-MIG-DEC-2026-0024-0025-r01.validation.json
+    expected_checksum: sha256:a55a06039bb16308ba01469d712c300eed8cd1ac9010e6fb5f0785747c428d6a
+    actual_checksum: sha256:a55a06039bb16308ba01469d712c300eed8cd1ac9010e6fb5f0785747c428d6a
+    checksum_matches: true
+    reported_errors: 0
+    reported_warnings: 0
+input_provenance:
+  submitted_authority_decisions:
+    - id: DEC-2026-0024
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0024.yaml
+      expected_checksum: sha256:22a03555edf71ddf1b901fa6a15b1be05661952b2bd95b329e0707e1314a5cd7
+      actual_checksum: sha256:22a03555edf71ddf1b901fa6a15b1be05661952b2bd95b329e0707e1314a5cd7
+    - id: DEC-2026-0025
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0025.yaml
+      expected_checksum: sha256:94837cc1e2e540ddee1028264d708a4ceefec2005850c0d31719d1c7744e05db
+      actual_checksum: sha256:94837cc1e2e540ddee1028264d708a4ceefec2005850c0d31719d1c7744e05db
+  canonical_graph:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    expected_checksum: sha256:efc6b6efe3a4de9072081f3c18d68f44a2efda91e0acffce13a4946f568829c7
+    actual_checksum: sha256:efc6b6efe3a4de9072081f3c18d68f44a2efda91e0acffce13a4946f568829c7
+    rows_read: 4118
+  node_registry:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:df1a98e1eed7fcee87a27d6f3de6ae87dd76f915a6159536c5b528d174e30bc4
+overall_disposition: revision_required
+approval_ready: false
+approved_bundle_emitted: false
+summary:
+  operations_reviewed: 5
+  node_additions: 1
+  node_replacements: 1
+  canonical_endpoint_repoints: 3
+  canonical_removals: 1
+  approved_operations: 4
+  operations_requiring_revision: 1
+  blockers: 1
+node_addition_decisions:
+  - proposed_id: rule_mistletoe
+    submitted_label: Mistletoe
+    kind: rule
+    authority: DEC-2026-0024
+    disposition: approved
+    rationale: >-
+      Matches DEC-2026-0024's identity disposition and is absent from the
+      current registry; the existing rule_ prefix and kind are sufficient.
+node_replacement_decisions:
+  - retired_id: spell_call_woodland_being
+    submitted_retired_label: Call Woodland Being
+    canonical_id: spell_call_woodland_beings
+    submitted_canonical_label: Call Woodland Beings
+    authority: DEC-2026-0025
+    disposition: approved
+    rationale: >-
+      The claimed PHB packet directly heads the spell Call Woodland Beings on
+      PHB 59. The current registry has only the singular legacy row, and the
+      submitted replacement enumerates all three current singular endpoints.
+canonical_change_decisions:
+  - canonical_row: 2664
+    kind: endpoint_repoint
+    authority: DEC-2026-0025
+    disposition: approved
+    rationale: >-
+      The current before-image matches the submitted RESOLVED_BY row; only the
+      source ID and corresponding source label change to the PHB plural identity.
+  - canonical_row: 2665
+    kind: endpoint_repoint
+    authority: DEC-2026-0025
+    disposition: approved
+    rationale: >-
+      The current before-image matches the submitted MODIFIES row; only the
+      target ID and corresponding target label change to the PHB plural identity.
+  - canonical_row: 2666
+    kind: endpoint_repoint
+    authority: DEC-2026-0025
+    disposition: approved
+    rationale: >-
+      The current before-image matches the submitted TRIGGERS row; only the
+      source ID and corresponding source label change to the PHB plural identity.
+canonical_removal_decisions:
+  - canonical_row: 1502
+    authority: DEC-2026-0024
+    disposition: approved_with_revision
+    exact_corrections:
+      remove:
+        - surviving_row
+        - provenance_preserved_on_surviving_row
+        - action: remove_after_the_surviving_row_carries_the_preserved_locus
+      add:
+        action: remove_exact_before_image
+        replacement_edge: null
+        before:
+          source_id: class_druid
+          source_label: Druid Mistletoe
+          edge_type: DERIVED_FROM
+          target_id: spell_component_material
+          target_label: Material Component
+          aspect: consumed very slowly
+          condition: ""
+          polarity: neutral
+          polarity_basis: derived
+          book: DMG
+          page: "40"
+          section: SPELL CASTING
+          evidence: explicit_rule
+          pass: page-sweep
+          status: core
+          supersession_basis: ""
+          general_rule_id: ""
+          review_flag: ""
+    rationale: >-
+      DEC-2026-0024 requires the exact full before-image and no replacement
+      edge. The submitted removal serializes neither the full before-image nor
+      a no-replacement action; instead it asserts that an absent surviving row
+      preserves DMG provenance. That merge-oriented wording contradicts the
+      Decision's removal of an unread legacy assertion.
+blocking_findings:
+  - id: MIG-0024-0025-REMOVAL-BEFORE-IMAGE
+    severity: blocking
+    category: incomplete_canonical_mutation_evidence
+    canonical_row: 1502
+    exact_action: >-
+      Emit the immediate GUP revision with the exact 18-field before-image,
+      action remove_exact_before_image, and replacement_edge null for row 1502.
+      Update the decision-migration serializer and regression coverage so an
+      exact legacy deletion never emits a surviving-row/provenance-preservation
+      claim without a surviving row.
+    owner: builder
+architectural_escalations: []
+completeness_statement:
+  result: complete_review_of_submitted_r01
+  notes:
+    - All submitted node operations and four canonical operations are dispositioned.
+    - No new Architect escalation is needed; the missing deletion evidence is a Builder correction.
+reviewer_checklist:
+  decision_authority: pass
+  decision_checksums: pass
+  validation_report_checksum: pass
+  canonical_baseline_checksum_and_rows: pass
+  direct_packet_identity: pass_PHB_59_Call_Woodland_Beings
+  node_identity_and_local_neighborhood: pass
+  plural_replacement_endpoint_inventory: pass_3_singular_rows_2664_2665_2666
+  row_1502_current_before_match: pass
+  row_1502_full_before_image_in_submitted_gup: fail
+  row_1502_no_replacement_representation: fail
+  assertion_duplicates_after_submitted_simulation: pass
+  canonical_files_modified: false
+  registry_files_modified: false
+validation:
+  builder_report_status: proposed
+  builder_report_approval_ready: true
+  builder_validation_report: passed_with_zero_reported_findings
+  independent_builder_suite:
+    command: "[cwd tooling/builder/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+    exit_code: 0
+    result: passed
+    summary: "Ran 360 Builder tests; all passed."
+  independent_common_queue_suite:
+    command: "[cwd tooling/common/tests] python -m unittest test_scan_agent_queues"
+    exit_code: 0
+    result: passed
+    summary: "Ran 168 common queue-scanner tests; all passed."
+required_follow_up:
+  builder:
+    - Publish GUP-MIG-DEC-2026-0024-0025-r02 superseding this reviewed GUP.
+    - Carry the exact row-1502 before-image and no-replacement deletion semantics.
+  reviewer:
+    - Review the active r02 migration against the rebased canonical checksum.
+  integrator:
+    - Do not integrate a migration bundle until its r02 Review is approved.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: The combined migration requires an auditable exact deletion before-image before approval.
+  blocking_ids: []

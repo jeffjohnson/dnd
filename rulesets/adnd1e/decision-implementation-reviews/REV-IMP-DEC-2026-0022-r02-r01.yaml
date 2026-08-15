@@ -1,0 +1,98 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0022-r02-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0022-r02
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0022-r02.yaml
+  checksum: sha256:53b5037f21c0a805d524066acd8790c7715092befd98616fc1fb27eb71fb2ee1
+decision_input:
+  id: DEC-2026-0022
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0022.yaml
+  checksum: sha256:ad74f5937d668c02544f8d610c2fae236e6022fdeb7f434f5f5b26366604923f
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      The pre-review live queue reported Architect ready=0 and omitted
+      REV-GUP-MIG-DEC-2026-0015-0016-r03-r01 from ready Analyst work.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      The same queue scan retained DEC-2026-0021 as one Builder
+      decision-migration job.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      The complete queue-scanner suite passed, including the regression
+      coverage that exact handoff replacement leaves unrelated packet lineages
+      independently routable.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      The complete queue-scanner suite passed, including the regression that
+      unrelated Reviewer-ready packet work is not suppressed by a replacement.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      The originating Review remains at its immutable path and currently hashes
+      to sha256:bd028559156952c2a4b863b7ca911ba4337b00e8e473b4c637e6b328310550df.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: >-
+      The complete queue-scanner suite passed the mismatched-escalation-ID
+      regression.
+  - acceptance_test_index: 7
+    disposition: verified
+    evidence: >-
+      The complete queue-scanner suite passed the mismatched-originating-path
+      and free-text-without-path regressions.
+  - acceptance_test_index: 8
+    disposition: verified
+    evidence: >-
+      The complete queue-scanner suite passed the superseded-originating-leaf
+      regression.
+  - acceptance_test_index: 9
+    disposition: verified
+    evidence: >-
+      The complete queue-scanner suite passed the blocked-replacement routing
+      regression.
+  - acceptance_test_index: 10
+    disposition: verified
+    evidence: >-
+      The complete queue-scanner suite passed the terminal-replacement routing
+      regression.
+  - acceptance_test_index: 11
+    disposition: verified
+    evidence: >-
+      The pre-review live queue retained the pre-existing
+      decision_migration_lineage_error diagnostic while applying Decision
+      handoff replacement.
+  - acceptance_test_index: 12
+    disposition: verified
+    evidence: >-
+      TestScannerParity passed within the complete queue-scanner suite, proving
+      the PowerShell wrapper delegates to equivalent Python results.
+  - acceptance_test_index: 13
+    disposition: verified
+    evidence: >-
+      [cwd tooling/common/tests] python -m unittest test_scan_agent_queues
+      passed all 168 queue-scanner tests.
+independent_validation:
+  passed: true
+  commands:
+    - command: "[cwd tooling/common/tests] python -m unittest test_scan_agent_queues"
+      exit_code: 0
+      result: passed
+      summary: "Ran 168 queue-scanner tests; all passed."
+overall_disposition: approved
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: Every DEC-2026-0022 acceptance test was independently verified against the active report.
+  blocking_ids: []

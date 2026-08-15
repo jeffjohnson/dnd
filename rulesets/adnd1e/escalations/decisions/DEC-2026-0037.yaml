@@ -1,0 +1,328 @@
+schema_version: '1.0'
+id: DEC-2026-0037
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+revision: 3
+supersedes: DEC-2026-0031
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Publish the exact direct-v1 identity migration from item_pipes_sewer to
+    item_pipes_of_sewers against the stated current baseline, then wait for
+    Review and Integration before revising the Bards packet GUP.
+  blocking_ids: []
+
+decision_date: '2026-08-15'
+escalation_id: ESC-2026-08-15T04.05.07.090Z
+
+question: >-
+  Does the PHB Bards packet's secondary mention of Pipes of the Sewer control
+  the identity of the DMG item's defining entry, and what canonical identity
+  should replace the already integrated singular form?
+
+ruling: >-
+  Supersede DEC-2026-0031. The PHB Bards mention is a secondary use in a list
+  of items a bard may employ; it is not the Pipes item's defining locus and
+  does not control the existing DMG item's canonical identity. Adopt
+  `item_pipes_of_sewers`, label `Pipes of the Sewers`, kind `item`. The
+  semantically meaningful preposition `of` is retained in this ID; the article
+  `the` is omitted. Replace `item_pipes_sewer` / `Pipes of the Sewer` without
+  an alias and repoint exactly its two current canonical endpoints. This is a
+  name-specific ruling, not a project-wide instruction to add or remove
+  prepositions from other item IDs.
+
+rationale:
+  - >-
+    The active PHB packet cites Pipes only inside the Bards section. The bounded
+    source unit is about Bards, while both canonical mechanics for this item are
+    cited to the DMG 152 miscellaneous-magic entry that defines the item.
+  - >-
+    SOURCE_MARKDOWN 1.4 distinguishes a defining source locus from a secondary
+    mention. The earlier Decision applied direct-packet authority too broadly.
+  - >-
+    The repository owner's stated source reading and ID preference select the
+    plural display name and `item_pipes_of_sewers` stem. This direction is
+    recorded as Architect-governed naming while the DMG defining packet is not
+    available; it is not a claim that legacy extraction is source-read evidence.
+  - >-
+    Constitution 3.1 requires a prefixed snake_case ID but does not prohibit
+    prepositions. Retaining `of` is therefore a precise lexical choice, while
+    omitting `the` keeps the stem concise without losing identity.
+
+source_identity_scope:
+  secondary_packet:
+    id: PKT-PHB-117-119-bards
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-117-119-bards/source.md
+    locus:
+      book: PHB
+      page: '119'
+      section: BARDS
+      direct_text: Pipes of the Sewer
+      role: secondary list entry describing an item a bard may employ
+  defining_locus_not_packetized:
+    book: DMG
+    page: '152'
+    section: TREASURE (MISCELLANEOUS MAGIC)
+    role: current citation locus for both canonical Pipes mechanics
+  owner_directed_canonical_name:
+    canonical_id: item_pipes_of_sewers
+    canonical_label: Pipes of the Sewers
+    evidence_status: >-
+      Architect-governed lexical direction, pending comparison against a future
+      packet of the DMG defining locus; not source-read evidence from legacy data.
+  future_packet_rule: >-
+    When the DMG 152 defining locus is packetized, compare its directly named
+    identity to this Decision. Preserve this identity if it agrees; otherwise
+    escalate the incompatibility before any worker changes the canonical name.
+
+canonical_migration:
+  node_id_replacements:
+    - retired_id: item_pipes_sewer
+      retired_label: Pipes of the Sewer
+      canonical_id: item_pipes_of_sewers
+      canonical_label: Pipes of the Sewers
+      kind: item
+      registry_action: replace_one_row
+      require_no_remaining_retired_endpoints: true
+  endpoint_repoints:
+    - canonical_row: 2478
+      field: source_id
+      from: item_pipes_sewer
+      to: item_pipes_of_sewers
+      label: Pipes of the Sewers
+      before_assertion:
+        source_id: item_pipes_sewer
+        source_label: Pipes of the Sewer
+        edge_type: TRIGGERS
+        target_id: gen_random_encounter
+        target_label: Rats
+        aspect: attracts rats within range
+        condition: ''
+        polarity: neutral
+        polarity_basis: unset
+        book: DMG
+        page: '152'
+        section: TREASURE (MISCELLANEOUS MAGIC)
+        evidence: explicit_rule
+        pass: page-sweep
+        status: core
+        supersession_basis: ''
+        general_rule_id: ''
+        review_flag: ''
+    - canonical_row: 2479
+      field: target_id
+      from: item_pipes_sewer
+      to: item_pipes_of_sewers
+      label: Pipes of the Sewers
+      before_assertion:
+        source_id: cbt_encounter_distance
+        source_label: Distance
+        edge_type: MODIFIES
+        target_id: item_pipes_sewer
+        target_label: Pipes of the Sewer
+        aspect: delay scales with how far the rats must travel
+        condition: ''
+        polarity: neutral
+        polarity_basis: unset
+        book: DMG
+        page: '152'
+        section: TREASURE (MISCELLANEOUS MAGIC)
+        evidence: explicit_rule
+        pass: page-sweep
+        status: core
+        supersession_basis: ''
+        general_rule_id: ''
+        review_flag: ''
+  counts:
+    node_replacements: 1
+    canonical_rows_repointed: 2
+    canonical_rows_label_normalized_without_repoint: 0
+    canonical_rows_removed: 0
+    aliases_retained: 0
+
+operation_contract:
+  operation_model: decision_migration_v1
+  required_gup: GUP-MIG-DEC-2026-0037-r01
+  lineage_id: MIG-DEC-2026-0037
+  planner_requirements:
+    - >-
+      Plan only the declared one-to-one replacement and its two enumerated
+      paired endpoint repoints. The canonical ID must be absent and the retired
+      ID present in the pinned registry baseline.
+    - >-
+      Verify that the two listed rows are the complete incident set for
+      item_pipes_sewer, retain a complete 18-field before-image for each, and
+      preserve every field other than the affected endpoint ID and label.
+    - >-
+      Pin the current canonical and registry checksums and row counts in the
+      direct-v1 GUP provenance. Do not create an edge CSV.
+  integrator_requirements:
+    - >-
+      Execute only the reviewed direct-v1 GUP in one transaction: replace the
+      registry identity, apply both compare-and-swap endpoint repoints, rebuild
+      nodes_master and graph, and reject any surviving retired ID or duplicate
+      assertion key.
+  prohibited_actions:
+    - Do not retain item_pipes_sewer or Pipes of the Sewer as an alias, duplicate, or zero-degree node.
+    - Do not alter citations, edge types, aspects, conditions, polarity, evidence, pass, or status.
+    - Do not apply this lexical choice to any other item identity without an independent Decision.
+    - Do not use unpacketized legacy data as source-read evidence.
+
+baseline:
+  canonical_edges:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:c64127c41487f7d090d11ec485a7e8d348caceb5b90c4cc8ac645bb398aa6fc9
+    rows: 4152
+  nodes_registry:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:4c8898e6eb27573d6f229fe1d0ea6da9786ee8572f3cf279710d8d59a291bf0e
+    rows: 1169
+  current_registry_row:
+    physical_csv_row: 228
+    id: item_pipes_sewer
+    label: Pipes of the Sewer
+    kind: item
+  current_nodes_master_row:
+    physical_csv_row: 735
+    id: item_pipes_sewer
+
+migration_required: true
+migration_scope:
+  architect_writes: contracts_and_decision_only
+  registry_rows_replaced: 1
+  canonical_nodes_replaced: 1
+  canonical_edges_repointed: 2
+  canonical_edges_added: 0
+  canonical_edges_removed: 0
+  aliases_retained: 0
+  required_derived_rebuilds:
+    - rulesets/adnd1e/canonical/nodes_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+
+affected_artifacts:
+  superseded_decision:
+    id: DEC-2026-0031
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0031.yaml
+  decided_prior_migration:
+    id: GUP-MIG-DEC-2026-0024-0025-r05
+    path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-0025-r05.yaml
+    disposition: Integrated history; immutable and not reopened.
+  bards_gup_to_revise_after_integration:
+    id: GUP-PKT-PHB-117-119-bards-r03
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-117-119-bards-r03.yaml
+  bards_review_to_revise_after_integration:
+    id: REV-GUP-PKT-PHB-117-119-bards-r03-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r03-r01.yaml
+    correction_id: M048
+    replacement_assertion:
+      source_id: class_bard
+      source_label: Bard
+      edge_type: MODIFIES
+      target_id: item_pipes_of_sewers
+      target_label: Pipes of the Sewers
+      aspect: superior for a bard
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: PHB
+      page: '119'
+      section: BARDS
+      evidence: explicit_rule
+      pass: page-sweep
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Publish GUP-MIG-DEC-2026-0037-r01 in lineage MIG-DEC-2026-0037 with
+      operation_model decision_migration_v1. It carries only this Decision, the
+      exact replacement, both current before-images, and its validation report.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Independently verify the two-row incident set, current baseline, owner-
+      directed identity, no non-identity delta, and no retained singular ID;
+      publish the exact two-component Approved direct-migration bundle.
+  - step: 3
+    owner: integrator
+    action: >-
+      Integrate only the approved direct-v1 migration transaction and rebuild
+      the derived canonical artifacts.
+  - step: 4
+    owner: reviewer
+    action: >-
+      Publish a revision of the Bards r03 Review after Integration, replacing
+      M048 with the exact assertion above while preserving all unrelated
+      dispositions and corrections.
+  - step: 5
+    owner: builder
+    action: >-
+      Publish the successor Bards GUP against the integrated canonical state.
+      It reuses item_pipes_of_sewers and proposes no Pipes registry node.
+
+acceptance_tests:
+  - >-
+    SOURCE_MARKDOWN 1.4 distinguishes a defining locus from a secondary mention
+    and allows an Architect-recorded owner direction only while the defining
+    packet is unavailable.
+  - >-
+    Planning this Decision against the stated baseline yields one replacement
+    and exactly canonical rows 2478 and 2479, with a complete two-row incident
+    set and no finding.
+  - >-
+    The direct-v1 GUP and Approved bundle validate with no edge CSV, exact
+    Decision and baseline provenance, full before-images, and only the permitted
+    replacement and paired endpoint-repoint operations.
+  - >-
+    Integration replaces item_pipes_sewer with item_pipes_of_sewers in the
+    registry, canonical endpoints, nodes_master, and graph; no singular ID,
+    label, alias, or duplicate assertion key remains.
+  - >-
+    The successor Bards Review and GUP use item_pipes_of_sewers / Pipes of the
+    Sewers for M048 while retaining PHB 119 as that assertion's citation.
+  - All applicable schema, graph, registry, direct-migration, lineage, and repository tests pass.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    The existing snake_case and item-prefix rules permit this identifier. The
+    change clarifies source-identity scope in SOURCE_MARKDOWN, not graph
+    ontology, edge semantics, or controlled vocabulary.
+
+governance_changelog:
+  - >-
+    SOURCE_MARKDOWN 1.4 separates an identity's defining locus from a secondary
+    mention and records the limited owner-directed naming path when the defining
+    source packet is unavailable.
+  - >-
+    DEC-2026-0037 is the active leaf of the DEC-2026-0030/0031 Pipes identity
+    lineage. It reverses only the prior singular migration through a new,
+    checked, identity-only transaction.
+
+exact_diff:
+  contracts/SOURCE_MARKDOWN.md:
+    - 'Version 1.3 -> 1.4; add defining-locus and owner-directed naming limits.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0037.yaml:
+    - 'Supersede DEC-2026-0031 with the exact item_pipes_of_sewers reversal.'
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Publish only the exact v1 migration and test the planned operation set.
+    - Do not revise the Bards GUP before the migration Integration record exists.
+  reviewer:
+    - Verify the direct migration before Approval and revise M048 only after Integration.
+  integrator:
+    - Apply only the approved identity-only transaction and rebuild derived artifacts.
+  analyst:
+    - Compare a future DMG 152 defining packet against this identity and escalate only a genuine conflict.

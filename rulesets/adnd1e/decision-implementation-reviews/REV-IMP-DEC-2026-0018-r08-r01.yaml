@@ -1,0 +1,33 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0018-r08-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation: {id: IMP-DEC-2026-0018-r08, path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0018-r08.yaml, checksum: sha256:986e6ebf82926c703b95bb403110daa9a712fb9c4b073d143c9d16421abc5c21}
+decision_input: {id: DEC-2026-0018, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0018.yaml, checksum: sha256:32aa2cf7578886b60b729876eb7ae6d343744bf59963446fc8e46a7d2d26d7ae}
+implementation_inventory: {declared_files: 10, checksum_matches: 10, noncanonical_scope: verified}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: "Focused queue-scanner coverage verifies conforming Decision-migration Reviewer routing without stale GUP input."}
+  - {acceptance_test_index: 2, disposition: verified, evidence: "Focused queue-scanner coverage verifies invalid Decision-provenance rejection cases."}
+  - {acceptance_test_index: 3, disposition: verified, evidence: "Focused queue-scanner coverage verifies missing migration-envelope and checksum rejection cases."}
+  - {acceptance_test_index: 4, disposition: verified, evidence: "Focused queue-scanner coverage verifies GUR-provenance disqualification."}
+  - {acceptance_test_index: 5, disposition: verified, evidence: "Focused queue-scanner coverage retains authority Decisions as Builder work for invalid or stale migrations."}
+  - {acceptance_test_index: 6, disposition: verified, evidence: "Focused queue-scanner coverage verifies independent cross-packet lineage routing."}
+  - {acceptance_test_index: 7, disposition: verified, evidence: "Focused queue-scanner coverage verifies active-leaf and reviewed-migration suppression."}
+  - {acceptance_test_index: 8, disposition: verified, evidence: "Focused queue-scanner coverage verifies Python/PowerShell parity."}
+  - {acceptance_test_index: 9, disposition: verified, evidence: "The full Builder suite verifies current Decision-migration schema and validation-component coverage."}
+  - {acceptance_test_index: 10, disposition: verified, evidence: "SOURCE_MARKDOWN 1.3 is the version pinned by the attributed Builder test; r08 corrects r07's stale explanatory reference."}
+  - {acceptance_test_index: 11, disposition: verified, evidence: "Live queue scan classifies packet GUPs as packet_update and retains legacy identity_merge_migration outside Reviewer readiness."}
+  - {acceptance_test_index: 12, disposition: verified, evidence: "Focused queue-scanner coverage verifies equivalent book-store and cross-book-store discovery."}
+  - {acceptance_test_index: 13, disposition: verified, evidence: "All ten declared implementation-file SHA-256 values match; none is canonical, registry, Decision, or r01 data."}
+independent_validation:
+  passed: true
+  commands:
+    - {command: "[cwd tooling/common] python -m unittest discover -s tests -p 'test_*.py'", exit_code: 0, result: passed, summary: "Ran 267 common schema and queue tests; all passed."}
+    - {command: "[cwd tooling/builder] PYTHONPATH=tooling/builder/src python -m unittest discover -s tests -p 'test_*.py'", exit_code: 0, result: passed, summary: "Ran 381 Builder tests; all passed."}
+overall_disposition: approved
+handoff: {next_role: none, readiness: terminal, reason: "All acceptance requirements, checksums, and independent validations are verified.", blocking_ids: []}

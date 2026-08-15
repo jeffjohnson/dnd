@@ -1,0 +1,35 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0028-r02-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation: {id: IMP-DEC-2026-0028-r02, path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0028-r02.yaml, checksum: sha256:0443eab40cbfe2a5e235cec31fa77b91c2aa3ba7ee887b733be6ae6ae30d39de}
+decision_input: {id: DEC-2026-0028, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0028.yaml, checksum: sha256:368749c4bae0f1c61cbfc0a874f1e73c302258192c6836accb5cd1088b2f1064}
+implementation_inventory: {declared_files: 6, checksum_matches: 6, noncanonical_scope: verified}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: "The decided escalation, DEC-2026-0028, and the preserved raising Review establish the stated authorization lineage."}
+  - {acceptance_test_index: 2, disposition: verified, evidence: "The active schemas define retired_by_lineage and the independently required review evidence fields."}
+  - {acceptance_test_index: 3, disposition: verified, evidence: "The named negative-path test families are present; r02 must restore exact reproducible outcomes in its evidence."}
+  - {acceptance_test_index: 4, disposition: verified, evidence: "DEC-2026-0028 restricts retirement authority to exact Decision checksum and acceptance-test index."}
+  - {acceptance_test_index: 5, disposition: failed, evidence: "r02 says IMP-DEC-2026-0022-r08 remains a blocked historical report, but the live queue routes that same active report to Reviewer. The claim is self-contradictory and cannot substantiate this acceptance result."}
+  - {acceptance_test_index: 6, disposition: verified, evidence: "The review schema requires independently re-derived authority and subject integration evidence for retired results."}
+  - {acceptance_test_index: 7, disposition: verified, evidence: "The current schema and suite support the authorized retirement workflow; the report nevertheless requires corrected item-5 evidence."}
+independent_validation:
+  passed: false
+  commands:
+    - {command: "[cwd D:/analysis/dnd] acceptance-evidence audit", exit_code: 1, result: failed, summary: "Acceptance test 5 misstates the live state of IMP-DEC-2026-0022-r08."}
+    - {command: "[cwd tooling/common] python -m unittest discover -s tests -p 'test_*.py'", exit_code: 0, result: passed, summary: "Ran 267 common tests; all passed."}
+    - {command: "[cwd tooling/builder] PYTHONPATH=tooling/builder/src python -m unittest discover -s tests -p 'test_*.py'", exit_code: 0, result: passed, summary: "Ran 381 Builder tests; all passed."}
+overall_disposition: revision_required
+validation_evidence_findings:
+  - severity: blocking
+    finding: "Acceptance test 5 calls the active approval-ready IMP-DEC-2026-0022-r08 a blocked historical report, contrary to the derived Reviewer queue."
+    required_correction: "Publish r03 with acceptance test 5 stating only the true active report state and its separately verified retired_by_lineage evidence; update the validation report and all derived checksums."
+handoff: {next_role: builder, readiness: ready, reason: "Implementation behavior is supported, but r02 records contradictory acceptance evidence.", blocking_ids: []}

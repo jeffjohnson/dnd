@@ -42,6 +42,15 @@ Primary input is an Architect Escalation under `rulesets/<ruleset-id>/escalation
 Only complete packages in that directory are Architect queue items. A blocked
 GUP that references the same escalation is context, not a second job.
 
+## Incoming Packet Authority
+
+For a concept explicitly named in the current incoming packet or its immutable
+claimed copy, that packet is canonical for spelling, grammatical number, source
+label, and canonical ID stem. A legacy registry or canonical node that disagrees
+is identity drift, not authority to overwrite the packet reading. Apply
+`contracts/SOURCE_MARKDOWN.md`; resolve the migration through a durable Decision
+and never use unpacketized legacy text as a tie-breaker.
+
 An escalation must provide:
 
 - exact governance question;

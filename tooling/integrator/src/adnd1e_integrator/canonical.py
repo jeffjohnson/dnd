@@ -118,6 +118,20 @@ class Registry:
                 break
         self.rows.insert(position, row)
 
+    def replace(self, retired_id: str, values: dict[str, str]) -> None:
+        """Retire one approved ID and register its replacement, leaving no alias.
+
+        The retired row is removed rather than kept as a pointer: `decision_
+        migration_v1` prohibits retaining a retired ID as an alias or duplicate
+        registry row, so the replacement is an in-place identity swap and the
+        file stays sorted by ID.
+        """
+        remaining = [r for r in self.rows if r.values["id"] != retired_id]
+        if len(remaining) == len(self.rows):
+            raise KeyError(f"{retired_id} is not in the registry")
+        self.rows = remaining
+        self.add(values)
+
     def save(self, path: Path) -> None:
         out = io.StringIO(newline="")
         out.write(self.header + self.header_terminator)

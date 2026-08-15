@@ -1,0 +1,154 @@
+schema_version: '1.0'
+id: ESC-2026-08-15T03.59.20.402Z
+status: pending
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-legacy-unspecified
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-15'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    GUP-MIG-DEC-2026-0032-r01 was published against registry sha256:f4134caa and
+    is already stale. One field is wrong: DEC-2026-0036 names registry row 1071
+    for str_exceptional, which now sits at row 1077. All 33 canonical locators
+    still resolve and every identity still matches.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. An approved Decision directs canonical work whose
+  enumerated registry locator no longer resolves. Adjusting the number would be
+  the Builder reinterpreting an Architect Decision.
+
+question: >-
+  DEC-2026-0036 is stale in exactly one field one day after being issued, for
+  the second time on this lineage. Should it be reissued again with the
+  corrected registry row, and should `registry_csv_row` become an advisory
+  cross-check rather than a required match, given that it carries no
+  information the retired node ID does not?
+
+what_is_not_in_question:
+  - >-
+    The ruling. The three merges, the six retired identities, the three
+    survivors, and the derived-ability convention are unchanged and correct.
+  - >-
+    The canonical operations. All 33 incident rows still resolve exactly against
+    the current baseline; the planes integration only appended rows, so no
+    canonical locator moved.
+  - >-
+    Five of the six registry locators. Rows 8, 9, 12, 72 and 73 still hold
+    exactly the declared identities.
+
+evidence:
+  what_moved:
+    cause: >-
+      INT-20260814-002 integrated GUP-PKT-PHB-120-120-planes-of-existence-r06:
+      20 canonical rows appended and 6 `rule_` nodes registered.
+    canonical:
+      before: sha256:3f39ae7753211eac78fad1f910e548a1cfa21e4de697599736e899cf3b61fa5c
+      after: sha256:c64127c41487f7d090d11ec485a7e8d348caceb5b90c4cc8ac645bb398aa6fc9
+      rows: 4132 -> 4152
+      locators_affected: 0
+    registry:
+      before: sha256:f4134caa1ac80da733dca8a2db31ff7a1696f7c52bb1458ffcdff1b2300aab94
+      after: sha256:4c8898e6eb27573d6f229fe1d0ea6da9786ee8572f3cf279710d8d59a291bf0e
+      rows: 1163 -> 1169
+      locators_affected: 1
+  the_single_stale_field:
+    declared: {registry_csv_row: 1071, id: str_exceptional}
+    actual_at_that_row: spell_wish
+    id_now_at_row: 1077
+    reason: >-
+      The six new `rule_` nodes sort before `str_`, so every row from the
+      insertion point down shifted by six. Only `str_exceptional` sits below it;
+      the other five retired IDs are near the top of the file and did not move.
+  affected_artifact:
+    id: GUP-MIG-DEC-2026-0032-r01
+    path: books/adnd1e/dmg/artifacts/gup/GUP-MIG-DEC-2026-0032-r01.yaml
+    state: >-
+      Published, approval-ready, schema-clean, and correct in every operation.
+      It pins the superseded registry baseline, so it cannot be reviewed or
+      integrated as it stands.
+
+systemic_finding:
+  observation: >-
+    This lineage has now been invalidated twice in two days by unrelated
+    integrations, each time in physical locators and never in meaning. The first
+    was a row removal shifting canonical; this one is a registry insertion
+    shifting one row. Both times every identity, label, kind and incident set
+    was still exactly right.
+  the_redundancy: >-
+    A merge is keyed on `retired_nodes[].id`. The registry row number adds no
+    identifying information: the ID is the identity, the label and kind confirm
+    it, and `NodeRegistry.row_of()` finds the row without being told. The
+    locator's only effect is to expire.
+  what_actually_protects_correctness: >-
+    The identity triple, and the closed incident set checked against the corpus.
+    Those caught nothing wrong here because nothing is wrong.
+  builder_recommendation: >-
+    Reissue with row 1077 so the migration can proceed, and consider making
+    `registry_csv_row` advisory: verified when it matches, reported as an
+    informational finding when the node has moved but ID, label and kind still
+    agree, and an error only when the ID at the named row belongs to a different
+    node than the one declared and the declared ID is absent entirely. The
+    Builder will not weaken this check without authorization, because
+    DEC-2026-0036 requires the match in terms.
+
+options_considered:
+  - option: Reissue DEC-2026-0036 with registry_csv_row 1077 for str_exceptional
+    impact: >-
+      Unblocks the migration with a one-field change. Leaves the lineage exposed
+      to the next registry insertion, which will land before this migration is
+      integrated if any other packet is approved first.
+    builder_preference: recommended_as_the_immediate_step
+  - option: Also make registry_csv_row an advisory cross-check
+    impact: >-
+      Removes the recurrence permanently for registry locators. The Builder can
+      implement and test it; it needs authorization because the current Decision
+      mandates the strict match. Canonical row locators are a separate question
+      this escalation does not reopen.
+    builder_preference: recommended_as_the_durable_fix
+  - option: Let the Builder resolve the row from the node ID and proceed
+    impact: >-
+      Not recommended and not offered as a fallback. It is verifiable today, but
+      it is the Builder deciding that a Decision's stated requirement may be
+      skipped when it looks redundant.
+
+builder_work_completed:
+  summary:
+    - >-
+      `decision_migration_v2` is implemented, tested and published:
+      GUP-MIG-DEC-2026-0032-r01 carries all three merges and all 33 paired
+      repoints, schema-clean with zero findings.
+    - >-
+      The v1 and v2 models refuse each other's shapes, and the `merges` array is
+      emitted only where the schema admits it -- v1 declares
+      `additionalProperties: false` on node_changes, so an unconditional emit
+      would have invalidated every v1 artifact.
+  files:
+    - tooling/builder/src/adnd1e_builder/decision_migration.py
+    - tooling/builder/src/adnd1e_builder/cli.py
+    - tooling/builder/tests/test_decision_migration.py
+
+blocked_work:
+  - id: GUP-MIG-DEC-2026-0032-r02
+    blocks: >-
+      The re-plan against the current baseline. Behind it: the Reviewer step,
+      the Integrator's v2 execution path, and the Analyst's required
+      GUR-PKT-DMG-064-064-missile-discharge-r03.
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  contract_change: possible
+  note: >-
+    Only if the advisory-locator option is adopted. Reissuing with the corrected
+    row alone changes no governance artifact.
+
+blocking: >-
+  The three ability-identity merges and the DMG missile-discharge packet lineage
+  behind them cannot proceed.

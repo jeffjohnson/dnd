@@ -1,0 +1,88 @@
+schema_version: '1.0'
+id: ESC-2026-08-14T04.18.34.249Z
+status: decided
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-legacy-unspecified
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.7'
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-08-14'
+decision_id: DEC-2026-0032
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: Two canonical nodes appear ontologically equivalent and merging them could affect existing edges.
+  blocking_ids: []
+gur_candidate_ref: GUR-PKT-DMG-064-064-missile-discharge-r02 IDQ-02 and GUR-PKT-UA-014-016-cavalier-r01
+  IDQ-02
+trigger: 'ESCALATION_CONTRACT 1.2: two canonical nodes appear ontologically equivalent and merging them
+  could affect existing edges.'
+originating_artifacts:
+  gur_id: GUR-PKT-DMG-064-064-missile-discharge-r02
+  gur_path: books/adnd1e/dmg/artifacts/gur/GUR-PKT-DMG-064-064-missile-discharge-r02.yaml
+  also_raised_in: GUR-PKT-UA-014-016-cavalier-r01 IDQ-02
+  packet_path: books/adnd1e/dmg/packets/claimed/PKT-DMG-064-064-missile-discharge/
+question: Three pairs of canonical nodes carry identical labels and represent the same concept. Which
+  member of each pair survives, and what naming convention governs the ability-adjustment family going
+  forward?
+source_excerpt: 'DMG 64 MISSILE DISCHARGE: "The Dexterity Attacking Adjustment is for missile firing considerations
+  when initiative is considered." The packet names the mechanic directly; canonical records it twice under
+  two IDs.'
+local_graph_neighborhood:
+  duplicate_pairs:
+  - dex_reaction_adj (6 canonical uses) and abil_dexterity_reaction_attacking_adjustment (1) — both labelled
+    'Reaction/Attacking Adjustment'
+  - dex_defensive_adj (16) and abil_dexterity_defensive_adjustment (1) — both labelled 'Dexterity Defensive
+    Adjustment'
+  - str_exceptional (7) and abil_strength_exceptional (2) — both labelled 'Exceptional Strength'
+  constitution_conflict: Constitution 3.1 lists abil_ as the ability-score prefix with the example abil_constitution,
+    and lists neither dex_ nor str_. The corpus and the constitution therefore disagree about which member
+    of each pair is even well formed, while canonical usage runs 6:1, 16:1 and 7:2 in favour of the forms
+    the constitution does not list.
+  wider_prefix_drift: 'nodes.csv also contains bare prefixes absent from 3.1: comeliness, training, magic,
+    death, fatigue, cursed, turn and align. Out of scope for this escalation but recorded, since a 3.1
+    amendment is the natural place to address them.'
+affected_canonical_ids:
+- dex_reaction_adj
+- abil_dexterity_reaction_attacking_adjustment
+- dex_defensive_adj
+- abil_dexterity_defensive_adjustment
+- str_exceptional
+- abil_strength_exceptional
+repository_owner_stated_preference:
+  stated_on: '2026-08-13'
+  convention: abil_<three-letter ability abbreviation>_<snake_case rule name>
+  target_ids:
+  - abil_dex_reaction_adjustment
+  - abil_dex_defensive_adjustment
+  - abil_str_exceptional
+  scope_as_stated: Applies to work going forward.
+  analyst_note: 'Recorded as input, not applied. Renaming canonical node IDs is an Architect Decision
+    plus an Integrator transaction, and the convention also needs a 3.1 amendment: as it stands 3.1 gives
+    the unabbreviated abil_constitution, so adopting abbreviated forms would leave abil_constitution and
+    abil_dex_defensive_adjustment side by side unless 3.1 is changed too.'
+options_considered:
+- option: Adopt the owner's convention and migrate all three pairs to it
+  impact: Registry change plus canonical edge rewrites on 32 rows across the three pairs. Amends constitution
+    3.1 to define the abbreviated form. Resolves the duplicates and the corpus/constitution disagreement
+    in one move.
+- option: Keep the dominant existing ID in each pair and retire the minority
+  impact: Registry change plus rewrites on 4 rows only. Cheapest merge, but leaves dex_ and str_ prefixes
+    that 3.1 does not sanction.
+- option: Adopt the convention for new nodes only and leave existing IDs alone
+  impact: No migration, but the duplicates persist and new work adds a third naming style alongside the
+    two already present.
+recommended_resolution: 'The first option. It is the only one that resolves both the duplication and the
+  corpus/constitution disagreement, and it matches the repository owner''s stated direction. The migration
+  is bounded and mechanical: three ID renames and their label rows.'
+expected_migration_impact: 'Registry: three IDs renamed, three retired. Canonical: approximately 32 rows
+  re-pointed by endpoint ID with no change to edge type, aspect, condition, polarity or citation. No assertion
+  is added, removed or reinterpreted.'
+governance_impact:
+  constitution_change: true
+  registry_change: true
+  profile_change: false
+blocking: Blocks no current artifact. Both GURs use the dominant existing form and propose none of the
+  six nodes, so neither depends on the outcome.

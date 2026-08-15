@@ -1,0 +1,39 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0023-r10-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation: {id: IMP-DEC-2026-0023-r10, path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0023-r10.yaml, checksum: sha256:aae2869f5d64c469339fe88a93ae92d0e1d03e80fedd9578c4094c4bfa7816d8}
+decision_input: {id: DEC-2026-0023, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0023.yaml, checksum: sha256:8be0df954bdfaab576086c36ee03045ded38e9901140d70cf7b3686819abffa7}
+implementation_inventory: {declared_files: 2, checksum_matches: 2, noncanonical_scope: verified}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: "ARTIFACT_LIFECYCLE defines both implementation artifacts and their stores."}
+  - {acceptance_test_index: 2, disposition: verified, evidence: "FILE_NAMING defines both implementation artifact names and stores."}
+  - {acceptance_test_index: 3, disposition: verified, evidence: "WORK_QUEUES retains the complete non-migration Decision lineage."}
+  - {acceptance_test_index: 4, disposition: verified, evidence: "REPOSITORY_STRUCTURE names both ruleset-scoped append-only implementation stores."}
+  - {acceptance_test_index: 5, disposition: verified, evidence: "Draft202012Validator schema checks pass for both implementation schemas."}
+  - {acceptance_test_index: 6, disposition: verified, evidence: "Common-suite coverage verifies unconsumed non-migration Decision Builder-job routing."}
+  - {acceptance_test_index: 7, disposition: verified, evidence: "Common-suite coverage verifies active-report Reviewer routing and Builder-job suppression."}
+  - {acceptance_test_index: 8, disposition: verified, evidence: "Common-suite coverage verifies partial-report non-readiness."}
+  - {acceptance_test_index: 9, disposition: verified, evidence: "Common-suite coverage verifies invalid provenance, migration flag, index, checksum, handoff, and validation rejection."}
+  - {acceptance_test_index: 10, disposition: verified, evidence: "Common-suite coverage verifies revision-required implementation-review Builder routing without a duplicate Decision job."}
+  - {acceptance_test_index: 11, disposition: verified, evidence: "Common-suite coverage verifies active-report and Decision provenance before terminal Review consumption."}
+  - {acceptance_test_index: 12, disposition: verified, evidence: "Direct inspection confirms each current implementation report covers every one-based Decision index exactly once."}
+  - {acceptance_test_index: 13, disposition: verified, evidence: "Builder reports remain distinct from required Reviewer disposition; no self-approval is accepted."}
+  - {acceptance_test_index: 14, disposition: verified, evidence: "Common-suite coverage verifies Python/PowerShell parity."}
+  - {acceptance_test_index: 15, disposition: verified, evidence: "Independent suites passed: 267 common and 381 Builder tests."}
+  - {acceptance_test_index: 16, disposition: verified, evidence: "Both declared implementation-file SHA-256 values match and the inventory contains no governed graph or historical artifact."}
+independent_validation:
+  passed: true
+  commands:
+    - {command: "[cwd tooling/common] python -m unittest discover -s tests -p 'test_*.py'", exit_code: 0, result: passed, summary: "Ran 267 common schema and queue tests; all passed."}
+    - {command: "[cwd tooling/builder] PYTHONPATH=tooling/builder/src python -m unittest discover -s tests -p 'test_*.py'", exit_code: 0, result: passed, summary: "Ran 381 Builder tests; all passed."}
+overall_disposition: approved
+handoff: {next_role: none, readiness: terminal, reason: "All acceptance requirements, checksums, and independent validations are verified.", blocking_ids: []}

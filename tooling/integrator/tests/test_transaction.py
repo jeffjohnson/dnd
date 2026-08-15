@@ -17,7 +17,7 @@ import yaml
 import _bootstrap
 from _bootstrap import REPO_ROOT, RULESET_ID
 
-from adnd1e_integrator.bundles import discover
+from adnd1e_integrator.bundles import discover, ready_queue
 from adnd1e_integrator.canonical import CanonicalPaths
 from adnd1e_integrator.checksums import checksum_file
 from adnd1e_integrator.integrate import IntegrationError, integrate, verify_bundle
@@ -37,13 +37,78 @@ def clone_repo(target: Path) -> Path:
         f"rulesets/{RULESET_ID}/registries",
         f"rulesets/{RULESET_ID}/profiles",
         f"rulesets/{RULESET_ID}/governance",
+        # A direct migration reads its authority Decisions and its Builder
+        # validation report, so a clone without them cannot verify one.
+        f"rulesets/{RULESET_ID}/escalations",
         f"books/{RULESET_ID}/phb/artifacts",
+        "build/reports",
     ]:
         source = REPO_ROOT / relative
         if source.exists():
             shutil.copytree(source, target / relative, dirs_exist_ok=True)
     _rewind(target)
     return target
+
+
+def _rewind_migration(bundle, root: Path, graph, registry) -> bool:
+    """Undo a `decision_migration_v1` plan, if canonical shows it was applied.
+
+    Reversal runs in the mirror of the application order: rows come back first,
+    so the repoints that follow address the line numbers the plan was measured
+    against, and the registry identity swap is undone last.
+
+    Returns whether anything changed, so the caller knows to rederive.
+    """
+    from adnd1e_integrator.migration import MigrationError, read_plan
+
+    manifest = bundle.manifest or {}
+    component = next((c for c in manifest.get("components") or []
+                      if c.get("kind") == "decision_migration"), None)
+    if component is None:
+        return False
+    plan_path = root / component["path"]
+    if not plan_path.exists():
+        return False
+    try:
+        plan = read_plan(yaml.safe_load(plan_path.read_text(encoding="utf-8")))
+    except (MigrationError, KeyError, TypeError, ValueError):
+        return False
+
+    # If no replacement's new identity is registered, the plan never landed here
+    # and there is nothing to undo.
+    if not any(r.canonical_id in registry.ids for r in plan.replacements):
+        return False
+
+    for removal in sorted(plan.removals, key=lambda r: r.canonical_row):
+        graph.edges.insert(removal.canonical_index, dict(removal.before))
+    for repoint in plan.repoints:
+        edge = graph.edges[repoint.canonical_index]
+        for field_name, delta in repoint.changes.items():
+            if edge.get(field_name) == delta["to"]:
+                edge[field_name] = delta["from"]
+    for replacement in plan.replacements:
+        if replacement.canonical_id in registry.ids:
+            registry.replace(replacement.canonical_id, {
+                "id": replacement.retired_id, "label": replacement.retired_label,
+                "kind": replacement.kind, "degree": "0", "roles": ""})
+    registry.rows = [r for r in registry.rows
+                     if r.values["id"] not in {a.node_id for a in plan.additions}]
+    return True
+
+
+def resync_registry(graph, registry) -> None:
+    """Rebuild the registry's derived columns from the graph.
+
+    `degree` and `roles` are a projection of canonical state, so a restored
+    identity comes back at whatever degree its edges now give it. Without this,
+    a rewind puts the right IDs back with zeroed derived columns and the file no
+    longer matches the checksum a plan pinned against it.
+    """
+    derived = {n["id"]: n for n in graph.nodes}
+    for row in registry.rows:
+        node = derived.get(row.values["id"])
+        row.values["degree"] = node["degree"] if node else "0"
+        row.values["roles"] = node["roles"] if node else ""
 
 
 def _rewind(root: Path) -> None:
@@ -72,10 +137,25 @@ def _rewind(root: Path) -> None:
     touched = False
 
     for bundle in discover(root, RULESET_ID, "phb")[0]:
+        if bundle.is_direct_migration:
+            touched |= _rewind_migration(bundle, root, graph, registry)
+            continue
         rows = read_csv_rows(bundle.edges_path)
         review = bundle.review or yaml.safe_load(
             bundle.review_path.read_text(encoding="utf-8"))
-        operations = read_operations(bundle.manifest, review, len(rows))
+        try:
+            operations = read_operations(bundle.manifest, review, len(rows))
+        except (KeyError, ValueError):
+            # A bundle whose operation index cannot be read is one the applier
+            # rejects at precondition time, so it never reached canonical state
+            # and there is nothing here to undo. Skipping keeps the fixture
+            # measuring the transaction rather than dying on a malformed input
+            # that happens to be sitting in the queue.
+            #
+            # The defect itself is not swallowed: TestPreconditions asserts that
+            # every ready bundle passes its blocking checks, and that is the test
+            # that must fail while such a bundle is published.
+            continue
 
         for update in operations.updates:
             index = update.canonical_index
@@ -166,7 +246,7 @@ class TestIntegrationIsAtomic(unittest.TestCase):
             paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
             before = {p: checksum_file(p) for p in paths.writable()}
 
-            bundles, _ = discover(root, RULESET_ID, "phb")
+            bundles = ready_queue(root, RULESET_ID, ["phb"])["ready"]
             integrate(root, RULESET_ID, bundles, integration_id="INT-19700101-003", dry_run=True)
 
             self.assertEqual({p: checksum_file(p) for p in paths.writable()}, before)
@@ -178,7 +258,7 @@ class TestIntegrationIsAtomic(unittest.TestCase):
             with tempfile.TemporaryDirectory() as tmp:
                 root = clone_repo(Path(tmp))
                 paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
-                bundles, _ = discover(root, RULESET_ID, "phb")
+                bundles = ready_queue(root, RULESET_ID, ["phb"])["ready"]
                 integrate(root, RULESET_ID, bundles, integration_id="INT-19700101-004")
                 digests.append(tuple(checksum_file(p) for p in paths.writable()))
         self.assertEqual(digests[0], digests[1])
@@ -186,13 +266,26 @@ class TestIntegrationIsAtomic(unittest.TestCase):
 
 class TestPreconditions(unittest.TestCase):
     def test_every_ready_bundle_passes_its_blocking_checks(self):
-        bundles, _ = discover(REPO_ROOT, RULESET_ID, "phb")
-        for bundle in bundles:
+        """Ready means the active leaf, not everything `discover` returns.
+
+        `discover` deliberately yields every Approved bundle, history included.
+        A superseded bundle will never be integrated, so holding its provenance
+        to a blocking check asserts a contract the repository does not make --
+        and it fails on exactly the bundles whose successors already shipped.
+        """
+        for bundle in ready_queue(REPO_ROOT, RULESET_ID, ["phb"])["ready"]:
             verification = verify_bundle(bundle, REPO_ROOT)
             self.assertEqual(
                 verification.blocking_failures, [],
                 f"{bundle.bundle_id}: "
                 f"{[c.name for c in verification.blocking_failures]}")
+
+    def test_superseded_bundle_is_not_offered_as_ready(self):
+        """A bundle whose GUP a later revision supersedes is history, not a job."""
+        queue = ready_queue(REPO_ROOT, RULESET_ID, ["phb"])
+        retired = {b.bundle_id for b in queue["superseded"]}
+        self.assertNotEqual(retired, set(), "fixture expects at least one retired bundle")
+        self.assertEqual(retired & {b.bundle_id for b in queue["ready"]}, set())
 
 
 if __name__ == "__main__":

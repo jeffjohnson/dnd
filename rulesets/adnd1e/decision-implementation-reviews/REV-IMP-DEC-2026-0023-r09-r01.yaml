@@ -1,0 +1,52 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0023-r09-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0023-r09
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0023-r09.yaml
+  checksum: sha256:61484e44130cd71bab318c832737378e655824e7c2c137f28a5e0be8a33ff305
+decision_input:
+  id: DEC-2026-0023
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0023.yaml
+  checksum: sha256:8be0df954bdfaab576086c36ee03045ded38e9901140d70cf7b3686819abffa7
+implementation_inventory:
+  declared_files: 2
+  checksum_matches: 2
+  noncanonical_scope: verified
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: "ARTIFACT_LIFECYCLE is Version 1.4 and defines both implementation artifacts, including retirement-by-lineage context."}
+  - {acceptance_test_index: 2, disposition: verified, evidence: "FILE_NAMING is Version 1.4 and defines both implementation artifact names and stores."}
+  - {acceptance_test_index: 3, disposition: verified, evidence: "WORK_QUEUES Version 1.6 retains the complete non-migration Decision lineage."}
+  - {acceptance_test_index: 4, disposition: verified, evidence: "REPOSITORY_STRUCTURE names both ruleset-scoped append-only implementation stores."}
+  - {acceptance_test_index: 5, disposition: verified, evidence: "Draft202012Validator.check_schema succeeds for both implementation schemas."}
+  - {acceptance_test_index: 6, disposition: verified, evidence: "Current common suite passes unconsumed non-migration Decision Builder-job coverage."}
+  - {acceptance_test_index: 7, disposition: verified, evidence: "Current common suite passes active-report Reviewer routing and Builder-job suppression coverage."}
+  - {acceptance_test_index: 8, disposition: verified, evidence: "Current common suite passes partial-report non-readiness, including the six-of-thirteen spot-check case."}
+  - {acceptance_test_index: 9, disposition: verified, evidence: "Current common suite passes invalid provenance, migration flag, acceptance index, checksum, handoff, and validation rejection coverage."}
+  - {acceptance_test_index: 10, disposition: verified, evidence: "Current common suite passes revision-required implementation-review Builder routing without a duplicate Decision job."}
+  - {acceptance_test_index: 11, disposition: verified, evidence: "Current common suite passes active-report and Decision provenance checks before terminal Review consumption."}
+  - {acceptance_test_index: 12, disposition: verified, evidence: "Direct inspection confirms each current report covers every one-based acceptance index exactly once."}
+  - {acceptance_test_index: 13, disposition: verified, evidence: "Every report remains Builder-proposed and requires a separate Reviewer disposition; no Builder self-approval is accepted."}
+  - {acceptance_test_index: 14, disposition: verified, evidence: "Current common suite passes Python/PowerShell parity coverage."}
+  - {acceptance_test_index: 15, disposition: verified, evidence: "Independent suites passed: 266 common tests and 370 Builder tests."}
+  - {acceptance_test_index: 16, disposition: verified, evidence: "Both declared implementation-file SHA-256 values match and the declared inventory contains no governed graph or historical artifact."}
+independent_validation:
+  passed: true
+  commands:
+    - {command: "[cwd tooling/common] python -m unittest discover -s tests -p 'test_*.py'", exit_code: 0, result: passed, summary: "Ran 266 common schema and queue tests; all passed."}
+    - {command: "[cwd tooling/builder] PYTHONPATH=tooling/builder/src python -m unittest discover -s tests -p 'test_*.py'", exit_code: 0, result: passed, summary: "Ran 370 Builder compiler, migration, registry, vocabulary, and schema tests; all passed."}
+overall_disposition: approved
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: All acceptance requirements, declared checksums, and independent validations are verified.
+  blocking_ids: []

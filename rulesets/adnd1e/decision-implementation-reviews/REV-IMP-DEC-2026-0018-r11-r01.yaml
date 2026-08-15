@@ -1,0 +1,34 @@
+schema_version: "1.0"
+id: REV-IMP-DEC-2026-0018-r11-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation: {id: IMP-DEC-2026-0018-r11, path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0018-r11.yaml, checksum: sha256:167658e73c1ce18c352431e9d6030c6f9f89442e8026ecfb889847fdfca2e084}
+decision_input: {id: DEC-2026-0018, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0018.yaml, checksum: sha256:32aa2cf7578886b60b729876eb7ae6d343744bf59963446fc8e46a7d2d26d7ae}
+implementation_inventory: {declared_files: 10, checksum_matches: 10, noncanonical_scope: verified}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: "Focused scanner coverage verifies valid Decision-migration Reviewer routing."}
+  - {acceptance_test_index: 2, disposition: verified, evidence: "Focused scanner coverage verifies invalid Decision-provenance rejection."}
+  - {acceptance_test_index: 3, disposition: verified, evidence: "Focused scanner coverage verifies missing envelope and checksum rejection."}
+  - {acceptance_test_index: 4, disposition: verified, evidence: "Focused scanner coverage verifies GUR-provenance disqualification."}
+  - {acceptance_test_index: 5, disposition: verified, evidence: "Focused scanner coverage retains invalid or stale migrations as Builder work."}
+  - {acceptance_test_index: 6, disposition: verified, evidence: "Focused scanner coverage verifies independent cross-packet lineage routing."}
+  - {acceptance_test_index: 7, disposition: verified, evidence: "Focused scanner coverage verifies active-leaf and reviewed-migration suppression."}
+  - {acceptance_test_index: 8, disposition: verified, evidence: "Independent common-suite run verifies Python and PowerShell scanner parity coverage."}
+  - {acceptance_test_index: 9, disposition: verified, evidence: "Builder suite and report checks verify migration schema and validation coverage."}
+  - {acceptance_test_index: 10, disposition: verified, evidence: "Current vocabulary and governed tests preserve the required DEC-2026-0017/0016 attributions."}
+  - {acceptance_test_index: 11, disposition: verified, evidence: "Live queue keeps packet-update GUPs distinct from legacy migrations."}
+  - {acceptance_test_index: 12, disposition: verified, evidence: "Focused scanner coverage verifies book-store and cross-book-store discovery."}
+  - {acceptance_test_index: 13, disposition: verified, evidence: "All declared implementation-file checksums match; no canonical, registry, Decision, or r01 artifact was changed by this implementation."}
+independent_validation:
+  passed: true
+  commands:
+    - {command: "[cwd tooling/common] python -m unittest discover -s tests -p 'test_*.py'", exit_code: 0, result: passed, summary: "Ran 285 common tests; all passed."}
+    - {command: "[cwd tooling/builder] PYTHONPATH=tooling/builder/src python -m unittest discover -s tests -p 'test_*.py'", exit_code: 0, result: passed, summary: "Ran 397 Builder tests; all passed."}
+  spot_check: "emit.py now emits a sibling .pending.csv whenever held rows exist, preventing a header-only .edges.csv from representing a non-empty pending set."
+overall_disposition: approved
+handoff: {next_role: none, readiness: terminal, reason: "All 13 acceptance requirements, checksums, and independent validations are verified.", blocking_ids: []}

@@ -1,0 +1,1423 @@
+schema_version: '1.0'
+id: GUR-PKT-PHB-117-119-bards-r01
+status: published
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.3
+- contracts/WORK_QUEUES.md 1.6
+- contracts/ARTIFACT_LIFECYCLE.md 1.4
+- contracts/GRAPH_INVARIANTS.md 1.0
+- rulesets/adnd1e/governance/constitution.md 1.7
+analyst_pass: page-sweep
+citation_code: PHB
+page_start: 117
+page_end: 119
+packet_source_checksum: sha256:8736de88cef4642300f8347117d1ae49b84b8c82ba93c28d81996f0f010704c8
+packet_source_checksum_basis: lf_normalized
+source_summary: 'PHB 117 to 119, Appendix II. The bard: ability minimums, race, and a three-stage progression
+  through fighter and thief into druidic tutelage, then three tables giving advancement with druid spells,
+  college and two percentage abilities, and permitted armour and weapons. It closes with a narrative section
+  on poetics, song, charming, legend lore, magic items, henchmen and strongholds.'
+node_id_resolution_method: No registry slice was supplied. class_bard exists with twenty edges, fifteen
+  from the prior PHB 117 pass and five from the DMG. Two of the DMG edges, on item_bard_instrument, already
+  depend on a bardic college concept the graph has no node for, which settled that rule_bard_college should
+  be minted. item_pipes_sewers already exists under a spelling the packet does not use and is reused;
+  see IDQ-01. Ten identities are proposed, five of them bardic abilities Table II already treats as separate
+  columns.
+grain_decisions:
+- decision: Five bardic abilities become nodes rather than facets of class_bard.
+  basis: Constitution 3.1. Table II gives college, charming and legend lore their own columns, and the
+    narrative gives poetics and song their own paragraphs with their own timings and exclusions.
+  how_applied: 'rule_bard_college, rule_bard_charm, rule_bard_legend_lore, rule_bard_poetics and rule_bard_song.
+    The strongest evidence is external: two canonical DMG edges on item_bard_instrument already talk about
+    college level and charming ability, so the graph was already referencing these apart from the class.'
+- decision: The three advancement tables yield dependencies, not values.
+  basis: Constitution 2 and 2.1.
+  how_applied: Experience point thresholds, hit dice, the twenty-three level titles, spell counts by level,
+    charm and legend lore percentages and henchman counts are all dropped. What is kept is that each of
+    those facets moves with exp_level.
+- decision: The nine college names are not minted.
+  basis: The core test. Fochlucan through Magna Alumnae are names attached to level bands; no mechanic
+    reads any of them individually except the highest, whose exception is carried as a condition.
+  how_applied: One node, rule_bard_college, with the association rule and its exception on a single edge.
+    See OBS-06.
+- decision: The permitted weapons list yields no edge.
+  basis: The core test and constitution 3.2. Table III names nine weapon types; the graph has no weapons-permitted
+    concept and minting nine weapon identities from a permission list would propose ontology this packet
+    does not support.
+  how_applied: Armour, shield, oil and poison are recorded because each has an existing endpoint. The
+    weapon column is recorded in OBS-05 instead.
+- decision: Status is optional on every edge.
+  basis: Constitution 8 names the bard explicitly, and the appendix calls the class supplemental with
+    the DM as final arbiter.
+  how_applied: All rows carry status optional. rule_dm_discretion GATES class_bard is already canonical
+    at PHB 117 and is not restated.
+candidate_nodes:
+- proposed_id: rule_bard_college
+  proposed_label: Bardic College
+  kind: rule
+  why_needed: 'Table II''s own first column and the distinction the appendix calls the important one to
+    a bard. Already load-bearing without a node: item_bard_instrument GATES class_bard at DMG 148 is keyed
+    to college level, so a canonical edge already depends on a concept the graph cannot name.'
+  edges_depending_on_it:
+  - M011
+  - M012
+- proposed_id: rule_bard_charm
+  proposed_label: Bardic Charming
+  kind: rule
+  why_needed: A percentage on Table II with its own range, saving throw, once-a-day limit and negation
+    conditions. item_bard_instrument MODIFIES class_bard at DMG 148 says each instrument raises the bard's
+    charming ability, which is this and not spell_charm_person.
+  edges_depending_on_it:
+  - M014
+  - M015
+  - M016
+  - M035
+  - M036
+  - M037
+  - M038
+  - M039
+  - M040
+  - M041
+- proposed_id: rule_bard_legend_lore
+  proposed_label: Bardic Legend Lore
+  kind: rule
+  why_needed: The second percentage column on Table II, covering both legendary knowledge and item identification.
+    Distinct from spell_legend_lore, which the packet names as the thing it resembles.
+  edges_depending_on_it:
+  - M017
+  - M018
+  - M019
+  - M020
+  - M021
+  - M022
+- proposed_id: rule_bard_poetics
+  proposed_label: Bardic Poetics
+  kind: rule
+  why_needed: 'A timed activity with two effects, a warm-up, a duration, and an explicit list of what
+    it forbids while running. Referenced apart from singing: the bard may not sing while performing it.'
+  edges_depending_on_it:
+  - M029
+  - M030
+  - M031
+  - M032
+- proposed_id: rule_bard_song
+  proposed_label: Bardic Song and Playing
+  kind: rule
+  why_needed: The vehicle for charming and, separately, the thing that negates harpy song and stills shriekers.
+    Those two effects are stated in different paragraphs and neither runs through the other.
+  edges_depending_on_it:
+  - M031
+  - M033
+  - M034
+  - M035
+- proposed_id: item_drums_panic
+  proposed_label: Drums of Panic
+  kind: item
+  why_needed: One of four musical items the appendix says perform better for a bard. Each carries a different
+    improvement, so the four cannot share one node.
+  edges_depending_on_it:
+  - M045
+- proposed_id: item_horn_blasting
+  proposed_label: Horn of Blasting
+  kind: item
+  why_needed: As item_drums_panic.
+  edges_depending_on_it:
+  - M046
+- proposed_id: item_lyre_building
+  proposed_label: Lyre of Building
+  kind: item
+  why_needed: As item_drums_panic.
+  edges_depending_on_it:
+  - M047
+- proposed_id: monster_harpy
+  proposed_label: Harpy
+  kind: monster
+  why_needed: Named as the creature whose song effects bardic music negates. The negation is a mechanic
+    and needs the creature as an endpoint.
+  edges_depending_on_it:
+  - M033
+- proposed_id: monster_shrieker
+  proposed_label: Shrieker
+  kind: monster
+  why_needed: Named as the creature whose noise bardic music stills.
+  edges_depending_on_it:
+  - M034
+reused_nodes:
+- abil_charisma
+- cbt_melee
+- cbt_morale
+- cbt_tohit
+- class_bard
+- class_druid
+- class_fighter
+- class_thief
+- exp_level
+- hench_henchmen
+- item_artifact
+- item_bard_instrument
+- item_magic_item
+- item_pipes_sewers
+- race_elf
+- race_half_elf
+- race_human
+- rule_dm_discretion
+- rule_druid_spells
+- rule_dual_class
+- rule_hit_points
+- rule_languages
+- rule_oil
+- rule_poison_use
+- rule_scroll_use
+- rule_spell_casting
+- rule_stronghold
+- rule_time
+- save_spell
+- spell_charm_monster
+- spell_charm_person
+- spell_legend_lore
+- spell_suggestion
+- sys_alignment
+- sys_armor
+cross_packet_candidate_targets: []
+candidate_general_rules: []
+domains_touched:
+- class
+- magic
+- combat
+domains_touched_note: domain_registry.yaml remains at 0.1, status bootstrap, with an empty domains map.
+  class, magic and combat are the labels used by earlier GURs in this book.
+candidate_domains: []
+domain_boundary_questions: []
+candidate_edges:
+- ref: M001
+  source_id: race_human
+  source_label: race_human
+  edge_type: GATES
+  target_id: class_bard
+  target_label: Bard
+  aspect: human or half-elven only
+  condition: ''
+  book: PHB
+  page: 117
+  section: BARD RACE
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Canonical carries race_any GATES class_bard with aspect 'eligibility', cited to this
+    same section. The packet permits two races and no others, so race_any reads as no racial restriction
+    where the text sets a narrow one. Emitted as a refinement rather than a duplicate; see OBS-02.
+- ref: M002
+  source_id: race_half_elf
+  source_label: Half-Elf
+  edge_type: GATES
+  target_id: class_bard
+  target_label: Bard
+  aspect: human or half-elven only
+  condition: ''
+  book: PHB
+  page: 117
+  section: BARD RACE
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: class_bard
+  source_label: Bard
+  edge_type: DERIVED_FROM
+  target_id: rule_druid_spells
+  target_label: Druid Spells
+  aspect: draws its spell list from the druid
+  condition: ''
+  book: PHB
+  page: 117
+  section: BARDS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: class_bard
+  target_label: Bard
+  aspect: number and level of spells available
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 117
+  section: BARDS TABLE I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: class_druid
+  source_label: Druid
+  edge_type: FEEDS_INTO
+  target_id: class_bard
+  target_label: Bard
+  aspect: druidic powers at the same level
+  condition: ''
+  book: PHB
+  page: 118
+  section: Notes Regarding Bards Table I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: CONSTRAINS
+  target_id: class_bard
+  target_label: Bard
+  aspect: spells are cast at a capped druid ability
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: Notes Regarding Bards Table I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: class_bard
+  source_label: Bard
+  edge_type: GATES
+  target_id: rule_scroll_use
+  target_label: Reading Spell from Scroll
+  aspect: may read scrolls carrying druid spells
+  condition: ''
+  book: PHB
+  page: 118
+  section: Notes Regarding Bards Table I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: class_fighter
+  source_label: Fighter
+  edge_type: FEEDS_INTO
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: hit dice earned as a fighter carry across
+  condition: ''
+  book: PHB
+  page: 118
+  section: Notes Regarding Bards Table I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: class_thief
+  source_label: Thief
+  edge_type: FEEDS_INTO
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: hit dice earned as a thief carry across
+  condition: where that class level is the higher
+  book: PHB
+  page: 118
+  section: Notes Regarding Bards Table I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: rule_dual_class
+  source_label: The Character with Two Classes
+  edge_type: EXCLUDED_FROM
+  target_id: class_bard
+  target_label: Bard
+  aspect: the class-change hit dice penalty does not apply
+  condition: ''
+  book: PHB
+  page: 118
+  section: Notes Regarding Bards Table I
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'The bard changes class twice, so a reader would reach for rule_dual_class CONSTRAINS
+    rule_hit_points from PHB 33. The note denies it in terms: no hit dice are lost for becoming a bard.
+    This is the case constitution 4.1 reserves EXCLUDED_FROM for.'
+- ref: M011
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: rule_bard_college
+  target_label: Bardic College
+  aspect: college advances with the bard
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: BARDS TABLE II
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M012
+  source_id: rule_bard_college
+  source_label: Bardic College
+  edge_type: CONSTRAINS
+  target_id: class_bard
+  target_label: Bard
+  aspect: will not associate with a lesser college
+  condition: except the highest college, which aids any bard
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: Notes Regarding Bards Table II
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M013
+  source_id: class_bard
+  source_label: Bard
+  edge_type: MODIFIES
+  target_id: rule_languages
+  target_label: Languages
+  aspect: new tongues arrive without study
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: Notes Regarding Bards Table II
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M014
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: rule_bard_charm
+  target_label: Bardic Charming
+  aspect: chance of charming
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: BARDS TABLE II
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M015
+  source_id: rule_bard_charm
+  source_label: Bardic Charming
+  edge_type: CROSS_REFERENCES
+  target_id: spell_charm_person
+  target_label: Charm
+  aspect: the effect cast with music
+  condition: ''
+  book: PHB
+  page: 118
+  section: Notes Regarding Bards Table II
+  evidence: explicit_reference
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M016
+  source_id: rule_bard_charm
+  source_label: Bardic Charming
+  edge_type: CROSS_REFERENCES
+  target_id: spell_charm_monster
+  target_label: Charm Monster
+  aspect: the effect cast with music
+  condition: ''
+  book: PHB
+  page: 118
+  section: Notes Regarding Bards Table II
+  evidence: explicit_reference
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M017
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: MODIFIES
+  target_id: rule_bard_legend_lore
+  target_label: Bardic Legend Lore
+  aspect: chance of knowing
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: BARDS TABLE II
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M018
+  source_id: rule_bard_legend_lore
+  source_label: Bardic Legend Lore
+  edge_type: CROSS_REFERENCES
+  target_id: spell_legend_lore
+  target_label: Informational Spells
+  aspect: delivers similar information
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_reference
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M019
+  source_id: rule_bard_legend_lore
+  source_label: Bardic Legend Lore
+  edge_type: FEEDS_INTO
+  target_id: item_magic_item
+  target_label: Magic Device
+  aspect: names an item's properties without touching it
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M020
+  source_id: rule_bard_legend_lore
+  source_label: Bardic Legend Lore
+  edge_type: FEEDS_INTO
+  target_id: sys_alignment
+  target_label: Alignment
+  aspect: names an item's alignment
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M021
+  source_id: rule_bard_legend_lore
+  source_label: Bardic Legend Lore
+  edge_type: CONSTRAINS
+  target_id: item_artifact
+  target_label: Artifacts and Relics
+  aspect: treated as legendary rather than as miscellaneous magic
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M022
+  source_id: rule_bard_legend_lore
+  source_label: Bardic Legend Lore
+  edge_type: GATES
+  target_id: rule_scroll_use
+  target_label: Reading Spell from Scroll
+  aspect: all bards read runes, glyphs and inscriptions
+  condition: ''
+  book: PHB
+  page: 118
+  section: Notes Regarding Bards Table II
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M023
+  source_id: sys_armor
+  source_label: Armor
+  edge_type: CONSTRAINS
+  target_id: class_bard
+  target_label: Bard
+  aspect: armour and shield permitted
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: 'BARDS TABLE III: ARMOR AND WEAPONS PERMITTED'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M024
+  source_id: class_bard
+  source_label: Bard
+  edge_type: EXCLUDES
+  target_id: rule_poison_use
+  target_label: Use of Poison
+  aspect: poison is never used
+  condition: except by neutral evil bards
+  book: PHB
+  page: 118
+  section: 'BARDS TABLE III: ARMOR AND WEAPONS PERMITTED'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M025
+  source_id: class_bard
+  source_label: Bard
+  edge_type: GATES
+  target_id: rule_oil
+  target_label: Oil
+  aspect: oil is permitted
+  condition: ''
+  book: PHB
+  page: 118
+  section: 'BARDS TABLE III: ARMOR AND WEAPONS PERMITTED'
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M026
+  source_id: class_fighter
+  source_label: Fighter
+  edge_type: FEEDS_INTO
+  target_id: class_bard
+  target_label: Bard
+  aspect: combat is resolved at the fighter level attained
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M027
+  source_id: class_thief
+  source_label: Thief
+  edge_type: FEEDS_INTO
+  target_id: class_bard
+  target_label: Bard
+  aspect: thieving is resolved at the thief level attained
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M028
+  source_id: item_bard_instrument
+  source_label: Bardic Instruments
+  edge_type: GATES
+  target_id: class_bard
+  target_label: Bard
+  aspect: a stringed instrument must always be carried
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Reuses the existing identity, which the DMG minted for the magical bardic instruments.
+    The requirement here is for any stringed instrument, magical or not; see OBS-05.
+- ref: M029
+  source_id: rule_bard_poetics
+  source_label: Bardic Poetics
+  edge_type: MODIFIES
+  target_id: cbt_morale
+  target_label: Morale
+  aspect: raises the morale of associated creatures
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M030
+  source_id: rule_bard_poetics
+  source_label: Bardic Poetics
+  edge_type: MODIFIES
+  target_id: cbt_tohit
+  target_label: To-Hit Roll
+  aspect: inspires ferocity in attack
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M031
+  source_id: rule_bard_poetics
+  source_label: Bardic Poetics
+  edge_type: EXCLUDES
+  target_id: rule_bard_song
+  target_label: Bardic Song and Playing
+  aspect: no singing while poetics are running
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M032
+  source_id: rule_bard_poetics
+  source_label: Bardic Poetics
+  edge_type: EXCLUDES
+  target_id: rule_spell_casting
+  target_label: Casting a Spell
+  aspect: no casting while poetics are running
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M033
+  source_id: rule_bard_song
+  source_label: Bardic Song and Playing
+  edge_type: EXCLUDES
+  target_id: monster_harpy
+  target_label: Harpy
+  aspect: negates the song effects
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M034
+  source_id: rule_bard_song
+  source_label: Bardic Song and Playing
+  edge_type: EXCLUDES
+  target_id: monster_shrieker
+  target_label: Shrieker
+  aspect: stills their noise
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M035
+  source_id: rule_bard_song
+  source_label: Bardic Song and Playing
+  edge_type: FEEDS_INTO
+  target_id: rule_bard_charm
+  target_label: Bardic Charming
+  aspect: the charm is worked through the music
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M036
+  source_id: rule_bard_charm
+  source_label: Bardic Charming
+  edge_type: RESOLVED_BY
+  target_id: save_spell
+  target_label: Spell
+  aspect: the target saves or sits entranced, and immunities are not negated
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M037
+  source_id: rule_bard_charm
+  source_label: Bardic Charming
+  edge_type: TRIGGERS
+  target_id: spell_suggestion
+  target_label: Suggestion
+  aspect: charmed creatures become subject to it
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M038
+  source_id: rule_bard_charm
+  source_label: Bardic Charming
+  edge_type: MODIFIES
+  target_id: save_spell
+  target_label: Spell
+  aspect: the save against an implanted suggestion is penalised
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M039
+  source_id: rule_time
+  source_label: Time
+  edge_type: CONSTRAINS
+  target_id: rule_bard_charm
+  target_label: Bardic Charming
+  aspect: a limit on repeat attempts against the same creature
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M040
+  source_id: cbt_melee
+  source_label: Melee Combat
+  edge_type: EXCLUDES
+  target_id: rule_bard_charm
+  target_label: Bardic Charming
+  aspect: physical attack or loud noise breaks it
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M041
+  source_id: rule_bard_charm
+  source_label: Bardic Charming
+  edge_type: EXCLUDED_FROM
+  target_id: spell_suggestion
+  target_label: Suggestion
+  aspect: breaking the charm does not lift an implanted suggestion
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The text draws the distinction itself, in the same sentence that gives the negation.
+    Without it a reader would take the suggestion to fall with the charm that carried it.
+- ref: M042
+  source_id: class_bard
+  source_label: Bard
+  edge_type: GATES
+  target_id: item_magic_item
+  target_label: Magic Device
+  aspect: may use what its component classes may use
+  condition: ''
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M043
+  source_id: item_magic_item
+  source_label: Magic Device
+  edge_type: MODIFIES
+  target_id: class_bard
+  target_label: Bard
+  aspect: librams can raise fighting or thieving beyond the norm
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 118
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M044
+  source_id: item_magic_item
+  source_label: Magic Device
+  edge_type: MODIFIES
+  target_id: class_bard
+  target_label: Bard
+  aspect: a baneful writing treats the bard as its least favourable class
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M045
+  source_id: class_bard
+  source_label: Bard
+  edge_type: MODIFIES
+  target_id: item_drums_panic
+  target_label: Drums of Panic
+  aspect: superior when employed by a bard
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M046
+  source_id: class_bard
+  source_label: Bard
+  edge_type: MODIFIES
+  target_id: item_horn_blasting
+  target_label: Horn of Blasting
+  aspect: superior when employed by a bard
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M047
+  source_id: class_bard
+  source_label: Bard
+  edge_type: MODIFIES
+  target_id: item_lyre_building
+  target_label: Lyre of Building
+  aspect: superior when employed by a bard
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M048
+  source_id: class_bard
+  source_label: Bard
+  edge_type: MODIFIES
+  target_id: item_pipes_sewers
+  target_label: Pipes of the Sewers
+  aspect: superior when employed by a bard
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M049
+  source_id: class_bard
+  source_label: Bard
+  edge_type: CONSTRAINS
+  target_id: hench_henchmen
+  target_label: Henchmen
+  aspect: will serve another only briefly
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M050
+  source_id: class_bard
+  source_label: Bard
+  edge_type: CONSTRAINS
+  target_id: hench_henchmen
+  target_label: Henchmen
+  aspect: may employ only druids, fighters and thieves
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M051
+  source_id: race_human
+  source_label: race_human
+  edge_type: GATES
+  target_id: hench_henchmen
+  target_label: Henchmen
+  aspect: races a bard may employ
+  condition: ''
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M052
+  source_id: race_half_elf
+  source_label: Half-Elf
+  edge_type: GATES
+  target_id: hench_henchmen
+  target_label: Henchmen
+  aspect: races a bard may employ
+  condition: ''
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M053
+  source_id: race_elf
+  source_label: Elf
+  edge_type: GATES
+  target_id: hench_henchmen
+  target_label: Henchmen
+  aspect: races a bard may employ
+  condition: ''
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M054
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: GATES
+  target_id: hench_henchmen
+  target_label: Henchmen
+  aspect: how many a bard may maintain
+  condition: ''
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M055
+  source_id: abil_charisma
+  source_label: Charisma
+  edge_type: CONSTRAINS
+  target_id: hench_henchmen
+  target_label: Henchmen
+  aspect: subject to the bard's rating
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M056
+  source_id: exp_level
+  source_label: Experience Level
+  edge_type: GATES
+  target_id: rule_stronghold
+  target_label: Stronghold
+  aspect: only the highest bards settle and build
+  condition: ''
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M057
+  source_id: rule_dm_discretion
+  source_label: DM Discretion
+  edge_type: GATES
+  target_id: item_magic_item
+  target_label: Magic Device
+  aspect: the DM may add items usable only by bards
+  condition: ''
+  book: PHB
+  page: 119
+  section: BARDS
+  evidence: explicit_rule
+  pass: page-sweep
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+canonical_duplicates_not_for_emission:
+- assertion: class_bard -[OVERRIDES]-> save_matrix
+  canonical_row: 1948
+  canonical_aspect: checks each class possessed
+  canonical_locus: DMG p79, I. SAVING THROW MATRIX FOR CHARACTERS
+  packet_aspect: restated by this packet
+  packet_locus: PHB p118, BARDS
+  why_not_emitted: The packet says all saving throws use the most favourable table with the bard level
+    counted as a druid. Canonical already holds this from DMG 79 as 'checks each class possessed'. Emitting
+    it again would restate one rule under two citations, and OVERRIDES additionally requires a supersession_basis
+    that the PHB sentence does not supply.
+- assertion: class_bard -[DERIVED_FROM]-> cbt_attack_matrix
+  canonical_row: 1884
+  canonical_aspect: fights at highest fighter level attained
+  canonical_locus: DMG p74, I.B. ATTACK MATRIX FOR FIGHTERS
+  packet_aspect: restated by this packet
+  packet_locus: PHB p118, BARDS
+  why_not_emitted: '''A bard always engages in combat at the level he or she attained as a fighter'' is
+    already canonical from DMG 74. What this packet adds is the direction from the fighter class, emitted
+    as class_fighter FEEDS_INTO class_bard, so the attack-matrix row is left alone.'
+- assertion: rule_dm_discretion -[GATES]-> class_bard
+  canonical_row: 383
+  canonical_aspect: inclusion in campaign
+  canonical_locus: PHB p117, APPENDIX II BARDS
+  packet_aspect: restated by this packet
+  packet_locus: 'PHB p117, APPENDIX II: BARDS'
+  why_not_emitted: Already canonical and already cited to PHB 117 by the prior pass. It is the status
+    flag for this whole packet and is recorded in packet.yaml rather than emitted twice.
+near_matches_vs_canonical:
+- canonical_row: 2435
+  canonical: item_bard_instrument -[GATES]-> class_bard | aspect='each instrument keyed to a college level'
+    | DMG p148
+  candidate_aspect: a stringed instrument must always be carried
+  packet_locus: PHB p118, BARDS
+  analyst_view: distinct facet; emitted separately
+- canonical_row: 200
+  canonical: exp_level -[GATES]-> rule_stronghold | aspect='construction option' | PHB p20
+  candidate_aspect: only the highest bards settle and build
+  packet_locus: PHB p119, BARDS
+  analyst_view: distinct facet; emitted separately
+source_identity_conflicts:
+  rule: contracts/SOURCE_MARKDOWN.md 1.3, Source Identity Authority.
+  conflicts:
+  - canonical_id: item_pipes_sewers
+    canonical_label: Pipes of the Sewers
+    packet_usage: The packet names the item 'Pipes of the Sewer', singular.
+    packet_locus: PHB p119, BARDS
+  - canonical_id: spell_legend_lore
+    canonical_label: Informational Spells
+    packet_usage: The packet names the magic-user spell legend lore as the thing the bard's ability resembles.
+      The canonical node carries a family label instead of the spell's name.
+    packet_locus: PHB p118, BARDS
+  - canonical_id: spell_charm_person
+    canonical_label: Charm
+    packet_usage: The packet names charm person and charm monster as two spells. The canonical node for
+      the first is labelled simply 'Charm'.
+    packet_locus: PHB p118, Notes Regarding Bards Table II
+  - canonical_id: race_human
+    canonical_label: race_human
+    packet_usage: The packet requires a bard to be human or half-elven. The canonical node's stored label
+      is the string 'race_human', which is its own ID rather than a label.
+    packet_locus: PHB p117, BARD RACE
+  analyst_view: 'Every ID is reused unchanged under GRAPH_INVARIANTS 4. Three of the four conflicts are
+    stored-label defects rather than genuine identity questions and are surfaced for Builder and Reviewer
+    without a migration proposal. The race_human label is the most serious of them: a node whose label
+    is its own ID will render as ''race_human'' anywhere the graph is displayed, and it is one of the
+    eleven race identities. See OBS-03.'
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: Pipes of the Sewer against the existing item_pipes_sewers
+  question: SOURCE_MARKDOWN 1.3 Incoming Packet Authority makes the packet canonical for spelling and
+    grammatical number of a mechanic it names. The packet writes 'Pipes of the Sewer'; the registry holds
+    item_pipes_sewers labelled 'Pipes of the Sewers'.
+  analyst_position: Reuse item_pipes_sewers unchanged. Incoming Packet Authority governs the candidate
+    ID stem for a new identity, and this identity is not new; GRAPH_INVARIANTS 4 governs an existing one.
+    The two spellings name the same item beyond doubt, so minting a second node would be exactly the drift
+    constitution 3.2 calls the most common defect here. Whether the stored label should follow the DMG
+    or this packet is the Architect's.
+  affects:
+  - M048
+- id: IDQ-02
+  subject: prefix for the five bardic abilities
+  question: College, charming, legend lore, poetics and song are abilities of one class. class_ is reserved
+    for character classes and holds seventeen nodes, all of them classes. rule_ is the general prefix
+    for a named rule or procedure.
+  analyst_position: Minted under rule_ with a bard_ stem, giving rule_bard_college and its four siblings.
+    They are procedures with their own timings and saving throws rather than classes, and the graph already
+    carries class-specific procedures under rule_, such as rule_cleric_spells and rule_druid_spells. Nothing
+    else depends on the choice, so a rename before integration is cheap if the Architect prefers otherwise.
+  affects:
+  - M011
+  - M012
+  - M014
+  - M015
+  - M016
+  - M017
+  - M018
+  - M019
+  - M020
+  - M021
+  - M022
+  - M029
+  - M030
+  - M031
+  - M032
+  - M033
+  - M034
+  - M035
+  - M036
+  - M037
+  - M038
+  - M039
+  - M040
+  - M041
+architectural_escalations: []
+non_edge_observations:
+- id: OBS-01
+  topic: the third appendix running whose body was never extracted
+  finding: Canonical holds fifteen bard edges, every one cited to PHB 117, and nothing cited to 118 or
+    119. The same shape appears in Appendix I, where ten edges sit at 110 and twenty-six at 117 with nothing
+    between, and Appendices III, IV and V had no edges at all before this session.
+  why_it_matters: 'Three appendices in a row were extracted at their opening page and abandoned. Together
+    with GUR-PKT-PHB-110-117-psionics-r01 OBS-01 this is now a pattern rather than an incident, and it
+    is worth asking whether the prior pass stopped at a page budget. The material lost here is the whole
+    of what a bard actually does: charming, legend lore, poetics, song, and every limit on henchmen and
+    strongholds.'
+- id: OBS-02
+  topic: race_any GATES class_bard understates the racial restriction
+  finding: The canonical row cited to this packet's own BARD RACE section reads race_any GATES class_bard
+    with aspect 'eligibility'. The section says a bard must be human or half-elven.
+  why_it_matters: race_any reads as an absence of racial restriction where the text sets one of the narrowest
+    in the book. Two refinement edges are emitted from race_human and race_half_elf rather than a correction
+    to the existing row, because an Analyst proposes and does not edit canonical. If the Reviewer accepts
+    them the race_any row should be withdrawn in the same batch, or the graph will hold both readings
+    at once.
+- id: OBS-03
+  topic: race_human's stored label is its own ID
+  finding: 'nodes_master.csv gives race_human the label ''race_human''. Every other race node carries
+    a readable label: race_half_elf is ''Half-Elf'', race_elf is ''Elf''.'
+  why_it_matters: Found while resolving this packet's race requirement, not sought. It is a display defect
+    in one of the graph's most referenced nodes and it predates this packet. Reported rather than fixed;
+    canonical is the Integrator's.
+- id: OBS-04
+  topic: the DMG already depends on a bardic college with no node
+  finding: item_bard_instrument GATES class_bard at DMG 148 is described as 'each instrument keyed to
+    a college level', and item_bard_instrument MODIFIES class_bard as 'each raises the bard's charming
+    ability'.
+  why_it_matters: Both aspects name concepts the graph could not point at. This packet is where they are
+    printed, and rule_bard_college and rule_bard_charm give them endpoints. When the DMG treasure chapter
+    is packetized those two rows are the natural place to re-point.
+- id: OBS-05
+  topic: Table III's weapon column yields nothing
+  finding: Nine weapon types are permitted, with footnotes admitting magical versions and naming four
+    sword types. No weapons-permitted concept exists in the graph and no wpn_ node matches any of the
+    nine as a permission.
+  why_it_matters: Declined rather than skipped. Armour, shield, oil and poison from the same table are
+    recorded because each has an existing endpoint. If class weapon restrictions are modelled later, this
+    table is one of the places that will need revisiting.
+- id: OBS-06
+  topic: the nine colleges are levels, not mechanics
+  finding: Fochlucan, Mac-Fuirmidh, Doss, Canaith, Cli, Anstruth, Ollamh and Magna Alumnae, plus Probationer
+    at first level, are names attached to bands of experience level.
+  why_it_matters: 'Only two facts read them: a bard will not associate with a lesser college, and the
+    highest college aids any bard. Both are carried on one edge, the second as its condition. The names
+    themselves fail the core test, in the same way the nineteen planes of GUR-PKT-PHB-120-120-planes-of-existence-r01
+    OBS-02 did.'
+- id: OBS-07
+  topic: a mundane instrument requirement reuses a magic-item identity
+  finding: The packet requires a bard to always carry a stringed instrument. The only matching identity
+    is item_bard_instrument, which the DMG minted for the magical bardic instruments keyed to college.
+  why_it_matters: The edge is emitted against that identity because inventing a second node for an ordinary
+    lute would be worse drift, but the reuse is imprecise and is flagged rather than hidden. A Reviewer
+    may prefer the requirement be dropped until an ordinary equipment identity exists.
+- id: OBS-08
+  topic: the bard is the only class whose class change costs nothing
+  finding: The notes to Table I state that all previously earned hit dice are additions and none are lost
+    for becoming a bard, which is the opposite of rule_dual_class CONSTRAINS rule_hit_points at PHB 33.
+  why_it_matters: Recorded as rule_dual_class EXCLUDED_FROM class_bard. It is the packet's clearest negative
+    dependency and the one most likely to be missed, because a reader meeting a class that changes class
+    twice will reach for the dual-class rule first.
+blocking_notes:
+- id: BLK-02
+  note: No node_registry_slice.csv, local_neighborhood.json or general_rule_slice.json accompanied this
+    packet. nodes_master.csv, registries/nodes.csv and edges_master.csv were read directly, and canonical
+    edges were bucketed by page to establish what the prior pass had already taken.
+  impact: Does not block this GUR. It is how OBS-01, OBS-02, OBS-03 and OBS-04 were found.
+completeness_statement: 'All three pages were read in full: the four prose sections, all three tables
+  and both sets of table notes, and the closing BARDS section. Every candidate edge cites PHB and a page
+  inside 117 to 119 and a named section. No aspect or condition contains a magnitude; the experience thresholds,
+  hit dice, level titles, spell counts, percentages and henchman counts are all dropped. Authored polarity
+  appears only on MODIFIES, TRIGGERS and CONSTRAINS, always with basis read. Candidates were checked against
+  canonical on the constitution 5.1 assertion key and on the source-type-target triple, and three further
+  assertions the packet restates were withheld by hand because canonical already holds them from the DMG
+  or from the prior PHB 117 pass. The nine college names and the nine permitted weapon types were deliberately
+  not minted; see OBS-06 and OBS-05.'
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []

@@ -47,6 +47,15 @@ Do not read the Analyst or Builder conversation. Their artifacts are sufficient.
 - local graph neighborhood;
 - relevant registries and general-rule records.
 
+## Incoming Packet Authority
+
+For a mechanic explicitly named in the current incoming packet or claimed copy,
+the packet is canonical for spelling, grammatical number, source label, and ID
+stem. A conflicting legacy registry or canonical identity is drift, not a reason
+to reject the packet-derived candidate or repoint it to legacy text. Verify the
+name directly in the Markdown, identify every affected canonical row, and route
+an ID replacement through Architect when existing canonical data must change.
+
 ## Review checklist
 
 Review every edge field by field:
@@ -135,12 +144,22 @@ Write:
 ```text
 books/<ruleset-id>/<book-id>/artifacts/reviews/REV-<gup-id>-rNN.yaml
 books/<ruleset-id>/<book-id>/artifacts/approved/APPROVED-<gup-id>-rNN.yaml       # only when no blocking issues remain
-books/<ruleset-id>/<book-id>/artifacts/approved/APPROVED-<gup-id>-rNN.edges.csv
+books/<ruleset-id>/<book-id>/artifacts/approved/APPROVED-<gup-id>-rNN.edges.csv # packet updates only
 ```
 
 The Approved YAML is the bundle manifest. It records the Review ID, GUP ID,
 component paths, and checksums. The manifest and components form one Integrator
 job.
+
+For `operation_model: decision_migration_v1` or `decision_migration_v2`, do not
+create an edge CSV. Verify the GUP's pinned canonical and registry baselines,
+full before-images, complete retired-endpoint sets, and post-plan keys
+independently. For v2, also verify every merge has at least two distinct retired
+IDs, an absent canonical ID, exact registry row/label matches, a closed incident
+set, and no non-merge direct operation. An Approved manifest must name the exact
+reviewed GUP YAML as its sole `decision_migration` operation component and its
+validation report as a `validation` component, with matching GUP and Review
+checksums. The manifest never repeats the operation plan.
 
 The review must conform to `schemas/common/review.schema.json` and contain:
 

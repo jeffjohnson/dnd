@@ -144,6 +144,9 @@ alibi for new breakage.
 At `INT-20260730-001` the baseline was 1,728 findings: invariant 16
 (unresolved authored polarity, 1,700), invariant 3 (unapproved node prefix, 19,
 owned by DEC-2026-0004), and invariant 11 (digits in `aspect`/`condition`, 9).
+As of `INT-20260804-002`, the baseline is 1,700 findings (19 invariant 3, 9
+invariant 11, 1,672 invariant 16) with **no batch having ever introduced a new
+finding**.
 
 `INT-20260801-001` introduced none and *resolved* six: its compare-and-swap
 updates replaced four `unset` and two `heuristic` polarity bases with values read
@@ -173,6 +176,9 @@ updates first, from the manifest's declared `canonical` values, then additions
 and registrations — because dropping added rows alone shifts every line number an
 update depends on.
 
+**Note:** Decision migration bundles are now supported (see below). The test
+fixtures may need updating to handle bundles with `artifact_kind: decision_migration`.
+
 ## Not yet built
 
 The legacy 13→18 field migration. The 3,851 / 3,613 / 3,809 count drift recorded
@@ -182,6 +188,7 @@ runner exists.
 Node retirement remains unexercised — no bundle has yet proposed one, and
 `integrate.py` has no path for removing a registered identity or the edges that
 cite it. Decision migrations (`artifact_kind: decision_migration`,
-WORK_QUEUES 1.2) have not reached an Approved bundle yet; when one does, its
-components differ from a packet update's and `operations.py` will need to read
-canonical mutations carried in the GUP YAML rather than an edge CSV.
+WORK_QUEUES 1.2) **are now supported** — `INT-20260804-002` applied the first
+`APPROVED-GUP-MIG-DEC-2026-0016-PAGE-r01-r01` decision migration bundle (9
+page-only compare-and-swap updates) on 2026-08-04. Its components are an edge
+CSV carrying the corrected rows, validated by the approving Review.

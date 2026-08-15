@@ -1,6 +1,6 @@
 # Pandoc Source Markdown Contract
 
-**Version 1.1.**
+**Version 1.4.**
 
 ## Scope
 
@@ -18,6 +18,26 @@ Only packet source text is required to be Markdown.
 Printed-page attribution is the only physical page-layout information workers must
 derive from these files. Do not infer columns, coordinates, lineation, or other
 visual layout unless a separate packet artifact explicitly requires it.
+
+## External Source Intake
+
+The five pipeline roles consume source packets; none acquires a book, recreates
+missing rulebook text, or authors a packet's source prose from recollection. The
+**repository source steward** is the repository owner, or an explicitly delegated
+external operator, responsible for lawful source acquisition and intake. This is
+an external repository responsibility, not a sixth pipeline role or a scanner
+queue.
+
+The source steward supplies a bounded incoming packet with its source text and
+required packet metadata. A claimed packet remains immutable after an Analyst
+uses it. The steward may transcribe or package supplied source material, but may
+not reconstruct unavailable text from memory or inference and present it as
+source-read evidence.
+
+When a required source locus is absent, every downstream task that needs its
+reading remains blocked. An Analyst may resume only after the source steward has
+provided the conforming incoming packet; Builder, Reviewer, and Integrator may
+not assign source acquisition or source authoring to Analyst by elimination.
 
 ## Parser Requirements
 
@@ -144,15 +164,56 @@ correction to the Integrator; only the Integrator may edit canonical data. If th
 packet marker is malformed or ambiguous, follow the attribution rules above and
 return the packet for correction rather than preferring either value.
 
+## Source Identity Authority and Conflicts
+
+For packet-backed work, the current incoming packet, and then its immutable
+claimed copy, is canonical for every source name explicitly present in that
+packet. This includes spelling, grammatical number, source label, and the
+corresponding canonical ID stem. A direct packet heading or table entry takes
+precedence over legacy extraction files, pre-packet GURs/GUPs/Reviews, and a
+conflicting canonical label or ID derived from unpacketized legacy text.
+
+For an identity that already exists in canonical data, a packet name may replace
+that identity only when it occurs in the concept's defining locus: its heading,
+named entry, table row, or other bounded source unit whose subject is the
+concept. A secondary listing, permission list, cross-reference, or incidental
+mention can support the relationship stated in its own packet, but it does not
+rename a concept whose defining mechanics belong to another source. In that
+case, reuse the existing canonical identity unless an Architect Decision directs
+an identity migration.
+
+When no packet yet contains the defining locus, only an Architect Decision may
+adopt a repository-owner-specified canonical identity. The Decision must name
+the unavailable defining locus, preserve that the direction is not source-read
+evidence, and require a fresh identity comparison when the defining source is
+packetized. This does not permit a worker to infer a spelling from unpacketized
+legacy text.
+
+Do not normalize a current packet name back to a legacy singular, plural, or
+otherwise different spelling merely because that legacy identity is already in
+the registry. Treat the legacy identity as drift. Builder and Reviewer must
+surface the exact affected registry row and canonical neighborhood; a canonical
+ID replacement or other migration proceeds only through an Architect Decision,
+reviewed GUP, and Integrator transaction.
+
+This precedence applies only to source material directly present in the current
+packet. It does not authorize a worker to infer a renamed concept in another
+packet or source. If two current packets give genuinely incompatible direct
+names for the same concept, preserve both packet readings and escalate the
+cross-packet identity conflict. Do not select a legacy reading as a tie-breaker.
+
 ## Role Obligations
 
-- Analyst derives every candidate citation page using this contract.
-- Builder preserves page attribution and makes any source-inspection tooling
-  Pandoc-compatible.
-- Reviewer independently verifies citation pages against the original Markdown
-  and these placement rules.
-- Integrator carries approved page provenance without reinterpretation.
-- Architect applies these rules to source excerpts used in governance decisions.
+- Analyst derives every candidate citation page and direct source identity from
+  the current packet under this contract.
+- Builder preserves packet-derived identity and page attribution; it never
+  silently restores a conflicting legacy ID or label.
+- Reviewer independently verifies citation pages and direct source names against
+  the original Markdown and these placement rules.
+- Integrator carries approved packet-derived identity and page provenance
+  without reinterpretation.
+- Architect applies these rules to source excerpts and identity migrations used
+  in governance decisions.
 
 ## Acceptance Tests for Parsers
 
@@ -167,6 +228,15 @@ Any programmatic packet parser must demonstrate that it:
 
 ## Version History
 
+- **1.4 - 2026-08-15:** Distinguished a defining source locus from a secondary
+  mention for existing-identity migrations, and bounded owner-directed naming
+  decisions while a defining source packet is unavailable.
+- **1.3 - 2026-08-06:** Named the external repository source steward as the
+  owner of source acquisition and intake; prohibited pipeline roles from
+  fabricating unavailable packet text or routing that work to Analyst.
+- **1.2 - 2026-08-04:** Made the current incoming/claimed packet authoritative
+  for directly stated source identity, including spelling, grammatical number,
+  labels, and ID stems; legacy identity conflicts are governed migrations.
 - **1.1 - 2026-07-31:** Made the current input packet authoritative for printed
   page attribution and defined conflicting legacy or canonical pages as reviewed
   Integrator citation corrections.

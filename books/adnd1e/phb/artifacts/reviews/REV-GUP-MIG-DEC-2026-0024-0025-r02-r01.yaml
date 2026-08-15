@@ -1,0 +1,151 @@
+schema_version: "1.0"
+id: REV-GUP-MIG-DEC-2026-0024-0025-r02-r01
+status: architect_escalation
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: "2026-08-05"
+reviewed_gup:
+  id: GUP-MIG-DEC-2026-0024-0025-r02
+  path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-0025-r02.yaml
+  checksum: sha256:d74784d442404f22f158fdf91af1360bcfa6f96824a160d2e0bf7dd4e0f1c492
+  artifact_kind: decision_migration
+  lineage_id: MIG-DEC-2026-0024-0025
+  revision: 2
+  supersedes: GUP-MIG-DEC-2026-0024-0025-r01
+  validation_report:
+    path: build/reports/GUP-MIG-DEC-2026-0024-0025-r02.validation.json
+    expected_checksum: sha256:7201e87f1d4bb6bcfe58233fdec679db207195dca83e822eca2fd1f656909c64
+    actual_checksum: sha256:7201e87f1d4bb6bcfe58233fdec679db207195dca83e822eca2fd1f656909c64
+    checksum_matches: true
+    reported_errors: 0
+    reported_warnings: 0
+input_provenance:
+  submitted_authority_decisions:
+    - id: DEC-2026-0024
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0024.yaml
+      expected_checksum: sha256:22a03555edf71ddf1b901fa6a15b1be05661952b2bd95b329e0707e1314a5cd7
+      actual_checksum: sha256:22a03555edf71ddf1b901fa6a15b1be05661952b2bd95b329e0707e1314a5cd7
+    - id: DEC-2026-0025
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0025.yaml
+      expected_checksum: sha256:94837cc1e2e540ddee1028264d708a4ceefec2005850c0d31719d1c7744e05db
+      actual_checksum: sha256:94837cc1e2e540ddee1028264d708a4ceefec2005850c0d31719d1c7744e05db
+  canonical_graph:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    expected_checksum: sha256:43b5be90b9110943f3369daa9e82fd78b190c5586b5ec4260f8d685bc4f0261c
+    actual_checksum: sha256:43b5be90b9110943f3369daa9e82fd78b190c5586b5ec4260f8d685bc4f0261c
+    rows_read: 4118
+overall_disposition: architect_escalation
+approval_ready: false
+approved_bundle_emitted: false
+summary:
+  operations_reviewed: 5
+  approved_operations: 0
+  operations_requiring_revision: 2
+  architectural_blockers: 1
+node_addition_decisions:
+  - proposed_id: rule_mistletoe
+    submitted_label: Mistletoe
+    kind: rule
+    authority: DEC-2026-0024
+    disposition: architect_escalation
+    escalation_id: ESC-2026-08-05T01.03.23.309Z
+    rationale: >-
+      The direct PHB text distinguishes greater mistletoe, and the current task
+      instruction sets greater mistletoe as the canonical/default identity.
+      That conflicts with DEC-2026-0024's generic proposed node and requires a
+      governing Decision clarification.
+node_replacement_decisions:
+  - retired_id: spell_call_woodland_being
+    canonical_id: spell_call_woodland_beings
+    canonical_label: Call Woodland Beings
+    disposition: approved
+    rationale: >-
+      The claimed PHB source's page-59 heading is Call Woodland Beings. The
+      registry has one singular legacy node with exactly three incident rows,
+      all enumerated by the migration.
+canonical_change_decisions:
+  - canonical_row: 2664
+    disposition: approved
+    rationale: "The submitted before-image matches; only the source ID and label change to the PHB plural identity."
+  - canonical_row: 2665
+    disposition: architect_escalation
+    escalation_id: ESC-2026-08-05T01.03.23.309Z
+    rationale: >-
+      The submitted identity correction is exact, but it leaves
+      polarity_basis unset on a touched row. Reviewer instructions prohibit
+      approval of unset polarity and DEC-2026-0025 forbids changing
+      non-identity fields without clarification.
+  - canonical_row: 2666
+    disposition: architect_escalation
+    escalation_id: ESC-2026-08-05T01.03.23.309Z
+    rationale: >-
+      The submitted identity correction is exact, but it leaves
+      polarity_basis unset on a touched row. Reviewer instructions prohibit
+      approval of unset polarity and DEC-2026-0025 forbids changing
+      non-identity fields without clarification.
+canonical_removal_decisions:
+  - canonical_row: 1502
+    disposition: approved_with_revision
+    exact_corrections:
+      remove: [surviving_row, identity, provenance_preserved_on_surviving_row]
+      add:
+        action: remove_exact_before_image
+        replacement_edge: null
+    rationale: >-
+      The full before-image matches the current row, but r02 retains the
+      surviving-row/provenance language rejected in the r01 Review and omits
+      the required explicit no-replacement field. DEC-2026-0024 rejects this
+      unread DMG assertion; it does not preserve its provenance on a surviving
+      row.
+component_decisions:
+  - path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-0025-r02.edges.csv
+    disposition: approved_with_revision
+    exact_correction: >-
+      If retained as a component in the next GUP revision, serialize row 2665
+      with source_id exp_level, source_label Druid Level, edge_type MODIFIES,
+      and target_id spell_call_woodland_being. The submitted CSV has a leading
+      empty source_id that shifts every field of that row.
+architectural_escalations:
+  - id: ESC-2026-08-05T01.03.23.309Z
+    question: canonical/default mistletoe identity and touched unset polarity bases
+completeness_statement:
+  result: complete_review_of_submitted_r02
+  notes:
+    - All node, endpoint-repoint, and removal operations were independently checked against the current baseline.
+    - No Approved bundle is emitted while the identity and polarity authority conflict remains unresolved.
+reviewer_checklist:
+  decision_authority: pass
+  decision_checksums: pass
+  validation_report_checksum: pass
+  canonical_baseline_checksum_and_rows: pass
+  direct_packet_identity: pass_PHB_59_Call_Woodland_Beings
+  mistletoe_source_identity: escalation_required_greater_mistletoe_default
+  singular_endpoint_inventory: pass_3_rows_2664_2665_2666
+  nonidentity_fields_preserved: pass_except_unset_basis_authority_conflict
+  row_1502_before_image: pass
+  row_1502_no_replacement_representation: fail
+  CSV_component_alignment: fail_row_2665
+  canonical_files_modified: false
+  registry_files_modified: false
+validation:
+  independent_common_suite:
+    command: "[cwd tooling/common/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+    exit_code: 0
+    result: passed
+    summary: "Ran 197 common schema and queue tests; all passed."
+  independent_builder_suite:
+    command: "[cwd tooling/builder/tests] python -m unittest discover -s . -p \"test_*.py\" -t ."
+    exit_code: 0
+    result: passed
+    summary: "Ran 360 Builder tests; all passed."
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: Resolve the named identity and polarity authority conflict before Builder revises the migration.
+  blocking_ids: []

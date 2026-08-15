@@ -1,0 +1,330 @@
+schema_version: "1.0"
+id: DEC-2026-0025
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-054-064-druid-spells
+constitution_version: "1.7"
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Build one combined decision migration for DEC-2026-0024 and DEC-2026-0025,
+    then route the druid-spells packet revision using the plural canonical spell
+    identity after integration.
+  blocking_ids: []
+
+decision_date: "2026-08-04"
+escalation_id: null
+supplements: DEC-2026-0024
+decision_basis:
+  type: direct_architect_correction
+  authority: user_directive
+  source_packet:
+    id: PKT-PHB-054-064-druid-spells
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-054-064-druid-spells/packet.yaml
+    checksum: sha256:36b7997d2d3935084c90cbdc0817e75ced9948347a9f877f25805fd900bc9feb
+  source_markdown:
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-054-064-druid-spells/source.md
+    checksum: sha256:b448558b627645760f36c5fbbc299224b6c9e939d188c6acf94e67d1dd4a5a42
+    locus:
+      book: PHB
+      page: "59"
+      section: Call Woodland Beings
+      direct_heading: Call Woodland Beings
+  conflicting_artifacts:
+    - id: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01.yaml
+      checksum: sha256:b38fee633e0da7704b145274c2ac8af41f145d27c03566d8fade1cb47888747d
+    - id: DEC-2026-0024
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0024.yaml
+
+question: >-
+  When the current PHB druid-spells packet directly names the spell "Call
+  Woodland Beings," does its plural source identity control over the legacy
+  canonical singular spell_call_woodland_being and the Review instruction to
+  reuse that singular ID?
+
+ruling: >-
+  Yes. spell_call_woodland_beings, label Call Woodland Beings, is the one
+  canonical identity. spell_call_woodland_being and label Call Woodland Being
+  are incorrect legacy forms and must be replaced, not retained as an alias or
+  reused as a duplicate identity. The current incoming packet and its immutable
+  claimed copy are authoritative for direct source naming. This ruling supersedes
+  only DEC-2026-0024's reference to the singular spell_call_woodland_being
+  correction; every mistletoe ruling in DEC-2026-0024 remains unchanged.
+
+rationale:
+  - >-
+    The claimed PHB packet directly heads the spell "Call Woodland Beings" at
+    PHB 59. Its GUR and GUP use the corresponding plural ID and label.
+  - >-
+    The singular node exists only in legacy canonical data citing unpacketized
+    DMG material. It cannot override direct, current packet source naming.
+  - >-
+    Retaining both spell IDs would create duplicate identities for one named
+    spell. Retaining the singular as an alias would preserve an explicitly
+    incorrect canonical spelling and let later work regress to it.
+  - >-
+    This applies the existing spell_ prefix and node kind. No new ontology,
+    prefix, kind, edge type, or evidence class is needed.
+
+source_identity_policy:
+  contract: contracts/SOURCE_MARKDOWN.md
+  version: "1.2"
+  rule: >-
+    The current incoming packet, and then its immutable claimed copy, is
+    canonical for directly stated source identity: spelling, grammatical number,
+    source label, and canonical ID stem. Legacy canonical data cannot overrule
+    it. Cross-packet direct-name conflicts remain Architect work.
+
+node_replacement:
+  retired_id: spell_call_woodland_being
+  retired_label: Call Woodland Being
+  canonical_id: spell_call_woodland_beings
+  canonical_label: Call Woodland Beings
+  kind: spell
+  registry_action: replace_one_row
+  alias_action: prohibited
+  source_authority: PHB 59, Call Woodland Beings
+
+canonical_migration:
+  node_id_replacements:
+    - retired_id: spell_call_woodland_being
+      retired_label: Call Woodland Being
+      canonical_id: spell_call_woodland_beings
+      canonical_label: Call Woodland Beings
+      kind: spell
+      registry_action: replace_one_row
+      require_no_remaining_retired_endpoints: true
+  endpoint_repoints:
+    - canonical_row: 2664
+      field: source_id
+      from: spell_call_woodland_being
+      to: spell_call_woodland_beings
+      label: Call Woodland Beings
+      before_assertion:
+        source_id: spell_call_woodland_being
+        edge_type: RESOLVED_BY
+        target_id: rule_terrain
+        aspect: chance varies by forest density
+        condition: ""
+    - canonical_row: 2665
+      field: target_id
+      from: spell_call_woodland_being
+      to: spell_call_woodland_beings
+      label: Call Woodland Beings
+      before_assertion:
+        source_id: exp_level
+        edge_type: MODIFIES
+        target_id: spell_call_woodland_being
+        aspect: adds to the chance for each creature type
+        condition: ""
+    - canonical_row: 2666
+      field: source_id
+      from: spell_call_woodland_being
+      to: spell_call_woodland_beings
+      label: Call Woodland Beings
+      before_assertion:
+        source_id: spell_call_woodland_being
+        edge_type: TRIGGERS
+        target_id: gen_random_encounter
+        aspect: checked in order down the list
+        condition: ""
+  counts:
+    canonical_rows_repointed: 3
+    canonical_rows_label_normalized_without_repoint: 0
+    new_registry_rows: 0
+    registry_rows_replaced: 1
+    canonical_node_ids_replaced: 1
+
+affected_contracts_and_registries:
+  contracts:
+    - contracts/SOURCE_MARKDOWN.md
+  role_instructions:
+    - agents/architect/INSTRUCTIONS.md
+    - agents/analyst/INSTRUCTIONS.md
+    - agents/builder/INSTRUCTIONS.md
+    - agents/reviewer/INSTRUCTIONS.md
+    - agents/integrator/INSTRUCTIONS.md
+  registries:
+    - rulesets/adnd1e/registries/nodes.csv
+  schemas: []
+  canonical_files:
+    - rulesets/adnd1e/canonical/edges_master.csv
+    - rulesets/adnd1e/canonical/nodes_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+  tooling:
+    - tooling/builder/src/adnd1e_builder/decision_migration.py
+    - tooling/builder/tests/test_decision_migration.py
+    - tooling/builder/tests/test_registry_and_vocab.py
+
+migration_required: true
+migration_scope:
+  architect_writes: contracts_and_role_instructions_only
+  combined_authority_required: [DEC-2026-0024, DEC-2026-0025]
+  lineage_id: MIG-DEC-2026-0024-0025
+  canonical_nodes_added: 1
+  canonical_nodes_retired: 1
+  registry_rows_added: 1
+  registry_rows_retired: 1
+  canonical_edges_repointed: 3
+  canonical_edges_removed: 1
+  canonical_edges_added: 0
+  legacy_aliases_retained: 0
+  source_gur_or_gup_rewritten: 0
+
+builder_implementation_requirements:
+  planner_extension: >-
+    Extend the decision-migration planner to consume canonical_migration.
+    node_id_replacements. It must validate the retiring registry row, add the
+    replacement node, retire the legacy node, require every incident canonical
+    endpoint to be explicitly enumerated, and reject a plan that leaves the
+    retired ID in a canonical endpoint or produces an assertion-key duplicate.
+  gup_shape: >-
+    The combined decision-migration GUP records both Decisions as exact,
+    checksummed authority inputs; one spell-node addition; one spell-node
+    retirement; DEC-2026-0024's one row removal; and these three endpoint/label
+    repoints with complete before-state. The Integrator alone applies registry
+    and canonical mutations.
+  compatibility: >-
+    Existing Decisions without node_id_replacements remain unchanged. The new
+    planner behavior is additive and does not reinterpret their migrations.
+  source_contract_test: >-
+    Update the existing SOURCE_MARKDOWN authority test for version 1.2 and make
+    it assert the new direct source-identity authority section rather than
+    preserving an obsolete 1.1 version literal.
+
+packet_disposition:
+  gur: GUR-PKT-PHB-054-064-druid-spells-r01
+  gup: GUP-PKT-PHB-054-064-druid-spells-r01
+  review: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01
+  governing_override: >-
+    Do not apply the Review's L11 correction to spell_call_woodland_being. Its
+    plural proposed identity is correct under this Decision.
+  post_migration_review_revision: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r02
+  required_L11_identity:
+    target_id: spell_call_woodland_beings
+    target_label: Call Woodland Beings
+  required_node_disposition: >-
+    The post-migration Review records spell_call_woodland_beings as already
+    registered by the combined migration, not as a duplicate and not as a new
+    packet registry proposal.
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Extend the decision-migration planner and tests for exact node-ID
+      replacements without changing existing Decision behavior.
+  - step: 2
+    owner: builder
+    action: >-
+      Emit GUP-MIG-DEC-2026-0024-0025-r01 in lineage
+      MIG-DEC-2026-0024-0025 with both checked Decision inputs, the then-current
+      canonical baseline, the mistletoe operations from DEC-2026-0024, and this
+      exact spell-ID replacement.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently verify both Decision operations, the PHB 59 plural heading,
+      all three enumerated endpoint repoints, node retirement, no retained alias,
+      and no unrelated canonical or registry change.
+  - step: 4
+    owner: integrator
+    action: >-
+      Integrate only the Approved combined migration, then rebuild canonical
+      nodes, edges, graph JSON, and derived roles.
+  - step: 5
+    owner: reviewer
+    action: >-
+      Publish Review r01-r02 after integration. It supersedes the prior Review,
+      records both Decisions and Integration provenance, retains L11 as plural,
+      and returns the remaining exact GUP corrections to Builder.
+  - step: 6
+    owner: builder
+    action: >-
+      Publish GUP-PKT-PHB-054-064-druid-spells-r02 against the integrated
+      registry. It references spell_call_woodland_beings and proposes no duplicate
+      node addition.
+
+acceptance_tests:
+  - SOURCE_MARKDOWN declares version 1.2 and the direct packet identity rule.
+  - Every role instruction explicitly states current incoming/claimed packet authority.
+  - >-
+    The Builder planner accepts an exact node_id_replacements entry, enumerates
+    its node add/retirement and endpoint changes, and rejects unenumerated
+    incident endpoints, a missing retiring node, a retained endpoint, or a
+    duplicate assertion key.
+  - Existing migration-planner tests and Decisions without node_id_replacements remain valid.
+  - >-
+    One GUP with lineage_id MIG-DEC-2026-0024-0025 has exact checked authority
+    inputs for DEC-2026-0024 and DEC-2026-0025.
+  - >-
+    The combined migration adds rule_mistletoe, removes exact canonical row 1502,
+    replaces exactly one spell registry identity, and repoints exactly rows 2664,
+    2665, and 2666.
+  - No canonical registry or edge endpoint retains spell_call_woodland_being.
+  - No canonical node or registry entry uses Call Woodland Being as the spell label.
+  - Every changed endpoint label is Call Woodland Beings and every non-identity field is preserved.
+  - The migration produces no duplicate five-field assertion key.
+  - >-
+    The r01-r02 Review and packet r02 preserve L11 as
+    spell_call_woodland_beings / Call Woodland Beings.
+  - All applicable schema, graph, registry, lineage, and repository tests pass.
+
+constitution_version_impact:
+  changed: false
+  version: "1.7"
+  reason: >-
+    The existing node identity format and spell prefix remain sufficient. This
+    adds source-precedence workflow guidance and corrects data; it does not
+    change graph ontology or edge semantics.
+
+governance_changelog:
+  - >-
+    SOURCE_MARKDOWN 1.2 makes the current incoming/claimed packet authoritative
+    for direct source identity, not only printed page attribution.
+  - >-
+    All role instructions require workers to preserve direct packet spelling,
+    grammatical number, labels, and ID stems over conflicting legacy data.
+  - >-
+    spell_call_woodland_being is replaced with spell_call_woodland_beings from
+    the current PHB packet heading.
+
+exact_diff:
+  contracts/SOURCE_MARKDOWN.md:
+    - Change Version 1.1 to 1.2.
+    - Add Source Identity Authority and Conflicts.
+    - Expand Role Obligations from page attribution to direct source identity.
+  agents:
+    - Add Incoming Packet Authority to Architect, Analyst, Builder, Reviewer, and Integrator instructions.
+  rulesets/adnd1e/registries/nodes.csv:
+    - Replace spell_call_woodland_being / Call Woodland Being with spell_call_woodland_beings / Call Woodland Beings through the Approved migration.
+  rulesets/adnd1e/canonical/edges_master.csv:
+    - Repoint and relabel exactly rows 2664, 2665, and 2666 through the Approved migration.
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement and test exact node-ID replacement planning.
+    - Build the one combined DEC-2026-0024/0025 migration.
+    - Do not produce an individual DEC-2026-0024 migration first.
+  reviewer:
+    - Review the combined migration against PHB 59 and both Decisions.
+    - Replace the prior singular L11 instruction in the r01-r02 Review revision.
+  integrator:
+    - Integrate only the Approved combined migration and rebuild derived artifacts.
+  analyst:
+    - Use plural spell_call_woodland_beings for this PHB spell in all future packet work.
+
+prohibited_actions:
+  - Do not reuse spell_call_woodland_being for Call Woodland Beings.
+  - Do not retain spell_call_woodland_being as an alias, duplicate, or zero-degree registry node.
+  - Do not apply the old Review's singular L11 correction.
+  - Do not let legacy canonical data overrule a direct name in the current packet.
+  - Do not infer a cross-packet name conflict without a direct packet source.
+  - Do not alter GUR, GUP, Review, registry, canonical, or tooling files outside role ownership.
