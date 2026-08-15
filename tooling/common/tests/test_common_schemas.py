@@ -261,3 +261,70 @@ class TestSchemasAreWellFormed(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestImplementationArtifactsValidate(unittest.TestCase):
+    """Every published implementation report and Review, against its own schema.
+
+    The envelope sweep above never covered these two kinds, so nothing checked
+    them automatically and a shape the schema forbids -- `validation_report`
+    nested inside `validation`, a `cwd` key on a command -- survived across
+    several revisions until a Reviewer read one by hand. A schema is only worth
+    what is validated against it.
+    """
+
+    KINDS = (
+        ("rulesets/*/decision-implementations/IMP-*.yaml",
+         "decision-implementation.schema.json"),
+        ("rulesets/*/decision-implementation-reviews/REV-IMP-*.yaml",
+         "decision-implementation-review.schema.json"),
+    )
+
+    def full_registry(self):
+        resources = []
+        for path in sorted(COMMON.glob("*.json")):
+            contents = json.loads(path.read_text(encoding="utf-8"))
+            resources.append((path.name, Resource(contents=contents, specification=DRAFT202012)))
+        return Registry().with_resources(resources)
+
+    @staticmethod
+    def active_leaves(paths):
+        """The newest revision of each lineage.
+
+        Superseded revisions are immutable history. Several were published
+        before the schema was tightened and cannot be corrected -- a Decision
+        that governs one of them says so explicitly -- so requiring the whole
+        archive to satisfy today's schema would make the rule unenforceable and
+        the test permanently red. The active leaf is what routes work, so that
+        is what must be clean.
+        """
+        leaves: dict[str, tuple[int, Path, dict]] = {}
+        for path in sorted(paths):
+            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            if not isinstance(document, dict):
+                continue
+            identifier = str(document.get("id") or path.stem)
+            lineage, _, revision = identifier.rpartition("-r")
+            try:
+                number = int(revision)
+            except ValueError:
+                lineage, number = identifier, 0
+            if number >= leaves.get(lineage, (-1,))[0]:
+                leaves[lineage] = (number, path, document)
+        return [(path, document) for _, path, document in leaves.values()]
+
+    def test_every_active_implementation_artifact_validates(self):
+        registry = self.full_registry()
+        checked = 0
+        for pattern, schema_name in self.KINDS:
+            schema = json.loads((COMMON / schema_name).read_text(encoding="utf-8"))
+            validator = Draft202012Validator(schema, registry=registry)
+            for path, document in self.active_leaves(REPO_ROOT.glob(pattern)):
+                checked += 1
+                with self.subTest(artifact=path.name):
+                    found = [
+                        f"{list(e.path)}: {e.message}"
+                        for e in validator.iter_errors(document)
+                    ]
+                    self.assertEqual(found, [], path.name)
+        self.assertGreater(checked, 0, "expected published implementation artifacts")

@@ -18,6 +18,7 @@ import hashlib
 import json
 import re
 import sys
+import textwrap
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -35,6 +36,11 @@ except ImportError:  # pragma: no cover - exercised only in an incomplete runtim
 
 
 ROLE_ORDER = ("Analyst", "Builder", "Reviewer", "Architect", "Integrator")
+
+#: Lowercase handoff role name -> the reporting role it belongs to. `none` and
+#: any unrecognised value are deliberately absent: a blocked artifact naming no
+#: actionable role stays with the Builder that produced it rather than vanishing.
+ROLE_BY_NAME = {role.lower(): role for role in ROLE_ORDER}
 DEFAULT_ROOT = Path(__file__).resolve().parents[2]
 REVISION_PATTERN = re.compile(r"-r(\d+)$")
 APPROVED_ID_PATTERN = re.compile(r"\bAPPROVED-[A-Za-z0-9._-]+")
@@ -182,6 +188,28 @@ def _lineage_root(artifact: Artifact) -> str:
     if isinstance(provenance, dict) and provenance.get("gur_id"):
         return PACKET_UPDATE
     return PACKET_UPDATE
+
+
+def _packaged_gup_id(manifest: dict[str, Any] | None, review: "Artifact") -> str:
+    """The GUP an Approved bundle packages.
+
+    Three spellings are in use across the corpus: the bundle manifest may name
+    it directly or under `provenance`, and the Review names it as either a
+    mapping with an `id` or a bare string. The bundle's own manifest wins when
+    it has one -- it is the artifact being routed -- and the Review is the
+    fallback for bundles that predate the field.
+
+    Returns `""` when none of them says, which routes the bundle normally
+    rather than suppressing it: a supersession check that cannot read the ID
+    must not guess that the bundle is stale.
+    """
+    for source in (manifest or {}), ((manifest or {}).get("provenance") or {}):
+        if isinstance(source, dict) and source.get("gup_id"):
+            return str(source["gup_id"])
+    reviewed = review.data.get("reviewed_gup")
+    if isinstance(reviewed, dict):
+        return str(reviewed.get("id") or "")
+    return str(reviewed or "")
 
 
 def _decision_migration_errors(
@@ -448,6 +476,41 @@ def _blocking_ids(document: dict[str, Any]) -> set[str]:
     return blockers
 
 
+def _sequenced_prerequisites(
+    review_id: str,
+    blockers: set[str],
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+    artifacts_root: Path,
+) -> list[str]:
+    """Artifacts a resolving Decision puts ahead of the Builder's rebuild.
+
+    A Decision that answers a Review's escalation may also rule on the order the
+    remaining work happens in. Where it names a routing Review revision the
+    Builder must build against, that Review is a prerequisite, not a suggestion:
+    it carries the Decision's dispositions down onto the individual rows. Until
+    it exists the Builder has decided identities but no instruction set, so the
+    rebuild is blocked however thoroughly the escalation was answered.
+
+    Only an exact named artifact counts. Prose sequencing is left alone, because
+    guessing an order out of prose is how a queue starts inventing governance.
+    """
+    prerequisites: list[str] = []
+    for decision_id, (_, document) in sorted(decisions.items()):
+        if str(document.get("escalation_id") or "") not in blockers:
+            continue
+        disposition = document.get("packet_disposition")
+        if not isinstance(disposition, dict):
+            continue
+        required = str(disposition.get("required_routing_review") or "").strip()
+        # A Decision naming the Review that already exists is describing this
+        # one, not asking for a further revision.
+        if not required or required == review_id:
+            continue
+        if not (artifacts_root / "reviews" / f"{required}.yaml").is_file():
+            prerequisites.append(f"{required} (required by {decision_id})")
+    return sorted(prerequisites)
+
+
 #: Roles a handoff may name, per WORK_QUEUES "Required Handoff Metadata".
 HANDOFF_ROLES = frozenset(
     {"analyst", "builder", "reviewer", "architect", "integrator", "none"}
@@ -480,6 +543,9 @@ def _originating_artifact_refs(block: Any) -> list[tuple[str, str]]:
         review: REV-...-r01              # `<kind>` plus `<kind>_path`
         review_path: books/.../REV-...yaml
 
+        gur_id: GUR-...-r01              # `<kind>_id` plus `<kind>_path`
+        gur_path: books/.../GUR-...yaml
+
         gup: {id: GUP-...-r02, path: books/.../GUP-...yaml}
     """
     refs: list[tuple[str, str]] = []
@@ -496,11 +562,19 @@ def _originating_artifact_refs(block: Any) -> list[tuple[str, str]]:
         if isinstance(value, dict):
             add(value.get("id"), value.get("path"))
         elif isinstance(value, list):
-            for entry in value:
-                if isinstance(entry, dict):
-                    add(entry.get("id"), entry.get("path"))
+            if str(key).endswith("_ids"):
+                stem = str(key)[:-4]
+                paths = block.get(f"{stem}_paths")
+                if isinstance(paths, list) and len(value) == len(paths):
+                    for identifier, path in zip(value, paths):
+                        add(identifier, path)
+            else:
+                for entry in value:
+                    if isinstance(entry, dict):
+                        add(entry.get("id"), entry.get("path"))
         elif isinstance(value, str) and not str(key).endswith("_path"):
-            add(value, block.get(f"{key}_path"))
+            stem = str(key)[:-3] if str(key).endswith("_id") else str(key)
+            add(value, block.get(f"{stem}_path"))
     return refs
 
 
@@ -520,7 +594,18 @@ def _handoff_replacements(
     path -- a superseded artifact has no such item.
     """
     replacements: list[dict[str, Any]] = []
-    for decision_id in sorted(decisions):
+    # Multiple Decisions can name the same active artifact. WORK_QUEUES 1.5
+    # gives the later governance ruling precedence, based on authored Decision
+    # metadata rather than filesystem state.
+    ordered_decision_ids = sorted(
+        decisions,
+        key=lambda decision_id: (
+            str(decisions[decision_id][1].get("decision_date") or ""),
+            decision_id,
+        ),
+        reverse=True,
+    )
+    for decision_id in ordered_decision_ids:
         path, document = decisions[decision_id]
         escalation_id = str(document.get("escalation_id") or "").strip()
         if not escalation_id:
@@ -545,6 +630,666 @@ def _handoff_replacements(
             }
         )
     return replacements
+
+
+DECISION_IMPLEMENTATION = "decision_implementation"
+DECISION_IMPLEMENTATION_REVIEW = "decision_implementation_review"
+
+
+#: Retirement states WORK_QUEUES 1.6 recognises. Anything else -- deletion, a
+#: replaced handoff, an unapproved revision -- is not a retirement.
+RETIREMENT_STATES = frozenset(
+    {"consumed_by_integrated_bundle", "superseded_by_integrated_revision"}
+)
+
+
+def _authorized_retirement(
+    decision_id: str,
+    input_checksum: str,
+    index: int,
+    authority_id: str,
+    authority_doc: dict[str, Any],
+) -> tuple[dict[str, Any] | None, str]:
+    """The authorization covering one retired result, or why there is none.
+
+    Two shapes authorize a retirement. The Decision under implementation may
+    classify its own test with `acceptance_test_semantics`; or a later Decision
+    may name that exact Decision, checksum and index in
+    `retired_acceptance_authorizations`. The second exists because a Decision
+    written before this rule cannot classify anything, and rewriting it to say
+    so would edit the decision record after the fact.
+
+    Both are exact. Neither may be widened by matching on packet, role or date.
+    """
+    if authority_id == decision_id:
+        for entry in authority_doc.get("acceptance_test_semantics") or []:
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("acceptance_test_index") != index:
+                continue
+            if str(entry.get("kind") or "") != "live_queue_snapshot":
+                return None, (
+                    f"{authority_id} classifies acceptance test {index} as "
+                    f"{entry.get('kind')!r}, which is not a live queue snapshot"
+                )
+            if entry.get("retirement_allowed") is not True:
+                return None, (
+                    f"{authority_id} does not allow retirement of acceptance test {index}"
+                )
+            return entry, ""
+        return None, (
+            f"{authority_id} declares no live-queue-snapshot semantics for acceptance "
+            f"test {index}, so it cannot authorize its own retirement"
+        )
+
+    for entry in authority_doc.get("retired_acceptance_authorizations") or []:
+        if not isinstance(entry, dict):
+            continue
+        target = entry.get("decision_input")
+        target = target if isinstance(target, dict) else {}
+        if str(target.get("id") or "") != decision_id:
+            continue
+        if entry.get("acceptance_test_index") != index:
+            continue
+        # The authority pins the Decision it authorizes. If that Decision has
+        # been re-issued since, the ruling was made about different text.
+        if str(target.get("checksum") or "").strip() != input_checksum:
+            return None, (
+                f"{authority_id} authorizes acceptance test {index} of {decision_id} at "
+                f"checksum {target.get('checksum')}, but the report records {input_checksum}"
+            )
+        if str(entry.get("kind") or "") != "live_queue_snapshot":
+            return None, (
+                f"{authority_id} classifies acceptance test {index} of {decision_id} as "
+                f"{entry.get('kind')!r}, which is not a live queue snapshot"
+            )
+        if entry.get("retirement_allowed") is not True:
+            return None, (
+                f"{authority_id} does not allow retirement of acceptance test {index} "
+                f"of {decision_id}"
+            )
+        return entry, ""
+
+    return None, (
+        f"{authority_id} does not authorize retiring acceptance test {index} of "
+        f"{decision_id}"
+    )
+
+
+def _retired_result_errors(
+    root: Path,
+    decision_id: str,
+    input_checksum: str,
+    result: dict[str, Any],
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+) -> list[str]:
+    """WORK_QUEUES 1.6 conditions 1-5 for one `retired_by_lineage` result.
+
+    The outcome says a subject left the asserted queue by completing its whole
+    ordinary lineage. Everything here exists to keep that from being assertable
+    on any weaker fact: a superseded artifact whose successor never integrated,
+    a subject removed by handoff replacement, or an authority that covers a
+    different index. Each is checked against repository state rather than
+    against what the report says about repository state.
+    """
+    reasons: list[str] = []
+    index = result.get("acceptance_test_index")
+    label = f"acceptance result {index}"
+
+    authority = result.get("retirement_authority")
+    if not isinstance(authority, dict):
+        return [f"{label} is retired_by_lineage but records no retirement_authority"]
+
+    authority_id = str(authority.get("id") or "").strip()
+    entry = decisions.get(authority_id)
+    if entry is None:
+        return [
+            f"{label} names retirement authority {authority_id!r}, which is not an "
+            f"approved Decision of this ruleset"
+        ]
+    authority_path, authority_doc = entry
+
+    declared = str(authority.get("path") or "").strip()
+    actual = _relative(root, authority_path)
+    if declared != actual:
+        reasons.append(
+            f"{label} records authority path {declared!r} but {authority_id} is at {actual!r}"
+        )
+    actual_sum = _sha256_of(authority_path)
+    if str(authority.get("checksum") or "").strip() != actual_sum:
+        reasons.append(
+            f"{label} records a stale checksum for its authority {authority_id}; it now "
+            f"hashes to {actual_sum}"
+        )
+    if authority.get("authorized_acceptance_test_index") != index:
+        reasons.append(
+            f"{label} records an authority for acceptance test "
+            f"{authority.get('authorized_acceptance_test_index')!r}, not {index!r}"
+        )
+
+    if not isinstance(index, int):
+        reasons.append(f"{label} has a non-integer acceptance_test_index")
+        return reasons
+
+    authorization, why = _authorized_retirement(
+        decision_id, input_checksum, index, authority_id, authority_doc
+    )
+    if authorization is None:
+        reasons.append(f"{label}: {why}")
+        return reasons
+
+    # Condition 3: complete coverage. A partial account would retire a test on
+    # the strength of whichever subject happened to be convenient.
+    authorized = {
+        str(s.get("id") or ""): s
+        for s in authorization.get("subjects") or []
+        if isinstance(s, dict)
+    }
+    recorded = {
+        str(s.get("id") or ""): s
+        for s in result.get("retired_subjects") or []
+        if isinstance(s, dict)
+    }
+    for missing in sorted(set(authorized) - set(recorded)):
+        reasons.append(
+            f"{label} omits the authorized subject {missing}; partial coverage does not "
+            f"retire an acceptance test"
+        )
+    for extra in sorted(set(recorded) - set(authorized)):
+        reasons.append(f"{label} records {extra}, which its authority does not name")
+
+    for subject_id in sorted(set(authorized) & set(recorded)):
+        allowed = authorized[subject_id]
+        claimed = recorded[subject_id]
+        state = str(claimed.get("retirement_state") or "").strip()
+        if state not in RETIREMENT_STATES:
+            reasons.append(
+                f"{label} records retirement state {state!r} for {subject_id}, which is "
+                f"not an ordinary integrated completion"
+            )
+            continue
+        permitted = str(allowed.get("permitted_retirement_state") or "").strip()
+        if permitted and state != permitted:
+            reasons.append(
+                f"{label} records {subject_id} as {state}, but its authority permits "
+                f"only {permitted}"
+            )
+            continue
+
+        if state == "superseded_by_integrated_revision":
+            successor = str(claimed.get("integrated_successor_id") or "").strip()
+            expected = str(allowed.get("integrated_successor_id") or "").strip()
+            if not successor:
+                reasons.append(
+                    f"{label} supersedes {subject_id} but names no integrated successor; a "
+                    f"merely superseded artifact is not retired"
+                )
+                continue
+            if expected and successor != expected:
+                reasons.append(
+                    f"{label} names successor {successor} for {subject_id}, but its "
+                    f"authority names {expected}"
+                )
+                continue
+
+        record_path = str(claimed.get("integration_record_path") or "").strip()
+        expected_record = str(allowed.get("integration_record_path") or "").strip()
+        if expected_record and record_path != expected_record:
+            reasons.append(
+                f"{label} cites integration record {record_path!r} for {subject_id}, but "
+                f"its authority cites {expected_record!r}"
+            )
+            continue
+        candidate = root / record_path
+        if not record_path or not candidate.is_file():
+            reasons.append(
+                f"{label} cites integration record {record_path!r} for {subject_id}, which "
+                f"does not exist"
+            )
+            continue
+        if str(claimed.get("integration_record_checksum") or "").strip() != _sha256_of(
+            candidate
+        ):
+            reasons.append(
+                f"{label} records a stale integration-record checksum for {subject_id}"
+            )
+
+    return reasons
+
+
+def _decision_reissue_leaves(
+    root: Path,
+    ruleset: str,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+    decisions_by_ruleset: dict[str, dict[str, tuple[Path, dict[str, Any]]]],
+    diagnostics: list,
+) -> set[str]:
+    """WORK_QUEUES 1.7: only the leaf of a valid Decision reissue creates work.
+
+    Architect Decisions are immutable, so a Decision whose executable
+    instructions need correcting is replaced by a new one that names it in
+    `supersedes` rather than being rewritten. Both files stay on disk, so
+    without this the predecessor keeps producing a ready Builder job beside its
+    own replacement -- which is what DEC-2026-0030 and DEC-2026-0031 did.
+
+    Returns the IDs a *valid* reissue supersedes. An invalid reissue is reported
+    and suppresses nothing: the contract is explicit that a lineage error leaves
+    both Decisions' otherwise-ready work visible, so a malformed correction can
+    never quietly cancel the job it was meant to fix.
+    """
+    successors: dict[str, list[str]] = defaultdict(list)
+    for decision_id in sorted(decisions):
+        predecessor = str(decisions[decision_id][1].get("supersedes") or "").strip()
+        if predecessor:
+            successors[predecessor].append(decision_id)
+
+    superseded: set[str] = set()
+    for decision_id in sorted(decisions):
+        path, document = decisions[decision_id]
+        predecessor = str(document.get("supersedes") or "").strip()
+        if not predecessor:
+            continue
+
+        reasons: list[str] = []
+        entry = decisions.get(predecessor)
+        if entry is None:
+            # Only this ruleset's approved Decisions are in `decisions`, so a
+            # miss is either a cross-ruleset reference or an absent/unapproved
+            # predecessor. Saying which one saves the reader the lookup.
+            elsewhere = next(
+                (
+                    other
+                    for other, table in sorted(decisions_by_ruleset.items())
+                    if other != ruleset and predecessor in table
+                ),
+                None,
+            )
+            if elsewhere is not None:
+                reasons.append(
+                    f"supersedes {predecessor}, which belongs to ruleset {elsewhere!r}; "
+                    f"a Decision reissue lineage does not cross rulesets"
+                )
+            else:
+                reasons.append(
+                    f"supersedes {predecessor}, which is not an approved Decision of "
+                    f"ruleset {ruleset!r}"
+                )
+        else:
+            prior = entry[1]
+            if prior.get("migration_required") != document.get("migration_required"):
+                reasons.append(
+                    f"declares migration_required={document.get('migration_required')!r} "
+                    f"but {predecessor} declares {prior.get('migration_required')!r}; a "
+                    f"reissue preserves the predecessor's migration flag"
+                )
+            revision = document.get("revision")
+            prior_revision = prior.get("revision")
+            if (
+                isinstance(revision, int)
+                and isinstance(prior_revision, int)
+                and revision <= prior_revision
+            ):
+                reasons.append(
+                    f"is revision {revision}, which is not later than {predecessor} at "
+                    f"revision {prior_revision}"
+                )
+            branches = successors.get(predecessor) or []
+            if len(branches) > 1:
+                reasons.append(
+                    f"{predecessor} is superseded by {', '.join(branches)}; a Decision "
+                    f"lineage has at most one direct successor"
+                )
+
+        if reasons:
+            _diag(
+                diagnostics,
+                "error",
+                "decision_reissue_lineage_error",
+                f"{decision_id} " + "; ".join(reasons) + ".",
+                path=_relative(root, path),
+                artifact_id=decision_id,
+            )
+            continue
+        superseded.add(predecessor)
+    return superseded
+
+
+def _implementation_report_errors(
+    root: Path,
+    artifact: Artifact,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+) -> list[str]:
+    """Every mandatory condition of WORK_QUEUES 1.4 "Builder report".
+
+    An empty list means the report may carry its Decision to Reviewer. Anything
+    else is a diagnostic: the report neither routes to Reviewer nor consumes the
+    Decision, so the Decision stays visible as Builder work rather than being
+    silently retired by a report that does not hold up.
+    """
+    reasons: list[str] = []
+    data = artifact.data
+
+    if str(data.get("artifact_kind") or "") != DECISION_IMPLEMENTATION:
+        reasons.append(
+            f"declares artifact_kind {data.get('artifact_kind')!r} rather than "
+            f"{DECISION_IMPLEMENTATION}"
+        )
+        return reasons
+
+    decision_input = data.get("decision_input")
+    if not isinstance(decision_input, dict):
+        reasons.append("has no decision_input block")
+        return reasons
+
+    decision_id = str(decision_input.get("id") or "").strip()
+    if not decision_id:
+        reasons.append("names no Decision in decision_input.id")
+        return reasons
+
+    entry = decisions.get(decision_id)
+    if entry is None:
+        reasons.append(f"names {decision_id}, which is not an approved Decision of this ruleset")
+        return reasons
+    decision_path, decision_doc = entry
+
+    # 3: exact ID, repository path and current checksum.
+    declared_path = str(decision_input.get("path") or "").strip()
+    actual_path = _relative(root, decision_path)
+    if declared_path != actual_path:
+        reasons.append(
+            f"records decision path {declared_path!r} but the Decision is at {actual_path!r}"
+        )
+    declared_sum = str(decision_input.get("checksum") or "").strip()
+    actual_sum = _sha256_of(decision_path)
+    if declared_sum != actual_sum:
+        reasons.append(
+            f"records a stale decision checksum; {decision_id} now hashes to {actual_sum}"
+        )
+
+    # 2: the Decision must actually be a non-migration Builder assignment.
+    handoff = decision_doc.get("handoff")
+    handoff = handoff if isinstance(handoff, dict) else {}
+    if str(decision_doc.get("ruleset_id") or "") != artifact.ruleset:
+        reasons.append(f"{decision_id} belongs to another ruleset")
+    if str(handoff.get("next_role") or "") != "builder":
+        reasons.append(f"{decision_id} does not hand off to Builder")
+    if str(handoff.get("readiness") or "") != "ready":
+        reasons.append(f"{decision_id} has no ready Builder handoff")
+    if decision_doc.get("migration_required") is not False:
+        reasons.append(f"{decision_id} is not a non-migration Decision")
+
+    acceptance = decision_doc.get("acceptance_tests")
+    if not isinstance(acceptance, list) or not acceptance:
+        reasons.append(f"{decision_id} declares no acceptance_tests")
+        acceptance = []
+
+    # 4: every implementation file exists and hashes to what is recorded.
+    files = data.get("implementation_files")
+    if not isinstance(files, list) or not files:
+        reasons.append("has an empty or missing implementation_files list")
+        files = []
+    for item in files:
+        if not isinstance(item, dict):
+            reasons.append("has an implementation_files entry that is not a mapping")
+            continue
+        relative = str(item.get("path") or "").strip()
+        candidate = root / relative
+        if not relative or not candidate.is_file():
+            reasons.append(f"names implementation file {relative!r}, which does not exist")
+            continue
+        if str(item.get("checksum") or "").strip() != _sha256_of(candidate):
+            reasons.append(f"records a stale checksum for {relative}")
+
+    # 5: every acceptance test accounted for exactly once, by one-based index.
+    results = data.get("acceptance_results")
+    if not isinstance(results, list) or not results:
+        reasons.append("has an empty or missing acceptance_results list")
+        results = []
+    indexes = [
+        r.get("acceptance_test_index") for r in results if isinstance(r, dict)
+    ]
+    expected = set(range(1, len(acceptance) + 1))
+    seen: set[int] = set()
+    for value in indexes:
+        if not isinstance(value, int):
+            reasons.append(f"has a non-integer acceptance_test_index {value!r}")
+            continue
+        if value in seen:
+            reasons.append(f"repeats acceptance_test_index {value}")
+        if acceptance and value not in expected:
+            reasons.append(
+                f"records acceptance_test_index {value}, outside 1..{len(acceptance)}"
+            )
+        seen.add(value)
+    missing = sorted(expected - seen)
+    if missing:
+        reasons.append(
+            f"omits acceptance_test_index {', '.join(str(m) for m in missing)}; a partial "
+            f"account is not Reviewer-ready"
+        )
+
+    # WORK_QUEUES 1.6: a retired result carries evidence of its own, and it is
+    # checked whether or not the report claims to be approval-ready. A blocked
+    # report with an unsound retirement should say so now, not the revision
+    # after someone tries to approve it.
+    for result in results:
+        if not isinstance(result, dict):
+            continue
+        if str(result.get("result") or "") != "retired_by_lineage":
+            continue
+        reasons.extend(
+            _retired_result_errors(root, decision_id, actual_sum, result, decisions)
+        )
+
+    # 6: approval_ready is a claim about every result, not a mood.
+    if data.get("approval_ready") is True:
+        failed = [
+            r.get("acceptance_test_index")
+            for r in results
+            if isinstance(r, dict)
+            and str(r.get("result") or "") not in ("passed", "retired_by_lineage")
+        ]
+        if failed:
+            reasons.append(
+                "is approval_ready but acceptance results "
+                + ", ".join(str(f) for f in failed)
+                + " neither passed nor validly retired by lineage"
+            )
+        validation = data.get("validation")
+        validation = validation if isinstance(validation, dict) else {}
+        if validation.get("passed") is not True:
+            reasons.append("is approval_ready but its validation did not pass")
+        if not validation.get("commands"):
+            reasons.append("is approval_ready but records no validation commands")
+        report_handoff = data.get("handoff")
+        report_handoff = report_handoff if isinstance(report_handoff, dict) else {}
+        if str(report_handoff.get("next_role") or "") != "reviewer":
+            reasons.append("is approval_ready but does not hand off to Reviewer")
+        if str(report_handoff.get("readiness") or "") != "ready":
+            reasons.append("is approval_ready but its Reviewer handoff is not ready")
+        if report_handoff.get("blocking_ids"):
+            reasons.append("is approval_ready but names blocking IDs")
+
+    # 8: one unforked lineage per Decision.
+    revision = data.get("revision")
+    if isinstance(revision, int) and revision >= 2 and not data.get("supersedes"):
+        reasons.append(f"is revision {revision} but names no supersedes")
+
+    return reasons
+
+
+def _implementation_review_errors(
+    root: Path,
+    review: Artifact,
+    report: Artifact,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+) -> list[str]:
+    """Every provenance condition WORK_QUEUES 1.4 puts on an implementation Review.
+
+    Validating the report but not the Review left the consuming half of the
+    lineage unguarded: any schema-shaped approved Review grouped by report ID
+    retired its Decision, even with a checksum of all zeroes. The Review is what
+    completes a Decision, so its provenance has to be checked at least as hard as
+    the report's.
+
+    Provenance is checked for every Review. The stricter conditions -- every
+    index verified, independent validation passed, terminal handoff -- apply to
+    an `approved` Review, because those are what the section requires before
+    consumption.
+    """
+    reasons: list[str] = []
+    data = review.data
+
+    if str(data.get("artifact_kind") or "") != DECISION_IMPLEMENTATION_REVIEW:
+        reasons.append(
+            f"declares artifact_kind {data.get('artifact_kind')!r} rather than "
+            f"{DECISION_IMPLEMENTATION_REVIEW}"
+        )
+        return reasons
+
+    disposition = str(data.get("overall_disposition") or data.get("status") or "").strip()
+    if disposition not in ("approved", "revision_required"):
+        reasons.append(f"has an unrecognised overall_disposition {disposition!r}")
+
+    # The Review must name the exact report leaf it reviewed.
+    reviewed = data.get("reviewed_implementation")
+    if not isinstance(reviewed, dict):
+        reasons.append("has no reviewed_implementation block")
+        return reasons
+    report_path = _relative(root, report.path)
+    if str(reviewed.get("id") or "") != report.artifact_id:
+        reasons.append(
+            f"names implementation report {reviewed.get('id')!r} rather than the active "
+            f"leaf {report.artifact_id}"
+        )
+    if str(reviewed.get("path") or "") != report_path:
+        reasons.append(
+            f"records report path {reviewed.get('path')!r} but the report is at {report_path!r}"
+        )
+    actual_report_sum = _sha256_of(report.path)
+    if str(reviewed.get("checksum") or "") != actual_report_sum:
+        reasons.append(
+            f"records a stale report checksum; {report.artifact_id} now hashes to "
+            f"{actual_report_sum}"
+        )
+
+    # It must repeat the same Decision provenance the report carries.
+    review_decision = data.get("decision_input")
+    report_decision = report.data.get("decision_input")
+    if not isinstance(review_decision, dict):
+        reasons.append("has no decision_input block")
+        return reasons
+    if not isinstance(report_decision, dict):
+        report_decision = {}
+    decision_id = str(review_decision.get("id") or "")
+    if decision_id != str(report_decision.get("id") or ""):
+        reasons.append(
+            f"names Decision {decision_id!r} but the report implements "
+            f"{report_decision.get('id')!r}"
+        )
+    entry = decisions.get(decision_id)
+    if entry is None:
+        reasons.append(f"names {decision_id!r}, which is not an approved Decision of this ruleset")
+    else:
+        decision_path, _ = entry
+        actual_path = _relative(root, decision_path)
+        if str(review_decision.get("path") or "") != actual_path:
+            reasons.append(
+                f"records decision path {review_decision.get('path')!r} but the Decision is "
+                f"at {actual_path!r}"
+            )
+        actual_sum = _sha256_of(decision_path)
+        if str(review_decision.get("checksum") or "") != actual_sum:
+            reasons.append(
+                f"records a stale decision checksum; {decision_id} now hashes to {actual_sum}"
+            )
+
+    if disposition != "approved":
+        return reasons
+
+    # Consumption conditions.
+    acceptance = []
+    if entry is not None:
+        acceptance = entry[1].get("acceptance_tests") or []
+    dispositions = data.get("acceptance_dispositions")
+    if not isinstance(dispositions, list) or not dispositions:
+        reasons.append("is approved but has no acceptance_dispositions")
+        dispositions = []
+    # WORK_QUEUES 1.6: the two dispositions are not interchangeable. A retired
+    # result must be met with `verified_retired_by_lineage`, which obliges the
+    # Reviewer to re-derive the authority and Integration evidence; letting a
+    # plain `verified` approve it would make the independent check optional.
+    # The converse matters too: the retired disposition on an ordinary result
+    # would approve a retirement nobody claimed.
+    report_results = {
+        r.get("acceptance_test_index"): str(r.get("result") or "")
+        for r in report.data.get("acceptance_results") or []
+        if isinstance(r, dict)
+    }
+    report_checksum = str(report_decision.get("checksum") or "").strip()
+
+    seen: set[int] = set()
+    for item in dispositions:
+        if not isinstance(item, dict):
+            continue
+        index = item.get("acceptance_test_index")
+        if isinstance(index, int):
+            if index in seen:
+                reasons.append(f"repeats acceptance_test_index {index}")
+            seen.add(index)
+        disposition_value = str(item.get("disposition") or "")
+        reported = report_results.get(index, "")
+        if disposition_value == "verified_retired_by_lineage":
+            if reported != "retired_by_lineage":
+                reasons.append(
+                    f"disposes acceptance_test_index {index} as verified_retired_by_lineage, "
+                    f"but the report records it as {reported!r}"
+                )
+                continue
+            mirrored = {
+                "acceptance_test_index": index,
+                "retirement_authority": item.get("verified_retirement_authority"),
+                "retired_subjects": item.get("verified_retired_subjects"),
+            }
+            reasons.extend(
+                f"independent verification: {reason}"
+                for reason in _retired_result_errors(
+                    root, decision_id, report_checksum, mirrored, decisions
+                )
+            )
+        elif disposition_value == "verified":
+            if reported == "retired_by_lineage":
+                reasons.append(
+                    f"is approved but disposes the retired acceptance_test_index {index} as "
+                    f"plain verified; a retired result needs verified_retired_by_lineage"
+                )
+        else:
+            reasons.append(
+                f"is approved but acceptance_test_index {index} is "
+                f"{item.get('disposition')!r} rather than verified"
+            )
+    missing = sorted(set(range(1, len(acceptance) + 1)) - seen)
+    if missing:
+        reasons.append(
+            "is approved but does not dispose acceptance_test_index "
+            + ", ".join(str(m) for m in missing)
+        )
+
+    validation = data.get("independent_validation")
+    validation = validation if isinstance(validation, dict) else {}
+    if validation.get("passed") is not True:
+        reasons.append("is approved but its independent validation did not pass")
+    if not validation.get("commands"):
+        reasons.append("is approved but records no independent validation commands")
+
+    handoff = data.get("handoff")
+    handoff = handoff if isinstance(handoff, dict) else {}
+    if str(handoff.get("readiness") or "") != "terminal":
+        reasons.append("is approved but its handoff is not terminal")
+    if handoff.get("blocking_ids"):
+        reasons.append("is approved but names blocking IDs")
+
+    return reasons
 
 
 def _article(word: str) -> str:
@@ -1002,11 +1747,22 @@ def scan_repository(root: Path) -> dict[str, Any]:
                             if unresolved
                             else "Blocked GUP has no resolved downstream handoff."
                         )
+                        # WORK_QUEUES: `blocked` means "the named role cannot
+                        # act until every blocking_id is resolved". The named
+                        # role is the one in the artifact's own handoff, not the
+                        # one that produced it. Attributing every blocked GUP to
+                        # Builder filed a patch the Builder is forbidden to fix
+                        # -- an Analyst revision it may not perform itself,
+                        # because that would be reinterpreting source -- as
+                        # Builder work, where it would have waited forever.
+                        owner = _handoff_role(leaf_gup.data)
+                        role = owner.capitalize() if owner in ROLE_BY_NAME else "Builder"
                         blocked.append(
                             _queue_item(
                                 state="blocked",
-                                queue="BUILDER-BLOCKED",
-                                role="Builder",
+                                queue=f"{role.upper()}-BLOCKED-GUP" if role != "Builder"
+                                else "BUILDER-BLOCKED",
+                                role=role,
                                 ruleset=ruleset,
                                 book=book,
                                 packet_id=packet_id,
@@ -1111,21 +1867,53 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         and review_blockers
                         and not review_unresolved
                     ):
-                        ready.append(
-                            _queue_item(
-                                state="ready",
-                                queue="BUILDER-REVISION",
-                                role="Builder",
-                                ruleset=ruleset,
-                                book=book,
-                                packet_id=packet_id,
-                                input_id=review_leaf.artifact_id,
-                                reason="Review escalations are decided; rebuild the GUP.",
-                                path=_relative(root, review_leaf.path),
-                                components=[_relative(root, review_leaf.path)],
-                                legacy_inference=review_inferred,
-                            )
+                        # A decided escalation does not by itself make the
+                        # Builder next. The resolving Decision may order another
+                        # role ahead of the rebuild, and where it does, calling
+                        # this ready sends the Builder to compile against state
+                        # that is not there yet.
+                        prerequisites = _sequenced_prerequisites(
+                            review_leaf.artifact_id,
+                            review_blockers,
+                            decisions_by_ruleset[ruleset],
+                            artifacts_root,
                         )
+                        if prerequisites:
+                            blocked.append(
+                                _queue_item(
+                                    state="blocked",
+                                    queue="BUILDER-REVISION-BLOCKED",
+                                    role="Builder",
+                                    ruleset=ruleset,
+                                    book=book,
+                                    packet_id=packet_id,
+                                    input_id=review_leaf.artifact_id,
+                                    reason=(
+                                        "Review escalations are decided, but the deciding "
+                                        "Decision orders another artifact first: "
+                                        + "; ".join(prerequisites)
+                                    ),
+                                    path=_relative(root, review_leaf.path),
+                                    components=[_relative(root, review_leaf.path)],
+                                    legacy_inference=review_inferred,
+                                )
+                            )
+                        else:
+                            ready.append(
+                                _queue_item(
+                                    state="ready",
+                                    queue="BUILDER-REVISION",
+                                    role="Builder",
+                                    ruleset=ruleset,
+                                    book=book,
+                                    packet_id=packet_id,
+                                    input_id=review_leaf.artifact_id,
+                                    reason="Review escalations are decided; rebuild the GUP.",
+                                    path=_relative(root, review_leaf.path),
+                                    components=[_relative(root, review_leaf.path)],
+                                    legacy_inference=review_inferred,
+                                )
+                            )
 
             # Approved bundles are grouped by base ID.
             approved_dir = artifacts_root / "approved"
@@ -1140,6 +1928,18 @@ def scan_repository(root: Path) -> dict[str, Any]:
             integrated_ids = _integrated_approved_ids(
                 root, ruleset, book_root, diagnostics
             )
+            # WORK_QUEUES 3 and 6: only the active leaf creates work, and a
+            # superseded artifact is not ready work. A bundle inherits that from
+            # the GUP it packages. The Integrator rejected
+            # APPROVED-GUP-PKT-PHB-119-119-alignment-graph-r02-r01 and the
+            # Builder published r03, and the rejected bundle still came back as
+            # ready -- offering a batch that had already been refused, and whose
+            # own report said applying it would register two nodes at degree 0.
+            superseded_gup_ids = {
+                str(artifact.data.get("supersedes"))
+                for artifact in gups
+                if artifact.data.get("supersedes")
+            }
             for approved_id, component_paths in sorted(approved_groups.items()):
                 manifest_path = next(
                     (
@@ -1210,6 +2010,31 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         )
                     )
                     continue
+
+                packaged_gup = _packaged_gup_id(manifest, review)
+                if packaged_gup and packaged_gup in superseded_gup_ids:
+                    informational.append(
+                        _queue_item(
+                            state="informational",
+                            queue="INTEGRATOR-SUPERSEDED",
+                            role="Integrator",
+                            ruleset=ruleset,
+                            book=book,
+                            packet_id=str(packet_id or review.packet_id or "") or None,
+                            input_id=approved_id,
+                            reason=(
+                                f"Approved bundle packages {packaged_gup}, which a later "
+                                f"revision supersedes. Only the active leaf creates work "
+                                f"(WORK_QUEUES 3, 6). The bundle is unchanged and remains "
+                                f"available as history."
+                            ),
+                            path=_relative(root, component_paths[0]),
+                            components=[_relative(root, path) for path in component_paths],
+                            legacy_inference=manifest is None,
+                        )
+                    )
+                    continue
+
                 ready.append(
                     _queue_item(
                         state="ready",
@@ -1247,6 +2072,11 @@ def scan_repository(root: Path) -> dict[str, Any]:
 
             decisions = decisions_by_ruleset[ruleset]
             migrations = migrations_by_ruleset[ruleset]
+            # WORK_QUEUES 1.7. Computed once: both the migration and the
+            # non-migration Decision loops below derive work from the leaf only.
+            reissued_decision_ids = _decision_reissue_leaves(
+                root, ruleset, decisions, decisions_by_ruleset, diagnostics
+            )
 
             by_lineage: dict[str, list[Artifact]] = defaultdict(list)
             unkeyed: dict[str, Artifact] = {}
@@ -1273,6 +2103,12 @@ def scan_repository(root: Path) -> dict[str, Any]:
             for artifact_id, artifact in unkeyed.items():
                 by_lineage[f"!unkeyed:{artifact_id}"].append(artifact)
 
+            # Collect all integrated APPROVED bundle IDs for this ruleset
+            # to check if a decision migration lineage has been integrated
+            integrated_approved_for_ruleset = _integrated_approved_ids(
+                root, ruleset, rulesets_root / ruleset, diagnostics
+            )
+
             consumed_decision_ids: set[str] = set()
             for lineage_id in sorted(by_lineage):
                 group = by_lineage[lineage_id]
@@ -1281,6 +2117,22 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 )
                 if leaf is None:
                     continue
+
+                # Check if ANY artifact in this lineage group has been integrated
+                # by checking if there's an integrated APPROVED bundle that
+                # corresponds to it. APPROVED bundle IDs are of the form:
+                # APPROVED-<gup-id>-r<review-revision>
+                # We check if any integrated APPROVED ID contains the GUP artifact ID
+                lineage_integrated = False
+                for artifact in group:
+                    gup_id = artifact.artifact_id
+                    # Check if any integrated APPROVED bundle corresponds to this GUP
+                    for approved_id in integrated_approved_for_ruleset:
+                        if approved_id.startswith(f"APPROVED-{gup_id}-r") or approved_id == f"APPROVED-{gup_id}":
+                            lineage_integrated = True
+                            break
+                    if lineage_integrated:
+                        break
 
                 reasons = _decision_migration_errors(root, leaf, decisions)
                 if reasons:
@@ -1349,11 +2201,27 @@ def scan_repository(root: Path) -> dict[str, Any]:
                                 )
                             )
                         continue
+
+                    # If this lineage has been integrated (even if the leaf has errors),
+                    # its authority Decisions are consumed
+                    if lineage_integrated:
+                        for artifact in group:
+                            consumed_decision_ids.update(
+                                str(a) for a in artifact.data.get("authority") or []
+                            )
+
                     # Otherwise it does not consume its authority Decisions, so
                     # their Builder jobs stay visible.
                     continue
 
-                consumed_decision_ids.update(str(a) for a in leaf.data.get("authority") or [])
+                # If lineage is integrated, add all authority Decisions from all artifacts
+                if lineage_integrated:
+                    for artifact in group:
+                        consumed_decision_ids.update(
+                            str(a) for a in artifact.data.get("authority") or []
+                        )
+                else:
+                    consumed_decision_ids.update(str(a) for a in leaf.data.get("authority") or [])
 
                 status = str(leaf.data.get("status") or "")
                 approval_ready = leaf.data.get("approval_ready") is True
@@ -1438,6 +2306,8 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     continue
                 if decision_id in consumed_decision_ids:
                     continue
+                if decision_id in reissued_decision_ids:
+                    continue
                 ready.append(
                     _queue_item(
                         state="ready",
@@ -1450,6 +2320,178 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         reason=(
                             "Approved Decision requires a migration and no valid "
                             "decision-migration GUP consumes it."
+                        ),
+                        path=_relative(root, path),
+                        components=[_relative(root, path)],
+                    )
+                )
+
+            # -- WORK_QUEUES 1.4: non-migration Decision implementations -------
+            # A non-migration Decision changes schemas, docs, tests or tooling
+            # and produces no GUP, so nothing in the graph lineage can retire it.
+            # Its completion lineage is one Builder report plus one independent
+            # Review, and only the Approved Review consumes the Decision.
+            reports = _load_artifacts(
+                root,
+                ruleset_dir / "decision-implementations",
+                "decision-implementation",
+                ruleset,
+                None,
+                diagnostics,
+            )
+            impl_reviews = _load_artifacts(
+                root,
+                ruleset_dir / "decision-implementation-reviews",
+                "decision-implementation-review",
+                ruleset,
+                None,
+                diagnostics,
+            )
+
+            reports_by_decision: dict[str, list[Artifact]] = defaultdict(list)
+            for artifact in reports:
+                block = artifact.data.get("decision_input")
+                target = (
+                    str(block.get("id") or "") if isinstance(block, dict) else ""
+                )
+                if target:
+                    reports_by_decision[target].append(artifact)
+
+            reviews_by_report: dict[str, list[Artifact]] = defaultdict(list)
+            for artifact in impl_reviews:
+                block = artifact.data.get("reviewed_implementation")
+                target = (
+                    str(block.get("id") or "") if isinstance(block, dict) else ""
+                )
+                if target:
+                    reviews_by_report[target].append(artifact)
+
+            for decision_id in sorted(decisions):
+                path, document = decisions[decision_id]
+                handoff = document.get("handoff")
+                if not isinstance(handoff, dict):
+                    continue
+                if str(handoff.get("next_role") or "") != "builder":
+                    continue
+                if str(handoff.get("readiness") or "") != "ready":
+                    continue
+                if document.get("migration_required") is not False:
+                    continue
+                if decision_id in reissued_decision_ids:
+                    continue
+
+                group = reports_by_decision.get(decision_id) or []
+                leaf, report_inferred = _active_leaf(
+                    root, group, diagnostics, f"{ruleset} implementation {decision_id}"
+                )
+
+                report_errors: list[str] = []
+                if leaf is not None:
+                    report_errors = _implementation_report_errors(root, leaf, decisions)
+                    if report_errors:
+                        _diag(
+                            diagnostics,
+                            "error",
+                            "decision_implementation_invalid",
+                            f"{leaf.artifact_id} " + "; ".join(report_errors) + ".",
+                            path=_relative(root, leaf.path),
+                            artifact_id=leaf.artifact_id,
+                        )
+
+                review_leaf = None
+                if leaf is not None and not report_errors:
+                    review_leaf, _ = _active_leaf(
+                        root,
+                        reviews_by_report.get(leaf.artifact_id) or [],
+                        diagnostics,
+                        f"{ruleset} implementation review {leaf.artifact_id}",
+                    )
+
+                if review_leaf is not None:
+                    review_errors = _implementation_review_errors(
+                        root, review_leaf, leaf, decisions
+                    )
+                    if review_errors:
+                        # An unsound Review neither consumes the Decision nor
+                        # hides the report that is still waiting for a sound one.
+                        _diag(
+                            diagnostics,
+                            "error",
+                            "decision_implementation_review_invalid",
+                            f"{review_leaf.artifact_id} "
+                            + "; ".join(review_errors)
+                            + ".",
+                            path=_relative(root, review_leaf.path),
+                            artifact_id=review_leaf.artifact_id,
+                        )
+                        review_leaf = None
+
+                if review_leaf is not None:
+                    disposition = str(
+                        review_leaf.data.get("overall_disposition")
+                        or review_leaf.data.get("status")
+                        or ""
+                    )
+                    if disposition == "approved":
+                        # The Decision is complete. No Integrator job exists for
+                        # this lineage: no canonical or registry state changed.
+                        continue
+                    ready.append(
+                        _queue_item(
+                            state="ready",
+                            queue="BUILDER-DECISION-IMPLEMENTATION-REVISION",
+                            role="Builder",
+                            ruleset=ruleset,
+                            book=str(document.get("book_id") or "") or None,
+                            packet_id=str(document.get("packet_id") or "") or None,
+                            input_id=review_leaf.artifact_id,
+                            reason=(
+                                f"Implementation Review requires a Builder revision of "
+                                f"{decision_id}."
+                            ),
+                            path=_relative(root, review_leaf.path),
+                            components=[_relative(root, review_leaf.path)],
+                        )
+                    )
+                    # The revision job replaces the Decision job rather than
+                    # standing alongside it.
+                    continue
+
+                if leaf is not None and not report_errors and leaf.data.get("approval_ready") is True:
+                    ready.append(
+                        _queue_item(
+                            state="ready",
+                            queue="REVIEWER-DECISION-IMPLEMENTATION",
+                            role="Reviewer",
+                            ruleset=ruleset,
+                            book=str(document.get("book_id") or "") or None,
+                            packet_id=str(document.get("packet_id") or "") or None,
+                            input_id=leaf.artifact_id,
+                            reason=(
+                                f"Approval-ready implementation report for {decision_id} "
+                                f"has no independent Review."
+                            ),
+                            path=_relative(root, leaf.path),
+                            components=[_relative(root, leaf.path)],
+                            legacy_inference=report_inferred,
+                        )
+                    )
+                    continue
+
+                # No report, an invalid one, or one still marked partial: the
+                # Decision remains Builder work.
+                ready.append(
+                    _queue_item(
+                        state="ready",
+                        queue="BUILDER-DECISION",
+                        role="Builder",
+                        ruleset=ruleset,
+                        book=str(document.get("book_id") or "") or None,
+                        packet_id=str(document.get("packet_id") or "") or None,
+                        input_id=decision_id,
+                        reason=(
+                            "Approved non-migration Decision has no approval-ready "
+                            "implementation report."
                         ),
                         path=_relative(root, path),
                         components=[_relative(root, path)],
@@ -1477,6 +2519,16 @@ def scan_repository(root: Path) -> dict[str, Any]:
 
             suppressed = False
             for artifact_id, artifact_path in replacement["refs"]:
+                if artifact_id in decisions_by_ruleset[ruleset]:
+                    # A Decision is authored governance, not a queue artifact
+                    # whose handoff was derived from the escalation it raised,
+                    # and only the Architect supersedes one. Escalation packages
+                    # routinely name Decisions as context -- the package behind
+                    # DEC-2026-0023 lists the three Decisions the question was
+                    # about, and the one behind DEC-2026-0021 names DEC-2026-0019
+                    # the same way. Reading that as replacement would retire
+                    # Builder work the replacing Decision expressly reaffirms.
+                    continue
                 # Condition 3: only an item the scan derived for this exact ID
                 # and path is replaced. A Decision naming a superseded artifact
                 # matches nothing, so the active leaf keeps its own handoff.
@@ -1501,7 +2553,23 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         artifact_id=artifact_id,
                     )
 
+            # A migration-required Decision with a ready Builder handoff already
+            # gets its Builder item from the decision-migration consumption rule
+            # above, so emitting one here would double-count it. That is a reason
+            # to skip the *emission* only. Skipping the suppression loop as well
+            # left DEC-2026-0021 unable to replace the stale Analyst handoff on
+            # REV-GUP-MIG-DEC-2026-0015-0016-r03-r01, which is precisely the case
+            # DEC-2026-0022 names -- so this guard sits after the suppression.
+            if (document.get("migration_required") is True and
+                    role == "builder" and readiness == "ready"):
+                continue
+
             if not suppressed or role in ("", "none") or readiness == "terminal":
+                continue
+
+            # Skip if this Decision has already been consumed by an integrated
+            # decision-migration GUP
+            if decision_id in consumed_decision_ids:
                 continue
 
             already_ready = any(
@@ -1623,6 +2691,41 @@ def _print_table(headers: tuple[str, ...], rows: list[tuple[str, ...]]) -> None:
         print("  ".join(row[index].ljust(widths[index]) for index in range(len(headers))))
 
 
+def _wrap_diagnostic_cell(value: str, width: int, *, break_long_words: bool) -> list[str]:
+    lines = textwrap.wrap(
+        value,
+        width=width,
+        break_long_words=break_long_words,
+        break_on_hyphens=False,
+    )
+    return lines or [""]
+
+
+def _print_diagnostics_table(rows: list[tuple[str, str, str, str]]) -> None:
+    headers = ("Severity", "Code", "Artifact", "Message")
+    widths = (8, 32, 45, 80)
+    print("  ".join(headers[index].ljust(widths[index]) for index in range(len(headers))))
+    print("  ".join("-" * width for width in widths))
+    for severity, code, artifact, message in rows:
+        cells = (
+            [severity[: widths[0]]],
+            _wrap_diagnostic_cell(code, widths[1], break_long_words=True),
+            _wrap_diagnostic_cell(artifact, widths[2], break_long_words=True),
+            _wrap_diagnostic_cell(message, widths[3], break_long_words=False),
+        )
+        for line_index in range(max(len(cell) for cell in cells)):
+            print(
+                "  ".join(
+                    (
+                        cells[column_index][line_index]
+                        if line_index < len(cells[column_index])
+                        else ""
+                    ).ljust(widths[column_index])
+                    for column_index in range(len(headers))
+                )
+            )
+
+
 def _print_items(title: str, items: list[dict[str, Any]]) -> None:
     if not items:
         return
@@ -1684,7 +2787,7 @@ def _print_console(result: dict[str, Any], include_all: bool) -> None:
             )
             for item in result["Diagnostics"]
         ]
-        _print_table(("Severity", "Code", "Artifact", "Message"), rows)
+        _print_diagnostics_table(rows)
 
     print(
         f"\n{result['ReadyCount']} ready job(s), "

@@ -6,6 +6,8 @@ import os
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 
 import yaml
@@ -17,6 +19,55 @@ assert SPEC and SPEC.loader
 scanner = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = scanner
 SPEC.loader.exec_module(scanner)
+
+
+class DiagnosticsConsoleFormattingTests(unittest.TestCase):
+    def test_diagnostics_use_fixed_columns_and_wrapped_continuations(self):
+        output = StringIO()
+        with redirect_stdout(output):
+            scanner._print_diagnostics_table(
+                [
+                    (
+                        "severity-too-long",
+                        "c" * 33,
+                        "a" * 46,
+                        "m" * 78 + " next",
+                    )
+                ]
+            )
+
+        lines = output.getvalue().splitlines()
+        widths = (8, 32, 45, 80)
+        self.assertEqual(
+            lines[0],
+            "  ".join(
+                header.ljust(width)
+                for header, width in zip(("Severity", "Code", "Artifact", "Message"), widths)
+            ),
+        )
+        self.assertEqual(lines[1], "  ".join("-" * width for width in widths))
+        self.assertEqual(
+            lines[2],
+            "  ".join(
+                value.ljust(width)
+                for value, width in zip(
+                    ("severity", "c" * 32, "a" * 45, "m" * 78), widths
+                )
+            ),
+        )
+        self.assertEqual(
+            lines[3],
+            "  ".join(
+                value.ljust(width)
+                for value, width in zip(("", "c", "a", "next"), widths)
+            ),
+        )
+
+    def test_message_wraps_only_at_whitespace(self):
+        self.assertEqual(
+            scanner._wrap_diagnostic_cell("x" * 81, 80, break_long_words=False),
+            ["x" * 81],
+        )
 
 
 class QueueScannerCase(unittest.TestCase):
@@ -632,6 +683,181 @@ class DecisionMigrationCase(MigrationFixtureMixin, QueueScannerCase):
         self.assertEqual(self.scan()["Items"], first)
 
 
+class SupersededApprovedBundleCase(QueueScannerCase):
+    """An Approved bundle inherits the standing of the GUP it packages.
+
+    WORK_QUEUES 3 says only the active leaf creates work and 6 says a superseded
+    artifact is not ready work. The bundle was routed on its own account, so a
+    bundle the Integrator had already rejected kept returning as ready after the
+    Builder published a superseding revision -- and that particular batch, by
+    the Integrator's own report, would have registered two nodes at degree zero.
+    """
+
+    PACKET = "PKT-PHB-001-002-fixture"
+
+    def bundle(self, revision: int, gup_id: str, review_gup_as_mapping=True):
+        approved_id = f"APPROVED-{gup_id}-r01"
+        review_id = f"REV-{gup_id}-r01"
+        self.write_yaml(
+            f"books/adnd1e/phb/artifacts/reviews/{review_id}.yaml",
+            {
+                "id": review_id, "packet_id": self.PACKET, "revision": 1,
+                "status": "approved", "overall_disposition": "approved",
+                "reviewed_gup": {"id": gup_id} if review_gup_as_mapping else gup_id,
+            },
+        )
+        self.write_yaml(
+            f"books/adnd1e/phb/artifacts/approved/{approved_id}.yaml",
+            {"id": approved_id, "packet_id": self.PACKET, "review_id": review_id,
+             "gup_id": gup_id},
+        )
+        return approved_id
+
+    def integrator_states(self, result):
+        states = {}
+        for key in ("Items", "InformationalItems", "BlockedItems"):
+            for item in result.get(key, []):
+                if item["Role"] == "Integrator":
+                    states[item["InputId"]] = (item["State"], item["Queue"])
+        return states
+
+    def two_revisions(self, **kwargs):
+        gur = self.gur(self.PACKET, 1)
+        first = self.gup(self.PACKET, 1, gur)
+        second = self.gup(self.PACKET, 2, gur, supersedes=first)
+        return (self.bundle(1, first, **kwargs), self.bundle(2, second, **kwargs))
+
+    def test_a_bundle_for_a_superseded_gup_is_not_ready_work(self):
+        stale, current = self.two_revisions()
+        states = self.integrator_states(self.scan())
+        self.assertEqual(states[stale], ("informational", "INTEGRATOR-SUPERSEDED"))
+        self.assertEqual(states[current][0], "ready")
+
+    def test_the_reason_names_the_superseded_gup(self):
+        stale, _ = self.two_revisions()
+        item = next(
+            i for i in self.scan()["InformationalItems"] if i["InputId"] == stale
+        )
+        self.assertIn("supersede", item["Reason"].lower())
+        self.assertIn(f"GUP-{self.PACKET}-r01", item["Reason"])
+
+    def test_the_bundle_is_not_deleted_or_moved(self):
+        """It is history, and no role may remove an upstream artifact."""
+        stale, _ = self.two_revisions()
+        path = self.root / "books/adnd1e/phb/artifacts/approved" / f"{stale}.yaml"
+        self.scan()
+        self.assertTrue(path.is_file())
+
+    def test_a_bundle_for_a_leaf_gup_is_untouched(self):
+        gur = self.gur(self.PACKET, 1)
+        only = self.gup(self.PACKET, 1, gur)
+        approved = self.bundle(1, only)
+        self.assertEqual(self.integrator_states(self.scan())[approved][0], "ready")
+
+    def test_a_review_naming_its_gup_as_a_bare_string_is_read_too(self):
+        stale, current = self.two_revisions(review_gup_as_mapping=False)
+        states = self.integrator_states(self.scan())
+        self.assertEqual(states[stale], ("informational", "INTEGRATOR-SUPERSEDED"))
+        self.assertEqual(states[current][0], "ready")
+
+    def test_a_bundle_naming_no_gup_at_all_still_routes(self):
+        """A check that cannot read the ID must not guess the bundle is stale."""
+        gur = self.gur(self.PACKET, 1)
+        first = self.gup(self.PACKET, 1, gur)
+        self.gup(self.PACKET, 2, gur, supersedes=first)
+        approved_id = f"APPROVED-{first}-r01"
+        review_id = f"REV-{first}-r01"
+        self.write_yaml(
+            f"books/adnd1e/phb/artifacts/reviews/{review_id}.yaml",
+            {"id": review_id, "packet_id": self.PACKET, "revision": 1,
+             "status": "approved", "overall_disposition": "approved"},
+        )
+        self.write_yaml(
+            f"books/adnd1e/phb/artifacts/approved/{approved_id}.yaml",
+            {"id": approved_id, "packet_id": self.PACKET, "review_id": review_id},
+        )
+        self.assertEqual(self.integrator_states(self.scan())[approved_id][0], "ready")
+
+
+class BlockedGupOwnershipCase(QueueScannerCase):
+    """A blocked GUP belongs to the role its handoff names.
+
+    WORK_QUEUES defines `blocked` as "the named role cannot act until every
+    blocking_id is resolved". The named role is in the artifact's own handoff.
+    Filing every blocked GUP under Builder put patches the Builder is forbidden
+    to fix -- an aspect-grain block needs the source reread, which is the
+    Analyst's -- into the Builder queue, where they would have waited forever
+    for a role that may not act on them.
+    """
+
+    PACKET = "PKT-PHB-001-002-fixture"
+
+    def blocked_gup(self, next_role, blocking_ids):
+        gur_id = self.gur(self.PACKET, 1)
+        artifact_id = f"GUP-{self.PACKET}-r01"
+        self.write_yaml(
+            f"books/adnd1e/phb/artifacts/gup/{artifact_id}.yaml",
+            {
+                "id": artifact_id,
+                "packet_id": self.PACKET,
+                "revision": 1,
+                "supersedes": None,
+                "status": "blocked",
+                "approval_ready": False,
+                "provenance": {"gur_id": gur_id},
+                "escalations": [],
+                "handoff": {
+                    "next_role": next_role,
+                    "readiness": "blocked",
+                    "reason": "fixture",
+                    "blocking_ids": blocking_ids,
+                },
+            },
+        )
+        (
+            self.root / "books/adnd1e/phb/artifacts/gup" / f"{artifact_id}.edges.csv"
+        ).write_text("source_id,target_id\n", encoding="utf-8")
+        return artifact_id
+
+    def blocked_items(self, result):
+        return [i for i in result["BlockedItems"] if i["State"] == "blocked"]
+
+    def test_a_gup_blocked_for_the_analyst_is_the_analysts(self):
+        artifact_id = self.blocked_gup("analyst", [f"GUR-{self.PACKET}-r01"])
+        items = self.blocked_items(self.scan())
+        self.assertEqual([i["InputId"] for i in items], [artifact_id])
+        self.assertEqual(items[0]["Role"], "Analyst")
+        self.assertNotEqual(items[0]["Queue"], "BUILDER-BLOCKED")
+
+    def test_a_gup_blocked_for_the_architect_is_the_architects(self):
+        self.blocked_gup("architect", ["ESC-2026-01-01T00.00.00.000Z"])
+        items = self.blocked_items(self.scan())
+        self.assertEqual(items[0]["Role"], "Architect")
+
+    def test_a_gup_naming_no_actionable_role_stays_with_the_builder(self):
+        """Absent or unroutable, it must not vanish from every queue."""
+        for next_role in ("none", "", "nonsense"):
+            with self.subTest(next_role=next_role):
+                self.setUp()
+                self.blocked_gup(next_role, ["something"])
+                items = self.blocked_items(self.scan())
+                self.assertEqual(items[0]["Role"], "Builder")
+                self.assertEqual(items[0]["Queue"], "BUILDER-BLOCKED")
+
+    def test_the_blocked_item_still_names_what_it_waits_on(self):
+        gur_id = f"GUR-{self.PACKET}-r01"
+        self.blocked_gup("analyst", [gur_id])
+        items = self.blocked_items(self.scan())
+        self.assertIn(gur_id, items[0]["Reason"])
+
+    def test_reassignment_does_not_turn_a_blocked_item_ready(self):
+        self.blocked_gup("analyst", [f"GUR-{self.PACKET}-r01"])
+        result = self.scan()
+        self.assertEqual(
+            [i for i in result["Items"] if i["InputId"] == f"GUP-{self.PACKET}-r01"], []
+        )
+
+
 class TestScannerParity(unittest.TestCase):
     """WORK_QUEUES 1.2 acceptance 20: the two scanners must agree.
 
@@ -648,28 +874,62 @@ class TestScannerParity(unittest.TestCase):
 
         return shutil.which("pwsh") or shutil.which("powershell")
 
-    def test_powershell_and_python_return_the_same_jobs_and_exit_code(self):
+    #: The scanners are compared against the live repository, so the comparison
+    #: is only meaningful while the tree holds still. It does not always: an
+    #: agent publishing artifacts in another process moved a GUP between the two
+    #: invocations here, and the test reported a parity violation for what was
+    #: only a fifteen-second gap. Bracketing the PowerShell run with two Python
+    #: runs tells the two cases apart -- if the brackets disagree, the tree
+    #: moved and this test has nothing to say about parity.
+    KEYS = ("Items", "Diagnostics", "ReadyCount", "LineageErrorCount")
+
+    def _scan(self, command):
         import subprocess
 
+        done = subprocess.run(command, capture_output=True, text=True)
+        return done.returncode, json.loads(done.stdout)
+
+    def test_powershell_and_python_return_the_same_jobs_and_exit_code(self):
         shell = self._pwsh()
         if shell is None:
             self.skipTest("no PowerShell on PATH")
 
-        python = subprocess.run(
-            [sys.executable, str(MODULE_PATH), "--root", str(self.REPO_ROOT), "--json"],
-            capture_output=True, text=True,
-        )
-        powershell = subprocess.run(
-            [shell, "-NoProfile", "-File", str(self.SCRIPT),
-             "-Root", str(self.REPO_ROOT), "-Json"],
-            capture_output=True, text=True,
-        )
-        self.assertEqual(powershell.returncode, python.returncode)
+        python_command = [
+            sys.executable, str(MODULE_PATH), "--root", str(self.REPO_ROOT), "--json"
+        ]
+        powershell_command = [
+            shell, "-NoProfile", "-File", str(self.SCRIPT),
+            "-Root", str(self.REPO_ROOT), "-Json",
+        ]
 
-        expected = json.loads(python.stdout)
-        actual = json.loads(powershell.stdout)
-        for key in ("Items", "Diagnostics", "ReadyCount", "LineageErrorCount"):
-            self.assertEqual(actual[key], expected[key], f"{key} differs")
+        before_code, before = self._scan(python_command)
+        actual_code, actual = self._scan(powershell_command)
+        after_code, after = self._scan(python_command)
+
+        if before_code != after_code or any(before[k] != after[k] for k in self.KEYS):
+            self.skipTest(
+                "the repository changed between scans; parity is not observable on a moving tree"
+            )
+
+        self.assertEqual(actual_code, before_code)
+        for key in self.KEYS:
+            self.assertEqual(actual[key], before[key], f"{key} differs")
+
+    def test_a_moving_tree_is_reported_as_such_and_not_as_a_parity_violation(self):
+        """The guard has to fire, or it is just a slower way to fail."""
+        if self._pwsh() is None:
+            self.skipTest("no PowerShell on PATH")
+
+        empty = {key: ([] if key in ("Items", "Diagnostics") else 0) for key in self.KEYS}
+        scans = [
+            (0, dict(empty)),
+            (0, dict(empty)),
+            (0, dict(empty, ReadyCount=1)),  # the tree moved under the third scan
+        ]
+        case = TestScannerParity("test_powershell_and_python_return_the_same_jobs_and_exit_code")
+        case._scan = lambda command: scans.pop(0)
+        with self.assertRaises(unittest.SkipTest):
+            case.test_powershell_and_python_return_the_same_jobs_and_exit_code()
 
 
 if __name__ == "__main__":
@@ -985,7 +1245,7 @@ class DecisionHandoffReplacementCase(QueueScannerCase):
         return escalation_id
 
     def decision(self, decision_id, escalation_id, *, next_role="builder",
-                 readiness="ready", blocking_ids=None):
+                 readiness="ready", blocking_ids=None, migration_required=False):
         self.write_yaml(
             f"rulesets/adnd1e/escalations/decisions/{decision_id}.yaml",
             {
@@ -995,7 +1255,7 @@ class DecisionHandoffReplacementCase(QueueScannerCase):
                 "book_id": "phb",
                 "packet_id": self.PACKET,
                 "escalation_id": escalation_id,
-                "migration_required": False,
+                "migration_required": migration_required,
                 "handoff": {
                     "next_role": next_role,
                     "readiness": readiness,
@@ -1016,6 +1276,37 @@ class DecisionHandoffReplacementCase(QueueScannerCase):
         return [d["Code"] for d in result["Diagnostics"]]
 
     # -- the ruling ---------------------------------------------------------
+    def test_a_migration_decision_still_replaces_the_stale_handoff(self):
+        """The real DEC-2026-0021 shape, and the one the guard used to swallow.
+
+        A migration-required Decision with a ready Builder handoff gets its
+        Builder item from the decision-migration rule, so this stage must not
+        emit a second one. That is a reason to skip the emission, not the
+        suppression -- and skipping both left the originating Review sitting in
+        the Analyst queue as ready work the Architect had already reassigned.
+        """
+        artifact_id, path = self.review_needing_the_analyst()
+        esc = self.decided_package(artifact_id, path)
+        self.decision("DEC-2026-0021", esc, migration_required=True)
+        result = self.scan()
+        self.assertNotIn(artifact_id, self.ready_ids(result))
+        self.assertIn("handoff_replaced_by_decision", self.codes(result))
+
+    def test_a_migration_decision_does_not_double_count_its_builder_job(self):
+        """Suppressing must not bring back the duplicate the guard prevents."""
+        artifact_id, path = self.review_needing_the_analyst()
+        esc = self.decided_package(artifact_id, path)
+        decision_id = self.decision("DEC-2026-0021", esc, migration_required=True)
+        result = self.scan()
+        emitted = [
+            item for item in result["Items"]
+            if item["InputId"] == decision_id and item["Role"] == "Builder"
+        ]
+        self.assertLessEqual(len(emitted), 1)
+        self.assertNotIn(
+            "BUILDER-DECISION", [item["Queue"] for item in emitted]
+        )
+
     def test_the_decision_replaces_the_stale_ready_handoff(self):
         artifact_id, path = self.review_needing_the_analyst()
         esc = self.decided_package(artifact_id, path)
@@ -1032,6 +1323,28 @@ class DecisionHandoffReplacementCase(QueueScannerCase):
         result = self.scan()
         self.assertEqual((self.root / path).read_bytes(), before)
         self.assertIn("handoff_replaced_by_decision", self.codes(result))
+
+    def test_later_decision_wins_when_two_decisions_replace_one_handoff(self):
+        artifact_id, path = self.review_needing_the_analyst()
+        old_escalation = self.decided_package(
+            artifact_id, path, "ESC-2026-08-03T22.35.13.308Z"
+        )
+        new_escalation = self.decided_package(
+            artifact_id, path, "ESC-2026-08-06T02.36.49.284Z"
+        )
+        self.decision("DEC-2026-0021", old_escalation, migration_required=True)
+        self.decision(
+            "DEC-2026-0027", new_escalation, next_role="none", readiness="terminal"
+        )
+
+        result = self.scan()
+        replacement = next(
+            diagnostic
+            for diagnostic in result["Diagnostics"]
+            if diagnostic["Code"] == "handoff_replaced_by_decision"
+        )
+        self.assertNotIn(artifact_id, self.ready_ids(result))
+        self.assertTrue(replacement["Message"].startswith("DEC-2026-0027 resolved"))
 
     # -- exactness ----------------------------------------------------------
     def test_a_mismatched_escalation_id_does_not_suppress(self):
@@ -1134,6 +1447,32 @@ class TestOriginatingArtifactRefs(unittest.TestCase):
             [("REV-X-r01", "books/x/REV-X-r01.yaml")],
         )
 
+    def test_kind_id_and_kind_path_pair(self):
+        self.assertEqual(
+            self.refs({"gur_id": "GUR-X-r01", "gur_path": "books/x/GUR-X-r01.yaml"}),
+            [("GUR-X-r01", "books/x/GUR-X-r01.yaml")],
+        )
+
+    def test_kind_ids_and_kind_paths_pair(self):
+        self.assertEqual(
+            self.refs(
+                {
+                    "gur_ids": ["GUR-X-r01", "GUR-Y-r01"],
+                    "gur_paths": ["books/x/GUR-X-r01.yaml", "books/y/GUR-Y-r01.yaml"],
+                }
+            ),
+            [
+                ("GUR-X-r01", "books/x/GUR-X-r01.yaml"),
+                ("GUR-Y-r01", "books/y/GUR-Y-r01.yaml"),
+            ],
+        )
+
+    def test_mismatched_parallel_lists_yield_nothing(self):
+        self.assertEqual(
+            self.refs({"gur_ids": ["GUR-X-r01"], "gur_paths": []}),
+            [],
+        )
+
     def test_nested_id_and_path_mapping(self):
         self.assertEqual(
             self.refs({"gup": {"id": "GUP-X-r02", "path": "books/x/GUP-X-r02.yaml"}}),
@@ -1156,3 +1495,1347 @@ class TestOriginatingArtifactRefs(unittest.TestCase):
     def test_a_non_mapping_yields_nothing(self):
         self.assertEqual(self.refs(None), [])
         self.assertEqual(self.refs(["REV-X-r01"]), [])
+
+
+class DecisionImplementationCase(QueueScannerCase):
+    """WORK_QUEUES 1.4, ruled by DEC-2026-0023.
+
+    A non-migration Decision changes schemas, documentation, tests or tooling
+    and produces no GUP, so nothing in the graph lineage can retire it. Its
+    completion lineage is one Builder report plus one independent Review, and
+    only the Approved Review consumes it. File existence, version strings,
+    passing tests and Builder's own claim are all insufficient by ruling.
+    """
+
+    DECISION = "DEC-2026-0099"
+    ACCEPTANCE = ["first criterion", "second criterion", "third criterion"]
+
+    def sha256(self, relative: str) -> str:
+        return scanner._sha256_of(self.root / relative)
+
+    def decision(self, *, migration_required=False, next_role="builder",
+                 readiness="ready", acceptance=None):
+        relative = f"rulesets/adnd1e/escalations/decisions/{self.DECISION}.yaml"
+        self.write_yaml(
+            relative,
+            {
+                "id": self.DECISION,
+                "status": "approved",
+                "ruleset_id": "adnd1e",
+                "book_id": "phb",
+                "packet_id": "cross-packet",
+                "migration_required": migration_required,
+                "acceptance_tests": self.ACCEPTANCE if acceptance is None else acceptance,
+                "handoff": {
+                    "next_role": next_role, "readiness": readiness,
+                    "reason": "implement it", "blocking_ids": [],
+                },
+            },
+        )
+        return relative
+
+    def implementation_file(self, relative="tooling/common/fixture_impl.py"):
+        path = self.root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("# fixture implementation\n", encoding="utf-8")
+        return relative
+
+    def report(self, decision_relative, *, revision=1, approval_ready=True,
+               indices=None, results=None, files=None, supersedes=None,
+               decision_checksum=None, decision_path=None,
+               handoff_role="reviewer", handoff_readiness="ready"):
+        artifact_id = f"IMP-{self.DECISION}-r{revision:02d}"
+        impl = files if files is not None else [self.implementation_file()]
+        indices = list(range(1, len(self.ACCEPTANCE) + 1)) if indices is None else indices
+        results = results or {}
+        self.write_yaml(
+            f"rulesets/adnd1e/decision-implementations/{artifact_id}.yaml",
+            {
+                "schema_version": "1.0",
+                "id": artifact_id,
+                "artifact_kind": "decision_implementation",
+                "status": "proposed",
+                "ruleset_id": "adnd1e",
+                "constitution_version": "1.7",
+                "revision": revision,
+                "supersedes": supersedes,
+                "approval_ready": approval_ready,
+                "implemented_by": "builder",
+                "decision_input": {
+                    "id": self.DECISION,
+                    "path": decision_path or decision_relative,
+                    "checksum": decision_checksum or self.sha256(decision_relative),
+                },
+                "implementation_files": [
+                    {"path": p, "checksum": self.sha256(p)} for p in impl
+                ],
+                "acceptance_results": [
+                    {"acceptance_test_index": i,
+                     "result": results.get(i, "passed"),
+                     "evidence": f"evidence for {i}"}
+                    for i in indices
+                ],
+                "validation": {
+                    "passed": True,
+                    "commands": [
+                        {"command": "python -m unittest discover",
+                         "exit_code": 0, "result": "passed", "summary": "all green"}
+                    ],
+                },
+                "handoff": {
+                    "next_role": handoff_role, "readiness": handoff_readiness,
+                    "reason": "implemented", "blocking_ids": [],
+                },
+            },
+        )
+        return artifact_id
+
+    def implementation_review(self, report_id, decision_relative, *,
+                              disposition="approved", revision=1):
+        artifact_id = f"REV-{report_id}-r{revision:02d}"
+        report_relative = f"rulesets/adnd1e/decision-implementations/{report_id}.yaml"
+        self.write_yaml(
+            f"rulesets/adnd1e/decision-implementation-reviews/{artifact_id}.yaml",
+            {
+                "schema_version": "1.0",
+                "id": artifact_id,
+                "artifact_kind": "decision_implementation_review",
+                "status": disposition,
+                "ruleset_id": "adnd1e",
+                "constitution_version": "1.7",
+                "revision": revision,
+                "supersedes": None,
+                "reviewed_by": "reviewer",
+                "reviewed_implementation": {
+                    "id": report_id,
+                    "path": report_relative,
+                    "checksum": self.sha256(report_relative),
+                },
+                "decision_input": {
+                    "id": self.DECISION,
+                    "path": decision_relative,
+                    "checksum": self.sha256(decision_relative),
+                },
+                "acceptance_dispositions": [
+                    {"acceptance_test_index": i, "disposition": "verified",
+                     "evidence": "independently checked"}
+                    for i in range(1, len(self.ACCEPTANCE) + 1)
+                ],
+                "independent_validation": {
+                    "passed": True,
+                    "commands": [
+                        {"command": "python -m unittest discover",
+                         "exit_code": 0, "result": "passed", "summary": "reproduced"}
+                    ],
+                },
+                "overall_disposition": disposition,
+                "handoff": {
+                    "next_role": "none" if disposition == "approved" else "builder",
+                    "readiness": "terminal" if disposition == "approved" else "ready",
+                    "reason": "reviewed", "blocking_ids": [],
+                },
+            },
+        )
+        return artifact_id
+
+    def queues(self, result):
+        return {(i["Role"], i["Queue"], i["InputId"]) for i in result["Items"]}
+
+    def codes(self, result):
+        return [d["Code"] for d in result["Diagnostics"]]
+
+    # -- discovery ----------------------------------------------------------
+    def test_an_unconsumed_non_migration_decision_is_one_builder_job(self):
+        self.decision()
+        result = self.scan()
+        self.assertIn(("Builder", "BUILDER-DECISION", self.DECISION), self.queues(result))
+
+    def test_a_migration_decision_is_not_routed_by_this_rule(self):
+        self.decision(migration_required=True)
+        result = self.scan()
+        self.assertNotIn(("Builder", "BUILDER-DECISION", self.DECISION), self.queues(result))
+
+    # -- report validity ----------------------------------------------------
+    def test_a_valid_report_is_one_reviewer_job_and_suppresses_the_decision_job(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        result = self.scan()
+        q = self.queues(result)
+        self.assertIn(("Reviewer", "REVIEWER-DECISION-IMPLEMENTATION", report_id), q)
+        self.assertNotIn(("Builder", "BUILDER-DECISION", self.DECISION), q)
+
+    def test_a_partial_report_is_not_reviewer_ready(self):
+        """The six-of-thirteen spot-check case, in miniature."""
+        rel = self.decision()
+        self.report(rel, indices=[1, 2])
+        result = self.scan()
+        q = self.queues(result)
+        self.assertIn(("Builder", "BUILDER-DECISION", self.DECISION), q)
+        self.assertFalse(any(r == "Reviewer" for r, _, _ in q))
+        self.assertIn("decision_implementation_invalid", self.codes(result))
+
+    def test_a_repeated_acceptance_index_is_invalid(self):
+        rel = self.decision()
+        self.report(rel, indices=[1, 2, 3, 3])
+        result = self.scan()
+        self.assertIn("decision_implementation_invalid", self.codes(result))
+        self.assertIn(("Builder", "BUILDER-DECISION", self.DECISION), self.queues(result))
+
+    def test_an_out_of_range_acceptance_index_is_invalid(self):
+        rel = self.decision()
+        self.report(rel, indices=[1, 2, 3, 4])
+        result = self.scan()
+        self.assertIn("decision_implementation_invalid", self.codes(result))
+
+    def test_a_failed_acceptance_result_cannot_be_approval_ready(self):
+        rel = self.decision()
+        self.report(rel, results={2: "failed"})
+        result = self.scan()
+        self.assertIn("decision_implementation_invalid", self.codes(result))
+        self.assertIn(("Builder", "BUILDER-DECISION", self.DECISION), self.queues(result))
+
+    def test_a_stale_decision_checksum_is_invalid(self):
+        rel = self.decision()
+        self.report(rel, decision_checksum="sha256:" + "0" * 64)
+        result = self.scan()
+        self.assertIn("decision_implementation_invalid", self.codes(result))
+        self.assertIn(("Builder", "BUILDER-DECISION", self.DECISION), self.queues(result))
+
+    def test_a_mismatched_decision_path_is_invalid(self):
+        rel = self.decision()
+        self.report(rel, decision_path="rulesets/adnd1e/escalations/decisions/DEC-2026-0001.yaml")
+        result = self.scan()
+        self.assertIn("decision_implementation_invalid", self.codes(result))
+
+    def test_a_missing_implementation_file_is_invalid(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        # Remove the file the report vouches for.
+        (self.root / "tooling/common/fixture_impl.py").unlink()
+        result = self.scan()
+        self.assertIn("decision_implementation_invalid", self.codes(result))
+        self.assertNotIn(
+            ("Reviewer", "REVIEWER-DECISION-IMPLEMENTATION", report_id),
+            self.queues(result),
+        )
+
+    def test_a_stale_implementation_file_checksum_is_invalid(self):
+        rel = self.decision()
+        self.report(rel)
+        (self.root / "tooling/common/fixture_impl.py").write_text("# changed\n", encoding="utf-8")
+        result = self.scan()
+        self.assertIn("decision_implementation_invalid", self.codes(result))
+
+    def test_a_non_ready_report_leaves_the_decision_as_builder_work(self):
+        rel = self.decision()
+        self.report(rel, approval_ready=False)
+        result = self.scan()
+        self.assertIn(("Builder", "BUILDER-DECISION", self.DECISION), self.queues(result))
+
+    # -- Review routing -----------------------------------------------------
+    def test_an_approved_review_consumes_the_decision(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        self.implementation_review(report_id, rel, disposition="approved")
+        result = self.scan()
+        q = self.queues(result)
+        self.assertNotIn(("Builder", "BUILDER-DECISION", self.DECISION), q)
+        self.assertNotIn(("Reviewer", "REVIEWER-DECISION-IMPLEMENTATION", report_id), q)
+        self.assertFalse(
+            any(role == "Integrator" for role, _, _ in q),
+            "this lineage creates no Integrator job",
+        )
+
+    def test_a_revision_required_review_is_one_builder_job_and_no_duplicate(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        review_id = self.implementation_review(report_id, rel, disposition="revision_required")
+        result = self.scan()
+        q = self.queues(result)
+        self.assertIn(
+            ("Builder", "BUILDER-DECISION-IMPLEMENTATION-REVISION", review_id), q
+        )
+        self.assertNotIn(("Builder", "BUILDER-DECISION", self.DECISION), q)
+        self.assertNotIn(("Reviewer", "REVIEWER-DECISION-IMPLEMENTATION", report_id), q)
+
+    def test_a_superseding_revision_leaves_only_the_active_leaf(self):
+        rel = self.decision()
+        first = self.report(rel, revision=1, approval_ready=False)
+        second = self.report(rel, revision=2, supersedes=first)
+        result = self.scan()
+        q = self.queues(result)
+        self.assertIn(("Reviewer", "REVIEWER-DECISION-IMPLEMENTATION", second), q)
+        self.assertNotIn(("Reviewer", "REVIEWER-DECISION-IMPLEMENTATION", first), q)
+
+
+class TestImplementationReportValidation(unittest.TestCase):
+    """The report validator, read directly against WORK_QUEUES 1.4."""
+
+    def test_a_wrong_artifact_kind_is_rejected_immediately(self):
+        artifact = scanner.Artifact(
+            Path("x.yaml"), "decision-implementation", "adnd1e", None,
+            {"artifact_kind": "packet_update"},
+        )
+        reasons = scanner._implementation_report_errors(Path("."), artifact, {})
+        self.assertEqual(len(reasons), 1)
+        self.assertIn("artifact_kind", reasons[0])
+
+    def test_an_unknown_decision_is_rejected(self):
+        artifact = scanner.Artifact(
+            Path("x.yaml"), "decision-implementation", "adnd1e", None,
+            {"artifact_kind": "decision_implementation",
+             "decision_input": {"id": "DEC-2026-9999"}},
+        )
+        reasons = scanner._implementation_report_errors(Path("."), artifact, {})
+        self.assertTrue(any("not an approved Decision" in r for r in reasons))
+
+
+class ImplementationReviewProvenanceCase(DecisionImplementationCase):
+    """WORK_QUEUES 1.4: the Review is what consumes a Decision, so it is checked.
+
+    Validating the report but not the Review left the consuming half of the
+    lineage unguarded. An approved Review carrying a checksum of all zeroes
+    retired its Decision, produced no Reviewer job, and emitted no diagnostic --
+    the exact failure REV-IMP-DEC-2026-0023-r01-r01 reported at acceptance test
+    11. An unsound Review must consume nothing and must not hide the report that
+    is still waiting for a sound one.
+    """
+
+    def corrupt_review(self, review_id, **overrides):
+        path = (
+            self.root
+            / "rulesets/adnd1e/decision-implementation-reviews"
+            / f"{review_id}.yaml"
+        )
+        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        for dotted, value in overrides.items():
+            block, _, field = dotted.partition(".")
+            if field:
+                doc[block][field] = value
+            else:
+                doc[block] = value
+        path.write_text(yaml.safe_dump(doc, sort_keys=False), encoding="utf-8")
+
+    def assert_not_consumed(self, report_id, result):
+        """The Decision is back, the report is still Reviewer-ready, and it is loud."""
+        q = self.queues(result)
+        self.assertIn("decision_implementation_review_invalid", self.codes(result))
+        self.assertIn(("Reviewer", "REVIEWER-DECISION-IMPLEMENTATION", report_id), q)
+        self.assertNotIn(
+            ("Builder", "BUILDER-DECISION-IMPLEMENTATION-REVISION", f"REV-{report_id}-r01"), q
+        )
+
+    def test_a_stale_report_checksum_does_not_consume_the_decision(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        review_id = self.implementation_review(report_id, rel)
+        self.corrupt_review(review_id, **{"reviewed_implementation.checksum": "sha256:" + "0" * 64})
+        self.assert_not_consumed(report_id, self.scan())
+
+    def test_a_mismatched_report_path_does_not_consume_the_decision(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        review_id = self.implementation_review(report_id, rel)
+        self.corrupt_review(
+            review_id,
+            **{"reviewed_implementation.path": "rulesets/adnd1e/decision-implementations/OTHER.yaml"},
+        )
+        self.assert_not_consumed(report_id, self.scan())
+
+    def test_a_stale_decision_checksum_does_not_consume_the_decision(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        review_id = self.implementation_review(report_id, rel)
+        self.corrupt_review(review_id, **{"decision_input.checksum": "sha256:" + "0" * 64})
+        self.assert_not_consumed(report_id, self.scan())
+
+    def test_a_mismatched_decision_path_does_not_consume_the_decision(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        review_id = self.implementation_review(report_id, rel)
+        self.corrupt_review(
+            review_id,
+            **{"decision_input.path": "rulesets/adnd1e/escalations/decisions/DEC-2026-0001.yaml"},
+        )
+        self.assert_not_consumed(report_id, self.scan())
+
+    def test_a_review_of_a_superseded_report_does_not_consume_the_decision(self):
+        """A Review must target the active report leaf, not an earlier revision."""
+        rel = self.decision()
+        first = self.report(rel, revision=1)
+        self.implementation_review(first, rel)
+        second = self.report(rel, revision=2, supersedes=first)
+        result = self.scan()
+        q = self.queues(result)
+        # The Review named r01; r02 is the leaf, so it is still awaiting Review.
+        self.assertIn(("Reviewer", "REVIEWER-DECISION-IMPLEMENTATION", second), q)
+        self.assertNotIn(("Builder", "BUILDER-DECISION", self.DECISION), q)
+
+    def test_an_unverified_disposition_does_not_consume_the_decision(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        review_id = self.implementation_review(report_id, rel)
+        path = (
+            self.root
+            / "rulesets/adnd1e/decision-implementation-reviews"
+            / f"{review_id}.yaml"
+        )
+        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        doc["acceptance_dispositions"][1]["disposition"] = "failed"
+        path.write_text(yaml.safe_dump(doc, sort_keys=False), encoding="utf-8")
+        self.assert_not_consumed(report_id, self.scan())
+
+    def test_a_missing_disposition_does_not_consume_the_decision(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        review_id = self.implementation_review(report_id, rel)
+        path = (
+            self.root
+            / "rulesets/adnd1e/decision-implementation-reviews"
+            / f"{review_id}.yaml"
+        )
+        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        doc["acceptance_dispositions"] = doc["acceptance_dispositions"][:1]
+        path.write_text(yaml.safe_dump(doc, sort_keys=False), encoding="utf-8")
+        self.assert_not_consumed(report_id, self.scan())
+
+    def test_a_failed_independent_validation_does_not_consume_the_decision(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        review_id = self.implementation_review(report_id, rel)
+        self.corrupt_review(review_id, **{"independent_validation.passed": False})
+        self.assert_not_consumed(report_id, self.scan())
+
+    def test_a_non_terminal_handoff_does_not_consume_the_decision(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        review_id = self.implementation_review(report_id, rel)
+        self.corrupt_review(review_id, **{"handoff.readiness": "ready"})
+        self.assert_not_consumed(report_id, self.scan())
+
+    def test_a_sound_approved_review_still_consumes_the_decision(self):
+        """The guard must not break the path it protects."""
+        rel = self.decision()
+        report_id = self.report(rel)
+        self.implementation_review(report_id, rel)
+        result = self.scan()
+        q = self.queues(result)
+        self.assertNotIn(("Builder", "BUILDER-DECISION", self.DECISION), q)
+        self.assertNotIn(("Reviewer", "REVIEWER-DECISION-IMPLEMENTATION", report_id), q)
+        self.assertNotIn("decision_implementation_review_invalid", self.codes(result))
+
+    def test_a_sound_revision_required_review_still_returns_builder_work(self):
+        rel = self.decision()
+        report_id = self.report(rel)
+        review_id = self.implementation_review(report_id, rel, disposition="revision_required")
+        result = self.scan()
+        self.assertIn(
+            ("Builder", "BUILDER-DECISION-IMPLEMENTATION-REVISION", review_id),
+            self.queues(result),
+        )
+        self.assertNotIn("decision_implementation_review_invalid", self.codes(result))
+
+
+class SequencedRebuildRoutingCase(QueueScannerCase):
+    """A decided escalation does not by itself make the Builder next.
+
+    DEC-2026-0024 answered the mistletoe identity escalation and, in the same
+    ruling, ordered a routing Review revision ahead of the packet rebuild: the
+    Decision settles identities, and the Review carries those identities down
+    onto individual rows. Calling the rebuild ready the moment the escalation is
+    decided sends the Builder to compile against instructions that do not exist,
+    and the only ways out are a no-op leaf or invented rows.
+    """
+
+    PACKET = "PKT-PHB-001-002-fixture"
+    ESCALATION = "ESC-2026-01-01T00.00.00.000Z"
+
+    def escalated_review(self, *, required_routing_review=None, publish_required=False):
+        gur_id = self.gur(self.PACKET, 1)
+        gup_id = self.gup(self.PACKET, 1, gur_id)
+        review_id = f"REV-{gup_id}-r01"
+        self.write_yaml(
+            f"books/adnd1e/phb/artifacts/reviews/{review_id}.yaml",
+            {
+                "id": review_id,
+                "packet_id": self.PACKET,
+                "revision": 1,
+                "status": "architect_escalation",
+                "overall_disposition": "architect_escalation",
+                "reviewed_gup": {"id": gup_id},
+                "architectural_escalations": [{"id": self.ESCALATION}],
+                "handoff": {
+                    "next_role": "architect",
+                    "readiness": "ready",
+                    "blocking_ids": [],
+                },
+            },
+        )
+        disposition = {"existing_gup": gup_id}
+        if required_routing_review is not None:
+            disposition["required_routing_review"] = required_routing_review.format(
+                gup=gup_id
+            )
+        self.write_yaml(
+            "rulesets/adnd1e/escalations/decisions/DEC-2026-9001.yaml",
+            {
+                "id": "DEC-2026-9001",
+                "status": "approved",
+                "ruleset_id": "adnd1e",
+                "book_id": "phb",
+                "packet_id": self.PACKET,
+                "escalation_id": self.ESCALATION,
+                "migration_required": False,
+                "packet_disposition": disposition,
+                "handoff": {
+                    "next_role": "builder",
+                    "readiness": "ready",
+                    "reason": "the Architect has ruled",
+                    "blocking_ids": [],
+                },
+            },
+        )
+        if publish_required:
+            self.write_yaml(
+                f"books/adnd1e/phb/artifacts/reviews/REV-{gup_id}-r02.yaml",
+                {
+                    "id": f"REV-{gup_id}-r02",
+                    "packet_id": self.PACKET,
+                    "revision": 2,
+                    "supersedes": review_id,
+                    "status": "revision_required",
+                    "overall_disposition": "revision_required",
+                    "reviewed_gup": {"id": gup_id},
+                    "row_decisions": [
+                        {"ref": "B1", "disposition": "approved_with_revision",
+                         "exact_corrections": {"aspect": "as the Decision directs"}},
+                    ],
+                    "handoff": {
+                        "next_role": "builder",
+                        "readiness": "ready",
+                        "blocking_ids": [],
+                    },
+                },
+            )
+        return review_id, self.scan()
+
+    def entries(self, result, state):
+        key = "BlockedItems" if state == "blocked" else "Items"
+        return {
+            (item["Queue"], item["InputId"])
+            for item in result[key]
+            if item["State"] == state and item["Role"] == "Builder"
+        }
+
+    def test_a_decision_naming_an_unpublished_routing_review_blocks_the_rebuild(self):
+        review_id, result = self.escalated_review(
+            required_routing_review="REV-{gup}-r02"
+        )
+        self.assertIn(
+            ("BUILDER-REVISION-BLOCKED", review_id), self.entries(result, "blocked")
+        )
+        self.assertNotIn(
+            ("BUILDER-REVISION", review_id), self.entries(result, "ready")
+        )
+
+    def test_the_blocked_item_names_the_artifact_and_the_decision(self):
+        _, result = self.escalated_review(required_routing_review="REV-{gup}-r02")
+        reason = next(
+            item["Reason"]
+            for item in result["BlockedItems"]
+            if item["Role"] == "Builder"
+        )
+        self.assertIn("r02", reason)
+        self.assertIn("DEC-2026-9001", reason)
+
+    def test_publishing_the_routing_review_releases_the_rebuild(self):
+        """The block must clear on its own, without a Builder edit."""
+        _, result = self.escalated_review(
+            required_routing_review="REV-{gup}-r02", publish_required=True
+        )
+        self.assertEqual(self.entries(result, "blocked"), set())
+        self.assertTrue(
+            any(item["Role"] == "Builder" and item["State"] == "ready"
+                for item in result["Items"])
+        )
+
+    def test_a_decision_ordering_nothing_leaves_the_rebuild_ready(self):
+        """The guard must not block every decided escalation."""
+        review_id, result = self.escalated_review()
+        self.assertEqual(self.entries(result, "blocked"), set())
+        self.assertIn(("BUILDER-REVISION", review_id), self.entries(result, "ready"))
+
+    def test_a_decision_naming_this_review_is_not_its_own_prerequisite(self):
+        """`required_routing_review` pointing at the active leaf describes it."""
+        review_id, result = self.escalated_review(
+            required_routing_review="REV-{gup}-r01"
+        )
+        self.assertEqual(self.entries(result, "blocked"), set())
+        self.assertIn(("BUILDER-REVISION", review_id), self.entries(result, "ready"))
+
+
+class RetiredLineageFixtureMixin:
+    """Fixtures shared by the report and Review halves of DEC-2026-0028.
+
+    Deliberately not a TestCase. Subclassing one case from another would
+    re-run every one of its tests under the second name, which inflates the
+    suite without testing anything new.
+    """
+
+    DECISION = "DEC-2026-9201"
+    AUTHORITY = "DEC-2026-9202"
+    SUBJECT = "GUP-PKT-PHB-001-002-fixture-r01"
+    SUBJECT_PATH = "books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-001-002-fixture-r01.yaml"
+    RECORD = (
+        "books/adnd1e/phb/artifacts/integrated/"
+        "INT-20260804-001-APPROVED-GUP-PKT-PHB-001-002-fixture-r01-r01.json"
+    )
+
+    def setUp(self):
+        super().setUp()
+        (self.root / "books/adnd1e/phb/artifacts/integrated").mkdir(
+            parents=True, exist_ok=True
+        )
+        (self.root / "rulesets/adnd1e/decision-implementations").mkdir(
+            parents=True, exist_ok=True
+        )
+        (self.root / "rulesets/adnd1e/decision-implementation-reviews").mkdir(
+            parents=True, exist_ok=True
+        )
+
+    def sha256(self, relative):
+        import hashlib
+
+        path = self.root / relative
+        if not path.is_file():
+            # Deliberate in the missing-authority case: the report still has to
+            # record some checksum, and the scanner must reject it on the file's
+            # absence rather than on a malformed field.
+            return "sha256:" + "0" * 64
+        return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+    def integration_record(self):
+        path = self.root / self.RECORD
+        path.write_text(
+            json.dumps({"id": "INT-20260804-001", "approved_bundle": "APPROVED"}, indent=2)
+            + "\n",
+            encoding="utf-8", newline="\n",
+        )
+        return self.RECORD
+
+    def decision(self, *, semantics=None):
+        """The Decision under implementation. Two acceptance tests."""
+        document = {
+            "id": self.DECISION,
+            "status": "approved",
+            "ruleset_id": "adnd1e",
+            "book_id": "phb",
+            "migration_required": False,
+            "acceptance_tests": ["a behavior test", "a live queue snapshot"],
+            "handoff": {
+                "next_role": "builder", "readiness": "ready",
+                "reason": "implement", "blocking_ids": [],
+            },
+        }
+        if semantics is not None:
+            document["acceptance_test_semantics"] = semantics
+        self.write_yaml(
+            f"rulesets/adnd1e/escalations/decisions/{self.DECISION}.yaml", document
+        )
+        return f"rulesets/adnd1e/escalations/decisions/{self.DECISION}.yaml"
+
+    def authority(self, *, index=2, subjects=None, checksum=None, kind="live_queue_snapshot",
+                  allowed=True, target=None):
+        """A later Decision authorizing retirement of the legacy Decision's test."""
+        decision_path = f"rulesets/adnd1e/escalations/decisions/{self.DECISION}.yaml"
+        if subjects is None:
+            subjects = [{
+                "id": self.SUBJECT,
+                "path": self.SUBJECT_PATH,
+                "permitted_retirement_state": "consumed_by_integrated_bundle",
+                "integration_record_path": self.RECORD,
+            }]
+        self.write_yaml(
+            f"rulesets/adnd1e/escalations/decisions/{self.AUTHORITY}.yaml",
+            {
+                "id": self.AUTHORITY,
+                "status": "approved",
+                "ruleset_id": "adnd1e",
+                "book_id": "phb",
+                "migration_required": False,
+                "acceptance_tests": ["authorize the retirement"],
+                "handoff": {
+                    "next_role": "builder", "readiness": "ready",
+                    "reason": "authorize", "blocking_ids": [],
+                },
+                "retired_acceptance_authorizations": [{
+                    "decision_input": {
+                        "id": target or self.DECISION,
+                        "path": decision_path,
+                        "checksum": checksum or self.sha256(decision_path),
+                    },
+                    "acceptance_test_index": index,
+                    "kind": kind,
+                    "retirement_allowed": allowed,
+                    "subjects": subjects,
+                }],
+            },
+        )
+        return f"rulesets/adnd1e/escalations/decisions/{self.AUTHORITY}.yaml"
+
+    def report(self, *, retired=None, authority_id=None, result="retired_by_lineage",
+               approval_ready=True, index=2):
+        decision_path = f"rulesets/adnd1e/escalations/decisions/{self.DECISION}.yaml"
+        authority_id = authority_id or self.AUTHORITY
+        authority_path = f"rulesets/adnd1e/escalations/decisions/{authority_id}.yaml"
+        if retired is None:
+            retired = [{
+                "id": self.SUBJECT,
+                "path": self.SUBJECT_PATH,
+                "retirement_state": "consumed_by_integrated_bundle",
+                "integration_record_path": self.RECORD,
+                "integration_record_checksum": self.sha256(self.RECORD),
+            }]
+        snapshot = {
+            "acceptance_test_index": index,
+            "result": result,
+            "evidence": "the subject completed its lineage",
+        }
+        if result == "retired_by_lineage":
+            snapshot["retirement_authority"] = {
+                "id": authority_id,
+                "path": authority_path,
+                "checksum": self.sha256(authority_path),
+                "authorized_acceptance_test_index": index,
+            }
+            snapshot["retired_subjects"] = retired
+        report_id = f"IMP-{self.DECISION}-r01"
+        self.write_yaml(
+            f"rulesets/adnd1e/decision-implementations/{report_id}.yaml",
+            {
+                "id": report_id,
+                "artifact_kind": "decision_implementation",
+                "status": "proposed",
+                "ruleset_id": "adnd1e",
+                "revision": 1,
+                "supersedes": None,
+                "approval_ready": approval_ready,
+                "implemented_by": "builder",
+                "decision_input": {
+                    "id": self.DECISION,
+                    "path": decision_path,
+                    "checksum": self.sha256(decision_path),
+                },
+                "implementation_files": [
+                    {"path": "README.md", "checksum": self.sha256("README.md")}
+                ],
+                "acceptance_results": [
+                    {"acceptance_test_index": 1, "result": "passed", "evidence": "unit test"},
+                    snapshot,
+                ],
+                "validation": {
+                    "passed": True,
+                    "commands": [{
+                        "command": "python -m unittest", "exit_code": 0,
+                        "result": "passed", "summary": "OK",
+                    }],
+                },
+                "handoff": {
+                    "next_role": "reviewer", "readiness": "ready",
+                    "reason": "ready for review", "blocking_ids": [],
+                },
+            },
+        )
+        return report_id
+
+    def build(self, **kwargs):
+        """The whole sound arrangement, with named parts overridable."""
+        self.integration_record()
+        self.decision(semantics=kwargs.pop("semantics", None))
+        if kwargs.pop("with_authority", True):
+            self.authority(**kwargs.pop("authority", {}))
+        report_id = self.report(**kwargs.pop("report", {}))
+        return report_id, self.scan()
+
+    def invalid(self, result):
+        return [
+            d["Message"] for d in result["Diagnostics"]
+            if d["Code"] == "decision_implementation_invalid"
+        ]
+
+    def reviewer_ready(self, result):
+        return [
+            i["InputId"] for i in result["Items"]
+            if i["Role"] == "Reviewer" and i["State"] == "ready"
+        ]
+
+
+class RetiredByLineageCase(RetiredLineageFixtureMixin, QueueScannerCase):
+    """WORK_QUEUES 1.6, ruled by DEC-2026-0028.
+
+    An acceptance test naming a live queue position goes false when its subject
+    completes Approval and Integration -- not because the implementation
+    regressed, but because the pipeline worked. Calling that `passed` falsifies
+    repository state; leaving it unresolved makes the Decision permanently
+    undischargeable. `retired_by_lineage` is the narrow third answer, and it is
+    worth nothing unless every part of its evidence is checked against the
+    repository rather than against the report's own account of it.
+    """
+
+    # -- the outcome works ---------------------------------------------------
+    def test_a_sound_retirement_is_reviewer_ready(self):
+        report_id, result = self.build()
+        self.assertEqual(self.invalid(result), [])
+        self.assertIn(report_id, self.reviewer_ready(result))
+
+    def test_the_decision_may_classify_its_own_snapshot_test(self):
+        """A future Decision needs no later authorization."""
+        self.integration_record()
+        self.decision(semantics=[{
+            "acceptance_test_index": 2,
+            "kind": "live_queue_snapshot",
+            "retirement_allowed": True,
+            "subjects": [{"id": self.SUBJECT, "path": self.SUBJECT_PATH}],
+        }])
+        report_id = self.report(authority_id=self.DECISION)
+        result = self.scan()
+        self.assertEqual(self.invalid(result), [])
+        self.assertIn(report_id, self.reviewer_ready(result))
+
+    # -- and cannot be asserted on weaker facts ------------------------------
+    def test_a_decision_without_semantics_cannot_retire_its_own_test(self):
+        """"A report cannot authorize itself" -- WORK_QUEUES 1.6 condition 2."""
+        self.integration_record()
+        self.decision()
+        report_id = self.report(authority_id=self.DECISION)
+        result = self.scan()
+        self.assertTrue(any("cannot authorize its own" in m for m in self.invalid(result)))
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_a_missing_authority_does_not_retire(self):
+        report_id, result = self.build(with_authority=False)
+        self.assertTrue(
+            any("not an approved Decision" in m for m in self.invalid(result))
+        )
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_a_stale_authority_checksum_does_not_retire(self):
+        """The authority pinned a Decision that has since been re-issued."""
+        report_id, result = self.build(
+            authority={"checksum": "sha256:" + "0" * 64}
+        )
+        self.assertTrue(any("at checksum" in m for m in self.invalid(result)))
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_an_authority_for_another_index_does_not_retire(self):
+        report_id, result = self.build(authority={"index": 1})
+        self.assertTrue(
+            any("does not authorize retiring" in m for m in self.invalid(result))
+        )
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_an_authority_for_another_decision_does_not_retire(self):
+        report_id, result = self.build(authority={"target": "DEC-2026-9999"})
+        self.assertTrue(
+            any("does not authorize retiring" in m for m in self.invalid(result))
+        )
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_a_non_snapshot_test_cannot_be_retired(self):
+        report_id, result = self.build(authority={"kind": "behavior"})
+        self.assertTrue(
+            any("not a live queue snapshot" in m for m in self.invalid(result))
+        )
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_an_authority_withholding_retirement_does_not_retire(self):
+        report_id, result = self.build(authority={"allowed": False})
+        self.assertTrue(
+            any("does not allow retirement" in m for m in self.invalid(result))
+        )
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_partial_subject_coverage_does_not_retire(self):
+        """Two authorized subjects, one accounted for."""
+        report_id, result = self.build(authority={"subjects": [
+            {"id": self.SUBJECT, "path": self.SUBJECT_PATH,
+             "permitted_retirement_state": "consumed_by_integrated_bundle",
+             "integration_record_path": self.RECORD},
+            {"id": "GUR-PKT-PHB-001-002-fixture-r01",
+             "path": "books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-001-002-fixture-r01.yaml",
+             "permitted_retirement_state": "consumed_by_integrated_bundle",
+             "integration_record_path": self.RECORD},
+        ]})
+        self.assertTrue(any("omits the authorized subject" in m for m in self.invalid(result)))
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_an_unauthorized_subject_does_not_retire(self):
+        report_id, result = self.build(report={"retired": [
+            {"id": "GUP-SOMETHING-ELSE-r01", "path": "books/x.yaml",
+             "retirement_state": "consumed_by_integrated_bundle",
+             "integration_record_path": self.RECORD,
+             "integration_record_checksum": "sha256:" + "0" * 64},
+        ]})
+        self.assertTrue(any("which its authority does not name" in m for m in self.invalid(result)))
+
+    def test_a_state_the_authority_does_not_permit_does_not_retire(self):
+        report_id, result = self.build(report={"retired": [
+            {"id": self.SUBJECT, "path": self.SUBJECT_PATH,
+             "retirement_state": "superseded_by_integrated_revision",
+             "integrated_successor_id": "GUP-PKT-PHB-001-002-fixture-r02",
+             "integration_record_path": self.RECORD,
+             "integration_record_checksum": "sha256:" + "0" * 64},
+        ]})
+        self.assertTrue(any("authority permits only" in m for m in self.invalid(result)))
+
+    def test_a_supersession_without_an_integrated_successor_does_not_retire(self):
+        """A merely superseded artifact is not retired -- condition 4."""
+        self.integration_record()
+        self.decision()
+        self.authority(subjects=[{
+            "id": self.SUBJECT, "path": self.SUBJECT_PATH,
+            "permitted_retirement_state": "superseded_by_integrated_revision",
+            "integrated_successor_id": "GUP-PKT-PHB-001-002-fixture-r02",
+            "integration_record_path": self.RECORD,
+        }])
+        report_id = self.report(retired=[{
+            "id": self.SUBJECT, "path": self.SUBJECT_PATH,
+            "retirement_state": "superseded_by_integrated_revision",
+            "integration_record_path": self.RECORD,
+            "integration_record_checksum": self.sha256(self.RECORD),
+        }])
+        result = self.scan()
+        self.assertTrue(any("no integrated successor" in m for m in self.invalid(result)))
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_a_missing_integration_record_does_not_retire(self):
+        self.decision()
+        self.authority()
+        report_id = self.report(retired=[{
+            "id": self.SUBJECT, "path": self.SUBJECT_PATH,
+            "retirement_state": "consumed_by_integrated_bundle",
+            "integration_record_path": self.RECORD,
+            "integration_record_checksum": "sha256:" + "0" * 64,
+        }])
+        result = self.scan()
+        self.assertTrue(any("does not exist" in m for m in self.invalid(result)))
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_a_stale_integration_record_checksum_does_not_retire(self):
+        report_id, result = self.build(report={"retired": [
+            {"id": self.SUBJECT, "path": self.SUBJECT_PATH,
+             "retirement_state": "consumed_by_integrated_bundle",
+             "integration_record_path": self.RECORD,
+             "integration_record_checksum": "sha256:" + "0" * 64},
+        ]})
+        self.assertTrue(
+            any("stale integration-record checksum" in m for m in self.invalid(result))
+        )
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_an_unrelated_integration_record_does_not_retire(self):
+        other = (
+            "books/adnd1e/phb/artifacts/integrated/"
+            "INT-20260101-001-APPROVED-GUP-UNRELATED-r01-r01.json"
+        )
+        self.integration_record()
+        (self.root / other).write_text("{}\n", encoding="utf-8", newline="\n")
+        self.decision()
+        self.authority()
+        report_id = self.report(retired=[{
+            "id": self.SUBJECT, "path": self.SUBJECT_PATH,
+            "retirement_state": "consumed_by_integrated_bundle",
+            "integration_record_path": other,
+            "integration_record_checksum": self.sha256(other),
+        }])
+        result = self.scan()
+        self.assertTrue(any("but its authority cites" in m for m in self.invalid(result)))
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_an_unapproved_authority_does_not_retire(self):
+        self.integration_record()
+        self.decision()
+        path = self.authority()
+        document = yaml.safe_load((self.root / path).read_text(encoding="utf-8"))
+        document["status"] = "proposed"
+        self.write_yaml(path, document)
+        report_id = self.report()
+        result = self.scan()
+        self.assertTrue(any("not an approved Decision" in m for m in self.invalid(result)))
+        self.assertNotIn(report_id, self.reviewer_ready(result))
+
+    def test_an_ordinary_result_may_not_carry_retirement_evidence(self):
+        """Guarded in the schema; asserted here so the two cannot drift."""
+        import json as _json
+        from jsonschema import Draft202012Validator
+
+        repo_root = Path(__file__).resolve().parents[3]
+        schema = _json.loads(
+            (repo_root / "schemas" / "common" / "decision-implementation.schema.json")
+            .read_text(encoding="utf-8")
+        )
+        result = {
+            "acceptance_test_index": 1,
+            "result": "passed",
+            "evidence": "unit test",
+            "retirement_authority": {
+                "id": self.AUTHORITY,
+                "path": f"rulesets/adnd1e/escalations/decisions/{self.AUTHORITY}.yaml",
+                "checksum": "sha256:" + "0" * 64,
+                "authorized_acceptance_test_index": 1,
+            },
+        }
+        # Validated through the whole schema so the internal $ref targets resolve.
+        subschema = dict(schema["$defs"]["acceptanceResult"])
+        subschema["$defs"] = schema["$defs"]
+        validator = Draft202012Validator(subschema)
+        self.assertTrue(list(validator.iter_errors(result)))
+        result.pop("retirement_authority")
+        self.assertEqual(list(validator.iter_errors(result)), [])
+
+
+class RetiredReviewDispositionCase(RetiredLineageFixtureMixin, QueueScannerCase):
+    """The Reviewer half of DEC-2026-0028.
+
+    Approving a retired result is the point at which the retirement becomes
+    real, so the Review has to re-derive the same evidence rather than take the
+    report's word. Allowing a plain `verified` here would make the independent
+    check optional exactly where it matters most.
+    """
+
+    def implementation_review(self, report_id, *, disposition="verified_retired_by_lineage",
+               authority=True, subjects=True, index=2):
+        report_path = f"rulesets/adnd1e/decision-implementations/{report_id}.yaml"
+        decision_path = f"rulesets/adnd1e/escalations/decisions/{self.DECISION}.yaml"
+        authority_path = f"rulesets/adnd1e/escalations/decisions/{self.AUTHORITY}.yaml"
+        snapshot = {
+            "acceptance_test_index": index,
+            "disposition": disposition,
+            "evidence": "re-derived from repository state",
+        }
+        if disposition == "verified_retired_by_lineage":
+            if authority:
+                snapshot["verified_retirement_authority"] = {
+                    "id": self.AUTHORITY,
+                    "path": authority_path,
+                    "checksum": self.sha256(authority_path),
+                    "authorized_acceptance_test_index": index,
+                }
+            if subjects:
+                snapshot["verified_retired_subjects"] = [{
+                    "id": self.SUBJECT,
+                    "path": self.SUBJECT_PATH,
+                    "retirement_state": "consumed_by_integrated_bundle",
+                    "integration_record_path": self.RECORD,
+                    "integration_record_checksum": self.sha256(self.RECORD),
+                }]
+        review_id = f"REV-{report_id}-r01"
+        self.write_yaml(
+            f"rulesets/adnd1e/decision-implementation-reviews/{review_id}.yaml",
+            {
+                "id": review_id,
+                "artifact_kind": "decision_implementation_review",
+                "status": "approved",
+                "ruleset_id": "adnd1e",
+                "revision": 1,
+                "supersedes": None,
+                "reviewed_by": "reviewer",
+                "overall_disposition": "approved",
+                "reviewed_implementation": {
+                    "id": report_id,
+                    "path": report_path,
+                    "checksum": self.sha256(report_path),
+                },
+                "decision_input": {
+                    "id": self.DECISION,
+                    "path": decision_path,
+                    "checksum": self.sha256(decision_path),
+                },
+                "acceptance_dispositions": [
+                    {"acceptance_test_index": 1, "disposition": "verified",
+                     "evidence": "re-ran the unit test"},
+                    snapshot,
+                ],
+                "independent_validation": {
+                    "passed": True,
+                    "commands": [{
+                        "command": "python -m unittest", "exit_code": 0,
+                        "result": "passed", "summary": "OK",
+                    }],
+                },
+                "handoff": {
+                    "next_role": "none", "readiness": "terminal",
+                    "reason": "decision complete", "blocking_ids": [],
+                },
+            },
+        )
+        return review_id
+
+    def review_invalid(self, result):
+        return [
+            d["Message"] for d in result["Diagnostics"]
+            if d["Code"] == "decision_implementation_review_invalid"
+        ]
+
+    def assert_not_consumed(self, report_id, result):
+        """An unsound Review sends the work back to the Reviewer, not the Builder.
+
+        The report is sound, so the Builder has nothing to redo. What failed is
+        the independent check, and the Decision stays unconsumed until a Review
+        that actually re-derives the evidence replaces it.
+        """
+        ready = {
+            (i["Role"], i["InputId"]) for i in result["Items"] if i["State"] == "ready"
+        }
+        self.assertIn(("Reviewer", report_id), ready)
+        self.assertNotIn(("Builder", self.DECISION), ready)
+
+    def test_a_sound_retired_review_consumes_the_decision(self):
+        report_id, _ = self.build()
+        self.implementation_review(report_id)
+        result = self.scan()
+        self.assertEqual(self.review_invalid(result), [])
+        ready = {
+            (i["Role"], i["InputId"]) for i in result["Items"] if i["State"] == "ready"
+        }
+        self.assertNotIn(("Reviewer", report_id), ready)
+        self.assertNotIn(("Builder", self.DECISION), ready)
+
+    def test_plain_verified_cannot_approve_a_retired_result(self):
+        report_id, _ = self.build()
+        self.implementation_review(report_id, disposition="verified")
+        result = self.scan()
+        self.assertTrue(
+            any("needs verified_retired_by_lineage" in m for m in self.review_invalid(result))
+        )
+        self.assert_not_consumed(report_id, result)
+
+    def test_a_retired_disposition_on_an_ordinary_result_is_rejected(self):
+        report_id, _ = self.build()
+        self.implementation_review(report_id, index=1)
+        result = self.scan()
+        self.assertTrue(
+            any("the report records it as 'passed'" in m for m in self.review_invalid(result))
+        )
+        self.assert_not_consumed(report_id, result)
+
+    def test_a_review_omitting_its_own_authority_is_rejected(self):
+        report_id, _ = self.build()
+        self.implementation_review(report_id, authority=False)
+        result = self.scan()
+        self.assertTrue(
+            any("records no retirement_authority" in m for m in self.review_invalid(result))
+        )
+        self.assert_not_consumed(report_id, result)
+
+    def test_a_review_omitting_the_subject_evidence_is_rejected(self):
+        report_id, _ = self.build()
+        self.implementation_review(report_id, subjects=False)
+        result = self.scan()
+        self.assertTrue(
+            any("omits the authorized subject" in m for m in self.review_invalid(result))
+        )
+        self.assert_not_consumed(report_id, result)
+
+
+class DecisionReissueLineageCase(QueueScannerCase):
+    """WORK_QUEUES 1.7 Decision reissue, per DEC-2026-0031 acceptance test 2.
+
+    Architect Decisions are immutable, so a correction is a new Decision naming
+    the old one in `supersedes`. Both files stay on disk. Before this rule the
+    predecessor kept producing a ready Builder job beside its own replacement,
+    which is exactly what DEC-2026-0030 and DEC-2026-0031 did.
+
+    The load-bearing half is what happens when a reissue is *malformed*: it must
+    be reported and suppress nothing, so a broken correction can never quietly
+    cancel the job it was meant to fix.
+    """
+
+    def decision(
+        self,
+        decision_id,
+        *,
+        ruleset="adnd1e",
+        migration=True,
+        revision=1,
+        supersedes=None,
+        status="approved",
+    ):
+        self.write_yaml(
+            f"rulesets/{ruleset}/escalations/decisions/{decision_id}.yaml",
+            {
+                "id": decision_id,
+                "status": status,
+                "ruleset_id": ruleset,
+                "book_id": "phb",
+                "revision": revision,
+                "supersedes": supersedes,
+                "migration_required": migration,
+                "acceptance_tests": ["fixture"],
+                "handoff": {
+                    "next_role": "builder",
+                    "readiness": "ready",
+                    "reason": "fixture",
+                    "blocking_ids": [],
+                },
+            },
+        )
+        return decision_id
+
+    def builder_decision_ids(self, result):
+        return sorted(
+            item["InputId"]
+            for item in result["Items"]
+            if item["Role"] == "Builder" and item["Queue"].startswith("BUILDER-DECISION")
+        )
+
+    def lineage_errors(self, result):
+        return [
+            d["Message"]
+            for d in result["Diagnostics"]
+            if d["Code"] == "decision_reissue_lineage_error"
+        ]
+
+    def test_a_valid_reissue_leaves_only_the_leaf_job(self):
+        self.decision("DEC-2026-9001", revision=1)
+        self.decision("DEC-2026-9002", revision=2, supersedes="DEC-2026-9001")
+        result = self.scan()
+        self.assertEqual(self.builder_decision_ids(result), ["DEC-2026-9002"])
+        self.assertEqual(self.lineage_errors(result), [])
+
+    def test_a_valid_reissue_leaves_the_predecessor_file_alone(self):
+        path = self.root / "rulesets/adnd1e/escalations/decisions/DEC-2026-9001.yaml"
+        self.decision("DEC-2026-9001", revision=1)
+        before = path.read_bytes()
+        self.decision("DEC-2026-9002", revision=2, supersedes="DEC-2026-9001")
+        self.scan()
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_an_unrelated_decision_is_untouched_by_a_reissue_elsewhere(self):
+        self.decision("DEC-2026-9001", revision=1)
+        self.decision("DEC-2026-9002", revision=2, supersedes="DEC-2026-9001")
+        self.decision("DEC-2026-9009", revision=1)
+        result = self.scan()
+        self.assertEqual(
+            self.builder_decision_ids(result), ["DEC-2026-9002", "DEC-2026-9009"]
+        )
+
+    def test_a_missing_predecessor_is_an_error_and_suppresses_nothing(self):
+        self.decision("DEC-2026-9002", revision=2, supersedes="DEC-2026-9001")
+        result = self.scan()
+        self.assertEqual(self.builder_decision_ids(result), ["DEC-2026-9002"])
+        self.assertTrue(
+            any("is not an approved Decision" in m for m in self.lineage_errors(result))
+        )
+
+    def test_an_unapproved_predecessor_is_an_error_and_suppresses_nothing(self):
+        self.decision("DEC-2026-9001", revision=1, status="proposed")
+        self.decision("DEC-2026-9002", revision=2, supersedes="DEC-2026-9001")
+        result = self.scan()
+        # The predecessor was never approved, so it produced no job of its own;
+        # what matters is that the reissue did not silently inherit authority.
+        self.assertEqual(self.builder_decision_ids(result), ["DEC-2026-9002"])
+        self.assertTrue(
+            any("is not an approved Decision" in m for m in self.lineage_errors(result))
+        )
+
+    def test_a_cross_ruleset_reissue_is_an_error_and_says_so(self):
+        (self.root / "rulesets" / "osric" / "escalations" / "decisions").mkdir(
+            parents=True, exist_ok=True
+        )
+        self.decision("DEC-2026-9001", ruleset="osric", revision=1)
+        self.decision("DEC-2026-9002", revision=2, supersedes="DEC-2026-9001")
+        result = self.scan()
+        self.assertIn("DEC-2026-9002", self.builder_decision_ids(result))
+        self.assertIn("DEC-2026-9001", self.builder_decision_ids(result))
+        self.assertTrue(
+            any("does not cross rulesets" in m for m in self.lineage_errors(result))
+        )
+
+    def test_a_changed_migration_flag_is_an_error_and_suppresses_nothing(self):
+        self.decision("DEC-2026-9001", revision=1, migration=True)
+        self.decision(
+            "DEC-2026-9002", revision=2, supersedes="DEC-2026-9001", migration=False
+        )
+        result = self.scan()
+        self.assertEqual(
+            self.builder_decision_ids(result), ["DEC-2026-9001", "DEC-2026-9002"]
+        )
+        self.assertTrue(
+            any(
+                "preserves the predecessor" in m
+                for m in self.lineage_errors(result)
+            )
+        )
+
+    def test_a_forked_reissue_is_an_error_and_suppresses_nothing(self):
+        self.decision("DEC-2026-9001", revision=1)
+        self.decision("DEC-2026-9002", revision=2, supersedes="DEC-2026-9001")
+        self.decision("DEC-2026-9003", revision=2, supersedes="DEC-2026-9001")
+        result = self.scan()
+        self.assertEqual(
+            self.builder_decision_ids(result),
+            ["DEC-2026-9001", "DEC-2026-9002", "DEC-2026-9003"],
+        )
+        self.assertTrue(
+            any("at most one direct successor" in m for m in self.lineage_errors(result))
+        )
+
+    def test_a_reissue_that_does_not_advance_the_revision_is_an_error(self):
+        self.decision("DEC-2026-9001", revision=2)
+        self.decision("DEC-2026-9002", revision=2, supersedes="DEC-2026-9001")
+        result = self.scan()
+        self.assertEqual(
+            self.builder_decision_ids(result), ["DEC-2026-9001", "DEC-2026-9002"]
+        )
+        self.assertTrue(any("not later than" in m for m in self.lineage_errors(result)))
+
+    def test_a_non_migration_reissue_also_derives_from_the_leaf(self):
+        """The rule is about Decision lineage, not about the migration flag."""
+        self.decision("DEC-2026-9001", revision=1, migration=False)
+        self.decision(
+            "DEC-2026-9002", revision=2, supersedes="DEC-2026-9001", migration=False
+        )
+        result = self.scan()
+        self.assertEqual(self.builder_decision_ids(result), ["DEC-2026-9002"])
+
+    def test_a_three_step_lineage_leaves_only_the_last(self):
+        self.decision("DEC-2026-9001", revision=1)
+        self.decision("DEC-2026-9002", revision=2, supersedes="DEC-2026-9001")
+        self.decision("DEC-2026-9003", revision=3, supersedes="DEC-2026-9002")
+        result = self.scan()
+        self.assertEqual(self.builder_decision_ids(result), ["DEC-2026-9003"])
+        self.assertEqual(self.lineage_errors(result), [])
+
+    def test_the_live_superseded_pipes_decision_creates_no_builder_job(self):
+        """The case that motivated the rule, against the real repository.
+
+        Only the superseded half is asserted. Whether DEC-2026-0031 is itself
+        ready depends on whether a migration has consumed it yet, and pinning
+        that would make this test a claim about which artifact is current --
+        true today and false the next time the lineage advances.
+        """
+        repo_root = Path(__file__).resolve().parents[3]
+        decisions = repo_root / "rulesets" / "adnd1e" / "escalations" / "decisions"
+        if not (decisions / "DEC-2026-0031.yaml").exists():  # pragma: no cover
+            self.skipTest("DEC-2026-0031 is not present")
+        result = scanner.scan_repository(repo_root)
+        ready = {
+            item["InputId"]
+            for item in result["Items"]
+            if item["Role"] == "Builder" and item["Queue"].startswith("BUILDER-DECISION")
+        }
+        self.assertNotIn("DEC-2026-0030", ready)
+        self.assertTrue(
+            (decisions / "DEC-2026-0030.yaml").exists(),
+            "the superseded Decision stays on disk as history",
+        )
+        self.assertEqual(
+            [
+                d["Message"]
+                for d in result["Diagnostics"]
+                if d["Code"] == "decision_reissue_lineage_error"
+            ],
+            [],
+            "the live reissue lineage is valid",
+        )
