@@ -1,0 +1,150 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0051-r01
+artifact_kind: decision_implementation
+status: blocked
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: false
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0051
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0051.yaml
+  checksum: sha256:acd32e14c2073a0fa7148bdfa17b894d437de3959c0296b080b6f2158035d0ed
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:5bba3cbfb661e8264fd912e292928b1e16b278f4ad914619358b6e50ee99a1ae
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:8cfc8426863f771d546264cfa9c19aef4c358ca14c618c393916e7cd0058cafb
+- path: agents/reviewer/INSTRUCTIONS.md
+  checksum: sha256:2a086ead7c51170dcf28abe7f91b91950431245970de97dea86447d755900e9a
+- path: schemas/common/review.schema.json
+  checksum: sha256:657733ed7a1e59dca020866c1b69dfe7a74eadeb78ba144c44ab49213a7a757e
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:6d3374b272358a2a29b5190e44b4ba151daf331ae66a99125f566d4c331925d2
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0051.yaml
+  checksum: sha256:acd32e14c2073a0fa7148bdfa17b894d437de3959c0296b080b6f2158035d0ed
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-20T00.00.28.975Z.yaml
+  checksum: sha256:74a0e45a58d45a978b3df6cd8ca71f9b7c694ad5e73beab35eb2d32ab7460d7a
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'VERIFIED AGAINST THE PUBLISHED FILE, WHICH THE ARCHITECT WROTE, as current-state contract
+    evidence under this Decision''s own declared versioned_contract_content semantics. contracts/WORK_QUEUES.md
+    is Version 1.17, at the declared 1.17 floor. All three anchors are present: the ''### Review Disposition
+    Vocabulary'' section states the four legal per-row dispositions and that `approved_but_excluded_from_bundle`
+    is invalid (line 80); it separates the Review outcome from Approved-bundle membership, saying the
+    disposition records the judgment about the row and that an excluded row''s exclusion is packaging
+    evidence rather than a fifth disposition (line 79); and the `review_contract_version: ''1.1''` publication
+    check is stated at line 85.'
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0051
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0051.yaml
+      checksum: sha256:acd32e14c2073a0fa7148bdfa17b894d437de3959c0296b080b6f2158035d0ed
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:5bba3cbfb661e8264fd912e292928b1e16b278f4ad914619358b6e50ee99a1ae
+      observed_version: '1.17'
+      minimum_version: '1.17'
+      anchors_present:
+      - review_contract_version
+      - approved_but_excluded_from_bundle is invalid
+      - Approved-bundle membership
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'VERIFIED AGAINST THE PUBLISHED FILE, WHICH THE ARCHITECT WROTE. contracts/ARTIFACT_LIFECYCLE.md
+    is Version 1.13, at the declared 1.13 floor. Section 4 lists the same four dispositions including
+    `approved_with_revision` (line 134), requires every per-row `edge_decisions` or `row_decisions` value
+    under Review 1.1 to be one of them and to validate through schemas/common/review.schema.json before
+    publication (lines 137-139), and requires a packaging exclusion to be recorded as packaging evidence
+    outside the disposition field: ''A source-supported `approved` row may remain in a checksummed `blocked.csv`
+    outside the bundle; record that exclusion as packaging evidence.'' It closes by stating the invalid
+    term is not a legal disposition.'
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0051
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0051.yaml
+      checksum: sha256:acd32e14c2073a0fa7148bdfa17b894d437de3959c0296b080b6f2158035d0ed
+      authorized_acceptance_test_index: 2
+    authorized_acceptance_test_index: 2
+    contracts:
+    - path: contracts/ARTIFACT_LIFECYCLE.md
+      checksum: sha256:8cfc8426863f771d546264cfa9c19aef4c358ca14c618c393916e7cd0058cafb
+      observed_version: '1.13'
+      minimum_version: '1.13'
+      anchors_present:
+      - approved_with_revision
+      - packaging exclusions
+      - per-row disposition
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED, BOTH DIRECTIONS AND BOTH SHAPES. schemas/common/review.schema.json
+    gains an opt-in branch: when review_contract_version is ''1.1'', every per-row decision in edge_decisions
+    and row_decisions must carry one of the four legal dispositions. TestReviewDispositionVocabulary proves
+    each of the four is accepted (test_every_legal_disposition_is_accepted), that approved_but_excluded_from_bundle
+    is rejected in edge_decisions and in row_decisions, that any other unknown term is rejected rather
+    than only the named one, and that one bad row among good ones still fails. test_both_published_shapes_are_checked
+    pins the mapping form as well as the list form, because the corpus uses both and checking one while
+    silently passing the other is how an invalid value survives a validator. Legacy compatibility: test_a_legacy_review_without_the_field_is_untouched
+    and its mapping-shape twin show a Review omitting the field still validates carrying the illegal term,
+    and test_another_declared_version_does_not_opt_in shows the check is keyed to ''1.1'' exactly. Two
+    false-positive guards: a grouped summary such as `edge_decisions: {approved_refs: [...]}` states no
+    per-row judgment and is left alone, and a row carrying no disposition is untouched. Live corpus: all
+    111 published Reviews validate, verified by TestPublishedReviewsStillValidate.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'THIS REPORT IS THE PROOF, AND IT RECORDS REAL RUNS. The focused tests are TestReviewDispositionVocabulary
+    and TestPublishedReviewsStillValidate: 14 tests, all passing. The schema itself is checked as a valid
+    Draft 2020-12 document by the suite''s own schema-validity test. The full common suite, which contains
+    both the schema and these tests, runs 647 tests and passes. Both commands are recorded in the validation
+    block with exact exit codes. The independent Review that acceptance test 4 calls for is sequence step
+    3 and is the Reviewer''s to publish.'
+- acceptance_test_index: 5
+  result: not_run
+  evidence: 'NOT THE BUILDER''S TO EVIDENCE, AND NOT YET POSSIBLE FOR ANYONE. This test describes REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06:
+    that it supersede r05-r05 without modifying r03 or r04, declare Review 1.1, use `approved` for exactly
+    M025, M026, M058, M072, M073 and M074, record their checksummed blocked component as packaging evidence,
+    and introduce no novel disposition. That is a Reviewer artifact, assigned by this Decision''s sequence
+    step 4, which the Decision places after step 3 -- the independent Review of this very report. So r06
+    cannot exist at the moment this report is written, and the Builder may not publish a Review in any
+    case. Recorded as not_run rather than passed, which is why approval_ready is false. Acceptance test
+    4 speaks of the Review verifying ''every direct implementation acceptance test'', and this Decision''s
+    post_implementation_requirements already treat the downstream r07 GUP, Approved bundle and Integrator
+    preflight as non-blocking; test 5 looks like the same kind of downstream artifact and may belong there
+    too. That is the Architect''s call, not the Builder''s, so it is reported as it stands rather than
+    resolved here.'
+handoff:
+  next_role: reviewer
+  readiness: blocked
+  reason: 'Every Builder-owned part of this Decision is implemented and evidenced: the opt-in Review 1.1
+    vocabulary gate is in schemas/common/review.schema.json, 14 focused tests pass, all 111 published
+    Reviews still validate as immutable history, and the common suite is 647 OK. Acceptance tests 1 and
+    2 carry structured versioned_contract_content evidence against WORK_QUEUES 1.17 and ARTIFACT_LIFECYCLE
+    1.13, both at their declared floors with every anchor located in the current text. Acceptance test
+    5 is recorded not_run: it describes the Reviewer''s r06 Review, which this Decision''s sequence places
+    at step 4, after the step 3 independent review of this report, so it cannot exist yet and is not the
+    Builder''s to publish. That single result is what holds approval_ready false. Separately and unrelated
+    to this Decision, the Builder suite is red on the DEC-2026-0014 debt pin, which DEC-2026-0050 now
+    assigns to the Builder as a decision_migration_v3; no file in this Decision''s exact_diff is Builder
+    compiler code, and both suites recorded here are green.'
+  blocking_ids:
+  - REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06
+validation_report: build/reports/IMP-DEC-2026-0051-r01.validation.json
+validation_report_checksum: sha256:fb69b8f9456aa89217ce698bcc45adcc5361be218f18fe45577ccf7d269eb88b
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 647 tests in 97.879s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_common_schemas.TestReviewDispositionVocabulary
+      test_common_schemas.TestPublishedReviewsStillValidate'
+    exit_code: 0
+    result: passed
+    summary: Ran 14 tests in 4.189s OK

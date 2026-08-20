@@ -1,0 +1,259 @@
+schema_version: '1.0'
+id: DEC-2026-0051
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-094-100-illusionist-spells
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Add the opt-in Review 1.1 disposition-schema validation and publish the
+    Decision Implementation Report. The Reviewer successor work follows that
+    implementation review; neither historic Review is rewritten.
+  blocking_ids: []
+
+decision_date: '2026-08-20'
+escalation_id: ESC-2026-08-20T00.00.28.975Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  Is `approved_but_excluded_from_bundle` a legal per-edge Review disposition, and
+  how must the active Illusionist Review lineage recover without rewriting immutable
+  Reviews or causing Builder to infer a disposition?
+
+ruling: >-
+  No. The only legal per-edge dispositions are `approved`,
+  `approved_with_revision`, `rejected`, and `architect_escalation`.
+  `approved_but_excluded_from_bundle` is invalid and is not added to the
+  vocabulary. It conflates two independent facts: `approved` is the Reviewer's
+  judgment that an assertion is correct, while Approved-bundle membership is a
+  packaging fact derived from the GUP's approved/pending/blocked components and
+  governed by DEC-2026-0047. A correct row may be `approved` and remain outside
+  an Approved edge component because it is in the GUP's checksummed
+  `blocked.csv`; that exclusion must be recorded as packaging evidence, not as a
+  fifth row disposition.
+
+  `REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r03` and `-r04` remain
+  immutable history. Reviewer publishes
+  `REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06`, superseding the active
+  `-r05` leaf for the same immutable r05 GUP. It must restate M025, M026, M058,
+  M072, M073, and M074 as `approved`, preserve the nine r05 rejections through
+  the normal Review chain, and record the six-row `blocked.csv` exclusion as
+  packaging evidence only. Builder then publishes the normal r07 GUP successor;
+  it neither maps an unknown term nor creates a no-op artifact. The ordinary
+  Review/Approved/Integrator lifecycle follows from that successor.
+
+  New Reviews declaring `review_contract_version: '1.1'` must validate every
+  per-row `edge_decisions` or `row_decisions` disposition against the four-term
+  vocabulary at publication. The opt-in field preserves immutable legacy history
+  while making an unrecognized disposition a schema failure before it can become
+  an otherwise valid downstream handoff.
+
+rationale:
+  - >-
+    `tooling/builder/src/adnd1e_builder/review.py` already has exactly the four
+    executable dispositions and correctly rejects an unrecognized fifth term.
+    Adding a synonym would let Review invent operational states that no contract
+    or compiler behavior defines.
+  - >-
+    DEC-2026-0047 explicitly keeps `blocked.csv` outside the Approved bundle.
+    Its six records remain source-supported but are blocked on the named
+    cross-packet work, so their bundle exclusion is neither a source rejection
+    nor an architectural escalation.
+  - >-
+    A successor Review is the established append-only correction mechanism.
+    Restating the six active row rulings as `approved` makes the later Review
+    override the inherited invalid term without altering r03 or r04.
+
+affected_artifacts:
+  immutable_history:
+    - id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r03
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r03.yaml
+      disposition: retain_unchanged
+    - id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r04
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r04.yaml
+      disposition: retain_unchanged
+  active_review_leaf:
+    id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05.yaml
+    disposition: supersede_with_r06
+  reviewed_gup:
+    id: GUP-PKT-PHB-094-100-illusionist-spells-r05
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-094-100-illusionist-spells-r05.yaml
+    checksum: sha256:366dbf305a6fe2483dc9993e58928489ba676a8546fcac1b078273fc6421b049
+    disposition: immutable_input_to_r06
+  blocked_component:
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-094-100-illusionist-spells-r05.blocked.csv
+    rows: 6
+    refs: [M025, M026, M058, M072, M073, M074]
+    disposition: packaging_evidence_not_a_row_disposition
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: >-
+    A Review successor corrects the active Review vocabulary, then a normal
+    Builder GUP successor and normal Review/Approved/Integration sequence resume.
+  direct_implementation: >-
+    Builder adds the opt-in Review 1.1 schema validation and its regression
+    coverage; its Decision Implementation Report is independently reviewed
+    before the successor Review is published.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, update the Review-vocabulary contract and Reviewer
+      instructions, and close the escalation. Do not change Review, GUP, bundle,
+      or canonical data.
+  - step: 2
+    owner: builder
+    action: >-
+      Add the opt-in `review_contract_version: '1.1'` common schema validation
+      and focused tests, then publish IMP-DEC-2026-0051-r01. The schema must
+      accept each of the four legal dispositions and reject
+      approved_but_excluded_from_bundle on `edge_decisions` and `row_decisions`.
+      It must not invalidate a Review that omits the opt-in version field.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0051-r01. Verify the opt-in boundary,
+      legal-vocabulary enforcement, and legacy-history compatibility before
+      approving the implementation review.
+  - step: 4
+    owner: reviewer
+    action: >-
+      Publish REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06, superseding
+      r05-r05. Declare review_contract_version 1.1; restate the six named refs
+      as `approved`; carry the blocked-component path, checksum, refs, and
+      exclusion reason in packaging evidence; and hand off normally to Builder.
+      Do not rewrite r03/r04, emit an Approved bundle, or call the six rows
+      rejected or architect_escalation.
+  - step: 5
+    owner: builder
+    action: >-
+      Consume the r06 Review through the normal compiler and publish
+      GUP-PKT-PHB-094-100-illusionist-spells-r07. It applies the inherited nine
+      legal rejections, retains the six source-supported blocked rows in the
+      blocked component when their cross-packet endpoints remain unresolved, and
+      emits no unknown-disposition error.
+  - step: 6
+    owner: reviewer
+    action: >-
+      Review r07 and, only when its approved/pending component and blocked
+      exclusion are complete and checksummed, publish the normal Approved bundle.
+  - step: 7
+    owner: integrator
+    action: >-
+      Integrate only the ordinary approved r07 bundle and then re-run the
+      normal five-field batch preflight for the dependent Magic-User bundles.
+
+acceptance_tests:
+  - >-
+    WORK_QUEUES version 1.17 or later retains the four legal Review row
+    dispositions, the separation of Review outcome from Approved-bundle
+    membership, and the `review_contract_version: '1.1'` publication check.
+  - >-
+    ARTIFACT_LIFECYCLE version 1.13 or later retains the same four-term Review
+    disposition vocabulary and requires a successor Review to record packaging
+    exclusions outside the per-row disposition field.
+  - >-
+    Under review_contract_version 1.1, `schemas/common/review.schema.json`
+    accepts the four legal values in edge_decisions and row_decisions and rejects
+    approved_but_excluded_from_bundle. A legacy Review omitting that field still
+    validates as immutable history.
+  - >-
+    The Builder implementation report proves the schema and focused tests pass;
+    its independent Review verifies every direct implementation acceptance test.
+  - >-
+    r06 supersedes r05-r05 without modifying r03/r04, declares Review 1.1,
+    uses `approved` for exactly M025, M026, M058, M072, M073, and M074, records
+    their checksummed blocked component as packaging evidence, and introduces no
+    novel disposition.
+
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.17'
+        substantive_anchors:
+          - review_contract_version
+          - approved_but_excluded_from_bundle is invalid
+          - Approved-bundle membership
+  - acceptance_test_index: 2
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/ARTIFACT_LIFECYCLE.md
+        minimum_version: '1.13'
+        substantive_anchors:
+          - approved_with_revision
+          - packaging exclusions
+          - per-row disposition
+
+post_implementation_requirements:
+  - >-
+    The Builder r07, Reviewer r07, Approved bundle, and Integrator preflight are
+    ordinary downstream artifacts. They do not block the direct schema
+    implementation review, but they must follow the exact successor sequence.
+  - >-
+    The six blocked rows remain source-supported history. A future request to
+    package them independently needs its own governed eligibility and Integrator
+    behavior; this Decision does not create such a component kind.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This is artifact-review vocabulary and packaging governance. It does not
+    alter ontology, source meaning, assertion identity, or graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.17 and ARTIFACT_LIFECYCLE 1.13 separate row dispositions from
+    packaging membership and add opt-in Review 1.1 vocabulary validation.
+  - >-
+    Reviewer instructions forbid using a disposition to express a blocked or
+    excluded bundle state.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.16 -> 1.17; define the Review 1.1 four-term row vocabulary and packaging separation.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.12 -> 1.13; require legal row dispositions and separate packaging-exclusion evidence.'
+  agents/reviewer/INSTRUCTIONS.md:
+    - 'Require Review 1.1 validation and prohibit disposition-based bundle exclusion.'
+  schemas/common/review.schema.json:
+    - 'Add opt-in Review 1.1 edge_decisions and row_decisions disposition validation.'
+  tooling/common/tests/test_common_schemas.py:
+    - 'Cover Review 1.1 legal and illegal dispositions while retaining legacy compatibility.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0051.yaml:
+    - 'Record the invalid disposition ruling and exact recovery sequence.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-20T00.00.28.975Z.yaml:
+    - 'Record the resolving Decision and move the immutable escalation out of pending.'
+
+exact_diff_ownership:
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: contracts/ARTIFACT_LIFECYCLE.md, owner: architect, sequence_step: 1}
+  - {path: agents/reviewer/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: schemas/common/review.schema.json, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_common_schemas.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0051.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-20T00.00.28.975Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Do not rewrite r03/r04, accept an extra disposition, or change the six rows' source meaning.
+  builder:
+    - Implement only the Review 1.1 schema gate, publish its implementation report, then perform the ordinary r07 compile after r06 is published.
+  reviewer:
+    - Independently review the implementation report and then publish the legal r06 Review successor with separate packaging evidence.
+  integrator:
+    - Wait for the ordinary approved r07 bundle; never infer a disposition from a blocked component.

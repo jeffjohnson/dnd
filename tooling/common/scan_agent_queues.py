@@ -44,6 +44,7 @@ ROLE_BY_NAME = {role.lower(): role for role in ROLE_ORDER}
 DEFAULT_ROOT = Path(__file__).resolve().parents[2]
 REVISION_PATTERN = re.compile(r"-r(\d+)$")
 APPROVED_ID_PATTERN = re.compile(r"\bAPPROVED-[A-Za-z0-9._-]+")
+CHECKSUM_PATTERN = re.compile(r"^sha256:[0-9a-f]{64}$")
 COMPONENT_SUFFIXES = (
     ".edges.csv",
     ".nodes.csv",
@@ -212,6 +213,23 @@ def _packaged_gup_id(manifest: dict[str, Any] | None, review: "Artifact") -> str
     return str(reviewed or "")
 
 
+#: The one reason an integrated migration is allowed to carry. A migration's
+#: whole purpose is to change the canonical baseline, so once it has been applied
+#: the state it was planned against is necessarily gone. Reporting that as work
+#: told the Builder to re-issue a transaction the Integrator had already
+#: completed, and buried the drift reports that do mean something.
+#: DEC-2026-0043: the roles a non-migration Decision may assign its
+#: implementation to. Deliberately not every role -- this lifecycle is for
+#: tooling, contract, schema and operational work, and it never authorizes
+#: canonical or registry mutation, which still requires an Approved GUP.
+DIRECT_IMPLEMENTATION_OWNERS = frozenset({"builder", "integrator"})
+
+BASELINE_MOVED_REASON = (
+    "was planned against a canonical baseline that has since changed; "
+    "Builder must re-issue it"
+)
+
+
 def _decision_migration_errors(
     root: Path,
     artifact: Artifact,
@@ -318,10 +336,7 @@ def _decision_migration_errors(
         elif _sha256_of(canonical_path) != canonical_checksum:
             # The plan describes a before-state that is no longer there. Applying
             # it would edit rows nobody reviewed.
-            reasons.append(
-                "was planned against a canonical baseline that has since changed; "
-                "Builder must re-issue it"
-            )
+            reasons.append(BASELINE_MOVED_REASON)
 
     report = str(data.get("validation_report") or "")
     report_checksum = str(data.get("validation_report_checksum") or "")
@@ -494,27 +509,173 @@ def _sequenced_prerequisites(
     Only an exact named artifact counts. Prose sequencing is left alone, because
     guessing an order out of prose is how a queue starts inventing governance.
     """
+    # WORK_QUEUES 1.7: the Decision that answered the escalation may since have
+    # been reissued, and only the leaf of that lineage states the current ruling.
+    # The Bards M048 escalation was answered by DEC-2026-0030, reissued as
+    # DEC-2026-0031 and then DEC-2026-0037 -- and only the leaf carries the
+    # corrected identity. Matching on `escalation_id` alone stopped at the
+    # original, whose text says nothing about ordering, so the rebuild looked
+    # ready while the instruction set it needed did not exist.
+    successors = {
+        str(document.get("supersedes") or "").strip(): decision_id
+        for decision_id, (_, document) in decisions.items()
+        if str(document.get("supersedes") or "").strip()
+    }
+
     prerequisites: list[str] = []
     for decision_id, (_, document) in sorted(decisions.items()):
         if str(document.get("escalation_id") or "") not in blockers:
             continue
+        seen = {decision_id}
+        while decision_id in successors and successors[decision_id] not in seen:
+            decision_id = successors[decision_id]
+            seen.add(decision_id)
+        document = decisions[decision_id][1]
         disposition = document.get("packet_disposition")
-        if not isinstance(disposition, dict):
-            continue
-        required = str(disposition.get("required_routing_review") or "").strip()
-        # A Decision naming the Review that already exists is describing this
-        # one, not asking for a further revision.
-        if not required or required == review_id:
-            continue
-        if not (artifacts_root / "reviews" / f"{required}.yaml").is_file():
-            prerequisites.append(f"{required} (required by {decision_id})")
+        if isinstance(disposition, dict):
+            required = str(disposition.get("required_routing_review") or "").strip()
+            # A Decision naming the Review that already exists is describing this
+            # one, not asking for a further revision.
+            if required and required != review_id:
+                if not (artifacts_root / "reviews" / f"{required}.yaml").is_file():
+                    prerequisites.append(f"{required} (required by {decision_id})")
+        prerequisites.extend(_correction_prerequisites(review_id, decision_id, document))
     return sorted(prerequisites)
+
+
+def _correction_prerequisites(
+    review_id: str, decision_id: str, document: dict[str, Any]
+) -> list[str]:
+    """A Decision that hands a named Review a correction requires its successor.
+
+    The other shape names a Review that does not exist yet. This one names a
+    Review that does -- the current leaf -- and states a correction the Reviewer
+    must apply to it, so what is missing is the revision rather than the file.
+    DEC-2026-0037 does exactly that: it replaces the Bards M048 row with an
+    assertion naming the post-migration identity, and sequences the Reviewer's
+    revision ahead of the Builder's rebuild. Reading only the first shape, the
+    queue called the rebuild ready while the corrected instruction set did not
+    exist, and building against the stale Review would have emitted the retired
+    `item_pipes_sewer` that the same Decision exists to remove.
+
+    The trigger is an exact named artifact carrying an exact correction, never
+    prose: an `affected_artifacts` entry whose `id` is this leaf and which states
+    a `correction_id` or `replacement_assertion`. A Decision merely mentioning a
+    Review says nothing about ordering. Because the entry names the *leaf*, the
+    correction cannot have been applied yet -- once it is, the leaf is the
+    successor and this stops matching on its own.
+    """
+    affected = document.get("affected_artifacts")
+    if not isinstance(affected, dict):
+        return []
+    found: list[str] = []
+    for key, entry in sorted(affected.items()):
+        if not isinstance(entry, dict):
+            continue
+        if str(entry.get("id") or "").strip() != review_id:
+            continue
+        correction = str(entry.get("correction_id") or "").strip()
+        if not correction and not isinstance(entry.get("replacement_assertion"), dict):
+            continue
+        found.append(
+            f"a successor to {review_id} applying "
+            f"{correction or 'the replacement assertion'} (required by {decision_id})"
+        )
+    return found
 
 
 #: Roles a handoff may name, per WORK_QUEUES "Required Handoff Metadata".
 HANDOFF_ROLES = frozenset(
     {"analyst", "builder", "reviewer", "architect", "integrator", "none"}
 )
+
+
+#: Fallback handoff shape, used only when the envelope schema cannot be read.
+#: The scanner deliberately depends on nothing but PyYAML, so it degrades to
+#: reporting queues rather than failing when the repository is incomplete.
+_FALLBACK_HANDOFF_SHAPE = {
+    "roles": HANDOFF_ROLES,
+    "readiness": frozenset({"ready", "blocked", "terminal"}),
+    "required": frozenset({"next_role", "readiness", "reason", "blocking_ids"}),
+    "properties": frozenset({"next_role", "readiness", "reason", "blocking_ids"}),
+}
+
+_HANDOFF_SHAPE_CACHE: dict[Path, dict[str, frozenset[str]]] = {}
+
+
+def _handoff_shape(root: Path) -> dict[str, frozenset[str]]:
+    """The handoff vocabulary, read from the schema that defines it.
+
+    Restating the enums here would let the scanner and the schema disagree about
+    what a valid handoff is -- and the scanner's whole job under WORK_QUEUES
+    1.11 is to say which artifacts do not conform. Read with `json` rather than
+    validated with `jsonschema` so this stays a dependency-free reporting tool.
+    """
+    if root in _HANDOFF_SHAPE_CACHE:
+        return _HANDOFF_SHAPE_CACHE[root]
+    shape = dict(_FALLBACK_HANDOFF_SHAPE)
+    path = root / "schemas" / "common" / "artifact-envelope.schema.json"
+    try:
+        handoff = json.loads(path.read_text(encoding="utf-8"))["$defs"]["handoff"]
+        properties = handoff["properties"]
+        shape = {
+            "roles": frozenset(properties["next_role"]["enum"]),
+            "readiness": frozenset(properties["readiness"]["enum"]),
+            "required": frozenset(handoff["required"]),
+            "properties": frozenset(properties),
+        }
+    except (OSError, ValueError, KeyError, TypeError):  # pragma: no cover
+        pass
+    _HANDOFF_SHAPE_CACHE[root] = shape
+    return shape
+
+
+def _handoff_defects(document: dict[str, Any], shape: dict[str, frozenset[str]]) -> list[str]:
+    """Why a present handoff does not conform, as field-level phrases.
+
+    Returns `[]` both for a conforming handoff and for an absent one; the caller
+    distinguishes those two cases, because a missing block is a legacy artifact
+    and a malformed one is a broken workflow.
+    """
+    handoff = document.get("handoff")
+    if not isinstance(handoff, dict):
+        return []
+
+    defects: list[str] = []
+    for key in sorted(shape["required"] - set(handoff)):
+        defects.append(f"{key} is missing")
+    for key in sorted(set(handoff) - shape["properties"]):
+        defects.append(f"{key} is not a handoff field")
+
+    role = handoff.get("next_role")
+    if "next_role" in handoff and role not in shape["roles"]:
+        defects.append(f"next_role is {role!r}, not one of {sorted(shape['roles'])}")
+
+    readiness = handoff.get("readiness")
+    if "readiness" in handoff and readiness not in shape["readiness"]:
+        defects.append(
+            f"readiness is {readiness!r}, not one of {sorted(shape['readiness'])}"
+        )
+
+    if "reason" in handoff and not str(handoff.get("reason") or "").strip():
+        defects.append("reason is empty")
+
+    blocking = handoff.get("blocking_ids")
+    if "blocking_ids" in handoff and not isinstance(blocking, list):
+        defects.append("blocking_ids is not a list")
+        blocking = []
+    blocking = blocking or []
+
+    # The schema's three conditional invariants. Expressed here because they are
+    # `if`/`then` subschemas rather than enums, and named so a diagnostic can
+    # say which one failed.
+    if readiness == "terminal" and role != "none":
+        defects.append("readiness is terminal but next_role is not none")
+    if readiness in ("ready", "terminal") and blocking:
+        defects.append(f"readiness is {readiness} but blocking_ids names {len(blocking)}")
+    if readiness == "blocked" and not blocking:
+        defects.append("readiness is blocked but blocking_ids is empty")
+    return defects
 
 
 def _handoff_role(document: dict[str, Any]) -> str:
@@ -954,10 +1115,447 @@ def _decision_reissue_leaves(
     return superseded
 
 
+
+#: WORK_QUEUES 1.12 rule 14 applies only to Decisions that opt in by declaring
+#: this authoring-contract version. Every Decision published before DEC-2026-0045
+#: predates the requirement and remains valid immutable history; reading the rule
+#: onto them would retroactively invalidate the record rather than govern new work.
+DECISION_AUTHORING_CONTRACT_OWNERSHIP = "1.1"
+
+#: The roles a Decision may assign a path to. Any other value is unknown: an
+#: exact_diff path assigned to "tooling" or "architect team" names no one who can
+#: be handed the work.
+DECISION_OWNER_ROLES = frozenset(
+    {"architect", "analyst", "builder", "reviewer", "integrator"}
+)
+
+
+def _decision_assigned_roles(document: dict[str, Any]) -> set[str]:
+    """The roles this Decision actually schedules work for.
+
+    WORK_QUEUES 1.12 rule 14 names exactly two sources: a sequence step and a
+    `follow_up_owners` entry. The older singular `follow_up_owner` is deliberately
+    not read here. Accepting it would widen the rule the guard exists to enforce,
+    and a role that appears only there has been named as a contact rather than
+    scheduled to do anything.
+    """
+
+    roles: set[str] = set()
+    sequence = document.get("sequence")
+    if isinstance(sequence, list):
+        for entry in sequence:
+            if isinstance(entry, dict):
+                owner = str(entry.get("owner") or "").strip().lower()
+                if owner:
+                    roles.add(owner)
+    follow_up = document.get("follow_up_owners")
+    if isinstance(follow_up, dict):
+        for key in follow_up:
+            role = str(key).strip().lower()
+            if role:
+                roles.add(role)
+    elif isinstance(follow_up, list):
+        for entry in follow_up:
+            if isinstance(entry, str) and entry.strip():
+                roles.add(entry.strip().lower())
+    return roles
+
+
+def _sequence_owner_by_step(document: dict[str, Any]) -> dict[int, str]:
+    """Step number -> declared owner, for entries that carry both."""
+
+    owners: dict[int, str] = {}
+    sequence = document.get("sequence")
+    if not isinstance(sequence, list):
+        return owners
+    for entry in sequence:
+        if not isinstance(entry, dict):
+            continue
+        step = entry.get("step")
+        owner = str(entry.get("owner") or "").strip().lower()
+        if isinstance(step, int) and not isinstance(step, bool) and owner:
+            owners[step] = owner
+    return owners
+
+
+def _exact_diff_ownership_errors(document: dict[str, Any]) -> list[str]:
+    """WORK_QUEUES 1.12 rule 14: every changed path has an accountable owner.
+
+    DEC-2026-0043 named four Architect-owned governance files in its `exact_diff`
+    and assigned them to no one, so the Decision could not complete: its only
+    ready handoff was to Builder, which may not write a contract or a role
+    instruction. DEC-2026-0039 had already done the same thing with a test file.
+    Both were invisible until a Review failed on the missing work, because
+    nothing compared the set of files a Decision changes against the set of roles
+    it schedules.
+
+    That comparison is what this function is. It reads the Decision alone -- no
+    repository state, no timestamps, no inferred competence -- so an incomplete
+    plan is detectable when it is authored rather than when it fails.
+
+    An empty list means the plan is completely owned.
+    """
+
+    declared = str(document.get("decision_authoring_contract_version") or "").strip()
+    if declared != DECISION_AUTHORING_CONTRACT_OWNERSHIP:
+        return []
+    exact_diff = document.get("exact_diff")
+    if not isinstance(exact_diff, dict) or not exact_diff:
+        return []
+
+    ownership = document.get("exact_diff_ownership")
+    if ownership is None:
+        return [
+            f"declares decision_authoring_contract_version "
+            f"{DECISION_AUTHORING_CONTRACT_OWNERSHIP} and changes "
+            f"{len(exact_diff)} exact_diff path(s) but records no "
+            f"exact_diff_ownership"
+        ]
+    if not isinstance(ownership, list):
+        return ["records a non-list exact_diff_ownership"]
+
+    errors: list[str] = []
+    assigned_roles = _decision_assigned_roles(document)
+    step_owners = _sequence_owner_by_step(document)
+    changed_paths = {str(path) for path in exact_diff}
+
+    seen: dict[str, int] = {}
+    for index, entry in enumerate(ownership, start=1):
+        if not isinstance(entry, dict):
+            errors.append(f"exact_diff_ownership entry {index} is not a mapping")
+            continue
+        path = str(entry.get("path") or "").strip()
+        if not path:
+            errors.append(f"exact_diff_ownership entry {index} names no path")
+            continue
+        seen[path] = seen.get(path, 0) + 1
+
+        owner = str(entry.get("owner") or "").strip().lower()
+        if not owner:
+            errors.append(f"exact_diff_ownership for {path} names no owner")
+        elif owner not in DECISION_OWNER_ROLES:
+            errors.append(
+                f"exact_diff_ownership for {path} names unknown owner {owner!r}; "
+                f"expected one of {', '.join(sorted(DECISION_OWNER_ROLES))}"
+            )
+        elif owner not in assigned_roles:
+            # The heart of the rule. An owner the Decision never schedules is a
+            # name on a page: DEC-2026-0043 would have failed exactly here.
+            errors.append(
+                f"exact_diff_ownership assigns {path} to {owner}, which no "
+                f"sequence step or follow_up_owners entry names"
+            )
+
+        step = entry.get("sequence_step")
+        if step is not None:
+            if not isinstance(step, int) or isinstance(step, bool):
+                errors.append(
+                    f"exact_diff_ownership for {path} declares a non-integer "
+                    f"sequence_step"
+                )
+            elif step not in step_owners:
+                errors.append(
+                    f"exact_diff_ownership for {path} names sequence_step {step}, "
+                    f"which the sequence does not define"
+                )
+            elif owner and step_owners[step] != owner:
+                errors.append(
+                    f"exact_diff_ownership for {path} names owner {owner} at "
+                    f"sequence_step {step}, but that step is owned by "
+                    f"{step_owners[step]}"
+                )
+
+        if path not in changed_paths:
+            errors.append(
+                f"exact_diff_ownership names {path}, which is not an exact_diff path"
+            )
+
+    for path, count in sorted(seen.items()):
+        if count > 1:
+            errors.append(
+                f"exact_diff_ownership lists {path} {count} times; each path is "
+                f"owned exactly once"
+            )
+
+    for path in sorted(changed_paths - set(seen)):
+        errors.append(f"exact_diff changes {path} but no exact_diff_ownership entry owns it")
+
+    return errors
+
+
+
+#: `**Version 1.15.**` on its own line, as every contract in `contracts/` writes it.
+CONTRACT_VERSION_PATTERN = re.compile(r"^\*\*Version ([0-9]+(?:\.[0-9]+)*)\.\*\*", re.M)
+
+
+def _version_tuple(text: str) -> tuple[int, ...] | None:
+    try:
+        return tuple(int(part) for part in str(text).strip().split("."))
+    except (TypeError, ValueError):
+        return None
+
+
+def _declared_contract_version(root: Path, relative: str) -> str | None:
+    """The version a contract declares, read from the file itself.
+
+    Deliberately not taken from the report: the whole point of this evidence is
+    that the current file is checked, so the number must come from the file.
+    """
+
+    path = root / relative
+    if not path.is_file():
+        return None
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:  # pragma: no cover - unreadable contract
+        return None
+    match = CONTRACT_VERSION_PATTERN.search(text)
+    return match.group(1) if match else None
+
+
+def _authorized_contract_sets(
+    report_decision_id: str,
+    report_decision_checksum: str,
+    index: int,
+    authority_document: dict[str, Any],
+    authority_is_own_decision: bool,
+) -> tuple[list[dict[str, Any]] | None, str]:
+    """The contract/anchor sets this authority grants for this exact test.
+
+    Returns (sets, reason). `sets` is None when the authority grants nothing for
+    this Decision and index, and `reason` says why. Two shapes are legal:
+    a Decision declaring its own `versioned_contract_content` semantics, and a
+    later Decision pinning a legacy test through
+    `contract_version_acceptance_authorizations`.
+    """
+
+    if authority_is_own_decision:
+        for entry in authority_document.get("acceptance_test_semantics") or []:
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("kind") != "versioned_contract_content":
+                continue
+            if entry.get("acceptance_test_index") != index:
+                continue
+            contracts = entry.get("contracts")
+            if not isinstance(contracts, list) or not contracts:
+                return None, "declares versioned_contract_content semantics with no contracts"
+            return contracts, ""
+
+    for entry in authority_document.get("contract_version_acceptance_authorizations") or []:
+        if not isinstance(entry, dict):
+            continue
+        pinned = entry.get("decision_input")
+        pinned = pinned if isinstance(pinned, dict) else {}
+        if str(pinned.get("id") or "") != report_decision_id:
+            continue
+        if entry.get("acceptance_test_index") != index:
+            continue
+        # The authorization pins the Decision it covers by checksum, so a
+        # rewritten Decision loses it rather than silently keeping it.
+        if str(pinned.get("checksum") or "") != report_decision_checksum:
+            return None, (
+                f"authorizes {report_decision_id} at a different checksum than the "
+                f"report's Decision currently hashes to"
+            )
+        contracts = entry.get("contracts")
+        if not isinstance(contracts, list) or not contracts:
+            return None, "carries an authorization with no contracts"
+        return contracts, ""
+
+    return None, (
+        f"does not authorize {report_decision_id} acceptance test {index}"
+    )
+
+
+def _versioned_content_errors(
+    root: Path,
+    artifact: Artifact,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+) -> list[str]:
+    """WORK_QUEUES 1.15 acceptance test 48, over one implementation report.
+
+    A mutable contract's version in an acceptance test becomes a minimum rather
+    than a literal only through explicit, checksummed authority. DEC-2026-0045
+    acceptance test 1 named WORK_QUEUES 1.12 and DEC-2026-0046 test 4 named 1.13;
+    both were literally false within a day because later approved Decisions
+    advanced the same file, while every requirement they actually stated was
+    still present. Reading "1.12" as "1.12 or later" by eye would have fixed that
+    and quietly widened every other version-pinned test at the same time.
+
+    So the widening is granted per test, by an approved Decision, pinned to a
+    checksum -- and this refuses it in every other case. It checks the current
+    files, never the report's summary of them.
+    """
+
+    data = artifact.data
+    decision_input = data.get("decision_input")
+    decision_input = decision_input if isinstance(decision_input, dict) else {}
+    report_decision_id = str(decision_input.get("id") or "")
+    report_decision_checksum = str(decision_input.get("checksum") or "")
+
+    errors: list[str] = []
+    for entry in data.get("acceptance_results") or []:
+        if not isinstance(entry, dict):
+            continue
+        block = entry.get("versioned_contract_content")
+        if not isinstance(block, dict):
+            continue
+        errors.extend(
+            _versioned_block_errors(
+                root,
+                report_decision_id,
+                report_decision_checksum,
+                entry.get("acceptance_test_index"),
+                block,
+                decisions,
+                result_value=str(entry.get("result") or ""),
+            )
+        )
+    return errors
+
+
+def _versioned_block_errors(
+    root: Path,
+    report_decision_id: str,
+    report_decision_checksum: str,
+    index: Any,
+    block: dict[str, Any],
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+    *,
+    result_value: str,
+) -> list[str]:
+    """Validate one versioned contract-content evidence block.
+
+    Shared deliberately between an implementation report and its independent
+    Review. WORK_QUEUES 1.15 requires the Reviewer to re-derive the same
+    authority, versions and anchors; running a second, similar implementation for
+    the Review is how two checks drift until one quietly accepts what the other
+    rejects.
+    """
+
+    errors: list[str] = []
+    label = f"acceptance test {index}"
+
+    if result_value != "passed":
+        errors.append(
+            f"carries versioned contract-content evidence on {label}, whose result is "
+            f"{result_value!r}; this outcome is reported as passed"
+        )
+
+    if block.get("authorized_acceptance_test_index") != index:
+        errors.append(
+            f"{label} records versioned contract-content authority for index "
+            f"{block.get('authorized_acceptance_test_index')!r}"
+        )
+
+    authority = block.get("authority")
+    authority = authority if isinstance(authority, dict) else {}
+    authority_id = str(authority.get("id") or "")
+    if authority_id not in decisions:
+        errors.append(
+            f"{label} names authority {authority_id or '(absent)'}, which is not an "
+            f"approved Decision of this ruleset"
+        )
+        return errors
+    authority_path, authority_document = decisions[authority_id]
+
+    actual = _sha256_of(authority_path)
+    if str(authority.get("checksum") or "") != actual:
+        errors.append(
+            f"{label} records a stale checksum for authority {authority_id}, which now "
+            f"hashes to {actual}"
+        )
+        return errors
+    declared_path = str(authority.get("path") or "")
+    if declared_path and declared_path != _relative(root, authority_path):
+        errors.append(f"{label} records the wrong path for authority {authority_id}")
+
+    contracts, reason = _authorized_contract_sets(
+        report_decision_id,
+        report_decision_checksum,
+        index,
+        authority_document,
+        authority_is_own_decision=authority_id == report_decision_id,
+    )
+    if contracts is None:
+        errors.append(f"{label} authority {authority_id} {reason}")
+        return errors
+
+    observed: dict[str, list[dict[str, Any]]] = {}
+    for record in block.get("contracts") or []:
+        if isinstance(record, dict) and record.get("path"):
+            observed.setdefault(str(record["path"]), []).append(record)
+
+    authorized_paths = set()
+    for contract in contracts:
+        if not isinstance(contract, dict):
+            continue
+        relative = str(contract.get("path") or "")
+        authorized_paths.add(relative)
+        minimum = str(contract.get("minimum_version") or "")
+        anchors = [str(a) for a in (contract.get("substantive_anchors") or [])]
+
+        records = observed.get(relative) or []
+        if not records:
+            errors.append(f"{label} records no current evidence for {relative}")
+            continue
+        if len(records) > 1:
+            errors.append(f"{label} records {relative} {len(records)} times")
+        record = records[0]
+
+        current_sum = _sha256_of(root / relative) if (root / relative).is_file() else None
+        if current_sum is None:
+            errors.append(f"{label} names {relative}, which does not exist")
+            continue
+        if str(record.get("checksum") or "") != current_sum:
+            errors.append(
+                f"{label} records a stale checksum for {relative}, which now hashes to "
+                f"{current_sum}"
+            )
+        if str(record.get("minimum_version") or "") != minimum:
+            errors.append(
+                f"{label} records minimum version {record.get('minimum_version')!r} for "
+                f"{relative}, but its authority grants {minimum!r}"
+            )
+
+        live_version = _declared_contract_version(root, relative)
+        if live_version is None:
+            errors.append(f"{label} names {relative}, which declares no version")
+            continue
+        if str(record.get("observed_version") or "") != live_version:
+            errors.append(
+                f"{label} reports {relative} at version "
+                f"{record.get('observed_version')!r} but the file declares {live_version!r}"
+            )
+        live_tuple, minimum_tuple = _version_tuple(live_version), _version_tuple(minimum)
+        if live_tuple is None or minimum_tuple is None:
+            errors.append(f"{label} cannot compare versions for {relative}")
+        elif live_tuple < minimum_tuple:
+            errors.append(
+                f"{label} requires {relative} at {minimum} or later, but it is {live_version}"
+            )
+
+        present = {str(a) for a in (record.get("anchors_present") or [])}
+        missing = [a for a in anchors if a not in present]
+        if missing:
+            errors.append(
+                f"{label} does not evidence {len(missing)} authorized anchor(s) for "
+                f"{relative}: {'; '.join(missing)}"
+            )
+
+    for relative in sorted(set(observed) - authorized_paths):
+        errors.append(f"{label} evidences {relative}, which its authority does not name")
+
+    return errors
+
+
 def _implementation_report_errors(
     root: Path,
     artifact: Artifact,
     decisions: dict[str, tuple[Path, dict[str, Any]]],
+    *,
+    drift_sink: list[str] | None = None,
 ) -> list[str]:
     """Every mandatory condition of WORK_QUEUES 1.4 "Builder report".
 
@@ -1006,15 +1604,31 @@ def _implementation_report_errors(
             f"records a stale decision checksum; {decision_id} now hashes to {actual_sum}"
         )
 
-    # 2: the Decision must actually be a non-migration Builder assignment.
+    # 2: the Decision must actually be a ready non-migration assignment, and the
+    # report must claim the role the Decision assigned. DEC-2026-0043 opened this
+    # to the Integrator for tooling and contract work; the owner is whichever role
+    # the ready handoff names, and exactly one role owns a Decision. A report
+    # claiming the other role is a diagnostic rather than a silent reassignment,
+    # because who implemented a Decision is part of what the Review verifies.
     handoff = decision_doc.get("handoff")
     handoff = handoff if isinstance(handoff, dict) else {}
     if str(decision_doc.get("ruleset_id") or "") != artifact.ruleset:
         reasons.append(f"{decision_id} belongs to another ruleset")
-    if str(handoff.get("next_role") or "") != "builder":
-        reasons.append(f"{decision_id} does not hand off to Builder")
+    owner = str(handoff.get("next_role") or "").strip().lower()
+    if owner not in DIRECT_IMPLEMENTATION_OWNERS:
+        reasons.append(
+            f"{decision_id} hands off to {owner or 'no role'}, not to "
+            f"{' or '.join(sorted(DIRECT_IMPLEMENTATION_OWNERS))}"
+        )
+    else:
+        declared = str(data.get("implemented_by") or "").strip().lower()
+        if declared != owner:
+            reasons.append(
+                f"declares implemented_by {declared!r} but {decision_id} assigns its "
+                f"implementation to {owner!r}"
+            )
     if str(handoff.get("readiness") or "") != "ready":
-        reasons.append(f"{decision_id} has no ready Builder handoff")
+        reasons.append(f"{decision_id} has no ready implementation handoff")
     if decision_doc.get("migration_required") is not False:
         reasons.append(f"{decision_id} is not a non-migration Decision")
 
@@ -1024,6 +1638,14 @@ def _implementation_report_errors(
         acceptance = []
 
     # 4: every implementation file exists and hashes to what is recorded.
+    #
+    # WORK_QUEUES 1.13 rule 15 makes the meaning of a drifted file depend on
+    # something this function cannot see: whether an exact Approved Review has
+    # already consumed this report. So drift is collected separately when the
+    # caller asks for it, and the caller decides whether it is an error or a
+    # historical observation. A missing or malformed list is not drift -- it is
+    # a defect in the report itself either way.
+    drift = drift_sink if drift_sink is not None else reasons
     files = data.get("implementation_files")
     if not isinstance(files, list) or not files:
         reasons.append("has an empty or missing implementation_files list")
@@ -1033,12 +1655,15 @@ def _implementation_report_errors(
             reasons.append("has an implementation_files entry that is not a mapping")
             continue
         relative = str(item.get("path") or "").strip()
+        if not relative:
+            reasons.append("has an implementation_files entry naming no path")
+            continue
         candidate = root / relative
-        if not relative or not candidate.is_file():
-            reasons.append(f"names implementation file {relative!r}, which does not exist")
+        if not candidate.is_file():
+            drift.append(f"names implementation file {relative!r}, which does not exist")
             continue
         if str(item.get("checksum") or "").strip() != _sha256_of(candidate):
-            reasons.append(f"records a stale checksum for {relative}")
+            drift.append(f"records a stale checksum for {relative}")
 
     # 5: every acceptance test accounted for exactly once, by one-based index.
     results = data.get("acceptance_results")
@@ -1114,6 +1739,11 @@ def _implementation_report_errors(
     revision = data.get("revision")
     if isinstance(revision, int) and revision >= 2 and not data.get("supersedes"):
         reasons.append(f"is revision {revision} but names no supersedes")
+
+    # WORK_QUEUES 1.15: current-state contract evidence is validated against the
+    # current files, so an authorization that has gone stale or a contract that
+    # has fallen below its floor stops the report here rather than at Review.
+    reasons.extend(_versioned_content_errors(root, artifact, decisions))
 
     return reasons
 
@@ -1226,6 +1856,11 @@ def _implementation_review_errors(
         for r in report.data.get("acceptance_results") or []
         if isinstance(r, dict)
     }
+    report_versioned = {
+        r.get("acceptance_test_index")
+        for r in report.data.get("acceptance_results") or []
+        if isinstance(r, dict) and isinstance(r.get("versioned_contract_content"), dict)
+    }
     report_checksum = str(report_decision.get("checksum") or "").strip()
 
     seen: set[int] = set()
@@ -1257,11 +1892,59 @@ def _implementation_review_errors(
                     root, decision_id, report_checksum, mirrored, decisions
                 )
             )
+        elif disposition_value == "verified_versioned_contract_content":
+            # WORK_QUEUES 1.15. The Reviewer re-derives the authority, the current
+            # contract versions and every anchor for itself, through exactly the
+            # validation the report went through -- a second implementation here
+            # would drift from that one until the two disagreed.
+            if reported != "passed":
+                reasons.append(
+                    f"disposes acceptance_test_index {index} as "
+                    f"verified_versioned_contract_content, but the report records it as "
+                    f"{reported!r}"
+                )
+                continue
+            if index not in report_versioned:
+                reasons.append(
+                    f"disposes acceptance_test_index {index} as "
+                    f"verified_versioned_contract_content, but the report claims no "
+                    f"versioned contract-content evidence for it"
+                )
+                continue
+            mirrored = item.get("verified_versioned_contract_content")
+            if not isinstance(mirrored, dict):
+                reasons.append(
+                    f"disposes acceptance_test_index {index} as "
+                    f"verified_versioned_contract_content without recording its own "
+                    f"verification"
+                )
+                continue
+            reasons.extend(
+                f"independent verification: {reason}"
+                for reason in _versioned_block_errors(
+                    root,
+                    decision_id,
+                    report_checksum,
+                    index,
+                    mirrored,
+                    decisions,
+                    result_value=reported,
+                )
+            )
         elif disposition_value == "verified":
             if reported == "retired_by_lineage":
                 reasons.append(
                     f"is approved but disposes the retired acceptance_test_index {index} as "
                     f"plain verified; a retired result needs verified_retired_by_lineage"
+                )
+            elif index in report_versioned:
+                # The converse guard, matching the retired one above: approving
+                # this evidence as plain `verified` would make the Reviewer's
+                # independent re-derivation optional.
+                reasons.append(
+                    f"is approved but disposes the versioned contract-content "
+                    f"acceptance_test_index {index} as plain verified; it needs "
+                    f"verified_versioned_contract_content"
                 )
         else:
             reasons.append(
@@ -1331,6 +2014,116 @@ def _review_revision_roles(document: dict[str, Any]) -> list[str]:
     return roles
 
 
+def _diagnose_gur_handoffs(
+    root: Path,
+    gurs: list[Artifact],
+    diagnostics: list[dict[str, Any]],
+) -> None:
+    """Report every GUR whose present handoff does not conform.
+
+    Emitted for leaf and non-leaf revisions alike, because an invalid artifact is
+    invalid wherever it sits in a lineage and the repository-wide schema suite
+    will fail on it either way. Only the active leaf becomes repair *work*: a
+    superseded revision's successor has already resolved queue ownership, so
+    asking for a repair of history would be asking to rewrite it.
+    """
+    shape = _handoff_shape(root)
+    for artifact in gurs:
+        defects = _handoff_defects(artifact.data, shape)
+        if not defects:
+            continue
+        _diag(
+            diagnostics,
+            "error",
+            "gur_invalid_handoff",
+            f"{artifact.artifact_id} declares a handoff that does not conform: "
+            f"{'; '.join(defects)}. Analyst owns the repair and must publish a "
+            f"schema-valid successor revision; the published artifact is immutable.",
+            path=_relative(root, artifact.path),
+            artifact_id=artifact.artifact_id,
+        )
+
+
+def _route_leaf_gur(
+    root: Path,
+    ruleset: str,
+    book: str,
+    packet_id: str,
+    leaf_gur: Artifact,
+    gur_inferred: bool,
+    ready: list[dict[str, Any]],
+    diagnostics: list[dict[str, Any]],
+) -> None:
+    """WORK_QUEUES 1.11: where an unconsumed active-leaf GUR's work belongs.
+
+    Three shapes, three destinations:
+
+    * a **malformed** handoff is a broken workflow the Analyst owns. It routes to
+      `ANALYST-GUR-REPAIR` and never to Builder -- the role that cannot legally
+      repair a published GUR. Before this rule, an unreadable handoff fell
+      through to legacy inference and produced an ordinary Builder job, so a UA
+      GUR sat in the wrong queue for days while its invalidity held the common
+      suite red and, through it, seven Decision implementation reports.
+    * a conforming **terminal** handoff is finished work. A withdrawn GUR needs
+      no empty GUP to consume it.
+    * an **absent** handoff is a legacy artifact: ordinary Builder routing, with
+      the inference reported rather than silent.
+    """
+    defects = _handoff_defects(leaf_gur.data, _handoff_shape(root))
+    handoff = leaf_gur.data.get("handoff")
+    path = _relative(root, leaf_gur.path)
+
+    if defects:
+        ready.append(
+            _queue_item(
+                state="ready",
+                queue="ANALYST-GUR-REPAIR",
+                role="Analyst",
+                ruleset=ruleset,
+                book=book,
+                packet_id=packet_id,
+                input_id=leaf_gur.artifact_id,
+                reason=(
+                    "Active-leaf GUR has a malformed handoff; Analyst must publish a "
+                    "schema-valid successor revision."
+                ),
+                path=path,
+                components=[path],
+            )
+        )
+        return
+
+    if isinstance(handoff, dict):
+        if str(handoff.get("readiness") or "").strip() == "terminal":
+            return
+    else:
+        _diag(
+            diagnostics,
+            "info",
+            "legacy_handoff_inference",
+            f"{leaf_gur.artifact_id} carries no handoff block; ordinary Builder "
+            f"routing was inferred under the WORK_QUEUES legacy rules.",
+            path=path,
+            artifact_id=leaf_gur.artifact_id,
+        )
+
+    ready.append(
+        _queue_item(
+            state="ready",
+            queue="BUILDER-GUR",
+            role="Builder",
+            ruleset=ruleset,
+            book=book,
+            packet_id=packet_id,
+            input_id=leaf_gur.artifact_id,
+            reason="Active-leaf GUR has no consuming GUP.",
+            path=path,
+            components=[path],
+            legacy_inference=gur_inferred or not isinstance(handoff, dict),
+        )
+    )
+
+
 def _queue_item(
     *,
     state: str,
@@ -1378,6 +2171,245 @@ def _collect_approved_ids(value: Any, found: set[str]) -> None:
         for match in APPROVED_ID_PATTERN.findall(value):
             found.add(_approved_base(Path(match).name))
 
+
+
+#: DEC-2026-0043 authorizes exactly one already-published rejection record to act
+#: as a queue signal without the checksums the schema now requires. It is named by
+#: record ID *and* bundle ID together, so the allowance cannot spread to another
+#: bundle in the same file or to a later record reusing the ID.
+LEGACY_AUTHORIZED_REJECTIONS = {
+    ("INT-20260815-002", "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r04-r01"),
+}
+
+REJECTION_CHECKSUM_FIELDS = (
+    ("bundle_id", "bundle_checksum", "bundle"),
+    ("review_id", "review_checksum", "approving Review"),
+    ("gup_id", "gup_checksum", "reviewed GUP"),
+)
+
+
+def _rejection_entry_errors(
+    root: Path,
+    record_id: str,
+    entry: dict[str, Any],
+    artifact_paths: dict[str, Path],
+) -> list[str]:
+    """Why one rejected-bundle entry may not act as a queue signal.
+
+    A rejection retires an Integrator job, so it has to be at least as
+    well-evidenced as the approval it overrides: the exact bundle, the Review
+    that approved it, and the GUP it carries, each pinned to the bytes on disk.
+    Without the pins a record would keep suppressing integration after the
+    artifacts it describes were re-issued -- the bundle would sit unqueued and
+    unrejected, which is the failure mode this whole rule exists to end.
+    """
+    reasons: list[str] = []
+    bundle_id = str(entry.get("bundle_id") or "").strip()
+    if not bundle_id:
+        return ["names no bundle_id"]
+
+    if (record_id, bundle_id) in LEGACY_AUTHORIZED_REJECTIONS:
+        # Authorized by exact ID pair. Still must name a failure: a rejection
+        # with no stated failing check directs no repair.
+        if not (entry.get("blocking_failures") or []):
+            reasons.append(f"{bundle_id} names no blocking_failures")
+        return reasons
+
+    failures = entry.get("blocking_failures")
+    if not isinstance(failures, list) or not failures:
+        reasons.append(f"{bundle_id} names no blocking_failures")
+    else:
+        for failure in failures:
+            if not isinstance(failure, dict):
+                reasons.append(f"{bundle_id} has a blocking_failures entry that is not a mapping")
+                continue
+            if not str(failure.get("check") or "").strip():
+                reasons.append(f"{bundle_id} has a blocking failure naming no check")
+            if not str(failure.get("detail") or "").strip():
+                reasons.append(f"{bundle_id} has a blocking failure with no detail")
+
+    for id_field, checksum_field, label in REJECTION_CHECKSUM_FIELDS:
+        declared_id = str(entry.get(id_field) or "").strip()
+        declared_sum = str(entry.get(checksum_field) or "").strip()
+        if not declared_id:
+            reasons.append(f"{bundle_id} names no {id_field}")
+            continue
+        if not CHECKSUM_PATTERN.match(declared_sum):
+            reasons.append(f"{bundle_id} records no valid {checksum_field}")
+            continue
+        path = artifact_paths.get(declared_id)
+        if path is None:
+            reasons.append(f"{bundle_id} names {label} {declared_id}, which is not on disk")
+            continue
+        actual = _sha256_of(path)
+        if actual != declared_sum:
+            reasons.append(
+                f"{bundle_id} records a stale {label} checksum for {declared_id}; "
+                f"it now hashes to {actual}"
+            )
+    return reasons
+
+
+def _rejected_bundle_ids(
+    root: Path,
+    ruleset: str,
+    artifact_paths: dict[str, Path],
+    live_bundle_ids: set[str],
+    diagnostics: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Bundles a current, valid rejection record blocks, by bundle ID.
+
+    DEC-2026-0043 makes an Integration rejection a first-class queue signal: it
+    suppresses that exact bundle's Integrator item and creates one Reviewer
+    remediation item. Everything that could make the signal untrustworthy --
+    unreadable, wrong ruleset, superseded by a later record, ambiguous between two
+    records, or pinned to checksums that have moved -- is reported and suppresses
+    nothing. A rejection that cannot be trusted must leave the bundle exactly where
+    it was rather than quietly removing it from the queue.
+    """
+    directory = root / "rulesets" / ruleset / "reports"
+    if not directory.is_dir():
+        return {}
+
+    records: dict[str, tuple[Path, dict[str, Any]]] = {}
+    superseded: set[str] = set()
+    for path in sorted(directory.glob("*.rejected.json")):
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            _diag(
+                diagnostics,
+                "error",
+                "integration_rejection_unreadable",
+                f"{path.name} is not readable JSON: {exc}",
+                path=_relative(root, path),
+            )
+            continue
+        if not isinstance(document, dict):
+            _diag(
+                diagnostics,
+                "error",
+                "integration_rejection_invalid",
+                f"{path.name} does not contain a mapping.",
+                path=_relative(root, path),
+            )
+            continue
+        record_id = str(document.get("id") or path.name).strip()
+        if str(document.get("status") or "").strip() != "rejected":
+            _diag(
+                diagnostics,
+                "error",
+                "integration_rejection_invalid",
+                f"{record_id} declares status "
+                f"{document.get('status')!r} rather than 'rejected'.",
+                path=_relative(root, path),
+                artifact_id=record_id,
+            )
+            continue
+        declared_ruleset = str(document.get("ruleset_id") or "").strip()
+        if declared_ruleset != ruleset:
+            _diag(
+                diagnostics,
+                "error",
+                "integration_rejection_invalid",
+                f"{record_id} belongs to ruleset {declared_ruleset!r}, not {ruleset!r}; "
+                f"it suppresses nothing here.",
+                path=_relative(root, path),
+                artifact_id=record_id,
+            )
+            continue
+        records[record_id] = (path, document)
+        predecessor = str(document.get("supersedes") or "").strip()
+        if predecessor:
+            superseded.add(predecessor)
+
+    blocked_by_bundle: dict[str, dict[str, Any]] = {}
+    claimed_by: dict[str, str] = {}
+    for record_id in sorted(records):
+        path, document = records[record_id]
+        if record_id in superseded:
+            # A later record describes the current state of this integration.
+            continue
+        entries = document.get("rejected_bundles")
+        if not isinstance(entries, list) or not entries:
+            _diag(
+                diagnostics,
+                "error",
+                "integration_rejection_invalid",
+                f"{record_id} names no rejected_bundles.",
+                path=_relative(root, path),
+                artifact_id=record_id,
+            )
+            continue
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            bundle_id = str(entry.get("bundle_id") or "").strip()
+            if bundle_id not in live_bundle_ids:
+                # Superseded, integrated, or gone. The bundle produces no
+                # Integrator item, so this entry can neither suppress one nor
+                # describe repairable work.
+                continue
+            reasons = _rejection_entry_errors(root, record_id, entry, artifact_paths)
+            if reasons:
+                _diag(
+                    diagnostics,
+                    "error",
+                    "integration_rejection_invalid",
+                    f"{record_id} " + "; ".join(reasons) + ". It suppresses no integration.",
+                    path=_relative(root, path),
+                    artifact_id=record_id,
+                )
+                continue
+            previous = claimed_by.get(bundle_id)
+            if previous is not None and previous != record_id:
+                # Two live records disagreeing about one bundle is not a signal
+                # anyone can act on, and choosing between them is not a queue
+                # decision. Both are reported and neither suppresses.
+                _diag(
+                    diagnostics,
+                    "error",
+                    "integration_rejection_ambiguous",
+                    f"{bundle_id} is rejected by both {previous} and {record_id} with "
+                    f"neither superseding the other; neither suppresses integration.",
+                    path=_relative(root, path),
+                    artifact_id=bundle_id,
+                )
+                blocked_by_bundle.pop(bundle_id, None)
+                continue
+            claimed_by[bundle_id] = record_id
+            blocked_by_bundle[bundle_id] = {
+                "record_id": record_id,
+                "record_path": _relative(root, path),
+                "bundle_id": bundle_id,
+                "review_id": str(entry.get("review_id") or "").strip(),
+                "gup_id": str(entry.get("gup_id") or "").strip(),
+                "failures": [
+                    str(f.get("check") or "")
+                    for f in (entry.get("blocking_failures") or [])
+                    if isinstance(f, dict)
+                ],
+            }
+    return blocked_by_bundle
+
+
+def _rejection_remediated(rejection: dict[str, Any], reviews: list[Artifact]) -> bool:
+    """Whether a Review successor already records this exact rejection.
+
+    The successor is what turns a rejection into repairable work, so the
+    remediation item exists only until one names the record. Matching is on the
+    exact record ID: a Review that merely postdates the rejection has not
+    necessarily read it.
+    """
+    for artifact in reviews:
+        for key in ("integration_rejection", "rejection_input", "rejected_by"):
+            block = artifact.data.get(key)
+            if isinstance(block, dict):
+                if str(block.get("id") or "").strip() == rejection["record_id"]:
+                    return True
+            elif isinstance(block, str) and block.strip() == rejection["record_id"]:
+                return True
+    return False
 
 def _integrated_approved_ids(
     root: Path,
@@ -1461,6 +2493,8 @@ def scan_repository(root: Path) -> dict[str, Any]:
     #: Decision migrations found anywhere: book GUP stores and ruleset-scoped
     #: cross-book stores alike. Scope location does not change the lineage checks.
     migrations_by_ruleset: dict[str, list[Artifact]] = defaultdict(list)
+    #: WORK_QUEUES 1.7: per ruleset, the Decision IDs a valid reissue superseded.
+    reissued_by_ruleset: dict[str, set[str]] = defaultdict(set)
     reviewed_gup_ids_global: set[str] = set()
     #: The same Reviews, keyed by the GUP they reviewed. A migration is
     #: cross-book, so its Review may sit in any book's store and the per-book
@@ -1652,6 +2686,9 @@ def scan_repository(root: Path) -> dict[str, Any]:
             leaf_gur_by_packet: dict[str, tuple[Artifact | None, bool]] = {}
             leaf_gup_by_packet: dict[str, tuple[Artifact | None, bool]] = {}
             for packet_id in all_packets:
+                _diagnose_gur_handoffs(
+                    root, gurs_by_packet.get(packet_id, []), diagnostics
+                )
                 leaf_gur_by_packet[packet_id] = _active_leaf(
                     root,
                     gurs_by_packet.get(packet_id, []),
@@ -1678,20 +2715,15 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 leaf_gup, gup_inferred = leaf_gup_by_packet[packet_id]
 
                 if leaf_gur and leaf_gur.artifact_id not in consumed_gur_ids:
-                    ready.append(
-                        _queue_item(
-                            state="ready",
-                            queue="BUILDER-GUR",
-                            role="Builder",
-                            ruleset=ruleset,
-                            book=book,
-                            packet_id=packet_id,
-                            input_id=leaf_gur.artifact_id,
-                            reason="Active-leaf GUR has no consuming GUP.",
-                            path=_relative(root, leaf_gur.path),
-                            components=[_relative(root, leaf_gur.path)],
-                            legacy_inference=gur_inferred,
-                        )
+                    _route_leaf_gur(
+                        root,
+                        ruleset,
+                        book,
+                        packet_id,
+                        leaf_gur,
+                        gur_inferred,
+                        ready,
+                        diagnostics,
                     )
 
                 if not leaf_gup:
@@ -1928,6 +2960,20 @@ def scan_repository(root: Path) -> dict[str, Any]:
             integrated_ids = _integrated_approved_ids(
                 root, ruleset, book_root, diagnostics
             )
+            # DEC-2026-0043: a rejection pins the bundle, its approving Review and
+            # its GUP by checksum, so every one of those has to be resolvable to a
+            # path before the record can be trusted.
+            rejection_artifact_paths: dict[str, Path] = {}
+            for base, paths in approved_groups.items():
+                manifest_path = next(
+                    (candidate for candidate in paths if candidate.suffix == ".yaml"), None
+                )
+                if manifest_path is not None:
+                    rejection_artifact_paths[base] = manifest_path
+            for artifact in reviews:
+                rejection_artifact_paths[artifact.artifact_id] = artifact.path
+            for artifact in gups:
+                rejection_artifact_paths[artifact.artifact_id] = artifact.path
             # WORK_QUEUES 3 and 6: only the active leaf creates work, and a
             # superseded artifact is not ready work. A bundle inherits that from
             # the GUP it packages. The Integrator rejected
@@ -1940,6 +2986,36 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 for artifact in gups
                 if artifact.data.get("supersedes")
             }
+            # Only a bundle that could otherwise be offered for integration is
+            # worth judging a rejection against. Every rejection in this
+            # repository's history names bundles that have since been superseded
+            # or integrated, and reporting each pre-contract record as defective
+            # produced 56 errors that buried the 5 live ones. A rejection of a
+            # bundle nobody is queuing suppresses nothing either way.
+            live_bundle_ids: set[str] = set()
+            for base, paths in approved_groups.items():
+                if base in integrated_ids:
+                    continue
+                manifest_candidate = next(
+                    (c for c in paths if c.suffix.lower() in {".yaml", ".yml"}), None
+                )
+                bundle_manifest = (
+                    _load_yaml(root, manifest_candidate, diagnostics)
+                    if manifest_candidate
+                    else None
+                )
+                legacy_review_id = (
+                    "REV-" + base[len("APPROVED-"):] if base.startswith("APPROVED-") else ""
+                )
+                packaged = _packaged_gup_id(
+                    bundle_manifest, review_by_id.get(legacy_review_id)
+                )
+                if packaged and packaged in superseded_gup_ids:
+                    continue
+                live_bundle_ids.add(base)
+            rejected_bundles = _rejected_bundle_ids(
+                root, ruleset, rejection_artifact_paths, live_bundle_ids, diagnostics
+            )
             for approved_id, component_paths in sorted(approved_groups.items()):
                 manifest_path = next(
                     (
@@ -2035,6 +3111,66 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     )
                     continue
 
+                rejection = rejected_bundles.get(approved_id)
+                if rejection is not None:
+                    # DEC-2026-0043: the rejection is the current word on this
+                    # bundle. Re-offering it would hand the Integrator the same
+                    # batch it just refused -- which is what kept the illusionist
+                    # bundle in the ready queue across three rejections of the
+                    # same bytes. The repairable work belongs to the Reviewer,
+                    # who publishes an immutable successor Review recording the
+                    # rejection and routing the fix to its responsible role.
+                    successors = [
+                        artifact
+                        for artifact in reviews_by_gup.get(rejection["gup_id"], [])
+                        if artifact.artifact_id != rejection["review_id"]
+                    ]
+                    if _rejection_remediated(rejection, successors):
+                        informational.append(
+                            _queue_item(
+                                state="informational",
+                                queue="INTEGRATOR-REJECTED",
+                                role="Integrator",
+                                ruleset=ruleset,
+                                book=book,
+                                packet_id=str(packet_id or review.packet_id or "") or None,
+                                input_id=approved_id,
+                                reason=(
+                                    f"{rejection['record_id']} rejected this bundle and a "
+                                    f"Review successor already records it. The bundle is "
+                                    f"unchanged and remains available as history."
+                                ),
+                                path=_relative(root, component_paths[0]),
+                                components=[
+                                    _relative(root, path) for path in component_paths
+                                ],
+                            )
+                        )
+                        continue
+                    ready.append(
+                        _queue_item(
+                            state="ready",
+                            queue="REVIEWER-INTEGRATION-REJECTION",
+                            role="Reviewer",
+                            ruleset=ruleset,
+                            book=book,
+                            packet_id=str(packet_id or review.packet_id or "") or None,
+                            input_id=approved_id,
+                            reason=(
+                                f"{rejection['record_id']} rejected this bundle: "
+                                + "; ".join(rejection["failures"])
+                                + ". Publish a Review successor recording the rejection "
+                                "and routing the repair."
+                            ),
+                            path=rejection["record_path"],
+                            components=sorted(
+                                {rejection["record_path"]}
+                                | {_relative(root, path) for path in component_paths}
+                            ),
+                        )
+                    )
+                    continue
+
                 ready.append(
                     _queue_item(
                         state="ready",
@@ -2074,9 +3210,32 @@ def scan_repository(root: Path) -> dict[str, Any]:
             migrations = migrations_by_ruleset[ruleset]
             # WORK_QUEUES 1.7. Computed once: both the migration and the
             # non-migration Decision loops below derive work from the leaf only.
+            # Kept per ruleset because the handoff-replacement pass at the end of
+            # the scan runs in its own loop and needs the same answer -- and
+            # recomputing it there would emit every lineage diagnostic twice.
             reissued_decision_ids = _decision_reissue_leaves(
                 root, ruleset, decisions, decisions_by_ruleset, diagnostics
             )
+            reissued_by_ruleset[ruleset] = reissued_decision_ids
+
+            # WORK_QUEUES 1.12 rule 14. Checked here, before either Decision loop
+            # below derives work, because an unowned exact_diff path is a defect
+            # in the plan itself rather than in anything downstream of it.
+            unowned_decision_ids: set[str] = set()
+            for decision_id in sorted(decisions):
+                decision_path, decision_document = decisions[decision_id]
+                ownership_errors = _exact_diff_ownership_errors(decision_document)
+                if not ownership_errors:
+                    continue
+                unowned_decision_ids.add(decision_id)
+                _diag(
+                    diagnostics,
+                    "error",
+                    "decision_exact_diff_unowned",
+                    f"{decision_id} " + "; ".join(ownership_errors) + ".",
+                    path=_relative(root, decision_path),
+                    artifact_id=decision_id,
+                )
 
             by_lineage: dict[str, list[Artifact]] = defaultdict(list)
             unkeyed: dict[str, Artifact] = {}
@@ -2135,6 +3294,11 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         break
 
                 reasons = _decision_migration_errors(root, leaf, decisions)
+                if lineage_integrated and BASELINE_MOVED_REASON in reasons:
+                    # Applying the migration is what moved the baseline. Any other
+                    # reason still stands: an integrated artifact with a forbidden
+                    # GUR lineage or an unapproved authority is a real defect.
+                    reasons = [r for r in reasons if r != BASELINE_MOVED_REASON]
                 if reasons:
                     # A legacy spelling is known debt, not broken lineage: the
                     # artifact is immutable history awaiting a conforming
@@ -2371,7 +3535,8 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 handoff = document.get("handoff")
                 if not isinstance(handoff, dict):
                     continue
-                if str(handoff.get("next_role") or "") != "builder":
+                owner = str(handoff.get("next_role") or "").strip().lower()
+                if owner not in DIRECT_IMPLEMENTATION_OWNERS:
                     continue
                 if str(handoff.get("readiness") or "") != "ready":
                     continue
@@ -2379,27 +3544,55 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     continue
                 if decision_id in reissued_decision_ids:
                     continue
+                if decision_id in unowned_decision_ids:
+                    # WORK_QUEUES 1.12 rule 14: an incompletely owned plan cannot
+                    # become approval-ready, so it is not ready implementation
+                    # work. It is reported blocked rather than dropped: the work
+                    # is real, and silently withholding it is how DEC-2026-0043
+                    # reached a failed acceptance test with an empty Architect
+                    # queue. Decisions are immutable, so only a successor
+                    # Decision can supply the missing assignment.
+                    blocked.append(
+                        _queue_item(
+                            state="blocked",
+                            queue="ARCHITECT-DECISION-OWNERSHIP",
+                            role="Architect",
+                            ruleset=ruleset,
+                            book=str(document.get("book_id") or "") or None,
+                            packet_id=str(document.get("packet_id") or "") or None,
+                            input_id=decision_id,
+                            reason=(
+                                f"{decision_id} changes exact_diff paths that its own "
+                                f"sequence and follow_up_owners assign to no role, so "
+                                f"{owner.capitalize()} cannot complete it. A successor "
+                                f"Decision must record the missing ownership."
+                            ),
+                            path=_relative(root, path),
+                            components=[_relative(root, path)],
+                        )
+                    )
+                    continue
 
                 group = reports_by_decision.get(decision_id) or []
                 leaf, report_inferred = _active_leaf(
                     root, group, diagnostics, f"{ruleset} implementation {decision_id}"
                 )
 
+                # WORK_QUEUES 1.13 rule 15. The candidate Review is resolved and
+                # validated before implementation-file drift is classified,
+                # because drift means opposite things on either side of an
+                # Approved Review. After one, the recorded checksums are a
+                # snapshot of the state that was reviewed, and a later Decision
+                # editing the same shared file says nothing about this one.
+                # Before one, drift is still a live defect and still returns the
+                # Decision to its implementation owner.
                 report_errors: list[str] = []
-                if leaf is not None:
-                    report_errors = _implementation_report_errors(root, leaf, decisions)
-                    if report_errors:
-                        _diag(
-                            diagnostics,
-                            "error",
-                            "decision_implementation_invalid",
-                            f"{leaf.artifact_id} " + "; ".join(report_errors) + ".",
-                            path=_relative(root, leaf.path),
-                            artifact_id=leaf.artifact_id,
-                        )
-
+                file_drift: list[str] = []
                 review_leaf = None
-                if leaf is not None and not report_errors:
+                if leaf is not None:
+                    report_errors = _implementation_report_errors(
+                        root, leaf, decisions, drift_sink=file_drift
+                    )
                     review_leaf, _ = _active_leaf(
                         root,
                         reviews_by_report.get(leaf.artifact_id) or [],
@@ -2414,6 +3607,9 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     if review_errors:
                         # An unsound Review neither consumes the Decision nor
                         # hides the report that is still waiting for a sound one.
+                        # It also cannot confer the post-approval drift exception:
+                        # a Review that does not pin this exact report and
+                        # Decision has not established any completed state.
                         _diag(
                             diagnostics,
                             "error",
@@ -2425,6 +3621,43 @@ def scan_repository(root: Path) -> dict[str, Any]:
                             artifact_id=review_leaf.artifact_id,
                         )
                         review_leaf = None
+
+                consumed_by_approved_review = review_leaf is not None and str(
+                    review_leaf.data.get("overall_disposition")
+                    or review_leaf.data.get("status")
+                    or ""
+                ) == "approved"
+
+                if file_drift and leaf is not None:
+                    if consumed_by_approved_review:
+                        _diag(
+                            diagnostics,
+                            "info",
+                            "implementation_files_drifted_after_approval",
+                            f"{leaf.artifact_id} " + "; ".join(file_drift) + ". "
+                            f"{review_leaf.artifact_id} already approved this exact "
+                            f"report, so these checksums are the reviewed snapshot "
+                            f"and {decision_id} stays complete. Validating the "
+                            f"current file belongs to whatever changed it.",
+                            path=_relative(root, leaf.path),
+                            artifact_id=leaf.artifact_id,
+                        )
+                    else:
+                        report_errors = report_errors + file_drift
+
+                if report_errors:
+                    _diag(
+                        diagnostics,
+                        "error",
+                        "decision_implementation_invalid",
+                        f"{leaf.artifact_id} " + "; ".join(report_errors) + ".",
+                        path=_relative(root, leaf.path),
+                        artifact_id=leaf.artifact_id,
+                    )
+                    # A report that is broken on its own terms is consumed by no
+                    # Review. Discarding the leaf here keeps every pre-approval
+                    # case behaving exactly as it did before rule 15.
+                    review_leaf = None
 
                 if review_leaf is not None:
                     disposition = str(
@@ -2439,15 +3672,15 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     ready.append(
                         _queue_item(
                             state="ready",
-                            queue="BUILDER-DECISION-IMPLEMENTATION-REVISION",
-                            role="Builder",
+                            queue=f"{owner.upper()}-DECISION-IMPLEMENTATION-REVISION",
+                            role=owner.capitalize(),
                             ruleset=ruleset,
                             book=str(document.get("book_id") or "") or None,
                             packet_id=str(document.get("packet_id") or "") or None,
                             input_id=review_leaf.artifact_id,
                             reason=(
-                                f"Implementation Review requires a Builder revision of "
-                                f"{decision_id}."
+                                f"Implementation Review requires a "
+                                f"{owner.capitalize()} revision of {decision_id}."
                             ),
                             path=_relative(root, review_leaf.path),
                             components=[_relative(root, review_leaf.path)],
@@ -2479,12 +3712,12 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     continue
 
                 # No report, an invalid one, or one still marked partial: the
-                # Decision remains Builder work.
+                # Decision remains its assigned owner's work.
                 ready.append(
                     _queue_item(
                         state="ready",
-                        queue="BUILDER-DECISION",
-                        role="Builder",
+                        queue=f"{owner.upper()}-DECISION",
+                        role=owner.capitalize(),
                         ruleset=ruleset,
                         book=str(document.get("book_id") or "") or None,
                         packet_id=str(document.get("packet_id") or "") or None,
@@ -2565,6 +3798,17 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 continue
 
             if not suppressed or role in ("", "none") or readiness == "terminal":
+                continue
+
+            # WORK_QUEUES 1.7: a superseded Decision states a ruling its leaf has
+            # replaced, so it must not create work here either. The suppression
+            # above still stands -- the escalation really was resolved by this
+            # lineage -- but the job belongs to the leaf, which raises its own
+            # item. Without this, DEC-2026-0033 kept producing a ready Builder
+            # item beside DEC-2026-0042, the very reissue that corrected it, and
+            # the two Decision loops' 1.7 guards could not see it because this
+            # pass runs in a separate loop.
+            if decision_id in reissued_by_ruleset.get(ruleset, set()):
                 continue
 
             # Skip if this Decision has already been consumed by an integrated

@@ -1,0 +1,179 @@
+schema_version: '1.0'
+id: ESC-2026-08-17T16.01.23.870Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-094-100-illusionist-spells
+constitution_version: '1.8'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-08-17'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    An Approved bundle that the Integrator rejects, and whose Review is
+    `approved`, creates work for no role. It stays in the Integrator ready queue
+    and is re-rejected on every pass. One bundle has now been rejected three
+    times over five days without producing a single queue item for anyone who
+    could repair it.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. WORK_QUEUES derives every role's queue from artifact
+  state, and no state expresses "the Integrator refused this bundle." The defect
+  cannot be fixed mechanically by the Integrator, who may not edit a Review, a
+  GUP, or the contract.
+
+question: >-
+  When the Integrator rejects an Approved bundle whose Review is `approved` and
+  `approval_ready`, what artifact state returns that bundle to the role that must
+  repair it, and which role owns the repair when the defect is one the Review
+  should have caught?
+
+what_is_not_in_question:
+  - >-
+    The rejection itself. `APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r04-r01`
+    declares 126 operations over a 14-row edge CSV and no `operation_index` entry
+    carries `csv_row`. It is correctly unappliable and no ruling is sought on it.
+  - >-
+    Integrator authority. Rejecting, reporting, and preserving the inputs is the
+    whole of the role's remit here; this escalation asks only where the resulting
+    work should appear.
+  - >-
+    Whether rejection reports are useful. They are the correct record. The gap is
+    that a record is not a queue signal.
+
+the_stuck_artifact:
+  bundle: APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r04-r01
+  review: REV-GUP-PKT-PHB-094-100-illusionist-spells-r04-r01
+  gup: GUP-PKT-PHB-094-100-illusionist-spells-r04
+  unchanged_since: '2026-08-12T21:37'
+  defect: >-
+    `operation_index` declares 126 operations (14 additions, 112 pending) against
+    an edge CSV holding 14 data rows, and not one entry carries `csv_row`. The
+    index was written from the GUP's intent rather than from its rows.
+  rejected_in:
+    - INT-20260812-002
+    - INT-20260814-003
+    - INT-20260815-002
+  review_state:
+    overall_disposition: approved
+    approval_ready: true
+    handoff_next_role: integrator
+    handoff_readiness: ready
+  queue_derivation_today:
+    integrator: ready
+    builder: absent
+    reviewer: absent
+    architect: absent
+  no_superseding_revision: >-
+    No `GUP-PKT-PHB-094-100-illusionist-spells-r05` exists, so the bundle is the
+    active leaf and keeps re-entering the ready queue unchanged.
+
+why_the_loop_has_no_exit:
+  mechanism: >-
+    WORK_QUEUES derives Integrator work from an Approved bundle whose Review is
+    complete and whose ID no Integration manifest names. All three conditions hold
+    permanently for a rejected bundle: the Review stays `approved`, the bundle
+    stays published, and no manifest names it precisely because it was refused.
+  the_asymmetry: >-
+    A Review with `revision_required` creates Builder work, which is how every
+    other bundle rejected in this lineage was repaired — psionics r03 to r05 to
+    r06, magic-user 1-4 r05 to r07 to r08, planes r04 to r06. Each had a Reviewer
+    disposition that routed it. An `approved` Review has no equivalent, so the
+    Integrator's refusal is the only signal and it is not one the scanner reads.
+  scanner_evidence: >-
+    `tooling/common/scan_agent_queues.py` never opens
+    `rulesets/<ruleset>/reports/INT-*.rejected.json`. Grep for `rejected` in that
+    file returns only a comment about superseded bundles.
+  contract_evidence: >-
+    `contracts/WORK_QUEUES.md` contains no rule deriving work from an Integration
+    rejection. Its numbered acceptance rules cover Reviewer dispositions,
+    supersession, decision implementations and direct migrations, but not refusal
+    by the consuming role.
+
+why_it_matters: >-
+  The failure is silent in the way an unsatisfiable acceptance test is silent. The
+  bundle does not disappear and nothing reports an error; it simply produces one
+  more rejection record per pass while the defect stays exactly where it was. It
+  also makes the Integrator test suite permanently red — seven errors and one
+  failure today — because the tests that integrate the ready set correctly refuse
+  a set that contains an unappliable bundle. A queue that cannot drain trains
+  every role to read a red suite as normal.
+
+options_considered:
+  - option: The Reviewer supersedes its own Review with a `revision_required` revision
+    impact: >-
+      Uses machinery that already exists and already routes correctly. It requires
+      accepting that a published Review may be superseded on the Integrator's
+      evidence rather than on new source reading, and it makes the Reviewer the
+      owner of a defect its own approval-readiness check did not catch.
+    integrator_preference: recommended_if_a_narrow_fix_is_wanted
+  - option: >-
+      WORK_QUEUES derives Builder work from an Integration rejection record naming
+      the bundle, until a superseding GUP revision exists
+    impact: >-
+      Fixes the class rather than the instance and gives the rejection report a
+      mechanical consequence. Requires the scanner to read
+      `reports/INT-*.rejected.json`, a contract rule, and a decision about which
+      role a given defect class routes to.
+    integrator_preference: recommended_as_the_durable_fix
+  - option: Strengthen the Reviewer's approval-readiness check so this cannot be approved
+    impact: >-
+      Prevents the next occurrence but does not release this artifact or any other
+      already published. Worth doing alongside either option above, not instead of
+      them; the same check already passes a zero-row bundle whose index declares
+      four operations, which is how alignment-graph-r02 reached the queue.
+    integrator_preference: complementary_not_sufficient
+  - option: The Integrator repairs the operation index
+    impact: >-
+      Not offered. Rebuilding an index from the CSV would be authoring the
+      classification a Review must approve, and `agents/integrator/INSTRUCTIONS.md`
+      forbids repairing source interpretation during integration.
+    integrator_preference: refused
+  - option: Withdraw or move the Approved bundle so it leaves the queue
+    impact: >-
+      Not offered. "Do not move or rewrite an Approved bundle to represent
+      integration state" is an explicit Integrator prohibition, and it would hide
+      the defect rather than route it.
+    integrator_preference: refused
+
+affected_canonical_ids: []
+migration_impact: >-
+  None. Canonical state is untouched by this escalation and by all three
+  rejections; preconditions run before the snapshot, so the bundle has never
+  reached a write. Canonical stands at 4,224 edges / 1,165 nodes / 1,700 findings.
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  profile_change: false
+  contract_change: likely
+  note: >-
+    WORK_QUEUES would gain a rejection-derived queue rule under the second option,
+    or a stated expectation that the Reviewer supersedes on Integrator evidence
+    under the first. `tooling/common/scan_agent_queues.py` changes under the second.
+
+systemic_finding:
+  observation: >-
+    Every other role's refusal creates work. A Reviewer's `revision_required`
+    routes to Builder; a diagnostic restores a Decision to Builder; an escalation
+    routes to Architect. The Integrator is the only role whose refusal terminates
+    in a report nothing reads.
+  scope: >-
+    Not specific to this bundle or this defect class. Any bundle that passes
+    Review and fails integration lands in the same loop, including a future
+    `decision_migration_v1` bundle whose baseline drifts before it is applied.
+  integrator_note: >-
+    Three of the four bundles rejected in this lineage were eventually repaired,
+    which makes the gap easy to miss. Their repairs are traceable to Reviewer
+    dispositions and Architect Decisions, not to any rejection record. The one
+    bundle whose Review stayed `approved` is the one still sitting here.
+
+blocking: >-
+  Nothing this Integrator can act on. The bundle will be re-rejected on every
+  future pass until either a superseding GUP revision is published or a queue rule
+  routes it. No further rejection record will be written for it in the meantime;
+  a fourth would repeat the third without adding information.

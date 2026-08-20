@@ -1,0 +1,79 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0044-r03-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: All DEC-2026-0044 capability acceptance tests are independently verified.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0044-r03
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0044-r03.yaml
+  checksum: sha256:5cdc5dd129516377b82b95b6c1e38a094ef90f5e00cd9b093b47d9d8f23241f6
+decision_input:
+  id: DEC-2026-0044
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0044.yaml
+  checksum: sha256:ba23be39f14bf07ffc50e01d6ff0c7fb43531b4ddeb293e87db4498057ddb157
+acceptance_dispositions:
+- acceptance_test_index: 1
+  disposition: verified
+  evidence: >-
+    Independently ran test_migration_v2: 29 tests passed. The valid v2 bundle
+    is discovered as exactly one direct-migration job with no edge CSV; the
+    maintained v1 regression suite is also included in the complete run.
+- acceptance_test_index: 2
+  disposition: verified
+  evidence: >-
+    Independently rebuilt the r02 three-mutation reproduction in an isolated
+    clone: a valid extra component, a forged manifest authority Decision
+    checksum, and a proposed-status Review with its checksum repinned. r03
+    produced all three required blocking preconditions. The four new targeted
+    regressions passed, alongside the pre-existing grammar, baseline,
+    before-image, incident-set, identity, rollback, and retired-endpoint tests.
+- acceptance_test_index: 3
+  disposition: verified
+  evidence: >-
+    test_migration_v2 passed its moved-advisory-locator case. The implementation
+    treats only the locator as informational while retaining strict retired-ID,
+    label, and pinned-registry-baseline checks.
+- acceptance_test_index: 4
+  disposition: verified
+  evidence: >-
+    This Approved independent Review consumes the exact r03 report and Decision
+    provenance after rechecking its implementation-file checksums and validation.
+- acceptance_test_index: 5
+  disposition: verified
+  evidence: >-
+    Independently reran the complete Integrator suite at the pinned snapshot:
+    125 tests passed. The report additionally records passing current common,
+    Builder, migration, registration-agreement, queue, and schema validation.
+independent_validation:
+  passed: true
+  commands:
+  - command: >-
+      SHA-256 comparison of IMP-DEC-2026-0044-r03, DEC-2026-0044, the consumed
+      r02 Review, and every recorded implementation file
+    exit_code: 0
+    result: passed
+    summary: All reviewed checksums matched current bytes.
+  - command: '[cwd tooling/integrator/tests] PYTHONPATH=src;tests python -m unittest test_migration_v2 -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 29 tests in 5.580s; OK.
+  - command: >-
+      Isolated r02 three-mutation reproduction; assert extra component, forged
+      authority checksum, and proposed Review status each become blocking
+    exit_code: 0
+    result: passed
+    summary: All three expected blocking preconditions were present.
+  - command: '[cwd tooling/integrator/tests] PYTHONPATH=src;tests python -m unittest discover -s . -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 125 tests in 161.018s; OK.
+overall_disposition: approved

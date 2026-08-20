@@ -16,7 +16,7 @@ from pathlib import Path
 
 from .compiler import Compiler, load_general_rules
 from .duplicates import CanonicalEdges
-from .emit import write_all
+from .emit import preflight_create_only, write_all
 from .governance import Governance
 from .registry import NodeRegistry
 from .review import ReviewDirectives
@@ -100,7 +100,12 @@ def plan_decision_migration(args) -> int:
     import json
 
     from .compiler import TOOL_NAME, TOOL_VERSION, sha256_of
-    from .decision_migration import plan_from_decisions, to_gup, validation_report
+    from .decision_migration import (
+        note_baseline_drift,
+        plan_from_decisions,
+        to_gup,
+        validation_report,
+    )
     from .duplicates import CanonicalEdges
     from .emit import _dump
     from .registry import NodeRegistry
@@ -153,12 +158,24 @@ def plan_decision_migration(args) -> int:
     }
 
     tool = {"name": TOOL_NAME, "version": TOOL_VERSION}
+    # Recorded before either artifact is rendered so the note appears in both.
+    note_baseline_drift(plan, envelope)
     # The report is written first because the GUP pins it by checksum. Doing it
     # the other way round would mean hashing a file that does not exist yet.
     report = validation_report(
         plan, gup_id, envelope, tool, test_result, operation_model=args.operation_model
     )
     report_path.parent.mkdir(parents=True, exist_ok=True)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    # DEC-2026-0053: both durable outputs are checked before either is written.
+    # The report is written first because the GUP pins it by checksum, so a
+    # per-file check would have already clobbered the report by the time it
+    # noticed the GUP existed.
+    try:
+        preflight_create_only([report_path, args.out], gup_id)
+    except FileExistsError as clash:
+        print(str(clash), file=sys.stderr)
+        return 2
     report_path.write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n"
     )
@@ -232,6 +249,11 @@ def plan_migration(args) -> int:
         {"name": TOOL_NAME, "version": TOOL_VERSION}, test_result,
     )
     args.out.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        preflight_create_only([args.out], gup_id)
+    except FileExistsError as clash:
+        print(str(clash), file=sys.stderr)
+        return 2
     args.out.write_text(_dump(document), encoding="utf-8", newline="\n")
 
     summary = document["validation_summary"]
@@ -430,13 +452,6 @@ def main(argv: list[str] | None = None) -> int:
         type=int,
         help="GUP revision number; defaults to the GUR's revision",
     )
-    compile_cmd.add_argument(
-        "--allow-overwrite",
-        action="store_true",
-        help="rewrite a revision that already exists. Only for a revision nothing has "
-        "consumed; a Review may already pin the published checksum.",
-    )
-
     pages_cmd = sub.add_parser(
         "verify-pages",
         help="check every page cited by a GUP against the page markers in the packet source",
@@ -556,9 +571,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         report_dir = root / "build" / "reports"
         try:
-            written = write_all(
-                result, gup_dir, report_dir, test_result, allow_overwrite=args.allow_overwrite
-            )
+            written = write_all(result, gup_dir, report_dir, test_result)
         except FileExistsError as clash:
             print(str(clash), file=sys.stderr)
             return 2

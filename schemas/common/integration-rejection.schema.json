@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/common/integration-rejection.schema.json",
+  "title": "Integration Rejection Record",
+  "$comment": "DEC-2026-0043: an Integrator rejection is a first-class queue signal, not a report nobody reads. A record conforming to this schema suppresses its exact bundle's Integrator item and creates one Reviewer remediation item, so every field a queue decision rests on is required and checksummed. A record that does not conform is diagnostic and suppresses nothing: a malformed rejection must never be able to retire integration work.",
+  "allOf": [{"$ref": "artifact-envelope.schema.json"}],
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "id",
+    "status",
+    "ruleset_id",
+    "book_id",
+    "rejected_bundles"
+  ],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "status": {"const": "rejected"},
+    "ruleset_id": {"type": "string", "minLength": 1},
+    "book_id": {"type": "string", "minLength": 1},
+    "rejected_bundles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/rejectedBundle"}
+    }
+  },
+  "$defs": {
+    "checksum": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "rejectedBundle": {
+      "type": "object",
+      "additionalProperties": true,
+      "$comment": "The bundle, the Review that approved it, and the GUP it carries, each pinned by checksum. Naming them without checksums would let a record keep suppressing integration after the artifacts it describes had been re-issued.",
+      "required": [
+        "bundle_id",
+        "bundle_checksum",
+        "review_id",
+        "review_checksum",
+        "gup_id",
+        "gup_checksum",
+        "blocking_failures"
+      ],
+      "properties": {
+        "bundle_id": {"type": "string", "minLength": 1},
+        "bundle_checksum": {"$ref": "#/$defs/checksum"},
+        "review_id": {"type": "string", "minLength": 1},
+        "review_checksum": {"$ref": "#/$defs/checksum"},
+        "gup_id": {"type": "string", "minLength": 1},
+        "gup_checksum": {"$ref": "#/$defs/checksum"},
+        "packet_id": {"type": "string", "minLength": 1},
+        "blocking_failures": {
+          "type": "array",
+          "minItems": 1,
+          "$comment": "At least one machine-readable failure. A rejection with no stated failing check states no repairable defect, so it cannot direct remediation.",
+          "items": {"$ref": "#/$defs/blockingFailure"}
+        }
+      }
+    },
+    "blockingFailure": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["check", "detail", "blocking"],
+      "properties": {
+        "check": {"type": "string", "minLength": 1},
+        "detail": {"type": "string", "minLength": 1},
+        "blocking": {"const": true},
+        "result": {"const": "fail"}
+      }
+    }
+  }
+}

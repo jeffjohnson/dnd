@@ -1,0 +1,160 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0045-r05
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 5
+supersedes: IMP-DEC-2026-0045-r04
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0045
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0045.yaml
+  checksum: sha256:25dedbb5ca47f8b3084a9b1546610fa66c8f8da33923c9cdd1b9f2f059aee341
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:46a70321ce8aca78e4d704e6f3b30c2fec83f89bb9ab3318e9bf2166f07b15b7
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:a243b60067d9b0694a8b7185c89dd414d0c9db11338271f87fa8f80b1f6c9b0f
+- path: agents/integrator/INSTRUCTIONS.md
+  checksum: sha256:5f81495d1842e20ac253e7fa2ce77e7fb6cee1dba7d36f3f11c6bdde1da04110
+- path: agents/reviewer/INSTRUCTIONS.md
+  checksum: sha256:71863c4ce975b86f4bc868259939120c319369cae896edd9b1e1e0f25e635582
+- path: agents/architect/INSTRUCTIONS.md
+  checksum: sha256:c2911033c12bcaf1f9411730c17c2a8d19cfc040ea13944826fefe382a4e75c4
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0045.yaml
+  checksum: sha256:25dedbb5ca47f8b3084a9b1546610fa66c8f8da33923c9cdd1b9f2f059aee341
+- path: schemas/common/architect-decision.schema.json
+  checksum: sha256:b4004bd9fb4d3704c15670c6880416f60d07f9e9563ff4a4e0f030a7b4fc0d2e
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:f7cab29e0ce2e2be588f2039e9cf6206c72e966d3b9dcccc8e93601cbdcc756e
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:cac2a11c33849f97b235e2934be7b43594a5fc3f09ffdaf513e630b4074192aa
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'PASSES AS CURRENT-STATE CONTRACT EVIDENCE, UNDER DEC-2026-0048. This test names WORK_QUEUES
+    1.12 and ARTIFACT_LIFECYCLE 1.10. DEC-2026-0048 authorizes exactly this Decision checksum and acceptance-test
+    index 1 to read those as minimums, so the test is satisfied by 1.12-or-later and 1.10-or-later with
+    every named anchor still present, and the structured evidence in versioned_contract_content records
+    it. Measured now: WORK_QUEUES is Version 1.15 and carries checksummed Integration rejection remediation
+    (section at line 677), Builder-or-Integrator direct non-migration implementation ownership (core rule
+    13, line 41) and exact_diff ownership planning for version-1.1 Decisions (core rule 14, line 45).
+    ARTIFACT_LIFECYCLE is Version 1.11 and carries immutable checksummed Integration rejection records
+    (section 7, line 210) and the Builder-or-Integrator implemented_by requirement (line 181). Both are
+    at or above their authorized floors and no anchor has been removed or weakened. This is not retired_by_lineage:
+    the contracts are being read now, not asserted to have completed a lineage.'
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0048
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml
+      checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:46a70321ce8aca78e4d704e6f3b30c2fec83f89bb9ab3318e9bf2166f07b15b7
+      observed_version: '1.15'
+      minimum_version: '1.12'
+      anchors_present:
+      - checksummed Integration rejection remediation
+      - Builder-or-Integrator direct non-migration implementation ownership
+      - exact_diff ownership planning for version-1.1 Decisions
+    - path: contracts/ARTIFACT_LIFECYCLE.md
+      checksum: sha256:a243b60067d9b0694a8b7185c89dd414d0c9db11338271f87fa8f80b1f6c9b0f
+      observed_version: '1.11'
+      minimum_version: '1.10'
+      anchors_present:
+      - immutable checksummed Integration rejection records
+      - Builder-or-Integrator direct non-migration implementation ownership
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'VERIFIED AGAINST THE PUBLISHED FILES, WHICH THE ARCHITECT WROTE. agents/integrator/INSTRUCTIONS.md
+    gained ''### Rejection records'' at line 167: an immutable JSON record under rulesets/<ruleset-id>/reports/
+    conforming to the rejection schema, declaring status: rejected and recording, for every rejected bundle,
+    the exact Approved-bundle, approving Review and reviewed GUP IDs and SHA-256 checksums plus one or
+    more machine-readable blocking failures, with an explicit prohibition on inferring or omitting provenance.
+    agents/reviewer/INSTRUCTIONS.md gained ''### Integration-rejection remediation'' at line 135, requiring
+    an immutable successor Review recording integration_rejection.id, .path and .checksum, which is what
+    consumes the REVIEWER-INTEGRATION-REJECTION item. Before this Decision neither file contained the
+    word ''rejection'' at all. Re-verified for r02 at the current checksums after the DEC-2026-0046 scanner
+    change drifted the two shared tooling files this report pins; 31 targeted tests still pass and the
+    claim above is unchanged. Re-verified at the current checksums for this revision: the Integrator published
+    IMP-DEC-2026-0044-r03, so the common suite is 560 OK, the Integrator suite 125 OK and the builder
+    suite 580 OK. The claim above is unchanged; only the blocking suite state changed. Re-verified at
+    the current checksums for this revision, which exists only because DEC-2026-0047 advanced contracts/WORK_QUEUES.md
+    to 1.14 and this report pins it. No content this Decision required was changed; the claim above is
+    unchanged. Re-verified at the current checksums for this revision, which exists to carry the structured
+    authority DEC-2026-0048 grants; the claim above is unchanged.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED. schemas/common/architect-decision.schema.json adds $defs.exactDiffOwner
+    (additionalProperties false; path and owner required; owner restricted to the five roles; optional
+    integer sequence_step and note) and an allOf branch requiring exact_diff_ownership when decision_authoring_contract_version
+    is ''1.1'' and exact_diff is a non-empty object. tooling/common/scan_agent_queues.py adds _exact_diff_ownership_errors,
+    _decision_assigned_roles and _sequence_owner_by_step, reading the Decision alone. Positive coverage:
+    ExactDiffOwnershipCase.test_a_complete_plan_produces_no_ownership_diagnostic and test_a_complete_plan_is_ordinary_implementation_work.
+    Live corpus: test_every_published_decision_satisfies_the_guard walks all 45 published Decisions and
+    finds no offender, and all 45 validate against the amended schema. DEC-2026-0045 itself is the worked
+    example: it declares version 1.1, lists nine exact_diff paths, and owns all nine. Re-verified for
+    r02 at the current checksums after the DEC-2026-0046 scanner change drifted the two shared tooling
+    files this report pins; 31 targeted tests still pass and the claim above is unchanged. Re-verified
+    at the current checksums for this revision: the Integrator published IMP-DEC-2026-0044-r03, so the
+    common suite is 560 OK, the Integrator suite 125 OK and the builder suite 580 OK. The claim above
+    is unchanged; only the blocking suite state changed. Re-verified at the current checksums for this
+    revision, which exists only because DEC-2026-0047 advanced contracts/WORK_QUEUES.md to 1.14 and this
+    report pins it. No content this Decision required was changed; the claim above is unchanged. Re-verified
+    at the current checksums for this revision, which exists to carry the structured authority DEC-2026-0048
+    grants; the claim above is unchanged.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED, ONE NAMED DEFECT PER TEST. ExactDiffOwnershipCase covers missing
+    (test_an_unassigned_path_is_diagnostic, the exact DEC-2026-0043 shape), duplicate (test_a_duplicate_entry_is_diagnostic),
+    unowned (test_an_entry_without_an_owner_is_diagnostic), unknown-owner (test_an_unknown_owner_is_diagnostic),
+    and sequence-mismatched (test_a_sequence_step_owned_by_another_role_is_diagnostic plus test_a_sequence_step_the_sequence_does_not_define_is_diagnostic).
+    test_an_owner_the_decision_never_schedules_is_diagnostic covers the ruling''s central case: an owner
+    named in the ownership list that no sequence step or follow_up_owners entry schedules. Each emits
+    one error diagnostic ''decision_exact_diff_unowned''. Not-approval-ready is proven by test_an_unowned_plan_is_not_ready_implementation_work
+    (no Builder item) and test_an_integrator_owned_decision_is_guarded_the_same_way (no Integrator item);
+    test_an_unowned_plan_is_reported_blocked_rather_than_dropped fixes that the work surfaces as a blocked
+    Architect item instead of vanishing, since a silently empty queue is the failure DEC-2026-0043 actually
+    produced. Valid history is preserved by test_a_decision_without_the_version_declaration_is_untouched
+    and test_an_older_authoring_version_is_untouched; all 44 Decisions published before this one omit
+    the declaration and are unaffected. 31 targeted tests pass. Re-verified for r02 at the current checksums
+    after the DEC-2026-0046 scanner change drifted the two shared tooling files this report pins; 31 targeted
+    tests still pass and the claim above is unchanged. Re-verified at the current checksums for this revision:
+    the Integrator published IMP-DEC-2026-0044-r03, so the common suite is 560 OK, the Integrator suite
+    125 OK and the builder suite 580 OK. The claim above is unchanged; only the blocking suite state changed.
+    Re-verified at the current checksums for this revision, which exists only because DEC-2026-0047 advanced
+    contracts/WORK_QUEUES.md to 1.14 and this report pins it. No content this Decision required was changed;
+    the claim above is unchanged. Re-verified at the current checksums for this revision, which exists
+    to carry the structured authority DEC-2026-0048 grants; the claim above is unchanged.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Supersedes r04 to carry the structured authority DEC-2026-0048 grants for acceptance test 1,
+    which is the only thing that changed: the ownership guard is unchanged and re-verified with 31 targeted
+    tests, and all 49 published Decisions satisfy it. The version discrepancy r04 disclosed is now resolved
+    by explicit checksummed authorization rather than by the Builder''s reading.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0045-r05.validation.json
+validation_report_checksum: sha256:4337f11dfe088c079afb2520d955c030169900496d93d094c3cb2137f1c58817
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 595 tests in 93.868s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.ExactDiffOwnershipCase
+      test_scan_agent_queues.TestExactDiffOwnershipHelpers'
+    exit_code: 0
+    result: passed
+    summary: Ran 31 tests in 0.540s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 610 tests in 81.691s (38 skipped) OK

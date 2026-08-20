@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/common/role-context-manifest.schema.json",
+  "title": "Role Context Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "cache_format_version", "common_patterns", "roles"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "cache_format_version": {"const": 1},
+    "common_patterns": {"$ref": "#/$defs/patterns"},
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["architect", "analyst", "builder", "reviewer", "integrator"],
+      "properties": {
+        "architect": {"$ref": "#/$defs/role"},
+        "analyst": {"$ref": "#/$defs/role"},
+        "builder": {"$ref": "#/$defs/role"},
+        "reviewer": {"$ref": "#/$defs/role"},
+        "integrator": {"$ref": "#/$defs/role"}
+      }
+    }
+  },
+  "$defs": {
+    "pathPattern": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_./{}*+-]+$"
+    },
+    "patterns": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/pathPattern"}
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stable_patterns"],
+      "properties": {
+        "stable_patterns": {"$ref": "#/$defs/patterns"}
+      }
+    }
+  }
+}

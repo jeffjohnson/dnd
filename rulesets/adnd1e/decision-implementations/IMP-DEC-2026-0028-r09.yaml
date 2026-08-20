@@ -1,0 +1,146 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0028-r09
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 9
+supersedes: IMP-DEC-2026-0028-r08
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0028
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0028.yaml
+  checksum: sha256:368749c4bae0f1c61cbfc0a874f1e73c302258192c6836accb5cd1088b2f1064
+implementation_files:
+- path: schemas/common/decision-implementation.schema.json
+  checksum: sha256:11ba9038a5b5e8cc96100ce624dde370f8a02b588833e8c9dea18b994199672f
+- path: schemas/common/decision-implementation-review.schema.json
+  checksum: sha256:45ffc2c1bcd1a30801d5951b4985d0043f725c8b6f8460cacf2ca03efee8e2e5
+- path: schemas/common/architect-decision.schema.json
+  checksum: sha256:983e7b40e611189bffd0f1ffa0ee0067644bccb9897342ec81f1ba70318e676a
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:79648a8a0f7f5320b10ade9f15cf9991dddef0e7c324016f4647e8afa74165b3
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:e6bc2dbf294283e290f011316417dabba7041192fd31c1b91750228a282e2233
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:596bfff46fb75ced345585eca33b58613f8e0e7ca288d7b3be9c53ba2432f7c9
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'live repository check: ESC-2026-08-06T05.00.31.952Z is in escalations/decided/ and DEC-2026-0028
+    names it as its escalation_id. The raising Review REV-IMP-DEC-2026-0022-r08-r01 is unmodified, and
+    DEC-2026-0022 is unedited: DEC-2026-0028 declares supplements: [DEC-2026-0022] and carries the authorization
+    in its own retired_acceptance_authorizations block. (re-verified for r03) Re-verified for r6 at the
+    current file checksums: both suites pass (common 363, builder 569) and the claim above is unchanged.
+    Re-verified for r7 at the current file checksums: both suites pass (common 430, builder 569) and the
+    claim above is unchanged. Re-verified for r8 at the current file checksums: both suites pass (common
+    474, builder 569) and the claim above is unchanged. Re-verified for r9 at the current file checksums:
+    both suites pass (common 490, builder 577) and the claim above is unchanged.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'live repository check: decision-implementation.schema.json defines retired_by_lineage with
+    required retirement_authority and retired_subjects, and forbids either field on any other result;
+    decision-implementation-review.schema.json defines verified_retired_by_lineage with required verified_retirement_authority
+    and verified_retired_subjects. Both reuse the same retirementAuthority and retiredSubject definitions
+    so the two artifacts cannot drift. Every subject requires an integration record path and checksum,
+    and superseded_by_integrated_revision additionally requires the integrated successor. Draft202012Validator.check_schema
+    passes for all 10 common schemas -> unit test test_common_schemas.TestImplementationArtifactsValidate.test_every_active_implementation_artifact_validates
+    -> Ran 1 tests in 0.313s OK Re-verified for r6 at the current file checksums: both suites pass (common
+    363, builder 569) and the claim above is unchanged. Re-verified for r7 at the current file checksums:
+    both suites pass (common 430, builder 569) and the claim above is unchanged. Re-verified for r8 at
+    the current file checksums: both suites pass (common 474, builder 569) and the claim above is unchanged.
+    Re-verified for r9 at the current file checksums: both suites pass (common 490, builder 577) and the
+    claim above is unchanged.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'unit tests covering every rejection path: RetiredByLineageCase rejects a self-authorizing
+    Decision without semantics, a missing authority, a stale authority checksum, an authority for another
+    index, an authority for another Decision, a non-snapshot kind, a withheld retirement, partial subject
+    coverage, an unauthorized subject, an unpermitted state, a supersession with no integrated successor,
+    a missing integration record, a stale integration-record checksum, an unrelated integration record,
+    and an unapproved authority; RetiredReviewDispositionCase rejects a plain verified disposition on
+    a retired result, a retired disposition on an ordinary result, and a Review omitting either half of
+    its own evidence -> Ran 43 tests in 1.142s OK Re-verified for r6 at the current file checksums: both
+    suites pass (common 363, builder 569) and the claim above is unchanged. Re-verified for r7 at the
+    current file checksums: both suites pass (common 430, builder 569) and the claim above is unchanged.
+    Re-verified for r8 at the current file checksums: both suites pass (common 474, builder 569) and the
+    claim above is unchanged. Re-verified for r9 at the current file checksums: both suites pass (common
+    490, builder 577) and the claim above is unchanged.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'unit tests RetiredByLineageCase.test_a_stale_authority_checksum_does_not_retire, test_an_authority_for_another_index_does_not_retire
+    and test_an_authority_for_another_decision_does_not_retire pin the authorization to an exact Decision
+    checksum and index. Live: IMP-DEC-2026-0022-r08 retires indices 2, 3 and 4 only, against DEC-2026-0022
+    checksum sha256:ad74f5937d668c02544f8d610c2fae236e6022fdeb7f434f5f5b26366604923f, which is the checksum
+    DEC-2026-0028 authorizes -> Ran 1 tests in 0.025s OK Re-verified for r6 at the current file checksums:
+    both suites pass (common 363, builder 569) and the claim above is unchanged. Re-verified for r7 at
+    the current file checksums: both suites pass (common 430, builder 569) and the claim above is unchanged.
+    Re-verified for r8 at the current file checksums: both suites pass (common 474, builder 569) and the
+    claim above is unchanged. Re-verified for r9 at the current file checksums: both suites pass (common
+    490, builder 577) and the claim above is unchanged.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'live repository check: every revision of the DEC-2026-0022 report lineage published under
+    this mechanism, from IMP-DEC-2026-0022-r05 through IMP-DEC-2026-0022-r09, records index 1 as passed
+    and indices 2, 3 and 4 as retired_by_lineage, and each is approval_ready only with validation.passed
+    true. REV-IMP-DEC-2026-0022-r08-r01 approved IMP-DEC-2026-0022-r08, disposing indices 2, 3 and 4 as
+    verified_retired_by_lineage, so the outcome was independently re-derived rather than accepted on the
+    report''s word. IMP-DEC-2026-0022-r04 is untouched by all of it: status blocked, approval_ready false,
+    handed to the Architect on ESC-2026-08-06T05.00.31.952Z, last written before IMP-DEC-2026-0022-r05,
+    carrying sha256:e735746fa8bc40fb9169481e6d819e70d938b29afb37810cef375f8cc0e37a1c. This states what
+    each named revision records, not which revision is current, because a claim about the current leaf
+    stops being true the next time that lineage advances. Re-verified for r6 at the current file checksums:
+    both suites pass (common 363, builder 569) and the claim above is unchanged. Re-verified for r7 at
+    the current file checksums: both suites pass (common 430, builder 569) and the claim above is unchanged.
+    Re-verified for r8 at the current file checksums: both suites pass (common 474, builder 569) and the
+    claim above is unchanged. Re-verified for r9 at the current file checksums: both suites pass (common
+    490, builder 577) and the claim above is unchanged.'
+- acceptance_test_index: 6
+  result: passed
+  evidence: 'unit tests RetiredReviewDispositionCase.test_plain_verified_cannot_approve_a_retired_result,
+    test_a_review_omitting_its_own_authority_is_rejected and test_a_review_omitting_the_subject_evidence_is_rejected:
+    an approved Review consumes the Decision only when it re-derives the authority and every subject''s
+    integration evidence itself, and an ordinary verified disposition on a retired result is rejected
+    -> Ran 1 tests in 0.031s OK Re-verified for r6 at the current file checksums: both suites pass (common
+    363, builder 569) and the claim above is unchanged. Re-verified for r7 at the current file checksums:
+    both suites pass (common 430, builder 569) and the claim above is unchanged. Re-verified for r8 at
+    the current file checksums: both suites pass (common 474, builder 569) and the claim above is unchanged.
+    Re-verified for r9 at the current file checksums: both suites pass (common 490, builder 577) and the
+    claim above is unchanged.'
+- acceptance_test_index: 7
+  result: passed
+  evidence: 'live repository check: architect-decision.schema.json constrains acceptance_test_semantics
+    to an indexed live_queue_snapshot with an enumerated subject list, and retired_acceptance_authorizations
+    to an exact checksummed decision_input, index and complete subject list; DEC-2026-0028 validates against
+    it with 0 errors. Complete validation: common 267 tests OK, builder 381 tests OK; queue scan reports
+    no error diagnostic for any implementation artifact (re-verified for r03) Re-verified for r6 at the
+    current file checksums: both suites pass (common 363, builder 569) and the claim above is unchanged.
+    Re-verified for r7 at the current file checksums: both suites pass (common 430, builder 569) and the
+    claim above is unchanged. Re-verified for r8 at the current file checksums: both suites pass (common
+    474, builder 569) and the claim above is unchanged. Re-verified for r9 at the current file checksums:
+    both suites pass (common 490, builder 577) and the claim above is unchanged.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Re-issued because r08 recorded checksums for 2 file(s) that later, unrelated work modified:
+    tooling/common/scan_agent_queues.py, tooling/common/tests/test_scan_agent_queues.py. Nothing about
+    this Decision''s implementation changed; the report is republished so its provenance matches the bytes
+    on disk and it can carry the now-passing validation evidence. r08 remains on disk as history and was
+    not edited.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0028-r09.validation.json
+validation_report_checksum: sha256:0e56a746e983f0735afd38b5b2571db4bd7a678ec6a4ac307d166d2d3c742a47
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 490 tests in 103.808s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 577 tests in 111.635s (30 skipped) OK

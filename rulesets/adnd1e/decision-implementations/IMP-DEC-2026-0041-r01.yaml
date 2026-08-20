@@ -1,0 +1,70 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0041-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0041
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0041.yaml
+  checksum: sha256:96140c28f31eecb0210c7fe326a31a2cd99f257993621ec7064ec5592b6ae9d8
+implementation_files:
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:596bfff46fb75ced345585eca33b58613f8e0e7ca288d7b3be9c53ba2432f7c9
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'The implementation this Decision authorizes was already published under IMP-DEC-2026-0039-r01
+    and is unchanged. Verified against the ruling clause by clause in _repaired_by_successor: (a) every
+    envelope error must be rooted in handoff -- the guard returns False if any error path''s first element
+    is not ''handoff''; (b) a published direct successor must name the exact ID in supersedes -- it compares
+    str(successor[''supersedes'']) to the predecessor''s id; (c) that successor must have zero envelope
+    errors -- it requires errors(ENVELOPE, successor) to be empty. All three are required and each is
+    denied by a test in TestSupersededExemptionIsNarrow: no successor, a successor naming a different
+    predecessor, an invalid successor, and an error outside handoff (checked twice, via revision 0 and
+    a non-string schema_version).'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'The exemption is reported and pinned. test_the_exemption_is_reported_rather_than_silent asserts
+    the exempt set equals exactly [''GUR-PKT-UA-015-015-cavaliers-r02.yaml''], so a second artifact cannot
+    join it without that test failing and requiring a later Architect Decision. Live repository check:
+    the computed exempt set is that one artifact. test_the_exempt_artifact_is_invalid_only_in_its_handoff
+    asserts both of r02''s envelope errors sit under handoff, and test_the_exempt_artifact_has_a_valid_successor
+    asserts r03 validates with zero errors and declares supersedes GUR-PKT-UA-015-015-cavaliers-r02.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'The exemption is diagnostic history only and never a queue fallback. It lives entirely in
+    tooling/common/tests/test_common_schemas.py; scan_agent_queues.py has no reference to it, and r02
+    still produces its gur_invalid_handoff error diagnostic in every scan. Identity, provenance and proposal
+    fields are never excused: an error anywhere outside the handoff block fails the guard. No published
+    GUR was edited, moved or deleted; r01, r02 and r03 are all on disk at their stable paths.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Full common suite: Ran 474 tests in 84.363s OK. Full builder suite: Ran 569 tests in 76.003s
+    OK, 30 skipped. Canonical and registry data are untouched by this implementation.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: The narrow repaired-handoff exemption this Decision authorizes is already implemented and unchanged;
+    this report records the verification of each ruling clause against the code, and the exempt set is
+    pinned by test to the single named artifact.
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0041-r01.validation.json
+validation_report_checksum: sha256:515d306c4cba553878266085a4b68104a95aef068be1b67080d201d3e02a2f23
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 474 tests in 84.363s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 569 tests in 76.003s (30 skipped) OK

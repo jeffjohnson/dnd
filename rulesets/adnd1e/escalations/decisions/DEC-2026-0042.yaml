@@ -1,0 +1,156 @@
+schema_version: '1.0'
+id: DEC-2026-0042
+status: approved
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-014-016-cavalier
+constitution_version: '1.8'
+revision: 2
+supersedes: DEC-2026-0033
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Reissue the completed v1.8 vocabulary implementation under a satisfiable
+    acceptance boundary, then let the ordinary Analyst packet lifecycle verify
+    the future Cavalier GUR.
+  blocking_ids: []
+
+decision_date: '2026-08-17'
+escalation_id: ESC-2026-08-17T13.53.40.361Z
+
+question: >-
+  May a non-migration Decision Implementation Report be required to prove an
+  artifact that a later role in the same Decision has not yet created?
+
+ruling: >-
+  No. A Decision Implementation Report and its independent implementation
+  Review prove the initial implementation assignment only. An assertion about a
+  later role's source-derived artifact belongs in an explicit
+  `post_implementation_requirements` block and is verified through that
+  artifact's ordinary GUR, GUP, Review, and Integration lifecycle. It is not a
+  Decision acceptance test and may not block the prior implementation report.
+  DEC-2026-0033 is superseded only to make this execution boundary explicit;
+  its v1.8 vocabulary and class-condition rulings are unchanged.
+
+rationale:
+  - >-
+    The former acceptance test 4 required Builder and Reviewer to prove a GUR
+    that the same sequence made the Analyst publish only after their approval.
+    A truthful implementation report had to mark the assertion `not_run`, so
+    the Decision could not complete.
+  - >-
+    Moving downstream source interpretation into ordinary packet lifecycle
+    review preserves Analyst ownership and prevents a Builder report from
+    predicting an uncreated source artifact.
+  - >-
+    This distinction is general: future Architect Decisions must not put a
+    later role's artifact, integration result, or other downstream state in the
+    initial implementer's acceptance-test list.
+
+ruling_retained_from_dec_0033:
+  mundane_weapon_prefix: weapon_
+  weapon_property_prefix: wpn_
+  magic_item_prefix: item_
+  class_condition_policy: >-
+    A qualitative class identity may distinguish a class-specific rule facet
+    without carrying a numeric magnitude or threshold.
+  ability_mechanic_policy: >-
+    `abil_dex_` and `abil_str_` remain valid through `abil_`; bare `dex_` and
+    `str_` remain rejected.
+
+affected_artifacts:
+  superseded_decision:
+    id: DEC-2026-0033
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0033.yaml
+    checksum: sha256:d204da77595a77ef0abfa47a143b6067d860818e5c6e1f28ed1eba312123c4a1
+  retained_implementation_evidence:
+    id: IMP-DEC-2026-0033-r01
+    path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0033-r01.yaml
+    disposition: Immutable evidence only; it cannot consume this reissued Decision.
+  required_successor_gur:
+    id: GUR-PKT-UA-014-016-cavalier-r02
+    owner: analyst
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-014-016-cavalier-r02.yaml
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: >-
+    The Analyst's later GUR revision remains an ordinary packet artifact, not a
+    Decision Implementation artifact or decision migration.
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Publish IMP-DEC-2026-0042-r01 using current checksums and fresh validation
+      of the already implemented v1.8 vocabulary. It accounts only for this
+      Decision's implementation acceptance tests.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Independently review that implementation report. Do not require the
+      future UA r02 GUR as evidence for this implementation Review.
+  - step: 3
+    owner: analyst
+    action: >-
+      After the implementation Review is Approved, publish the required
+      source-backed GUR-PKT-UA-014-016-cavalier-r02 as stated in
+      `post_implementation_requirements`.
+  - step: 4
+    owner: builder
+    action: Compile only the active r02 GUR through the ordinary packet lifecycle.
+
+acceptance_tests:
+  - >-
+    The Constitution and ruleset manifest declare v1.8 and define `weapon_`
+    separately from `wpn_` and `item_`.
+  - >-
+    The Builder vocabulary accepts constitution v1.8, `weapon_lance`, and the
+    approved ability-mechanic forms without admitting bare `dex_` or `str_`.
+  - >-
+    An implementation report names this exact Decision checksum, accounts for
+    every listed implementation acceptance test, and receives an independent
+    Approved implementation Review.
+  - All applicable schema, vocabulary, queue, and repository tests pass.
+
+post_implementation_requirements:
+  - >-
+    The Analyst GUR r02 supersedes r01, uses constitution version 1.8 and the
+    source identity specified by DEC-2026-0034, and selects only source-backed
+    `weapon_` relationships and the permitted qualitative Cavalier progression
+    facet. It contains no numeric magnitude or threshold in aspect or condition.
+  - >-
+    The ordinary GUP and Review lifecycle independently validates that GUR;
+    neither a Decision Implementation Report nor its Review may substitute for
+    packet provenance or source interpretation.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This reissue corrects sequencing only; its ontology ruling is unchanged.
+
+governance_changelog:
+  - >-
+    Decision acceptance tests are initial-assignment evidence. Later-role
+    artifact requirements are declared separately and proceed through their
+    normal lifecycle.
+
+exact_diff:
+  agents/architect/INSTRUCTIONS.md:
+    - 'Require a satisfiability check: acceptance tests must be evidenceable by the role and sequence step that reports them.'
+    - 'Place later-role artifact outcomes under post_implementation_requirements, not Decision acceptance_tests.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0042.yaml:
+    - 'Supersede DEC-2026-0033 with unchanged semantic rulings and satisfiable implementation acceptance tests.'
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Reissue implementation evidence against DEC-2026-0042; do not claim the future GUR exists.
+  reviewer:
+    - Approve only the implementation boundary, then review the later packet work independently.
+  analyst:
+    - Produce r02 only after the implementation Review; retain source ownership.

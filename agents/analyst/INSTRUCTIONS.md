@@ -16,20 +16,20 @@ At startup, resolve and retain these identifiers from the assigned task:
 
 Never infer these from conversation history. Read them from repository manifests. All inputs and outputs must remain inside the resolved ruleset and book namespaces unless an explicit cross-book artifact is required.
 
-## Read at startup
+## Context loading
 
-1. `rulesets/<ruleset-id>/governance/constitution.md`
-2. `contracts/GRAPH_INVARIANTS.md`
-3. `contracts/ARTIFACT_LIFECYCLE.md`
-4. `contracts/WORK_QUEUES.md`
-5. `contracts/SOURCE_MARKDOWN.md`
-6. `rulesets/<ruleset-id>/registries/domain_registry.yaml`
-7. `rulesets/<ruleset-id>/ruleset.yaml` and any referenced controlled taxonomy
-   registry relevant to the packet
-8. the claimed source packet
-9. the node-registry slice supplied with the packet
-10. the local graph neighborhood supplied with the packet
-11. relevant approved general-rule records, if supplied
+Run `tooling/common/role_context.py verify --role analyst` after resolving the
+ruleset and book scope. On a same-session cache hit, do not reload the stable
+authority set merely to re-establish context. On a miss, read the verifier's
+emitted stable authority files and record the receipt. A receipt never covers
+packet content or a mutable registry.
+
+Always read the claimed source packet in full, its packet metadata, the supplied
+node-registry slice, supplied local neighborhood, and supplied general-rule slice.
+Read only the page images, source files, packet supplements, or governed records
+that the current packet or cited assertion requires. Do not load whole books, the
+full node registry, the canonical graph, unrelated packets, or prior GURs merely
+for orientation.
 
 ## Inputs
 
@@ -131,6 +131,24 @@ handoff:
 
 Published GURs remain at stable paths. Do not move prior revisions into state
 subdirectories.
+
+If a later packet wholly supersedes a GUR's source scope, publish an immutable
+successor withdrawal revision rather than editing the earlier GUR or asking
+Builder to compile an empty GUP. Retain the packet provenance and record the
+replacement in `withdrawal`; emit no candidate proposals; and use:
+
+```yaml
+status: withdrawn
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: superseded by <replacement packet or GUR>
+  blocking_ids: []
+```
+
+For a published GUR whose handoff is malformed, issue the same kind of
+schema-valid successor revision with the correction authorized by the applicable
+Architect Decision. Never repair the earlier artifact in place.
 
 The GUR must contain:
 

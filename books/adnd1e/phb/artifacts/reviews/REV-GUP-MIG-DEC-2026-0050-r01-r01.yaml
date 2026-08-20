@@ -1,0 +1,158 @@
+schema_version: '1.0'
+id: REV-GUP-MIG-DEC-2026-0050-r01-r01
+status: revision_required
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: Reissue the v3 migration with a validation report that separately records the seven label-normalization operations from the fifty endpoint repoints.
+  blocking_ids: []
+review_role: independent_reviewer
+review_date: '2026-08-20'
+review_contract_version: '1.1'
+reviewed_gup:
+  id: GUP-MIG-DEC-2026-0050-r01
+  path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0050-r01.yaml
+  checksum: sha256:dd1f5994572b82f7c9f0a88c1e222d66e42767801a9d9fa7b5c3175c0ea2891f
+  artifact_kind: decision_migration
+  operation_model: decision_migration_v3
+  lineage_id: MIG-DEC-2026-0050
+  revision: 1
+  supersedes: null
+  validation_report:
+    path: build/reports/GUP-MIG-DEC-2026-0050-r01.validation.json
+    expected_checksum: sha256:b5ad425d8d21d671a5eaa5c674a4dc02ed64bf82022628d2aef82df8e1270c19
+    actual_checksum: sha256:b5ad425d8d21d671a5eaa5c674a4dc02ed64bf82022628d2aef82df8e1270c19
+    checksum_matches: true
+    reported_errors: 0
+    reported_warnings: 0
+input_provenance:
+  authority_decision:
+    id: DEC-2026-0050
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0050.yaml
+    expected_checksum: sha256:75891a395ec69a6e92ade9269ee4c55468725df26b3bde6c187432fa055c423c
+    actual_checksum: sha256:75891a395ec69a6e92ade9269ee4c55468725df26b3bde6c187432fa055c423c
+    checksum_matches: true
+  canonical_baseline:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    expected_checksum: sha256:3acf31eccc239b7fc7aea73bfce3bce559b07e6eafb98aae7ce29b2fce493148
+    actual_checksum: sha256:3acf31eccc239b7fc7aea73bfce3bce559b07e6eafb98aae7ce29b2fce493148
+    rows_read: 4501
+  registry_baseline:
+    path: rulesets/adnd1e/registries/nodes.csv
+    expected_checksum: sha256:c7eb79ac67e2f6f3738450fc9a9d86675b49c780b5a7cc5fd358c11468d6a111
+    actual_checksum: sha256:c7eb79ac67e2f6f3738450fc9a9d86675b49c780b5a7cc5fd358c11468d6a111
+    rows_read: 1243
+overall_disposition: revision_required
+approval_ready: false
+approved_bundle_emitted: null
+summary:
+  registry_replacements_approved: 3
+  endpoint_repoints_approved: 50
+  label_normalizations_approved: 7
+  canonical_rows_removed: 0
+  blockers: 1
+completeness_statement: >-
+  The pinned canonical and registry baselines, three replacements, all fifty
+  closed endpoint repoints, and all seven blank-label normalization operations
+  independently match DEC-2026-0050. Approval is withheld solely because the
+  checksummed validation component misstates the operation accounting required
+  for a v3 Approved bundle.
+node_replacement_decisions:
+  - retired_id: comeliness
+    canonical_id: abil_comeliness
+    disposition: approved
+    rationale: The retired node is present, the replacement is absent, both labels are Comeliness, and the 25-row closed incident set matches the baseline.
+  - retired_id: fatigue
+    canonical_id: rule_exhaustion
+    disposition: approved
+    rationale: The retired node is present, the replacement is absent, both labels are Exhaustion, and the 11-row closed incident set matches the baseline.
+  - retired_id: training
+    canonical_id: rule_training
+    disposition: approved
+    rationale: The retired node is present, the replacement is absent, both labels are Training, and the 14-row closed incident set matches the baseline; rule_training_status is untouched.
+canonical_change_decisions:
+  - kind: endpoint_repoint
+    canonical_rows: [601, 602, 603, 604, 605, 606, 608, 652, 653, 654, 655, 659, 660, 661, 802, 987, 1178, 1692, 1693, 1694, 1781, 1803, 1804, 1805, 1806, 1807, 1960, 2001, 2497, 2763, 2764, 2765, 2766, 2767, 2768, 2769, 2770, 2771, 2819, 2904, 2908, 3100, 3188, 3194, 3211, 3252, 4453, 4476, 4477, 4478]
+    disposition: approved
+    field_decisions:
+      before_image: approved
+      endpoint_id: approved
+      endpoint_label: approved
+      assertion_identity: approved
+    rationale: Every full before-image matches its one-based pinned row; the three enumerated incident sets equal independent retired-endpoint discovery, and each paired label becomes the exact replacement-registry label.
+  - kind: endpoint_label_normalization
+    canonical_rows: [85, 86, 87, 88, 89, 90, 91]
+    disposition: approved
+    field_decisions:
+      before_image: approved
+      changed_fields: approved
+      blank_from_values: approved
+      registry_label_to_values: approved
+      assertion_identity: approved
+    rationale: Each operation changes only source_label and target_label from blank to the current label of the unchanged endpoint IDs, with its complete baseline before-image.
+validation_component_decision:
+  disposition: approved_with_revision
+  finding_id: validation_report_v3_operation_accounting
+  observed:
+    counts:
+      endpoint_repoints: 50
+      label_normalizations: 0
+    direct_operations:
+      canonical_endpoint_repoints: 57
+  required:
+    counts:
+      endpoint_repoints: 50
+      label_normalizations: 7
+    direct_operations:
+      canonical_endpoint_repoints: 50
+      canonical_endpoint_label_normalizations: 7
+  rationale: >-
+    The reviewed GUP carries 50 endpoint_repoint operations and 7 distinct
+    endpoint_label_normalization operations. DEC-2026-0050 requires the seven
+    label operations to be recorded separately from endpoint repoints; reporting
+    zero and folding them into 57 repoints is not an accurate validation record.
+required_builder_revision:
+  successor_gup_id: GUP-MIG-DEC-2026-0050-r02
+  preserve_operation_plan: true
+  exact_correction: >-
+    Correct the v3 planner/report classification so the seven operations whose
+    kind is endpoint_label_normalization are counted as label normalizations,
+    not endpoint repoints. Revalidate against the unchanged pinned baselines;
+    publish a new checksummed validation report with counts endpoint_repoints=50
+    and label_normalizations=7, and direct operation totals separating 50
+    endpoint repoints from 7 endpoint label normalizations. Publish r02 with
+    that new report checksum and no change to the approved 3+50+7 operation plan.
+architectural_escalations: []
+blocking_findings:
+  - id: validation_report_v3_operation_accounting
+    owner: builder
+    severity: blocking
+    rationale: The report is an approved-bundle component and cannot misrepresent the exact v3 operation categories.
+reviewer_checklist:
+  review_contract_version: '1.1'
+  legal_dispositions_only: passed
+  decision_authority_and_checksum: passed
+  canonical_baseline_checksum: passed
+  registry_baseline_checksum: passed
+  retired_endpoint_closure: passed
+  complete_before_images: passed
+  blank_to_registry_labels: passed
+  no_rule_training_status_change: passed
+  post_plan_retired_endpoints_absent: passed
+  post_plan_assertion_keys_unique: passed
+  validation_component_accounting: failed
+independent_validation:
+  methods:
+    - Recomputed SHA-256 for the Decision, GUP, report, canonical baseline, and registry baseline.
+    - Independently discovered all baseline endpoints for comeliness, fatigue, and training and compared each closed set to the GUP plan.
+    - Compared all 57 complete GUP before-images and changes to their one-based canonical rows and registry labels.
+    - Applied the operation plan to an in-memory baseline and checked that no retired endpoint or duplicate five-field assertion key remained.
+    - Re-ran the v3 planner and compared its operation kinds with the submitted validation-report totals.
+  result: plan_correct_but_validation_component_requires_builder_reissue

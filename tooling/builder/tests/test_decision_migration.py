@@ -20,6 +20,7 @@ sys.path.insert(0, str(REPO_ROOT / "tooling" / "builder" / "src"))
 from adnd1e_builder.decision_migration import (  # noqa: E402
     DecisionMigration,
     direct_model_objections,
+    note_baseline_drift,
     plan_from_decisions,
     to_gup,
     validation_report,
@@ -44,7 +45,8 @@ STALE_BASELINE_RULES = frozenset(
         "migration_removal_before_image_mismatch",
         "migration_merge_incident_set_not_closed",
         "migration_merge_row_does_not_hold_a_retired_endpoint",
-        "migration_merge_registry_row_moved",
+        # A moved v2 registry row is deliberately absent: WORK_QUEUES 1.10 makes
+        # it an observation, so it is no longer an error of any kind.
         "migration_merge_retired_node_mismatch",
         "migration_retired_endpoint_not_enumerated",
         "migration_assertion_not_found",
@@ -54,6 +56,103 @@ STALE_BASELINE_RULES = frozenset(
         "migration_retiring_node_not_in_registry",
     }
 )
+
+
+def active_leaf(decision_id: str):
+    """The Decision that currently governs `decision_id`'s reissue lineage.
+
+    WORK_QUEUES 1.7 makes only the leaf usable as migration authority, and this
+    lineage has been reissued twice already for reasons that had nothing to do
+    with its ruling. Pinning a literal DEC ID here would make these acceptance
+    tests fail on the next reissue and say "the merge is broken" when what
+    changed was the file name, so the chain is followed instead.
+    """
+    from adnd1e_builder.decision_migration import _superseding_siblings
+
+    paths = sorted(DECISIONS.glob("DEC-*.yaml"))
+    if not paths:  # pragma: no cover - an empty Decision store
+        return None
+    replaced = _superseding_siblings([str(p) for p in paths])
+    current = decision_id
+    while current in replaced:
+        current = replaced[current]
+    path = DECISIONS / f"{current}.yaml"
+    return path if path.exists() else None
+
+
+MANIFESTS = REPO_ROOT / "rulesets" / "adnd1e" / "manifests"
+
+
+def applied_retirements() -> dict[str, dict[str, str]]:
+    """Every node retirement an Integration manifest records as applied.
+
+    Keyed by retired ID, carrying the surviving ID, the authority Decision and
+    the integration that applied it. This is published fact, not inference: the
+    Integrator writes these rows when the transaction commits.
+    """
+
+    applied: dict[str, dict[str, str]] = {}
+    if not MANIFESTS.is_dir():  # pragma: no cover - a repository without integrations
+        return applied
+    import json
+
+    for path in sorted(MANIFESTS.glob("*.json")):
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):  # pragma: no cover - unreadable manifest
+            continue
+        changes = document.get("registry_changes")
+        if not isinstance(changes, dict):
+            continue
+        for row in changes.get("nodes_retired") or []:
+            if not isinstance(row, dict):
+                continue
+            retired = str(row.get("id") or "").strip()
+            survivor = str(row.get("replaced_by") or "").strip()
+            if retired and survivor:
+                applied[retired] = {
+                    "replaced_by": survivor,
+                    "authority": str(row.get("authority") or ""),
+                    "integration_id": str(document.get("integration_id") or path.stem),
+                }
+    return applied
+
+
+def decision_lineage(path: Path) -> set[str]:
+    """A Decision ID plus every predecessor it supersedes."""
+
+    lineage: set[str] = set()
+    current = path
+    while current is not None and current.exists():
+        document = yaml.safe_load(current.read_text(encoding="utf-8")) or {}
+        identifier = str(document.get("id") or current.stem)
+        if identifier in lineage:  # pragma: no cover - a forked chain
+            break
+        lineage.add(identifier)
+        predecessor = document.get("supersedes")
+        current = (
+            DECISIONS / f"{predecessor}.yaml"
+            if isinstance(predecessor, str) and predecessor
+            else None
+        )
+    return lineage
+
+
+def retirements_applied_for(lineage: set[str]) -> dict[str, dict[str, str]]:
+    """The applied retirements whose authority is in this Decision lineage.
+
+    Deliberately keyed on `registry_changes.nodes_retired[].authority` rather
+    than on a manifest's `architect_decisions` list. That list names every
+    Decision an integration operated under, so DEC-2026-0011 appears in four
+    integrations it merely governed; reading it as "this migration ran" would
+    call an unapplied merge complete.
+    """
+
+    return {
+        retired: row
+        for retired, row in applied_retirements().items()
+        if row["authority"] in lineage
+    }
 
 
 def stale_findings(plan) -> list[str]:
@@ -94,6 +193,34 @@ class MigrationCase(unittest.TestCase):
         if stale:
             self.skipTest(
                 f"the corpus has moved past this Decision: {stale[0][:160]}"
+            )
+
+    def skip_if_the_migration_integrated(self, lineage: set[str]):
+        """Skip once this migration's own retirements are in the canonical graph.
+
+        A merge plan asserts a pre-migration corpus: the surviving ID is absent
+        and the retired IDs are present. Applying the merge inverts both, so the
+        planner correctly reports `migration_merge_canonical_id_already_exists`
+        and every assertion below becomes a claim about a graph that no longer
+        exists.
+
+        That finding is NOT added to STALE_BASELINE_RULES, because before
+        integration it catches a real authoring defect -- a Decision merging into
+        an ID that already exists. Suppressing it by rule code would lose that
+        check permanently. The distinction is not in the finding, it is in
+        whether the Integrator recorded these exact retirements, so that is what
+        is read.
+        """
+
+        applied = retirements_applied_for(lineage)
+        if applied:
+            retired = sorted(applied)
+            first = applied[retired[0]]
+            self.skipTest(
+                f"{first['authority']} was applied by {first['integration_id']}: "
+                f"{len(retired)} retirement(s) including {retired[0]!r} -> "
+                f"{first['replaced_by']!r} are already canonical, so this "
+                f"pre-migration plan no longer describes the corpus"
             )
 
     def errors(self, plan: DecisionMigration) -> list[str]:
@@ -700,6 +827,95 @@ class SyntheticCorpusCase(unittest.TestCase):
         path = self.root / (name + ".yaml")
         path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
         return path
+
+
+class DeclaredBaselineDriftCase(SyntheticCorpusCase):
+    """A Decision names the corpus it was verified against. That state expires.
+
+    Two migrations in this repository were invalidated by an unrelated packet
+    integrating between the Decision being written and the GUP being planned.
+    Neither had anything wrong with it. The planner re-verifies every locator
+    and before-image against what it actually read, so the drift does not make
+    the plan wrong -- but it must be visible rather than inferable from two
+    checksums nobody diffed.
+    """
+
+    DECLARED_CANONICAL = "sha256:" + "a" * 64
+    DECLARED_REGISTRY = "sha256:" + "b" * 64
+
+    def decision(self, **baseline) -> Path:
+        document = {"canonical_migration": {}}
+        if baseline:
+            document["baseline"] = baseline
+        return self.write_decision("DEC-2026-9701", document)
+
+    def envelope(self, **overrides) -> dict:
+        base = {
+            "canonical_checksum": "sha256:" + "c" * 64,
+            "canonical_rows_read": 4224,
+            "registry_checksum": "sha256:" + "d" * 64,
+            "registry_rows_read": 1183,
+        }
+        base.update(overrides)
+        return base
+
+    def notes(self, path, **overrides) -> list[dict]:
+        plan = plan_from_decisions(self.canonical, [path])
+        note_baseline_drift(plan, self.envelope(**overrides))
+        return [f for f in plan.findings if f["rule"] == "migration_decision_baseline_moved"]
+
+    def full_baseline(self) -> dict:
+        return {
+            "canonical_edges": {"checksum": self.DECLARED_CANONICAL, "rows": 4152},
+            "nodes_registry": {"checksum": self.DECLARED_REGISTRY, "rows": 1169},
+        }
+
+    def test_a_moved_baseline_is_named_on_both_files(self):
+        baselines = {n["baseline"] for n in self.notes(self.decision(**self.full_baseline()))}
+        self.assertEqual(baselines, {"canonical", "registry"})
+
+    def test_the_note_carries_both_states(self):
+        note = next(
+            n
+            for n in self.notes(self.decision(**self.full_baseline()))
+            if n["baseline"] == "registry"
+        )
+        self.assertEqual(note["declared_checksum"], self.DECLARED_REGISTRY)
+        self.assertEqual(note["observed_checksum"], "sha256:" + "d" * 64)
+        self.assertEqual(note["declared_rows"], 1169)
+        self.assertEqual(note["observed_rows"], 1183)
+        self.assertEqual(note["authority"], "DEC-2026-9701")
+
+    def test_drift_never_blocks_approval(self):
+        """WORK_QUEUES 1.10's whole point: another packet integrating is not a defect."""
+        plan = plan_from_decisions(self.canonical, [self.decision(**self.full_baseline())])
+        note_baseline_drift(plan, self.envelope())
+        self.assertEqual([f["severity"] for f in plan.findings], ["info", "info"])
+        self.assertFalse(plan.blocks_approval)
+
+    def test_an_agreeing_baseline_is_silent(self):
+        notes = self.notes(
+            self.decision(**self.full_baseline()),
+            canonical_checksum=self.DECLARED_CANONICAL,
+            registry_checksum=self.DECLARED_REGISTRY,
+        )
+        self.assertEqual(notes, [])
+
+    def test_only_the_file_that_moved_is_named(self):
+        notes = self.notes(
+            self.decision(**self.full_baseline()),
+            canonical_checksum=self.DECLARED_CANONICAL,
+        )
+        self.assertEqual([n["baseline"] for n in notes], ["registry"])
+
+    def test_a_decision_declaring_no_baseline_is_silent(self):
+        self.assertEqual(self.notes(self.decision()), [])
+
+    def test_a_partially_declared_baseline_checks_what_it_declared(self):
+        notes = self.notes(
+            self.decision(canonical_edges={"checksum": self.DECLARED_CANONICAL, "rows": 4152})
+        )
+        self.assertEqual([n["baseline"] for n in notes], ["canonical"])
 
 
 class DecisionRevisionAndExceptionCase(SyntheticCorpusCase):
@@ -1760,16 +1976,108 @@ class NodeIdMergeCase(SyntheticCorpusCase):
             "migration_merge_retired_node_mismatch", self.rules(self.plan(path))
         )
 
-    def test_a_registry_row_that_has_moved_is_refused(self):
-        """The check that catches a registry rewritten under the Decision."""
+    def moved_row_plan(self):
+        """RETIRED_A declared one row away from where it actually sits."""
+        return self.plan(
+            self.merge_decision(
+                retired_nodes=[
+                    {"id": self.RETIRED_A, "label": "Reaction Adjustment",
+                     "registry_csv_row": 5},
+                    {"id": self.RETIRED_B, "label": "Reaction Adjustment",
+                     "registry_csv_row": 3},
+                ]
+            )
+        )
+
+    def test_a_registry_row_that_has_moved_does_not_stop_the_plan(self):
+        """DEC-2026-0038: the row locates the node, it does not identify it.
+
+        An unrelated sorted insertion shifts every row below it. Refusing on
+        that made a merge's validity depend on which other packets had
+        integrated since the Decision was written, which is exactly what
+        invalidated the DEC-2026-0032 lineage twice.
+        """
+        plan = self.moved_row_plan()
+        self.assertEqual(self.rules(plan), [])
+        self.assertEqual(len(plan.nodes_merged), 1)
+        self.assertEqual(len(plan.row_changes), 2)
+
+    def test_a_moved_row_is_reported_as_an_observation(self):
+        finding = next(
+            f
+            for f in self.moved_row_plan().findings
+            if f["rule"] == "migration_merge_registry_row_advisory_moved"
+        )
+        self.assertEqual(finding["severity"], "info")
+        self.assertEqual(finding["node_id"], self.RETIRED_A)
+        self.assertEqual(finding["declared_registry_csv_row"], 5)
+        self.assertEqual(finding["observed_registry_csv_row"], 2)
+
+    def test_only_the_node_that_moved_is_reported(self):
+        moved = [
+            f["node_id"]
+            for f in self.moved_row_plan().findings
+            if f["rule"] == "migration_merge_registry_row_advisory_moved"
+        ]
+        self.assertEqual(moved, [self.RETIRED_A])
+
+    def test_the_gup_records_the_observed_row_not_the_declared_one(self):
+        """Copying the declared row forward is what let a stale number spread."""
+        rows = {
+            node["id"]: node.get("registry_csv_row")
+            for node in self.moved_row_plan().nodes_merged[0]["retired_nodes"]
+        }
+        self.assertEqual(rows, {self.RETIRED_A: 2, self.RETIRED_B: 3})
+
+    def test_the_audit_trail_keeps_both_rows(self):
+        audit = {e["node_id"]: e for e in self.moved_row_plan().registry_locator_audit}
+        self.assertEqual(audit[self.RETIRED_A]["declared_registry_csv_row"], 5)
+        self.assertEqual(audit[self.RETIRED_A]["observed_registry_csv_row"], 2)
+        self.assertTrue(audit[self.RETIRED_A]["moved"])
+        self.assertFalse(audit[self.RETIRED_B]["moved"])
+
+    def test_a_retired_node_with_no_declared_row_still_merges(self):
+        """The locator is optional; identity comes from the ID and label."""
+        plan = self.plan(
+            self.merge_decision(
+                retired_nodes=[
+                    {"id": self.RETIRED_A, "label": "Reaction Adjustment"},
+                    {"id": self.RETIRED_B, "label": "Reaction Adjustment"},
+                ]
+            )
+        )
+        self.assertEqual(self.rules(plan), [])
+        self.assertEqual(plan.registry_locator_audit, [])
+        rows = {
+            node["id"]: node.get("registry_csv_row")
+            for node in plan.nodes_merged[0]["retired_nodes"]
+        }
+        self.assertEqual(rows, {self.RETIRED_A: 2, self.RETIRED_B: 3})
+
+    def test_a_moved_row_does_not_excuse_a_label_mismatch(self):
+        """The relaxation is bounded to the locator and nothing else."""
         path = self.merge_decision(
             retired_nodes=[
-                {"id": self.RETIRED_A, "label": "Reaction Adjustment", "registry_csv_row": 5},
-                {"id": self.RETIRED_B, "label": "Reaction Adjustment", "registry_csv_row": 3},
+                {"id": self.RETIRED_A, "label": "Wrong Label", "registry_csv_row": 5},
+                {"id": self.RETIRED_B, "label": "Reaction Adjustment",
+                 "registry_csv_row": 3},
             ]
         )
-        rules = self.rules(self.plan(path))
-        self.assertIn("migration_merge_registry_row_moved", rules)
+        self.assertIn(
+            "migration_merge_retired_node_mismatch", self.rules(self.plan(path))
+        )
+
+    def test_a_moved_row_does_not_excuse_a_missing_identity(self):
+        path = self.merge_decision(
+            retired_nodes=[
+                {"id": "abil_missing", "label": "Nothing", "registry_csv_row": 5},
+                {"id": self.RETIRED_B, "label": "Reaction Adjustment",
+                 "registry_csv_row": 3},
+            ]
+        )
+        self.assertIn(
+            "migration_merge_retired_node_not_in_registry", self.rules(self.plan(path))
+        )
 
     def test_a_missing_incident_row_is_refused(self):
         path = self.merge_decision(
@@ -2038,10 +2346,63 @@ class DirectModelV2ObjectionCase(NodeIdMergeCase):
         self.assertEqual(report["direct_operations"]["registry_rows_retired_by_merge"], 2)
 
 
-class LiveAbilityMergeV2Case(MigrationCase):
-    """DEC-2026-0036 acceptance tests 1-3, against the real corpus and schema."""
+class IntegratedAbilityMergeCase(MigrationCase):
+    """What the DEC-2026-0036 merge lineage looks like once it is applied.
 
-    PATH = DECISIONS / "DEC-2026-0036.yaml"
+    LiveAbilityMergeV2Case stops asserting at exactly the moment the merge
+    integrates, which is correct but would leave the outcome unchecked. These
+    tests take over there and read the same published facts from the other side:
+    the retired IDs are gone from the registry, each survivor is present, and no
+    canonical endpoint still names a retired ID.
+
+    Together the two cases cover the lineage continuously, so integrating the
+    merge moves the coverage rather than deleting it.
+    """
+
+    PATH = active_leaf("DEC-2026-0036")
+
+    def applied(self):
+        if self.PATH is None:  # pragma: no cover
+            self.skipTest("the DEC-2026-0036 merge lineage is not present")
+        applied = retirements_applied_for(decision_lineage(self.PATH))
+        if not applied:
+            self.skipTest("this merge has not been integrated yet")
+        return applied
+
+    def test_every_retired_id_left_the_registry(self):
+        for retired in sorted(self.applied()):
+            self.assertNotIn(
+                retired, self.registry, f"{retired} was retired but is still registered"
+            )
+
+    def test_every_survivor_is_registered(self):
+        for retired, row in sorted(self.applied().items()):
+            self.assertIn(
+                row["replaced_by"],
+                self.registry,
+                f"{retired} was retired into {row['replaced_by']}, which is absent",
+            )
+
+    def test_no_canonical_endpoint_still_names_a_retired_id(self):
+        retired_ids = set(self.applied())
+        offenders = []
+        for index, row in enumerate(self.canonical.rows, start=2):
+            for field in ("source_id", "target_id"):
+                if row.get(field) in retired_ids:
+                    offenders.append((index, field, row.get(field)))
+        self.assertEqual(offenders, [], f"retired endpoints survive: {offenders[:5]}")
+
+
+class LiveAbilityMergeV2Case(MigrationCase):
+    """The v2 acceptance tests, against the real corpus and schema.
+
+    The authority is whichever Decision currently leads the DEC-2026-0036
+    lineage: DEC-2026-0038 reissued it for a moved advisory locator, and a
+    further reissue would move it again without changing the merge being
+    tested.
+    """
+
+    PATH = active_leaf("DEC-2026-0036")
 
     @staticmethod
     def gup_validator():
@@ -2063,8 +2424,9 @@ class LiveAbilityMergeV2Case(MigrationCase):
         )
 
     def merge_plan(self):
-        if not self.PATH.exists():  # pragma: no cover
-            self.skipTest("DEC-2026-0036 is not present")
+        if self.PATH is None:  # pragma: no cover
+            self.skipTest("the DEC-2026-0036 merge lineage is not present")
+        self.skip_if_the_migration_integrated(decision_lineage(self.PATH))
         plan = plan_from_decisions(self.canonical, [self.PATH], self.registry)
         self.skip_if_the_corpus_moved_on(plan)
         return plan

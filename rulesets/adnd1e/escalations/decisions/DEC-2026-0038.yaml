@@ -1,0 +1,331 @@
+schema_version: '1.0'
+id: DEC-2026-0038
+status: approved
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-legacy-unspecified
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.8'
+revision: 3
+supersedes: DEC-2026-0036
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Update the v2 decision-migration planner for advisory registry-row locators,
+    then re-plan these three exact ability-ID merges against the current
+    integrated baseline and publish GUP-MIG-DEC-2026-0032-r02. Do not compile
+    the successor DMG GUR first.
+  blocking_ids: []
+
+decision_date: '2026-08-15'
+escalation_id: ESC-2026-08-15T03.59.20.402Z
+
+question: >-
+  How must the DEC-2026-0032 ability-merge lineage proceed after an unrelated
+  registry insertion moved str_exceptional from its declared physical row while
+  every identity and every closed canonical incident set remained exact?
+
+ruling: >-
+  Supersede DEC-2026-0036 with this current-baseline reissue. The three survivor
+  identities and the `abil_<three-letter ability abbreviation>_<snake_case rule
+  name>` convention are retained without semantic change. For
+  `decision_migration_v2` only, a retired node's optional `registry_csv_row` is
+  an advisory, auditable planning locator. Retired node ID and label, an absent
+  canonical ID, the complete closed incident set, every before-image, and the
+  checksummed canonical and registry baselines remain strict. A declared row
+  that has moved is informational only when the declared ID and label still
+  resolve in the current registry. The resulting direct GUP records the observed
+  row when it emits the optional field and records the declared and observed rows
+  in validation output. This Decision authorizes only the three bounded v2
+  merges below, their exact paired endpoint repoints, and GUP revision r02.
+
+rationale:
+  - >-
+    INT-20260814-002 appended six rule_ registry nodes before str_exceptional
+    and therefore shifted that physical row from 1071 to 1077. It did not alter
+    the retired node's identity or label, the five other retired locators, or any
+    of the 33 canonical assertion locators.
+  - >-
+    A registry row is not the retired identity. It is useful for audit and for
+    exposing an unexpected plan, but it cannot safely outlive unrelated sorted
+    registry insertions. The pinned registry checksum protects the actual
+    transaction from drift.
+  - >-
+    This limited policy applies only to v2 merge retirement nodes. It does not
+    relax canonical before-images, canonical row locators, v1 operations,
+    labels, incident-set closure, registry baseline checksums, or any source
+    interpretation rule.
+
+operation_model:
+  name: decision_migration_v2
+  authority_source: >-
+    The checksummed GUP YAML is the sole executable operation source. The
+    Approved manifest names that reviewed GUP and its validation report by
+    checksum and never restates or extends the plan.
+  registry_locator_policy:
+    applies_to: node_changes.merges.retired_nodes.registry_csv_row
+    authority: retired_node_id_and_label
+    locator_status: optional_advisory
+    decision_declared_row_for_str_exceptional: 1071
+    current_observed_row_for_str_exceptional: 1077
+    required_behavior: >-
+      Report a declared-versus-observed moved row as informational when the
+      retired ID and label match. Reject an absent ID, a label mismatch, or a
+      baseline checksum mismatch. An emitted GUP locator is the observed row in
+      its pinned baseline and is not an Integrator transaction precondition.
+  permitted_operations:
+    - >-
+      One or more `node_changes.merges`, each with at least two distinct retired
+      IDs, one previously absent canonical ID, exact retired identities and
+      labels, `merge_retired_rows_into_one`, and a closed incident set.
+    - >-
+      Only the paired endpoint-ID/label repoint for every enumerated incident
+      row, each against a complete 18-field before-image.
+  prohibited_operations:
+    - A one-to-one replacement, addition, relabel, canonical removal, alias, or non-endpoint mutation.
+    - An inferred retired identity, endpoint, canonical locator, or incident row.
+    - A row selection by label, prefix, or any unenumerated semantic similarity.
+
+canonical_migration:
+  node_id_merges:
+    - canonical_id: abil_dex_reaction_adjustment
+      canonical_label: Reaction/Attacking Adjustment
+      kind: abil
+      retired_nodes:
+        - id: dex_reaction_adj
+          label: Reaction/Attacking Adjustment
+          registry_csv_row: 73
+        - id: abil_dexterity_reaction_attacking_adjustment
+          label: Reaction/Attacking Adjustment
+          registry_csv_row: 9
+      incident_canonical_rows: [682, 1722, 1723, 1744, 1745, 1746, 3841]
+      expected_incident_row_count: 7
+      registry_action: merge_retired_rows_into_one
+      require_no_remaining_retired_endpoints: true
+    - canonical_id: abil_dex_defensive_adjustment
+      canonical_label: Dexterity Defensive Adjustment
+      kind: abil
+      retired_nodes:
+        - id: dex_defensive_adj
+          label: Dexterity Defensive Adjustment
+          registry_csv_row: 72
+        - id: abil_dexterity_defensive_adjustment
+          label: Dexterity Defensive Adjustment
+          registry_csv_row: 8
+      incident_canonical_rows: [355, 592, 683, 763, 764, 1391, 1392, 1393, 1394, 1747, 1748, 1765, 1812, 2311, 2937, 2978, 3842]
+      expected_incident_row_count: 17
+      registry_action: merge_retired_rows_into_one
+      require_no_remaining_retired_endpoints: true
+    - canonical_id: abil_str_exceptional
+      canonical_label: Exceptional Strength
+      kind: abil
+      retired_nodes:
+        - id: str_exceptional
+          label: Exceptional Strength
+          registry_csv_row: 1071
+        - id: abil_strength_exceptional
+          label: Exceptional Strength
+          registry_csv_row: 12
+      incident_canonical_rows: [27, 102, 1171, 1173, 2198, 2407, 2987, 3836, 3837]
+      expected_incident_row_count: 9
+      registry_action: merge_retired_rows_into_one
+      require_no_remaining_retired_endpoints: true
+  counts:
+    node_merges: 3
+    retired_registry_rows: 6
+    canonical_registry_rows_added: 3
+    canonical_rows_repointed: 33
+    canonical_rows_label_normalized_without_repoint: 0
+    new_registry_rows: 0
+
+operation_contract:
+  applies_only_to: DEC-2026-0038
+  planner_requirements:
+    - >-
+      Read `canonical_migration.node_id_merges`; reject an absent, malformed,
+      partial, or otherwise unsupported merge rather than plan it as a no-op.
+    - >-
+      Require at least two distinct retired nodes per merge; require the
+      canonical ID to be absent from the baseline registry; require every
+      retired ID and label to match; and treat only a moved present advisory row
+      as informational. Preserve both declared and observed row values in the
+      validation report.
+    - >-
+      Resolve every listed one-based canonical CSV row, including the header;
+      require exactly one retired endpoint in every row; discover all baseline
+      rows incident on either retired ID; and require exact equality with the
+      declared set.
+    - >-
+      Change only that retired endpoint ID and its corresponding endpoint label.
+      Preserve every other canonical field byte-for-value and retain the full
+      before-image in the GUP.
+    - >-
+      Replace the named retired registry identities with exactly one canonical
+      row, create no alias, rebuild nodes_master and graph, and reject duplicate
+      assertion keys or any surviving retired ID in planned or derived output.
+  integrator_requirements:
+    - >-
+      Validate the reviewed GUP, Approved manifest, authority Decision,
+      canonical baseline, registry baseline, every before-image, and every
+      closed incident set before snapshotting state. The registry checksum is a
+      strict precondition; an optional v2 row locator is not.
+    - >-
+      Apply every registry merge and paired endpoint repoint in one transaction;
+      restore canonical and registry files byte-for-byte on any failure.
+  prohibited_inference:
+    - Do not recover a missing identity or a label mismatch from a row, label, or prefix.
+    - Do not adjust a canonical locator or incident set from a former Decision baseline.
+    - Do not add an alias, change a non-endpoint field, or widen the operation to another ability mechanic.
+    - Do not compile a packet GUR containing any retired ID after Integration.
+
+baseline:
+  canonical_edges:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:c64127c41487f7d090d11ec485a7e8d348caceb5b90c4cc8ac645bb398aa6fc9
+    rows: 4152
+  nodes_registry:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:4c8898e6eb27573d6f229fe1d0ea6da9786ee8572f3cf279710d8d59a291bf0e
+    rows: 1169
+
+migration_required: true
+migration_scope:
+  operation_model: decision_migration_v2
+  lineage_id: MIG-DEC-2026-0032
+  supersedes_gup: GUP-MIG-DEC-2026-0032-r01
+  required_gup: GUP-MIG-DEC-2026-0032-r02
+  registry_rows_replaced: 6
+  registry_rows_added: 3
+  canonical_edges_repointed: 33
+  canonical_edges_added: 0
+  canonical_edges_removed: 0
+  aliases_retained: 0
+  required_derived_rebuilds:
+    - rulesets/adnd1e/canonical/nodes_master.csv
+    - rulesets/adnd1e/canonical/graph.json
+
+affected_artifacts:
+  superseded_decision:
+    id: DEC-2026-0036
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0036.yaml
+    reason: Its strict physical registry-row locator became stale after an unrelated integration.
+  stale_gup:
+    id: GUP-MIG-DEC-2026-0032-r01
+    path: books/adnd1e/dmg/artifacts/gup/GUP-MIG-DEC-2026-0032-r01.yaml
+    disposition: Supersede with r02; do not modify the published r01 artifact.
+  active_gur_to_supersede_after_integration:
+    id: GUR-PKT-DMG-064-064-missile-discharge-r02
+    path: books/adnd1e/dmg/artifacts/gur/GUR-PKT-DMG-064-064-missile-discharge-r02.yaml
+    checksum: sha256:d62a48176f67d01ad79be3bf795804d89224d138bd95105830bb868c3ca710ff
+  required_successor_gur:
+    id: GUR-PKT-DMG-064-064-missile-discharge-r03
+    owner: analyst
+    constraint: >-
+      Publish only after this migration is Integrated. It supersedes r02 and
+      uses the three surviving ability IDs wherever r02 used a retired ID.
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Update v2 planner validation and serialization for the advisory locator;
+      add regression coverage; plan this Decision against the stated baseline;
+      and publish GUP-MIG-DEC-2026-0032-r02 and its validation report. The GUP
+      cites DEC-2026-0038 alone, supersedes r01, uses the observed row 1077 for
+      str_exceptional if it emits a row, and creates no edge CSV.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Verify all three merge identities, the 33-row closed incident set, current
+      registry ID/label matches, full before-images, v2-only operation arrays,
+      the informational declared-versus-observed str_exceptional locator record,
+      and absence of every retired identity before publishing the exact Approved
+      component pair.
+  - step: 3
+    owner: integrator
+    action: >-
+      Implement or confirm direct-migration discovery, validation, transaction
+      execution, and provenance for v2 merges. Key v2 registry retirement on
+      verified IDs and labels plus the pinned registry checksum, not a row
+      locator. Integrate only the approved r02 bundle and rebuild derived
+      artifacts.
+  - step: 4
+    owner: analyst
+    action: >-
+      Publish GUR-PKT-DMG-064-064-missile-discharge-r03 only after Integration.
+      Do not revise r02 in place or use a retired ability identity.
+
+acceptance_tests:
+  - >-
+    The v2 GUP schema accepts a retired node with ID and label but no
+    registry_csv_row, and rejects a non-integer row when the optional field is
+    present.
+  - >-
+    When a Decision-declared retired ID and label resolve but its registry row
+    moved, the Builder emits exactly one informational declared-versus-observed
+    locator finding, continues planning, and serializes the observed row if it
+    emits that field. An absent ID, label mismatch, existing canonical ID,
+    duplicate retired ID, or incomplete incident set still fails.
+  - >-
+    Planning this Decision produces exactly three registry merges and 33 paired
+    endpoint repoints, preserves every other edge field, creates no duplicate
+    assertion key, and leaves none of the six retired IDs in planned or derived
+    output.
+  - >-
+    The Reviewer independently verifies the advisory finding, current ID/label
+    matches, pinned baseline checksums, all 33 before-images, and the closed
+    incident set. A moved advisory row alone does not prevent approval.
+  - >-
+    Integrator discovery treats a valid v2 Approved bundle as one job with no
+    edge CSV; transaction preconditions still reject a baseline drift, stale
+    before-image, incomplete incident set, label mismatch, or surviving retired
+    identity, but do not reject a moved advisory row.
+  - >-
+    The subsequent DMG GUR revision is source-derived, supersedes r02, and uses
+    only the three surviving ability IDs.
+  - All applicable schema, graph, registry, migration, queue, and repository tests pass.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This policy change is limited to execution-locator handling in v2 migration
+    governance. It does not alter the ruleset ontology or constitutional graph
+    semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.10, ARTIFACT_LIFECYCLE 1.8, the common GUP schema, and role
+    instructions define the optional advisory v2 registry-row locator.
+  - >-
+    This Decision is the active leaf for the DEC-2026-0032 lineage. The r02
+    migration cites DEC-2026-0038 alone and its current baseline.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.9 -> 1.10; make the v2 registry row advisory and auditable.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.7 -> 1.8; record the v2 advisory locator lifecycle rule.'
+  schemas/common/gup.schema.json:
+    - 'Make v2 retired_nodes[].registry_csv_row optional while retaining its integer shape.'
+  agents/builder/INSTRUCTIONS.md:
+    - 'Require informational declared-versus-observed reporting and observed-row serialization.'
+  agents/reviewer/INSTRUCTIONS.md:
+    - 'Require independent ID/label and advisory-locator review treatment.'
+  agents/integrator/INSTRUCTIONS.md:
+    - 'Forbid using a v2 advisory row locator as a transaction precondition.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0038.yaml:
+    - 'Reissue DEC-2026-0036 for the current baseline and durable advisory-locator policy.'
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement only the v2 advisory locator behavior and publish the named r02 GUP.
+    - Do not infer an identity, endpoint, or incident row.
+  reviewer:
+    - Treat a moved advisory row as informational only after verifying ID, label, baselines, and the closed set.
+  integrator:
+    - Implement only the bounded v2 merge path and preserve strict checksum and identity checks.
+  analyst:
+    - Wait for a successful Integration record before issuing the required DMG GUR successor.

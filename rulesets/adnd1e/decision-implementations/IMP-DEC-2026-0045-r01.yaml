@@ -1,0 +1,117 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0045-r01
+artifact_kind: decision_implementation
+status: blocked
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: false
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0045
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0045.yaml
+  checksum: sha256:25dedbb5ca47f8b3084a9b1546610fa66c8f8da33923c9cdd1b9f2f059aee341
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:967e53efd5d8315f3b2408ae0ce2af9de0ae9c57c39f4f3a5a921873635f7d48
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:aab598c4791a384c82594f6657541117eb5397f3dab0dd95f5a69462e2b7964d
+- path: agents/integrator/INSTRUCTIONS.md
+  checksum: sha256:5f81495d1842e20ac253e7fa2ce77e7fb6cee1dba7d36f3f11c6bdde1da04110
+- path: agents/reviewer/INSTRUCTIONS.md
+  checksum: sha256:de857bbad129197f968336d9857a76bfcdf863fa18dd3a3fe815518082c93e91
+- path: agents/architect/INSTRUCTIONS.md
+  checksum: sha256:9b6681cb3588733214b0f32da8d00ea4a5ff2287fd539d60bec093539ec61fb7
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0045.yaml
+  checksum: sha256:25dedbb5ca47f8b3084a9b1546610fa66c8f8da33923c9cdd1b9f2f059aee341
+- path: schemas/common/architect-decision.schema.json
+  checksum: sha256:55b498fca2b2ff1dd6f8a5273be1296d05086c6075f8130070b375d85b8c7f2e
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:e55bded7ce9a7e85086ffade4b199af56e3af3a3269c48eae0cc51ac65cac9c4
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:a8d69a38866cabfabe2b870244aac07f76d3a28ce6a186cf474424e63a97ed1d
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: VERIFIED AGAINST THE PUBLISHED FILES, WHICH THE ARCHITECT WROTE. contracts/WORK_QUEUES.md
+    line 3 reads '**Version 1.12.**' and carries '### Integration rejection remediation' at line 623,
+    requiring a record that conforms to schemas/common/integration-rejection.schema.json and carries the
+    exact bundle, Review and GUP IDs with SHA-256 checksums plus at least one machine-readable blocking
+    failure. Builder-or-Integrator direct ownership is recorded at core rule 13 (line 41), report condition
+    2 (line 395) and Builder readiness rule 4 (line 525). contracts/ARTIFACT_LIFECYCLE.md line 3 reads
+    '**Version 1.10.**', section 7 'Integration rejection' begins at line 202, and line 181 requires that
+    `implemented_by` exactly equal the Decision's ready Builder or Integrator handoff. Both version histories
+    date the change 2026-08-18.
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'VERIFIED AGAINST THE PUBLISHED FILES, WHICH THE ARCHITECT WROTE. agents/integrator/INSTRUCTIONS.md
+    gained ''### Rejection records'' at line 167: an immutable JSON record under rulesets/<ruleset-id>/reports/
+    conforming to the rejection schema, declaring status: rejected and recording, for every rejected bundle,
+    the exact Approved-bundle, approving Review and reviewed GUP IDs and SHA-256 checksums plus one or
+    more machine-readable blocking failures, with an explicit prohibition on inferring or omitting provenance.
+    agents/reviewer/INSTRUCTIONS.md gained ''### Integration-rejection remediation'' at line 135, requiring
+    an immutable successor Review recording integration_rejection.id, .path and .checksum, which is what
+    consumes the REVIEWER-INTEGRATION-REJECTION item. Before this Decision neither file contained the
+    word ''rejection'' at all.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED. schemas/common/architect-decision.schema.json adds $defs.exactDiffOwner
+    (additionalProperties false; path and owner required; owner restricted to the five roles; optional
+    integer sequence_step and note) and an allOf branch requiring exact_diff_ownership when decision_authoring_contract_version
+    is ''1.1'' and exact_diff is a non-empty object. tooling/common/scan_agent_queues.py adds _exact_diff_ownership_errors,
+    _decision_assigned_roles and _sequence_owner_by_step, reading the Decision alone. Positive coverage:
+    ExactDiffOwnershipCase.test_a_complete_plan_produces_no_ownership_diagnostic and test_a_complete_plan_is_ordinary_implementation_work.
+    Live corpus: test_every_published_decision_satisfies_the_guard walks all 45 published Decisions and
+    finds no offender, and all 45 validate against the amended schema. DEC-2026-0045 itself is the worked
+    example: it declares version 1.1, lists nine exact_diff paths, and owns all nine.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED, ONE NAMED DEFECT PER TEST. ExactDiffOwnershipCase covers missing
+    (test_an_unassigned_path_is_diagnostic, the exact DEC-2026-0043 shape), duplicate (test_a_duplicate_entry_is_diagnostic),
+    unowned (test_an_entry_without_an_owner_is_diagnostic), unknown-owner (test_an_unknown_owner_is_diagnostic),
+    and sequence-mismatched (test_a_sequence_step_owned_by_another_role_is_diagnostic plus test_a_sequence_step_the_sequence_does_not_define_is_diagnostic).
+    test_an_owner_the_decision_never_schedules_is_diagnostic covers the ruling''s central case: an owner
+    named in the ownership list that no sequence step or follow_up_owners entry schedules. Each emits
+    one error diagnostic ''decision_exact_diff_unowned''. Not-approval-ready is proven by test_an_unowned_plan_is_not_ready_implementation_work
+    (no Builder item) and test_an_integrator_owned_decision_is_guarded_the_same_way (no Integrator item);
+    test_an_unowned_plan_is_reported_blocked_rather_than_dropped fixes that the work surfaces as a blocked
+    Architect item instead of vanishing, since a silently empty queue is the failure DEC-2026-0043 actually
+    produced. Valid history is preserved by test_a_decision_without_the_version_declaration_is_untouched
+    and test_an_older_authoring_version_is_untouched; all 44 Decisions published before this one omit
+    the declaration and are unaffected. 31 targeted tests pass.'
+handoff:
+  next_role: integrator
+  readiness: blocked
+  reason: 'All four acceptance tests are implemented and evidenced: the ownership guard is in the schema
+    and the scanner with 31 targeted tests passing, and the five Architect-published governance files
+    are verified at their current checksums. The report is not approval-ready for one reason outside it:
+    the common suite fails on IMP-DEC-2026-0044-r01, an Integrator-authored report whose third command
+    summary carries no verdict token, so WORK_QUEUES condition 7 cannot be met by any Builder action.
+    The Integrator already holds a ready DEC-2026-0044 job; a successor report there turns the suite green
+    and this lineage can then be re-issued for Review.'
+  blocking_ids:
+  - IMP-DEC-2026-0044-r01
+validation_report: build/reports/IMP-DEC-2026-0045-r01.validation.json
+validation_report_checksum: sha256:406a53afc8df7c897b156798e86f89ac5ecd143297bdf2f05c4c5ebce590f34f
+validation:
+  passed: false
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 1
+    result: failed
+    summary: 'Ran 521 tests in 92.314s, 1 failure: test_implementation_evidence.TestValidationEvidenceIsSelfConsistent.test_exit_code_result_and_summary_agree
+      on the Integrator-authored IMP-DEC-2026-0044-r01, whose third command summary ends ''all clone-fixture''
+      with no verdict token. That artifact is outside this implementation and is the Integrator''s to
+      repair by successor under its ready DEC-2026-0044 job; every other test in the suite passes FAILED'
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.ExactDiffOwnershipCase
+      test_scan_agent_queues.TestExactDiffOwnershipHelpers'
+    exit_code: 0
+    result: passed
+    summary: Ran 31 tests in 0.588s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 577 tests in 80.383s (30 skipped) OK

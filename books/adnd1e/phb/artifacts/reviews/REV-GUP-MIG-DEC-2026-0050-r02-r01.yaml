@@ -1,0 +1,117 @@
+schema_version: '1.0'
+id: REV-GUP-MIG-DEC-2026-0050-r02-r01
+status: revision_required
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: 'Reissue the validation component again: direct_operations must record 50 endpoint repoints and 7 endpoint label normalizations separately.'
+  blocking_ids: []
+review_role: independent_reviewer
+review_date: '2026-08-20'
+review_contract_version: '1.1'
+reviewed_gup:
+  id: GUP-MIG-DEC-2026-0050-r02
+  path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0050-r02.yaml
+  checksum: sha256:1057078268152d98af19d8b4818c9735a14b195cda428929dd99deb931c04d98
+  artifact_kind: decision_migration
+  operation_model: decision_migration_v3
+  lineage_id: MIG-DEC-2026-0050
+  revision: 2
+  supersedes: GUP-MIG-DEC-2026-0050-r01
+  validation_report:
+    path: build/reports/GUP-MIG-DEC-2026-0050-r02.validation.json
+    expected_checksum: sha256:19a5cd56b987ffa8205afbe82fb1844c8e4302d3f908c9b2004456dcf3be3bd2
+    actual_checksum: sha256:19a5cd56b987ffa8205afbe82fb1844c8e4302d3f908c9b2004456dcf3be3bd2
+    checksum_matches: true
+    reported_errors: 0
+    reported_warnings: 0
+input_provenance:
+  authority_decision:
+    id: DEC-2026-0050
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0050.yaml
+    checksum: sha256:75891a395ec69a6e92ade9269ee4c55468725df26b3bde6c187432fa055c423c
+  canonical_baseline:
+    path: rulesets/adnd1e/canonical/edges_master.csv
+    checksum: sha256:3acf31eccc239b7fc7aea73bfce3bce559b07e6eafb98aae7ce29b2fce493148
+    rows_read: 4501
+  registry_baseline:
+    path: rulesets/adnd1e/registries/nodes.csv
+    checksum: sha256:c7eb79ac67e2f6f3738450fc9a9d86675b49c780b5a7cc5fd358c11468d6a111
+    rows_read: 1243
+overall_disposition: revision_required
+approval_ready: false
+approved_bundle_emitted: null
+summary:
+  registry_replacements_approved: 3
+  endpoint_repoints_approved: 50
+  label_normalizations_approved: 7
+  blockers: 1
+completeness_statement: >-
+  r02 preserves the exact correct 3+50+7 migration plan and now correctly reports
+  its top-level counts. The validation component remains incomplete because its
+  direct operation accounting still mislabels all 57 canonical changes as endpoint
+  repoints, contrary to DEC-2026-0050's separate-operation requirement.
+inherited_review:
+  id: REV-GUP-MIG-DEC-2026-0050-r01-r01
+  path: books/adnd1e/phb/artifacts/reviews/REV-GUP-MIG-DEC-2026-0050-r01-r01.yaml
+  checksum: sha256:7203b3b8d15f5ef8723018ff41107125feaa81cfc2f929b113ed25582b2d11a0
+  rechecked: true
+row_decisions:
+  - operation_kind: endpoint_repoint
+    canonical_rows: [601, 602, 603, 604, 605, 606, 608, 652, 653, 654, 655, 659, 660, 661, 802, 987, 1178, 1692, 1693, 1694, 1781, 1803, 1804, 1805, 1806, 1807, 1960, 2001, 2497, 2763, 2764, 2765, 2766, 2767, 2768, 2769, 2770, 2771, 2819, 2904, 2908, 3100, 3188, 3194, 3211, 3252, 4453, 4476, 4477, 4478]
+    disposition: approved
+    field_decisions: {before_image: approved, endpoint_id: approved, endpoint_label: approved, assertion_identity: approved}
+  - operation_kind: endpoint_label_normalization
+    canonical_rows: [85, 86, 87, 88, 89, 90, 91]
+    disposition: approved
+    field_decisions: {before_image: approved, changed_fields: approved, blank_from_values: approved, registry_label_to_values: approved, assertion_identity: approved}
+  - operation_kind: registry_replacement
+    refs: [comeliness_to_abil_comeliness, fatigue_to_rule_exhaustion, training_to_rule_training]
+    disposition: approved
+    field_decisions: {retired_id: approved, retired_label: approved, canonical_id: approved, canonical_label: approved, closed_incident_set: approved}
+validation_component_decision:
+  disposition: approved_with_revision
+  finding_id: validation_report_direct_operation_accounting
+  corrected_top_level_counts: {endpoint_repoints: 50, label_normalizations: 7, endpoint_labels_normalized: 14}
+  invalid_direct_operations: {canonical_endpoint_repoints: 57}
+  exact_correction: >-
+    Report canonical_endpoint_repoints: 50 and add
+    canonical_endpoint_label_normalizations: 7. Do not count the seven
+    endpoint_label_normalization operations as endpoint repoints.
+  rationale: The report's direct_operations field is the component-level account of executable v3 work; its current 57-repoint total contradicts the GUP operation kinds and hides the required separate label-operation category.
+required_builder_revision:
+  successor_gup_id: GUP-MIG-DEC-2026-0050-r03
+  preserve_operation_plan: true
+  exact_correction: >-
+    Correct only the direct operation accounting and publish a new checksummed
+    validation report plus r03. Preserve the exact r02 operation plan, Decision,
+    baselines, and top-level 3 replacements, 50 repoints, 7 label-normalization,
+    and 14 endpoint-label-normalization totals.
+architectural_escalations: []
+blocking_findings:
+  - id: validation_report_direct_operation_accounting
+    owner: builder
+    severity: blocking
+reviewer_checklist:
+  review_contract_version: '1.1'
+  legal_dispositions_only: passed
+  decision_and_baselines: passed
+  all_57_before_images: passed
+  three_closed_retired_endpoint_sets: passed
+  blank_to_registry_label_changes: passed
+  rule_training_status_untouched: passed
+  validation_top_level_counts: passed
+  validation_direct_operation_accounting: failed
+independent_validation:
+  methods:
+    - Recomputed all submitted checksums and matched the unchanged Decision and baseline pins.
+    - Compared r01 and r02 canonical operation plans byte-for-value and independently checked all r02 before-images and label targets.
+    - Counted operation kinds directly from r02 and compared them to every validation-report total.
+  result: r02_plan_approved_validation_component_still_requires_builder_reissue

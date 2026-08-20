@@ -19,6 +19,8 @@ from adnd1e_builder.compiler import Compiler
 from adnd1e_builder.duplicates import CanonicalEdges
 from adnd1e_builder.governance import Governance
 from adnd1e_builder.emit import edges_csv, gup_document, validation_report
+import json
+
 from adnd1e_builder.registry import NodeRegistry, normalize_label
 from adnd1e_builder.vocab import AUTHORED_POLARITY_TYPES, COLUMNS
 
@@ -513,10 +515,12 @@ class TestPendingRowsAreLegibleOnDisk(CompilerCase):
             written = write_all(clean, gup_dir, reports, {"ran": False})
             self.assertEqual([p.name for p in written if p.name.endswith(".pending.csv")], [])
 
-            # Same fixture GUR, so the same GUP ID: this second publish is the
-            # overwrite the guard exists to stop, and here it is deliberate.
+            # Same fixture GUR, so the same GUP ID. Publication is create-only
+            # with no override (DEC-2026-0053), so the second case gets its own
+            # directories rather than rewriting the first.
+            second, second_reports = Path(tmp) / "gup2", Path(tmp) / "reports2"
             pending = self.compile_with_pending()
-            written = write_all(pending, gup_dir, reports, {"ran": False}, allow_overwrite=True)
+            written = write_all(pending, second, second_reports, {"ran": False})
             self.assertEqual(
                 [p.name for p in written if p.name.endswith(".pending.csv")],
                 [f"{pending.gup_id}.pending.csv"],
@@ -581,11 +585,20 @@ class TestAPublishedRevisionIsImmutable(CompilerCase):
             self.assertIn(result.gup_id, message)
             self.assertIn("next revision", message)
 
-    def test_an_explicit_overwrite_is_still_possible(self):
+    def test_there_is_no_override(self):
+        """DEC-2026-0053 removed it: an override that exists is one that gets used.
+
+        It was added for "a revision nothing has consumed", which is a fact the
+        writer cannot check -- a Review may already have hashed the file. That is
+        how GUP-MIG-DEC-2026-0050-r01 was destroyed, with the flag set.
+        """
         with tempfile.TemporaryDirectory() as tmp:
             gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
             self.publish(gup_dir, reports)
-            self.publish(gup_dir, reports, allow_overwrite=True)
+            with self.assertRaises(TypeError):
+                self.publish(gup_dir, reports, allow_overwrite=True)
+            with self.assertRaises(FileExistsError):
+                self.publish(gup_dir, reports)
 
     def test_a_fresh_revision_never_trips_the_guard(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -597,8 +610,8 @@ class TestAPublishedRevisionIsImmutable(CompilerCase):
             written = write_all(other, gup_dir, reports, {"ran": False})
             self.assertTrue(any(p.name.endswith(".yaml") for p in written))
 
-    def test_the_cli_exposes_the_overwrite_as_an_opt_in_flag(self):
-        """Overwriting must be something the operator asks for by name."""
+    def test_the_cli_offers_no_overwrite_flag(self):
+        """The operator cannot ask for it, because it is not on offer."""
         import contextlib
         import io
 
@@ -607,7 +620,7 @@ class TestAPublishedRevisionIsImmutable(CompilerCase):
         captured = io.StringIO()
         with contextlib.redirect_stdout(captured), self.assertRaises(SystemExit):
             main(["compile", "--help"])
-        self.assertIn("--allow-overwrite", captured.getvalue())
+        self.assertNotIn("--allow-overwrite", captured.getvalue())
 
 
 class TestCrossPacketCandidateTargets(CompilerCase):
@@ -993,6 +1006,546 @@ class TestAuthorizedIdentityMigration(CompilerCase):
         self.assertNotIn("endpoint_authorized_migration_target", self.rules(result))
 
 
+
+class RetiredEndpointRepointCase(CompilerCase):
+    """An immutable GUR naming an ID that a later integration retired.
+
+    This is the shape that stopped GUR-PKT-UA-014-016-cavalier-r02 dead. Its
+    M048 names `str_exceptional`, and INT-20260818-001 retired that into
+    `abil_str_exceptional` under DEC-2026-0038 between the GUR being published
+    and the GUP being compiled. The Analyst could not have written the survivor:
+    when the GUR was authored the survivor was in no registry, and constitution
+    3.2 requires reusing an existing ID over minting a variant.
+
+    The compiler repoints the row and says so on the row. It does not rewrite the
+    GUR, which is immutable and correct for the day it was written.
+    """
+
+    RETIRED = "str_exceptional"
+    SURVIVOR = "abil_str_exceptional"
+
+    def registry_with_retirement(self, *, survivor_registered=True, record=True):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        (root / "registries").mkdir(parents=True)
+        (root / "manifests").mkdir(parents=True)
+        rows = ["id,label,kind,degree,roles", "abil_strength,Strength,abil,68,"]
+        if survivor_registered:
+            rows.append(f"{self.SURVIVOR},Exceptional Strength,abil,9,")
+        (root / "registries" / "nodes.csv").write_text(
+            "\n".join(rows) + "\n", encoding="utf-8"
+        )
+        if record:
+            (root / "manifests" / "INT-19700101-001.json").write_text(
+                json.dumps(
+                    {
+                        "integration_id": "INT-19700101-001",
+                        "registry_changes": {
+                            "nodes_retired": [
+                                {
+                                    "id": self.RETIRED,
+                                    "label": "Exceptional Strength",
+                                    "replaced_by": self.SURVIVOR,
+                                    "authority": "DEC-2026-9999",
+                                }
+                            ]
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+        return NodeRegistry.load(root / "registries" / "nodes.csv")
+
+    def compile_with(self, registry, edge):
+        compiler = Compiler(registry, self.canonical, None, self.governance)
+        document = dict(BASE_ENVELOPE, candidate_edges=[edge])
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "gur.yaml"
+            path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+            return compiler.compile(path)
+
+    def edge(self):
+        return dict(
+            BASE_EDGE,
+            ref="M048",
+            source_id="abil_strength",
+            source_label="Strength",
+            edge_type="GATES",
+            target_id=self.RETIRED,
+            target_label="Exceptional Strength",
+            aspect="strength grade",
+        )
+
+    def test_the_row_is_repointed_to_the_survivor(self):
+        result = self.compile_with(self.registry_with_retirement(), self.edge())
+        self.assertEqual([f.detail for f in result.errors], [])
+        self.assertEqual(len(result.rows), 1)
+        self.assertEqual(result.rows[0]["target_id"], self.SURVIVOR)
+
+    def test_the_label_follows_the_surviving_identity(self):
+        result = self.compile_with(self.registry_with_retirement(), self.edge())
+        self.assertEqual(result.rows[0]["target_label"], "Exceptional Strength")
+
+    def test_the_substitution_is_reported_on_the_row(self):
+        """A silent repoint would be an identity change a Reviewer never sees."""
+        result = self.compile_with(self.registry_with_retirement(), self.edge())
+        findings = [
+            f for f in result.findings
+            if f.rule == "endpoint_repointed_to_merge_survivor"
+        ]
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].ref, "M048")
+        self.assertIn(self.RETIRED, findings[0].detail)
+        self.assertIn(self.SURVIVOR, findings[0].detail)
+        self.assertIn("DEC-2026-9999", findings[0].detail)
+        self.assertIn("INT-19700101-001", findings[0].detail)
+
+    def test_it_does_not_escalate_an_answered_question(self):
+        """ESCALATION_CONTRACT: a known canonical ID is not an escalation."""
+        result = self.compile_with(self.registry_with_retirement(), self.edge())
+        self.assertNotIn("identity_ambiguous", self.rules(result))
+        self.assertEqual(result.escalations, [])
+
+    def test_without_the_record_the_builder_still_refuses_the_label_match(self):
+        """The guard this rests beside must stay exactly as strict.
+
+        Same registry, same label, no integration record: the only thing linking
+        the two IDs is now the label, and invariant 4 forbids merging on that.
+        """
+        registry = self.registry_with_retirement(record=False)
+        result = self.compile_with(registry, self.edge())
+        self.assertIn("identity_ambiguous", self.rules(result))
+        self.assertTrue(result.errors)
+
+    def test_a_survivor_absent_from_the_registry_does_not_repoint(self):
+        """Repointing at an unregistered ID would breach invariant 1."""
+        registry = self.registry_with_retirement(survivor_registered=False)
+        result = self.compile_with(registry, self.edge())
+        self.assertNotIn("endpoint_repointed_to_merge_survivor", self.rules(result))
+        self.assertTrue(result.errors)
+
+    def test_a_live_endpoint_is_untouched(self):
+        edge = dict(self.edge(), ref="T9", target_id="abil_strength",
+                    target_label="Strength", source_id=self.SURVIVOR,
+                    source_label="Exceptional Strength")
+        result = self.compile_with(self.registry_with_retirement(), edge)
+        self.assertNotIn("endpoint_repointed_to_merge_survivor", self.rules(result))
+        self.assertEqual([f.detail for f in result.errors], [])
+
+
+class LiveCavalierRepointCase(unittest.TestCase):
+    """The published packet this behaviour was built for."""
+
+    GUP = (
+        REPO_ROOT / "books" / "adnd1e" / "ua" / "artifacts" / "gup"
+        / "GUP-PKT-UA-014-016-cavalier-r01.yaml"
+    )
+    REPORT = (
+        REPO_ROOT / "build" / "reports" / "GUP-PKT-UA-014-016-cavalier-r01.validation.json"
+    )
+
+    def report(self):
+        if not self.REPORT.is_file():  # pragma: no cover - packet may be superseded
+            self.skipTest("the cavalier GUP has not been compiled")
+        return json.loads(self.REPORT.read_text(encoding="utf-8"))
+
+    def test_m048_was_repointed_rather_than_escalated(self):
+        report = self.report()
+        repoints = [
+            f for f in report["findings"]
+            if f["rule"] == "endpoint_repointed_to_merge_survivor"
+        ]
+        self.assertEqual([f["ref"] for f in repoints], ["M048"])
+        self.assertIn("abil_str_exceptional", repoints[0]["detail"])
+
+    def test_the_packet_compiled_without_an_identity_escalation(self):
+        report = self.report()
+        self.assertEqual(report["summary"]["errors"], 0)
+        self.assertEqual(report["summary"]["escalations"], 0)
+        self.assertEqual(report["summary"]["edges_rejected"], 0)
+
+    def test_no_emitted_row_names_a_retired_identity(self):
+        import csv
+
+        if not self.GUP.is_file():  # pragma: no cover
+            self.skipTest("the cavalier GUP has not been compiled")
+        registry = NodeRegistry.load(REGISTRY_PATH)
+        retired = set(registry.retirements)
+        if not retired:
+            self.skipTest("no integration has retired a node yet")
+        offenders = []
+        for suffix in ("edges", "pending", "blocked"):
+            path = self.GUP.with_suffix("").with_suffix(f".{suffix}.csv")
+            path = self.GUP.parent / f"{self.GUP.stem}.{suffix}.csv"
+            if not path.is_file():
+                continue
+            with path.open(encoding="utf-8", newline="") as handle:
+                for row in csv.DictReader(handle):
+                    for field in ("source_id", "target_id"):
+                        if row.get(field) in retired:
+                            offenders.append((path.name, row.get("ref"), row.get(field)))
+        self.assertEqual(offenders, [])
+
+
+
+class ReviewOwnedDefectRoutingCase(CompilerCase):
+    """A defect that came from the Review goes back to the Reviewer.
+
+    The blocked-handoff branch routed every validation error to the Analyst with
+    the GUR as the blocker. That is right for a source-derived defect -- an
+    assertion the packet does not support is repaired by a new GUR. It is wrong
+    for a defect the Review itself introduced: no GUR revision can supply a
+    disposition a Review omitted, or respell one the Builder does not recognise.
+
+    Sending it to the Analyst is the same failure this repository has hit before
+    at a larger scale: routing a defect to a role that is not permitted to fix
+    it, so the work stalls with the queue looking busy. The illusionist packet
+    hit it live -- REV-...-r05-r04 dispositioned six rows
+    `approved_but_excluded_from_bundle`, which is not one of the four
+    dispositions ARTIFACT_LIFECYCLE section 4 defines, and the resulting GUP was
+    handed to the Analyst blocked on its GUR.
+    """
+
+    def review(self, tmp: Path, rows: dict) -> Path:
+        path = tmp / "review.yaml"
+        path.write_text(
+            yaml.safe_dump(
+                {
+                    "id": "REV-GUP-PKT-PHB-999-999-fixture-r01-r01",
+                    "packet_id": BASE_ENVELOPE["packet_id"],
+                    "reviewed_gup": {"id": "GUP-PKT-PHB-999-999-fixture-r01"},
+                    "overall_disposition": "revision_required",
+                    "row_decisions": [
+                        {"ref": ref, "disposition": disposition}
+                        for ref, disposition in rows.items()
+                    ],
+                },
+                sort_keys=False,
+            ),
+            encoding="utf-8",
+        )
+        return path
+
+    def compile_with_review(self, rows, edges):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            gur = tmp / "gur.yaml"
+            gur.write_text(
+                yaml.safe_dump(dict(BASE_ENVELOPE, candidate_edges=edges), sort_keys=False),
+                encoding="utf-8",
+            )
+            from adnd1e_builder.review import ReviewDirectives
+
+            directives = ReviewDirectives.load(self.review(tmp, rows))
+            return self.compiler.compile(gur, directives=directives)
+
+    def edges(self):
+        return [
+            dict(BASE_EDGE, ref="T1"),
+            dict(
+                BASE_EDGE,
+                ref="T2",
+                target_id="save_poison",
+                target_label="Saving Throw vs Poison",
+                aspect="save bonus",
+            ),
+        ]
+
+    def test_an_unknown_disposition_routes_to_the_reviewer(self):
+        result = self.compile_with_review(
+            {"T1": "approved", "T2": "approved_but_excluded_from_bundle"}, self.edges()
+        )
+        handoff = result.handoff
+        self.assertEqual(handoff["next_role"], "reviewer")
+        self.assertEqual(handoff["readiness"], "blocked")
+
+    def test_the_blocker_is_the_review_not_the_gur(self):
+        """Naming the GUR would ask the Analyst for a revision that cannot help."""
+        result = self.compile_with_review(
+            {"T1": "approved", "T2": "approved_but_excluded_from_bundle"}, self.edges()
+        )
+        handoff = result.handoff
+        self.assertEqual(
+            handoff["blocking_ids"], ["REV-GUP-PKT-PHB-999-999-fixture-r01-r01"]
+        )
+        self.assertNotIn(BASE_ENVELOPE["id"], handoff["blocking_ids"])
+
+    def test_the_reason_names_the_review_owned_rule(self):
+        result = self.compile_with_review(
+            {"T1": "approved", "T2": "approved_but_excluded_from_bundle"}, self.edges()
+        )
+        reason = result.handoff["reason"]
+        self.assertIn("review_disposition_unknown", reason)
+        self.assertIn("Review-owned", reason)
+
+    def test_an_undecided_row_also_routes_to_the_reviewer(self):
+        """Review is per row; an omitted disposition is the Review's omission."""
+        result = self.compile_with_review({"T1": "approved"}, self.edges())
+        handoff = result.handoff
+        self.assertEqual(handoff["next_role"], "reviewer")
+        self.assertIn("review_row_undecided", handoff["reason"])
+
+    def test_a_source_defect_still_routes_to_the_analyst(self):
+        """The default this narrows must keep working for what it was written for."""
+        broken = dict(BASE_EDGE, ref="T3", target_id="no_such_canonical_node",
+                      target_label="Nothing At All")
+        result = self.compile_with_review(
+            {"T1": "approved", "T3": "approved"}, [dict(BASE_EDGE, ref="T1"), broken]
+        )
+        handoff = result.handoff
+        self.assertEqual(handoff["next_role"], "analyst")
+        self.assertEqual(handoff["blocking_ids"], [BASE_ENVELOPE["id"]])
+
+    def test_a_mixed_batch_stays_with_the_analyst(self):
+        """A source defect is present, so the conservative default holds."""
+        broken = dict(BASE_EDGE, ref="T3", target_id="no_such_canonical_node",
+                      target_label="Nothing At All")
+        result = self.compile_with_review(
+            {"T1": "approved", "T3": "not_a_real_disposition"},
+            [dict(BASE_EDGE, ref="T1"), broken],
+        )
+        self.assertEqual(result.handoff["next_role"], "analyst")
+
+    def test_a_clean_review_still_reaches_the_reviewer_ready(self):
+        result = self.compile_with_review(
+            {"T1": "approved", "T2": "approved"}, self.edges()
+        )
+        handoff = result.handoff
+        self.assertEqual(handoff["next_role"], "reviewer")
+        self.assertEqual(handoff["readiness"], "ready")
+        self.assertEqual(handoff["blocking_ids"], [])
+
+
+
+class RejectedRowLeavesNodeDependentsCase(CompilerCase):
+    """A node proposal must not keep advertising rows the Review rejected.
+
+    `edges_depending_on_it` is how a proposal argues it earns registration, and a
+    Reviewer reads it to decide. When a Review rejects a row but keeps the node
+    because other rows still need it, leaving the rejected ref in that list makes
+    the proposal claim support the Reviewer has just withdrawn.
+
+    The existing rejected-node handling computed the surviving rows already, but
+    returned early unless a *node* was rejected, so a row-only rejection never
+    reached it. The cavalier packet is the live case: the Review rejected M067
+    and kept `rule_chivalric_code`, whose list still named M067.
+    """
+
+    NODE = "rule_fixture_code"
+
+    def gur(self, refs=("T1", "T2")):
+        edges = []
+        for index, ref in enumerate(refs):
+            edges.append(dict(
+                BASE_EDGE, ref=ref, source_id=self.NODE, source_label="Fixture Code",
+                edge_type="GATES", target_id="class_fighter", target_label="Fighter",
+                aspect=f"facet {index}",
+            ))
+        return dict(
+            BASE_ENVELOPE,
+            candidate_edges=edges,
+            candidate_nodes=[{
+                "proposed_id": self.NODE,
+                "proposed_label": "Fixture Code",
+                "kind": "rule",
+                "why_needed": "the fixture needs it",
+                "edges_depending_on_it": list(refs),
+            }],
+        )
+
+    def compile_with(self, rows, refs=("T1", "T2")):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            gur = tmp / "gur.yaml"
+            gur.write_text(yaml.safe_dump(self.gur(refs), sort_keys=False), encoding="utf-8")
+            review = tmp / "review.yaml"
+            review.write_text(
+                yaml.safe_dump({
+                    "id": "REV-GUP-PKT-PHB-999-999-fixture-r01-r01",
+                    "packet_id": BASE_ENVELOPE["packet_id"],
+                    "reviewed_gup": {"id": "GUP-PKT-PHB-999-999-fixture-r01"},
+                    "overall_disposition": "revision_required",
+                    "row_decisions": [
+                        {"ref": ref, "disposition": disposition}
+                        for ref, disposition in rows.items()
+                    ],
+                    "node_decisions": [
+                        {"proposed_id": self.NODE, "disposition": "approved"}
+                    ],
+                }, sort_keys=False),
+                encoding="utf-8",
+            )
+            from adnd1e_builder.review import ReviewDirectives
+
+            return self.compiler.compile(
+                gur, directives=ReviewDirectives.load(review)
+            )
+
+    def proposal(self, result):
+        return next(
+            n for n in result.node_additions if n["proposed_id"] == self.NODE
+        )
+
+    def test_a_rejected_row_leaves_the_dependent_list(self):
+        result = self.compile_with({"T1": "approved", "T2": "rejected"})
+        self.assertEqual(self.proposal(result)["edges_depending_on_it"], ["T1"])
+
+    def test_the_surviving_rows_are_kept(self):
+        result = self.compile_with(
+            {"T1": "approved", "T2": "rejected", "T3": "approved"},
+            refs=("T1", "T2", "T3"),
+        )
+        self.assertEqual(self.proposal(result)["edges_depending_on_it"], ["T1", "T3"])
+
+    def test_the_removal_is_reported(self):
+        """A silent edit to the proposal's own argument would be invisible."""
+        result = self.compile_with({"T1": "approved", "T2": "rejected"})
+        findings = [f for f in result.findings if f.rule == "node_dependent_row_rejected"]
+        self.assertEqual(len(findings), 1)
+        self.assertIn("T2", findings[0].detail)
+        self.assertIn(self.NODE, findings[0].detail)
+
+    def test_nothing_changes_when_no_row_is_rejected(self):
+        result = self.compile_with({"T1": "approved", "T2": "approved"})
+        self.assertEqual(self.proposal(result)["edges_depending_on_it"], ["T1", "T2"])
+        self.assertEqual(
+            [f for f in result.findings if f.rule == "node_dependent_row_rejected"], []
+        )
+
+    def test_the_node_survives_while_any_row_needs_it(self):
+        result = self.compile_with({"T1": "approved", "T2": "rejected"})
+        self.assertIn(
+            self.NODE, {n["proposed_id"] for n in result.node_additions}
+        )
+
+
+class LiveCavalierDependentsCase(unittest.TestCase):
+    """The published packet the prune was written for."""
+
+    GUP = (
+        REPO_ROOT / "books" / "adnd1e" / "ua" / "artifacts" / "gup"
+        / "GUP-PKT-UA-014-016-cavalier-r03.yaml"
+    )
+
+    def proposal(self):
+        if not self.GUP.is_file():  # pragma: no cover - superseded or not yet built
+            self.skipTest("the cavalier r03 GUP is not present")
+        document = yaml.safe_load(self.GUP.read_text(encoding="utf-8"))
+        for node in (document.get("node_changes") or {}).get("additions_proposed") or []:
+            if node.get("proposed_id") == "rule_chivalric_code":
+                return node
+        self.fail("rule_chivalric_code is not proposed by this GUP")
+
+    def test_the_rejected_row_is_gone_from_the_dependent_list(self):
+        self.assertNotIn("M067", self.proposal()["edges_depending_on_it"])
+
+    def test_the_rows_that_still_need_it_remain(self):
+        depending = self.proposal()["edges_depending_on_it"]
+        for ref in ("M003", "M009", "M065", "M066", "M068"):
+            self.assertIn(ref, depending)
+
+
+
+class DueMigrationEndpointCase(CompilerCase):
+    """DEC-2026-0050: a due legacy endpoint is refused, not warned about.
+
+    `comeliness`, `fatigue` and `training` had their replacements decided long
+    ago by DEC-2026-0004 and DEC-2026-0014, and the debt they belong to is meant
+    to shrink. Until now the compiler warned and carried on, and that warning was
+    read by four gates in a row without stopping anything: the cavalier GUR
+    disclosed the tension, this compiler warned on each row, the Reviewer
+    approved them, the Integrator applied them, and four rows joined a set an
+    approved Decision had pinned at a fixed size. The first thing to notice was a
+    test failure after integration.
+
+    So for this exactly-named set the row is refused. It is never rewritten to
+    the successor: repointing a source assertion is the reviewed migration's job,
+    and doing it here would be the Builder deciding identity on its own.
+    """
+
+    def edge_with(self, node_id, *, role="target"):
+        edge = dict(BASE_EDGE, ref="M041")
+        if role == "target":
+            edge.update(target_id=node_id, target_label="Training")
+        else:
+            edge.update(source_id=node_id, source_label="Training")
+        return edge
+
+    def rules_for(self, node_id, **kwargs):
+        result = self.compile_gur(candidate_edges=[self.edge_with(node_id, **kwargs)])
+        return result, self.rules(result)
+
+    def test_each_due_id_is_refused(self):
+        for node_id in ("comeliness", "fatigue", "training"):
+            with self.subTest(node_id=node_id):
+                result, rules = self.rules_for(node_id)
+                self.assertIn("endpoint_migration_due", rules)
+                self.assertTrue(result.errors)
+
+    def test_it_is_refused_on_either_endpoint(self):
+        for role in ("source", "target"):
+            with self.subTest(role=role):
+                _, rules = self.rules_for("training", role=role)
+                self.assertIn("endpoint_migration_due", rules)
+
+    def test_the_row_is_not_emitted(self):
+        result, _ = self.rules_for("training")
+        self.assertEqual(result.rows, [])
+
+    def test_the_row_is_not_rewritten_to_the_successor(self):
+        """Silently repointing would be the Builder deciding identity."""
+        result, _ = self.rules_for("training")
+        emitted = {
+            node
+            for row in result.rows
+            for node in (row.get("source_id"), row.get("target_id"))
+        }
+        self.assertNotIn("rule_training", emitted)
+
+    def test_the_finding_names_the_decision_and_the_successor(self):
+        result, _ = self.rules_for("training")
+        detail = next(
+            f.detail for f in result.findings if f.rule == "endpoint_migration_due"
+        )
+        self.assertIn("DEC-2026-0050", detail)
+        self.assertIn("rule_training", detail)
+
+    def test_the_old_warning_no_longer_fires_for_a_due_id(self):
+        """One row must not carry both a refusal and a carry-on warning."""
+        _, rules = self.rules_for("training")
+        self.assertNotIn("endpoint_pending_migration", rules)
+
+    def test_an_ordinary_endpoint_is_unaffected(self):
+        result = self.compile_gur(candidate_edges=[dict(BASE_EDGE)])
+        self.assertNotIn("endpoint_migration_due", self.rules(result))
+        self.assertEqual([f.detail for f in result.errors], [])
+
+    def test_the_successor_id_itself_is_not_refused(self):
+        """Once the migration lands, the surviving ID must compile normally."""
+        _, rules = self.rules_for("rule_training")
+        self.assertNotIn("endpoint_migration_due", rules)
+
+    def test_the_due_set_is_exactly_the_three_named(self):
+        """A closed set: other pending migrations keep their warning."""
+        from adnd1e_builder.governance import Governance
+
+        governance = Governance.load(REPO_ROOT / "rulesets" / "adnd1e")
+        self.assertEqual(
+            set(governance.migration_due_ids), {"comeliness", "fatigue", "training"}
+        )
+        for retired, (successor, decision_id) in governance.migration_due_ids.items():
+            self.assertEqual(decision_id, "DEC-2026-0050", retired)
+        self.assertEqual(
+            {r: s for r, (s, _) in governance.migration_due_ids.items()},
+            {
+                "comeliness": "abil_comeliness",
+                "fatigue": "rule_exhaustion",
+                "training": "rule_training",
+            },
+        )
+
+
 class TestEnvelope(CompilerCase):
     def test_wrong_ruleset_is_rejected(self):
         result = self.compile_gur(ruleset_id="adnd2e")
@@ -1191,10 +1744,9 @@ class BlockedRowsAreSeparableCase(CompilerCase):
                 [f"{mixed.gup_id}.blocked.csv"],
             )
 
+            second, second_reports = Path(tmp) / "gup2", Path(tmp) / "reports2"
             clean = self.compile_gur(candidate_edges=[dict(BASE_EDGE)])
-            written = write_all(
-                clean, gup_dir, reports, {"ran": False}, allow_overwrite=True
-            )
+            written = write_all(clean, second, second_reports, {"ran": False})
             self.assertEqual(
                 [p.name for p in written if p.name.endswith(".blocked.csv")], []
             )
@@ -1213,6 +1765,92 @@ class BlockedRowsAreSeparableCase(CompilerCase):
         summary = validation_report(self.compile_mixed(), {"ran": False})["summary"]
         self.assertEqual(summary["edge_pending_additions"], 1)
         self.assertEqual(summary["edge_blocked_additions"], 1)
+
+
+class EndpointSatisfiabilityCase(CompilerCase):
+    """An endpoint reaches integration only if something in the batch mints it.
+
+    There are exactly three fates for an unregistered endpoint, and each has to
+    be distinguishable from the others by looking at what was written to disk:
+    this packet proposes it (held, travels with the batch), another packet
+    mints it and the GUR says so (held, blocked until that packet lands), or
+    nothing accounts for it at all (refused outright).
+
+    Both bundle rejections in this lineage came from the middle case being
+    indistinguishable from the first once the CSVs were merged.
+    """
+
+    OWN = "rule_fixture_own_proposal"
+    FOREIGN = "spell_fixture_another_packet_mints_it"
+    UNKNOWN = "spell_fixture_nobody_accounts_for_it"
+
+    def compile_mixed(self, declare=True):
+        overrides = {
+            "candidate_nodes": [{
+                "proposed_id": self.OWN, "proposed_label": "Fixture Own Proposal",
+                "why_needed": "The packet names it.", "edges_depending_on_it": ["T1"],
+            }],
+            "candidate_edges": [
+                dict(BASE_EDGE, ref="T1", target_id=self.OWN,
+                     target_label="Fixture Own Proposal"),
+                dict(BASE_EDGE, ref="T2", target_id=self.FOREIGN,
+                     target_label="Fixture Foreign Spell"),
+            ],
+        }
+        if declare:
+            overrides["cross_packet_candidate_targets"] = [{
+                "id": self.FOREIGN, "label": "Fixture Foreign Spell",
+                "origin": "candidate minted by GUR-PKT-PHB-998-998-other-r01, not yet canonical",
+                "used_by": ["T2"],
+                "builder_instruction": "Do not mint a second identity.",
+            }]
+        return self.compile_gur(**overrides)
+
+    def test_the_three_fates_are_separable(self):
+        result = self.compile_mixed()
+        self.assertEqual(
+            [r["ref"] for r in result.batch_satisfiable_additions], ["T1"]
+        )
+        self.assertEqual([r["ref"] for r in result.blocked_additions], ["T2"])
+        self.assertEqual(result.unsatisfiable_endpoints, {self.FOREIGN})
+
+    def test_an_endpoint_nobody_accounts_for_is_refused_not_held(self):
+        """Not a bucket question: an undeclared unknown endpoint is an error."""
+        result = self.compile_gur(
+            candidate_edges=[
+                dict(BASE_EDGE, ref="T3", target_id=self.UNKNOWN,
+                     target_label="Fixture Unknown"),
+            ],
+        )
+        self.assertIn("endpoint_unresolved", self.rules(result))
+        self.assertEqual([r["ref"] for r in result.rows], [])
+
+    def test_every_shipped_row_resolves_against_the_batch(self):
+        """The exact property both Integrator rejections tested and found false."""
+        result = self.compile_mixed()
+        known = result.canonical_node_ids | {
+            n["proposed_id"] for n in result.node_additions
+        }
+        for row in result.additions + result.batch_satisfiable_additions:
+            self.assertIn(row["source_id"], known, row["ref"])
+            self.assertIn(row["target_id"], known, row["ref"])
+
+    def test_satisfiability_is_read_from_the_corpus_not_the_declaration(self):
+        """The declaration names the origin; it does not create the blockage.
+
+        Keying the split on `cross_packet_dependencies` made the bucket a
+        restatement of what the GUR said rather than of what is true, so a
+        declaration that was absent, misspelled, or later contradicted would
+        have silently reclassified the row as safe to integrate.
+        """
+        result = self.compile_mixed()
+        result.cross_packet_dependencies = []
+        self.assertEqual([r["ref"] for r in result.blocked_additions], ["T2"])
+
+    def test_a_registered_endpoint_is_never_blocked(self):
+        result = self.compile_gur(candidate_edges=[dict(BASE_EDGE)])
+        self.assertEqual(result.blocked_additions, [])
+        self.assertEqual(result.unsatisfiable_endpoints, set())
 
 
 class LivePsionicsBlockedCase(CompilerCase):
@@ -1257,12 +1895,50 @@ class LivePsionicsBlockedCase(CompilerCase):
         }
         self.assertEqual(integrable & set(self.REJECTED), set())
 
-    def test_the_blocked_set_is_far_smaller_than_the_pending_set(self):
-        """190 of 203 were always safe; only the remainder blocks the batch."""
+    def test_the_blocked_set_is_a_small_remainder_of_the_packet(self):
+        """Only a remainder blocks the batch; the bulk of the packet is safe.
+
+        This compared `blocked_additions` against `batch_satisfiable_additions`,
+        which was 13 against 190 when the rejection was first reproduced. That
+        comparison decays to false as the corpus completes, and not because
+        anything regressed: `batch_satisfiable_additions` is pending rows minus
+        blocked ones, so every node that lands canonically moves a row out of
+        pending and into plain additions. With the psionics dependencies now
+        registered, pending holds only the 9 rows blocked on the unpublished
+        druid-spells packet, batch_satisfiable is 0, and `9 < 0` fails.
+
+        The claim worth keeping is the one the rejection was about: the blocked
+        rows are a small remainder rather than the bulk of the packet. Measuring
+        that against the total emitted row set says it directly and stays true
+        whether the dependencies have landed or not.
+        """
         result = self.result()
         self.assertTrue(result.blocked_additions)
-        self.assertLess(
-            len(result.blocked_additions), len(result.batch_satisfiable_additions)
+        emitted = (
+            len(result.additions)
+            + len(result.pending_additions)
+            + len(result.updates)
+        )
+        self.assertGreater(emitted, 0)
+        self.assertLess(len(result.blocked_additions), emitted // 4)
+
+    def test_blocked_rows_are_a_subset_of_the_pending_rows(self):
+        """Blocked is a narrowing of pending, not a fourth independent bucket.
+
+        `batch_satisfiable_additions` is defined as the difference of the two, so
+        if a blocked row ever escaped the pending set that property would report
+        a nonsense count rather than fail outright.
+        """
+        result = self.result()
+        pending = {id(row) for row in result.pending_additions}
+        for row in result.blocked_additions:
+            self.assertIn(
+                id(row), pending,
+                f"{row['source_id']} -> {row['target_id']} is blocked but not pending",
+            )
+        self.assertEqual(
+            len(result.batch_satisfiable_additions),
+            len(result.pending_additions) - len(result.blocked_additions),
         )
 
 if __name__ == "__main__":

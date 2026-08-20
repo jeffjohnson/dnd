@@ -1,0 +1,108 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0046-r02
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: IMP-DEC-2026-0046-r01
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0046
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0046.yaml
+  checksum: sha256:2ebc1d44dfb1fb51583415f535896f41dac2bc64a6bfef4157c99e89486bbe0b
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:2c6852eb0ec426af504d9b40426d837633840bc1b0e677fb9794a18d98000714
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:c73c8afa9cb08956ca388af20f64b7245a1633585b6159e60077eab35557e059
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:21176795ade2d4337d4f23d1342a93f28e0954af68e6979cb81a5935ee11f33b
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0046.yaml
+  checksum: sha256:2ebc1d44dfb1fb51583415f535896f41dac2bc64a6bfef4157c99e89486bbe0b
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED, AND CONFIRMED ON THE LIVE CORPUS. _implementation_report_errors now
+    takes a keyword-only drift_sink; implementation-file staleness and absence are collected there while
+    every other report defect stays in the returned error list. The scanner resolves and validates the
+    candidate implementation Review before classifying that drift, and emits the informational diagnostic
+    ''implementation_files_drifted_after_approval'' when an exact valid Approved Review already consumed
+    the report. Live effect: the five lineages DEC-2026-0046 names -- IMP-DEC-2026-0018-r15, -0022-r13,
+    -0023-r15, -0028-r09 and -0039-r04 -- previously produced five ''decision_implementation_invalid''
+    errors and five ready BUILDER-DECISION items; they now produce five info diagnostics and no Builder
+    work, and their reports and Reviews are byte-unchanged. Covered by PostApprovalFileDriftCase.test_post_approval_drift_does_not_reopen_the_decision,
+    test_post_approval_drift_is_informational_not_an_error, test_the_observation_names_the_file_the_report_and_the_review,
+    test_a_deleted_implementation_file_is_also_only_informational and test_the_report_and_review_remain_untouched.
+    Re-verified at the current checksums for this revision: the Integrator published IMP-DEC-2026-0044-r03,
+    so the common suite is 560 OK, the Integrator suite 125 OK and the builder suite 580 OK. The claim
+    above is unchanged; only the blocking suite state changed.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED, ONE NEGATIVE CASE PER TEST. Drift stays a hard ''decision_implementation_invalid''
+    error, with no informational diagnostic and with ready work returned to the implementation owner,
+    for: no Review (test_drift_without_any_review_remains_an_error); a revision-required Review (test_drift_under_a_revision_required_review_remains_an_error);
+    an Approved Review pinning a stale report checksum (test_drift_under_a_review_pinning_a_stale_report_checksum_remains_an_error);
+    an Approved Review pinning a stale Decision checksum (test_drift_under_a_review_pinning_a_stale_decision_checksum_remains_an_error);
+    and a malformed Approved Review whose independent validation did not pass (test_drift_under_a_malformed_review_remains_an_error).
+    test_a_defect_other_than_drift_is_still_an_error_after_approval fixes that the exception covers drifted
+    files only: a report missing an acceptance index stays diagnostic even under a valid Approved Review,
+    because the scanner discards the Review leaf whenever the report is broken on its own terms. This
+    is confirmed live: IMP-DEC-2026-0043-r03 and IMP-DEC-2026-0045-r01 had no Approved Review and were
+    correctly reported invalid when this same edit drifted their pinned files, which is why they are superseded
+    in this same batch. Re-verified at the current checksums for this revision: the Integrator published
+    IMP-DEC-2026-0044-r03, so the common suite is 560 OK, the Integrator suite 125 OK and the builder
+    suite 580 OK. The claim above is unchanged; only the blocking suite state changed.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED. The exception changes the queue state of the already-reviewed Decision
+    only; it neither suppresses nor consumes the Decision that changed the shared file. PostApprovalFileDriftCase.test_the_decision_that_changed_the_file_is_independently_discoverable
+    publishes a completed drifted lineage alongside a second approved non-migration Decision and asserts
+    the Builder queue contains exactly the later Decision. The live corpus shows the same shape: with
+    the five completed lineages silent, DEC-2026-0043, DEC-2026-0045 and DEC-2026-0046 remain independently
+    ready Builder work with their own report and Review lifecycles, and the Integrator''s DEC-2026-0044
+    is untouched. Re-verified at the current checksums for this revision: the Integrator published IMP-DEC-2026-0044-r03,
+    so the common suite is 560 OK, the Integrator suite 125 OK and the builder suite 580 OK. The claim
+    above is unchanged; only the blocking suite state changed.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'VERIFIED AGAINST THE PUBLISHED FILE, WHICH THE ARCHITECT WROTE. contracts/WORK_QUEUES.md
+    line 3 reads ''**Version 1.13.**''. Core rule 15 (lines 52-57) states both halves: after an Approved
+    Review consumes the exact active report leaf the `implementation_files` are a checksummed snapshot
+    and later drift is informational and never reopens the Decision; before an exact Approved Review exists
+    drift remains a diagnostic and restores the Decision to its implementation owner. The distinct acceptance
+    criteria are recorded as contract acceptance test 45 (lines 800-802): post-approval drift is informational,
+    does not reopen that Decision, and does not suppress diagnostics or revision work for a report without
+    such a Review. The version history entry for 1.13 dated 2026-08-18 records the same split. Re-verified
+    at the current checksums for this revision: the Integrator published IMP-DEC-2026-0044-r03, so the
+    common suite is 560 OK, the Integrator suite 125 OK and the builder suite 580 OK. The claim above
+    is unchanged; only the blocking suite state changed.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Supersedes r01 solely because the condition that blocked it is gone: the Integrator published
+    IMP-DEC-2026-0044-r03 and all three suites are green. All four acceptance tests were already implemented
+    and evidenced, and the ruling''s effect remains visible on the live corpus -- the five completed lineages
+    produce informational drift diagnostics and no Builder work, while every pre-approval case stays strict.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0046-r02.validation.json
+validation_report_checksum: sha256:d26a77824f2812ced35e9e402eb37cad25a6847ace003a498662085508e210bf
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 560 tests in 90.862s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.PostApprovalFileDriftCase
+      test_scan_agent_queues.TestImplementationDriftSink'
+    exit_code: 0
+    result: passed
+    summary: Ran 39 tests in 0.608s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 580 tests in 78.818s (38 skipped) OK

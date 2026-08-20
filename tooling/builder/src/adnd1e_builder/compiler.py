@@ -112,6 +112,8 @@ class CompileResult:
     #: Node IDs another packet minted that this packet reuses, as the GUR
     #: declares them. Not proposals: the originating packet owns the identity.
     cross_packet_dependencies: list[dict] = field(default_factory=list)
+    #: Every node ID the registry held when this packet was compiled.
+    canonical_node_ids: set[str] = field(default_factory=set)
     architect_overrides: list[dict] = field(default_factory=list)
     direction_findings: list[dict] = field(default_factory=list)
     resolved_escalations: list[dict] = field(default_factory=list)
@@ -162,12 +164,37 @@ class CompileResult:
         ]
 
     @property
-    def _awaiting_origin_ids(self) -> set[str]:
+    def _declared_awaiting_origin_ids(self) -> set[str]:
+        """Cross-packet identities the GUR named, with their origin packet."""
         return {
             dependency["node_id"]
             for dependency in self.cross_packet_dependencies
             if dependency.get("state") == "awaiting_origin_packet"
         }
+
+    @property
+    def unsatisfiable_endpoints(self) -> set[str]:
+        """Endpoints in pending rows that nothing in this batch will register.
+
+        The question is answered from the corpus, not from the GUR's
+        declarations. `cross_packet_candidate_targets` is how a careful Analyst
+        announces this situation, and when it is present it also names the
+        origin packet -- but an endpoint that is neither canonical nor proposed
+        here is unsatisfiable whether or not anyone wrote that down. Keying the
+        split on the declaration meant an undeclared one reached the Integrator
+        as a rejection instead of a held row.
+        """
+        proposed = {n["proposed_id"] for n in self.node_additions}
+        known = self.canonical_node_ids | proposed
+        unsatisfiable = {
+            endpoint
+            for row in self.pending_additions
+            for endpoint in (row.get("source_id"), row.get("target_id"))
+            if endpoint and endpoint not in known
+        }
+        # A declared dependency counts even if the registry has since gained
+        # the ID: the GUR says another packet owns minting it.
+        return unsatisfiable | (self._declared_awaiting_origin_ids - self.canonical_node_ids)
 
     @property
     def blocked_additions(self) -> list[dict]:
@@ -182,14 +209,16 @@ class CompileResult:
         second kind. They were correctly held and correctly declared, but the
         Approved bundle merged all 203 pending rows into one CSV, so nothing
         downstream could tell the 190 safe ones from the 13 that were not.
+        INT-20260815-002 then refused both magic-user bundles for three
+        endpoints of the same kind that no GUR had declared at all.
         """
-        awaiting = self._awaiting_origin_ids
-        if not awaiting:
+        blocked = self.unsatisfiable_endpoints
+        if not blocked:
             return []
         return [
             row
             for row in self.pending_additions
-            if {row.get("source_id"), row.get("target_id")} & awaiting
+            if {row.get("source_id"), row.get("target_id")} & blocked
         ]
 
     @property
@@ -247,6 +276,24 @@ class CompileResult:
         if self.errors:
             rules = sorted({f.rule for f in self.errors})
             refs = sorted({f.ref for f in self.errors if f.ref})
+
+            # A defect that originates in the Review is the Reviewer's to repair,
+            # and routing it to the Analyst sends the work to a role that cannot
+            # do it: no GUR revision can supply a disposition the Review omitted
+            # or spell one the Builder does not recognise. The Analyst default
+            # below is right for a source-derived defect and only that.
+            if rules and all(rule.startswith("review_") for rule in rules):
+                return {
+                    "next_role": "reviewer",
+                    "readiness": "blocked",
+                    "reason": (
+                        f"{len(self.errors)} Review-owned defect(s) the Builder will not "
+                        f"silently rewrite: {', '.join(rules)}"
+                        + (f"; affected rows {', '.join(refs)}" if refs else "")
+                    ),
+                    "blocking_ids": [self.review_id] if self.review_id else [],
+                }
+
             return {
                 "next_role": "analyst",
                 "readiness": "blocked",
@@ -411,6 +458,53 @@ class Compiler:
             if proposed and proposed.get("proposed_label"):
                 return str(proposed["proposed_label"])
         return (edge.get(f"{role}_label") or "").strip()
+
+    def _prune_rejected_dependents(
+        self,
+        directives: "ReviewDirectives",
+        candidate_edges: list[dict],
+        result: CompileResult,
+    ) -> None:
+        """Drop rejected rows from the `edges_depending_on_it` of surviving nodes.
+
+        A node proposal lists the rows that need it, and a Reviewer reads that
+        list to judge whether the node earns its registration. When the Review
+        rejects a row but keeps the node -- because other rows still need it --
+        the list kept advertising the rejected row, so the proposal overstated
+        its own support by exactly the rows the Reviewer had just removed.
+
+        `_drop_reviewer_rejected_nodes` already computed a surviving set, but it
+        returns early unless some *node* was rejected, so a row-only rejection
+        never reached it. That is how M067 survived in `rule_chivalric_code` on
+        the cavalier packet after the Review rejected it.
+        """
+
+        rejected_refs = {
+            ref
+            for ref, ruling in directives.rows.items()
+            if ruling.disposition == "rejected"
+        }
+        if not rejected_refs:
+            return
+
+        for addition in result.node_additions:
+            depending = addition.get("edges_depending_on_it") or []
+            kept = [ref for ref in depending if ref not in rejected_refs]
+            if len(kept) == len(depending):
+                continue
+            dropped = [ref for ref in depending if ref in rejected_refs]
+            addition["edges_depending_on_it"] = kept
+            result.findings.append(
+                Finding(
+                    "node_dependent_row_rejected",
+                    "info",
+                    f"{', '.join(dropped)} removed from the rows depending on proposed node "
+                    f"{addition['proposed_id']!r}: "
+                    f"{directives.review_id or 'the Review'} rejected "
+                    f"{'them' if len(dropped) > 1 else 'it'}. "
+                    f"{len(kept)} row(s) still require this node.",
+                )
+            )
 
     def _drop_reviewer_rejected_nodes(
         self, directives: ReviewDirectives, candidate_edges: list, result: CompileResult
@@ -756,6 +850,37 @@ class Compiler:
         # DEC-2026-0004 rejected some prefixes and slated those IDs for a
         # reviewed migration. Such a node still resolves, so this must be checked
         # before the exact-match path returns.
+        # DEC-2026-0050. Three legacy IDs are due, not merely proposed: their
+        # replacements were already decided by DEC-2026-0004 and DEC-2026-0014,
+        # and the debt they belong to is meant to shrink. Warning was not enough.
+        # The cavalier packet disclosed the tension, this compiler warned on every
+        # affected row, the Reviewer approved them and the Integrator applied
+        # them -- and four rows joined a set an approved Decision had pinned. A
+        # warning that four gates read and none acted on is a warning in the
+        # wrong severity, so for this exactly-named set the row is refused.
+        #
+        # The row is never rewritten to the successor. Repointing a source
+        # assertion is the migration's job, under review; doing it silently here
+        # would be the Builder deciding identity.
+        due = self.governance.migration_due(node_id)
+        if due:
+            successor, decision_id = due
+            result.findings.append(
+                Finding(
+                    "endpoint_migration_due",
+                    "error",
+                    f"{role}_id {node_id!r} has a due identity migration: {decision_id} "
+                    f"replaces it with {successor!r}. New ordinary work may not use it, and "
+                    f"the Builder will not rewrite the row -- that repoint belongs to the "
+                    f"reviewed migration. Re-raise this assertion against {successor!r} once "
+                    f"the migration integrates, or escalate if the source means something "
+                    f"other than {successor!r}.",
+                    ref=ref,
+                    field_name=f"{role}_id",
+                )
+            )
+            return None
+
         migration_target = self.governance.migration_target(node_id)
         if migration_target and node_id in self.registry:
             result.findings.append(
@@ -772,6 +897,41 @@ class Compiler:
             )
 
         resolution = self.registry.resolve(node_id, label)
+
+        # An ID the Integrator has recorded as retired into a surviving one is
+        # repointed here, before any other handling. This is not the label
+        # merge invariant 4 forbids: the mapping comes from the Integration
+        # manifest that applied the migration, named by authority Decision and
+        # integration ID, and it is reported on every row it touches so a
+        # Reviewer sees the substitution rather than discovering it in a diff.
+        #
+        # A GUR is immutable and is authored against the registry of its day. If
+        # the merge it anticipated integrates before the GUP is compiled -- which
+        # is exactly what DEC-2026-0038 and INT-20260818-001 did to this
+        # packet's `str_exceptional` -- then without this the row cannot compile
+        # at all, and the Builder would escalate a question the repository has
+        # already answered in writing.
+        if resolution.method == "retired_replacement":
+            survivor = resolution.resolved_id
+            edge[f"{role}_id"] = survivor
+            canonical_label = self.registry.nodes[survivor].label
+            if canonical_label:
+                edge[f"{role}_label"] = canonical_label
+            result.findings.append(
+                Finding(
+                    "endpoint_repointed_to_merge_survivor",
+                    "info",
+                    f"{role}_id {node_id!r} was retired into {survivor!r} by "
+                    f"{resolution.retirement_integration_id or 'an integration'} under "
+                    f"{resolution.retirement_authority or 'an approved Decision'}; the row is "
+                    f"repointed to the surviving identity. The GUR predates that integration "
+                    f"and remains immutable.",
+                    ref=ref,
+                    field_name=f"{role}_id",
+                )
+            )
+            return survivor
+
         if resolution.method == "exact":
             canonical_label = self.registry.nodes[node_id].label
             ruled = self.governance.approved_label(node_id)
@@ -1905,6 +2065,10 @@ class Compiler:
             packet_id=packet_id,
             gur_checksum=f"sha256:{sha256_of(gur_path)}",
         )
+        # Snapshotted so a result can answer "is this endpoint registered?"
+        # without holding the registry, which is what separates a pending row
+        # the batch can satisfy from one it cannot.
+        result.canonical_node_ids = set(self.registry.nodes)
         result.revision = int(gup_revision)
         result.supersedes = supersedes
         result.envelope = {
@@ -1963,6 +2127,24 @@ class Compiler:
                         f"ignore them.",
                     )
                 )
+            # A ruling on a GUP-level field names no row, so nothing in the
+            # compile loop can consume it. It is reported on every compile so the
+            # Builder answers it deliberately in how the patch is emitted --
+            # reading the key without surfacing it would be the same silent drop
+            # as not reading it at all.
+            for directive in directives.field_directives:
+                result.findings.append(
+                    Finding(
+                        "review_field_directive_outstanding",
+                        "warning",
+                        f"review {directives.review_id} rules "
+                        f"{directive.disposition or 'no disposition'} on the GUP field "
+                        f"{directive.field_name!r}: {directive.correction or 'no correction stated'} "
+                        f"This constrains how the patch is emitted rather than any single "
+                        f"row; confirm the emitted patch satisfies it before approval.",
+                    )
+                )
+
             # A Review that returned the packet to the Analyst is answered by a
             # new GUR revision. That replacement legitimately drops rows the
             # Review rejected and adds rows it demanded, so the Review covers
@@ -2042,6 +2224,7 @@ class Compiler:
                 directives, candidate_edges, result
             )
             self._apply_node_directives(directives, result)
+            self._prune_rejected_dependents(directives, candidate_edges, result)
             self._drop_reviewer_rejected_nodes(directives, candidate_edges, result)
 
         for edge in candidate_edges:

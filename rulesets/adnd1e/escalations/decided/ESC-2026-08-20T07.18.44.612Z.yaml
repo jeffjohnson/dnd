@@ -1,0 +1,135 @@
+schema_version: '1.0'
+id: ESC-2026-08-20T07.18.44.612Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-20'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The Builder overwrote GUP-MIG-DEC-2026-0050-r01 after a Review had already
+    consumed it. REV-GUP-MIG-DEC-2026-0050-r01-r01 pins that GUP at
+    sha256:dd1f5994572b82f7c9f0a88c1e222d66e42767801a9d9fa7b5c3175c0ea2891f; the
+    file on disk now hashes to
+    sha256:71b4ca57de7f251e16e0632649b9fe0f0dfab05680e4d59dbe764659b6bc9df4. The
+    original bytes cannot be restored. This is reported rather than quietly
+    superseded, because the repository's audit guarantee is that a published
+    checksum still resolves.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. An immutability guarantee the workflow depends on has
+  been broken and cannot be repaired by the role that broke it.
+
+question: >-
+  How should a consumed artifact that was overwritten in place be recorded, given
+  that its reviewing artifact's checksum no longer resolves and the original
+  bytes are unrecoverable?
+
+what_happened:
+  sequence:
+    - The Builder published GUP-MIG-DEC-2026-0050-r01 for DEC-2026-0050.
+    - >-
+      The Reviewer published REV-GUP-MIG-DEC-2026-0050-r01-r01,
+      `revision_required`, asking for a reissue whose validation report records
+      the seven label-normalization operations separately from the fifty
+      endpoint repoints.
+    - >-
+      The Builder found the cause: the counter matched only the v1 spelling
+      `label_normalization`, so the v3 `endpoint_label_normalization` rows were
+      counted as zero. That fix is correct and is in r02.
+    - >-
+      The Builder then re-ran its emit script, which still targeted the r01
+      filename. It rewrote r01 in place instead of producing a new revision.
+  what_that_violated:
+    - >-
+      WORK_QUEUES core rule 8: a role must not move, rename, overwrite, or delete
+      an upstream artifact after publication.
+    - >-
+      agents/builder/INSTRUCTIONS.md prohibited actions: do not move or rewrite a
+      consumed GUR or prior GUP revision.
+  why_it_cannot_be_undone: >-
+    The GUP embeds its own test_result summary, which carries the wall-clock
+    duration of the suite run that produced it. Re-emitting reproduces every
+    other byte but never that string, so no re-run can restore the reviewed
+    checksum. The artifact was untracked, so no version-control copy exists.
+
+current_state:
+  r01:
+    path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0050-r01.yaml
+    reviewed_checksum: sha256:dd1f5994572b82f7c9f0a88c1e222d66e42767801a9d9fa7b5c3175c0ea2891f
+    current_checksum: sha256:71b4ca57de7f251e16e0632649b9fe0f0dfab05680e4d59dbe764659b6bc9df4
+    content_difference: >-
+      The corrected counts block and the resulting validation-report checksum,
+      plus the timing string of a later suite run. No operation, before-image,
+      baseline or authority differs.
+  r02:
+    path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0050-r02.yaml
+    supersedes: GUP-MIG-DEC-2026-0050-r01
+    state: >-
+      Published, schema-valid, and ready for Review. It carries the fix the
+      Review asked for: 50 endpoint repoints, 7 label-normalization rows and 14
+      normalized label fields, each counted separately, against unchanged pinned
+      baselines.
+  review:
+    id: REV-GUP-MIG-DEC-2026-0050-r01-r01
+    state: >-
+      Immutable and untouched. Its ruling stands and was acted on; only its
+      ability to re-derive the exact artifact it read is lost.
+
+options_considered:
+  - option: >-
+      Record r01 as corrupted-in-place history: a successor Decision or
+      Architect note stating that its published checksum no longer resolves, that
+      r02 supersedes it, and that r01 must not be cited as evidence
+    impact: >-
+      Keeps the audit trail honest about a gap it genuinely has. The Review's
+      ruling and r02's content are both unaffected, so nothing downstream needs
+      redoing.
+    builder_preference: recommended
+  - option: >-
+      Additionally make the Builder's emit path refuse to write a GUP revision
+      that already exists unless `--allow-overwrite` is given and no Review
+      consumes it
+    impact: >-
+      Closes the class. The CLI already has that guard; the Builder's own emit
+      script bypassed it by writing the file directly. The guard belongs in the
+      emitter rather than in the caller that happens to use it.
+    builder_preference: recommended_alongside
+  - option: Reconstruct r01 and claim the reviewed checksum
+    impact: >-
+      Not offered and not attempted. The bytes cannot be reproduced, and a
+      reconstruction presented as the original would be a worse fault than the
+      overwrite.
+    builder_preference: refused
+  - option: Say nothing, since r02 supersedes r01 anyway
+    impact: >-
+      Not offered. A superseded artifact is still evidence, and a checksum that
+      silently stops resolving is exactly the failure the checksums exist to make
+      impossible to hide.
+    builder_preference: refused
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  contract_change: false
+  note: >-
+    No canonical, registry or contract state changed. The recommended note is a
+    provenance record; the emitter guard is Builder-owned work.
+
+blocking: >-
+  Nothing is blocked. r02 is with the Reviewer and DEC-2026-0050 proceeds. This
+  is raised for the integrity record, not to obtain permission.
+resolution:
+  decision_id: DEC-2026-0053
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0053.yaml
+  outcome: >-
+    r01 is retained as an explicitly integrity-breached historical artifact;
+    its original checksum is not reconstructed or substituted. Builder must
+    make every durable artifact publication path create-only before any write.

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import tempfile
+import hashlib
 import unittest
 from pathlib import Path
 
@@ -1097,3 +1098,333 @@ class TestCarriedEscalationWithoutAnId(ReviewCase):
             result = self.compiler.compile(gur, revision=3)
         self.assertIn("gur_escalation_since_decided", self.rules(result))
         self.assertNotIn("gur_escalation_omits_id", self.rules(result))
+
+
+class FieldDecisionCase(unittest.TestCase):
+    """A ruling on a GUP-level field, which names no row to attach to.
+
+    Every other ruling shape keys on a `ref` or a proposed node ID, so the
+    compiler can find the thing it edits. `field_decisions` keys on a field of
+    the patch itself: the illusionist Review rules on `operation_index`, which
+    describes the whole patch, and no edit to any single row satisfies it.
+
+    Reading it matters because the alternative is silence. Before this, the key
+    was unknown, and an unknown ruling key is a correction that quietly does not
+    apply -- the revision comes out looking clean while ignoring what the
+    Reviewer asked for. That is the same defect that once made the loader read
+    one of four ruling shapes.
+    """
+
+    REVIEW = {
+        "id": "REV-GUP-PKT-PHB-000-000-fixture-r01-r01",
+        "packet_id": "PKT-PHB-000-000-fixture",
+        "reviewed_gup": {"id": "GUP-PKT-PHB-000-000-fixture-r01"},
+        "overall_disposition": "revision_required",
+        "field_decisions": {
+            "operation_index": {
+                "disposition": "approved_with_revision",
+                "exact_correction": "Add a valid csv_row locator to every declared operation.",
+                "evidence": "126 declared operations over 14 CSV rows.",
+            }
+        },
+    }
+
+    def load(self, document=None):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "review.yaml"
+            path.write_text(
+                yaml.safe_dump(document or self.REVIEW, sort_keys=False), encoding="utf-8"
+            )
+            return ReviewDirectives.load(path)
+
+    def test_the_key_is_read_rather_than_reported_unread(self):
+        directives = self.load()
+        self.assertEqual(directives.unread_decision_keys, [])
+
+    def test_the_ruling_is_carried_with_its_correction(self):
+        directive = self.load().field_directives[0]
+        self.assertEqual(directive.field_name, "operation_index")
+        self.assertEqual(directive.disposition, "approved_with_revision")
+        self.assertIn("csv_row", directive.correction)
+        self.assertIn("126", directive.evidence)
+
+    def test_it_creates_no_row_or_node_directive(self):
+        """It names no row, so inventing one would be the Builder guessing."""
+        directives = self.load()
+        self.assertEqual(directives.rows, {})
+        self.assertEqual(directives.nodes, {})
+
+    def test_a_review_without_the_key_carries_no_field_directive(self):
+        document = dict(self.REVIEW)
+        document.pop("field_decisions")
+        self.assertEqual(self.load(document).field_directives, [])
+
+    def test_a_malformed_entry_is_skipped_not_guessed(self):
+        document = dict(self.REVIEW, field_decisions={"operation_index": "fix it"})
+        self.assertEqual(self.load(document).field_directives, [])
+
+    def test_the_known_key_set_names_it(self):
+        from adnd1e_builder.review import FIELD_DECISION_KEY, KNOWN_DECISION_KEYS
+
+        self.assertIn(FIELD_DECISION_KEY, KNOWN_DECISION_KEYS)
+
+
+class LiveFieldDecisionCase(unittest.TestCase):
+    """The published Review that produced this shape."""
+
+    PATH = (
+        REPO_ROOT / "books" / "adnd1e" / "phb" / "artifacts" / "reviews"
+        / "REV-GUP-PKT-PHB-094-100-illusionist-spells-r04-r04.yaml"
+    )
+
+    def directives(self):
+        if not self.PATH.is_file():  # pragma: no cover - the Review may be superseded
+            self.skipTest("the illusionist remediation Review is not present")
+        return ReviewDirectives.load(self.PATH)
+
+    def test_the_illusionist_remediation_is_fully_read(self):
+        directives = self.directives()
+        self.assertEqual(directives.unread_decision_keys, [])
+        self.assertEqual(
+            [d.field_name for d in directives.field_directives], ["operation_index"]
+        )
+
+    def test_the_correction_names_the_csv_row_locator(self):
+        directive = self.directives().field_directives[0]
+        self.assertEqual(directive.disposition, "approved_with_revision")
+        self.assertIn("csv_row", directive.correction)
+
+
+class InheritedRejectionCase(unittest.TestCase):
+    """A successor Review may carry forward rejections instead of restating them.
+
+    DEC-2026-0051 produced the first one. r06 had to restate six rows as
+    `approved` and keep the nine rejections its predecessor established; writing
+    all fifteen again would have invited a transcription error in exactly the
+    rows a superseded Review had already settled. So it names the source Review
+    by ID and SHA-256 and lists the refs it preserves.
+
+    The source is read and hashed rather than believed. A Review that claims an
+    inheritance its source does not support inherits nothing and is reported as
+    not fully understood, because applying nine unverified rejections silently is
+    worse than refusing to compile.
+    """
+
+    SOURCE = "REV-GUP-PKT-PHB-999-999-fixture-r01-r01"
+    REFS = ["M082", "M085"]
+
+    def build(self, *, checksum=None, source_dispositions=None, refs=None,
+              restate=None, omit_source=False):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+
+        dispositions = source_dispositions or {ref: "rejected" for ref in self.REFS}
+        source_path = root / f"{self.SOURCE}.yaml"
+        if not omit_source:
+            source_path.write_text(
+                yaml.safe_dump({
+                    "id": self.SOURCE,
+                    "packet_id": "PKT-PHB-999-999-fixture",
+                    "overall_disposition": "revision_required",
+                    "edge_decisions": [
+                        {"ref": ref, "disposition": d,
+                         "rationale": f"source rationale for {ref}"}
+                        for ref, d in dispositions.items()
+                    ],
+                }, sort_keys=False),
+                encoding="utf-8",
+            )
+
+        actual = (
+            "sha256:" + hashlib.sha256(source_path.read_bytes()).hexdigest()
+            if source_path.exists() else "sha256:" + "0" * 64
+        )
+        successor = {
+            "id": "REV-GUP-PKT-PHB-999-999-fixture-r01-r02",
+            "packet_id": "PKT-PHB-999-999-fixture",
+            "supersedes": self.SOURCE,
+            "overall_disposition": "revision_required",
+            "review_contract_version": "1.1",
+            "edge_decisions": restate or [],
+            "inherited_edge_decisions": {
+                "from_review": self.SOURCE,
+                "checksum": checksum or actual,
+                "preserved_rejected_refs": list(self.REFS if refs is None else refs),
+                "rationale": "settled in the superseded review",
+            },
+        }
+        path = root / "REV-GUP-PKT-PHB-999-999-fixture-r01-r02.yaml"
+        path.write_text(yaml.safe_dump(successor, sort_keys=False), encoding="utf-8")
+        return ReviewDirectives.load(path)
+
+    # -- a sound inheritance -------------------------------------------------
+
+    def test_the_preserved_rejections_are_applied(self):
+        directives = self.build()
+        self.assertEqual(
+            {ref: directives.rows[ref].disposition for ref in self.REFS},
+            {ref: "rejected" for ref in self.REFS},
+        )
+
+    def test_a_sound_inheritance_reports_no_unread_key(self):
+        self.assertEqual(self.build().unread_decision_keys, [])
+
+    def test_the_source_rationale_is_carried_not_invented(self):
+        directives = self.build()
+        self.assertIn("source rationale for M082", directives.rows["M082"].rationale)
+
+    def test_a_restatement_in_the_successor_wins(self):
+        """The successor is the active ruling; inheritance fills the gaps."""
+        directives = self.build(
+            restate=[{"ref": "M082", "disposition": "approved",
+                      "rationale": "the successor reversed this"}]
+        )
+        self.assertEqual(directives.rows["M082"].disposition, "approved")
+        self.assertEqual(directives.rows["M085"].disposition, "rejected")
+
+    # -- and every way it can be unsound -------------------------------------
+
+    def assert_refused(self, directives, fragment):
+        self.assertEqual(directives.rows, {})
+        self.assertTrue(directives.unread_decision_keys)
+        self.assertIn(fragment, " ".join(directives.unread_decision_keys))
+
+    def test_a_stale_source_checksum_inherits_nothing(self):
+        self.assert_refused(
+            self.build(checksum="sha256:" + "1" * 64), "now hashes to"
+        )
+
+    def test_an_absent_source_inherits_nothing(self):
+        self.assert_refused(self.build(omit_source=True), "is not present")
+
+    def test_a_ref_the_source_does_not_reject_inherits_nothing(self):
+        """Claiming an inheritance the source will not support refuses all of it."""
+        self.assert_refused(
+            self.build(source_dispositions={"M082": "rejected", "M085": "approved"}),
+            "does not reject M085",
+        )
+
+    def test_a_ref_absent_from_the_source_inherits_nothing(self):
+        self.assert_refused(
+            self.build(refs=["M082", "M999"]), "does not reject M999"
+        )
+
+    def test_an_empty_preserved_list_is_reported(self):
+        self.assert_refused(self.build(refs=[]), "no preserved refs")
+
+
+class LiveIllusionistR06Case(unittest.TestCase):
+    """The published Review this reading was written for."""
+
+    PATH = (
+        REPO_ROOT / "books" / "adnd1e" / "phb" / "artifacts" / "reviews"
+        / "REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06.yaml"
+    )
+    APPROVED = ("M025", "M026", "M058", "M072", "M073", "M074")
+    REJECTED = ("M082", "M085", "M086", "M090", "M095", "M096", "M100", "M102", "M112")
+
+    def directives(self):
+        if not self.PATH.is_file():  # pragma: no cover - superseded
+            self.skipTest("the r06 Review is not present")
+        return ReviewDirectives.load(self.PATH)
+
+    def test_it_is_fully_read(self):
+        self.assertEqual(self.directives().unread_decision_keys, [])
+
+    def test_the_six_are_approved_and_the_nine_inherited_rejections_hold(self):
+        rows = self.directives().rows
+        self.assertEqual(
+            {ref: rows[ref].disposition for ref in self.APPROVED},
+            {ref: "approved" for ref in self.APPROVED},
+        )
+        self.assertEqual(
+            {ref: rows[ref].disposition for ref in self.REJECTED},
+            {ref: "rejected" for ref in self.REJECTED},
+        )
+
+    def test_it_introduces_no_disposition_outside_the_legal_four(self):
+        """DEC-2026-0051: the invalid fifth term must not reappear."""
+        rows = self.directives().rows
+        self.assertEqual(
+            {r.disposition for r in rows.values()}, {"approved", "rejected"}
+        )
+
+
+class ChainSupersedesUnknownDispositionCase(unittest.TestCase):
+    """A later legal ruling settles a ref an earlier Review got wrong.
+
+    DEC-2026-0051 declared `approved_but_excluded_from_bundle` invalid. r05-r04
+    had used it on six rows and r06 restates those exact six as `approved`, so
+    the merged chain applies a legal ruling to every one of them. Carrying the
+    earlier complaint forward would block the build on a disposition the merged
+    result never uses.
+
+    The drop is per ref and only where a later Review actually restates it: an
+    unknown disposition nobody revisited still stops the build, because nothing
+    has replaced it.
+    """
+
+    def chain(self, later_disposition="approved", later_ref="M1"):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+
+        def write(name, decisions):
+            path = root / f"{name}.yaml"
+            path.write_text(
+                yaml.safe_dump({
+                    "id": name,
+                    "packet_id": "PKT-PHB-999-999-fixture",
+                    "overall_disposition": "revision_required",
+                    "edge_decisions": decisions,
+                }, sort_keys=False),
+                encoding="utf-8",
+            )
+            return path
+
+        first = write("REV-GUP-PKT-PHB-999-999-fixture-r01-r01", [
+            {"ref": "M1", "disposition": "approved_but_excluded_from_bundle"},
+            {"ref": "M2", "disposition": "approved_but_excluded_from_bundle"},
+        ])
+        second = write("REV-GUP-PKT-PHB-999-999-fixture-r01-r02", [
+            {"ref": later_ref, "disposition": later_disposition},
+        ])
+        return ReviewDirectives.load_chain([first, second])
+
+    def test_a_restated_ref_drops_its_earlier_complaint(self):
+        merged = self.chain()
+        self.assertEqual(merged.rows["M1"].disposition, "approved")
+        self.assertFalse(
+            [e for e in merged.unknown_dispositions if e.startswith("M1: ")]
+        )
+
+    def test_a_ref_nobody_revisited_still_stops_the_build(self):
+        merged = self.chain()
+        self.assertTrue(
+            [e for e in merged.unknown_dispositions if e.startswith("M2: ")],
+            "M2 was never restated, so its unknown disposition must survive",
+        )
+
+    def test_a_later_illegal_ruling_does_not_clear_anything(self):
+        """Replacing one invalid term with another settles nothing."""
+        merged = self.chain(later_disposition="approved_pending_packaging")
+        self.assertTrue(
+            [e for e in merged.unknown_dispositions if e.startswith("M1: ")]
+        )
+
+    def test_the_live_illusionist_chain_merges_clean(self):
+        base = REPO_ROOT / "books" / "adnd1e" / "phb" / "artifacts" / "reviews"
+        paths = [
+            base / "REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r04.yaml",
+            base / "REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06.yaml",
+        ]
+        if not all(p.is_file() for p in paths):  # pragma: no cover
+            self.skipTest("the illusionist review chain is not present")
+        merged = ReviewDirectives.load_chain(paths)
+        self.assertEqual(merged.unknown_dispositions, [])
+        self.assertEqual(merged.unread_decision_keys, [])
+        self.assertEqual(len(merged.rows), 126)
+        self.assertEqual(
+            sum(1 for r in merged.rows.values() if r.disposition == "rejected"), 9
+        )

@@ -1,0 +1,188 @@
+schema_version: '1.0'
+id: ESC-2026-08-19T10.47.55.301Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-19'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    INT-20260819-001 rejects four Approved bundles for duplicate assertion keys.
+    Every duplicate it names is a pair of rows that share source, edge type and
+    target but differ in `aspect`, and in one case in `condition` as well.
+    Constitution 5.1 makes those distinct assertions, and GRAPH_INVARIANTS 12
+    forbids tooling from omitting key fields. The rejection is comparing on three
+    fields where the constitution defines five. The remediation now sitting in
+    the Reviewer queue would be satisfied by deleting rows that carry real,
+    separately sourced mechanics.
+  blocking_ids: []
+
+resolution:
+  decision_id: DEC-2026-0049
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0049.yaml
+  summary: >-
+    Constitution 5.1's five-field assertion key governs. INT-20260819-002
+    supersedes the erroneous three-field rejection, clears the false findings and
+    psionics bundle, and retains only nine exact cross-bundle collisions for the
+    existing Reviewer and Builder successor lineages.
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. The constitution and production tooling disagree about
+  assertion identity, and the disagreement is currently deleting valid assertions
+  from four approved packets rather than being resolvable inside one role.
+
+question: >-
+  Which key governs Integrator duplicate rejection: the five-field assertion key
+  in constitution 5.1, or the three-field source/type/target comparison
+  INT-20260819-001 applied?
+
+what_is_not_in_question:
+  - >-
+    The rejection lifecycle. INT-20260819-001 is a well-formed rejection record
+    and it routed correctly to Reviewer. The mechanism works; what it is asserting
+    is what this escalation disputes.
+  - >-
+    The packaging correction. DEC-2026-0047's concatenation was carried out
+    correctly. The Approved edge component for magic-user-spells-1-4 holds
+    exactly 231 rows, matching its GUP's 98 `edges.csv` plus 133 `pending.csv`.
+  - >-
+    The GUPs. Measured with the Builder's own `assertion_key`, the
+    magic-user-spells-1-4 GUP carries zero duplicate keys in `edges.csv`, zero in
+    `pending.csv`, and zero in their concatenation. The same holds for the
+    published Approved component: 231 rows, zero duplicate keys.
+
+evidence:
+  the_governing_definitions:
+    constitution_5_1: >-
+      "The assertion key is (source_id, edge_type, target_id, aspect,
+      condition)." And: "Edges that share source, type, and target but have
+      genuinely different aspects or conditions are distinct assertions; Builder
+      reports them as near matches and Reviewer determines whether each facet is
+      independently supported."
+    graph_invariants_12: >-
+      "Each ruleset constitution defines its assertion key. Two edges equal under
+      that key are duplicate identity and cannot both enter production; tooling
+      must not invent, omit, or widen key fields."
+    builder_implementation: >-
+      tooling/builder/src/adnd1e_builder/duplicates.py defines `assertion_key`
+      as the five-field key, and separately defines `endpoint_type_key` as the
+      three-field source/type/target tuple. The three-field tuple is the
+      near-match probe constitution 5.1 sends to Reviewer judgment; it is not an
+      identity.
+
+  every_named_duplicate_is_a_distinct_assertion:
+    - bundle: APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03
+      rows: [39, 40]
+      pair: exp_level MODIFIES spell_wizard_lock
+      aspects: ['area of effect', 'opening the lock']
+      distinct_under_constitution_key: true
+    - bundle: APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03
+      rows: [70, 71]
+      pair: spell_friends MODIFIES abil_charisma
+      aspects: ['temporary charisma gain', 'temporary charisma loss']
+      conditions: ['creatures fail their saving throw', 'creatures make their saving throw']
+      distinct_under_constitution_key: true
+      note: >-
+        These are opposite outcomes of the same saving throw. Collapsing them to
+        one row would delete a stated mechanic, not remove a duplicate.
+    - bundle: APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r05-r01
+      rows: [54, 55]
+      pair: exp_level MODIFIES spell_shadow_monsters
+      aspects: ['duration', 'total hit dice created']
+      distinct_under_constitution_key: true
+    - bundle: APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02
+      rows: [111, 112]
+      pair: psi_domination CONSUMES psi_strength_points
+      aspects: ['strength point cost', 'upkeep of control']
+      distinct_under_constitution_key: true
+
+  the_canonical_collision_claim_has_the_same_shape:
+    claim: >-
+      "exp_level MODIFIES spell_detect_magic (csv row 5) already exists in
+      canonical."
+    measured: >-
+      The proposed row carries aspect 'duration'. Canonical holds exactly one row
+      sharing source, type and target, and its aspect is 'chance rises per level
+      to a ceiling'. Exact five-field key matches in canonical: 0.
+    reading: >-
+      A near match under 5.1, which the Reviewer adjudicates. Not a duplicate
+      identity, and not a blocking precondition failure.
+
+  why_this_is_urgent: >-
+    The rejection is now a REVIEWER-INTEGRATION-REJECTION item on all four
+    bundles. Its stated defect is "duplicate assertion key", and the obvious
+    remediation is to remove one row of each named pair. Doing so would silently
+    drop the charisma-loss branch of `spell_friends`, the upkeep cost of
+    `psi_domination`, and the hit-dice scaling of `spell_shadow_monsters`. The
+    Reviewer would be following a correctly routed instruction to destroy sourced
+    mechanics.
+
+options_considered:
+  - option: >-
+      Rule that Integrator duplicate detection uses the constitution 5.1
+      five-field key, and withdraw INT-20260819-001's duplicate findings
+    impact: >-
+      Restores agreement between the constitution, the Builder, and the
+      Integrator. Under the five-field key all four bundles carry zero internal
+      duplicates and zero exact canonical collisions, so the duplicate findings
+      resolve without any row being touched. Any genuinely remaining precondition
+      failure would then stand on its own.
+    builder_preference: recommended
+  - option: >-
+      Additionally require every duplicate-class rejection to record the key
+      fields it compared
+    impact: >-
+      Makes this class of disagreement visible in the record instead of inferable
+      only by re-deriving the keys by hand, which is how it was found here.
+    builder_preference: recommended_alongside
+  - option: Rule that the three-field comparison is correct and amend constitution 5.1
+    impact: >-
+      Offered for completeness and strongly opposed. It would make every
+      multi-facet relationship unrepresentable: one spell could modify one
+      statistic in exactly one way, and the four pairs above would each lose a
+      real assertion. It would also invalidate existing canonical rows.
+    builder_preference: opposed
+  - option: Let the Reviewer delete the flagged rows to clear the rejection
+    impact: >-
+      Not offered. It is the outcome this escalation exists to prevent.
+    builder_preference: refused
+
+verification_method: >-
+  Every count above was computed with the Builder's own `assertion_key` over the
+  published Approved edge components and the current
+  rulesets/adnd1e/canonical/edges_master.csv. No claim rests on the Integrator's
+  report or on the Builder's prior output being assumed correct.
+
+current_state:
+  builder_action_taken: none on the four bundles.
+  builder_action_withheld_reason: >-
+    DEC-2026-0047 states that Builder has no revision in this packaging case and
+    must not publish an Approved bundle. Nothing here changes that; the Builder
+    is supplying the measurement, not the repair.
+  unrelated_report_note: >-
+    IMP-DEC-2026-0043-r07 records acceptance test 5 as failing on a separate
+    Integrator-owned matter: clone_repo's rewind in
+    tooling/integrator/tests/test_transaction.py strips spell_continual_light, a
+    node the already-integrated INT-20260803-001 registered. That is a fixture
+    fault, is not this question, and needs no ruling here.
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  contract_change: false
+  note: >-
+    The recommended option requires no governance text change, only that
+    Integrator tooling apply the key the constitution already defines. The
+    second option would add a field to the rejection record schema.
+
+blocking: >-
+  Four Approved bundles totalling 762 reviewed rows cannot integrate, and the
+  remediation as stated would remove valid assertions from all four.
+  Component row counts: magic-user-spells-1-4 231, magic-user-spells-5-9 203,
+  psionics 208, illusionist-spells 120.

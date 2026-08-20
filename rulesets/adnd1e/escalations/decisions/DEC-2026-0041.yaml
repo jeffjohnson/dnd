@@ -1,0 +1,129 @@
+schema_version: '1.0'
+id: DEC-2026-0041
+status: approved
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-015-015-cavaliers
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Record and independently verify the narrow historical-handoff validation
+    exception already required to make the immutable UA cavaliers repair
+    observable without weakening validation of live or semantic data.
+  blocking_ids: []
+
+decision_date: '2026-08-17'
+escalation_id: ESC-2026-08-17T13.29.36.700Z
+
+question: >-
+  How can repository-wide envelope validation remain strict when a published,
+  immutable predecessor has only invalid queue-handoff metadata and a fully
+  valid successor has already repaired that metadata?
+
+ruling: >-
+  Do not scope envelope validation to active leaves generally. A published
+  predecessor is exempt from the repository-wide envelope assertion only when
+  every envelope error is rooted in its `handoff` block, a published direct
+  successor names its exact ID in `supersedes`, and that successor has zero
+  envelope errors. The exemption is diagnostic history, never a claim that the
+  predecessor is valid, never a queue fallback, and never an exemption for
+  identity, provenance, proposals, or other semantic fields. The exemption set
+  must be reported and pinned: a second artifact cannot join it without a later
+  Architect Decision. This authorizes the existing
+  `test_common_schemas.py` implementation as the missing DEC-2026-0039 scope
+  extension; no published GUR may be edited, moved, or deleted.
+
+rationale:
+  - >-
+    An active-leaf-only sweep would stop checking all superseded semantic
+    artifacts. The three conjunctive conditions retain that coverage while
+    handling only metadata that a valid successor has replaced.
+  - >-
+    The current exception is auditable: r02 has two handoff errors, r03 names
+    r02 directly and has zero envelope errors, and the suite reports exactly
+    that one exempt artifact.
+  - >-
+    The original DEC-2026-0039 acceptance test required the common suite to
+    pass but omitted the test file that necessarily implements that outcome.
+    This Decision supplies that authorization without changing DEC-2026-0039's
+    immutable text or widening its GUR queue rule.
+
+authorization:
+  extends_decision:
+    id: DEC-2026-0039
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0039.yaml
+    checksum: sha256:3811b5d8ede97cf5f047e611e215c7fdf2a712cc0a146afa017d213f05a47e67
+  authorized_file:
+    path: tooling/common/tests/test_common_schemas.py
+    purpose: >-
+      Preserve strict published-artifact validation while reporting the one
+      immutable handoff-only predecessor repaired by a valid successor.
+  current_exception:
+    id: GUR-PKT-UA-015-015-cavaliers-r02
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r02.yaml
+    successor_id: GUR-PKT-UA-015-015-cavaliers-r03
+    successor_path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r03.yaml
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: false
+  published_artifact_mutation: prohibited
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Publish IMP-DEC-2026-0041-r01. It may use the existing bounded test
+      implementation as evidence, but must re-run the common suite and show
+      that the exemption is exactly the named r02 predecessor and that every
+      denied condition still fails validation.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Independently verify all three exemption conditions, the exact reported
+      exception set, and that DEC-2026-0039's implementation report may treat
+      this Decision as its authorized exact-diff extension.
+
+acceptance_tests:
+  - >-
+    A valid active artifact and a predecessor with no successor, a successor
+    naming another artifact, an invalid successor, or any error outside
+    `handoff` each fail the published-artifact envelope assertion.
+  - >-
+    The current UA r02/r03 pair is reported as exactly one historical exception;
+    r02 remains schema-invalid on disk and r03 validates with zero envelope
+    errors.
+  - >-
+    The common schema suite passes without suppressing validation of any other
+    published GUR, GUP, or Review.
+  - All applicable common-schema and repository tests pass.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This is validation-lifecycle policy, not graph semantics or ontology.
+
+governance_changelog:
+  - >-
+    Historical handoff-only envelope invalidity may be reported as a narrowly
+    checked repaired predecessor; it is not a blanket non-leaf exemption.
+
+exact_diff:
+  tooling/common/tests/test_common_schemas.py:
+    - 'Authorize the narrow, reported repaired-handoff exception and its denial coverage.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0041.yaml:
+    - 'Authorize the DEC-2026-0039 exact-diff extension without altering immutable history.'
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Publish the scoped implementation report; do not alter r02 or r03.
+  reviewer:
+    - Independently verify the exception remains one named handoff-only case.

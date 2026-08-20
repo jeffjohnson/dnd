@@ -265,35 +265,62 @@ def _rows_csv(rows) -> str:
     return buffer.getvalue()
 
 
+def preflight_create_only(paths, label: str) -> None:
+    """Refuse the whole publication if any intended output already exists.
+
+    DEC-2026-0053. The check is over *every* output before the first byte is
+    written, not one path at a time, because a partial refusal is what caused the
+    breach it answers: GUP-MIG-DEC-2026-0050-r01 was rewritten in place after a
+    Review had hashed it, and its original bytes are gone for good.
+
+    There is no override. A published revision is immutable whether or not
+    anything has consumed it, so a correction is always a new revision with an
+    explicit `supersedes` link. An override that exists is an override that gets
+    passed.
+    """
+    existing = [p for p in paths if Path(p).exists()]
+    if not existing:
+        return
+    raise FileExistsError(
+        f"{label} is already published. A published revision is immutable and there is no "
+        f"overwrite option: publish the next revision with a supersedes link instead. "
+        f"Pre-existing path(s): " + ", ".join(str(p) for p in sorted(existing))
+    )
+
+
 def write_all(
     result: CompileResult,
     gup_dir: Path,
     report_dir: Path,
     test_result: dict,
-    allow_overwrite: bool = False,
 ) -> list[Path]:
-    """Publish a GUP. A revision that already exists is never rewritten.
+    """Publish a GUP. Create-only across every output it will write.
 
-    A published revision is immutable. A Reviewer may already have hashed it,
-    and rewriting it in place leaves that Review pinning content that no longer
+    A published revision is immutable. A Reviewer may already have hashed it, and
+    rewriting it in place leaves that Review pinning content that no longer
     exists anywhere -- INT-20260812-002 rejected four bundles for exactly that,
-    with the declared checksums matching no file on disk. Recompiling at an
-    existing `--revision` used to clobber silently, so the damage was invisible
-    until the Integrator refused the bundle.
+    with the declared checksums matching no file on disk, and DEC-2026-0053
+    records a later breach of the same shape that could not be repaired at all.
+
+    So the whole output set is checked first, companions included. A run that
+    would clobber even one file writes none of them.
     """
     gup_dir.mkdir(parents=True, exist_ok=True)
     report_dir.mkdir(parents=True, exist_ok=True)
 
     gup_path = gup_dir / f"{result.gup_id}.yaml"
     csv_path = gup_dir / f"{result.gup_id}.edges.csv"
-
-    if gup_path.exists() and not allow_overwrite:
-        raise FileExistsError(
-            f"{result.gup_id} is already published at {gup_path}. A published revision is "
-            f"immutable -- a Review may already pin its checksum. Publish the next revision "
-            f"instead, or pass allow_overwrite only for a revision nothing has consumed."
-        )
     report_path = report_dir / f"{result.gup_id}.validation.json"
+    pending_path = gup_dir / f"{result.gup_id}.pending.csv"
+    blocked_path = gup_dir / f"{result.gup_id}.blocked.csv"
+
+    # Every same-ID companion is preflighted, including the two this run may not
+    # write. A leftover `.pending.csv` from an earlier compile of the same ID
+    # would otherwise survive beside a fresh patch that no longer holds pending
+    # rows, and read as current.
+    preflight_create_only(
+        [gup_path, csv_path, report_path, pending_path, blocked_path], result.gup_id
+    )
 
     gup_path.write_text(_dump(gup_document(result, test_result)), encoding="utf-8", newline="\n")
     csv_path.write_text(edges_csv(result), encoding="utf-8", newline="\n")
@@ -307,13 +334,11 @@ def write_all(
     # Written only when there is something to hold, so its presence is itself
     # the signal that `.edges.csv` is short by design rather than by accident.
     if result.batch_satisfiable_additions:
-        pending_path = gup_dir / f"{result.gup_id}.pending.csv"
         pending_path.write_text(pending_csv(result), encoding="utf-8", newline="\n")
         written.append(pending_path)
     # Its presence is the signal that this patch cannot integrate on its own,
     # however complete it otherwise looks.
     if result.blocked_additions:
-        blocked_path = gup_dir / f"{result.gup_id}.blocked.csv"
         blocked_path.write_text(blocked_csv(result), encoding="utf-8", newline="\n")
         written.append(blocked_path)
     return written

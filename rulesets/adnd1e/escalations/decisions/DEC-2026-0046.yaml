@@ -1,0 +1,193 @@
+schema_version: '1.0'
+id: DEC-2026-0046
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement post-approval implementation-file drift handling while retaining
+    strict checksum validation before an exact Approved implementation Review.
+  blocking_ids: []
+
+decision_date: '2026-08-18'
+escalation_id: ESC-2026-08-18T14.42.11.507Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  Does later drift in a shared implementation file reopen a Decision after an
+  exact Approved Decision Implementation Review has already consumed its report?
+
+ruling: >-
+  No. An exact Approved Decision Implementation Review completes the Decision and
+  fixes the report's implementation-file checksums as historical evidence of the
+  reviewed state. Later changes to, or absence of, those current paths are
+  informational only and create no revision job for that completed Decision.
+  The later Decision or ordinary workflow that changed the shared file carries
+  responsibility for validating its own result.
+
+  This exception is deliberately narrow. Until an exact active Approved Review
+  exists, every implementation-file path and checksum remains a current strict
+  precondition. A missing, revision-required, malformed, or provenance-stale
+  Review does not consume the Decision; its report's file drift remains an error
+  and returns work to the ready implementation owner. The scanner must validate
+  the candidate Review's exact report and Decision provenance before applying the
+  post-approval exception.
+
+  The completed lineages for DEC-2026-0018, DEC-2026-0022, DEC-2026-0023,
+  DEC-2026-0028, and DEC-2026-0039 require no successor report or Review solely
+  because shared tooling changed. DEC-2026-0043 and DEC-2026-0045 remain
+  unconsumed because their active reports are not approval-ready; this Decision
+  does not weaken their current validation or their normal Review requirements.
+
+rationale:
+  - >-
+    `implementation_files` proves the specific repository state independently
+    reviewed at completion. It cannot also be a permanent dependency on every
+    future edit to a shared scanner, schema, or test file without making tooling
+    Decisions non-convergent.
+  - >-
+    The completion authority is the Approved implementation Review, which already
+    pins the exact report and Decision. Later file drift cannot alter either
+    immutable artifact or retrospectively invalidate that completed review.
+  - >-
+    Keeping pre-approval drift strict preserves the current audit and repair
+    guarantee where it matters: before independent approval has established the
+    completed state.
+
+affected_artifacts:
+  completed_lineages:
+    - decision: DEC-2026-0018
+      report: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0018-r15.yaml
+      approved_review: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0018-r15-r01.yaml
+    - decision: DEC-2026-0022
+      report: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0022-r13.yaml
+      approved_review: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0022-r13-r01.yaml
+    - decision: DEC-2026-0023
+      report: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0023-r15.yaml
+      approved_review: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0023-r15-r01.yaml
+    - decision: DEC-2026-0028
+      report: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0028-r09.yaml
+      approved_review: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0028-r09-r01.yaml
+    - decision: DEC-2026-0039
+      report: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0039-r04.yaml
+      approved_review: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0039-r04-r01.yaml
+  still_strict:
+    - decision: DEC-2026-0043
+      report: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0043-r03.yaml
+      reason: The active report is blocked and has no Approved implementation Review.
+    - decision: DEC-2026-0045
+      report: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0045-r01.yaml
+      reason: The active report is blocked and has no Approved implementation Review.
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: >-
+    The named completed report and Review lineages remain immutable and require
+    no reissue. This changes queue derivation only.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish WORK_QUEUES 1.13, defining post-approval implementation-file
+      snapshots and preserving strict pre-approval checksum drift handling.
+  - step: 2
+    owner: builder
+    action: >-
+      Update queue derivation so it validates an exact candidate implementation
+      Review before treating file drift as an invalid report; emit an
+      informational post-approval-drift diagnostic and add targeted tests.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently verify that only an exact Approved Review receives the
+      exception and that every unreviewed, revision-required, or invalid-review
+      case remains strict before approving the implementation report.
+
+acceptance_tests:
+  - >-
+    A completed implementation lineage whose exact active Approved Review pins
+    the active report and Decision suppresses no longer-current implementation
+    files only informationally, creates no implementation-owner job, and retains
+    its immutable report and Review as provenance.
+  - >-
+    A report with implementation-file drift and no Review, a revision-required
+    Review, or a malformed or report/Decision-checksum-stale Approved Review is
+    diagnostic and produces the normal ready work for its implementation owner.
+  - >-
+    Post-approval drift affects only the completed Decision's queue state; a
+    later Decision changing the shared file remains independently discoverable
+    and subject to its own report and Review lifecycle.
+  - >-
+    WORK_QUEUES is Version 1.13 and records both the post-approval historical
+    snapshot rule and the unchanged strict pre-approval rule, including their
+    distinct acceptance criteria.
+
+post_implementation_requirements:
+  - >-
+    Do not reissue the five named completed reports solely to update shared-file
+    checksums. Their Approved implementation Reviews remain their completion
+    evidence.
+  - >-
+    DEC-2026-0043 and DEC-2026-0045 remain ordinary unconsumed Builder work until
+    their reports can satisfy all approval-ready requirements and receive exact
+    Approved implementation Reviews.
+  - >-
+    Integrator must complete its existing DEC-2026-0044 work so the unrelated
+    validation-suite failures no longer prevent approval-ready Builder reports.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This is workflow provenance and queue derivation, not graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.13 treats a consumed report's implementation-file checksums as
+    historical evidence and keeps current checksum validation strict before
+    approval.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.12 -> 1.13; distinguish strict pre-approval file drift from informational post-approval drift.'
+  tooling/common/scan_agent_queues.py:
+    - 'Validate exact implementation Review provenance before classifying implementation-file checksum drift.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Add post-approval drift, invalid-review, and unreviewed-drift queue coverage.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0046.yaml:
+    - 'Record the bounded post-approval implementation-file snapshot rule.'
+
+exact_diff_ownership:
+  - path: contracts/WORK_QUEUES.md
+    owner: architect
+    sequence_step: 1
+  - path: tooling/common/scan_agent_queues.py
+    owner: builder
+    sequence_step: 2
+  - path: tooling/common/tests/test_scan_agent_queues.py
+    owner: builder
+    sequence_step: 2
+  - path: rulesets/adnd1e/escalations/decisions/DEC-2026-0046.yaml
+    owner: architect
+    sequence_step: 1
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Publish the queue-contract correction with this Decision; do not rewrite completed reports or Reviews.
+  builder:
+    - Implement only the bounded queue derivation and test changes specified here.
+    - Do not reissue any completed report solely because shared files drifted.
+  reviewer:
+    - Verify the completed-review exception and the strict negative cases independently.
+  integrator:
+    - Complete DEC-2026-0044 separately; its validation failures are not cured by this Decision.

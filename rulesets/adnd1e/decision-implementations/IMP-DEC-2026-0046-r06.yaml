@@ -1,0 +1,152 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0046-r06
+artifact_kind: decision_implementation
+status: blocked
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 6
+supersedes: IMP-DEC-2026-0046-r05
+approval_ready: false
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0046
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0046.yaml
+  checksum: sha256:2ebc1d44dfb1fb51583415f535896f41dac2bc64a6bfef4157c99e89486bbe0b
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:5bba3cbfb661e8264fd912e292928b1e16b278f4ad914619358b6e50ee99a1ae
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:a9abe770369ae7a58f1d2992a93ceca4e972e276987853ba15fe73ce90626fed
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:7cd6c52adb115dbc12e5c7146d5ae73a467207370f460cff628f0fe4b2355103
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0046.yaml
+  checksum: sha256:2ebc1d44dfb1fb51583415f535896f41dac2bc64a6bfef4157c99e89486bbe0b
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED, AND CONFIRMED ON THE LIVE CORPUS. _implementation_report_errors now
+    takes a keyword-only drift_sink; implementation-file staleness and absence are collected there while
+    every other report defect stays in the returned error list. The scanner resolves and validates the
+    candidate implementation Review before classifying that drift, and emits the informational diagnostic
+    ''implementation_files_drifted_after_approval'' when an exact valid Approved Review already consumed
+    the report. Live effect: the five lineages DEC-2026-0046 names -- IMP-DEC-2026-0018-r15, -0022-r13,
+    -0023-r15, -0028-r09 and -0039-r04 -- previously produced five ''decision_implementation_invalid''
+    errors and five ready BUILDER-DECISION items; they now produce five info diagnostics and no Builder
+    work, and their reports and Reviews are byte-unchanged. Covered by PostApprovalFileDriftCase.test_post_approval_drift_does_not_reopen_the_decision,
+    test_post_approval_drift_is_informational_not_an_error, test_the_observation_names_the_file_the_report_and_the_review,
+    test_a_deleted_implementation_file_is_also_only_informational and test_the_report_and_review_remain_untouched.
+    Re-verified at the current checksums for this revision: the Integrator published IMP-DEC-2026-0044-r03,
+    so the common suite is 560 OK, the Integrator suite 125 OK and the builder suite 580 OK. The claim
+    above is unchanged; only the blocking suite state changed. Re-verified at the current checksums for
+    this revision, which exists only because DEC-2026-0047 advanced contracts/WORK_QUEUES.md to 1.14 and
+    this report pins it. No content this Decision required was changed; the claim above is unchanged.
+    Re-verified at the current checksums for this revision, which exists to carry the structured authority
+    DEC-2026-0048 grants; the claim above is unchanged. Re-verified at the current checksums for this
+    revision, which carries the DEC-2026-0048 Review-branch correction; the claim above is unchanged.
+    Re-verified at the current checksums for this revision, which exists only because later approved Decisions
+    advanced the contracts this report pins; the claim above is unchanged.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED, ONE NEGATIVE CASE PER TEST. Drift stays a hard ''decision_implementation_invalid''
+    error, with no informational diagnostic and with ready work returned to the implementation owner,
+    for: no Review (test_drift_without_any_review_remains_an_error); a revision-required Review (test_drift_under_a_revision_required_review_remains_an_error);
+    an Approved Review pinning a stale report checksum (test_drift_under_a_review_pinning_a_stale_report_checksum_remains_an_error);
+    an Approved Review pinning a stale Decision checksum (test_drift_under_a_review_pinning_a_stale_decision_checksum_remains_an_error);
+    and a malformed Approved Review whose independent validation did not pass (test_drift_under_a_malformed_review_remains_an_error).
+    test_a_defect_other_than_drift_is_still_an_error_after_approval fixes that the exception covers drifted
+    files only: a report missing an acceptance index stays diagnostic even under a valid Approved Review,
+    because the scanner discards the Review leaf whenever the report is broken on its own terms. This
+    is confirmed live: IMP-DEC-2026-0043-r03 and IMP-DEC-2026-0045-r01 had no Approved Review and were
+    correctly reported invalid when this same edit drifted their pinned files, which is why they are superseded
+    in this same batch. Re-verified at the current checksums for this revision: the Integrator published
+    IMP-DEC-2026-0044-r03, so the common suite is 560 OK, the Integrator suite 125 OK and the builder
+    suite 580 OK. The claim above is unchanged; only the blocking suite state changed. Re-verified at
+    the current checksums for this revision, which exists only because DEC-2026-0047 advanced contracts/WORK_QUEUES.md
+    to 1.14 and this report pins it. No content this Decision required was changed; the claim above is
+    unchanged. Re-verified at the current checksums for this revision, which exists to carry the structured
+    authority DEC-2026-0048 grants; the claim above is unchanged. Re-verified at the current checksums
+    for this revision, which carries the DEC-2026-0048 Review-branch correction; the claim above is unchanged.
+    Re-verified at the current checksums for this revision, which exists only because later approved Decisions
+    advanced the contracts this report pins; the claim above is unchanged.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED. The exception changes the queue state of the already-reviewed Decision
+    only; it neither suppresses nor consumes the Decision that changed the shared file. PostApprovalFileDriftCase.test_the_decision_that_changed_the_file_is_independently_discoverable
+    publishes a completed drifted lineage alongside a second approved non-migration Decision and asserts
+    the Builder queue contains exactly the later Decision. The live corpus shows the same shape: with
+    the five completed lineages silent, DEC-2026-0043, DEC-2026-0045 and DEC-2026-0046 remain independently
+    ready Builder work with their own report and Review lifecycles, and the Integrator''s DEC-2026-0044
+    is untouched. Re-verified at the current checksums for this revision: the Integrator published IMP-DEC-2026-0044-r03,
+    so the common suite is 560 OK, the Integrator suite 125 OK and the builder suite 580 OK. The claim
+    above is unchanged; only the blocking suite state changed. Re-verified at the current checksums for
+    this revision, which exists only because DEC-2026-0047 advanced contracts/WORK_QUEUES.md to 1.14 and
+    this report pins it. No content this Decision required was changed; the claim above is unchanged.
+    Re-verified at the current checksums for this revision, which exists to carry the structured authority
+    DEC-2026-0048 grants; the claim above is unchanged. Re-verified at the current checksums for this
+    revision, which carries the DEC-2026-0048 Review-branch correction; the claim above is unchanged.
+    Re-verified at the current checksums for this revision, which exists only because later approved Decisions
+    advanced the contracts this report pins; the claim above is unchanged.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'PASSES AS CURRENT-STATE CONTRACT EVIDENCE, UNDER DEC-2026-0048. This test names WORK_QUEUES
+    1.13. DEC-2026-0048 authorizes exactly this Decision checksum and acceptance-test index 4 to read
+    that as a minimum. Measured now: WORK_QUEUES is Version 1.15, and core rule 15 (lines 52-57) still
+    carries all three authorized anchors verbatim -- approved implementation-review checksum snapshots
+    are historical evidence, pre-approval implementation-file drift remains strict, and post-approval
+    drift is informational only. Contract acceptance test 45 still records the distinct criteria. The
+    rule continues to demonstrate itself: this revision exists because pre-approval drift is strict, while
+    the completed lineages holding Approved Reviews stayed silent through the same contract edits. Re-verified
+    at the current checksums for this revision, which carries the DEC-2026-0048 Review-branch correction;
+    the claim above is unchanged. Re-verified at the current checksums for this revision, which exists
+    only because later approved Decisions advanced the contracts this report pins; the claim above is
+    unchanged.'
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0048
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml
+      checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698
+      authorized_acceptance_test_index: 4
+    authorized_acceptance_test_index: 4
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:5bba3cbfb661e8264fd912e292928b1e16b278f4ad914619358b6e50ee99a1ae
+      observed_version: '1.17'
+      minimum_version: '1.13'
+      anchors_present:
+      - approved implementation-review checksum snapshots are historical evidence
+      - pre-approval implementation-file drift remains strict
+      - post-approval implementation-file drift is informational only
+handoff:
+  next_role: integrator
+  readiness: blocked
+  reason: 'Supersedes r05 at the current WORK_QUEUES checksum. The drift guard is unchanged and re-verified
+    with 39 targeted tests. Acceptance test 4''s versioned contract-content evidence is rebuilt: WORK_QUEUES
+    is 1.17, above its authorized 1.13 floor, and core rule 15 still carries all three anchors. This revision
+    is again the rule working -- pre-approval drift is strict, while every completed lineage holding an
+    Approved Review stayed silent through the same contract edits. Not approval-ready only because of
+    the DEC-2026-0014 debt pin.'
+  blocking_ids:
+  - GUP-MIG-DEC-2026-0050-r01
+validation_report: build/reports/IMP-DEC-2026-0046-r06.validation.json
+validation_report_checksum: sha256:f8fc28103c8f36cc465205030c6ac444b0ab107254fa64b447c4205be9725948
+validation:
+  passed: false
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 647 tests in 103.194s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.PostApprovalFileDriftCase
+      test_scan_agent_queues.TestImplementationDriftSink'
+    exit_code: 0
+    result: passed
+    summary: Ran 39 tests in 0.577s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 1
+    result: failed
+    summary: 'Ran 642 tests in 89.396s, 3 failures, all in test_edge_schema.TestFullCorpus and all one
+      cause: the canonical audit reports more legacy endpoint debt than DEC-2026-0014 pinned. GUP-MIG-DEC-2026-0050-r01
+      is published and with the Reviewer to remove exactly that debt; nothing in this Decision touches
+      Builder compiler code FAILED'

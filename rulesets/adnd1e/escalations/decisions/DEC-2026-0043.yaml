@@ -1,0 +1,212 @@
+schema_version: '1.0'
+id: DEC-2026-0043
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-094-100-illusionist-spells
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement queue-visible remediation for rejected Approved bundles and allow
+    checked non-migration implementation reports from the role an Architect
+    Decision actually assigns.
+  blocking_ids: []
+
+decision_date: '2026-08-17'
+escalation_id: ESC-2026-08-17T16.01.23.870Z
+
+question: >-
+  How does an Integrator rejection of an otherwise approved bundle return exact,
+  repairable work to the workflow instead of re-queuing the same rejected bundle
+  indefinitely?
+
+ruling: >-
+  An Integration rejection is a first-class queue signal. A valid rejection
+  record naming an active Approved bundle, its approving Review, its GUP, and
+  their exact checksums suppresses that bundle's Integrator-ready item and
+  creates exactly one Reviewer remediation item. The Reviewer publishes an
+  immutable successor Review that records the rejection input and either routes
+  a revision to its responsible role or escalates a new architectural question.
+  For the named illusionist-spells bundle, the reviewer must publish a
+  `revision_required` Review successor to Builder because the operation index
+  failed a mechanical approval-readiness check. The original Approved bundle and
+  Review remain immutable history.
+
+  In the same contract release, a non-migration Decision may name Builder or
+  Integrator as its implementation owner. Its ready handoff determines that
+  owner; an implementation report must declare the same `implemented_by` role,
+  and its independent Reviewer implementation Review remains the only completion
+  record. This permits queue-visible, checked Integrator capability work without
+  treating it as a canonical migration.
+
+rationale:
+  - >-
+    An approved Review is not evidence that the Integrator can apply a bundle.
+    The rejection proves a specific mechanical defect, but leaving its signal in
+    an unread report makes the Integrator reject the same immutable bundle on
+    every pass.
+  - >-
+    Returning the rejection to Reviewer preserves approval accountability. The
+    Reviewer, not the Integrator, decides whether the evidence requires Builder,
+    Analyst, or Architect action and records that decision in a successor Review.
+  - >-
+    The report/review completion lineage already provides checksummed,
+    independently reviewed proof for non-migration tooling. Its owner must match
+    the Decision rather than being hard-coded to Builder.
+
+affected_artifacts:
+  rejected_bundle:
+    id: APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r04-r01
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r04-r01.yaml
+  approved_review:
+    id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r04-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r04-r01.yaml
+  rejected_gup:
+    id: GUP-PKT-PHB-094-100-illusionist-spells-r04
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-094-100-illusionist-spells-r04.yaml
+  authorized_legacy_rejection:
+    id: INT-20260815-002
+    path: rulesets/adnd1e/reports/INT-20260815-002.rejected.json
+    bundle_id: APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r04-r01
+    limitation: >-
+      This already-published record is authorized by exact ID and bundle ID only;
+      new rejection records must carry all exact bundle, Review, and GUP checksums.
+
+integration_rejection_contract:
+  applies_to: active_unintegrated_approved_bundle
+  record_requirements_for_new_reports:
+    - '`status: rejected`, ruleset and book scope, exact rejection record ID and path.'
+    - Rejected bundle ID and SHA-256 checksum.
+    - Approving Review ID and SHA-256 checksum.
+    - Reviewed GUP ID and SHA-256 checksum.
+    - At least one machine-readable blocking failure with the failed check and detail.
+  queue_behavior:
+    - >-
+      A valid current rejection suppresses ordinary `INTEGRATOR-APPROVED` work
+      for that exact bundle and emits one `REVIEWER-INTEGRATION-REJECTION` item.
+    - >-
+      The scanner reports malformed, stale, mismatched, or ambiguous rejection
+      evidence diagnostically and never suppresses integration from it.
+    - >-
+      A Review successor that records the exact rejection record consumes the
+      remediation item; its ordinary handoff then supplies all downstream work.
+  current_remediation:
+    owner: reviewer
+    required_review_successor: REV-GUP-PKT-PHB-094-100-illusionist-spells-r04-r02
+    required_disposition: revision_required
+    required_handoff_role: builder
+    required_finding: >-
+      Reconcile `operation_index` with the 14 data rows and include `csv_row`
+      for every declared operation before re-approval.
+
+direct_implementation_contract:
+  applies_to: non_migration_architect_decision
+  allowed_owners:
+    - builder
+    - integrator
+  requirements:
+    - >-
+      A ready Decision handoff to Builder or Integrator selects the sole
+      implementation owner for its Decision Implementation Report.
+    - >-
+      `implemented_by` must exactly equal that selected owner; a mismatch is a
+      diagnostic and does not consume the Decision.
+    - >-
+      The scanner emits `<ROLE>-DECISION` until a valid approval-ready report,
+      then `REVIEWER-DECISION-IMPLEMENTATION`; only an Approved implementation
+      Review consumes the Decision.
+    - >-
+      This lifecycle is for tooling, contract, schema, or operational work. It
+      never authorizes canonical or registry mutation without an Approved GUP.
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: >-
+    Review successors and GUP revisions remain ordinary immutable workflow
+    artifacts; the rejected Approved bundle remains published history.
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Implement the rejection-record schema and queue derivation, extend the
+      direct implementation schema and scanner for Builder/Integrator ownership,
+      add targeted tests, and publish IMP-DEC-2026-0043-r01.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Independently verify both queue rules, rejection provenance validation,
+      owner-mismatch rejection, and every denial case before approving the
+      implementation report.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Publish the named illusionist-spells Review successor using
+      INT-20260815-002 as the exact legacy-authorized rejection input and route
+      its operation-index repair to Builder.
+
+acceptance_tests:
+  - >-
+    A valid rejected-bundle record suppresses only that active unintegrated
+    bundle's Integrator item and creates one Reviewer remediation item.
+  - >-
+    Missing, stale, checksum-mismatched, wrong-ruleset, ambiguous, or already
+    superseded rejection evidence is diagnostic and suppresses no bundle.
+  - >-
+    A successor Review recording the exact rejection consumes the remediation
+    item and its ordinary `revision_required` handoff creates the next job.
+  - >-
+    A ready non-migration Decision assigned to Integrator produces one
+    Integrator Decision item; a Builder-authored report for it is diagnostic.
+    A valid Integrator report routes to Reviewer, and an Approved implementation
+    Review consumes the Decision without creating an Integrator batch.
+  - All applicable schema, scanner, Integrator, and repository tests pass.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: The change governs workflow accountability, not graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.12 recognizes rejection-derived Reviewer remediation and
+    checked non-migration implementation work owned by Builder or Integrator.
+  - >-
+    ARTIFACT_LIFECYCLE 1.10 records immutable rejection evidence and the
+    generalized implementation-report owner rule.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.11 -> 1.12; add rejection-derived Reviewer remediation and direct Builder/Integrator implementation ownership.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.9 -> 1.10; record immutable rejection-report and direct implementation lifecycle rules.'
+  schemas/common/decision-implementation.schema.json:
+    - 'Permit only builder or integrator implemented_by values and enforce exact Decision-owner matching in queue validation.'
+  schemas/common/integration-rejection.schema.json:
+    - 'Add the checksummed machine-readable rejected-bundle record shape for new reports.'
+  tooling/common/scan_agent_queues.py:
+    - 'Read validated rejection records, route Reviewer remediation, suppress only exact rejected bundles, and derive Builder/Integrator direct implementation work.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Add rejection provenance, suppression, successor-Review, and direct-Integrator Decision lifecycle coverage.'
+  agents/integrator/INSTRUCTIONS.md:
+    - 'Require new rejection reports to carry exact bundle, Review, and GUP checksums.'
+  agents/reviewer/INSTRUCTIONS.md:
+    - 'Require a rejection-consuming Review successor before routing the repair.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0043.yaml:
+    - 'Resolve the approved-but-rejected bundle queue loop and direct Integrator implementation ownership.'
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement only the stated schema and queue behavior; do not rewrite the rejected bundle or Review.
+  reviewer:
+    - Independently verify the implementation and issue the named Review successor.
+  integrator:
+    - Emit complete, checksummed rejection evidence for future refusals; never repair a rejected bundle in place.

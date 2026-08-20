@@ -1,0 +1,176 @@
+schema_version: '1.0'
+id: ESC-2026-08-18T14.42.11.507Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-18'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Five non-migration Decisions that were implemented, independently Reviewed and
+    Approved were re-opened as ready Builder work by a single edit to one shared
+    tooling file -- an edit DEC-2026-0045 itself ordered. Nothing about those five
+    implementations changed. Their reports pin `tooling/common/scan_agent_queues.py`
+    by checksum, so every later edit to that file invalidates every completed report
+    that names it. The cycle has no fixed point: each re-issue must pin the newest
+    bytes, and the next Decision touching the file voids it again.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. The constitution and production data disagree in a way
+  that cannot be fixed mechanically: WORK_QUEUES acceptance test 27 requires
+  implementation-file checksum drift to restore a Decision as Builder work, and
+  that rule cannot distinguish an implementation that has become wrong from one
+  whose file a later, unrelated Decision edited.
+
+question: >-
+  When a shared implementation file changes after an Approved Decision
+  Implementation Review consumed the report that pins it, is the earlier Decision
+  genuinely incomplete again, or is that drift informational once an Approved
+  Review exists?
+
+what_is_not_in_question:
+  - >-
+    The checksum requirement itself. Pinning implementation files is what makes a
+    report auditable, and drift on an unreviewed or revision-required report is a
+    real defect that should restore the Decision as work.
+  - >-
+    The DEC-2026-0045 ruling or its implementation. The ownership guard is
+    published and evidenced in IMP-DEC-2026-0045-r01; this escalation is about a
+    side effect of editing the file that Decision required the Builder to edit.
+  - >-
+    Any of the five affected implementations. Each was independently verified and
+    Approved. No new defect has been found in any of them.
+
+evidence:
+  the_reopened_decisions:
+    - decision: DEC-2026-0018
+      leaf_report: IMP-DEC-2026-0018-r15
+      approved_review: REV-IMP-DEC-2026-0018-r15-r01
+      report_revision: 15
+      drifted_files: [tooling/common/scan_agent_queues.py, tooling/common/tests/test_scan_agent_queues.py]
+    - decision: DEC-2026-0022
+      leaf_report: IMP-DEC-2026-0022-r13
+      approved_review: REV-IMP-DEC-2026-0022-r13-r01
+      report_revision: 13
+      drifted_files: [tooling/common/scan_agent_queues.py, tooling/common/tests/test_scan_agent_queues.py]
+    - decision: DEC-2026-0023
+      leaf_report: IMP-DEC-2026-0023-r15
+      approved_review: REV-IMP-DEC-2026-0023-r15-r01
+      report_revision: 15
+      drifted_files: [tooling/common/scan_agent_queues.py, tooling/common/tests/test_scan_agent_queues.py]
+    - decision: DEC-2026-0028
+      leaf_report: IMP-DEC-2026-0028-r09
+      approved_review: REV-IMP-DEC-2026-0028-r09-r01
+      report_revision: 9
+      drifted_files:
+        - schemas/common/architect-decision.schema.json
+        - tooling/common/scan_agent_queues.py
+        - tooling/common/tests/test_scan_agent_queues.py
+    - decision: DEC-2026-0039
+      leaf_report: IMP-DEC-2026-0039-r04
+      approved_review: REV-IMP-DEC-2026-0039-r04-r01
+      report_revision: 4
+      drifted_files: [tooling/common/scan_agent_queues.py, tooling/common/tests/test_scan_agent_queues.py]
+
+  what_the_scanner_now_reports: >-
+    Six `decision_implementation_invalid` error diagnostics and six ready
+    BUILDER-DECISION items, for DEC-2026-0018, 0022, 0023, 0028, 0039 and 0043.
+    Five of those six were complete before this session began.
+
+  the_revision_numbers_are_the_symptom: >-
+    Report revision 15, 13, 15, 9 and 4. Those counts are not fifteen distinct
+    defects in one implementation. A large share of them are re-issues whose only
+    substantive change was a checksum, because some later Decision edited a file
+    the report happened to name.
+
+  why_it_cannot_converge: >-
+    A re-issued report must pin the file's current bytes. The next Decision that
+    edits that file invalidates the new report exactly as it invalidated the old
+    one. Every Decision implemented in shared tooling permanently depends on every
+    future Decision implemented in the same file. The work is unbounded and the
+    Approved Reviews it consumes are spent on re-verifying evidence nobody
+    disputes.
+
+  the_precedent_already_in_the_contract: >-
+    WORK_QUEUES 1.10 met the same shape and solved it. An integrated migration's
+    canonical baseline necessarily changes, because changing it is the migration's
+    purpose, so baseline drift after integration is suppressed rather than
+    reported as work. A completed tooling Decision is the same case: changing the
+    file was the point, and the change proving the Decision was implemented is
+    now the reason it looks unimplemented.
+
+options_considered:
+  - option: >-
+      Treat implementation-file drift as informational once an Approved
+      implementation Review has consumed that exact report leaf
+    impact: >-
+      Closes the loop with a rule the contract already contains in another form.
+      Drift before approval keeps its current strict meaning, so an unreviewed or
+      revision-required report still returns to its owner. The Approved Review
+      remains the thing that completes a Decision, which WORK_QUEUES rule 13
+      already states.
+    builder_preference: recommended
+  - option: >-
+      Record a resolved-commit or content identifier for the state a report was
+      approved against, and compare against that rather than current bytes
+    impact: >-
+      Also correct, and more precise, but it adds provenance the repository does
+      not currently carry and would need a migration for existing reports.
+    builder_preference: viable_but_heavier
+  - option: Keep re-issuing the affected reports each time
+    impact: >-
+      This is the present behaviour. It has already produced report revisions in
+      the double digits, consumes a full independent Review per re-issue, and
+      cannot terminate.
+    builder_preference: not_recommended
+  - option: Stop listing shared tooling files in implementation_files
+    impact: >-
+      Not offered. It would remove the checksummed coverage that makes a report
+      auditable, which is the opposite of what the lifecycle is for.
+    builder_preference: refused
+
+current_state:
+  builder_action_taken: >-
+    The two Decisions DEC-2026-0045 assigned are complete and published:
+    IMP-DEC-2026-0045-r01 evidences all four acceptance tests, and
+    IMP-DEC-2026-0043-r03 supersedes r02 with the four Architect-published
+    governance files verified at their current checksums.
+  builder_action_withheld: >-
+    The five reports above have deliberately not been re-issued. Doing so would
+    consume five independent Reviews to restate verified evidence, and the next
+    tooling Decision would void them again. The Builder is raising the rule rather
+    than paying its cost a second time in one session; if the Architect rules that
+    re-issue is correct, the Builder will publish all five.
+
+blocking: >-
+  Five Approved non-migration Decisions are reported incomplete, and the ready
+  Builder queue overstates real work by five items.
+
+secondary_observation:
+  detail: >-
+    Independently of this question, no Builder implementation report can currently
+    reach approval-ready, because WORK_QUEUES condition 7 requires passing
+    validation and two Integrator-owned suites are red: the common suite fails on
+    IMP-DEC-2026-0044-r01, whose third command summary ends in prose with no
+    verdict token, and the Integrator suite has five errors in
+    tooling/integrator/tests/test_operations.py raising IntegrationError
+    "21 blocking precondition failure(s)".
+  note: >-
+    Raised for visibility only and needs no ruling. The Integrator already holds a
+    ready DEC-2026-0044 job covering that work. Both new Builder reports record
+    the failure honestly and are blocked on it rather than claiming a pass.
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  contract_change: true
+  note: >-
+    A ruling would amend the WORK_QUEUES implementation-report drift rule and its
+    acceptance test 27.

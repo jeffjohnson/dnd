@@ -1,0 +1,219 @@
+schema_version: '1.0'
+id: DEC-2026-0045
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Publish the mechanical ownership guard, then evidence the complete direct
+    governance correction and reissue the already implemented DEC-2026-0043
+    report against its current files.
+  blocking_ids: []
+
+decision_date: '2026-08-18'
+escalation_id: ESC-2026-08-18T01.14.43.815Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  Who owns a file named by an Architect Decision's exact_diff when the Decision
+  assigned it to no role, and how is that omission prevented before approval?
+
+ruling: >-
+  The Architect owns an unassigned exact_diff file that is a contract, role
+  instruction, or other governance artifact. The omission in DEC-2026-0043 is
+  corrected by publishing its four missing Architect-owned files with this
+  Decision; DEC-2026-0043 itself remains immutable and is not reissued.
+
+  Every future Decision declaring `decision_authoring_contract_version: '1.1'`
+  and an `exact_diff` must list every exact_diff path exactly once in
+  `exact_diff_ownership`. The recorded owner must be named by a sequence step or
+  follow_up_owners entry. A direct Architect change is an explicit Architect
+  sequence step. The schema validates the ownership entry shape and queue tooling
+  diagnoses missing, duplicate, unknown-owner, and sequence-mismatched entries;
+  an invalid plan cannot be reported approval-ready. Historical Decisions that do
+  not declare the new authoring-contract version remain valid immutable history.
+
+  An implementation report may list a file an earlier Architect step published
+  when it verifies complete, checksummed Decision coverage. That listing does not
+  transfer ownership or authority to the report's Builder or Integrator author.
+
+rationale:
+  - >-
+    Contracts and role instructions establish inter-agent authority, so their
+    author must be explicit. Builder cannot repair a missing Architect assignment
+    by writing rules for Integrator or Reviewer.
+  - >-
+    DEC-2026-0043's rejection lifecycle and direct implementation-owner behavior
+    are already independently verified in code. The absent governance text is a
+    planning defect, not a reason to discard that work or rewrite its immutable
+    Decision.
+  - >-
+    A path-by-path ownership list makes the previous ambiguity mechanically
+    detectable without using timestamps, inferred competence, or chat history.
+
+affected_artifacts:
+  governing_decision:
+    id: DEC-2026-0043
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0043.yaml
+    status: remains_immutable
+  blocked_implementation:
+    id: IMP-DEC-2026-0043-r02
+    path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0043-r02.yaml
+    status: superseded_by_builder_successor_after_this_decision
+  revision_required_review:
+    id: REV-IMP-DEC-2026-0043-r01-r03
+    path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0043-r01-r03.yaml
+    status: active_builder_revision_handoff
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: >-
+    No canonical or registry migration occurs. DEC-2026-0043's implementation
+    report is reissued in its ordinary immutable report lineage after the direct
+    governance files exist.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish the four DEC-2026-0043 governance and role-instruction updates and
+      the Architect authoring requirement, all with this Decision's exact path
+      ownership recorded below.
+  - step: 2
+    owner: builder
+    action: >-
+      Add the versioned exact_diff_ownership structural rule to the Architect
+      Decision schema and scanner, with tests for complete, missing, duplicate,
+      unknown-owner, and sequence-mismatched plans. Publish the DEC-2026-0045
+      implementation report and reissue DEC-2026-0043's report with the current
+      checksums of every required code and governance file.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently verify the ownership guard and the published governance text,
+      then review each active implementation-report lineage under its normal
+      Decision Implementation Review procedure.
+
+acceptance_tests:
+  - >-
+    contracts/WORK_QUEUES.md is Version 1.12 and
+    contracts/ARTIFACT_LIFECYCLE.md is Version 1.10; each records checksummed
+    Integration rejection remediation and Builder-or-Integrator direct
+    non-migration implementation ownership.
+  - >-
+    agents/integrator/INSTRUCTIONS.md requires a new rejection record to pin the
+    rejected bundle, approving Review, reviewed GUP, checksums, and
+    machine-readable failures; agents/reviewer/INSTRUCTIONS.md requires a
+    checksummed rejection-consuming successor Review.
+  - >-
+    An Architect Decision declaring authoring contract version 1.1 validates only
+    when its exact_diff_ownership entries have the required path and owner shape,
+    and a fully owned plan with owners named in its sequence or follow_up_owners
+    produces no ownership diagnostic.
+  - >-
+    A version-1.1 Decision with a missing, duplicate, unowned, unknown-owner, or
+    sequence-mismatched exact_diff ownership entry is diagnostic and cannot be
+    treated as approval-ready implementation work; an earlier Decision without
+    the version declaration remains valid history.
+
+post_implementation_requirements:
+  - >-
+    Builder must publish IMP-DEC-2026-0043-r03, superseding r02, after verifying
+    the four Architect-published files alongside the already completed code-side
+    files. Its implementation_files list is complete coverage evidence and does
+    not claim Builder authorship of the governance files.
+  - >-
+    Reviewer must review the DEC-2026-0045 implementation report and the active
+    DEC-2026-0043 report successor independently. Their ordinary approval
+    records, not this Decision, complete the respective non-migration Decisions.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This corrects workflow accountability and implementation provenance, not
+    graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.12 records rejection-derived Reviewer remediation, direct
+    Builder/Integrator implementation ownership, and explicit exact_diff path
+    ownership for new version-1.1 Decisions.
+  - >-
+    ARTIFACT_LIFECYCLE 1.10 records immutable rejection evidence and direct
+    implementation ownership.
+  - >-
+    Integrator and Reviewer instructions state the corresponding rejection record
+    and successor-Review duties.
+  - >-
+    Architect instructions require an explicit owner for every exact_diff path.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.11 -> 1.12; add rejection remediation, direct Builder/Integrator ownership, and version-1.1 exact_diff ownership.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.9 -> 1.10; add immutable rejection records and direct implementation-owner lifecycle.'
+  agents/integrator/INSTRUCTIONS.md:
+    - 'Require complete, checksummed rejection records for new Integration refusals.'
+  agents/reviewer/INSTRUCTIONS.md:
+    - 'Require a checksummed rejection-consuming successor Review before repair routing.'
+  agents/architect/INSTRUCTIONS.md:
+    - 'Require complete exact_diff_ownership planning before a Decision is published.'
+  schemas/common/architect-decision.schema.json:
+    - 'Add the version-1.1 exact_diff_ownership entry shape.'
+  tooling/common/scan_agent_queues.py:
+    - 'Diagnose incomplete, duplicate, unknown-owner, and sequence-mismatched version-1.1 ownership plans.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Add exact_diff ownership guard acceptance coverage.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0045.yaml:
+    - 'Record the ownership correction and durable guard.'
+
+exact_diff_ownership:
+  - path: contracts/WORK_QUEUES.md
+    owner: architect
+    sequence_step: 1
+  - path: contracts/ARTIFACT_LIFECYCLE.md
+    owner: architect
+    sequence_step: 1
+  - path: agents/integrator/INSTRUCTIONS.md
+    owner: architect
+    sequence_step: 1
+  - path: agents/reviewer/INSTRUCTIONS.md
+    owner: architect
+    sequence_step: 1
+  - path: agents/architect/INSTRUCTIONS.md
+    owner: architect
+    sequence_step: 1
+  - path: schemas/common/architect-decision.schema.json
+    owner: builder
+    sequence_step: 2
+  - path: tooling/common/scan_agent_queues.py
+    owner: builder
+    sequence_step: 2
+  - path: tooling/common/tests/test_scan_agent_queues.py
+    owner: builder
+    sequence_step: 2
+  - path: rulesets/adnd1e/escalations/decisions/DEC-2026-0045.yaml
+    owner: architect
+    sequence_step: 1
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - The direct governance correction is published with this Decision; do not rewrite DEC-2026-0043.
+  builder:
+    - Implement only the exact version-1.1 ownership guard and its tests.
+    - Reissue the DEC-2026-0043 report with full current coverage after the governance files are present.
+  reviewer:
+    - Independently verify both report lineages and the direct governance content.
+  integrator:
+    - Use the new rejection-record requirements for every new refusal; do not repair immutable rejected bundles.

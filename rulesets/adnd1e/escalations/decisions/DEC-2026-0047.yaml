@@ -1,0 +1,207 @@
+schema_version: '1.0'
+id: DEC-2026-0047
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: >-
+    Correct the four named Review handoffs: verify the complete approved row set,
+    publish successor Reviews, and emit their corrected Approved bundles without
+    a Builder GUP revision.
+  blocking_ids: []
+
+decision_date: '2026-08-18'
+escalation_id: ESC-2026-08-18T19.05.42.118Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  When an Approved bundle's only defect is an incomplete edge component, what is
+  Builder's revision and which role publishes the corrected bundle?
+
+ruling: >-
+  Builder has no revision in this bounded packaging-only case. It must not publish
+  an Approved bundle and must not manufacture a no-op GUP successor. Reviewer
+  owns the correction: it publishes a successor Review for the same immutable
+  GUP, verifies the current complete approved row set, and emits the successor
+  Approved bundle.
+
+  For the three current rejections recorded by INT-20260817-002, the successor
+  Approved edge component is the deterministic concatenation of that GUP's
+  `edges.csv` and `pending.csv` rows in the existing `csv_row` order. The
+  successor Review records the source-component paths and checksums, output path
+  and checksum, exact row count, and the excluded `blocked.csv` path and checksum.
+  It must independently confirm every appended pending row is listed by the GUP's
+  operation index and supported by its declared node-registration plan. No row is
+  added, dropped, or reinterpreted.
+
+  `blocked.csv` remains outside the Approved bundle. No `pending` or `blocked`
+  Approved-bundle component kind is created by this Decision; a future proposal
+  must define its eligibility and Integrator behavior before expanding the shape.
+
+  REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r02 does not consume
+  INT-20260817-002, because that report expressly did not reject its predecessor
+  bundle. Reviewer must not add a false rejection reference. It may apply the
+  same packaging correction only as an ordinary successor Review after directly
+  verifying the current r05 GUP's row set and recording that its correction does
+  not consume INT-20260817-002.
+
+rationale:
+  - >-
+    An Approved bundle is Reviewer output. Asking Builder to publish it would
+    remove independent approval and contradict the repository's ownership model.
+  - >-
+    The exact rejection evidence says the current GUP assertions, operation
+    classifications, node registrations, and blocked-row exclusion are correct.
+    Reissuing identical GUP content would add immutable noise and another review
+    cycle without repairing the missing bundle component.
+  - >-
+    The deterministic derived edge component preserves the reviewed distinction
+    between immediately listed and registration-dependent rows in GUP provenance
+    while giving Integrator one complete, checksummed component to apply.
+
+affected_artifacts:
+  rejection_consuming_reviews:
+    - id: REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03.yaml
+      gup_id: GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08
+      approved_rows: 231
+    - id: REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02.yaml
+      gup_id: GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07
+      approved_rows: 203
+    - id: REV-GUP-PKT-PHB-110-117-psionics-r06-r02
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-110-117-psionics-r06-r02.yaml
+      gup_id: GUP-PKT-PHB-110-117-psionics-r06
+      approved_rows: 208
+  ordinary_review_correction:
+    id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r02
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r02.yaml
+    gup_id: GUP-PKT-PHB-094-100-illusionist-spells-r05
+    approved_rows: 120
+    excluded_rows: 6
+    provenance_limit: Must not claim to consume INT-20260817-002.
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: >-
+    Each named Review receives an immutable successor and its own new Approved
+    bundle. The GUPs remain byte-immutable and are not superseded.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish the bounded packaging-only rule, update Reviewer and Architect
+      instructions, and replace the four exact Builder revision handoffs with
+      this Reviewer action through the decided escalation's originating-artifact
+      references.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Publish one successor Review per named current Review. For each of the three
+      INT-20260817-002 rejections, record the exact rejection input and derived
+      component evidence, then publish the matching Approved bundle. For the
+      illusionist r05 Review, independently verify the same current packaging
+      condition without falsely naming INT-20260817-002, then publish its
+      ordinary successor Review and matching Approved bundle if complete.
+
+acceptance_tests:
+  - >-
+    Each successor Review for the three INT-20260817-002 packages records the
+    exact rejection input, immutable reviewed GUP checksum, input `edges.csv` and
+    `pending.csv` paths and checksums, output Approved edge-component path and
+    checksum, the exact 231, 203, or 208 row count, and excluded blocked input.
+  - >-
+    Each matching Approved manifest contains one complete `edges` component whose
+    rows equal the verified GUP additions plus pending additions exactly once in
+    declared order; it contains no blocked row and has checksums matching the
+    successor Review evidence.
+  - >-
+    The illusionist r05 successor Review names no INT-20260817-002 rejection
+    input, directly verifies its 14-plus-106 complete row set and six excluded
+    rows, and emits an Approved bundle only when the same checks hold.
+  - >-
+    The four named prior revision-required Reviews produce no Builder revision
+    item after this Decision's handoff replacement; exactly one Reviewer Decision
+    item represents the bounded packaging correction.
+  - >-
+    WORK_QUEUES is Version 1.14 and Reviewer instructions explicitly reserve this
+    derived Approved-edge packaging action to Reviewer while retaining the
+    prohibition on Builder-authored Approved bundles.
+
+post_implementation_requirements:
+  - >-
+    Builder does not publish a GUP revision, an edge CSV, or an Approved bundle
+    for these four packaging-only corrections.
+  - >-
+    Integrator applies only the successor Approved bundles after their normal
+    Review provenance, component checksums, and complete row counts validate.
+  - >-
+    A later request to carry pending or blocked data as independently typed
+    Approved-bundle components requires a new Architect escalation.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This changes workflow packaging ownership, not graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.14 defines Reviewer-owned correction of an incomplete Approved
+    edge component when the GUP itself remains correct.
+  - >-
+    Reviewer instructions define the required deterministic derivation and
+    blocked-row exclusion evidence.
+  - >-
+    Architect instructions distinguish normal successor-artifact acceptance from
+    direct Builder or Integrator implementation-report acceptance.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.13 -> 1.14; define Reviewer-owned packaging-only correction and derived edge-component evidence.'
+  agents/reviewer/INSTRUCTIONS.md:
+    - 'Specify Reviewer construction and evidence requirements for a complete Approved edge component.'
+  agents/architect/INSTRUCTIONS.md:
+    - 'Distinguish Reviewer handoff-replacement Decisions from direct implementation Decisions.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-18T19.05.42.118Z.yaml:
+    - 'Record the four exact originating Review artifacts so the Decision handoff replaces their Builder work.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0047.yaml:
+    - 'Record the bounded packaging-only correction and Reviewer handoff.'
+
+exact_diff_ownership:
+  - path: contracts/WORK_QUEUES.md
+    owner: architect
+    sequence_step: 1
+  - path: agents/reviewer/INSTRUCTIONS.md
+    owner: architect
+    sequence_step: 1
+  - path: agents/architect/INSTRUCTIONS.md
+    owner: architect
+    sequence_step: 1
+  - path: rulesets/adnd1e/escalations/decided/ESC-2026-08-18T19.05.42.118Z.yaml
+    owner: architect
+    sequence_step: 1
+  - path: rulesets/adnd1e/escalations/decisions/DEC-2026-0047.yaml
+    owner: architect
+    sequence_step: 1
+
+follow_up_owner: reviewer
+follow_up_owners:
+  architect:
+    - The four Builder handoffs are replaced with this Decision's Reviewer action; do not rewrite their prior Reviews or GUPs.
+  reviewer:
+    - Produce exact successor Reviews and Approved bundles under the bounded rule.
+    - Do not add an INT-20260817-002 reference to the illusionist r05 successor.
+  builder:
+    - Do not create a no-op GUP revision or publish any Approved bundle for this correction.
+  integrator:
+    - Accept only the successor Approved bundles with complete checked edge components.

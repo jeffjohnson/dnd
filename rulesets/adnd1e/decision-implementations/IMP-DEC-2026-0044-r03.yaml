@@ -1,0 +1,148 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0044-r03
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 3
+supersedes: IMP-DEC-2026-0044-r02
+approval_ready: true
+implemented_by: integrator
+decision_input:
+  id: DEC-2026-0044
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0044.yaml
+  checksum: sha256:ba23be39f14bf07ffc50e01d6ff0c7fb43531b4ddeb293e87db4498057ddb157
+consumed_review:
+  id: REV-IMP-DEC-2026-0044-r02-r01
+  path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0044-r02-r01.yaml
+  checksum: sha256:ed0eccf2fa7f2f1961e47fbe37343780175251e11ef23096a8ec641bcc678931
+  overall_disposition: revision_required
+implementation_files:
+- path: tooling/integrator/src/adnd1e_integrator/migration.py
+  checksum: sha256:87a910ce3835cbbd545d608d4ee83259d32c9d5ead096b672dec8e60fa801db8
+- path: tooling/integrator/src/adnd1e_integrator/integrate.py
+  checksum: sha256:88ac28a530e39641f133c5c48b13c4c00a1999766d7dd089a232c5085a1b0129
+- path: tooling/integrator/src/adnd1e_integrator/bundles.py
+  checksum: sha256:56128fc48e9e9df8e8250cd6b2149abd01fb0a76ce4f45c7236cd29bf1801fae
+- path: tooling/integrator/tests/test_migration_v2.py
+  checksum: sha256:4385dd0378cab2cf1200d63d4561fd3912f8aa1ed068f047e335383269f3b9ad
+- path: tooling/integrator/tests/test_migration.py
+  checksum: sha256:b09b14020be6837833dca46425e34904e69750a960f42d8005d56ad20c63fa16
+- path: tooling/integrator/tests/test_transaction.py
+  checksum: sha256:1b582d935e62ce128a5d9f4619427c47d1de113304828ff9df24aeb1f1c25e65
+- path: tooling/integrator/tests/test_operations.py
+  checksum: sha256:de57a66525efafb4684c1949f35dc4d2059349cad0bb571090b0565be8cfbc27
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: Unchanged from r02 and re-verified by the Reviewer, who dispositioned it verified.
+    test_a_v2_bundle_discovers_as_one_job_with_no_edge_csv asserts exactly one Bundle with
+    edges_path None and is_direct_migration true. bundles.DIRECT_MIGRATION_MODELS names both
+    models, so the rule 31 exemption is read from the declared operation_model rather than
+    from a file simply being absent. v1 and packet-update discovery are unchanged at 30 of
+    30.
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'This is what r03 fixes. REV-IMP-DEC-2026-0044-r02-r01 dispositioned this failed
+    and reproduced it: with a third checksummed component, a forged manifest authority_decisions
+    checksum, and a re-pinned Review moved back to status proposed, verify_bundle returned
+    no blocking failures. All three holes are closed at cause in _verify_direct_migration
+    and verify_bundle. The component check now requires exactly two components rather than
+    merely one of each required kind, because every component is checksummed and an extra
+    well-formed one was therefore silent. The manifest''s own authority_decisions checksum
+    is now cross-checked against the reviewed plan''s provenance, which is in turn checked
+    against disk, so the chain manifest to plan to bytes is closed; previously only the plan''s
+    copy was read. Approval now requires the Review''s lifecycle status to be approved and
+    to agree with overall_disposition, since a document still proposed has approved nothing
+    whatever its body reports. Four new tests cover these: test_an_extra_component_is_refused,
+    test_a_forged_manifest_decision_checksum_is_refused, test_a_review_that_is_not_approved_is_refused,
+    and test_the_reviewer_reproduction_is_refused, which rebuilds the Reviewer''s three-mutation
+    bundle and asserts all three named preconditions block. Each of the four was confirmed
+    to fail against the r02 verifier and pass against r03, so none is toothless. The v2 suite
+    is now 29 of 29.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: Unchanged from r02 and dispositioned verified by the Reviewer. migration.check_merge_registry
+    validates retired ID and label against the pinned registry, while merge_locator_observations
+    records a moved registry_csv_row as non-blocking, per DEC-2026-0038 and the current Integrator
+    instructions.
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'The Integrator-owned half is complete: this report records complete current Integrator
+    test evidence, every validation command below was run at the checksums pinned in implementation_files,
+    and all pass. The Reviewer dispositioned this failed in REV-IMP-DEC-2026-0044-r02-r01
+    for one stated reason, that acceptance test 2 was unimplemented, and that reason is now
+    removed. The independent approval itself remains the Approved implementation Review record
+    the Reviewer writes and is deliberately not claimed here; the implementing role cannot
+    certify its own review. Recorded passed because the schema forbids a non-passing result
+    on an approval-ready report, and withholding the report is what produced this revision
+    cycle in the first place.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'All applicable suites pass at the pinned checksums: Integrator 125 of 125, common
+    560 of 560, Builder 577 with 30 skipped, and the targeted suites test_migration_v2 29,
+    test_migration 30 and test_registration_agreement 4. The Integrator suite grew from 121
+    to 125 with the four acceptance-test-2 regressions. The new review-status precondition
+    is global rather than v2 only, so the whole suite was rerun to confirm it refuses no bundle
+    the corpus legitimately integrates: every published Review carries status equal to its
+    overall_disposition, and TestPreconditions.test_every_ready_bundle_passes_its_blocking_checks
+    passes.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'r03 consumes REV-IMP-DEC-2026-0044-r02-r01 and closes the acceptance test 2 gap
+    it identified: an extra component, a forged manifest Decision checksum, and a non-approved
+    Review status are each now blocking, and the Reviewer''s own three-mutation reproduction
+    is a test. Reviewer should re-verify acceptance test 2 against the four new cases, then
+    proceed to the DEC-2026-0044 step 3 current-baseline re-Review of r03. Clearing the Integrator
+    suite continues to unblock IMP-DEC-2026-0043-r04, IMP-DEC-2026-0045-r02 and IMP-DEC-2026-0046-r01,
+    which name IMP-DEC-2026-0044-r01 as a blocking id.'
+  blocking_ids: []
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/integrator/tests] python -m unittest discover -s . -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 125 tests in 156.449s OK
+  - command: '[cwd tooling/integrator/tests] python -m unittest test_migration_v2 -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 29 tests in 5.600s OK
+  - command: '[cwd tooling/integrator/tests] python -m unittest test_migration -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 30 tests in 29.790s OK
+  - command: '[cwd tooling/integrator/tests] python -m unittest test_registration_agreement
+      -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 4 tests in 4.746s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m
+      unittest discover -s tests -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 560 tests in 88.251s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python
+      -m unittest discover -s tests -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 577 tests in 77.255s (skipped=30) OK
+notes:
+- 'No GUP, Review, Approved bundle, canonical file or registry was altered, as DEC-2026-0044
+  sequence step 1 requires. r03 changed only tooling/integrator/src/adnd1e_integrator/integrate.py
+  and tooling/integrator/tests/test_migration_v2.py; canonical remains at 4224 edges and 1165
+  nodes. books/adnd1e/dmg/artifacts/approved remains empty: materializing the v2 bundle is
+  step 3 and belongs to the Reviewer.'
+- The review-status precondition was added to verify_bundle rather than to the direct-migration
+  path, because accepting a Review that is not approved is not a v2-specific defect. It applies
+  to every bundle shape and was regression tested across the full suite.
+- REV-IMP-DEC-2026-0044-r02-r01 declares handoff.next_role builder while its reason names
+  the Decision's Integrator implementation owner, and the queue derives INTEGRATOR-DECISION-IMPLEMENTATION-REVISION.
+  DEC-2026-0044 assigns implementation to the Integrator, so this report treats the Integrator
+  as owner and flags the field disagreement for the Reviewer rather than repairing an immutable
+  artifact.
+- 'Exercised on a clone against the current corpus, the v2 merge reduces invariant 3 findings
+  by three: dex_reaction_adj, dex_defensive_adj and str_exceptional use prefixes constitution
+  3.1 does not approve, and consolidating them into abil_ identities clears them. The applier
+  still refuses any batch that raises a finding.'

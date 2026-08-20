@@ -1,0 +1,970 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20260819-003",
+  "ruleset_id": "adnd1e",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-08-19T21:34:54.759Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:b54e57f4f18e10666d4cadfe9a0db41f5a019f1c9a32034052ff51b50daa6506 actual=sha256:b54e57f4f18e10666d4cadfe9a0db41f5a019f1c9a32034052ff51b50daa6506"
+        },
+        {
+          "check": "component checksum matches: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:d7b7810e9732ee43679733fe21f938c62e200f1e21721f7a8d04afb22467f2a6 actual=sha256:d7b7810e9732ee43679733fe21f938c62e200f1e21721f7a8d04afb22467f2a6"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-110-117-psionics-r06.yaml: declared=sha256:054fd585f1a63e8ffbb5cd35949cc3056edac3fa25ffc19a0e888d4e781c9a6f actual=sha256:054fd585f1a63e8ffbb5cd35949cc3056edac3fa25ffc19a0e888d4e781c9a6f"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=208 actual=208"
+        },
+        {
+          "check": "review approved-row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "review approved 208 row(s), CSV carries 208"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 14, 'pending_additions': 194, 'updates': 0, 'node_registrations': 51}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 1697,
+      "by_invariant": {
+        "3": 16,
+        "11": 9,
+        "16": 1672
+      },
+      "affected_rows": 1674,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 1697,
+      "by_invariant": {
+        "3": 16,
+        "11": 9,
+        "16": 1672
+      }
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 4224,
+    "edges_after": 4432,
+    "edges_updated_in_place": 0,
+    "nodes_before": 1162,
+    "nodes_after": 1214,
+    "registry_before": 1180,
+    "registry_after": 1231,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "psi_attack_mind_thrust",
+        "label": "Mind Thrust",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M022"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_attack_ego_whip",
+        "label": "Ego Whip",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M023"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_attack_id_insinuation",
+        "label": "Id Insinuation",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M024"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_attack_psychic_crush",
+        "label": "Psychic Crush",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M010",
+          "M025"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_defense_mind_blank",
+        "label": "Mind Blank",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M009",
+          "M027"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_defense_thought_shield",
+        "label": "Thought Shield",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M028"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_defense_mental_barrier",
+        "label": "Mental Barrier",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M029"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_defense_intellect_fortress",
+        "label": "Intellect Fortress",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M011",
+          "M013",
+          "M030"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_defense_tower_iron_will",
+        "label": "Tower of Iron Will",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M012",
+          "M014",
+          "M031"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_minor_devotions",
+        "label": "Minor Devotions",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M018",
+          "M019"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_major_sciences",
+        "label": "Major Sciences",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M018",
+          "M020"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_animal_telepathy",
+        "label": "Animal Telepathy",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M032",
+          "M079",
+          "M080",
+          "M081"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_body_equilibrium",
+        "label": "Body Equilibrium",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M033",
+          "M082",
+          "M083"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_body_weaponry",
+        "label": "Body Weaponry",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M034",
+          "M072",
+          "M084",
+          "M085",
+          "M086",
+          "M087",
+          "M088"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_cell_adjustment",
+        "label": "Cell Adjustment",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M035",
+          "M089",
+          "M090",
+          "M091",
+          "M092"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_clairaudience",
+        "label": "Clairaudience",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M036",
+          "M093"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_clairvoyance",
+        "label": "Clairvoyance",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M037",
+          "M094",
+          "M129"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_detection_good_evil",
+        "label": "Detection of Good or Evil",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M038",
+          "M095",
+          "M096",
+          "M097",
+          "M098"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_detection_magic",
+        "label": "Detection of Magic",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M039",
+          "M099",
+          "M100"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_domination",
+        "label": "Domination",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M040",
+          "M073",
+          "M081",
+          "M101",
+          "M102",
+          "M161",
+          "M177"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_empathy",
+        "label": "Empathy",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M041",
+          "M074",
+          "M103",
+          "M104",
+          "M178",
+          "M202"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_esp",
+        "label": "ESP",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M042",
+          "M105",
+          "M106",
+          "M208"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_expansion",
+        "label": "Expansion",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M043",
+          "M075",
+          "M107",
+          "M108",
+          "M109",
+          "M110",
+          "M111"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_hypnosis",
+        "label": "Hypnosis",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M044",
+          "M112",
+          "M113",
+          "M114",
+          "M115",
+          "M116",
+          "M117",
+          "M179"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_invisibility",
+        "label": "Invisibility",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M045",
+          "M118",
+          "M119",
+          "M120",
+          "M181"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_levitation",
+        "label": "Levitation",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M046",
+          "M121",
+          "M122"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_mind_over_body",
+        "label": "Mind Over Body",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M047",
+          "M123",
+          "M124",
+          "M125"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_molecular_agitation",
+        "label": "Molecular Agitation",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M048",
+          "M126",
+          "M127",
+          "M128",
+          "M129"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_object_reading",
+        "label": "Object Reading",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M049",
+          "M076",
+          "M130",
+          "M131"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_precognition",
+        "label": "Precognition",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M050",
+          "M132",
+          "M133",
+          "M134",
+          "M135",
+          "M136"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_reduction",
+        "label": "Reduction",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M051",
+          "M137",
+          "M218"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_sensitivity_psychic_impressions",
+        "label": "Sensitivity to Psychic Impressions",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M052",
+          "M138"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_suspend_animation",
+        "label": "Suspend Animation",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M053",
+          "M139",
+          "M140",
+          "M141"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_astral_projection",
+        "label": "Astral Projection",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M054",
+          "M142",
+          "M143",
+          "M190"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_aura_alteration",
+        "label": "Aura Alteration",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M055",
+          "M144",
+          "M145",
+          "M146",
+          "M147",
+          "M148"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_body_control",
+        "label": "Body Control",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M056",
+          "M149",
+          "M150",
+          "M151"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_dimension_door",
+        "label": "Dimension Door",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M057",
+          "M152"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_dimension_walk",
+        "label": "Dimension Walk",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M058",
+          "M153",
+          "M154",
+          "M155"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_energy_control",
+        "label": "Energy Control",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M059",
+          "M156",
+          "M157"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_etherealness",
+        "label": "Etherealness",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M060",
+          "M158",
+          "M159",
+          "M160"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_mass_domination",
+        "label": "Mass Domination",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M061",
+          "M077",
+          "M161",
+          "M162",
+          "M163",
+          "M164",
+          "M165",
+          "M166",
+          "M167"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_mind_bar",
+        "label": "Mind Bar",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M062",
+          "M168",
+          "M169",
+          "M170",
+          "M171",
+          "M172",
+          "M173",
+          "M174",
+          "M175",
+          "M176",
+          "M177",
+          "M178",
+          "M179",
+          "M180",
+          "M181",
+          "M182",
+          "M183"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_molecular_manipulation",
+        "label": "Molecular Manipulation",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M063",
+          "M184",
+          "M185"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_molecular_rearrangement",
+        "label": "Molecular Rearrangement",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M064",
+          "M187",
+          "M188",
+          "M189"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_probability_travel",
+        "label": "Probability Travel",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M065",
+          "M190",
+          "M191",
+          "M192",
+          "M193"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_shape_alteration",
+        "label": "Shape Alteration",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M066",
+          "M194",
+          "M195",
+          "M196",
+          "M197",
+          "M198"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_telekinesis",
+        "label": "Telekinesis",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M067",
+          "M199",
+          "M200",
+          "M201"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_telempathic_projection",
+        "label": "Telempathic Projection",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M068",
+          "M078",
+          "M202",
+          "M203"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_telepathic_projection",
+        "label": "Telepathic Projection",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M069",
+          "M204",
+          "M205",
+          "M206",
+          "M207",
+          "M208",
+          "M209",
+          "M210",
+          "M211",
+          "M212"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_telepathy",
+        "label": "Telepathy",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M070",
+          "M180",
+          "M204",
+          "M207",
+          "M213",
+          "M214",
+          "M215"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      },
+      {
+        "id": "psi_teleportation",
+        "label": "Teleportation",
+        "kind": "psi",
+        "basis": "Current claimed packet names this distinct mechanic; prefix, kind, ID format, and registry neighborhood are valid.",
+        "edges_depending_on_it": [
+          "M071",
+          "M216",
+          "M217"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+        "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+        "integration_id": "INT-20260819-003"
+      }
+    ],
+    "registry_derived_resync": 62,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

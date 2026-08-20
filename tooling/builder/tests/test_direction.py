@@ -8,6 +8,8 @@ from pathlib import Path
 
 import yaml
 
+from test_decision_migration import applied_retirements  # noqa: E402
+
 import _bootstrap
 from _bootstrap import REPO_ROOT
 
@@ -198,13 +200,27 @@ class TestAgainstTheRealGurs(unittest.TestCase):
             packet = path.stem[4:].rsplit("-r", 1)[0]
             latest[packet] = path  # sorted order leaves the highest revision
 
+        # A GUR is immutable, so an old one keeps naming the node IDs that were
+        # current when the Analyst wrote it. DEC-2026-0038 merged six of those
+        # into three survivors, which silently cost this test the two ability
+        # cases D1 and D2: their reversed canonical counterparts still exist,
+        # under the surviving IDs. Resolving each endpoint through the
+        # retirements the Integrator actually recorded restores the comparison
+        # without editing the GUR or weakening EXPECTED. An unretired ID maps to
+        # itself, so this is a no-op until a merge lands.
+        retirements = applied_retirements()
+
+        def survivor(node_id):
+            row = retirements.get(node_id)
+            return row["replaced_by"] if row else node_id
+
         found = set()
         for packet, path in latest.items():
             document = yaml.safe_load(path.read_text(encoding="utf-8"))
             for edge in document.get("candidate_edges") or []:
                 probe = {
-                    "source_id": edge.get("source_id"),
-                    "target_id": edge.get("target_id"),
+                    "source_id": survivor(edge.get("source_id")),
+                    "target_id": survivor(edge.get("target_id")),
                     "edge_type": edge.get("edge_type"),
                 }
                 verdict = direction.classify(probe, canonical.reversed_edges(probe))

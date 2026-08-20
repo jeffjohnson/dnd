@@ -1,0 +1,116 @@
+schema_version: '1.0'
+id: ESC-2026-08-17T13.29.36.700Z
+status: decided
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-015-015-cavaliers
+constitution_version: '1.8'
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-08-17'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: DEC-2026-0039 acceptance test 6 cannot be satisfied by the work that Decision assigns, and the
+    only file that could satisfy it has no owner.
+  blocking_ids: []
+trigger: 'ESCALATION_CONTRACT 1.2: two governance requirements disagree in a way that cannot be fixed
+  mechanically. Artifact immutability and a repository-wide schema invariant cannot both hold for an already-published
+  invalid artifact.'
+supplements: DEC-2026-0039
+originating_artifacts:
+  decision: rulesets/adnd1e/escalations/decisions/DEC-2026-0039.yaml
+  repair_published: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r03.yaml
+  invalid_immutable_artifact: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r02.yaml
+  failing_test: 'tooling/common/tests/test_common_schemas.py :: TestLegacyArtifactsStayValid.test_every_published_artifact_still_validates'
+question: DEC-2026-0039 acceptance test 6 requires that after r03 is published, the common schema suite
+  no longer fails on r02, releasing seven blocked Decision Implementation lineages. The Analyst repair
+  is complete and r03 is valid, but the suite still fails, because r02 remains published and schema-invalid
+  and the Decision forbids editing it. Should the repository-wide envelope assertion be scoped to active
+  leaf artifacts, mirroring this Decision's own non-leaf rule, or should r02 carry a named historical
+  exception? Who owns the change, given that the Decision's implementation scope does not include the
+  failing test file?
+source_excerpt: 'DEC-2026-0039 acceptance test 6: "After r03 is published, the common schema suite no
+  longer fails on r02 or r03, the UA cavaliers lineage creates no Builder GUR job, and all seven previously
+  blocked Decision Implementation lineages can obtain passing validation evidence."
+
+
+  DEC-2026-0039 withdrawal_contract.prohibited: "Editing, moving, or deleting the published withdrawn
+  revision."
+
+
+  tooling/common/tests/test_common_schemas.py, test_every_published_artifact_still_validates: globs books/*/*/artifacts/{gur,gup,reviews}/
+  with no exclusion for superseded, non-leaf, or terminal artifacts, and asserts envelope validity for
+  every document found.'
+local_graph_neighborhood:
+  not_a_graph_question: This concerns artifact lifecycle and tooling, not graph data. No node, edge, registry
+    row or canonical assertion is involved.
+  measured_state_after_the_repair:
+  - 262 published GUR, GUP and Review artifacts checked against the envelope schema.
+  - 'Exactly 1 invalid: GUR-PKT-UA-015-015-cavaliers-r02.'
+  - 'Its two errors: handoff.next_role null is not in the enum; handoff.readiness ''withdrawn'' is not
+    in the enum.'
+  - GUR-PKT-UA-015-015-cavaliers-r03 validates against the common envelope, the common GUR schema and
+    the AD&D GUR schema with zero errors.
+  - The full common schema suite runs 30 tests with exactly 1 failure, and that failure names r02 alone.
+  why_publishing_r03_cannot_clear_it: The assertion is over published artifacts, not over active leaves.
+    r02 is published and immutable, so it stays in the glob and stays invalid no matter how many valid
+    successors exist above it.
+  decision_scope_gap: DEC-2026-0039 affected_artifacts.implementation.files names only tooling/common/scan_agent_queues.py
+    and tooling/common/tests/test_scan_agent_queues.py. The failing assertion is in tooling/common/tests/test_common_schemas.py,
+    which no owner in the Decision is authorized to touch. Builder sequence step 4 requires re-running
+    the full common suite and recording released validation evidence, which that step cannot produce.
+affected_canonical_ids: []
+options_considered:
+- option: Scope the envelope assertion to active leaf artifacts
+  basis: Mirrors DEC-2026-0039's own reasoning in queue_contract.non_leaf_behavior, which already accepts
+    that a malformed handoff on a non-leaf is diagnostic only, because an active successor resolves ownership.
+    Applying the same rule to the schema suite makes the two consistent.
+  impact: One test file changes. Superseded artifacts keep an explicit diagnostic but stop failing the
+    build. Active leaves remain strictly validated, so no live artifact loses coverage.
+  risk: A genuinely invalid active artifact could be masked if leaf detection is wrong. Mitigated by deriving
+    leaf status from the supersedes chain rather than from status.
+- option: Add a named historical exception for r02 alone
+  basis: Precedent exists in DEC-2026-0029, which bound a conformance exception to exact provenance rather
+    than relaxing the rule.
+  impact: Smallest possible change and fully auditable. Does not generalize, so the next malformed published
+    artifact reopens the same failure.
+- option: Delete or edit r02
+  basis: Would satisfy the test directly.
+  impact: Prohibited by DEC-2026-0039 and by ARTIFACT_LIFECYCLE 1.9. Listed only to record that it was
+    considered and rejected, not as a live option.
+recommended_resolution: Option 1, scoping the assertion to active leaf artifacts, with an explicit diagnostic
+  retained for invalid non-leaves so r02 stays visible rather than silently forgiven. It matches the rule
+  DEC-2026-0039 already adopted for the queue scanner, and it resolves the class of failure rather than
+  this one instance. Assign the test file to Builder as an addition to the DEC-2026-0039 implementation
+  scope, since Builder already owns the adjacent scanner work and sequence step 4 depends on the suite
+  passing.
+expected_migration_impact: None. No canonical row, registry row, packet, GUR, GUP, Review or Approved
+  bundle changes. One tooling test file is amended.
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  profile_change: false
+  contract_change: Possibly ARTIFACT_LIFECYCLE, if the active-leaf scope is stated as contract rather
+    than left as test implementation.
+blocking: The Analyst repair required by DEC-2026-0039 sequence step 1 is complete and r03 is published
+  and valid; nothing Analyst-owned is blocked. Blocked are DEC-2026-0039 acceptance test 6, Builder sequence
+  step 4, and the seven Decision Implementation lineages that the Decision expected this repair to release.
+analyst_disclosure: The defect in r02 is the Analyst's. r02 was authored with an invented readiness value,
+  'withdrawn', instead of the envelope enum, and with next_role null. This escalation is not a request
+  to be relieved of that; the repair is published. It reports that the repair does not produce the outcome
+  the Decision expects from it.
+baseline:
+  envelope_schema:
+    path: schemas/common/artifact-envelope.schema.json
+    checksum: sha256:081761712f054ffdd091f726445d569004ab302b3b70748f26c72c6de802d758
+  failing_test_file:
+    path: tooling/common/tests/test_common_schemas.py
+    checksum: sha256:d1c0c9b7ed230b855adc929e580418d9622dcc285c421ca99bc505896825d78c
+  r02:
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r02.yaml
+    checksum: sha256:7ebfac9651b70bd149e9774d9c23f156366f111e5f824d5d90d8e96526cd425b
+  r03:
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r03.yaml
+    checksum: sha256:3d93a53a2f72af3e00f0cc1d722452576d47e9d069903c91da4308f9883d19d8

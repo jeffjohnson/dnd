@@ -1,0 +1,144 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0044-r02
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: IMP-DEC-2026-0044-r01
+approval_ready: true
+implemented_by: integrator
+decision_input:
+  id: DEC-2026-0044
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0044.yaml
+  checksum: sha256:ba23be39f14bf07ffc50e01d6ff0c7fb43531b4ddeb293e87db4498057ddb157
+implementation_files:
+- path: tooling/integrator/src/adnd1e_integrator/migration.py
+  checksum: sha256:87a910ce3835cbbd545d608d4ee83259d32c9d5ead096b672dec8e60fa801db8
+- path: tooling/integrator/src/adnd1e_integrator/integrate.py
+  checksum: sha256:ef8a81c3b847add33db5f04c1ed6d43eb2be59a08373a87145798c19f9d017f5
+- path: tooling/integrator/src/adnd1e_integrator/bundles.py
+  checksum: sha256:56128fc48e9e9df8e8250cd6b2149abd01fb0a76ce4f45c7236cd29bf1801fae
+- path: tooling/integrator/tests/test_migration_v2.py
+  checksum: sha256:4e34507e39d01a4a4fb79d30c17c4d18e0a234a3393f27bb3cf175be8b6ffabf
+- path: tooling/integrator/tests/test_migration.py
+  checksum: sha256:b09b14020be6837833dca46425e34904e69750a960f42d8005d56ad20c63fa16
+- path: tooling/integrator/tests/test_transaction.py
+  checksum: sha256:1b582d935e62ce128a5d9f4619427c47d1de113304828ff9df24aeb1f1c25e65
+- path: tooling/integrator/tests/test_operations.py
+  checksum: sha256:de57a66525efafb4684c1949f35dc4d2059349cad0bb571090b0565be8cfbc27
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'TestDiscoveryAndPreconditions.test_a_v2_bundle_discovers_as_one_job_with_no_edge_csv
+    asserts exactly one Bundle with edges_path None and is_direct_migration true. bundles.DIRECT_MIGRATION_MODELS
+    names both models, so the rule 31 exemption is read from the declared operation_model
+    rather than from a file simply being absent. v1 and packet-update discovery are unchanged:
+    the 30 tests in test_migration pass, and both exclusions stay in force via test_a_forbidden_edge_csv_is_refused
+    and rule 32 coverage in test_migration.TestDiscovery.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'TestPlanShape covers the grammar: fewer than two retired IDs, duplicate retired
+    IDs, a retired ID claimed by two merges, a nonempty additions_proposed / relabels / replacements,
+    a canonical_removals entry, a wrong registry_action, a non-paired repoint, and a v1 model
+    carrying a merge are each refused with MigrationError. TestDiscoveryAndPreconditions covers
+    bundle and corpus conditions: a forbidden edge CSV, baseline drift, an existing survivor
+    identity, a retired label mismatch and an incomplete incident set are each blocking before
+    any snapshot is taken. TestTransactional covers the post-operation duplicate assertion
+    key with a byte-for-byte rollback assertion. Every assertion runs against the real reviewed
+    r03 plan.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: test_a_moved_advisory_locator_is_informational_only sets a retired node registry_csv_row
+    to 99999 with ID and label intact and asserts blocking_failures is empty while an advisory
+    precondition records the observation; migration.merge_locator_observations reports the
+    moved row and never blocks. The strict conditions are asserted separately by test_a_retired_label_mismatch_is_refused,
+    the missing-ID branch of check_merge_registry, and test_baseline_drift_is_refused for
+    the pinned registry checksum.
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'The Integrator-owned half is complete and is what this revision changed. This
+    report records complete current Integrator test evidence: every validation command below
+    was run at the checksums pinned in implementation_files, and all of them pass, including
+    the full 121-test Integrator suite that r01 recorded as failing. The report is routed
+    for independent approval under the DEC-2026-0043 direct-implementation lifecycle with
+    implemented_by integrator, status proposed, approval_ready true and handoff.next_role
+    reviewer. The independent approval itself is the Approved implementation Review record
+    the Reviewer writes, and is deliberately not claimed here: the implementing role cannot
+    certify its own review. This follows the recording convention already used for the Reviewer-consumption
+    clause of DEC-2026-0043 acceptance test 4 in IMP-DEC-2026-0043-r04.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'All applicable suites pass at the pinned checksums: Integrator 121 of 121, common
+    560 of 560, Builder 577 with 30 skipped, and the targeted suites test_migration_v2 25,
+    test_migration 30 and test_registration_agreement 4. r01 recorded five errors here. They
+    were not in the applier and were not introduced by v2; all five were defects in the shared
+    clone fixture, and each is now fixed at its cause rather than suppressed. _rewind stripped
+    a registry registration even when a surviving edge from a bundle it did not rewind still
+    referenced that node, which left canonical pointing at an unregistered ID and failed the
+    re-apply on invariant 1; it now retires only registrations no surviving edge anchors.
+    Four tests integrated everything discover returned, which mixes superseded, already-integrated
+    and rejected bundles and would apply a GUP alongside the revision superseding it; they
+    now rewind and re-apply the same pinned set via reapplied_batch. test_every_csv_row_is_classified_exactly_once
+    read every discovered bundle, including direct migrations that are forbidden an edge CSV,
+    and once that was fixed it surfaced two rejected bundles whose operation_index classifies
+    none of their 98 and 48 rows; it is now scoped to the live queue, because those bundles
+    are refused precisely for that defect and asserting the property over them would assert
+    that the rejection lifecycle does not exist.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: decision_migration_v2 discovery, component verification, strict preconditions, transactional
+    merge execution and provenance are implemented and covered by 25 targeted tests against
+    the real reviewed r03 plan, with v1 non-regression at 30 of 30. Every applicable suite
+    now passes, so the sole blocker r01 recorded is cleared and this report is approval-ready.
+    Reviewer should perform the DEC-2026-0044 step 2 capability Review, then the step 3 current-baseline
+    re-Review of r03. Clearing the Integrator suite also unblocks IMP-DEC-2026-0043-r04, IMP-DEC-2026-0045-r02
+    and IMP-DEC-2026-0046-r01, each of which names IMP-DEC-2026-0044-r01 as a blocking id.
+  blocking_ids: []
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/integrator/tests] python -m unittest discover -s . -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 121 tests in 195.487s OK
+  - command: '[cwd tooling/integrator/tests] python -m unittest test_migration_v2 -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 25 tests in 4.133s OK
+  - command: '[cwd tooling/integrator/tests] python -m unittest test_migration -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 30 tests in 29.653s OK
+  - command: '[cwd tooling/integrator/tests] python -m unittest test_registration_agreement
+      -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 4 tests in 4.641s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m
+      unittest discover -s tests -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 560 tests OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python
+      -m unittest discover -s tests -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 577 tests in 76.426s (skipped=30) OK
+notes:
+- 'No GUP, Review, Approved bundle, canonical file or registry was altered, as DEC-2026-0044
+  sequence step 1 requires. This revision changed only tooling/integrator/tests/test_operations.py
+  and tooling/integrator/tests/test_transaction.py; canonical remains at 4224 edges, 1165
+  nodes and 1700 findings. books/adnd1e/dmg/artifacts/approved remains empty: materializing
+  the v2 bundle is step 3 and belongs to the Reviewer.'
+- 'Exercised on a clone against the current corpus, the v2 merge reduces invariant 3 findings
+  by three: dex_reaction_adj, dex_defensive_adj and str_exceptional use prefixes constitution
+  3.1 does not approve, and consolidating them into abil_ identities clears them. The applier
+  still refuses any batch that raises a finding.'
+- 'bundles.ready_queue honours DEC-2026-0043 rejection records, so the Integrator CLI agrees
+  with the queue scanner: the three rejected bundles are suppressed and the live ready count
+  is 0.'
+- r01 recorded its failing suite in a summary carrying no OK or FAILED verdict, which is what
+  test_implementation_evidence.TestValidationEvidenceIsSelfConsistent .test_exit_code_result_and_summary_agree
+  was reporting against this artifact. Every summary above carries an explicit verdict.

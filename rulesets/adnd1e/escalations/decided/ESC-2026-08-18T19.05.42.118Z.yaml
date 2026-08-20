@@ -1,0 +1,213 @@
+schema_version: '1.0'
+id: ESC-2026-08-18T19.05.42.118Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-18'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Four Reviews route a `revision_required` to Builder and instruct it to publish
+    "a successor GUP and Approved bundle". An Approved bundle is Reviewer output.
+    The Integration rejection that caused these Reviews states the opposite
+    division of labour: that the GUP content is correct, that the only change
+    needed is emitting the bundle's edge component as the concatenation of the
+    GUP's `edges.csv` and `pending.csv` and re-pinning its checksum, and that the
+    Integrator will not do that itself because it is "the packaging decision the
+    Review exists to make". Builder cannot publish an Approved bundle, and the
+    only role that has stated what must change says the GUP needs no change.
+  blocking_ids: []
+
+# Exact pairs are Decision-routing metadata derived from the package's named
+# active Review artifacts. They allow DEC-2026-0047 to replace only these four
+# Builder revision handoffs, without moving or changing any published Review.
+originating_artifacts:
+  reviews:
+    - id: REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03.yaml
+    - id: REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02.yaml
+    - id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r02
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r02.yaml
+    - id: REV-GUP-PKT-PHB-110-117-psionics-r06-r02
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-110-117-psionics-r06-r02.yaml
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. Two roles have assigned the same repair to each other,
+  and the instruction as written requires the Builder to publish an artifact kind
+  that REPOSITORY_STRUCTURE assigns to the Reviewer.
+
+question: >-
+  When an Integration rejection is caused by an Approved bundle's edge component
+  carrying fewer rows than its manifest declares, what exactly is the Builder's
+  revision, and which role publishes the corrected Approved bundle?
+
+what_is_not_in_question:
+  - >-
+    The DEC-2026-0043 routing ruling. A rejection is a first-class queue signal,
+    the Reviewer publishes a successor Review, and that successor routes the
+    revision to its responsible role. Three of these four Reviews record the exact
+    rejection record and consume the remediation item correctly. That mechanism
+    works and is implemented.
+  - >-
+    The Integrator's diagnosis. Its arithmetic is exact and reproduces against the
+    current files, and its refusal to concatenate the CSVs itself is consistent
+    with only the Reviewer choosing the approved row set.
+  - >-
+    The three-way additions/pending/blocked decomposition. The rejection report
+    calls it "exactly the right decomposition of the problem" and confirms the
+    blocked rows are correctly excluded. Nothing here proposes abandoning it.
+  - >-
+    Whether the rows are correct. Every row count reconciles in every packet; the
+    defect is which file the bundle carries, not what the rows say.
+
+evidence:
+  the_two_instructions:
+    reviewer_to_builder:
+      artifacts:
+        - REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03
+        - REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02
+        - REV-GUP-PKT-PHB-110-117-psionics-r06-r02
+        - REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r02
+      disposition: revision_required
+      next_role: builder
+      field_decision: >-
+        "Publish a successor GUP and Approved bundle whose edge CSV, declared row
+        count, operation index, and approved-row set describe the same complete
+        row set exactly once."
+    integrator_to_reviewer:
+      artifact: rulesets/adnd1e/reports/INT-20260817-002.rejected.md
+      section: 'Remediation - Reviewer'
+      text: >-
+        "Emit it as the concatenation of the GUP's `edges.csv` and `pending.csv`,
+        in the row order the `csv_row` values already assume ... Then re-pin
+        `components[0].checksum`. Nothing else needs to change." And: "The
+        Integrator will not concatenate the files itself: choosing which rows
+        constitute the approved set is the packaging decision the Review exists to
+        make."
+
+  why_builder_cannot_simply_comply: >-
+    REPOSITORY_STRUCTURE lists `artifacts/reviews/` and `artifacts/approved/` as
+    Reviewer output, and ARTIFACT_LIFECYCLE section 4 makes the Approved GUP a
+    Reviewer product. A Builder that published an Approved bundle would be
+    approving its own patch, which is the separation this pipeline is built on.
+    The Builder can publish a successor GUP; it cannot publish the bundle that
+    Review packages from it.
+
+  why_a_successor_gup_alone_may_change_nothing: >-
+    The Integrator states the GUP is correct as written: the operation index, the
+    additions/pending split, the node registrations and the exclusion of blocked
+    rows "are all correct as written; they simply describe a file the bundle does
+    not currently carry." If that holds, a Builder successor that changes no row
+    would be a new revision identical to its predecessor, which is not a revision.
+
+  current_row_counts:
+    note: >-
+      Measured from the current GUP leaves. Each reconciles exactly, which is why
+      the defect is packaging rather than content.
+    packets:
+      - gup: GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08
+        edges_csv: 98
+        pending_csv: 133
+        blocked_csv: 2
+        manifest_declared: 231
+      - gup: GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07
+        edges_csv: 48
+        pending_csv: 155
+        blocked_csv: 7
+        manifest_declared: 203
+      - gup: GUP-PKT-PHB-094-100-illusionist-spells-r05
+        edges_csv: 14
+        pending_csv: 106
+        blocked_csv: 6
+        manifest_declared: null
+      - gup: GUP-PKT-PHB-110-117-psionics-r06
+        edges_csv: 14
+        pending_csv: 194
+        blocked_csv: 9
+        manifest_declared: 208
+
+options_considered:
+  - option: >-
+      Builder emits one edge CSV containing the additions and pending rows in
+      `csv_row` order, keeps the classification in `operation_index`, and keeps
+      blocked rows in a separate excluded file
+    impact: >-
+      Gives the Builder a real and mechanical change to make, produces exactly the
+      file the Integrator asked the bundle to carry, and leaves the Reviewer to
+      package and checksum it. The additions/pending distinction survives where the
+      Integrator says it belongs -- in the index, which it already reads -- rather
+      than in the file layout. This is the only reading under which the Reviews'
+      instruction to Builder describes work the Builder both can and must do.
+    builder_preference: recommended
+  - option: >-
+      Reviewer performs the concatenation when emitting the Approved bundle and
+      the Builder revision items are withdrawn
+    impact: >-
+      This is literally what the rejection report asks for and needs no Builder
+      action at all. It is not incompatible with the option above; if the Architect
+      prefers it, the four `revision_required` Reviews should be superseded, because
+      they currently hold Builder work that does not exist.
+    builder_preference: acceptable_and_needs_the_reviews_withdrawn
+  - option: >-
+      Architect defines `pending` and `blocked` Approved-bundle component kinds
+    impact: >-
+      The durable fix for the underlying shape. The Integrator raised this itself
+      and declined to assume it: "No contract, schema or Decision defines a
+      `pending` or `blocked` component kind ... this would be a new bundle shape and
+      an Architect question rather than a packaging fix." It would let the split
+      survive into the bundle instead of being flattened at packaging time.
+    builder_preference: recommended_as_the_durable_fix
+  - option: Reduce the declared row count to the shipped rows
+    impact: >-
+      Not offered. The rejection report rejects it, and it would silently drop rows
+      the Review approved.
+    builder_preference: refused
+  - option: Builder publishes the Approved bundle itself
+    impact: >-
+      Not offered. It would have the Builder approve its own patch.
+    builder_preference: refused
+
+secondary_observation:
+  artifact: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r02
+  detail: >-
+    Its three sibling Reviews each record `integration_rejection` naming
+    INT-20260817-002 with a matching checksum. This one records no
+    `integration_rejection` at all. INT-20260817-002 expressly did not re-reject
+    the illusionist bundle, so its rejections are the earlier INT-20260812-002,
+    INT-20260814-003 and INT-20260815-002.
+  note: >-
+    Raised for confirmation rather than as a claim of defect: DEC-2026-0043
+    requires a rejection-consuming successor Review, and it is not clear from the
+    artifacts whether this Review was intended to consume one of the earlier
+    illusionist rejections. The Reviewer, not the Builder, owns that answer.
+
+current_state:
+  builder_action_taken: >-
+    None on these four packets. No successor GUP has been compiled, because every
+    available reading of the instruction either asks the Builder to publish a
+    Reviewer artifact or asks it to re-emit rows the Integrator has stated are
+    already correct.
+  builder_action_withheld_reason: >-
+    Rebuilding four packets in a direction the Integrator has rejected in writing
+    would waste four Review cycles and could reintroduce the dependency defects
+    that produced the split in the first place.
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  contract_change: true
+  note: >-
+    Adopting the component-kind option would amend the Approved-bundle schema and
+    the WORK_QUEUES bundle-shape rules. The narrower options need only a Decision
+    stating which role emits the complete edge component.
+
+blocking: >-
+  Four Builder revision items cannot be actioned, and four approved packets
+  totalling roughly 780 reviewed rows cannot reach Integration.

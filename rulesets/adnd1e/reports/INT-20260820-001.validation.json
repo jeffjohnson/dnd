@@ -1,0 +1,256 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20260820-001",
+  "ruleset_id": "adnd1e",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-08-20T17:15:25.651Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-MIG-DEC-2026-0050-r04-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:c7046a7547f0ad3d86a39c9d1271272a20c6d4f714280c6921e3f47bd08307b5 actual=sha256:c7046a7547f0ad3d86a39c9d1271272a20c6d4f714280c6921e3f47bd08307b5"
+        },
+        {
+          "check": "component checksum matches: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0050-r04.yaml",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:5c6d364fd79c4b80c9fef71a75c995052209b7628a41e0a317a03542551db9d0 actual=sha256:5c6d364fd79c4b80c9fef71a75c995052209b7628a41e0a317a03542551db9d0"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-MIG-DEC-2026-0050-r04.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:048608eaef3c9c60c42e1db12d84397c5af0169d2455d79b3bf1bc15e65539ed actual=sha256:048608eaef3c9c60c42e1db12d84397c5af0169d2455d79b3bf1bc15e65539ed"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0050-r04.yaml: declared=sha256:5c6d364fd79c4b80c9fef71a75c995052209b7628a41e0a317a03542551db9d0 actual=sha256:5c6d364fd79c4b80c9fef71a75c995052209b7628a41e0a317a03542551db9d0"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "direct migration declares artifact_kind decision_migration",
+          "result": "pass",
+          "blocking": true,
+          "detail": "artifact_kind='decision_migration'"
+        },
+        {
+          "check": "direct migration carries no edge CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "an edge CSV is forbidden in this bundle shape"
+        },
+        {
+          "check": "direct migration names exactly one migration and one validation component",
+          "result": "pass",
+          "blocking": true,
+          "detail": "2 component(s), kinds=['decision_migration', 'validation']"
+        },
+        {
+          "check": "direct migration pins both approval checksums",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approves.gup_checksum and approves.review_checksum are mandatory for this model"
+        },
+        {
+          "check": "migration component is the GUP the Review approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "component=books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0050-r04.yaml reviewed=books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0050-r04.yaml approves.gup_checksum=sha256:5c6d364fd79c4b80c9fef71a75c995052209b7628a41e0a317a03542551db9d0 actual=sha256:5c6d364fd79c4b80c9fef71a75c995052209b7628a41e0a317a03542551db9d0"
+        },
+        {
+          "check": "migration plan is a well-formed decision_migration_v1 operation set",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'node_additions': 0, 'node_replacements': 3, 'endpoint_repoints': 50, 'row_removals': 0, 'label_normalizations': 7, 'normalized_label_fields': 14}"
+        },
+        {
+          "check": "manifest names exactly the plan's authority Decisions",
+          "result": "pass",
+          "blocking": true,
+          "detail": "manifest=['DEC-2026-0050'] plan=['DEC-2026-0050']"
+        },
+        {
+          "check": "manifest authority Decision checksum matches the reviewed plan: DEC-2026-0050",
+          "result": "pass",
+          "blocking": true,
+          "detail": "manifest=sha256:75891a395ec69a6e92ade9269ee4c55468725df26b3bde6c187432fa055c423c plan=sha256:75891a395ec69a6e92ade9269ee4c55468725df26b3bde6c187432fa055c423c"
+        },
+        {
+          "check": "authority Decision matches on disk: DEC-2026-0050",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:75891a395ec69a6e92ade9269ee4c55468725df26b3bde6c187432fa055c423c actual=sha256:75891a395ec69a6e92ade9269ee4c55468725df26b3bde6c187432fa055c423c"
+        },
+        {
+          "check": "migration baselines match the pinned canonical and registry state",
+          "result": "pass",
+          "blocking": true,
+          "detail": "both baselines current"
+        },
+        {
+          "check": "every enumerated before-image matches canonical exactly",
+          "result": "pass",
+          "blocking": true,
+          "detail": "50 repoint(s), 7 normalization(s), 0 removal(s)"
+        },
+        {
+          "check": "every normalized label is the endpoint's current registry label",
+          "result": "pass",
+          "blocking": true,
+          "detail": "14 label field(s)"
+        },
+        {
+          "check": "the plan's declared counts match the operations it carries",
+          "result": "pass",
+          "blocking": true,
+          "detail": "counts agree"
+        },
+        {
+          "check": "each replacement enumerates its complete incident row set",
+          "result": "pass",
+          "blocking": true,
+          "detail": "3 replacement(s)"
+        },
+        {
+          "check": "registry additions are absent and retired IDs are present",
+          "result": "pass",
+          "blocking": true,
+          "detail": "registry targets consistent"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 1697,
+      "by_invariant": {
+        "3": 16,
+        "11": 9,
+        "16": 1672
+      },
+      "affected_rows": 1674,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 1691,
+      "by_invariant": {
+        "3": 10,
+        "11": 9,
+        "16": 1672
+      }
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 4501,
+    "edges_after": 4501,
+    "edges_updated_in_place": 0,
+    "nodes_before": 1226,
+    "nodes_after": 1226,
+    "registry_before": 1243,
+    "registry_after": 1243,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [],
+    "registry_derived_resync": 3,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

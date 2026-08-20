@@ -22,7 +22,7 @@ import yaml
 import _bootstrap
 from _bootstrap import REPO_ROOT, RULESET_ID
 
-from adnd1e_integrator.bundles import discover
+from adnd1e_integrator.bundles import discover, ready_queue
 from adnd1e_integrator.canonical import (
     CanonicalGraph, CanonicalPaths, Registry, read_csv_rows)
 from adnd1e_integrator.checksums import checksum_file
@@ -36,6 +36,11 @@ SPELLS = "APPROVED-GUP-PKT-PHB-040-042-spells-intro-r04-r01"
 CLASSES = "APPROVED-GUP-PKT-PHB-018-033-classes-r09-r01"
 CLERIC_SPELLS = "APPROVED-GUP-PKT-PHB-043-054-cleric-spells-r04-r01"
 
+#: The bundles these tests re-apply. Only these are rewound: the clone's registry
+#: is shared, so rewinding a sibling too would retire identities the target
+#: depends on but does not itself register.
+REAPPLIED = {ABILITY, SPELLS, CLASSES, CLERIC_SPELLS}
+
 
 def bundle_by_id(root: Path, bundle_id: str):
     bundles, _ = discover(root, RULESET_ID, "phb")
@@ -46,9 +51,41 @@ def load_review(bundle) -> dict:
     return bundle.review or yaml.safe_load(bundle.review_path.read_text(encoding="utf-8"))
 
 
+def reapplied_batch(root: Path) -> list:
+    """Exactly the bundles `clone_repo(rewind_only=REAPPLIED)` rewound.
+
+    These tests need a batch that actually exercises updates and registrations,
+    and the live ready queue is empty, so they pin a representative set instead
+    of integrating whatever `discover` returns. Discovery is not a batch: it also
+    yields superseded, already-integrated and rejected bundles, and applying a
+    GUP alongside the revision that supersedes it is not an integration the
+    Integrator would ever perform.
+
+    Rewinding and re-applying the same set is what keeps the fixture honest --
+    the registry is shared, so a bundle rewound but not re-applied would retire
+    identities its siblings legitimately depend on.
+    """
+    return [bundle_by_id(root, bundle_id) for bundle_id in sorted(REAPPLIED)]
+
+
 class TestOperationIndex(unittest.TestCase):
     def test_every_csv_row_is_classified_exactly_once(self):
-        for bundle in discover(REPO_ROOT, RULESET_ID, "phb")[0]:
+        """Every bundle the Integrator has applied, or still may, classifies once.
+
+        Scope is the live queue, not raw discovery. A direct migration carries
+        its plan in the checksummed GUP and is forbidden an edge CSV
+        (WORK_QUEUES 31), so it has no rows to classify at all. A superseded
+        bundle is history. A rejected bundle is refused *because* its operation
+        index is unusable -- two of the current ones classify none of their 98
+        and 48 rows -- so asserting the property over them would assert that the
+        rejection lifecycle does not exist.
+        """
+        queue = ready_queue(REPO_ROOT, RULESET_ID, ["phb"])
+        live = queue["ready"] + [bundle for bundle, _ in queue["integrated"]]
+        self.assertTrue(live, "expected at least one live bundle to classify")
+        for bundle in live:
+            if bundle.is_direct_migration:
+                continue
             rows = read_csv_rows(bundle.edges_path)
             operations = read_operations(bundle.manifest, load_review(bundle), len(rows))
             claimed = sorted(operations.added_rows + [u.csv_row for u in operations.updates])
@@ -110,7 +147,7 @@ class TestCompareAndSwap(unittest.TestCase):
     def test_stale_precondition_aborts_without_writing(self):
         """If canonical no longer holds the declared value, the row moved."""
         with tempfile.TemporaryDirectory() as tmp:
-            root = clone_repo(Path(tmp))
+            root = clone_repo(Path(tmp), rewind_only=REAPPLIED)
             paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
             self._mutate_manifest(
                 root, ABILITY,
@@ -126,7 +163,7 @@ class TestCompareAndSwap(unittest.TestCase):
 
     def test_wrong_line_number_is_caught_by_endpoint_identity(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = clone_repo(Path(tmp))
+            root = clone_repo(Path(tmp), rewind_only=REAPPLIED)
             paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
             self._mutate_manifest(
                 root, ABILITY,
@@ -147,7 +184,7 @@ class TestCompareAndSwap(unittest.TestCase):
         canonical row must match the *declared* endpoints, not the patch's.
         """
         with tempfile.TemporaryDirectory() as tmp:
-            root = clone_repo(Path(tmp))
+            root = clone_repo(Path(tmp), rewind_only=REAPPLIED)
             paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
             bundle = bundle_by_id(root, CLASSES)
             rows = read_csv_rows(bundle.edges_path)
@@ -163,10 +200,10 @@ class TestCompareAndSwap(unittest.TestCase):
                     if field in update.changes:
                         self.assertEqual(current[field], update.changes[field]["canonical"])
 
-            # The whole queue: these bundles reference each other's registrations,
-            # and the clone is rewound past all of them.
-            bundles, _ = discover(root, RULESET_ID, "phb")
-            integrate(root, RULESET_ID, bundles, integration_id="INT-19700101-017")
+            # These bundles reference each other's registrations, so the batch
+            # must be the same set the clone was rewound past.
+            integrate(root, RULESET_ID, reapplied_batch(root),
+                      integration_id="INT-19700101-017")
             after = CanonicalGraph.load(paths).edges
             for update in repoints:
                 row = after[update.canonical_index]
@@ -176,7 +213,7 @@ class TestCompareAndSwap(unittest.TestCase):
     def test_repoint_still_catches_a_wrong_line_number(self):
         """Declaring an endpoint change must not weaken the line-number check."""
         with tempfile.TemporaryDirectory() as tmp:
-            root = clone_repo(Path(tmp))
+            root = clone_repo(Path(tmp), rewind_only=REAPPLIED)
             paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
             bundle = bundle_by_id(root, CLASSES)
             rows = read_csv_rows(bundle.edges_path)
@@ -204,7 +241,7 @@ class TestCompareAndSwap(unittest.TestCase):
         update guard rather than stopping at the earlier checksum precondition.
         """
         with tempfile.TemporaryDirectory() as tmp:
-            root = clone_repo(Path(tmp))
+            root = clone_repo(Path(tmp), rewind_only=REAPPLIED)
             csv_path = (root / "books" / RULESET_ID / "phb" / "artifacts" / "approved"
                         / f"{ABILITY}.edges.csv")
             lines = csv_path.read_bytes().decode("utf-8").split("\n")
@@ -223,7 +260,7 @@ class TestCompareAndSwap(unittest.TestCase):
 
     def test_update_rewrites_only_its_own_row(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = clone_repo(Path(tmp))
+            root = clone_repo(Path(tmp), rewind_only=REAPPLIED)
             paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
             before = CanonicalGraph.load(paths).edges
             bundle = bundle_by_id(root, ABILITY)
@@ -270,12 +307,12 @@ class TestRegistryAdditions(unittest.TestCase):
 
     def test_registrations_land_and_are_used(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = clone_repo(Path(tmp))
+            root = clone_repo(Path(tmp), rewind_only=REAPPLIED)
             paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
             before = Registry.load(paths.registry).ids
 
-            bundles, _ = discover(root, RULESET_ID, "phb")
-            batch = integrate(root, RULESET_ID, bundles, integration_id="INT-19700101-014")
+            batch = integrate(root, RULESET_ID, reapplied_batch(root),
+                              integration_id="INT-19700101-014")
 
             after = Registry.load(paths.registry)
             added = after.ids - before
@@ -298,10 +335,10 @@ class TestRegistryAdditions(unittest.TestCase):
         would reject an Approved bundle over a rule no contract states.
         """
         with tempfile.TemporaryDirectory() as tmp:
-            root = clone_repo(Path(tmp))
+            root = clone_repo(Path(tmp), rewind_only=REAPPLIED)
             paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
-            bundles, _ = discover(root, RULESET_ID, "phb")
-            batch = integrate(root, RULESET_ID, bundles, integration_id="INT-19700101-019")
+            batch = integrate(root, RULESET_ID, reapplied_batch(root),
+                              integration_id="INT-19700101-019")
 
             self.assertTrue(batch.registrations_without_edges)
             registry = Registry.load(paths.registry)
@@ -314,12 +351,26 @@ class TestRegistryAdditions(unittest.TestCase):
                 self.assertEqual(row.values["roles"], "")
 
     def test_duplicate_registration_is_refused(self):
+        """Invariant 4: one canonical identity per node ID.
+
+        The conflict has to be a *disagreeing* one. The rewind keeps a
+        registration whose node still anchors a surviving edge, so this squats
+        the existing identity's label rather than assuming the row was retired;
+        re-adding the ID with its own label is an agreeing redeclaration, which
+        is legal and is covered in `test_registration_agreement`.
+        """
+        squatter = {"id": "rule_prime_requisite", "label": "Squatter", "kind": "rule",
+                    "degree": "0", "roles": ""}
         with tempfile.TemporaryDirectory() as tmp:
-            root = clone_repo(Path(tmp))
+            root = clone_repo(Path(tmp), rewind_only=REAPPLIED)
             paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
             registry = Registry.load(paths.registry)
-            registry.add({"id": "rule_prime_requisite", "label": "Squatter", "kind": "rule",
-                          "degree": "0", "roles": ""})
+            existing = next((r for r in registry.rows
+                             if r.values["id"] == squatter["id"]), None)
+            if existing is None:
+                registry.add(squatter)
+            else:
+                existing.values.update(squatter)
             registry.save(paths.registry)
 
             with self.assertRaises(IntegrationError) as caught:
@@ -329,10 +380,10 @@ class TestRegistryAdditions(unittest.TestCase):
 
     def test_registry_derived_columns_track_canonical(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = clone_repo(Path(tmp))
+            root = clone_repo(Path(tmp), rewind_only=REAPPLIED)
             paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
-            bundles, _ = discover(root, RULESET_ID, "phb")
-            integrate(root, RULESET_ID, bundles, integration_id="INT-19700101-016")
+            integrate(root, RULESET_ID, reapplied_batch(root),
+                      integration_id="INT-19700101-016")
 
             nodes = {n["id"]: n for n in CanonicalGraph.load(paths).nodes}
             for row in Registry.load(paths.registry).rows:

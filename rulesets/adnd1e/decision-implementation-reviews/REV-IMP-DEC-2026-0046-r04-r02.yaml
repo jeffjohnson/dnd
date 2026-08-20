@@ -1,0 +1,43 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0046-r04-r02
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: REV-IMP-DEC-2026-0046-r04-r01
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: After DEC-2026-0048's scanner correction is published, reissue this report against its current checksums for a fresh independent approval.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0046-r04
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0046-r04.yaml
+  checksum: sha256:32ab9e928719f4075a181db1c1231d7f329439f5f3e0b1c951f02322d1a79ba2
+decision_input:
+  id: DEC-2026-0046
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0046.yaml
+  checksum: sha256:2ebc1d44dfb1fb51583415f535896f41dac2bc64a6bfef4157c99e89486bbe0b
+acceptance_dispositions:
+- acceptance_test_index: 1
+  disposition: verified
+  evidence: Post-approval implementation-file drift remains informational only under an exact valid Approved Review.
+- acceptance_test_index: 2
+  disposition: verified
+  evidence: Drift without a valid Approved Review and non-drift defects remain blocking errors.
+- acceptance_test_index: 3
+  disposition: verified
+  evidence: The drift exception remains limited to the completed lineage and does not hide later Decision work.
+- acceptance_test_index: 4
+  disposition: failed
+  evidence: The independently re-derived versioned contract evidence is authorized and correct, but cannot yet be approved because the DEC-2026-0048 scanner implementation rejects its required Review disposition.
+independent_validation:
+  passed: false
+  commands:
+  - command: '[cwd tooling/common] scan_agent_queues.py --root ../.. --json'
+    exit_code: 1
+    result: failed
+    summary: The required versioned-content Review disposition is rejected by the current scanner; refer to REV-IMP-DEC-2026-0048-r01-r02.
+overall_disposition: revision_required

@@ -1,0 +1,70 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0043-r01-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: The report must be reissued after the Architect-owned contract and role-instruction
+    changes required by DEC-2026-0043 are published and validated.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0043-r01
+  path: rulesets\adnd1e\decision-implementations\IMP-DEC-2026-0043-r01.yaml
+  checksum: sha256:fe440a1dcfa3ec386dee66007cd0f3a782cbff00973c2b0520096b2244ea150a
+decision_input:
+  id: DEC-2026-0043
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0043.yaml
+  checksum: sha256:e54110f315795a173e3e1f0fd261f0674c1462e6c85fa19990bad0141e0ce7af
+acceptance_dispositions:
+- acceptance_test_index: 1
+  disposition: verified
+  evidence: Independently verified the current Decision test, report provenance, recorded
+    implementation-file checksums, and current common and Builder validation.
+- acceptance_test_index: 2
+  disposition: verified
+  evidence: Independently verified the current Decision test, report provenance, recorded
+    implementation-file checksums, and current common and Builder validation.
+- acceptance_test_index: 3
+  disposition: verified
+  evidence: Independently verified the current Decision test, report provenance, recorded
+    implementation-file checksums, and current common and Builder validation.
+- acceptance_test_index: 4
+  disposition: verified
+  evidence: Independently verified the current Decision test, report provenance, recorded
+    implementation-file checksums, and current common and Builder validation.
+- acceptance_test_index: 5
+  disposition: failed
+  evidence: DEC-2026-0043 exact_diff requires the Architect-owned updates to contracts/WORK_QUEUES.md,
+    contracts/ARTIFACT_LIFECYCLE.md, agents/integrator/INSTRUCTIONS.md, and agents/reviewer/INSTRUCTIONS.md.
+    The first two remain at versions 1.11 and 1.9, and none records the Decision-required
+    rejection lifecycle; therefore the all-applicable contract/repository implementation
+    is incomplete despite passing code suites.
+independent_validation:
+  passed: false
+  commands:
+  - command: Read DEC-2026-0043 exact_diff against current contract and role-instruction
+      files
+    exit_code: 1
+    result: failed
+    summary: Required Architect-owned lifecycle and instruction updates are absent;
+      WORK_QUEUES and ARTIFACT_LIFECYCLE remain at 1.11 and 1.9.
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common python -m unittest discover
+      -s tests -p test_*.py -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 474 tests in 123.464s; code tests do not substitute for the missing
+      governed files.
+overall_disposition: revision_required
+required_correction:
+  owner: architect_then_builder
+  architect_action: Publish the exact contract and role-instruction updates listed
+    in DEC-2026-0043.exact_diff.
+  builder_action: Reissue the implementation report with current checksums and validation
+    after those governed updates exist.
+

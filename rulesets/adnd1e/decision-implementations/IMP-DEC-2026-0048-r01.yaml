@@ -1,0 +1,113 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0048-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0048
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml
+  checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:46a70321ce8aca78e4d704e6f3b30c2fec83f89bb9ab3318e9bf2166f07b15b7
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:a243b60067d9b0694a8b7185c89dd414d0c9db11338271f87fa8f80b1f6c9b0f
+- path: agents/architect/INSTRUCTIONS.md
+  checksum: sha256:c2911033c12bcaf1f9411730c17c2a8d19cfc040ea13944826fefe382a4e75c4
+- path: agents/reviewer/INSTRUCTIONS.md
+  checksum: sha256:71863c4ce975b86f4bc868259939120c319369cae896edd9b1e1e0f25e635582
+- path: schemas/common/architect-decision.schema.json
+  checksum: sha256:b4004bd9fb4d3704c15670c6880416f60d07f9e9563ff4a4e0f030a7b4fc0d2e
+- path: schemas/common/decision-implementation.schema.json
+  checksum: sha256:32530912b31236fc8f3573ae4fefcd2eda33f8e8c417c35907bcbf854389cee4
+- path: schemas/common/decision-implementation-review.schema.json
+  checksum: sha256:461c54b38668c3ba95309f73fe816731a98b0351e2c8bc52a2ffc7fb39c8c007
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:f7cab29e0ce2e2be588f2039e9cf6206c72e966d3b9dcccc8e93601cbdcc756e
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:cac2a11c33849f97b235e2934be7b43594a5fc3f09ffdaf513e630b4074192aa
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-19T09.31.06.244Z.yaml
+  checksum: sha256:3d5f4f24c157f95d76c667006e208fc5820a7363bf0d71124ca0820a931fc53d
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml
+  checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: VERIFIED AGAINST THE PUBLISHED FILES, WHICH THE ARCHITECT WROTE. contracts/WORK_QUEUES.md
+    is Version 1.15; core rule 16 (lines 58-64) makes a contract version a minimum-version predicate only
+    under declared versioned_contract_content semantics or a later legacy authorization, and states that
+    an unstructured exact-version statement stays literal. The 'Versioned Contract-Content Acceptance'
+    section (line 66) requires 'Version N or later' plus enumerated paths, minimums and anchors, fixes
+    the outcome as passed in the report and verified_versioned_contract_content in the Review, and says
+    in terms that it is not retired_by_lineage. Contract acceptance test 48 records the queue criteria.
+    contracts/ARTIFACT_LIFECYCLE.md is Version 1.11 and its section 6 (lines 197-203) gives the same rule
+    as current-state verification rather than a retirement outcome.
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED. schemas/common/architect-decision.schema.json extends acceptance_test_semantics.kind
+    with versioned_contract_content, requires its `contracts` when that kind is declared, adds contract_version_acceptance_authorizations
+    pinning decision_input, acceptance_test_index and contracts, and adds $defs.contractAnchorSet requiring
+    path, minimum_version and a nonempty substantive_anchors set. decision-implementation.schema.json
+    adds the versioned_contract_content evidence block (authority, authorized index, and per-contract
+    path, checksum, observed and minimum version, anchors_present) and forbids carrying it on a retired_by_lineage
+    result. decision-implementation-review.schema.json adds the verified_versioned_contract_content disposition,
+    requires its matching evidence and forbids that evidence on any other disposition, and admits the
+    disposition to the approved branch. All 49 published Decisions, and every published report and implementation
+    Review, validate no worse than before: measured against the pre-change schemas the same legacy artifacts
+    fail for the same pre-existing reasons, and this change introduces none.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED, ONE NAMED REJECTION PER TEST. tooling/common/scan_agent_queues.py
+    adds _versioned_content_errors, folded into _implementation_report_errors so an invalid report is
+    diagnostic and cannot be approval-ready, plus _declared_contract_version and _version_tuple, which
+    read the version from the contract file rather than from the report. VersionedContractContentCase
+    covers absent authority, stale authority checksum, an authorization pinned to a different Decision
+    checksum, a mismatched authorized index, no authorization for the claimed index, below-minimum version,
+    incomplete anchors, stale contract checksum, an observed version disagreeing with the file, a declared
+    minimum below the authorized one, evidence for an unauthorized contract, missing evidence for an authorized
+    one, and this outcome on a failed result. test_an_invalid_report_is_not_approval_ready fixes the queue
+    consequence: the report does not reach Reviewer and the Decision returns to its owner. test_the_floor_compares_numerically_not_as_text
+    pins that 1.9 is below 1.12. Valid evidence stays reviewable: test_valid_evidence_reaches_the_reviewer.
+    35 targeted tests pass.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'DONE IN THIS SAME BATCH. IMP-DEC-2026-0045-r05 and IMP-DEC-2026-0046-r04 carry versioned_contract_content
+    evidence built directly from this Decision''s contract_version_acceptance_authorizations, so the minimums
+    and anchors are the Architect''s rather than retyped: DEC-2026-0045 acceptance test 1 against WORK_QUEUES
+    1.12 or later and ARTIFACT_LIFECYCLE 1.10 or later, and DEC-2026-0046 acceptance test 4 against WORK_QUEUES
+    1.13 or later. Each uses only its own authorized index. Current state recorded and independently checked
+    against the files: WORK_QUEUES is 1.15 and ARTIFACT_LIFECYCLE is 1.11, both at or above every floor,
+    and all eight authorized anchors were located in the current text before being claimed present. The
+    authorization checksums for both target Decisions match the live files.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: All four acceptance tests are implemented and evidenced. The schema shapes, the queue validation
+    and its 35 targeted tests are published, and the two authorized report successors are issued in this
+    same batch under this Decision's exact authorizations. All three suites are green.
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0048-r01.validation.json
+validation_report_checksum: sha256:d62668e94cdceb54706fe211f7092fea6f917edb0a368e06dd0ad05c19e456c3
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 595 tests in 93.868s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.VersionedContractContentCase
+      test_scan_agent_queues.TestVersionedContractHelpers'
+    exit_code: 0
+    result: passed
+    summary: Ran 35 tests in 0.478s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 610 tests in 81.691s (38 skipped) OK

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import unittest
 
 import yaml
@@ -9,7 +10,17 @@ import yaml
 import _bootstrap
 from _bootstrap import REPO_ROOT
 
-from adnd1e_builder.registry import ID_FORMAT, NodeRegistry, normalize_label, prefix_of
+import json
+import tempfile
+from pathlib import Path
+
+from adnd1e_builder.registry import (
+    ID_FORMAT,
+    NodeRegistry,
+    load_applied_retirements,
+    normalize_label,
+    prefix_of,
+)
 from adnd1e_builder.vocab import (
     COLUMNS,
     EDGE_DIRECTION,
@@ -186,8 +197,16 @@ class TestConstitutionVersion(unittest.TestCase):
         # if it were readable work. That contract is the one `pagemarkers.py`
         # implements, so this is the Builder's dependency rather than the
         # constitution prose, which states the rule by reference.
+        # 1.4 adds defining-locus-versus-secondary-mention. The version number
+        # is asserted as a floor rather than an equality: the Builder's
+        # dependency is that these sections exist, and pinning the exact
+        # revision made a legitimate Architect amendment look like a defect.
         text = (REPO_ROOT / "contracts" / "SOURCE_MARKDOWN.md").read_text(encoding="utf-8")
-        self.assertIn("**Version 1.3.**", text)
+        declared = re.search(r"^\*\*Version (\d+)\.(\d+)\.\*\*$", text, re.MULTILINE)
+        self.assertIsNotNone(declared, "SOURCE_MARKDOWN.md declares no version")
+        self.assertGreaterEqual(
+            (int(declared.group(1)), int(declared.group(2))), (1, 3)
+        )
         self.assertIn("Page Authority and Conflicts", text)
         self.assertIn("Source Identity Authority and Conflicts", text)
         self.assertIn("External Source Intake", text)
@@ -342,6 +361,175 @@ class TestRegistry(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+class TestRetiredIdentityResolution(unittest.TestCase):
+    """A GUR authored before a merge integrates must still compile.
+
+    A GUR is immutable and names the node IDs that were canonical the day the
+    Analyst wrote it. When the merge it anticipated integrates first, those IDs
+    leave the registry and the survivors arrive in their place --
+    `GUR-PKT-UA-014-016-cavalier-r02` names `str_exceptional` for M048, and
+    INT-20260818-001 retired it into `abil_str_exceptional` under DEC-2026-0038
+    hours before the GUP was compiled.
+
+    Before this, the retired ID resolved to nothing, the normalized-label
+    fallback then found the survivor by its label, and the Builder correctly
+    refused to trust that under invariant 4 -- so a whole packet stopped at an
+    identity escalation the repository had already answered in writing.
+    ESCALATION_CONTRACT is explicit that a known canonical ID is not an
+    escalation, so escalating there was the wrong outcome, not merely a slow one.
+
+    The two evidence sources are not interchangeable and this is the whole point
+    of the ordering: a label match is a guess, while an Integration manifest's
+    `nodes_retired` row is the Integrator's record of a transaction it committed
+    under an approved Decision.
+    """
+
+    MANIFEST = {
+        "integration_id": "INT-19700101-001",
+        "registry_changes": {
+            "nodes_retired": [
+                {
+                    "id": "str_exceptional",
+                    "label": "Exceptional Strength",
+                    "replaced_by": "abil_str_exceptional",
+                    "authority": "DEC-2026-9999",
+                    "operation": "merge",
+                },
+                # A retirement with no successor: a removal, nothing to repoint to.
+                {"id": "gone_entirely", "label": "Gone", "authority": "DEC-2026-9999"},
+                # A successor that never made it into the registry.
+                {
+                    "id": "points_nowhere",
+                    "replaced_by": "abil_not_registered",
+                    "authority": "DEC-2026-9999",
+                },
+            ]
+        },
+    }
+
+    ROWS = [
+        "id,label,kind,degree,roles",
+        "abil_str_exceptional,Exceptional Strength,abil,9,",
+        "abil_strength,Strength,abil,68,",
+    ]
+
+    #: Distinct from None, which would be ambiguous with "write no manifest".
+    DEFAULT = object()
+
+    def build(self, *, manifest=DEFAULT, rows=None):
+        """A ruleset tree shaped like the real one: registries/ beside manifests/."""
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        (root / "registries").mkdir(parents=True)
+        (root / "manifests").mkdir(parents=True)
+        registry = root / "registries" / "nodes.csv"
+        registry.write_text(
+            "\n".join(self.ROWS if rows is None else rows) + "\n", encoding="utf-8"
+        )
+        document = self.MANIFEST if manifest is self.DEFAULT else manifest
+        if document is not None:
+            (root / "manifests" / "INT-19700101-001.json").write_text(
+                json.dumps(document), encoding="utf-8"
+            )
+        return NodeRegistry.load(registry)
+
+    def test_a_retired_id_resolves_to_its_recorded_survivor(self):
+        resolution = self.build().resolve("str_exceptional", "Exceptional Strength")
+        self.assertEqual(resolution.method, "retired_replacement")
+        self.assertEqual(resolution.resolved_id, "abil_str_exceptional")
+        self.assertTrue(resolution.canonical)
+
+    def test_the_resolution_carries_the_record_that_justifies_it(self):
+        """A Reviewer must be able to audit the substitution to its source."""
+        resolution = self.build().resolve("str_exceptional", "Exceptional Strength")
+        self.assertEqual(resolution.retirement_authority, "DEC-2026-9999")
+        self.assertEqual(resolution.retirement_integration_id, "INT-19700101-001")
+        self.assertIn("abil_str_exceptional", resolution.detail)
+        self.assertIn("DEC-2026-9999", resolution.detail)
+
+    def test_the_record_wins_over_the_label_fallback(self):
+        """Both would answer here; only one of them is evidence.
+
+        The label points at the same node, so the outcome looks identical -- but
+        the method must show the retirement record, because that is what makes
+        the answer checkable rather than lucky.
+        """
+        resolution = self.build().resolve("str_exceptional", "Exceptional Strength")
+        self.assertEqual(resolution.method, "retired_replacement")
+        self.assertNotEqual(resolution.method, "normalized_label")
+
+    def test_a_retirement_with_no_successor_does_not_resolve(self):
+        resolution = self.build().resolve("gone_entirely", "Gone")
+        self.assertEqual(resolution.method, "unresolved")
+        self.assertIsNone(resolution.resolved_id)
+
+    def test_a_successor_absent_from_the_registry_does_not_resolve(self):
+        """Repointing at an unregistered ID would breach invariant 1."""
+        resolution = self.build().resolve("points_nowhere", "Whatever")
+        self.assertEqual(resolution.method, "unresolved")
+
+    def test_an_unrelated_unknown_id_is_untouched(self):
+        self.assertEqual(self.build().resolve("no_such_node", "").method, "unresolved")
+
+    def test_a_live_id_still_resolves_exactly(self):
+        resolution = self.build().resolve("abil_strength", "Strength")
+        self.assertEqual(resolution.method, "exact")
+
+    def test_no_manifests_means_no_retirements_and_no_behaviour_change(self):
+        registry = self.build(manifest=None)
+        self.assertEqual(registry.retirements, {})
+        # With nothing recorded, the label fallback is reached exactly as before.
+        self.assertEqual(
+            registry.resolve("str_exceptional", "Exceptional Strength").method,
+            "normalized_label",
+        )
+
+    def test_an_unreadable_manifest_is_skipped_rather_than_fatal(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        (root / "registries").mkdir(parents=True)
+        (root / "manifests").mkdir(parents=True)
+        registry = root / "registries" / "nodes.csv"
+        registry.write_text("\n".join(self.ROWS) + "\n", encoding="utf-8")
+        (root / "manifests" / "broken.json").write_text("{not json", encoding="utf-8")
+        self.assertEqual(NodeRegistry.load(registry).retirements, {})
+
+
+class TestLiveRetirementCorpus(unittest.TestCase):
+    """The real registry and the real integration records."""
+
+    def registry(self):
+        return NodeRegistry.load(REGISTRY_PATH)
+
+    def test_every_recorded_retirement_left_the_registry(self):
+        registry = self.registry()
+        if not registry.retirements:
+            self.skipTest("no integration has retired a node yet")
+        for retired in sorted(registry.retirements):
+            self.assertNotIn(retired, registry, f"{retired} is retired but still registered")
+
+    def test_every_recorded_survivor_is_registered_and_reachable(self):
+        registry = self.registry()
+        if not registry.retirements:
+            self.skipTest("no integration has retired a node yet")
+        for retired, row in sorted(registry.retirements.items()):
+            self.assertIn(row["replaced_by"], registry)
+            resolution = registry.resolve(retired, "")
+            self.assertEqual(resolution.method, "retired_replacement")
+            self.assertEqual(resolution.resolved_id, row["replaced_by"])
+
+    def test_every_retirement_names_its_authority_decision(self):
+        """An unattributed retirement could not be audited back to a ruling."""
+        registry = self.registry()
+        if not registry.retirements:
+            self.skipTest("no integration has retired a node yet")
+        for retired, row in sorted(registry.retirements.items()):
+            self.assertRegex(row["authority"], r"^DEC-\d{4}-\d{4}$", retired)
 
 
 class TestAssertionKeyMatchesGovernance(unittest.TestCase):

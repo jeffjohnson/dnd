@@ -1,0 +1,222 @@
+schema_version: '1.0'
+id: DEC-2026-0039
+status: approved
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-015-015-cavaliers
+constitution_version: '1.8'
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the terminal-GUR-withdrawal and malformed-GUR-handoff queue rules,
+    including scanner tests and an implementation report. In parallel, the
+    Analyst publishes the named immutable successor repair so the common suite
+    and blocked Decision Implementation lineages are released without delay.
+  blocking_ids: []
+
+decision_date: '2026-08-15'
+escalation_id: ESC-2026-08-15T13.10.23.383Z
+
+question: >-
+  How does the repository withdraw a GUR whose source scope is wholly superseded
+  by a later packet, and who repairs a published active GUR whose attempted
+  terminal handoff is schema-invalid and therefore mis-routed to Builder?
+
+ruling: >-
+  Retain the existing handoff vocabulary. A source-superseded GUR is withdrawn
+  only by an immutable Analyst-authored successor revision with no proposals,
+  a withdrawal record naming the replacement packet or GUR, and
+  `handoff.next_role: none` plus `handoff.readiness: terminal`. A terminal GUR
+  leaf creates no Builder job and needs no empty GUP or Review. A present but
+  malformed GUR handoff is not legacy: the scanner emits exactly one
+  `gur_invalid_handoff` error diagnostic and exactly one ready
+  `ANALYST-GUR-REPAIR` item for the active leaf, while suppressing ordinary
+  Builder routing and legacy inference. This narrow repair rule applies only to
+  GURs. The Analyst must repair the named UA artifact by publishing r03, never
+  by rewriting r02.
+
+rationale:
+  - >-
+    The envelope already defines the terminal form precisely. Adding `withdrawn`
+    to readiness would duplicate terminality and require every consumer to learn
+    a second spelling of the same workflow state.
+  - >-
+    A handoff that exists but violates the schema is positive evidence of a
+    broken workflow, not missing metadata eligible for legacy inference.
+  - >-
+    GUR provenance and interpretation are Analyst-owned. Routing a malformed
+    GUR to Builder invites either an impermissible rewrite of a published Analyst
+    artifact or a synthetic empty GUP with no semantic purpose.
+  - >-
+    The scope is intentionally limited to active-leaf GURs. Expanding a repair
+    ownership taxonomy to every artifact type is unnecessary to resolve this
+    recurring failure mode.
+
+withdrawal_contract:
+  applies_to: graph_update_recommendation
+  permitted_when: >-
+    A later packet wholly supersedes the earlier GUR's source scope and its
+    analysis is re-derived in the replacement packet lineage.
+  successor_requirements:
+    - A later GUR revision with `supersedes` naming the withdrawn GUR.
+    - '`status: withdrawn` is permitted, but terminality is expressed only by the handoff.'
+    - A `withdrawal` record that names the replacement packet or GUR and explains scope replacement.
+    - Empty candidate node, edge, domain, general-rule, and escalation proposal collections.
+    - 'handoff: {next_role: none, readiness: terminal, blocking_ids: []} with a nonempty reason.'
+  prohibited:
+    - Editing, moving, or deleting the published withdrawn revision.
+    - Publishing an empty GUP or Review merely to consume a terminal withdrawal.
+    - Treating a terminal handoff as a legacy omission.
+
+queue_contract:
+  applies_to: active_leaf_gur_with_present_invalid_handoff
+  owner: analyst
+  diagnostic:
+    severity: error
+    code: gur_invalid_handoff
+    required_content: >-
+      Name the GUR, identify the invalid handoff fields or invariant, and state
+      that Analyst must publish a schema-valid successor revision.
+  queue_item:
+    state: ready
+    queue: ANALYST-GUR-REPAIR
+    role: Analyst
+    input: exact active GUR ID and path
+  normal_routing_suppressed:
+    - BUILDER-GUR
+    - legacy handoff inference
+  non_leaf_behavior: >-
+    Report the invalid handoff diagnostically but create no repair item, because
+    an active successor already resolves ordinary queue ownership.
+
+affected_artifacts:
+  invalid_gur:
+    id: GUR-PKT-UA-015-015-cavaliers-r02
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r02.yaml
+    owner: analyst
+    current_defect: >-
+      `handoff.next_role: null` and `handoff.readiness: withdrawn` violate the
+      existing artifact-envelope schema.
+  required_successor:
+    id: GUR-PKT-UA-015-015-cavaliers-r03
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r03.yaml
+    owner: analyst
+    supersedes: GUR-PKT-UA-015-015-cavaliers-r02
+  replacement_lineage:
+    packet_id: PKT-UA-014-016-cavalier
+    gur_id: GUR-PKT-UA-014-016-cavalier-r01
+  implementation:
+    owner: builder
+    files:
+      - tooling/common/scan_agent_queues.py
+      - tooling/common/tests/test_scan_agent_queues.py
+  governance:
+    - contracts/WORK_QUEUES.md
+    - contracts/ARTIFACT_LIFECYCLE.md
+    - agents/analyst/INSTRUCTIONS.md
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    Analyst publishes one terminal GUR successor that supersedes r02. No GUP,
+    Review, Approved bundle, or Integration batch is authorized or required.
+
+sequence:
+  - step: 1
+    owner: analyst
+    action: >-
+      Immediately publish GUR-PKT-UA-015-015-cavaliers-r03. Preserve r02 and
+      its withdrawal record; set the conforming terminal handoff; retain zero
+      proposals; and validate against the current common and AD&D GUR schemas.
+      This repair is deterministic under this Decision and must not wait for the
+      scanner implementation.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement the exact scanner behavior in `queue_contract`, update targeted
+      scanner tests using an active-invalid-GUR fixture, and publish the
+      non-migration Decision Implementation Report for DEC-2026-0039. Do not
+      edit the UA GUR.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review the Builder implementation report and its scanner
+      evidence. The named current GUR must route only as an Analyst repair item,
+      never as Builder work.
+  - step: 4
+    owner: builder
+    action: >-
+      Re-run the full common schema suite after r03 exists and record the
+      released validation evidence in the Decision Implementation Report or its
+      successor revision as required by the Decision Implementation contract.
+
+acceptance_tests:
+  - >-
+    The current r02 fixture produces one `error` diagnostic with code
+    `gur_invalid_handoff`, one ready `ANALYST-GUR-REPAIR` item naming r02, no
+    `BUILDER-GUR` item for r02, and no legacy-inference diagnostic for r02.
+  - >-
+    A conforming terminal withdrawal GUR leaf with `next_role: none` and
+    `readiness: terminal` creates neither Builder work nor an Analyst repair
+    item, while preserving the artifact as lineage history.
+  - >-
+    A GUR with no handoff remains a legacy artifact: it retains ordinary Builder
+    routing and an explicit legacy-inference diagnostic. A valid ready GUR keeps
+    ordinary Builder routing unchanged.
+  - >-
+    A malformed non-leaf GUR handoff remains an error diagnostic but creates no
+    repair item. Only the active leaf is repairable work.
+  - >-
+    GUR-PKT-UA-015-015-cavaliers-r03 validates against the common envelope and
+    AD&D GUR schema, supersedes r02, retains no proposals, contains the
+    replacement-lineage withdrawal record, and uses the conforming terminal
+    handoff.
+  - >-
+    After r03 is published, the common schema suite no longer fails on r02 or
+    r03, the UA cavaliers lineage creates no Builder GUR job, and all seven
+    previously blocked Decision Implementation lineages can obtain passing
+    validation evidence.
+  - All applicable queue-scanner, common schema, and repository tests pass.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This is artifact lifecycle and queue ownership governance. It changes no
+    graph semantic, node identity, edge vocabulary, registry, or profile.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.11 formalizes terminal GUR withdrawal and exact Analyst repair
+    routing for a present malformed GUR handoff.
+  - >-
+    ARTIFACT_LIFECYCLE 1.9 and Analyst instructions define the immutable
+    successor-withdrawal artifact shape.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.10 -> 1.11; add terminal GUR withdrawal and malformed-handoff queue rules.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.8 -> 1.9; document immutable terminal GUR withdrawal revisions.'
+  agents/analyst/INSTRUCTIONS.md:
+    - 'Specify withdrawal and malformed-handoff successor authoring requirements.'
+  tooling/common/scan_agent_queues.py:
+    - 'Implement gur_invalid_handoff and ANALYST-GUR-REPAIR routing without legacy fallback.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Add the current malformed, terminal, legacy, valid, and non-leaf GUR cases.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0039.yaml:
+    - 'Resolve the UA terminal-GUR withdrawal and malformed-handoff ownership escalation.'
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement only the named scanner behavior and tests; never edit the published GUR.
+  reviewer:
+    - Verify all scanner acceptance cases independently before approving implementation evidence.
+  analyst:
+    - Immediately publish r03 as the immutable terminal withdrawal successor; do not edit r02.

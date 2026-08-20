@@ -51,6 +51,14 @@ ROW_DECISION_KEYS = ("row_decisions", "edge_decisions")
 #: The same for rulings on proposed nodes.
 NODE_DECISION_KEYS = ("node_registry_decisions", "node_decisions")
 
+#: Rulings on a GUP-level field, keyed by the field name rather than by a row
+#: `ref`. The illusionist remediation Review states its correction this way: the
+#: defect is in `operation_index`, which describes the patch as a whole, so there
+#: is no single row to rule on. Read into its own bucket because the compiler
+#: cannot satisfy it by editing a row, and a directive the Builder cannot apply
+#: must be reported rather than absorbed.
+FIELD_DECISION_KEY = "field_decisions"
+
 #: Bulk rulings. A Review that approves most of a large packet says so once
 #: under a policy block listing every ref it covers, rather than repeating an
 #: entry per row, and then states only the exceptions individually. Eleven
@@ -65,10 +73,18 @@ KNOWN_POLICY_KEYS = frozenset({ROW_POLICY_KEY, NODE_POLICY_KEY})
 #: Every top-level `*_decisions` key this loader accounts for. Anything else is
 #: reported rather than ignored: an unread ruling is one that silently does not
 #: apply, which looks exactly like a clean revision.
+#: A successor Review may carry forward the rejections of the Review it
+#: supersedes instead of restating them, naming that Review by ID and checksum.
+#: DEC-2026-0051 produced the first one: r06 restates six rows as `approved` and
+#: inherits the nine rejections r05-r05 established, so the surviving document
+#: says only what changed.
+INHERITED_ROW_DECISION_KEY = "inherited_edge_decisions"
+
 KNOWN_DECISION_KEYS = frozenset(
     set(ROW_DECISION_KEYS)
     | set(NODE_DECISION_KEYS)
     | {
+        INHERITED_ROW_DECISION_KEY,
         "node_addition_decisions",
         "node_replacement_decisions",
         "canonical_change_decisions",
@@ -79,6 +95,10 @@ KNOWN_DECISION_KEYS = frozenset(
         # nothing from anyone.
         "node_relabel_decisions",
         "component_decisions",
+        # A ruling on a GUP-level field rather than on a row or a node. Keyed by
+        # field name, not by `ref`, so it carries no row to attach to and is read
+        # into `field_directives` instead of `rows`.
+        FIELD_DECISION_KEY,
     }
 )
 
@@ -477,6 +497,23 @@ class RowDirective:
 
 
 @dataclass(frozen=True)
+class FieldDirective:
+    """One Reviewer ruling on a GUP-level field.
+
+    Distinct from a row or node directive in what it can be satisfied by: there
+    is no row to rewrite, so the correction constrains how the patch as a whole
+    is emitted. `operation_index` is the case that produced it -- the illusionist
+    bundle declared 126 operations over a 14-row CSV, and no edit to any single
+    row fixes that.
+    """
+
+    field_name: str
+    disposition: str
+    correction: str
+    evidence: str
+
+
+@dataclass(frozen=True)
 class NodeDirective:
     """A Reviewer ruling on a node this patch proposes.
 
@@ -644,11 +681,117 @@ def _ruling_entries(document: dict, directives=None) -> list[dict]:
             entries.extend({**shared, "ref": str(ref)} for ref in refs)
             continue
         for entry in block or []:
-            if isinstance(entry, dict):
-                entries.append(entry)
-            elif directives is not None:
-                directives.unread_decision_keys.append(key)
+            if not isinstance(entry, dict):
+                if directives is not None:
+                    directives.unread_decision_keys.append(key)
+                continue
+            # A migration Review rules on canonical rows in batches -- one
+            # `operation_kind` covering a `canonical_rows` list -- because a
+            # migration has no packet refs to rule on. Expanded to the
+            # `canonical_row_<n>` ref the corpus already uses for these, so the
+            # rulings are readable instead of loading as nothing at all.
+            rows = entry.get("canonical_rows")
+            if not entry.get("ref") and isinstance(rows, list) and rows:
+                shared = {
+                    name: value
+                    for name, value in entry.items()
+                    if name != "canonical_rows"
+                }
+                entries.extend(
+                    {**shared, "ref": f"canonical_row_{row}", "canonical_row": row}
+                    for row in rows
+                )
+                continue
+            entries.append(entry)
     return entries
+
+
+
+def _inherited_rejections(
+    path: Path, document: dict, directives: "ReviewDirectives"
+) -> None:
+    """Carry forward rejections a superseded Review established.
+
+    The inheritance names its source by ID and SHA-256, so the source is read and
+    hashed rather than taken on the successor's word. A ref is inherited only
+    when that exact Review really dispositions it `rejected`; anything else is
+    recorded as an unread key so the compiler treats the Review as not fully
+    understood instead of quietly applying nine rejections nobody verified.
+    """
+
+    import hashlib
+
+    block = document.get(INHERITED_ROW_DECISION_KEY)
+    if not isinstance(block, dict):
+        return
+
+    def unread(reason: str) -> None:
+        directives.unread_decision_keys.append(
+            f"{INHERITED_ROW_DECISION_KEY} ({reason})"
+        )
+
+    source_id = str(block.get("from_review") or "").strip()
+    declared = str(block.get("checksum") or "").strip()
+    refs = [str(r) for r in (block.get("preserved_rejected_refs") or [])]
+    if not source_id or not refs:
+        unread("names no source review or no preserved refs")
+        return
+
+    source_path = path.parent / f"{source_id}.yaml"
+    if not source_path.is_file():
+        unread(f"{source_id} is not present beside this Review")
+        return
+    actual = "sha256:" + hashlib.sha256(source_path.read_bytes()).hexdigest()
+    if declared and declared != actual:
+        unread(f"{source_id} now hashes to {actual}")
+        return
+
+    try:
+        source = yaml.safe_load(source_path.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError:
+        unread(f"{source_id} is unreadable")
+        return
+
+    established = {}
+    for key in ROW_DECISION_KEYS:
+        entries = source.get(key)
+        if isinstance(entries, list):
+            for entry in entries:
+                if isinstance(entry, dict) and entry.get("ref"):
+                    established[str(entry["ref"])] = entry
+        elif isinstance(entries, dict):
+            for ref, entry in entries.items():
+                if isinstance(entry, dict):
+                    established[str(ref)] = entry
+
+    missing = [
+        ref for ref in refs
+        if (established.get(ref) or {}).get("disposition") != "rejected"
+    ]
+    if missing:
+        unread(
+            f"{source_id} does not reject {', '.join(sorted(missing))}"
+        )
+        return
+
+    rationale = str(block.get("rationale") or "").strip()
+    for ref in refs:
+        # A restatement in this Review wins: the successor is the active ruling.
+        if ref in directives.rows:
+            continue
+        entry = established[ref]
+        directives.rows[ref] = RowDirective(
+            ref=ref,
+            disposition="rejected",
+            corrections={},
+            rationale=(
+                str(entry.get("rationale") or "").strip()
+                or rationale
+                or f"inherited from {source_id}"
+            ),
+            integration_action="",
+            review_id=directives.review_id,
+        )
 
 
 @dataclass
@@ -670,6 +813,10 @@ class ReviewDirectives:
     #: does not apply -- the revision comes out looking clean while ignoring
     #: what the Reviewer asked for.
     unread_decision_keys: list[str] = field(default_factory=list)
+    #: Rulings on a GUP-level field. Kept apart from `rows` because they name no
+    #: row: the compiler surfaces them for the Builder to satisfy in how the
+    #: patch is emitted, and never silently treats one as applied.
+    field_directives: list["FieldDirective"] = field(default_factory=list)
     #: Earlier Reviews in the chain, oldest first, whose rulings are folded in.
     superseded_reviews: list[str] = field(default_factory=list)
 
@@ -696,6 +843,20 @@ class ReviewDirectives:
             or "",
             input_gur=str(input_gur or ""),
         )
+
+        for name, ruling in sorted((document.get(FIELD_DECISION_KEY) or {}).items()):
+            if not isinstance(ruling, dict):
+                continue
+            directives.field_directives.append(
+                FieldDirective(
+                    field_name=str(name),
+                    disposition=str(ruling.get("disposition") or "").strip(),
+                    correction=str(ruling.get("exact_correction") or "").strip(),
+                    evidence=str(ruling.get("evidence") or "").strip(),
+                )
+            )
+
+        _inherited_rejections(path, document, directives)
 
         for key in sorted(document):
             if key.endswith("_decisions") and key not in KNOWN_DECISION_KEYS:
@@ -816,9 +977,27 @@ class ReviewDirectives:
             merged.input_gur = later.input_gur or merged.input_gur
             merged.unknown_dispositions.extend(later.unknown_dispositions)
             merged.unread_decision_keys.extend(later.unread_decision_keys)
+            merged.field_directives.extend(later.field_directives)
             merged.superseded_reviews.append(merged.review_id)
             for ref, directive in later.rows.items():
                 merged.rows[ref] = _carry_forward(merged.rows.get(ref), directive)
+                # A later Review that rules legally on a ref settles it. The
+                # earlier complaint about that same ref described a ruling the
+                # chain no longer applies, so carrying it forward would block the
+                # build on a disposition nothing in the merged result uses.
+                # DEC-2026-0051 is exactly this case: r05-r04 dispositioned six
+                # rows `approved_but_excluded_from_bundle`, the ruling declared
+                # that term invalid, and r06 restated the same six as `approved`.
+                # The complaint is dropped only for refs a later Review actually
+                # restates -- an unknown disposition nobody revisited still
+                # stops the build.
+                if directive.disposition in DISPOSITIONS:
+                    prefix = f"{ref}: "
+                    merged.unknown_dispositions = [
+                        entry
+                        for entry in merged.unknown_dispositions
+                        if not entry.startswith(prefix)
+                    ]
             # A node ruling is a plain override: unlike a row, it carries no
             # structural instruction that a later silence should preserve.
             merged.nodes.update(later.nodes)

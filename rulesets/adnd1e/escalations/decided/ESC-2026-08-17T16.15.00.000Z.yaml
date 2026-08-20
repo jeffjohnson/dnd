@@ -1,0 +1,97 @@
+schema_version: '1.0'
+id: ESC-2026-08-17T16.15.00.000Z
+status: decided
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: reviewer
+decision_owner: architect
+raised_on: '2026-08-17'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: A source- and plan-valid v2 migration cannot reach Integration because discovery recognizes only v1 direct migrations
+    without an edge CSV, contrary to the active Decision and work-queue contract.
+  blocking_ids: []
+originating_artifacts:
+- id: GUP-MIG-DEC-2026-0032-r03
+  path: books/adnd1e/dmg/artifacts/gup/GUP-MIG-DEC-2026-0032-r03.yaml
+  checksum: sha256:f04bd4354a5a366c334a4c340e4c368ffb970e04824424e221c8b8da8fe7e144
+- id: REV-GUP-MIG-DEC-2026-0032-r03-r02
+  path: books/adnd1e/dmg/artifacts/reviews/REV-GUP-MIG-DEC-2026-0032-r03-r02.yaml
+  checksum: sha256:6bd5760da9dac222c2b79dbec236e7fdf10cf3fd2309e7cddcbca33f3f5d26bb
+trigger: WORK_QUEUES 1.11 rules 31, 33, 38, and 39; DEC-2026-0038 operation model and integrator requirements.
+question: What exact owner and release path applies when the current Integrator implements no discovery path for a contract-required
+  decision_migration_v2 Approved bundle (no edge CSV), while the Reviewer has verified the GUP plan as valid?
+source_excerpt: 'DEC-2026-0038, sequence step 3: the Integrator must implement or confirm direct-migration discovery, validation,
+  transaction execution, and provenance for v2 merges. The same Decision says to integrate only the approved migration bundle
+  and requires no edge CSV under v2.'
+local_graph_neighborhood:
+  retired_ids:
+  - dex_reaction_adj
+  - abil_dexterity_reaction_attacking_adjustment
+  - dex_defensive_adj
+  - abil_dexterity_defensive_adjustment
+  - str_exceptional
+  - abil_strength_exceptional
+  planned_survivors:
+  - abil_dex_reaction_adjustment
+  - abil_dex_defensive_adjustment
+  - abil_str_exceptional
+  incident_rows: 33
+  current_canonical_rows: 4224
+  current_registry_rows: 1183
+  review_result: Every retired ID/label, complete before-image, closed incident set, and paired endpoint change passed independent
+    verification.
+affected_canonical_ids:
+- dex_reaction_adj
+- abil_dexterity_reaction_attacking_adjustment
+- dex_defensive_adj
+- abil_dexterity_defensive_adjustment
+- str_exceptional
+- abil_strength_exceptional
+- abil_dex_reaction_adjustment
+- abil_dex_defensive_adjustment
+- abil_str_exceptional
+reproduction_evidence:
+  command: PYTHONPATH=tooling/integrator/src python -m adnd1e_integrator --repo-root . queue
+  result: 'APPROVED-GUP-MIG-DEC-2026-0032-r03-r01: manifest present with no .edges.csv component'
+  code_locus: tooling/integrator/src/adnd1e_integrator/bundles.py:50-57 identifies only decision_migration_v1; lines 99-107
+    diagnose any other manifest without an edge CSV.
+  expected: A valid decision_migration_v2 manifest with one decision_migration component and one validation component discovers
+    as exactly one Integrator job.
+options_considered:
+- option: Integrator implements the v2 discovery/validation/transaction path required by DEC-2026-0038 and WORK_QUEUES, then
+    Reviewer publishes the already verified v2 bundle.
+  impact: No source interpretation or GUP mutation; validates and applies the exact reviewed plan.
+  recommendation: recommended
+- option: Rewrite the valid v2 plan as v1 or add an edge CSV.
+  impact: Contradicts the Decision and direct-migration contracts; v1 cannot represent a bounded two-to-one merge and an edge
+    CSV is prohibited.
+  recommendation: rejected
+- option: Return the GUP to Builder for content revision.
+  impact: Builder already produced a plan whose baseline, identities, incident sets, and before-images pass; it cannot repair
+    Integrator discovery without changing another role’s tooling.
+  recommendation: rejected
+recommended_resolution: Direct the Integrator to implement the already mandated v2 direct-migration bundle path, including
+  no-edge-CSV discovery, exact GUP/validation component verification, strict baseline and incident-set preconditions, and
+  transactional application. After that implementation is available, Reviewer republishes the exact approved manifest against
+  the then-current reviewed baseline; if the baseline moved, Builder reissues the plan first.
+migration_impact:
+  canonical_rows_repointed: 33
+  registry_rows_retired: 6
+  registry_rows_added: 3
+  aliases: 0
+  current_write_status: none; all rejection occurs before snapshotting
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  profile_change: false
+  contract_change: not required; current contract already specifies v2
+  tooling_change: required in Integrator discovery and v2 transaction path
+what_is_not_in_question:
+- The semantic correctness of DEC-2026-0038 or the three identity merges; those passed independent Review.
+- Whether to mutate canonical data before all direct-migration preconditions pass.
+- Whether to add an edge CSV to a v2 manifest.

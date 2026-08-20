@@ -18,20 +18,20 @@ At startup, resolve and retain these identifiers from the assigned task:
 
 Never infer these from conversation history. Read them from repository manifests. All inputs and outputs must remain inside the resolved ruleset and book namespaces unless an explicit cross-book artifact is required.
 
-## Read at startup
+## Context loading
 
-1. `rulesets/<ruleset-id>/governance/constitution.md`
-2. `contracts/GRAPH_INVARIANTS.md`
-3. `contracts/ARTIFACT_LIFECYCLE.md`
-4. `contracts/WORK_QUEUES.md`
-5. `contracts/SOURCE_MARKDOWN.md`
-6. all production schemas
-7. canonical registries and profiles
-8. current canonical graph manifest
-9. the Approved GUP bundle and its Review artifact
-10. existing integration/build code and tests
+Run `tooling/common/role_context.py verify --role integrator` after resolving the
+ruleset and book scope. A same-session cache hit avoids only stable authority
+reloads. On a miss, read the verifier's emitted stable authority files and record
+the receipt. The receipt is never an integration precondition or a substitute for
+the current transaction snapshot.
 
-Do not read the original packet unless the Approved GUP is corrupt; interpretation should already be complete.
+Always read the exact Approved bundle, Review, authority Decisions, current
+canonical graph and registry inputs, profiles, current manifest, and the code and
+tests required for the integration path. Hash and validate all mutable inputs in
+the transaction itself. Do not read the original source packet unless the Approved
+bundle is corrupt, and do not recursively load unrelated books, artifacts, or
+historical integration batches merely for orientation.
 
 ## Inputs
 
@@ -44,16 +44,23 @@ Do not read the original packet unless the Approved GUP is corrupt; interpretati
 
 Reject any input whose checksums, approvals, or schema versions do not match.
 
-For `decision_migration_v1` or `decision_migration_v2`, the Approved manifest
-has no edge CSV. Read the operation plan only from its checksummed GUP YAML
-component and reject any manifest or plan that does not exactly match the
-Review, authority Decisions, canonical baseline, and node-registry baseline.
-Apply only the declared v1 additions/replacements, paired endpoint repoints, and
-exact row removals, or the declared v2 bounded merges and paired endpoint
-repoints, inside the normal transaction. A v2 merge must replace every named
-retired registry row with exactly one canonical row before the closed endpoint
-set is repointed; do not infer a broader retirement, an alias, or any operation
-outside the approved model.
+For `decision_migration_v1`, `decision_migration_v2`, or
+`decision_migration_v3`, the Approved manifest has no edge CSV. Read the
+operation plan only from its checksummed GUP YAML component and reject any
+manifest or plan that does not exactly match the Review, authority Decisions,
+canonical baseline, and node-registry baseline. Apply only the declared v1
+additions/replacements, paired endpoint repoints, and exact row removals; the
+declared v2 bounded merges and paired endpoint repoints; or the declared v3
+one-to-one replacements, paired repoints, and exact blank-to-registry endpoint
+label normalizations. A v2 merge must replace every named retired registry
+identity with exactly one canonical row before the closed endpoint set is
+repointed. A v3 label operation must retain both endpoint IDs and all
+assertion-key fields, compare-and-swap its full before-image, and record its
+label changes separately from repoints. Do not infer a broader retirement, an
+alias, or any operation outside the approved model. For v2,
+`registry_csv_row` is an optional advisory locator only. Key the transaction on
+the reviewed retired IDs and labels plus the strict pinned registry checksum,
+never on that locator; a moved advisory row is not an integration failure.
 
 ## Incoming Packet Authority
 
@@ -155,11 +162,27 @@ Integrator queue.
 On any failure:
 
 - do not partially mutate canonical state;
-- write a rejected integration report;
+- write a rejected integration report as described below;
 - identify whether the defect belongs to Builder, Reviewer, Architect, or corrupted input;
 - preserve the failed inputs;
 - return exact remediation requirements;
 - never repair source interpretation during integration.
+
+### Rejection records
+
+Every new rejection report is an immutable JSON record under
+`rulesets/<ruleset-id>/reports/` conforming to
+`schemas/common/integration-rejection.schema.json`. It declares `status:
+rejected` and records, for every rejected bundle, the exact Approved-bundle,
+approving Review, and reviewed GUP IDs and SHA-256 checksums, plus one or more
+machine-readable blocking failures.
+
+Do not infer or omit provenance because the cause appears obvious. A valid record
+is the only Integrator signal that suppresses that exact bundle's ordinary
+Integrator item and sends the repair to Reviewer. Preserve the rejected bundle
+and its approval as immutable history; never repair either in place. A legacy
+record may omit current fields only when an Architect Decision explicitly
+authorizes that exact record and bundle.
 
 ## Prohibited actions
 

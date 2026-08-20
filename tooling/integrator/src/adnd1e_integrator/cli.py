@@ -60,6 +60,13 @@ def cmd_queue(args) -> int:
                        for b, i in queue["integrated"]],
         "superseded": [{"bundle_id": b.bundle_id, "gup_id": b.gup_id}
                        for b in queue["superseded"]],
+        # A refused bundle is queue state under DEC-2026-0043, not absence of
+        # state. Omitting it made the CLI disagree with the common scanner: the
+        # bundle vanished from every bucket, so the one view an Integrator runs
+        # gave no sign that three bundles had been rejected and why.
+        "rejected": [{"bundle_id": b.bundle_id, "gup_id": b.gup_id,
+                      "rejection_record_id": record}
+                     for b, record in queue["rejected"]],
         "diagnostics": queue["diagnostics"],
     }
     print(json.dumps(payload, indent=2))

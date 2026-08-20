@@ -1,0 +1,47 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0048-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: All DEC-2026-0048 acceptance tests are independently verified.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0048-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0048-r01.yaml
+  checksum: sha256:47ff669fed38811cd869f33945dd4bbc20866484482dfdc036830c9d8206df80
+decision_input:
+  id: DEC-2026-0048
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml
+  checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698
+acceptance_dispositions:
+- acceptance_test_index: 1
+  disposition: verified
+  evidence: WORK_QUEUES 1.15 and ARTIFACT_LIFECYCLE 1.11 publish the authorized current-state versioned-contract-content semantics while retaining literal unstructured version claims.
+- acceptance_test_index: 2
+  disposition: verified
+  evidence: The reviewed schemas require the authority, authorized index, current contract checksums and anchors for a versioned-contract result, and restrict the matching Review disposition.
+- acceptance_test_index: 3
+  disposition: verified
+  evidence: Targeted scanner coverage rejects invalid authority, index, version, checksum, and anchor permutations while allowing exactly authorized current-state evidence to reach Reviewer.
+- acceptance_test_index: 4
+  disposition: verified
+  evidence: IMP-DEC-2026-0045-r05 and IMP-DEC-2026-0046-r04 use only the separately authorized Decision/checksum/index pairs, with current contract evidence matching live text.
+independent_validation:
+  passed: true
+  commands:
+  - command: SHA-256 comparison of the implementation report, Decision, validation report, and all pinned implementation files
+    exit_code: 0
+    result: passed
+    summary: Every reviewed checksum matched current bytes.
+  - command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest test_scan_agent_queues.VersionedContractContentCase test_scan_agent_queues.TestVersionedContractHelpers'
+    exit_code: 0
+    result: passed
+    summary: Versioned-contract-content scanner and helper tests passed in the current targeted run.
+overall_disposition: approved

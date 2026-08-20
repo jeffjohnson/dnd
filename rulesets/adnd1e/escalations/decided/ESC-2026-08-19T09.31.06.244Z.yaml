@@ -1,0 +1,189 @@
+schema_version: '1.0'
+id: ESC-2026-08-19T09.31.06.244Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-19'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Two approved Decisions carry an acceptance test that names an exact contract
+    version number. Both version numbers have since been advanced by later
+    approved Decisions revising the same file, so both tests are now literally
+    false while every requirement they actually state is present and unchanged.
+    The Builder cannot make either literally true without reverting two approved
+    Decisions, so as written these tests are permanently undischargeable.
+  blocking_ids: []
+
+resolution:
+  decision_id: DEC-2026-0048
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml
+  summary: >-
+    Legacy exact-version acceptance tests remain literal unless an approved
+    Decision pins an exact minimum-version-and-anchor authorization. DEC-2026-0048
+    authorizes only DEC-2026-0045 test 1 and DEC-2026-0046 test 4, and assigns
+    structured schema, queue-validation, and report-successor work to Builder.
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. The constitution and production data disagree in a way
+  that cannot be fixed mechanically: a file-content acceptance test asserts a
+  version string that later approved governance work is expected to change.
+
+question: >-
+  When a Decision's acceptance test names an exact contract version, and a later
+  approved Decision advances that contract past it without altering anything the
+  test requires, is the test passed, failed, or discharged some third way?
+
+what_is_not_in_question:
+  - >-
+    The content. Every element both tests require is present at the current
+    checksums and is quoted with line numbers in the two implementation reports
+    filed alongside this escalation. Nothing was removed or weakened.
+  - >-
+    The later Decisions. DEC-2026-0046 and DEC-2026-0047 are correct, and their
+    edits to contracts/WORK_QUEUES.md are exactly the work they were approved to
+    do. Nothing here asks for either to be reverted or reissued.
+  - >-
+    The drift rule. WORK_QUEUES 1.13 rule 15 behaved exactly as ruled: these
+    reports had no Approved Review, so the drift was strict and returned them to
+    Builder, while the five Decisions holding Approved Reviews stayed silent
+    through the same edit. That is the rule working.
+
+evidence:
+  the_two_tests:
+    - decision: DEC-2026-0045
+      acceptance_test_index: 1
+      names: contracts/WORK_QUEUES.md is Version 1.12
+      file_now_reads: Version 1.14
+      advanced_by: [DEC-2026-0046, DEC-2026-0047]
+      substance_intact: >-
+        Core rule 13 carries Builder-or-Integrator direct ownership at line 41,
+        restated at lines 401 and 550; the '### Integration rejection
+        remediation' section stands at line 648. The 1.12 version-history entry
+        remains. contracts/ARTIFACT_LIFECYCLE.md, which the same test names at
+        Version 1.10, is untouched and still reads 1.10.
+    - decision: DEC-2026-0046
+      acceptance_test_index: 4
+      names: WORK_QUEUES is Version 1.13
+      file_now_reads: Version 1.14
+      advanced_by: [DEC-2026-0047]
+      substance_intact: >-
+        Core rule 15 stands at lines 52-57 with both halves verbatim, and its
+        distinct acceptance criteria remain as contract acceptance test 45 at
+        lines 823-825.
+
+  why_this_recurs: >-
+    Any Decision that amends a contract must name the version it produces, and
+    any later Decision amending the same contract must advance it. So every
+    version-pinned acceptance test is falsified by the next governance change to
+    its own file. This is not a defect in either Decision; it is a consequence of
+    pinning a value that the process is required to change.
+
+  the_precedent_and_why_it_does_not_reach: >-
+    WORK_QUEUES 1.6 met this exact shape for queue snapshots and solved it with
+    `retired_by_lineage`, reasoning that a test whose subject completed the
+    ordinary lifecycle "must not leave the Decision permanently undischargeable".
+    That mechanism is explicitly unavailable here: it "is never an outcome for a
+    behavior, file-content, schema, validation, graph, or other non-snapshot
+    acceptance test." The same failure mode therefore has a ruled remedy in one
+    place and none in the other.
+
+  what_the_builder_did_meanwhile: >-
+    Reported both tests `passed` on substance, with evidence that leads with the
+    discrepancy rather than burying it, quotes the current location of every
+    required element, and states plainly that a Reviewer reading the version
+    string literally should fail the test. Neither report claims the file reads
+    the version its Decision names.
+
+options_considered:
+  - option: >-
+      Read a version-pinned acceptance test as satisfied by the named version or
+      any later version of the same contract, provided every element the test
+      states is still present
+    impact: >-
+      Matches how these tests are actually meant: DEC-2026-0045 cared that the
+      rejection lifecycle and Builder-or-Integrator ownership were recorded, not
+      that the file stopped at 1.12. Checkable mechanically, since contract
+      versions are ordered and the required elements are already enumerated in
+      the test text.
+    builder_preference: recommended
+  - option: >-
+      Require future acceptance tests to name required content and a minimum
+      version rather than an exact one
+    impact: >-
+      Prevents new instances at authoring time, in the same spirit as the
+      exact_diff ownership rule from DEC-2026-0045. Does not by itself discharge
+      the two existing tests.
+    builder_preference: recommended_alongside
+  - option: >-
+      Extend a retired-by-lineage-style authorization to file-content tests
+      superseded by a later approved Decision
+    impact: >-
+      Reuses a mechanism the repository already understands and keeps the
+      discharge explicit and checksummed. Heavier than the first option, and it
+      would need its own evidence shape.
+    builder_preference: viable
+  - option: Fail both tests
+    impact: >-
+      Literally defensible and permanently undischargeable. It would report two
+      fully implemented, independently verifiable Decisions as unimplemented
+      forever, and every future WORK_QUEUES revision would add another.
+    builder_preference: not_recommended
+  - option: Revert WORK_QUEUES to 1.12 or 1.13
+    impact: >-
+      Not offered. It would discard two approved Decisions to satisfy a version
+      string.
+    builder_preference: refused
+
+current_state:
+  reports_filed:
+    - id: IMP-DEC-2026-0045-r04
+      approval_ready: true
+      note: Acceptance test 1 passed on substance, discrepancy disclosed in its evidence.
+    - id: IMP-DEC-2026-0046-r03
+      approval_ready: true
+      note: Acceptance test 4 passed on substance, discrepancy disclosed in its evidence.
+    - id: IMP-DEC-2026-0043-r06
+      approval_ready: false
+      note: >-
+        Unrelated to this question. Its acceptance test 5 requires every
+        applicable suite to pass, and the Integrator suite is red on a
+        half-published Approved bundle; see the observation below.
+  suites: common 560 OK; builder 602 OK with 38 skipped; integrator 126 with 1 failure and 2 errors.
+
+secondary_observation:
+  detail: >-
+    books/adnd1e/phb/artifacts/approved/ contains
+    APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03.edges.csv with no
+    matching -r08-r03.yaml manifest. verify_bundle therefore resolves the
+    approving Review by filename to REV-...-r08-r03, which is revision_required,
+    and four blocking preconditions fail. This is the single cause of all three
+    Integrator suite failures.
+  reading: >-
+    This looks like the DEC-2026-0047 packaging correction in progress rather
+    than a defect: the successor Review REV-...-r08-r04 is published and the
+    concatenated edge CSV is written, but the successor manifest is not yet.
+  note: >-
+    Raised for visibility only and needs no ruling. DEC-2026-0047 assigns this
+    correction to Reviewer and states that Builder has no revision in this case
+    and must not publish an Approved bundle, so the Builder is not acting on it.
+    It should clear when the successor manifest is published.
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  contract_change: true
+  note: >-
+    A ruling would amend how WORK_QUEUES defines acceptance-test discharge, and
+    may add an Architect authoring requirement for how a version is named.
+
+blocking: >-
+  Two otherwise complete Decisions cannot be discharged on a literal reading of
+  one acceptance test each, and every future contract revision creates another
+  instance.

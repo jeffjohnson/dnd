@@ -1,0 +1,244 @@
+schema_version: '1.0'
+id: DEC-2026-0048
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the checksummed versioned-contract-content evidence shape and queue
+    validation, then reissue the two named Builder reports under this Decision's
+    exact legacy-test authorizations.
+  blocking_ids: []
+
+decision_date: '2026-08-19'
+escalation_id: ESC-2026-08-19T09.31.06.244Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  How can an acceptance test prove a mutable contract's required content without
+  becoming permanently false merely because a later approved Decision advances
+  that contract's version?
+
+ruling: >-
+  For a mutable contract, an acceptance test may test a minimum version and explicit
+  substantive anchors. It is satisfied only when the current contract version is at
+  or above that floor and every named anchor remains present and unweakened. This is
+  current-state evidence, reported as `passed` and independently reviewed as
+  `verified_versioned_contract_content`; it is not `retired_by_lineage`.
+
+  New Decisions must express this as `Version N or later` and declare structured
+  `versioned_contract_content` semantics. An exact-version statement remains
+  literal unless the Decision explains why the literal version is the behavior being
+  tested. No role may infer a broader reading from version history alone.
+
+  The two legacy tests listed below are exceptionally authorized under the same
+  minimum-version and anchor rule. Their current reports must be reissued with the
+  structured authority and current checksums. DEC-2026-0045 acceptance test 1 is
+  authorized for WORK_QUEUES 1.12 or later and ARTIFACT_LIFECYCLE 1.10 or later;
+  DEC-2026-0046 acceptance test 4 is authorized for WORK_QUEUES 1.13 or later.
+  The authorization applies only to the checksummed Decision revisions named here.
+
+contract_version_acceptance_authorizations:
+  - decision_input:
+      id: DEC-2026-0045
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0045.yaml
+      checksum: sha256:25dedbb5ca47f8b3084a9b1546610fa66c8f8da33923c9cdd1b9f2f059aee341
+    acceptance_test_index: 1
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.12'
+        substantive_anchors:
+          - checksummed Integration rejection remediation
+          - Builder-or-Integrator direct non-migration implementation ownership
+          - exact_diff ownership planning for version-1.1 Decisions
+      - path: contracts/ARTIFACT_LIFECYCLE.md
+        minimum_version: '1.10'
+        substantive_anchors:
+          - immutable checksummed Integration rejection records
+          - Builder-or-Integrator direct non-migration implementation ownership
+  - decision_input:
+      id: DEC-2026-0046
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0046.yaml
+      checksum: sha256:2ebc1d44dfb1fb51583415f535896f41dac2bc64a6bfef4157c99e89486bbe0b
+    acceptance_test_index: 4
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.13'
+        substantive_anchors:
+          - approved implementation-review checksum snapshots are historical evidence
+          - pre-approval implementation-file drift remains strict
+          - post-approval implementation-file drift is informational only
+
+rationale:
+  - >-
+    Contract versions must advance when approved governance changes. Treating a
+    later version as failure makes every well-maintained contract create permanent
+    false negatives in earlier Decisions.
+  - >-
+    A version floor alone is insufficient: a later version could remove or weaken
+    the rule the earlier Decision actually required. The anchors preserve that
+    substantive obligation for independent Review.
+  - >-
+    Legacy wording needs a narrow checksummed authorization. Automatic widening
+    would convert an intentional exact-version test into a different test without
+    Architect authority.
+
+affected_artifacts:
+  legacy_reports:
+    - decision: DEC-2026-0045
+      active_report: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0045-r04.yaml
+      active_review: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0045-r04-r01.yaml
+      acceptance_test_index: 1
+    - decision: DEC-2026-0046
+      active_report: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0046-r03.yaml
+      active_review: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0046-r03-r01.yaml
+      acceptance_test_index: 4
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: >-
+    The two Decision Implementation Reports receive ordinary immutable Builder
+    successors, followed by ordinary independent Reviewer successors. No GUP,
+    Approved bundle, canonical edge, or registry entry changes.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish the minimum-version and substantive-anchor contract rule, the
+      lifecycle explanation, and Architect and Reviewer authoring/review duties.
+  - step: 2
+    owner: builder
+    action: >-
+      Add the structured semantics and legacy-authorization schema shapes; make
+      queue derivation validate exact authority, current minimum versions,
+      checksums, and complete anchor evidence; add positive and negative tests;
+      then publish successors to IMP-DEC-2026-0045-r04 and IMP-DEC-2026-0046-r03.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently verify the structured authority, the current contract state,
+      and every anchor before reviewing each Builder report successor.
+
+acceptance_tests:
+  - >-
+    WORK_QUEUES and ARTIFACT_LIFECYCLE define versioned contract-content tests as
+    current minimum-version plus substantive-anchor verification, never as
+    retired-by-lineage, and preserve literal semantics for unstructured legacy
+    exact-version wording.
+  - >-
+    New Decision semantics and legacy authorizations are schema-valid only when
+    they pin the exact target Decision, test index, contract paths, minimum
+    versions, and nonempty anchor sets; an implementation report and Review carry
+    matching checksummed current-state evidence.
+  - >-
+    Queue validation rejects an absent, stale, mismatched, incomplete, or
+    below-minimum authorization and never exposes it as approval-ready work;
+    valid evidence remains reviewable through the ordinary independent Review.
+  - >-
+    Successors to IMP-DEC-2026-0045-r04 and IMP-DEC-2026-0046-r03 use only this
+    Decision's exact authorizations for acceptance-test indices 1 and 4,
+    respectively, and retain current checksum and anchor evidence.
+
+post_implementation_requirements:
+  - >-
+    Reviewer must publish ordinary successor implementation Reviews for the two
+    reissued reports. The implementation Reviews, not this Decision, complete
+    DEC-2026-0045 and DEC-2026-0046.
+  - >-
+    Future Architect Decisions use `Version N or later` with declared semantics;
+    no role may add a broad legacy authorization outside an approved Decision.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This governs artifact evidence and workflow validation, not graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.15 and ARTIFACT_LIFECYCLE 1.11 define checksummed
+    minimum-version and substantive-anchor evidence for mutable contract tests.
+  - >-
+    Architect and Reviewer instructions prohibit implicit widening and require
+    independent verification of the exact authorization and current content.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.14 -> 1.15; define versioned contract-content acceptance and queue validation.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.10 -> 1.11; define implementation-report and Review lifecycle evidence.'
+  agents/architect/INSTRUCTIONS.md:
+    - 'Require minimum-version wording and explicit semantics for mutable-contract acceptance tests.'
+  agents/reviewer/INSTRUCTIONS.md:
+    - 'Require independent verification of versioned contract-content evidence.'
+  schemas/common/architect-decision.schema.json:
+    - 'Add structured versioned-contract-content semantics and legacy authorization shapes.'
+  schemas/common/decision-implementation.schema.json:
+    - 'Add exact authorization and current contract-state evidence for a passed versioned contract test.'
+  schemas/common/decision-implementation-review.schema.json:
+    - 'Add the independent versioned-contract-content disposition and evidence shape.'
+  tooling/common/scan_agent_queues.py:
+    - 'Validate authorization provenance, minimum contract versions, checksums, and required evidence.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Cover valid and invalid versioned contract-content and legacy-authorization lineages.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-19T09.31.06.244Z.yaml:
+    - 'Record the Decision that resolves the legacy exact-version acceptance-test gap.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml:
+    - 'Record the bounded authorization and implementation plan.'
+
+exact_diff_ownership:
+  - path: contracts/WORK_QUEUES.md
+    owner: architect
+    sequence_step: 1
+  - path: contracts/ARTIFACT_LIFECYCLE.md
+    owner: architect
+    sequence_step: 1
+  - path: agents/architect/INSTRUCTIONS.md
+    owner: architect
+    sequence_step: 1
+  - path: agents/reviewer/INSTRUCTIONS.md
+    owner: architect
+    sequence_step: 1
+  - path: schemas/common/architect-decision.schema.json
+    owner: builder
+    sequence_step: 2
+  - path: schemas/common/decision-implementation.schema.json
+    owner: builder
+    sequence_step: 2
+  - path: schemas/common/decision-implementation-review.schema.json
+    owner: builder
+    sequence_step: 2
+  - path: tooling/common/scan_agent_queues.py
+    owner: builder
+    sequence_step: 2
+  - path: tooling/common/tests/test_scan_agent_queues.py
+    owner: builder
+    sequence_step: 2
+  - path: rulesets/adnd1e/escalations/decided/ESC-2026-08-19T09.31.06.244Z.yaml
+    owner: architect
+    sequence_step: 1
+  - path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml
+    owner: architect
+    sequence_step: 1
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - The contract, lifecycle, and role-instruction changes are published with this Decision.
+    - Do not rewrite DEC-2026-0045 or DEC-2026-0046; their immutable wording is handled only by the exact authorization above.
+  builder:
+    - Implement the bounded schemas, queue checks, and tests, then reissue only the two named reports.
+    - Do not use this authorization for another Decision, test index, or contract path.
+  reviewer:
+    - Independently validate current versions and every anchor before approving either successor report.
+  integrator:
+    - No canonical or Integration action is assigned by this Decision.

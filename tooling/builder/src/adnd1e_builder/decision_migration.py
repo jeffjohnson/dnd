@@ -123,6 +123,14 @@ class DecisionMigration:
     #: sequence of one-to-one replacements -- two retirements landing on one
     #: registry row have to be planned, reviewed and applied as one operation.
     nodes_merged: list[dict] = field(default_factory=list)
+    #: WORK_QUEUES 1.10: what each v2 merge's advisory `registry_csv_row`
+    #: declared and what was actually observed. Kept even when the two agree,
+    #: so the Reviewer can see the locator was checked rather than skipped.
+    registry_locator_audit: list[dict] = field(default_factory=list)
+    #: The canonical/registry state each authority Decision declares it was
+    #: written against, compared to what was actually read by
+    #: `note_baseline_drift`.
+    declared_baselines: list[dict] = field(default_factory=list)
     row_changes: list[RowChange] = field(default_factory=list)
     removals: list[Removal] = field(default_factory=list)
     findings: list[dict] = field(default_factory=list)
@@ -206,6 +214,131 @@ def _check_understood_shape(block: dict, decision_id: str, plan: DecisionMigrati
             )
 
 
+
+def _plan_incident_repoints(
+    canonical: CanonicalEdges,
+    entry: dict,
+    decision_id: str,
+    plan: "DecisionMigration",
+    registry,
+    *,
+    retired_id: str,
+    retired_label: str,
+    canonical_id: str,
+    canonical_label: str,
+) -> None:
+    """Render one paired endpoint repoint per row a v3 replacement enumerates.
+
+    DEC-2026-0050 states the rule this implements: the `incident_canonical_rows`
+    list is closed and authoritative, so it is checked both ways. Every listed
+    row must actually hold the retired endpoint, and every row that holds it must
+    be listed. Neither an unlisted row nor a listed row that moved is repaired
+    here -- an incomplete enumeration means the Decision was written against a
+    corpus that has changed, and inferring the difference is exactly what the
+    Decision's `prohibited_inference` forbids.
+    """
+
+    declared = []
+    for value in entry.get("incident_canonical_rows") or []:
+        index = _index_of(value, len(canonical.rows))
+        if index is None:
+            plan.finding(
+                "migration_row_out_of_range",
+                "error",
+                f"{decision_id} names canonical row {value} for {retired_id!r}, which the "
+                f"canonical graph does not have ({len(canonical.rows)} rows)",
+            )
+            continue
+        declared.append(index)
+
+    discovered = {
+        index
+        for index, row in enumerate(canonical.rows)
+        if row.get("source_id") == retired_id or row.get("target_id") == retired_id
+    }
+    declared_set = set(declared)
+    if declared_set != discovered:
+        missing = sorted(i + 2 for i in discovered - declared_set)
+        extra = sorted(i + 2 for i in declared_set - discovered)
+        detail = []
+        if missing:
+            detail.append(f"rows {missing} hold {retired_id!r} but are not enumerated")
+        if extra:
+            detail.append(f"rows {extra} are enumerated but do not hold {retired_id!r}")
+        plan.finding(
+            "migration_retired_endpoint_not_enumerated",
+            "error",
+            f"{decision_id} incident set for {retired_id!r} is not closed: "
+            + "; ".join(detail),
+        )
+        return
+
+    expected = entry.get("expected_incident_row_count")
+    if isinstance(expected, int) and expected != len(declared):
+        plan.finding(
+            "migration_declared_count_mismatch",
+            "error",
+            f"{decision_id} declares expected_incident_row_count={expected} for "
+            f"{retired_id!r} but enumerates {len(declared)}",
+        )
+        return
+
+    # Rendered in two passes. A replacement that fails partway must contribute
+    # nothing: leaving the rows before the failure in the plan would hand the
+    # Reviewer a half-applied migration that looks complete.
+    rendered: list[RowChange] = []
+    variants: list[str] = []
+    for index in sorted(declared):
+        row = canonical.rows[index]
+        changes: dict[str, tuple[str, str]] = {}
+        for endpoint, label_field in (("source_id", "source_label"), ("target_id", "target_label")):
+            if row.get(endpoint) != retired_id:
+                continue
+            observed_label = row.get(label_field, "")
+            if retired_label and observed_label and observed_label != retired_label:
+                # Identity is the ID; the label is display text that invariant 4
+                # keeps out of identity, and canonical genuinely carries variants
+                # for these endpoints. A paired repoint therefore rewrites the
+                # label with the surviving node's, which normalizes that variant
+                # away -- a real content change, so it is reported per row for the
+                # Reviewer to weigh rather than performed silently.
+                variants.append(
+                    f"row {index + 2} {label_field}={observed_label!r}"
+                )
+            # RowChange.changes holds (before, after) tuples; the GUP renderer
+            # unpacks them into from/to. Emitting a dict here silently produced
+            # {"from": "from", "to": "to"} in the artifact.
+            changes[endpoint] = (retired_id, canonical_id)
+            changes[label_field] = (observed_label, canonical_label)
+
+        if not changes:  # pragma: no cover - the closure check already proved it holds
+            continue
+
+        rendered.append(
+            RowChange(
+                canonical_row=index + 2,
+                canonical_index=index,
+                kind="endpoint_repoint",
+                changes=changes,
+                authority=decision_id,
+                before=dict(row),
+            )
+        )
+
+    if variants:
+        plan.finding(
+            "migration_repoint_normalizes_label_variant",
+            "info",
+            f"{decision_id} repoints {retired_id!r} to {canonical_id!r} and rewrites "
+            f"{len(variants)} endpoint label(s) that differ from the retired node's "
+            f"registry label {retired_label!r}: {'; '.join(variants)}. Each becomes "
+            f"{canonical_label!r}. Identity is the endpoint ID, so this does not change "
+            f"which assertion the row makes, but it does discard wording someone chose.",
+        )
+
+    plan.row_changes.extend(rendered)
+
+
 def _plan_endpoint_repoints(
     canonical: CanonicalEdges, block: dict, decision_id: str, plan: DecisionMigration
 ) -> None:
@@ -280,8 +413,114 @@ def _plan_endpoint_repoints(
         )
 
 
+
+def _plan_v3_label_normalization(
+    canonical: CanonicalEdges,
+    entry: dict,
+    index: int,
+    row: dict,
+    decision_id: str,
+    plan: "DecisionMigration",
+    registry,
+) -> None:
+    """One v3 blank-label normalization on an enumerated row.
+
+    Bounded deliberately: only `source_label` and `target_label`, only from
+    blank, and only to the current registry label for that row's unchanged
+    endpoint ID. Anything else -- a nonblank `from`, a changed endpoint, a
+    non-label field, a label the registry does not carry -- is refused rather
+    than applied, because each of those would be a different operation wearing
+    this one's name.
+    """
+
+    allowed = {"source_label": "source_id", "target_label": "target_id"}
+    changes: dict[str, tuple[str, str]] = {}
+
+    for field_name, value in sorted((entry.get("changes") or {}).items()):
+        if field_name not in allowed:
+            plan.finding(
+                "migration_label_normalization_field_not_permitted",
+                "error",
+                f"{decision_id} row {index + 2} normalizes {field_name!r}; a v3 label "
+                f"normalization may change only source_label or target_label",
+            )
+            return
+        if not isinstance(value, dict):
+            plan.finding(
+                "migration_label_normalization_malformed",
+                "error",
+                f"{decision_id} row {index + 2} gives no from/to for {field_name!r}",
+            )
+            return
+
+        declared_from = str(value.get("from") or "")
+        declared_to = str(value.get("to") or "").strip()
+        if declared_from != "":
+            plan.finding(
+                "migration_label_normalization_from_not_blank",
+                "error",
+                f"{decision_id} row {index + 2} declares {field_name} from "
+                f"{declared_from!r}; this operation fills a blank label only",
+            )
+            return
+
+        observed = row.get(field_name, "")
+        if observed != "":
+            plan.finding(
+                "migration_before_assertion_mismatch",
+                "error",
+                f"{decision_id} row {index + 2} normalizes {field_name}, but the baseline "
+                f"carries {observed!r} rather than a blank",
+            )
+            return
+
+        endpoint_id = str(row.get(allowed[field_name]) or "").strip()
+        node = registry.get(endpoint_id) if registry is not None else None
+        if node is None:
+            plan.finding(
+                "migration_label_normalization_endpoint_unknown",
+                "error",
+                f"{decision_id} row {index + 2} normalizes {field_name} for endpoint "
+                f"{endpoint_id!r}, which the registry does not hold",
+            )
+            return
+        if declared_to != node.label:
+            plan.finding(
+                "migration_label_normalization_not_registry_label",
+                "error",
+                f"{decision_id} row {index + 2} sets {field_name} to {declared_to!r}, but "
+                f"the registry label for {endpoint_id!r} is {node.label!r}",
+            )
+            return
+
+        changes[field_name] = ("", declared_to)
+
+    if not changes:
+        plan.finding(
+            "migration_label_normalization_malformed",
+            "error",
+            f"{decision_id} row {index + 2} declares a label normalization with no changes",
+        )
+        return
+
+    plan.row_changes.append(
+        RowChange(
+            canonical_row=index + 2,
+            canonical_index=index,
+            kind="endpoint_label_normalization",
+            changes=changes,
+            authority=decision_id,
+            before=dict(row),
+        )
+    )
+
+
 def _plan_label_normalizations(
-    canonical: CanonicalEdges, block: dict, decision_id: str, plan: DecisionMigration
+    canonical: CanonicalEdges,
+    block: dict,
+    decision_id: str,
+    plan: DecisionMigration,
+    registry=None,
 ) -> None:
     key = "endpoint_label_normalizations_without_repoint"
     for entry in block.get(key) or []:
@@ -295,6 +534,16 @@ def _plan_label_normalizations(
             )
             continue
         row = canonical.rows[index]
+
+        # DEC-2026-0050 v3 shape: a `changes` map of label fields, each with an
+        # explicit blank `from` and the exact registry label as `to`. It changes
+        # only labels, so assertion identity is untouched by construction.
+        if isinstance(entry.get("changes"), dict):
+            _plan_v3_label_normalization(
+                canonical, entry, index, row, decision_id, plan, registry
+            )
+            continue
+
         field_name = str(entry.get("field") or "").strip()
         value = str(entry.get("value") or "").strip()
         before = row.get(field_name, "")
@@ -488,6 +737,67 @@ def _sha256(path: Path) -> str:
     return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _record_declared_baseline(document: dict, decision_id: str, plan) -> None:
+    """Keep the corpus state a Decision says it was written against."""
+    baseline = document.get("baseline")
+    if not isinstance(baseline, dict):
+        return
+    declared = {"authority": decision_id}
+    for key, field_name in (
+        ("canonical_edges", "canonical"),
+        ("nodes_registry", "registry"),
+    ):
+        block = baseline.get(key)
+        if isinstance(block, dict):
+            declared[f"{field_name}_checksum"] = str(block.get("checksum") or "").strip()
+            declared[f"{field_name}_rows"] = block.get("rows")
+    if len(declared) > 1:
+        plan.declared_baselines.append(declared)
+
+
+def note_baseline_drift(plan, envelope: dict) -> None:
+    """Say out loud when the corpus has moved since a Decision was written.
+
+    An Architect verifies a Decision's row locators and incident sets against a
+    named canonical and registry state. By the time a Builder plans it, an
+    unrelated integration may have replaced both. The planner re-verifies every
+    incident set and before-image against what it actually read, so a clean plan
+    is still a correct plan -- but the Reviewer should not have to diff two
+    checksums by hand to discover that the two states differ.
+
+    Informational by construction. Making it an error would reintroduce exactly
+    the brittleness WORK_QUEUES 1.10 removed: a merge would become invalid
+    because some other packet integrated, not because anything about the merge
+    changed.
+    """
+    for declared in plan.declared_baselines:
+        for field_name, source_key, rows_key in (
+            ("canonical", "canonical_checksum", "canonical_rows_read"),
+            ("registry", "registry_checksum", "registry_rows_read"),
+        ):
+            expected = declared.get(f"{field_name}_checksum")
+            if not expected:
+                continue
+            observed = envelope.get(source_key)
+            if expected == observed:
+                continue
+            plan.finding(
+                "migration_decision_baseline_moved",
+                "info",
+                f"{declared['authority']} was written against a {field_name} baseline of "
+                f"{expected} ({declared.get(f'{field_name}_rows')} rows); this plan read "
+                f"{observed} ({envelope.get(rows_key)} rows). Every locator and before-image "
+                f"in this plan was re-verified against what was read, and the GUP pins the "
+                f"state it read.",
+                authority=declared["authority"],
+                baseline=field_name,
+                declared_checksum=expected,
+                observed_checksum=observed,
+                declared_rows=declared.get(f"{field_name}_rows"),
+                observed_rows=envelope.get(rows_key),
+            )
+
+
 def plan_from_decisions(
     canonical: CanonicalEdges,
     decision_paths: list[Path],
@@ -568,6 +878,7 @@ def plan_from_decisions(
                 "checksum": _sha256(path),
             }
         )
+        _record_declared_baseline(document, decision_id, plan)
 
         for node in document.get("new_nodes_authorized") or []:
             node_id = str(node.get("id") or "").strip()
@@ -620,7 +931,7 @@ def plan_from_decisions(
         block = document.get("canonical_migration") or {}
         _check_understood_shape(block, decision_id, plan)
         _plan_endpoint_repoints(canonical, block, decision_id, plan)
-        _plan_label_normalizations(canonical, block, decision_id, plan)
+        _plan_label_normalizations(canonical, block, decision_id, plan, registry)
         _plan_merged_assertion(canonical, block, decision_id, plan)
         _plan_node_id_replacements(canonical, block, decision_id, plan, registry)
         _plan_node_id_merges(canonical, block, decision_id, plan, registry)
@@ -661,8 +972,19 @@ def plan_from_decisions(
         "endpoint_repoints": sum(
             1 for c in plan.row_changes if c.kind == "endpoint_repoint"
         ),
+        # Both spellings: v1 emits `label_normalization`, the v3 endpoint-label
+        # operation emits `endpoint_label_normalization`. Counting only the first
+        # reported DEC-2026-0050's seven label rows as zero while its fifty
+        # repoints showed correctly, which is what the Review caught.
         "label_normalizations": sum(
-            1 for c in plan.row_changes if c.kind == "label_normalization"
+            1 for c in plan.row_changes
+            if c.kind in ("label_normalization", "endpoint_label_normalization")
+        ),
+        # Rows and fields are different quantities and the Decision declares
+        # both: seven rows carrying fourteen blank-to-registry label fields.
+        "endpoint_labels_normalized": sum(
+            len(c.changes) for c in plan.row_changes
+            if c.kind == "endpoint_label_normalization"
         ),
         "citation_corrections": sum(
             1 for c in plan.row_changes if c.kind == "citation_correction"
@@ -726,11 +1048,35 @@ def validation_report(
             "registry_rows_retired_by_merge": sum(
                 len(m["retired_nodes"]) for m in plan.nodes_merged
             ),
-            "canonical_endpoint_repoints": len(plan.row_changes),
+            # Counted by kind, not by row total. `len(plan.row_changes)` called
+            # every change an endpoint repoint, so DEC-2026-0050's seven
+            # label-normalization rows -- which change no endpoint at all --
+            # were reported as repoints and the two operation classes the
+            # Decision requires to be distinguishable were indistinguishable.
+            "canonical_endpoint_repoints": sum(
+                1 for c in plan.row_changes if c.kind == "endpoint_repoint"
+            ),
+            "canonical_endpoint_label_normalizations": sum(
+                1 for c in plan.row_changes
+                if c.kind in ("label_normalization", "endpoint_label_normalization")
+            ),
+            "canonical_endpoint_labels_normalized": sum(
+                len(c.changes) for c in plan.row_changes
+                if c.kind == "endpoint_label_normalization"
+            ),
+            "canonical_other_row_changes": sum(
+                1 for c in plan.row_changes
+                if c.kind not in (
+                    "endpoint_repoint", "label_normalization",
+                    "endpoint_label_normalization",
+                )
+            ),
             "canonical_row_removals": len(plan.removals),
             "aliases_created": 0,
             "semantic_reinterpretations": 0,
         }
+        if plan.registry_locator_audit:
+            report["registry_locator_audit"] = plan.registry_locator_audit
     return report
 
 
@@ -776,19 +1122,42 @@ DIRECT_MODEL = "decision_migration_v1"
 #: of v1 replacements, which is why it needs a model of its own rather than a
 #: widened v1.
 DIRECT_MODEL_V2 = "decision_migration_v2"
+#: DEC-2026-0050. One-to-one replacements with their closed paired repoints, plus
+#: blank endpoint-label normalization on enumerated rows. Deliberately separate
+#: from v1: v1 has no label operation, and widening it would have given every
+#: existing v1 Decision a capability nobody reviewed.
+DIRECT_MODEL_V3 = "decision_migration_v3"
 
-DIRECT_MODELS = (DIRECT_MODEL, DIRECT_MODEL_V2)
+DIRECT_MODELS = (DIRECT_MODEL, DIRECT_MODEL_V2, DIRECT_MODEL_V3)
 
 
-def _repoint_objections(plan: DecisionMigration) -> list[str]:
-    """Row changes neither direct model can execute. Shared by both."""
+def _repoint_objections(plan: DecisionMigration, model: str = "") -> list[str]:
+    """Row changes the named direct model cannot execute.
+
+    Shared by all three. Only v3 has a label-normalization operation, so the kind
+    is admitted for that model alone -- admitting it everywhere would hand v1 and
+    v2 a capability their Decisions never granted.
+    """
+    executable = {"endpoint_repoint"}
+    if model == DIRECT_MODEL_V3:
+        executable.add("endpoint_label_normalization")
+
     objections: list[str] = []
     for change in plan.row_changes:
-        if change.kind != "endpoint_repoint":
+        if change.kind not in executable:
             objections.append(
                 f"canonical row {change.canonical_row} is a {change.kind}; the model "
-                f"executes only endpoint_repoint"
+                f"executes only {', '.join(sorted(executable))}"
             )
+            continue
+        if change.kind == "endpoint_label_normalization":
+            # Its own field rule: labels only, and both are permitted together.
+            stray = sorted(set(change.changes) - {"source_label", "target_label"})
+            if stray:
+                objections.append(
+                    f"canonical row {change.canonical_row} normalizes {stray}; a label "
+                    f"normalization changes only endpoint labels"
+                )
             continue
         fields = set(change.changes)
         if fields not in ({"source_id", "source_label"}, {"target_id", "target_label"}):
@@ -815,7 +1184,7 @@ def direct_model_objections(
     may execute operations nobody authorized, so the answer is a refusal rather
     than a silently narrower artifact.
     """
-    objections = _repoint_objections(plan)
+    objections = _repoint_objections(plan, model)
 
     if model == DIRECT_MODEL_V2:
         if not plan.nodes_merged:
@@ -837,10 +1206,44 @@ def direct_model_objections(
             )
         return objections
 
+    if model == DIRECT_MODEL_V3:
+        if not plan.nodes_replaced:
+            objections.append(
+                "no one-to-one replacement; v3 exists to execute them and their "
+                "paired repoints"
+            )
+        for name, entries in (
+            ("addition", plan.nodes_added),
+            ("relabel", plan.nodes_relabelled),
+            ("merge", plan.nodes_merged),
+        ):
+            if entries:
+                objections.append(
+                    f"{len(entries)} node {name}(s); v3 executes one-to-one replacements, "
+                    f"their paired repoints and blank label normalization only"
+                )
+        if plan.removals:
+            objections.append(
+                f"{len(plan.removals)} canonical removal(s); v3 executes no removals"
+            )
+        for change in plan.row_changes:
+            if change.kind not in ("endpoint_repoint", "endpoint_label_normalization"):
+                objections.append(
+                    f"canonical row {change.canonical_row} carries a {change.kind!r} "
+                    f"operation; v3 executes no such change"
+                )
+        return objections
+
     if plan.nodes_relabelled:
         objections.append(
             f"{len(plan.nodes_relabelled)} relabel(s); the model has no relabel operation"
         )
+    for change in plan.row_changes:
+        if change.kind == "endpoint_label_normalization":
+            objections.append(
+                f"canonical row {change.canonical_row} normalizes a blank endpoint label; "
+                f"that operation is {DIRECT_MODEL_V3} work"
+            )
     if plan.nodes_merged:
         objections.append(
             f"{len(plan.nodes_merged)} node merge(s); v1 executes one-to-one "
@@ -1035,6 +1438,36 @@ def _plan_node_id_replacements(
             )
             continue
 
+        # DEC-2026-0050 v3: the enumeration lives on the replacement entry
+        # itself rather than in a separate top-level `endpoint_repoints` list.
+        # The Decision calls that list closed and authoritative, so it is
+        # compared against independently discovered usage and every listed row
+        # is rendered as one paired ID/label repoint.
+        if entry.get("incident_canonical_rows") is not None:
+            _plan_incident_repoints(
+                canonical, entry, decision_id, plan, registry,
+                retired_id=retired_id,
+                retired_label=retired_label,
+                canonical_id=canonical_id,
+                canonical_label=canonical_label,
+            )
+            plan.nodes_replaced.append(
+                {
+                    "retired_id": retired_id,
+                    "retired_label": retired_label,
+                    "canonical_id": canonical_id,
+                    "canonical_label": canonical_label,
+                    "kind": kind,
+                    "registry_action": registry_action or "replace_one_row",
+                    "require_no_remaining_retired_endpoints": bool(require_no_remaining),
+                    "authority": decision_id,
+                    "incident_canonical_rows": [
+                        int(r) for r in entry.get("incident_canonical_rows") or []
+                    ],
+                }
+            )
+            continue
+
         # Collect all canonical rows that use the retiring ID
         retired_as_source = [
             i for i, row in enumerate(canonical.rows)
@@ -1078,6 +1511,24 @@ def _plan_node_id_replacements(
             "authority": decision_id,
             "incident_canonical_rows": [i + 2 for i in all_retired_endpoints],
         })
+
+
+def _retired_node_document(node: dict, observed_rows: dict) -> dict:
+    """One retired node, carrying the row it actually occupies.
+
+    ARTIFACT_LIFECYCLE 1.8 makes the locator an *observed* value in the GUP's
+    own pinned baseline, so the Decision's declared row is never copied through:
+    copying it is what let a stale number outlive the state it described. When
+    nothing was observed -- no registry to read -- the field is omitted rather
+    than emitted empty, because the schema types it as an integer and a null
+    would assert a row nobody looked up.
+    """
+    node_id = str(node.get("id") or "").strip()
+    document = {"id": node_id, "label": str(node.get("label") or "").strip()}
+    observed = observed_rows.get(node_id)
+    if observed is not None:
+        document["registry_csv_row"] = observed
+    return document
 
 
 def _plan_node_id_merges(
@@ -1144,8 +1595,10 @@ def _plan_node_id_merges(
             )
             continue
 
-        # Each retired node must be exactly where and what the Decision says.
+        # Each retired node must be exactly what the Decision says. Where it
+        # sits is advisory (see the locator note below).
         mismatched = False
+        observed_rows: dict[str, int | None] = {}
         for node in retired:
             node_id = str(node.get("id") or "").strip()
             if registry is not None and node_id not in registry:
@@ -1169,17 +1622,37 @@ def _plan_node_id_merges(
                     f"different registry state; it needs re-issuing, not reinterpreting.",
                 )
                 mismatched = True
-            row_number = node.get("registry_csv_row")
+            # DEC-2026-0038 / WORK_QUEUES 1.10: the row is an advisory locator,
+            # not the identity. The ID and label above already established which
+            # node is being retired, and the pinned registry checksum protects
+            # the transaction. A row that moved under an unrelated sorted
+            # insertion says nothing about *this* merge, so it is recorded for
+            # audit and planning continues.
+            declared_row = node.get("registry_csv_row")
             actual_row = registry.row_of(node_id) if hasattr(registry, "row_of") else None
-            if row_number is not None and actual_row is not None and int(row_number) != actual_row:
-                plan.finding(
-                    "migration_merge_registry_row_moved",
-                    "error",
-                    f"{label} names registry row {row_number} for {node_id!r}, which now sits "
-                    f"at row {actual_row}. The Decision was written against a different "
-                    f"registry state; it needs re-issuing, not reinterpreting.",
+            observed_rows[node_id] = actual_row
+            if declared_row is not None and actual_row is not None:
+                if int(declared_row) != actual_row:
+                    plan.finding(
+                        "migration_merge_registry_row_advisory_moved",
+                        "info",
+                        f"{label} names registry row {declared_row} for {node_id!r}, which now "
+                        f"sits at row {actual_row}. The declared ID and label still resolve, so "
+                        f"this is an observation for audit, not a planning failure; the GUP "
+                        f"records the observed row.",
+                        node_id=node_id,
+                        declared_registry_csv_row=int(declared_row),
+                        observed_registry_csv_row=actual_row,
+                    )
+                plan.registry_locator_audit.append(
+                    {
+                        "node_id": node_id,
+                        "authority": decision_id,
+                        "declared_registry_csv_row": int(declared_row),
+                        "observed_registry_csv_row": actual_row,
+                        "moved": int(declared_row) != actual_row,
+                    }
                 )
-                mismatched = True
         if mismatched:
             continue
 
@@ -1271,11 +1744,7 @@ def _plan_node_id_merges(
                 "canonical_label": canonical_label,
                 "kind": kind,
                 "retired_nodes": [
-                    {
-                        "id": str(n.get("id") or "").strip(),
-                        "label": str(n.get("label") or "").strip(),
-                        "registry_csv_row": n.get("registry_csv_row"),
-                    }
+                    _retired_node_document(n, observed_rows)
                     for n in retired
                 ],
                 "registry_action": str(entry.get("registry_action") or "").strip(),
@@ -1617,10 +2086,13 @@ def _check_declared_counts(
     declared = block.get("counts") or {}
     # A merge enumerates its repoints inside `incident_canonical_rows` rather
     # than in `endpoint_repoints`, so both have to be counted or a Decision
-    # that only merges looks like it contradicts itself.
+    # that only merges looks like it contradicts itself. A v3 replacement
+    # enumerates them the same way, and DEC-2026-0050 -- fifty repoints, none of
+    # them in `endpoint_repoints` -- reads as self-contradictory without this.
     merge_repoints = sum(
         len(entry.get("incident_canonical_rows") or [])
-        for entry in (block.get("node_id_merges") or [])
+        for key in ("node_id_merges", "node_id_replacements")
+        for entry in (block.get(key) or [])
         if isinstance(entry, dict)
     )
     pairs = (

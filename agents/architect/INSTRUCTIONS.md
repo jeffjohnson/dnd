@@ -18,22 +18,20 @@ At startup, resolve and retain these identifiers from the assigned task:
 
 Never infer these from conversation history. Read them from repository manifests. All inputs and outputs must remain inside the resolved ruleset and book namespaces unless an explicit cross-book artifact is required.
 
-## Read at startup
+## Context loading
 
-1. `rulesets/<ruleset-id>/governance/constitution.md`
-2. `contracts/GRAPH_INVARIANTS.md`
-3. `contracts/SOURCE_MARKDOWN.md`
-4. `contracts/ESCALATION_CONTRACT.md`
-5. `contracts/WORK_QUEUES.md`
-6. `rulesets/<ruleset-id>/registries/domain_registry.yaml`
-7. `rulesets/<ruleset-id>/registries/general_rules.json`
-8. `rulesets/<ruleset-id>/profiles/roles.yaml`
-9. `rulesets/<ruleset-id>/ruleset.yaml` and any referenced controlled taxonomy
-   registry relevant to the escalation
-10. the specific escalation package
-11. only the graph slice and source excerpt included with that escalation
+Run `tooling/common/role_context.py verify --role architect` after resolving the
+ruleset scope. On a same-session cache hit, retain the verified stable authority
+context and do not reload it for orientation. On a miss, read only the verifier's
+emitted stable authority set, then record its receipt. The receipt is local,
+checksum-bound, and never substitutes for a current Decision or escalation.
 
-Do not load the whole graph unless the escalation proves that global analysis is necessary.
+Always read the specific escalation package, its named source excerpt, and only
+the local graph or registry slice necessary to decide it. Read an earlier
+Decision, current registry, canonical baseline, or source packet only when that
+exact artifact is named by the escalation or needed to validate a claimed impact.
+Do not enumerate the whole graph, all escalations, or unrelated book artifacts
+for orientation.
 
 ## Inputs
 
@@ -94,6 +92,10 @@ You must:
 8. identify all files affected by the decision;
 9. state whether existing approved data must be migrated;
 10. provide acceptance tests for any programmatic change.
+11. write a mutable-contract acceptance test as `Version N or later` plus
+    explicit substantive anchors, and declare its structured
+    `versioned_contract_content` semantics. Use an exact version only when that
+    literal version string is itself required behavior and explain why.
 
 ## Decision procedure
 
@@ -108,7 +110,25 @@ For each escalation:
 7. Decide: approve, reject, defer pending recurrence, or return as non-architectural.
 8. Specify required migration and tests.
 9. Write a durable decision artifact.
-10. Update governance files only when the decision requires it.
+10. When `exact_diff` is present, list every path exactly once in
+    `exact_diff_ownership`, assign its owner, and ensure that owner appears in a
+    sequence step or `follow_up_owners`. An Architect-owned direct change must
+    be an explicit sequence step; never leave a governance or instruction file
+    implied by a different role's implementation handoff.
+11. Update governance files only when the decision requires it.
+12. For a non-migration Decision that assigns direct implementation to Builder or
+    Integrator, verify that every acceptance test is evidenceable by the role and
+    sequence step that publishes the Decision Implementation Report. Put
+    later-role source artifacts, ordinary GUPs, Reviews, Integrations, and other
+    downstream outcomes in explicit `post_implementation_requirements`; they are
+    verified by their normal lifecycle and must not block the earlier
+    implementation Review. For a Decision that replaces an originating artifact
+    handoff with ordinary Reviewer or Analyst work, make its acceptance tests
+    evidenceable by that role's exact successor artifact instead.
+13. Never silently reinterpret an earlier exact-version acceptance test. A later
+    Decision may authorize it only by pinning the exact Decision checksum and
+    acceptance-test index, minimum versions, and the substantive anchors that
+    the implementation report and Reviewer must independently verify.
 
 ## Outputs
 
@@ -128,6 +148,8 @@ Every decision must contain:
 - acceptance tests;
 - constitution version impact;
 - follow-up owner.
+- for every `exact_diff` path, an explicit owner and sequence or follow-up
+  assignment.
 
 When changing governance files, also produce a concise changelog and exact diff.
 

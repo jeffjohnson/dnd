@@ -1,0 +1,43 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0045-r05-r02
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: REV-IMP-DEC-2026-0045-r05-r01
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: After DEC-2026-0048's scanner correction is published, reissue this report against its current checksums for a fresh independent approval.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0045-r05
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0045-r05.yaml
+  checksum: sha256:9c581d043b5c39a4be80c060cbbc9ed59ee9708f85ff640abcc89466922f6f90
+decision_input:
+  id: DEC-2026-0045
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0045.yaml
+  checksum: sha256:25dedbb5ca47f8b3084a9b1546610fa66c8f8da33923c9cdd1b9f2f059aee341
+acceptance_dispositions:
+- acceptance_test_index: 1
+  disposition: failed
+  evidence: The independently re-derived versioned contract evidence is authorized and correct, but cannot yet be approved because the DEC-2026-0048 scanner implementation rejects its required Review disposition.
+- acceptance_test_index: 2
+  disposition: verified
+  evidence: The published rejection-record provenance requirements remain present and checksummed.
+- acceptance_test_index: 3
+  disposition: verified
+  evidence: Exact-diff ownership guard and schema coverage remain current and targeted tests pass.
+- acceptance_test_index: 4
+  disposition: verified
+  evidence: The unowned-plan and owner-routing behavior remains current and targeted tests pass.
+independent_validation:
+  passed: false
+  commands:
+  - command: '[cwd tooling/common] scan_agent_queues.py --root ../.. --json'
+    exit_code: 1
+    result: failed
+    summary: The required versioned-content Review disposition is rejected by the current scanner; refer to REV-IMP-DEC-2026-0048-r01-r02.
+overall_disposition: revision_required

@@ -1,0 +1,92 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0052-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: All four DEC-2026-0052 direct implementation acceptance tests are independently verified.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0052-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0052-r01.yaml
+  checksum: sha256:dbf9fa45e7063a0b47dfa381dce013395b2fddc4f5de9520d344c69b0019d493
+decision_input:
+  id: DEC-2026-0052
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml
+  checksum: sha256:980c112825f5d3b57eab371bb6e20338c750e0a65b30b578ed8f897c0f63acbd
+acceptance_dispositions:
+- acceptance_test_index: 1
+  disposition: verified_versioned_contract_content
+  evidence: >-
+    Re-derived against the current WORK_QUEUES text under DEC-2026-0052's exact
+    authorization. Version 1.17 meets the authorized floor and every required
+    Review 1.1 vocabulary and packaging anchor remains present.
+  verified_versioned_contract_content:
+    authority:
+      id: DEC-2026-0052
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml
+      checksum: sha256:980c112825f5d3b57eab371bb6e20338c750e0a65b30b578ed8f897c0f63acbd
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:5bba3cbfb661e8264fd912e292928b1e16b278f4ad914619358b6e50ee99a1ae
+      observed_version: '1.17'
+      minimum_version: '1.17'
+      anchors_present:
+      - review_contract_version
+      - approved_but_excluded_from_bundle is invalid
+      - Approved-bundle membership
+- acceptance_test_index: 2
+  disposition: verified_versioned_contract_content
+  evidence: >-
+    Re-derived against the current ARTIFACT_LIFECYCLE text under DEC-2026-0052's
+    exact authorization. Version 1.13 meets the authorized floor and every
+    required disposition and packaging-exclusion anchor remains present.
+  verified_versioned_contract_content:
+    authority:
+      id: DEC-2026-0052
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml
+      checksum: sha256:980c112825f5d3b57eab371bb6e20338c750e0a65b30b578ed8f897c0f63acbd
+      authorized_acceptance_test_index: 2
+    authorized_acceptance_test_index: 2
+    contracts:
+    - path: contracts/ARTIFACT_LIFECYCLE.md
+      checksum: sha256:8cfc8426863f771d546264cfa9c19aef4c358ca14c618c393916e7cd0058cafb
+      observed_version: '1.13'
+      minimum_version: '1.13'
+      anchors_present:
+      - approved_with_revision
+      - packaging exclusions
+      - per-row disposition
+- acceptance_test_index: 3
+  disposition: verified
+  evidence: >-
+    The Review 1.1 schema gate accepts exactly the four legal per-row
+    dispositions, rejects the former fifth term in both edge and row decision
+    shapes, and preserves Reviews that do not opt in.
+- acceptance_test_index: 4
+  disposition: verified
+  evidence: >-
+    The report pins DEC-2026-0052's current checksum, reports all direct
+    acceptance tests passed, and records passing focused and full common-suite
+    validation. The r06 Review is correctly downstream rather than direct
+    implementation evidence.
+independent_validation:
+  passed: true
+  commands:
+  - command: SHA-256 comparison of the report, Decision, validation report, and every pinned implementation file
+    exit_code: 0
+    result: passed
+    summary: Every reviewed checksum matched current bytes.
+  - command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest test_common_schemas.TestReviewDispositionVocabulary test_common_schemas.TestPublishedReviewsStillValidate -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 14 tests in 4.411s; the legal Review 1.1 vocabulary and legacy Review compatibility both passed.
+overall_disposition: approved

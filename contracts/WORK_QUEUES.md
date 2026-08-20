@@ -1,6 +1,6 @@
 # Agent Work Queue Contract
 
-**Version 1.9.**
+**Version 1.18.**
 
 ## Purpose
 
@@ -38,10 +38,80 @@ paths and checksums are provenance and must remain valid.
 12. A later approved Architect Decision may replace the ready handoff of the
     artifact that raised its escalation. The original artifact remains immutable;
     queue tooling derives the current handoff from the Decision lineage.
-13. A non-migration Architect Decision assigned to Builder is complete only when
-    an Approved Decision Implementation Review consumes the exact active
-    implementation-report leaf. File state or passing tests alone never imply
-    completion.
+13. A non-migration Architect Decision with a ready Builder or Integrator handoff
+    is complete only when an Approved Decision Implementation Review consumes the
+    exact active implementation-report leaf. File state or passing tests alone
+    never imply completion.
+14. When an Architect Decision declares
+    `decision_authoring_contract_version: '1.1'` and has an `exact_diff`, every
+    listed path must occur exactly once in `exact_diff_ownership`. Each entry
+    names one owner and that owner must be named by a sequence step or
+    `follow_up_owners` entry. An unassigned, duplicate, or mismatched entry is
+    implementation-planning invalid; it cannot become approval-ready. Historical
+    Decisions without that declaration remain valid immutable history.
+15. After an Approved Decision Implementation Review consumes the exact active
+    report leaf, that report's `implementation_files` are a checksummed snapshot
+    of what was reviewed. Later current-file drift is informational and never
+    reopens the completed Decision. Before an exact Approved Review exists,
+    implementation-file drift remains a diagnostic and restores the Decision to
+    its implementation owner.
+16. A mutable contract's version in an acceptance test is a minimum-version
+    predicate only when the Decision explicitly declares
+    `versioned_contract_content` semantics, or a later approved Decision pins a
+    legacy-test authorization. The report and its independent Review must prove
+    the named contract remains at or above the authorized version and that every
+    named substantive anchor remains present. An unstructured exact-version
+    statement remains literal; it is not silently widened by a later edit.
+17. Durable artifact publication is create-only. Before writing any artifact,
+    component, or checksummed validation report, its publisher must preflight
+    every intended output and every same-ID companion path. If any path exists,
+    publication fails before any output is modified. A repository artifact
+    revision has no overwrite override; correction requires a new revision and
+    explicit `supersedes` lineage.
+18. When a checksum named by a published consumer no longer resolves to the
+    current bytes at its recorded path, it is an integrity breach, not ordinary
+    current-file drift and not permission to substitute the current bytes. The
+    affected artifact and consumers remain unchanged. The discovering role
+    raises an Architect escalation that records the expected and current
+    checksums; the resolving Decision is the durable incident record.
+
+## Versioned Contract-Content Acceptance
+
+New Decisions that test mutable contract content must say `Version N or later`,
+declare `acceptance_test_semantics.kind: versioned_contract_content`, and enumerate
+the contract paths, minimum versions, and substantive anchors. An exact version is
+permitted only when the literal version string itself is the required behavior; the
+   Decision must state why a minimum version would be insufficient.
+
+### Review Disposition Vocabulary
+
+The only legal per-row Review dispositions are `approved`,
+`approved_with_revision`, `rejected`, and `architect_escalation`. A disposition
+expresses the Reviewer's judgment about the row; it does not express
+Approved-bundle membership. In particular,
+`approved_but_excluded_from_bundle` is invalid. A source-supported approved row
+may remain in a checksummed `blocked.csv` outside an Approved bundle under the
+ordinary packaging rules, but that exclusion is packaging evidence and not a
+fifth disposition.
+
+Every new Review declares `review_contract_version: '1.1'`. At publication, the
+common Review schema validates every `edge_decisions` and `row_decisions`
+disposition against this four-term vocabulary. Reviews that omit the field are
+immutable legacy history and retain their existing structural treatment.
+
+The ordinary outcome remains `passed` in a Decision Implementation Report and
+`verified_versioned_contract_content` in its independent Review. It is not
+`retired_by_lineage`: the reported current state is still being tested. The report
+must pin the authorizing Decision, the authorized acceptance-test index, every
+current contract path and checksum, and the observed version. The Reviewer
+independently verifies the same authority, current minimum versions, and anchors.
+
+A later Decision may authorize a legacy exact-version acceptance test only by
+pinning the exact legacy Decision ID, path, checksum, and test index, together with
+the same minimum-version and anchor set. The authorization never covers another
+test, another Decision revision, or a later weakened contract. Queue tooling must
+diagnose an absent, stale, mismatched, incomplete, or below-minimum authorization;
+it must not treat such a report as approval-ready.
 
 ## Decision Handoff Replacement
 
@@ -111,6 +181,42 @@ original input provenance and state why a revision was needed.
 
 Legacy artifacts without this block remain valid. Queue tooling must apply the
 legacy rules below and report that inference in diagnostics.
+
+A present `handoff` block is not a legacy omission. It must conform to the
+envelope's complete handoff shape. Queue tooling must not silently apply a
+legacy fallback to an artifact with a present but malformed handoff.
+
+### GUR Withdrawals And Malformed Handoffs
+
+When a later packet wholly supersedes a GUR's source scope, the Analyst publishes
+an immutable successor GUR revision rather than altering the earlier GUR or
+asking Builder to compile an empty patch. The successor records the replacement
+GUR or packet in a `withdrawal` record, carries no candidate node, edge, domain,
+general-rule, or escalation proposal, and uses this conforming terminal handoff:
+
+```yaml
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: superseded by <replacement packet or GUR>
+  blocking_ids: []
+```
+
+The terminal withdrawal leaf creates no Builder job and needs no GUP or Review.
+It remains immutable history. `withdrawn` may be used as the GUR status for this
+case; terminality is defined by the handoff, not inferred from that status.
+
+For an active-leaf GUR with a present but malformed handoff, the scanner must:
+
+1. emit one `error` diagnostic with code `gur_invalid_handoff`, naming Analyst
+   as the owner of the repair and identifying the invalid handoff fields;
+2. emit one ready `ANALYST-GUR-REPAIR` item for the exact GUR; and
+3. emit no `BUILDER-GUR` item and no legacy-inference diagnostic for that GUR.
+
+The Analyst repairs such a published GUR only by publishing a schema-valid
+successor revision. A malformed handoff on a non-leaf GUR remains a diagnostic,
+but does not create repair work. This narrow repair routing applies to GURs; no
+other artifact kind is reclassified by it.
 
 ## GUP Lineage Roots
 
@@ -209,21 +315,50 @@ its plan may contain only:
 3. empty `additions_proposed`, `relabels`, `replacements`, and
    `canonical_removals` arrays.
 
-Every merge names its canonical ID, label, and kind; every retired ID, label,
-and one-based registry row; `registry_action:
-merge_retired_rows_into_one`; `require_no_remaining_retired_endpoints: true`;
-its authority Decision; and its complete incident canonical-row set. Before
-planning, the canonical ID must be absent, every retired node must match its
-declared registry row and label, and every discovered endpoint using a retired
-ID must equal that merge's declared incident set. Each incident row is exactly
-one paired endpoint-ID/label repoint with a full 18-field before-image. The
-Integrator replaces all retired registry rows with exactly one canonical row,
-creates no alias, and rejects the transaction if any retired ID remains in the
-registry, canonical endpoints, or derived outputs.
+Every merge names its canonical ID, label, and kind; every retired ID and label;
+`registry_action: merge_retired_rows_into_one`;
+`require_no_remaining_retired_endpoints: true`; its authority Decision; and its
+complete incident canonical-row set. A retired node may also carry a one-based
+`registry_csv_row` advisory locator. Before planning, the canonical ID must be
+absent, every retired ID and label must match the current registry, and every
+discovered endpoint using a retired ID must equal that merge's declared incident
+set. A present retired ID whose label matches but whose advisory locator moved is
+an informational observation, not a planning or integration error. A missing
+retired ID or a label mismatch remains an error. If a direct GUP emits
+`registry_csv_row`, it records the row observed in its pinned registry baseline;
+the validation report preserves any Decision-declared and observed rows for
+audit. Each incident row is exactly one paired endpoint-ID/label repoint with a
+full 18-field before-image. The Integrator replaces the named retired registry
+identities with exactly one canonical row, creates no alias, and rejects the
+transaction if any retired ID remains in the registry, canonical endpoints, or
+derived outputs. The registry baseline checksum remains a strict transaction
+precondition; an advisory locator never substitutes for it.
 
 Version 2 does not authorize a label-only edit, a one-to-one replacement, an
 alias, a removal, a non-endpoint mutation, an inferred incident row, or any
 other merge shape. Version 1 remains unchanged and cannot be used for a merge.
+
+`operation_model: decision_migration_v3` is a separate bounded model for a
+one-to-one identity migration that also completes missing endpoint labels. Its
+GUP may contain only:
+
+1. one or more `node_changes.replacements`, each retiring exactly one present
+   registry identity in favor of one previously absent canonical identity;
+2. the complete, enumerated paired endpoint-ID/label repoints for all retired
+   endpoints; and
+3. explicit `endpoint_label_normalization` operations on enumerated canonical
+   rows, each changing `source_label`, `target_label`, or both from an empty
+   before-state to the exact current registry label for its unchanged endpoint
+   ID.
+
+Each v3 operation carries its full 18-field before-image and a Decision
+authority. The implementation must reject an incomplete replacement incident
+set, a nonblank label `from` value, a label that does not match the unchanged
+endpoint's current registry label, an endpoint-ID change in a label operation,
+an assertion-identity change, a duplicate row operation, or baseline drift.
+V3 permits no registry addition, node relabel, alias, merge, canonical removal,
+non-endpoint mutation, or inferred row. It is not a widening of v1 or v2: those
+models retain their existing operation boundaries.
 
 The Reviewer must independently verify the two baseline checksums, every
 before-image, each replacement's complete incident set, the resulting absence of
@@ -232,7 +367,7 @@ Approved bundle only when the manifest declares:
 
 ```yaml
 artifact_kind: decision_migration
-operation_model: decision_migration_v1 # or decision_migration_v2
+operation_model: decision_migration_v1 # or decision_migration_v2 or decision_migration_v3
 components:
   - kind: decision_migration
     path: books/<ruleset>/<book>/artifacts/gup/<gup-id>.yaml
@@ -288,14 +423,16 @@ lineage checks.
 
 ## Non-Migration Decision Implementations
 
-An approved Architect Decision with `handoff.next_role: builder`,
-`handoff.readiness: ready`, and `migration_required: false` is a non-migration
-Builder Decision. It is not consumed by a GUP. Its completion lineage has one
-Decision Implementation Report and one independent Review.
+An approved Architect Decision with `handoff.next_role: builder` or
+`handoff.next_role: integrator`, `handoff.readiness: ready`, and
+`migration_required: false` is a direct non-migration implementation Decision.
+Its handoff role is its implementation owner. It is not consumed by a GUP. Its
+completion lineage has one Decision Implementation Report and one independent
+Review.
 
-### Builder report
+### Implementation-owner report
 
-Builder publishes one report lineage per Decision under:
+The implementation owner publishes one report lineage per Decision under:
 
 ```text
 rulesets/<ruleset-id>/decision-implementations/
@@ -340,26 +477,48 @@ The following conditions are mandatory:
 
 1. One report consumes exactly one Decision. Combined reports are forbidden.
 2. The Decision exists, is approved, belongs to the same ruleset, has a ready
-   Builder handoff, declares `migration_required: false`, and contains a
-   non-empty `acceptance_tests` list.
+   Builder or Integrator handoff, declares `migration_required: false`, and
+   contains a non-empty `acceptance_tests` list.
 3. `decision_input` records the exact Decision ID, repository path, and current
    SHA-256 checksum.
 4. `implementation_files` is non-empty. Every path exists and every checksum
-   matches. The list accounts for every file the Decision requires Builder to
-   change or verify.
-5. `acceptance_results` contains every Decision `acceptance_tests` entry exactly
+   matches. The list accounts for every file the Decision requires the
+   implementation owner to change or verify, including a file a preceding
+   Architect sequence step published. Listing that file attests to complete,
+   checksummed coverage; it does not transfer authorship or authority.
+5. `implemented_by` exactly equals the Decision's implementation owner.
+6. `acceptance_results` contains every Decision `acceptance_tests` entry exactly
    once by one-based index. No index is repeated or outside that list.
-6. `approval_ready: true` requires every acceptance result to be `passed` or a
+7. `approval_ready: true` requires every acceptance result to be `passed` or a
    valid `retired_by_lineage` result as defined below, the validation result to
    be passed, and a ready Reviewer handoff with no blocker.
-7. Exact commands, exit codes, and concise results are recorded. A partial
+8. Exact commands, exit codes, and concise results are recorded. A partial
    spot-check may be retained with `approval_ready: false`, but it is not
    Reviewer-ready.
-8. Revisions form one unforked lineage keyed by Decision ID. A later revision
+9. Revisions form one unforked lineage keyed by Decision ID. A later revision
    names the immediately prior report in `supersedes`.
 
 A structurally invalid or checksum-stale report is diagnostic, is not
-Reviewer-ready, and does not consume the Decision for Builder queue purposes.
+Reviewer-ready, and does not consume the Decision for its implementation-owner
+queue purposes.
+
+### Post-approval implementation-file drift
+
+Before an exact active Approved Decision Implementation Review exists, every
+`implementation_files` path must exist and match the report's checksum. A missing
+or changed file is a diagnostic and restores the Decision to its implementation
+owner for a successor report.
+
+After an exact active Approved Review has consumed the report by report and
+Decision ID, path, and checksum, its implementation-file list is immutable
+historical evidence of the reviewed state. A later change or absence at one of
+those paths is reported informationally as
+`implementation_files_drifted_after_approval`; it does not invalidate the
+report, Review, or completed Decision, and creates no Builder or Integrator job.
+The later change must be verified through the Decision or ordinary workflow that
+made it, not by reopening unrelated completed work. This exception never applies
+when the consuming Review is missing, revision-required, malformed, or has stale
+report or Decision provenance.
 
 ### Retired-by-lineage acceptance outcomes
 
@@ -467,7 +626,7 @@ A Builder job is ready when either:
    `migration_required: true`, and no structurally valid decision-migration GUP
    consumes it through matching `authority` and checksummed
    `provenance.decision_inputs`; or
-4. an approved Architect Decision has a ready Builder handoff and
+4. an approved Architect Decision has a ready Builder or Integrator handoff and
    `migration_required: false`, and no structurally valid active Decision
    Implementation Report or its active revision-required Review currently
    consumes the assignment.
@@ -480,11 +639,12 @@ GUP bundle becomes the Reviewer job.
 A GUP built from a superseded GUR is stale input. Queue tooling must report it as
 a lineage diagnostic and must not send it to Reviewer.
 
-For non-migration Decisions, a valid proposed implementation report replaces the
-Decision job with one Reviewer job. A revision-required implementation Review
-replaces both with one Builder revision job. An Approved implementation Review
-removes the Decision from ready work and may be reported as informational
-completed history.
+For direct non-migration implementation Decisions, a valid proposed
+implementation report replaces the Decision job with one Reviewer job. A
+revision-required implementation Review replaces both with one revision job for
+the Decision's implementation owner. An Approved implementation Review removes
+the Decision from ready work and may be reported as informational completed
+history.
 
 ### Reviewer
 
@@ -557,12 +717,50 @@ APPROVED-<gup-id>-rNN.yaml
 APPROVED-<gup-id>-rNN.edges.csv
 ```
 
-New `decision_migration_v1` and `decision_migration_v2` Approved bundles use the
+New `decision_migration_v1`, `decision_migration_v2`, and `decision_migration_v3` Approved bundles use the
 same manifest filename but no edge CSV. Their required `decision_migration` and
 `validation` components are the existing checksummed reviewed GUP YAML and
 validation report described in the Direct decision-migration operations section.
 The manifest records the Review ID, GUP ID, component paths, checksums, artifact
 kind, and operation model.
+
+### Integration rejection remediation
+
+An Integrator rejection is a first-class queue signal. A new rejection record
+conforms to `schemas/common/integration-rejection.schema.json` and carries the
+exact rejected Approved-bundle, approving Review, and reviewed GUP IDs and
+SHA-256 checksums, plus at least one machine-readable blocking failure.
+
+A valid active rejection record suppresses only its exact active, unintegrated
+Approved bundle's Integrator item and creates one
+`REVIEWER-INTEGRATION-REJECTION` item. Missing, stale, checksum-mismatched,
+wrong-ruleset, malformed, ambiguous, or superseded evidence is diagnostic and
+suppresses no bundle. A Reviewer successor that records the exact rejection
+record consumes the remediation item; its ordinary handoff supplies the repair.
+The rejected bundle and its prior Review remain immutable history.
+
+### Packaging-only rejection correction
+
+When an Integration rejection establishes that the current GUP's assertions,
+operation index, and node changes remain correct and only the Approved bundle's
+edge component is incomplete, the correction is Reviewer packaging work. Builder
+does not publish a no-op GUP revision or an Approved bundle.
+
+The Reviewer publishes a successor Review for the same immutable GUP and, only
+when it independently verifies the required row set, emits the successor Approved
+bundle. The Approved edge component may be a deterministic concatenation of the
+GUP's `edges.csv` and `pending.csv` inputs in their declared `csv_row` order. The
+successor Review records each input path and checksum, the output path and
+checksum, the exact row count, and every excluded `blocked.csv` input. This
+construction adds no assertion beyond the reviewed GUP; it only materializes the
+complete approved component the manifest already declares.
+
+`blocked.csv` remains excluded. It may not become an Approved-bundle component
+unless a later Architect Decision defines its component kind, eligibility, and
+Integrator behavior. A normal Review that identifies the same packaging defect
+without consuming a rejection record may use this correction only after the
+Reviewer independently verifies the current GUP and records that it is not
+consuming an unrelated rejection.
 
 ## Scanner Output
 
@@ -641,8 +839,8 @@ Queue tooling must prove that:
 21. an approved Decision whose decided escalation exactly names an active Review
     suppresses that Review's earlier ready handoff, routes only the Decision's
     current handoff, and leaves the Review file byte-immutable.
-22. an unconsumed approved non-migration Decision with a ready Builder handoff
-    produces exactly one Builder job;
+22. an unconsumed approved direct non-migration implementation Decision produces
+    exactly one job for its ready Builder or Integrator handoff owner;
 23. a valid active Decision Implementation Report suppresses the separate
     Decision job and produces exactly one Reviewer job;
 24. a report with a missing or mismatched Decision ID, path, checksum, status,
@@ -652,8 +850,9 @@ Queue tooling must prove that:
     exactly once, has only passed or valid retired-by-lineage results, and
     records passed validation;
 26. a partial acceptance-test spot-check is not Reviewer-ready;
-27. implementation-file checksum drift makes the report diagnostic and restores
-    the Decision as Builder work;
+27. implementation-file checksum drift before an exact Approved implementation
+    Review makes the report diagnostic and restores the Decision as work for its
+    implementation owner;
 28. a revision-required implementation Review produces one Builder revision job
     and does not also republish the Decision as a second job;
 29. an Approved implementation Review with exact report and Decision checksums
@@ -679,16 +878,68 @@ Queue tooling must prove that:
 37. every direct-migration failure, including a late invariant failure, restores
     all canonical and registry files byte-for-byte.
 38. a `decision_migration_v2` merge rejects fewer than two or duplicate retired
-    IDs, an existing canonical ID, a registry row or label mismatch, an
+    IDs, an existing canonical ID, a missing retired ID or label mismatch, an
     incomplete incident set, a non-paired repoint, or any nonempty operation
     array outside `node_changes.merges`;
 39. a valid `decision_migration_v2` merge replaces every named retired registry
-    row with exactly one canonical registry row, repoints every and only its
-    enumerated endpoints, leaves no retired ID in registry or derived output,
-    and remains fully transactional.
+    identity with exactly one canonical registry row, repoints every and only
+    its enumerated endpoints, leaves no retired ID in registry or derived
+    output, and remains fully transactional; and
+40. a present but moved v2 Decision `registry_csv_row`, with matching retired ID
+    and label, produces an informational validation observation rather than a
+    planning failure. A direct GUP that emits the locator uses the observed row
+    from its pinned baseline; the Integrator keys the transaction on the strict
+    registry checksum and declared identities, never on that advisory row.
+41. a valid rejection record suppresses only its exact active unintegrated
+    bundle and creates one Reviewer remediation item;
+42. malformed, stale, checksum-mismatched, wrong-ruleset, ambiguous, or already
+    superseded rejection evidence is diagnostic and suppresses no bundle;
+43. a Review successor recording the exact rejection consumes the remediation
+    item and its ordinary handoff creates the next job; and
+44. a direct non-migration Decision routes to its ready Builder or Integrator
+    implementation owner, rejects an `implemented_by` mismatch diagnostically,
+    and reaches Reviewer only through a valid matching report; and
+45. implementation-file drift after an exact Approved implementation Review is
+    informational only, does not reopen that Decision, and does not suppress
+    diagnostics or revision work for a report without such a Review.
+46. a packaging-only rejection correction leaves the current GUP immutable,
+    routes the successor Review and Approved bundle to Reviewer, and creates no
+    Builder GUP revision or Builder-authored Approved bundle; and
+47. its derived Approved edge component is exactly the verified `edges.csv` plus
+    `pending.csv` row set in declared order, with every `blocked.csv` row
+    excluded and recorded.
+48. a versioned-contract-content report or Review is approval-ready only when its
+    exact Decision authority, authorized acceptance-test index, current contract
+    checksums, minimum versions, and substantive-anchor evidence validate; a
+    legacy exact-version test has this path only through a later checksummed
+    authorization that names it exactly.
 
 ## Version History
 
+- **1.18 - 2026-08-20:** Made durable publication create-only across all
+  artifact components and validation reports, and defined Architect-recorded
+  handling of a published checksum that no longer resolves.
+- **1.15 - 2026-08-19:** Defined minimum-version, anchor-preserving acceptance
+  evidence for mutable contract tests, including tightly scoped authorization of
+  legacy exact-version wording.
+- **1.14 - 2026-08-18:** Defined Reviewer-owned packaging-only correction of an
+  incomplete packet-update Approved edge component without a no-op Builder GUP
+  revision or a new pending/blocked bundle-component kind.
+- **1.13 - 2026-08-18:** Made implementation-file checksums a historical
+  snapshot after an exact Approved implementation Review consumes a report;
+  later shared-file drift is informational while pre-approval drift remains
+  strict.
+- **1.12 - 2026-08-18:** Defined checksummed Integration rejection remediation,
+  generalized direct non-migration implementation ownership to Builder or
+  Integrator, and required every Decision `exact_diff` path to have an explicit
+  accountable owner.
+- **1.11 - 2026-08-15:** Defined terminal GUR withdrawals and exact Analyst
+  repair routing for an active GUR with a present malformed handoff. Such a
+  handoff never triggers legacy Builder inference.
+- **1.10 - 2026-08-15:** Made a v2 merge's optional
+  `retired_nodes[].registry_csv_row` an advisory, auditable planning locator.
+  Retired ID/label, the closed incident set, and the checksummed registry
+  baseline remain strict preconditions.
 - **1.9 - 2026-08-14:** Defined `decision_migration_v2`: a direct-YAML,
   two-or-more-retired-IDs-to-one-new-ID merge model with closed incident sets
   and no other operation shapes.

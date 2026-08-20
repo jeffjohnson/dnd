@@ -1,0 +1,60 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0046-r03-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: The report cannot be approved while its version-pinned acceptance test is literally false. Do not rewrite a Decision or revert later approved governance; await the pending Architect ruling, then publish only the authorized successor evidence.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0046-r03
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0046-r03.yaml
+  checksum: sha256:dbad1ef852ab11d3301335c0538812e10048a1499c504a70b31635a996404b80
+decision_input:
+  id: DEC-2026-0046
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0046.yaml
+  checksum: sha256:2ebc1d44dfb1fb51583415f535896f41dac2bc64a6bfef4157c99e89486bbe0b
+acceptance_dispositions:
+- acceptance_test_index: 1
+  disposition: verified
+  evidence: Verified against the current checksummed implementation files and targeted queue-derivation tests; the required behavior remains present.
+- acceptance_test_index: 2
+  disposition: verified
+  evidence: Verified against the current checksummed implementation files and targeted queue-derivation tests; the required behavior remains present.
+- acceptance_test_index: 3
+  disposition: verified
+  evidence: Verified against the current checksummed implementation files and targeted queue-derivation tests; the required behavior remains present.
+- acceptance_test_index: 4
+  disposition: failed
+  evidence: Acceptance test 4 literally requires WORK_QUEUES Version 1.13, but the current approved governance state is Version 1.14. The report candidly acknowledges this. No Builder-owned revision can make the statement true without reverting DEC-2026-0047; await Architect resolution of ESC-2026-08-19T09.31.06.244Z.
+independent_validation:
+  passed: false
+  commands:
+  - command: SHA-256 verification of every implementation_files entry
+    exit_code: 0
+    result: passed
+    summary: All declared implementation-file checksums match the current files.
+  - command: python -m unittest targeted ExactDiffOwnership/PostApprovalFileDrift cases
+    exit_code: 0
+    result: passed
+    summary: 70 targeted queue-derivation tests passed.
+  - command: Read the exact version-pinned acceptance-test text against current contracts/WORK_QUEUES.md
+    exit_code: 1
+    result: failed
+    summary: Acceptance test 4 literally requires WORK_QUEUES Version 1.13, but the current approved governance state is Version 1.14. The report candidly acknowledges this. No Builder-owned revision can make the statement true without reverting DEC-2026-0047; await Architect resolution of ESC-2026-08-19T09.31.06.244Z.
+overall_disposition: revision_required
+architectural_context:
+  pending_escalation_id: ESC-2026-08-19T09.31.06.244Z
+  path: rulesets/adnd1e/escalations/pending/ESC-2026-08-19T09.31.06.244Z.yaml
+  question: Whether later contract versions may satisfy a version-pinned acceptance test when required substance remains unchanged.
+completeness_statement: All non-version acceptance behavior and current implementation-file checksums were independently verified. The named acceptance test is nevertheless false under a literal reading, so the report cannot receive an Approved implementation Review before the pending Architect ruling resolves the governing interpretation.
+

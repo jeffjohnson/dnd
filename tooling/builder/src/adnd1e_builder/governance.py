@@ -73,6 +73,24 @@ SUBJECT_FIELDS: tuple[str, ...] = (
 )
 
 
+def _load_migration_due(governance: "Governance", decision_id: str, document: dict) -> None:
+    """Read DEC-2026-0050-style `migration_due_ids` from one Decision.
+
+    The mapping is exact: only IDs the Decision literally names become due. A
+    later Decision naming the same ID replaces the earlier entry, so the active
+    ruling wins without the loader having to know which Decisions exist.
+    """
+
+    due = document.get("migration_due_ids")
+    if not isinstance(due, dict):
+        return
+    for retired, successor in due.items():
+        retired_id = str(retired).strip()
+        successor_id = str(successor or "").strip()
+        if retired_id and successor_id:
+            governance.migration_due_ids[retired_id] = (successor_id, decision_id)
+
+
 @dataclass
 class Governance:
     """Rulings in force, loaded from Architect decision files."""
@@ -91,6 +109,10 @@ class Governance:
     #: Integrator has written it into the registry (DEC-2026-0015
     #: `node_dispositions[*].canonical_label`). Value is (label, decision_id).
     approved_labels: dict[str, tuple[str, str]] = field(default_factory=dict)
+    #: DEC-2026-0050 `migration_due_ids`: legacy endpoint IDs whose replacement is
+    #: due, not merely proposed. Value is (successor_id, decision_id). These are a
+    #: closed, exactly-named set; every other pending migration keeps its warning.
+    migration_due_ids: dict[str, tuple[str, str]] = field(default_factory=dict)
 
     @classmethod
     def load(cls, ruleset_root: str | Path) -> "Governance":
@@ -133,6 +155,8 @@ class Governance:
 
             decision_id = document.get("id") or path.stem
             governance.decisions_loaded.append(decision_id)
+
+            _load_migration_due(governance, decision_id, document)
 
             for old_id, new_id in (document.get("candidate_migration_map") or {}).items():
                 governance.migration_map[str(old_id)] = str(new_id)
@@ -282,6 +306,16 @@ class Governance:
     # -- queries -------------------------------------------------------------
     def migration_target(self, node_id: str) -> str | None:
         return self.migration_map.get(node_id)
+
+    def migration_due(self, node_id: str) -> tuple[str, str] | None:
+        """The successor and Decision for an ID whose migration is due.
+
+        `None` for every other ID, including ones with a proposed-but-not-due
+        migration. DEC-2026-0050 draws that line deliberately: a due ID may not
+        enter new ordinary work at all, while a merely pending one still compiles
+        with a warning.
+        """
+        return self.migration_due_ids.get(node_id)
 
     def approved_label(self, node_id: str) -> tuple[str, str] | None:
         """The label an Architect decision assigned, ahead of the registry."""

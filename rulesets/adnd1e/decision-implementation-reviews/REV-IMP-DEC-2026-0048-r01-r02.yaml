@@ -1,0 +1,55 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0048-r01-r02
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: REV-IMP-DEC-2026-0048-r01-r01
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: Publish an implementation successor that makes queue review validation re-derive and accept only the DEC-0048-authorized verified_versioned_contract_content disposition.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0048-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0048-r01.yaml
+  checksum: sha256:47ff669fed38811cd869f33945dd4bbc20866484482dfdc036830c9d8206df80
+decision_input:
+  id: DEC-2026-0048
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml
+  checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698
+acceptance_dispositions:
+- acceptance_test_index: 1
+  disposition: verified
+  evidence: Current contract text and schema declarations were rechecked and remain published as reported.
+- acceptance_test_index: 2
+  disposition: failed
+  evidence: >-
+    The implementation is incomplete: scan_agent_queues.py accepts
+    verified_retired_by_lineage but its approved-review validator still rejects
+    verified_versioned_contract_content as not verified. This directly
+    contradicts the required Review disposition behavior.
+- acceptance_test_index: 3
+  disposition: failed
+  evidence: A valid versioned-contract Review is currently rejected by the scanner, so valid evidence cannot reach an effective approved Review state.
+- acceptance_test_index: 4
+  disposition: failed
+  evidence: >-
+    The authorized reports IMP-DEC-2026-0045-r05 and
+    IMP-DEC-2026-0046-r04 demonstrate the missing scanner branch: both are
+    validly structured but their Reviews are rejected solely for the required
+    disposition value.
+independent_validation:
+  passed: false
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=.;tests python scan_agent_queues.py --root ../.. --json'
+    exit_code: 1
+    result: failed
+    summary: The scanner emitted decision_implementation_review_invalid for verified_versioned_contract_content on both authorized dependent reviews.
+  - command: Schema validation of decision-implementation-review artifacts
+    exit_code: 0
+    result: passed
+    summary: The schema admits the new disposition; the inconsistency is specifically the queue scanner implementation.
+overall_disposition: revision_required

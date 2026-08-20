@@ -1,0 +1,110 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0040-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0040
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0040.yaml
+  checksum: sha256:a89193b568d5437ade609a0a08d52bbb0ceaae40d42e0eafaf541b91b21962c5
+implementation_files:
+- path: tooling/common/role_context.py
+  checksum: sha256:d13dba889005fc828327e546177c366b865468c7d87fdb867923694690b0dfbf
+- path: tooling/common/tests/test_role_context.py
+  checksum: sha256:d7a71e1c9cd83048cab09f4ca009c5639f21c40ea07ae11973f4c4abefc5ccd4
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: TestTheLiveManifest checks the shipped contracts/ROLE_CONTEXT_MANIFEST.yaml against schemas/common/role-context-manifest.schema.json
+    with zero errors; asserts sorted(roles) equals exactly the five role names, so each is declared once;
+    and for every role resolves the path set twice, asserting the two runs are equal, the list is already
+    sorted, len == len(set) so it is duplicate-free, and non-empty. test_every_resolved_path_is_a_file_inside_the_repository
+    asserts each entry is an existing file and no entry escapes the root. Live builder/phb scope resolves
+    42 files -> Ran 50 tests in 1.114s OK
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'test_a_cold_verify_requires_a_reload_and_names_the_paths asserts status reload_required with
+    the role''s exact paths emitted; test_recording_then_verifying_is_a_hit asserts the same role, scope,
+    root and session then yields cache_hit; test_a_hit_is_repeatable asserts the hit is stable. test_a_hit_does_not_re_emit_stable_context_content
+    asserts the hit result carries no stable_authority map and no authority-file content. CLI exit codes
+    are covered by test_a_cold_verify_exits_one_and_a_hit_exits_zero: verify 1, record 0, verify 0 ->
+    Ran 50 tests OK'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'TestInvalidation covers one case per invalidating change: a changed authority file, a changed
+    role instruction, a changed manifest, a changed manifest schema, a newly added authority file, a removed
+    authority file, a different session, role, ruleset, book, and repository root. test_every_identity_field_is_actually_compared
+    tampers with each of the nine RECEIPT_IDENTITY_FIELDS in turn and asserts each is detected, so a field
+    added to a receipt cannot silently stop being checked. TestFailsClosed covers the error cases: a missing
+    literal path, an outside-root expansion, an unrecognized role, an unreadable/unparseable manifest,
+    a manifest omitting a role, a missing schema, an unresolved placeholder, and a role resolving nothing.
+    test_two_patterns_resolving_one_file_is_an_error covers the duplicate resolved path, and test_the_live_manifest_has_no_overlapping_patterns
+    confirms governance already conforms across all five roles and phb/dmg/ua/no-book scopes. An unreadable,
+    non-mapping, or file-set-less receipt fails closed to a miss and never a hit -> Ran 50 tests OK'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'test_a_receipt_holds_no_authority_file_content asserts none of the fixture files'' contents
+    appear in the written receipt; test_a_receipt_holds_exactly_the_declared_fields pins the receipt''s
+    key set to the nine identity fields plus stable_authority, so no content field can be added unnoticed;
+    test_receipts_are_written_only_under_the_local_cache_directory finds receipts by content rather than
+    filename and asserts every one lives under .local/role-context/; test_the_local_cache_directory_is_git_ignored
+    asserts ''.local/'' is in .gitignore, so no receipt is committed. test_a_different_session_is_always_a_miss
+    covers the cross-session prohibition. The receipt is named in no artifact as provenance: it is written
+    only by role_context.py record and read only by role_context.py verify -> Ran 50 tests OK'
+- acceptance_test_index: 5
+  result: passed
+  evidence: TestTheCacheExcludesLiveState.test_no_excluded_area_may_be_cached adds a file in each of ten
+    live areas -- canonical edges_master.csv, registries/nodes.csv, a GUR artifact, a claimed packet,
+    a pending escalation, a Decision, an implementation report, an integration manifest, a validation
+    report, and a build snapshot -- points a manifest pattern at it, and asserts the verifier refuses
+    with 'would cache' rather than caching it. The guard (EXCLUDED_PREFIXES/SEGMENTS/SUFFIXES) is deliberately
+    independent of the manifest so widening one cannot widen the other. test_the_live_manifest_caches_nothing_excluded
+    runs the real manifest for all five roles against the real tree and asserts every resolved path is
+    unexcluded; test_the_builder_set_excludes_the_registry_csv asserts rulesets/adnd1e/registries/nodes.csv
+    is absent from the Builder set while confirming the file exists, so its absence is a rule and not
+    an accident. Contracts and role instructions carry the always-read requirement -> Ran 50 tests OK
+- acceptance_test_index: 6
+  result: passed
+  evidence: Architect-owned and verified as an input, not authored here. AGENTS.md and all five agents/<role>/INSTRUCTIONS.md
+    are modified in the working tree by the Architect under this Decision's exact_diff; contracts/ROLE_CONTEXT_LOADING.md
+    1.0 carries the Always-Read Inputs section naming each role's bounded current inputs and the prohibition
+    on recursively enumerating a book, an artifact store, the full graph or the whole codebase for orientation.
+    The Builder did not edit AGENTS.md, any role instruction file, or any contract; those are Architect-owned
+    and the Builder's implementation scope is tooling/common/role_context.py and its tests. The Reviewer
+    should verify the instruction text independently.
+- acceptance_test_index: 7
+  result: passed
+  evidence: 'Full common suite (manifest schema, verifier, queue scanner, repository): Ran 430 tests in
+    86.653s OK, up from 363 before this work -- 50 new tests in test_role_context.py and 17 in IntegratedMigrationDriftCase.
+    Full builder suite: Ran 569 tests in 101.517s OK, 30 skipped. Canonical edges_master.csv, nodes.csv,
+    and every packet artifact are unchanged by this implementation; the only files added are tooling/common/role_context.py
+    and tooling/common/tests/test_role_context.py, plus receipts under .local/ which Git ignores.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: The same-session verifier and receipt recorder are implemented exactly as ROLE_CONTEXT_LOADING
+    1.0 specifies, with 50 targeted tests covering the cold miss, the hit, all eleven invalidating changes,
+    nine fail-closed errors, the ten excluded live-state areas, and receipt containment. Receipts hold
+    no authority-file content and live only under the Git-ignored .local/role-context/. Acceptance test
+    6 concerns Architect-owned instruction text and is reported as verified-as-input rather than authored.
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0040-r01.validation.json
+validation_report_checksum: sha256:7d29116f735e268666ca183ad9b15654864fa4c0c64a0bb646385d8e273131cb
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 430 tests in 86.653s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 569 tests in 101.517s (30 skipped) OK

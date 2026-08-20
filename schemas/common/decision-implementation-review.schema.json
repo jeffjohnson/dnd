@@ -29,7 +29,8 @@
                 "disposition": {
                   "enum": [
                     "verified",
-                    "verified_retired_by_lineage"
+                    "verified_retired_by_lineage",
+                    "verified_versioned_contract_content"
                   ]
                 }
               }
@@ -153,7 +154,8 @@
             "enum": [
               "verified",
               "failed",
-              "verified_retired_by_lineage"
+              "verified_retired_by_lineage",
+              "verified_versioned_contract_content"
             ]
           },
           "evidence": {
@@ -170,6 +172,9 @@
             "items": {
               "$ref": "#/$defs/retiredSubject"
             }
+          },
+          "verified_versioned_contract_content": {
+            "$ref": "#/$defs/verifiedVersionedContractContent"
           }
         },
         "$comment": "verified_retired_by_lineage carries the Reviewer's own re-derivation of the retirement evidence. Requiring it here is what stops a Review from approving a retired result by simply asserting it looked right.",
@@ -204,6 +209,31 @@
                       "verified_retired_subjects"
                     ]
                   }
+                ]
+              }
+            }
+          },
+          {
+            "$comment": "The Reviewer re-derives the authority, the current versions and every anchor itself. Requiring the evidence here is what stops a Review approving this outcome by asserting the report looked right.",
+            "if": {
+              "properties": {
+                "disposition": {
+                  "const": "verified_versioned_contract_content"
+                }
+              },
+              "required": [
+                "disposition"
+              ]
+            },
+            "then": {
+              "required": [
+                "verified_versioned_contract_content"
+              ]
+            },
+            "else": {
+              "not": {
+                "required": [
+                  "verified_versioned_contract_content"
                 ]
               }
             }
@@ -401,6 +431,71 @@
         },
         "integration_record_checksum": {
           "$ref": "#/$defs/checksum"
+        }
+      }
+    },
+    "observedContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "$comment": "What the reporting role actually measured: the contract's current checksum and version, and the anchors it confirmed are still there. Recording the checksum is what lets a Reviewer re-derive the same reading rather than trusting the summary.",
+      "required": [
+        "path",
+        "checksum",
+        "observed_version",
+        "minimum_version",
+        "anchors_present"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checksum": {
+          "$ref": "#/$defs/checksum"
+        },
+        "observed_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "minimum_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "anchors_present": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "verifiedVersionedContractContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "$comment": "WORK_QUEUES 1.15: current-state evidence for a mutable-contract acceptance test. It is deliberately not retired_by_lineage -- the reported state is still being tested, so the result stays `passed` and the Review verifies it again rather than accepting a retirement.",
+      "required": [
+        "authority",
+        "authorized_acceptance_test_index",
+        "contracts"
+      ],
+      "properties": {
+        "authority": {
+          "$ref": "#/$defs/retirementAuthority"
+        },
+        "authorized_acceptance_test_index": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contracts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/observedContract"
+          }
         }
       }
     }

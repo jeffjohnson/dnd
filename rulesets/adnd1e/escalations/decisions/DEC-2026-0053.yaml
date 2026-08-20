@@ -1,0 +1,252 @@
+schema_version: '1.0'
+id: DEC-2026-0053
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Record the unrecoverable r01 checksum breach as immutable history and make
+    every Builder artifact publisher create-only before it writes any output.
+  blocking_ids: []
+
+decision_date: '2026-08-20'
+escalation_id: ESC-2026-08-20T07.18.44.612Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  How must the repository record a consumed GUP that was overwritten in place,
+  leaving its Review's published checksum unrecoverable, and how must Builder
+  publication paths prevent recurrence?
+
+ruling: >-
+  GUP-MIG-DEC-2026-0050-r01 is an integrity-breached historical artifact. Its
+  Review pinned sha256:dd1f5994572b82f7c9f0a88c1e222d66e42767801a9d9fa7b5c3175c0ea2891f,
+  but the current file resolves to
+  sha256:71b4ca57de7f251e16e0632649b9fe0f0dfab05680e4d59dbe764659b6bc9df4.
+  The original bytes are unrecoverable and must not be reconstructed, replaced,
+  or presented as the reviewed artifact. The current r01 file and its r01
+  Review remain immutable evidence of the breach, but neither may be cited as
+  resolving the review's pinned GUP checksum.
+
+  The later successor lineage remains separate. This Decision neither approves
+  nor changes GUP-MIG-DEC-2026-0050-r02 or any later revision; each continues
+  through its own normal Review and integration lifecycle.
+
+  Every Builder publication entrypoint is create-only for durable artifact and
+  report paths. Before it writes anything, it must preflight every output and
+  existing same-ID companion path. If any such path exists, it must fail without
+  modifying any output. There is no overwrite override for a repository artifact
+  revision, consumed or otherwise; a correction always uses a new revision and
+  an explicit supersedes link.
+
+rationale:
+  - >-
+    A checksum is evidence of exact bytes, not a claim that later equivalent
+    content is interchangeable. Substituting the current r01 bytes would hide
+    the failed audit guarantee that its Reviewer depended on.
+  - >-
+    The original Review's substantive finding was a revision request, and a
+    successor migration GUP already carries the correction. Recording the
+    failed provenance does not authorize a no-op replay, canonical mutation, or
+    revision of a historical Review.
+  - >-
+    The ordinary compiler's write_all path already detects an existing YAML by
+    default, but its allow-overwrite escape hatch and both migration planners
+    permit direct durable writes. A shared, all-output preflight closes the
+    actual class of failure and prevents partial publication when a report or
+    companion already exists.
+
+integrity_record:
+  affected_artifact:
+    id: GUP-MIG-DEC-2026-0050-r01
+    path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0050-r01.yaml
+    reviewed_checksum: sha256:dd1f5994572b82f7c9f0a88c1e222d66e42767801a9d9fa7b5c3175c0ea2891f
+    current_checksum: sha256:71b4ca57de7f251e16e0632649b9fe0f0dfab05680e4d59dbe764659b6bc9df4
+    state: checksum_unresolvable_due_to_in_place_overwrite
+  affected_consumer:
+    id: REV-GUP-MIG-DEC-2026-0050-r01-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-MIG-DEC-2026-0050-r01-r01.yaml
+    checksum: sha256:7203b3b8d15f5ef8723018ff41107125feaa81cfc2f929b113ed25582b2d11a0
+    disposition: retain_unchanged_with_unresolvable_gup_provenance
+  successor_context:
+    id: GUP-MIG-DEC-2026-0050-r02
+    path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0050-r02.yaml
+    checksum: sha256:1057078268152d98af19d8b4818c9735a14b195cda428929dd99deb931c04d98
+    supersedes: GUP-MIG-DEC-2026-0050-r01
+    disposition: unaffected_normal_successor_lineage
+
+affected_artifacts:
+  corrupted_history:
+    id: GUP-MIG-DEC-2026-0050-r01
+    disposition: retain_unchanged_do_not_cite_as_reviewed_checksum_evidence
+  immutable_review:
+    id: REV-GUP-MIG-DEC-2026-0050-r01-r01
+    disposition: retain_unchanged_do_not_rederive_against_substitute_bytes
+  normal_successor_lineage:
+    id: GUP-MIG-DEC-2026-0050-r02
+    disposition: no_change_authorized
+
+affected_contracts:
+  - path: contracts/WORK_QUEUES.md
+    change: add create-only publication preflight and integrity-breach handling
+  - path: contracts/ARTIFACT_LIFECYCLE.md
+    change: record treatment of an unrecoverable published checksum
+affected_registries: []
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  profile_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    The r01 integrity breach is recorded by this Decision only. The active
+    successor migration lineage receives no new authority or state change.
+  direct_implementation: >-
+    Builder makes publication atomic with respect to pre-existing outputs and
+    removes overwrite permission for durable artifact revisions. No GUP,
+    Review, Approved bundle, Integration record, registry, or canonical data is
+    rewritten as part of this implementation.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, amend the create-only publication and integrity
+      breach contracts, update Builder instructions, and close the escalation.
+      Do not rewrite r01, its Review, r02, or any canonical artifact.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement one shared preflight used by packet compilation, plan-migration,
+      and plan-decision-migration before any output write. It must reject an
+      existing requested artifact, validation report, or same-ID companion with
+      no modified output, and it must remove the repository artifact
+      allow-overwrite path. Add focused regression tests and publish
+      IMP-DEC-2026-0053-r01.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0053-r01. Verify every publication
+      entrypoint performs the all-output preflight before mutation, no durable
+      overwrite override remains, and the regression tests demonstrate byte
+      preservation on each refusal.
+
+acceptance_tests:
+  - >-
+    WORK_QUEUES version 1.18 or later requires an all-output create-only
+    preflight before durable artifact publication and treats a published
+    checksum that no longer resolves as an Architect-recorded integrity breach,
+    never as permission to substitute current bytes.
+  - >-
+    ARTIFACT_LIFECYCLE version 1.14 or later requires a published-checksum
+    breach to retain the altered artifact and every consumer unchanged, record
+    both checksums in an Architect Decision, and use a successor revision for
+    all corrective work.
+  - >-
+    Packet compilation, plan-migration, and plan-decision-migration preflight
+    all intended durable outputs before writing. An existing YAML, validation
+    report, or same-ID component causes a refusal with every pre-existing and
+    would-be output byte unchanged; no repository publication option permits an
+    overwrite.
+  - >-
+    IMP-DEC-2026-0053-r01 pins this Decision's exact checksum, reports all
+    direct acceptance tests as passed with current evidence, records passing
+    focused publication-preflight tests, and is approval-ready for independent
+    Reviewer verification.
+
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.18'
+        substantive_anchors:
+          - create-only publication preflight
+          - no repository artifact overwrite override
+          - checksum no longer resolves
+  - acceptance_test_index: 2
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/ARTIFACT_LIFECYCLE.md
+        minimum_version: '1.14'
+        substantive_anchors:
+          - published-checksum integrity breach
+          - retain altered artifact and consumer unchanged
+          - successor revision
+
+post_implementation_requirements:
+  - >-
+    Reviewer independently approves the Decision Implementation Report through
+    the normal implementation-review lifecycle. It must not alter r01 or its
+    Review to make their checksums agree.
+  - >-
+    The DEC-2026-0050 migration successor lineage remains subject to its own
+    active Review and Integration requirements. This integrity record neither
+    expedites nor blocks it.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This is publication provenance and workflow integrity governance, not a
+    change to ontology, source meaning, assertion identity, or graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.18 and ARTIFACT_LIFECYCLE 1.14 make durable artifact
+    publication create-only, require all outputs to be preflighted before a
+    write, and define the immutable treatment of an unrecoverable checksum.
+  - >-
+    DEC-2026-0053 records the r01 checksum mismatch without claiming the
+    current file is the Reviewer-hashed artifact or changing the successor
+    migration lineage.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.17 -> 1.18; require create-only all-output publication preflight and integrity-breach treatment.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.13 -> 1.14; define immutable handling of an unrecoverable published checksum.'
+  agents/builder/INSTRUCTIONS.md:
+    - 'Require shared create-only preflight for every durable GUP and validation-report publication path.'
+  tooling/builder/src/adnd1e_builder/emit.py:
+    - 'Preflight every ordinary GUP bundle output and remove durable overwrite permission.'
+  tooling/builder/src/adnd1e_builder/cli.py:
+    - 'Route both migration planners through the shared publication preflight before any write.'
+  tooling/builder/tests/test_compiler.py:
+    - 'Prove ordinary compilation refuses existing YAML, report, and companion paths without mutation.'
+  tooling/builder/tests/test_decision_migration.py:
+    - 'Prove both migration publication entrypoints refuse all pre-existing outputs before mutation.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0053.yaml:
+    - 'Record the r01 integrity breach and the prevention decision.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-20T07.18.44.612Z.yaml:
+    - 'Record DEC-2026-0053 as the resolution and move the immutable escalation out of pending.'
+
+exact_diff_ownership:
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: contracts/ARTIFACT_LIFECYCLE.md, owner: architect, sequence_step: 1}
+  - {path: agents/builder/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: tooling/builder/src/adnd1e_builder/emit.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/src/adnd1e_builder/cli.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_compiler.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_decision_migration.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0053.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-20T07.18.44.612Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Preserve the r01 breach record; do not reconstruct, replace, or normalize its reviewed checksum.
+  builder:
+    - Implement only all-output create-only publication preflight and its tests; publish a Decision Implementation Report.
+  reviewer:
+    - Verify byte preservation and absence of an overwrite path before approving the implementation report.
+  integrator:
+    - Do not treat the corrupted r01 or its Review as approval evidence; follow only the normally approved active migration successor.

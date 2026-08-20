@@ -24,8 +24,11 @@ from .checksums import checksum_file
 from .derive import apply_derived_polarity, load_role_profile, rebuild_nodes
 from .invariants import assertion_key, approved_prefixes, check, check_derived_state
 from .migration import (
-    MigrationError, MigrationPlan, check_baselines, check_before_images,
-    check_incident_sets, check_registry_targets, read_plan)
+    MODEL_V2, MODEL_V3, MigrationError, MigrationPlan, check_baselines,
+    check_before_images, check_declared_counts, check_normalization_labels,
+    LABEL_ENDPOINTS,
+    check_incident_sets, check_merge_incident_sets, check_merge_registry,
+    check_registry_targets, merge_locator_observations, read_plan)
 from .operations import EdgeUpdate, NodeRegistration, Operations, OperationError, read_operations
 from .snapshot import Transaction
 
@@ -78,6 +81,14 @@ def verify_bundle(bundle: Bundle, root: Path) -> BundleVerification:
         "review disposition is approved",
         disposition == "approved",
         f"overall_disposition={disposition!r}"))
+    # `overall_disposition` alone is not the approval. A Review carries its
+    # lifecycle state in `status`, and the two must agree: a document still
+    # `proposed`, or withdrawn to `revision_required`, has not approved anything
+    # no matter what disposition its body reports.
+    add(Precondition(
+        "review status is approved and agrees with the disposition",
+        review.get("status") == "approved" == disposition,
+        f"status={review.get('status')!r} overall_disposition={disposition!r}"))
     add(Precondition(
         "review is approval-ready",
         bool(review.get("approval_ready")),
@@ -322,6 +333,47 @@ def _apply_migration(graph: CanonicalGraph, registry: Registry,
             "integration_id": integration_id,
         })
 
+    for merge in plan.merges:
+        # v2: N retired registry rows become exactly one canonical row. The
+        # survivor must be absent and every retired identity present with the
+        # declared label -- the advisory registry_csv_row is deliberately not
+        # consulted here (DEC-2026-0038 makes it informational).
+        if merge.canonical_id in registry.ids:
+            raise IntegrationError(
+                f"{bundle_id}: merge target {merge.canonical_id} is already registered; "
+                "a v2 merge consolidates into a previously absent identity (invariant 4)")
+        if merge.canonical_id[: merge.canonical_id.find("_") + 1] not in prefixes:
+            raise IntegrationError(
+                f"{bundle_id}: merge target {merge.canonical_id} does not use an approved "
+                "prefix (invariant 3)")
+        for retired in merge.retired:
+            current = next((r for r in registry.rows
+                            if r.values["id"] == retired.node_id), None)
+            if current is None:
+                raise IntegrationError(
+                    f"{bundle_id}: retired ID {retired.node_id} is not in the registry; "
+                    "there is no identity to merge")
+            if current.values["label"] != retired.label:
+                raise IntegrationError(
+                    f"{bundle_id}: retired ID {retired.node_id} is labelled "
+                    f"{current.values['label']!r} but the plan declares {retired.label!r}; "
+                    "a label mismatch is never advisory")
+        registry.rows = [r for r in registry.rows
+                         if r.values["id"] not in {x.node_id for x in merge.retired}]
+        registry.add({"id": merge.canonical_id, "label": merge.canonical_label,
+                      "kind": merge.kind, "degree": "0", "roles": ""})
+        batch.node_merges.append({
+            "canonical_id": merge.canonical_id,
+            "canonical_label": merge.canonical_label,
+            "kind": merge.kind,
+            "authority": merge.authority,
+            "retired": [{"id": r.node_id, "label": r.label,
+                         "advisory_registry_csv_row": r.registry_csv_row}
+                        for r in merge.retired],
+            "incident_rows": list(merge.incident_rows),
+            "bundle_id": bundle_id, "integration_id": integration_id,
+        })
+
     for replacement in plan.replacements:
         if replacement.retired_id not in registry.ids:
             raise IntegrationError(
@@ -360,6 +412,25 @@ def _apply_migration(graph: CanonicalGraph, registry: Registry,
             "bundle_id": bundle_id, "integration_id": integration_id,
         })
 
+    for normalization in plan.normalizations:
+        edge = graph.edges[normalization.canonical_index]
+        differing = [c for c in EDGE_COLUMNS if edge.get(c, "") != normalization.before[c]]
+        if differing:
+            raise IntegrationError(
+                f"{bundle_id}: canonical row {normalization.canonical_row} no longer matches "
+                f"its before-image on {differing}; rolling back")
+        for field_name, delta in normalization.changes.items():
+            edge[field_name] = delta["to"]
+        batch.normalizations.append({
+            "canonical_row": normalization.canonical_row,
+            "authority": normalization.authority,
+            "changes": {f: dict(d) for f, d in normalization.changes.items()},
+            "endpoints": {f: normalization.before[LABEL_ENDPOINTS[f]]
+                          for f in normalization.changes},
+            "assertion": f"{edge['source_id']} {edge['edge_type']} {edge['target_id']}",
+            "bundle_id": bundle_id, "integration_id": integration_id,
+        })
+
     for removal in sorted(plan.removals, key=lambda r: r.canonical_row, reverse=True):
         edge = graph.edges[removal.canonical_index]
         differing = [c for c in EDGE_COLUMNS if edge.get(c, "") != removal.before[c]]
@@ -377,6 +448,23 @@ def _apply_migration(graph: CanonicalGraph, registry: Registry,
                         f"{removal.before['section']}",
             "bundle_id": bundle_id, "integration_id": integration_id,
         })
+
+    for merge in plan.merges:
+        if not merge.require_no_remaining:
+            continue
+        for retired in merge.retired:
+            if retired.node_id in registry.ids:
+                raise IntegrationError(
+                    f"{bundle_id}: retired ID {retired.node_id} is still in the registry "
+                    "after its merge")
+            surviving = [
+                i + 2 for i, edge in enumerate(graph.edges)
+                if retired.node_id in (edge.get("source_id"), edge.get("target_id"))
+            ]
+            if surviving:
+                raise IntegrationError(
+                    f"{bundle_id}: retired ID {retired.node_id} still appears as an endpoint "
+                    f"on canonical row(s) {surviving}; the merge incident set was incomplete")
 
     # Nothing may survive that still names a retired identity -- not in the
     # registry, not as an endpoint. This is the check that turns an incomplete
@@ -421,10 +509,15 @@ def _verify_direct_migration(bundle: Bundle, root: Path, verification: BundleVer
     components = manifest.get("components") or []
     migration_components = [c for c in components if c.get("kind") == "decision_migration"]
     validation_components = [c for c in components if c.get("kind") == "validation"]
+    # Exactly two, and nothing else. Counting only the two required kinds let a
+    # third component ride along unexamined: every component is checksummed, so
+    # an extra one is well-formed by construction and would otherwise be silent.
     add(Precondition(
         "direct migration names exactly one migration and one validation component",
-        len(migration_components) == 1 and len(validation_components) == 1,
-        f"{len(migration_components)} migration, {len(validation_components)} validation"))
+        len(components) == 2 and len(migration_components) == 1
+        and len(validation_components) == 1,
+        f"{len(components)} component(s), kinds="
+        f"{sorted(str(c.get('kind')) for c in components)}"))
 
     approves = manifest.get("approves") or {}
     add(Precondition(
@@ -468,7 +561,19 @@ def _verify_direct_migration(bundle: Bundle, root: Path, verification: BundleVer
         "manifest names exactly the plan's authority Decisions",
         set(declared_decisions) == set(plan.authority),
         f"manifest={sorted(declared_decisions)} plan={sorted(plan.authority)}"))
-    for entry in (plan_provenance_decisions(plan_path)):
+    provenance = {entry["id"]: entry for entry in plan_provenance_decisions(plan_path)}
+    # The manifest pins its own copy of each Decision checksum. Verifying only
+    # the plan's copy left that one unchecked, so a forged manifest checksum
+    # passed while the bundle still looked internally consistent. Chain it:
+    # manifest agrees with the reviewed plan, and the plan agrees with disk.
+    for decision_id, declared in sorted(declared_decisions.items()):
+        pinned = provenance.get(decision_id)
+        add(Precondition(
+            f"manifest authority Decision checksum matches the reviewed plan: {decision_id}",
+            pinned is not None and declared.get("checksum") == pinned.get("checksum"),
+            f"manifest={declared.get('checksum')} "
+            f"plan={(pinned or {}).get('checksum', 'ABSENT')}"))
+    for entry in provenance.values():
         path = root / entry["path"]
         actual_decision = checksum_file(path) if path.exists() else "MISSING"
         add(Precondition(
@@ -495,25 +600,64 @@ def _verify_direct_migration(bundle: Bundle, root: Path, verification: BundleVer
     problems = check_before_images(plan, graph_rows)
     add(Precondition("every enumerated before-image matches canonical exactly",
                      not problems, "; ".join(problems) or
-                     f"{len(plan.repoints)} repoint(s), {len(plan.removals)} removal(s)"))
+                     f"{len(plan.repoints)} repoint(s), "
+                     f"{len(plan.normalizations)} normalization(s), "
+                     f"{len(plan.removals)} removal(s)"))
 
-    problems = check_incident_sets(plan, graph_rows)
-    add(Precondition("each replacement enumerates its complete incident row set",
-                     not problems, "; ".join(problems) or
-                     f"{len(plan.replacements)} replacement(s)"))
+    if plan.model == MODEL_V3:
+        # DEC-2026-0050 acceptance test 6. The replacement half reuses the v1
+        # incident-set rule; what is new is that a filled label is looked up, not
+        # authored, and that the plan's own counts must agree with what it
+        # carries.
+        problems = check_normalization_labels(plan, registry.rows)
+        add(Precondition("every normalized label is the endpoint's current registry label",
+                         not problems, "; ".join(problems) or
+                         f"{sum(len(n.changes) for n in plan.normalizations)} label field(s)"))
 
-    problems = check_registry_targets(plan, registry.ids)
-    add(Precondition("registry additions are absent and retired IDs are present",
-                     not problems, "; ".join(problems) or "registry targets consistent"))
+        problems = check_declared_counts(plan, _plan_document(plan_path).get("counts") or {})
+        add(Precondition("the plan's declared counts match the operations it carries",
+                         not problems, "; ".join(problems) or "counts agree"))
+
+    if plan.model == MODEL_V2:
+        problems = check_merge_incident_sets(plan, graph_rows)
+        add(Precondition("each merge enumerates its complete incident row set",
+                         not problems, "; ".join(problems) or
+                         f"{len(plan.merges)} merge(s), "
+                         f"{sum(len(m.incident_rows) for m in plan.merges)} incident row(s)"))
+
+        problems = check_merge_registry(plan, registry.rows)
+        add(Precondition("every retired identity exists and no survivor identity does",
+                         not problems, "; ".join(problems) or
+                         f"{sum(len(m.retired) for m in plan.merges)} retired identity(ies)"))
+
+        for observation in merge_locator_observations(plan, registry.rows):
+            # DEC-2026-0038 makes a moved advisory locator informational. It is
+            # recorded rather than dropped, and never blocking.
+            add(Precondition("advisory registry_csv_row still points at its row",
+                             False, observation, blocking=False))
+    else:
+        problems = check_incident_sets(plan, graph_rows)
+        add(Precondition("each replacement enumerates its complete incident row set",
+                         not problems, "; ".join(problems) or
+                         f"{len(plan.replacements)} replacement(s)"))
+
+        problems = check_registry_targets(plan, registry.ids)
+        add(Precondition("registry additions are absent and retired IDs are present",
+                         not problems, "; ".join(problems) or "registry targets consistent"))
 
     # -- the Reviewer's own count of what it approved ------------------------
     summary = review.get("summary") or {}
     if "operations_reviewed" in summary:
-        planned = sum(plan.summary().values())
+        planned = plan.operation_count
         add(Precondition(
             "review operation count matches the plan",
             summary["operations_reviewed"] == planned,
             f"review approved {summary['operations_reviewed']}, plan carries {planned}"))
+
+
+def _plan_document(plan_path: Path) -> dict:
+    """The raw reviewed plan, for fields the parsed plan deliberately drops."""
+    return yaml.safe_load(plan_path.read_text(encoding="utf-8")) or {}
 
 
 def plan_provenance_decisions(plan_path: Path) -> list[dict]:
@@ -610,9 +754,24 @@ def _header_of(path: Path) -> list[str]:
     return first.split(",") if first else []
 
 
-def next_integration_id(manifests_dir: Path, day: str) -> str:
-    existing = sorted(manifests_dir.glob(f"INT-{day}-*.json")) if manifests_dir.exists() else []
-    return f"INT-{day}-{len(existing) + 1:03d}"
+def next_integration_id(manifests_dir: Path, day: str, reports_dir: Path | None = None) -> str:
+    """The next unused integration ID for `day`.
+
+    Counting manifests alone was wrong twice over. A rejected batch writes a
+    record but no manifest, so today's rejections were invisible and the next
+    integration would reuse their exact ID -- two different artifacts under one
+    identifier. And counting rather than taking the maximum reuses an ID whenever
+    one is skipped. Scan both directories and take the highest sequence seen.
+    """
+    seen = set()
+    for directory in (manifests_dir, reports_dir):
+        if directory is None or not directory.exists():
+            continue
+        for path in directory.glob(f"INT-{day}-*"):
+            sequence = path.name[len(f"INT-{day}-"):][:3]
+            if sequence.isdigit():
+                seen.add(int(sequence))
+    return f"INT-{day}-{(max(seen) if seen else 0) + 1:03d}"
 
 
 @dataclass
@@ -624,8 +783,11 @@ class Batch:
     added: list[dict] = field(default_factory=list)
     updated: list[dict] = field(default_factory=list)
     registrations: list[dict] = field(default_factory=list)
+    registrations_redeclared: list[dict] = field(default_factory=list)
     node_replacements: list[dict] = field(default_factory=list)
+    node_merges: list[dict] = field(default_factory=list)
     repoints: list[dict] = field(default_factory=list)
+    normalizations: list[dict] = field(default_factory=list)
     removals: list[dict] = field(default_factory=list)
     registrations_without_edges: list[dict] = field(default_factory=list)
     registry_resync: list[dict] = field(default_factory=list)
@@ -673,7 +835,8 @@ def integrate(
     # diagnostics nicety. `_unresolved_endpoints` is kept for reporting use.
 
     day = _dt.date.today().strftime("%Y%m%d")
-    integration_id = integration_id or next_integration_id(paths.manifests_dir, day)
+    integration_id = integration_id or next_integration_id(
+        paths.manifests_dir, day, paths.manifests_dir.parent / "reports")
 
     graph = CanonicalGraph.load(paths)
     pre_counts = {
@@ -723,11 +886,66 @@ def integrate(
         registered: dict[str, NodeRegistration] = {}
         for verification in verifications:
             for registration in verification.operations.registrations:
+                # Two packets working in parallel may each need the same new
+                # identity, and each Review approves it independently. That is
+                # not an overwrite: the registry is the list of approved IDs
+                # (constitution 3.2), so the identity is registered once and the
+                # later declaration is already satisfied. Writing it again would
+                # be the actual defect -- a duplicate registry row.
+                #
+                # Only an *agreeing* redeclaration is absorbed. Two bundles
+                # claiming one ID with different labels or kinds is a real
+                # identity conflict, and resolving that is not the Integrator's
+                # to make, so it aborts the batch.
+                existing = registered.get(registration.node_id)
+                if existing is not None:
+                    if (existing.label, existing.kind) != (registration.label, registration.kind):
+                        raise IntegrationError(
+                            f"{verification.bundle.bundle_id}: node {registration.node_id} is "
+                            f"declared as ({registration.label!r}, {registration.kind!r}) but "
+                            f"another bundle in this batch declares it as "
+                            f"({existing.label!r}, {existing.kind!r}); one identity cannot "
+                            "carry two definitions (invariant 4)")
+                    batch.registrations_redeclared.append({
+                        "id": registration.node_id,
+                        "label": registration.label,
+                        "kind": registration.kind,
+                        "bundle_id": verification.bundle.bundle_id,
+                        "review_id": verification.bundle.review_id,
+                        "first_declared_by": next(
+                            r["bundle_id"] for r in batch.registrations
+                            if r["id"] == registration.node_id),
+                    })
+                    continue
                 if registration.node_id in registry.ids:
-                    raise IntegrationError(
-                        f"{verification.bundle.bundle_id}: node {registration.node_id} is "
-                        "already registered; a registry addition must not overwrite an "
-                        "approved identity (invariant 4)")
+                    # Same rule as the within-batch case, against the registry a
+                    # previous integration already wrote: a packet may declare an
+                    # identity another packet registered first. Declaring exactly
+                    # what is already approved overwrites nothing, so it is
+                    # satisfied. Declaring it differently is the overwrite
+                    # invariant 4 exists to stop.
+                    current = next(r for r in registry.rows
+                                   if r.values["id"] == registration.node_id)
+                    if (current.values["label"], current.values["kind"]) != (
+                            registration.label, registration.kind):
+                        raise IntegrationError(
+                            f"{verification.bundle.bundle_id}: node {registration.node_id} is "
+                            f"already registered as ({current.values['label']!r}, "
+                            f"{current.values['kind']!r}) and this bundle declares it as "
+                            f"({registration.label!r}, {registration.kind!r}); a registry "
+                            "addition must not overwrite an approved identity (invariant 4)")
+                    batch.registrations_redeclared.append({
+                        "id": registration.node_id,
+                        "label": registration.label,
+                        "kind": registration.kind,
+                        "bundle_id": verification.bundle.bundle_id,
+                        "review_id": verification.bundle.review_id,
+                        "first_declared_by": "already in the registry",
+                    })
+                    # Deliberately not added to `registered`: that set drives the
+                    # new-label/kind overrides and the registrations-without-edges
+                    # report, and this identity is neither new nor this batch's.
+                    continue
                 if registration.node_id[: registration.node_id.find("_") + 1] not in prefixes:
                     raise IntegrationError(
                         f"{verification.bundle.bundle_id}: node {registration.node_id} does "
@@ -833,6 +1051,9 @@ def integrate(
         for node_id, registration in registered.items():
             labels[node_id] = registration.label
             kinds[node_id] = registration.kind
+        for merge in batch.node_merges:
+            labels[merge["canonical_id"]] = merge["canonical_label"]
+            kinds[merge["canonical_id"]] = merge["kind"]
         graph.nodes = rebuild_nodes(graph.edges, labels, kinds, thresholds)
 
         for node in graph.nodes:
@@ -942,7 +1163,10 @@ def integrate(
                     f"canonical changed by {actual}")
             reloaded_registry = Registry.load(paths.registry)
             # A replacement retires one ID and registers one, so it is net zero.
-            expected_registry = pre_counts["registry"] + len(batch.registrations)
+            # A v2 merge retires N and registers one, so it is net (1 - N).
+            merge_delta = sum(1 - len(m["retired"]) for m in batch.node_merges)
+            expected_registry = (pre_counts["registry"] + len(batch.registrations)
+                                 + merge_delta)
             if len(reloaded_registry.rows) != expected_registry:
                 raise IntegrationError(
                     f"registry drift: expected {expected_registry} row(s), "

@@ -7,6 +7,7 @@ artifacts published before the contract remain valid without those fields.
 
 from __future__ import annotations
 
+import functools
 import json
 import unittest
 from pathlib import Path
@@ -42,6 +43,71 @@ def errors(schema: dict, document: dict) -> list[str]:
     return [e.message for e in Draft202012Validator(schema, registry=REGISTRY).iter_errors(document)]
 
 
+PUBLISHED_PATTERNS = (
+    "books/*/*/artifacts/gur/GUR-*.yaml",
+    "books/*/*/artifacts/gup/GUP-*.yaml",
+    "books/*/*/artifacts/reviews/REV-*.yaml",
+)
+
+
+@functools.lru_cache(maxsize=1)
+def _published_artifacts() -> dict[Path, dict]:
+    """Every published packet-workflow artifact, by path.
+
+    Cached because several tests need the whole set: parsing ~150 YAML files per
+    test made the suite noticeably slower than the work it was doing.
+    """
+    found: dict[Path, dict] = {}
+    for pattern in PUBLISHED_PATTERNS:
+        for path in sorted(REPO_ROOT.glob(pattern)):
+            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            if isinstance(document, dict):
+                found[path] = document
+    return found
+
+
+def _repaired_by_successor(
+    path: Path, document: dict, published: dict[Path, dict]
+) -> bool:
+    """Whether a published artifact's invalidity has been superseded away.
+
+    DEC-2026-0039 and ARTIFACT_LIFECYCLE 1.9 forbid editing, moving or deleting a
+    published artifact: a mis-authored one is repaired only by an immutable
+    successor revision. That leaves the predecessor permanently invalid on disk,
+    so a repository-wide validation has to distinguish an artifact that is
+    *currently wrong* from one that has already been corrected.
+
+    Three conditions, all required, and each denied by a test in
+    `TestSupersededExemptionIsNarrow`:
+
+    1. every error is inside `handoff` -- queue-derivation metadata, which
+       WORK_QUEUES already does not read from a superseded revision. An error in
+       identity, provenance or proposals is never excused;
+    2. some published artifact names this one in `supersedes`; and
+    3. that successor validates completely.
+
+    Nothing here is inferred from status, name or position in a lineage.
+    """
+    locations = [
+        list(e.absolute_path)
+        for e in Draft202012Validator(ENVELOPE, registry=REGISTRY).iter_errors(document)
+    ]
+    if not locations:
+        return False
+    if any(not location or location[0] != "handoff" for location in locations):
+        return False
+
+    artifact_id = str(document.get("id") or path.stem)
+    for successor_path, successor in published.items():
+        if successor_path == path:
+            continue
+        if str(successor.get("supersedes") or "") != artifact_id:
+            continue
+        if not errors(ENVELOPE, successor):
+            return True
+    return False
+
+
 class TestLegacyArtifactsStayValid(unittest.TestCase):
     """`revision`, `supersedes` and `handoff` are optional by design."""
 
@@ -53,22 +119,127 @@ class TestLegacyArtifactsStayValid(unittest.TestCase):
             self.assertNotIn(field, ENVELOPE.get("required", []))
 
     def test_every_published_artifact_still_validates(self):
-        """No artifact in the repository is invalidated by the new fields."""
-        patterns = (
-            "books/*/*/artifacts/gur/GUR-*.yaml",
-            "books/*/*/artifacts/gup/GUP-*.yaml",
-            "books/*/*/artifacts/reviews/REV-*.yaml",
+        """No artifact in the repository is invalidated by the new fields.
+
+        One exemption, defined by `repaired_by_successor` below: a superseded
+        revision whose only invalidity is in its `handoff` block and whose
+        successor validates. Governance forbids editing a published artifact, so
+        without it a single mis-authored handoff would fail this suite forever --
+        and because an approval-ready Decision implementation report requires
+        passing validation evidence, forever would have meant seven approved
+        Decisions permanently unimplementable.
+        """
+        published = _published_artifacts()
+        self.assertTrue(published, "expected published artifacts to check")
+        for path, document in published.items():
+            found = errors(ENVELOPE, document)
+            if found and _repaired_by_successor(path, document, published):
+                continue
+            with self.subTest(artifact=path.name):
+                self.assertEqual(found, [], path.name)
+
+    def test_the_exemption_is_reported_rather_than_silent(self):
+        """An exemption that accumulates unnoticed is a hole, not an allowance."""
+        published = _published_artifacts()
+        exempt = sorted(
+            path.name
+            for path, document in published.items()
+            if errors(ENVELOPE, document)
+            and _repaired_by_successor(path, document, published)
         )
-        checked = 0
-        for pattern in patterns:
-            for path in REPO_ROOT.glob(pattern):
-                document = yaml.safe_load(path.read_text(encoding="utf-8"))
-                if not isinstance(document, dict):
-                    continue
-                checked += 1
-                with self.subTest(artifact=path.name):
-                    self.assertEqual(errors(ENVELOPE, document), [], path.name)
-        self.assertGreater(checked, 0, "expected published artifacts to check")
+        self.assertEqual(
+            exempt,
+            ["GUR-PKT-UA-015-015-cavaliers-r02.yaml"],
+            "the exempt set changed; a new invalid artifact needs a ruling, not a pass",
+        )
+
+    def test_the_exempt_artifact_is_invalid_only_in_its_handoff(self):
+        published = _published_artifacts()
+        path = next(
+            p for p in published if p.name == "GUR-PKT-UA-015-015-cavaliers-r02.yaml"
+        )
+        found = [
+            list(e.absolute_path)
+            for e in Draft202012Validator(ENVELOPE, registry=REGISTRY).iter_errors(
+                published[path]
+            )
+        ]
+        self.assertTrue(found)
+        for location in found:
+            self.assertEqual(location[0], "handoff", location)
+
+    def test_the_exempt_artifact_has_a_valid_successor(self):
+        published = _published_artifacts()
+        successor = next(
+            document
+            for path, document in published.items()
+            if path.name == "GUR-PKT-UA-015-015-cavaliers-r03.yaml"
+        )
+        self.assertEqual(errors(ENVELOPE, successor), [])
+        self.assertEqual(successor["supersedes"], "GUR-PKT-UA-015-015-cavaliers-r02")
+
+
+class TestSupersededExemptionIsNarrow(unittest.TestCase):
+    """Each condition of the exemption, denied one at a time.
+
+    A guard nobody has tried to break is a guard nobody knows the shape of. Every
+    case here is an artifact the suite must still fail.
+    """
+
+    BROKEN_HANDOFF = {"next_role": None, "readiness": "withdrawn",
+                      "reason": "superseded", "blocking_ids": []}
+    GOOD_HANDOFF = {"next_role": "none", "readiness": "terminal",
+                    "reason": "superseded by a replacement packet", "blocking_ids": []}
+
+    def lineage(self, *, predecessor_extra=None, successor=True, successor_valid=True,
+                successor_names_it=True):
+        stale = Path("books/adnd1e/ua/artifacts/gur/GUR-FIXTURE-r01.yaml")
+        predecessor = dict(
+            BASE,
+            id="GUR-FIXTURE-r01",
+            revision=1,
+            supersedes=None,
+            handoff=self.BROKEN_HANDOFF,
+        )
+        predecessor.update(predecessor_extra or {})
+        published = {stale: predecessor}
+        if successor:
+            document = dict(
+                BASE,
+                id="GUR-FIXTURE-r02",
+                revision=2,
+                supersedes="GUR-FIXTURE-r01" if successor_names_it else "GUR-OTHER-r01",
+                handoff=self.GOOD_HANDOFF if successor_valid else self.BROKEN_HANDOFF,
+            )
+            published[Path("books/adnd1e/ua/artifacts/gur/GUR-FIXTURE-r02.yaml")] = document
+        return stale, published
+
+    def exempt(self, **kwargs):
+        stale, published = self.lineage(**kwargs)
+        return _repaired_by_successor(stale, published[stale], published)
+
+    def test_the_intended_case_is_exempt(self):
+        self.assertTrue(self.exempt())
+
+    def test_a_leaf_with_no_successor_is_not_exempt(self):
+        """Nothing has repaired it, so it is live work, not history."""
+        self.assertFalse(self.exempt(successor=False))
+
+    def test_a_successor_that_names_another_predecessor_is_not_exempt(self):
+        self.assertFalse(self.exempt(successor_names_it=False))
+
+    def test_a_successor_that_is_itself_invalid_repairs_nothing(self):
+        self.assertFalse(self.exempt(successor_valid=False))
+
+    def test_an_error_outside_the_handoff_is_not_exempt(self):
+        """Only queue-derivation metadata is excused; semantics never are."""
+        self.assertFalse(self.exempt(predecessor_extra={"revision": 0}))
+        self.assertFalse(self.exempt(predecessor_extra={"schema_version": 1.0}))
+
+    def test_a_valid_artifact_is_never_routed_through_the_exemption(self):
+        stale, published = self.lineage()
+        published[stale]["handoff"] = self.GOOD_HANDOFF
+        self.assertEqual(errors(ENVELOPE, published[stale]), [])
 
 
 class TestRevisionAndSupersedes(unittest.TestCase):
@@ -328,3 +499,167 @@ class TestImplementationArtifactsValidate(unittest.TestCase):
                     ]
                     self.assertEqual(found, [], path.name)
         self.assertGreater(checked, 0, "expected published implementation artifacts")
+
+
+REVIEW = json.loads((COMMON / "review.schema.json").read_text(encoding="utf-8"))
+
+REVIEW_BASE = {
+    "schema_version": "1.0",
+    "id": "REV-GUP-PKT-PHB-999-999-fixture-r01-r01",
+    "status": "revision_required",
+    "ruleset_id": "adnd1e",
+    "constitution_version": "1.8",
+}
+
+
+class TestReviewDispositionVocabulary(unittest.TestCase):
+    """DEC-2026-0051: four legal per-row dispositions, checked at publication.
+
+    `approved_but_excluded_from_bundle` conflated two independent facts. Whether
+    a row is correct is the Reviewer's judgment; whether it lands in an Approved
+    edge component is packaging, derived from the GUP's approved/pending/blocked
+    components under DEC-2026-0047. The illusionist lineage is what happens
+    without this check: the term validated at publication, travelled through the
+    Review, and was first read as unknown when the Builder tried to compile
+    against it several artifacts later.
+
+    The check is opt-in on `review_contract_version: '1.1'` so the 111 Reviews
+    published before the ruling stay valid history rather than retroactively
+    becoming defects.
+    """
+
+    LEGAL = ["approved", "approved_with_revision", "rejected", "architect_escalation"]
+    ILLEGAL = "approved_but_excluded_from_bundle"
+
+    def review(self, **overrides):
+        return dict(REVIEW_BASE, **overrides)
+
+    # -- the opt-in boundary -------------------------------------------------
+
+    def test_a_legacy_review_without_the_field_is_untouched(self):
+        """Immutable history must not become invalid because a rule arrived."""
+        document = self.review(
+            edge_decisions=[{"ref": "M1", "disposition": self.ILLEGAL}]
+        )
+        self.assertEqual(errors(REVIEW, document), [])
+
+    def test_a_legacy_review_is_untouched_in_the_mapping_shape_too(self):
+        document = self.review(row_decisions={"M1": {"disposition": self.ILLEGAL}})
+        self.assertEqual(errors(REVIEW, document), [])
+
+    def test_another_declared_version_does_not_opt_in(self):
+        document = self.review(
+            review_contract_version="1.0",
+            edge_decisions=[{"ref": "M1", "disposition": self.ILLEGAL}],
+        )
+        self.assertEqual(errors(REVIEW, document), [])
+
+    # -- enforcement under 1.1 ----------------------------------------------
+
+    def test_every_legal_disposition_is_accepted(self):
+        for disposition in self.LEGAL:
+            with self.subTest(disposition=disposition):
+                document = self.review(
+                    review_contract_version="1.1",
+                    edge_decisions=[{"ref": "M1", "disposition": disposition}],
+                )
+                self.assertEqual(errors(REVIEW, document), [])
+
+    def test_the_invalid_disposition_is_rejected_in_edge_decisions(self):
+        document = self.review(
+            review_contract_version="1.1",
+            edge_decisions=[{"ref": "M1", "disposition": self.ILLEGAL}],
+        )
+        self.assertTrue(errors(REVIEW, document))
+
+    def test_the_invalid_disposition_is_rejected_in_row_decisions(self):
+        document = self.review(
+            review_contract_version="1.1",
+            row_decisions=[{"ref": "M1", "disposition": self.ILLEGAL}],
+        )
+        self.assertTrue(errors(REVIEW, document))
+
+    def test_both_published_shapes_are_checked(self):
+        """A list of decisions and a mapping of them are both in use.
+
+        Checking one and silently passing the other is exactly how an invalid
+        value survives a validator, so the mapping form is pinned here too.
+        """
+        document = self.review(
+            review_contract_version="1.1",
+            edge_decisions={"M1": {"disposition": self.ILLEGAL}},
+        )
+        self.assertTrue(errors(REVIEW, document))
+
+    def test_any_unknown_disposition_is_rejected_not_just_the_named_one(self):
+        document = self.review(
+            review_contract_version="1.1",
+            row_decisions=[{"ref": "M1", "disposition": "approved_pending_packaging"}],
+        )
+        self.assertTrue(errors(REVIEW, document))
+
+    def test_one_bad_row_among_good_ones_is_still_rejected(self):
+        document = self.review(
+            review_contract_version="1.1",
+            edge_decisions=[
+                {"ref": "M1", "disposition": "approved"},
+                {"ref": "M2", "disposition": "rejected"},
+                {"ref": "M3", "disposition": self.ILLEGAL},
+            ],
+        )
+        self.assertTrue(errors(REVIEW, document))
+
+    # -- what the check must not touch --------------------------------------
+
+    def test_a_grouped_summary_is_not_a_per_row_disposition(self):
+        """`edge_decisions: {approved_refs: [...]}` states no row judgment.
+
+        The migration Reviews use these keys for grouped summaries. Requiring a
+        disposition there would fail artifacts that never claimed to carry one.
+        """
+        document = self.review(
+            review_contract_version="1.1",
+            edge_decisions={"approved_refs": ["canonical_row_27", "canonical_row_102"]},
+        )
+        self.assertEqual(errors(REVIEW, document), [])
+
+    def test_a_row_carrying_no_disposition_is_left_alone(self):
+        document = self.review(
+            review_contract_version="1.1",
+            edge_decisions=[{"ref": "M1", "rationale": "still being written"}],
+        )
+        self.assertEqual(errors(REVIEW, document), [])
+
+    def test_other_review_fields_are_unconstrained(self):
+        document = self.review(
+            review_contract_version="1.1",
+            edge_decisions=[{
+                "ref": "M1",
+                "disposition": "approved",
+                "source_locus": "PHB p94",
+                "rationale": "verified against the page",
+            }],
+            packaging_evidence={"blocked_component": "x.blocked.csv"},
+        )
+        self.assertEqual(errors(REVIEW, document), [])
+
+
+class TestPublishedReviewsStillValidate(unittest.TestCase):
+    """The live corpus, which is what the opt-in exists to protect."""
+
+    def reviews(self):
+        return sorted(
+            (REPO_ROOT / "books" / "adnd1e").glob("*/artifacts/reviews/*.yaml")
+        )
+
+    def test_every_published_review_validates(self):
+        offenders = {}
+        for path in self.reviews():
+            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            found = errors(REVIEW, document)
+            if found:
+                offenders[path.name] = found[0]
+        self.assertEqual(offenders, {})
+
+    def test_the_corpus_is_not_empty(self):
+        self.assertGreater(len(self.reviews()), 50)

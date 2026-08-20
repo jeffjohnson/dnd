@@ -1,0 +1,143 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0043-r03
+artifact_kind: decision_implementation
+status: blocked
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 3
+supersedes: IMP-DEC-2026-0043-r02
+approval_ready: false
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0043
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0043.yaml
+  checksum: sha256:e54110f315795a173e3e1f0fd261f0674c1462e6c85fa19990bad0141e0ce7af
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:967e53efd5d8315f3b2408ae0ce2af9de0ae9c57c39f4f3a5a921873635f7d48
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:aab598c4791a384c82594f6657541117eb5397f3dab0dd95f5a69462e2b7964d
+- path: agents/integrator/INSTRUCTIONS.md
+  checksum: sha256:5f81495d1842e20ac253e7fa2ce77e7fb6cee1dba7d36f3f11c6bdde1da04110
+- path: agents/reviewer/INSTRUCTIONS.md
+  checksum: sha256:de857bbad129197f968336d9857a76bfcdf863fa18dd3a3fe815518082c93e91
+- path: schemas/common/decision-implementation.schema.json
+  checksum: sha256:11ba9038a5b5e8cc96100ce624dde370f8a02b588833e8c9dea18b994199672f
+- path: schemas/common/integration-rejection.schema.json
+  checksum: sha256:37895ce4219dfd7e386b23665b9dfa141d37d8d4250c89dab89a1717a5099e7f
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:e55bded7ce9a7e85086ffade4b199af56e3af3a3269c48eae0cc51ac65cac9c4
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:a8d69a38866cabfabe2b870244aac07f76d3a28ce6a186cf474424e63a97ed1d
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0043.yaml
+  checksum: sha256:e54110f315795a173e3e1f0fd261f0674c1462e6c85fa19990bad0141e0ce7af
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'IntegrationRejectionCase.test_a_valid_rejection_suppresses_only_that_bundle asserts a conforming
+    record removes that bundle''s INTEGRATOR-APPROVED item and creates one REVIEWER-INTEGRATION-REJECTION
+    item; test_a_second_unrejected_bundle_is_untouched asserts an unrelated bundle in the same book still
+    routes to the Integrator, so suppression is per bundle and never per book or queue; test_exactly_one_remediation_item_is_created
+    asserts exactly one; test_the_remediation_item_names_the_failing_check asserts the item is Reviewer-owned
+    and names both the rejection record and the failing check. Live repository: APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r04-r01
+    left the Integrator queue and became a Reviewer remediation item pointing at rulesets/adnd1e/reports/INT-20260815-002.rejected.json,
+    after four consecutive rejections of identical bytes. Re-verified for r03 at the current file checksums
+    after the DEC-2026-0045 governance publication: IntegrationRejectionCase and DirectImplementationOwnerCase
+    run 44 tests OK and the claim above is unchanged.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'Nine denial tests, each asserting the bundle stays in INTEGRATOR-APPROVED, no remediation
+    item is created, and a diagnostic is emitted: a missing checksum, a stale checksum, no blocking_failures,
+    a wrong ruleset, a status other than rejected, unreadable JSON, a superseded record, two disagreeing
+    live records (integration_rejection_ambiguous), and an unchecksummed record reusing the legacy-authorized
+    ID for a different bundle. test_the_legacy_allowance_is_pinned_to_one_record_and_bundle asserts LEGACY_AUTHORIZED_REJECTIONS
+    is exactly the one (record, bundle) pair DEC-2026-0043 names, so the allowance cannot spread. A rejection
+    naming a superseded or integrated bundle is silent rather than diagnostic (test_a_rejection_of_a_superseded_bundle_is_silent):
+    it can suppress nothing either way, and reporting every pre-contract record produced 56 errors that
+    buried the 5 live ones. Live repository: INT-20260812-002, INT-20260814-003 and INT-20260817-002 are
+    reported as invalid for want of the now-required checksums and suppress nothing. Re-verified for r03
+    at the current file checksums after the DEC-2026-0045 governance publication: IntegrationRejectionCase
+    and DirectImplementationOwnerCase run 44 tests OK and the claim above is unchanged.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'test_a_review_successor_recording_the_rejection_consumes_the_item asserts that a Review successor
+    carrying integration_rejection.id equal to the record ID removes the remediation item, leaving its
+    ordinary handoff to supply downstream work; test_a_successor_naming_another_rejection_does_not_consume_it
+    asserts matching is on the exact record ID, so a Review that merely postdates the rejection does not
+    discharge it. The bundle then appears as INTEGRATOR-REJECTED informational history rather than ready
+    work. Re-verified for r03 at the current file checksums after the DEC-2026-0045 governance publication:
+    IntegrationRejectionCase and DirectImplementationOwnerCase run 44 tests OK and the claim above is
+    unchanged.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'DirectImplementationOwnerCase covers both halves. test_an_integrator_decision_creates_an_integrator_item
+    asserts a ready non-migration Decision handing off to Integrator produces exactly one INTEGRATOR-DECISION
+    item and no Builder item; test_a_builder_decision_still_creates_a_builder_item asserts the existing
+    Builder path is unchanged; test_a_builder_report_for_an_integrator_decision_is_diagnostic and test_an_integrator_report_for_a_builder_decision_is_diagnostic
+    assert an owner mismatch emits decision_implementation_invalid naming implemented_by and does NOT
+    consume the Decision; test_a_valid_integrator_report_routes_to_reviewer asserts a matching report
+    routes to REVIEWER-DECISION-IMPLEMENTATION; test_an_approved_review_consumes_the_decision_and_makes_no_batch
+    asserts an Approved implementation Review consumes the Decision and creates no INTEGRATOR-APPROVED
+    batch. test_the_owner_set_is_exactly_builder_and_integrator pins the owner set. schemas/common/decision-implementation.schema.json
+    now declares implemented_by as enum [builder, integrator]. Live repository: DEC-2026-0044 routes to
+    INTEGRATOR-DECISION. Re-verified for r03 at the current file checksums after the DEC-2026-0045 governance
+    publication: IntegrationRejectionCase and DirectImplementationOwnerCase run 44 tests OK and the claim
+    above is unchanged.'
+- acceptance_test_index: 5
+  result: failed
+  evidence: 'STILL FAILS, BUT NO LONGER FOR THE REASON r02 RECORDED, AND NOT FOR ANY BUILDER REASON. The
+    governance gap is closed: contracts/WORK_QUEUES.md is now Version 1.12 with the rejection-remediation
+    section, contracts/ARTIFACT_LIFECYCLE.md is Version 1.10 with section 7 ''Integration rejection'',
+    and agents/integrator/INSTRUCTIONS.md and agents/reviewer/INSTRUCTIONS.md now carry their rejection-record
+    and rejection-consuming-successor duties. All four are listed above at their current checksums. What
+    this test now fails on is two red suites, both Integrator-owned. (1) The common suite runs 521 tests
+    with one failure: test_implementation_evidence.TestValidationEvidenceIsSelfConsistent.test_exit_code_result_and_summary_agree
+    rejects IMP-DEC-2026-0044-r01, an Integrator-authored report whose third command summary ends ''all
+    clone-fixture'' with no trailing verdict token. (2) The Integrator suite runs 121 tests with 5 errors
+    in test_operations, raising IntegrationError ''21 blocking precondition failure(s)'' from tooling/integrator/src/adnd1e_integrator/integrate.py;
+    IMP-DEC-2026-0044-r01 records the same five and calls them clone-fixture errors. Every file involved
+    is under tooling/integrator/ or is an Integrator-published artifact, so the Builder can neither repair
+    them nor honestly report this test as passing. The Builder-owned half of this Decision is complete
+    and independently verified: REV-IMP-DEC-2026-0043-r01-r03 confirmed acceptance tests 1 through 4,
+    and 44 targeted tests pass at the current checksums. approval_ready is false rather than misreporting
+    coverage.'
+handoff:
+  next_role: integrator
+  readiness: blocked
+  reason: 'DEC-2026-0045 closed the governance gap that blocked r02: all four Architect-owned files exist
+    and are verified here at their current checksums, and acceptance tests 1 through 4 are re-verified
+    with 44 targeted tests passing. Acceptance test 5 requires every applicable schema, scanner, Integrator
+    and repository test to pass, and two Integrator-owned suites are red: the common suite fails on IMP-DEC-2026-0044-r01''s
+    verdict-token-less summary, and the Integrator suite has 5 errors in test_operations. Both sit inside
+    the Integrator''s ready DEC-2026-0044 job. No Builder action can turn this test green.'
+  blocking_ids:
+  - IMP-DEC-2026-0044-r01
+  - tooling/integrator/tests/test_operations.py
+validation_report: build/reports/IMP-DEC-2026-0043-r03.validation.json
+validation_report_checksum: sha256:f5ceeb2b0e5f73024fb33d8a6ee60a5d7600dcab04348c01f8beab3fccda3794
+validation:
+  passed: false
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 1
+    result: failed
+    summary: 'Ran 521 tests in 92.314s, 1 failure: test_implementation_evidence.TestValidationEvidenceIsSelfConsistent.test_exit_code_result_and_summary_agree
+      on the Integrator-authored IMP-DEC-2026-0044-r01, whose third command summary carries no verdict
+      token FAILED'
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.IntegrationRejectionCase
+      test_scan_agent_queues.DirectImplementationOwnerCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 44 tests in 0.579s OK
+  - command: '[cwd tooling/integrator/tests] python -m unittest discover -s . -q'
+    exit_code: 1
+    result: failed
+    summary: Ran 121 tests in 162.633s, 0 failures, 5 errors, all in test_operations and all raising IntegrationError
+      '21 blocking precondition failure(s); nothing was written' from adnd1e_integrator.integrate; Integrator-owned
+      code and fixtures, outside this Decision's Builder scope FAILED
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 577 tests in 80.383s (30 skipped) OK

@@ -1,0 +1,83 @@
+schema_version: '1.0'
+id: ESC-2026-08-20T02.50.21.676Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-094-100-illusionist-spells
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+raised_by: reviewer
+decision_owner: architect
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: DEC-2026-0051’s direct-implementation approval gate depends on the later Reviewer r06 artifact that the same Decision forbids before approval.
+  blocking_ids: []
+trigger: >-
+  IMP-DEC-2026-0051-r01 is complete for every Builder-owned acceptance item but
+  has status blocked and approval_ready false because acceptance test 5 requires
+  REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06. DEC-2026-0051 sequence
+  step 4 assigns r06 to Reviewer only after step 3 independently approves this
+  implementation report.
+originating_artifacts:
+  decision:
+    id: DEC-2026-0051
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0051.yaml
+    checksum: sha256:acd32e14c2073a0fa7148bdfa17b894d437de3959c0296b080b6f2158035d0ed
+  implementation_report:
+    id: IMP-DEC-2026-0051-r01
+    path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0051-r01.yaml
+    checksum: sha256:40bfa0b3dfaaa3d91385bf6fb8bab74a1fa16947c7e371f1503a2f14f406fd47
+  blocked_review_successor:
+    id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06
+    predecessor: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05
+    reviewed_gup: GUP-PKT-PHB-094-100-illusionist-spells-r05
+question: >-
+  How may the direct implementation report be independently approved when its
+  fifth acceptance test requires the r06 successor, but the Decision makes that
+  successor conditional on the report’s prior approval? Specifically, should
+  acceptance test 5 be classified as downstream and non-blocking, should the
+  Reviewer be authorized to publish r06 before report approval, or should a
+  different sequence be imposed?
+smallest_relevant_source_excerpt:
+  - >-
+    DEC-2026-0051 sequence step 3: Reviewer independently reviews
+    IMP-DEC-2026-0051-r01 before approving the implementation review.
+  - >-
+    DEC-2026-0051 sequence step 4: Reviewer publishes r06 after step 3.
+  - >-
+    DEC-2026-0051 acceptance test 5 requires r06’s exact successor properties.
+  - >-
+    IMP-DEC-2026-0051-r01 records test 5 as not_run and names r06 as its sole
+    blocker; no Builder-owned direct implementation item remains incomplete.
+local_graph_neighborhood:
+  applicable: false
+  reason: This is review-lifecycle sequencing only; no source assertion, canonical edge, node, or registry identity is under review.
+affected_canonical_ids: []
+options_considered:
+  - option: Treat acceptance test 5 as downstream and non-blocking for the direct implementation Review.
+    impact: Reviewer can approve IMP-DEC-2026-0051-r01 after verifying tests 1–4, then publish r06 in the Decision’s stated order.
+  - option: Authorize r06 before direct implementation report approval.
+    impact: Breaks the dependency but reverses DEC-2026-0051 steps 3 and 4; Reviewer would publish a Review 1.1 artifact before independently verifying the schema gate that validates it.
+  - option: Reissue the sequence with a separate downstream completion condition for r06.
+    impact: Makes the lifecycle explicit but creates a new Decision lineage for a sequencing-only correction.
+recommended_resolution: >-
+  Classify acceptance test 5 as a downstream post-implementation requirement,
+  not a blocker to approval of the direct schema implementation report. This
+  preserves the stated sequence: Reviewer verifies the schema gate first, then
+  publishes the r06 successor under that validated gate.
+expected_migration_impact:
+  canonical_data_change: false
+  registry_change: false
+  profile_change: false
+  artifact_lineage_change: A Reviewer implementation Review and the mandated r06 successor may proceed only after clarified approval semantics.
+resolution:
+  decision_id: DEC-2026-0052
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml
+  outcome: >-
+    DEC-2026-0051 is superseded by the corrected active leaf. Its fifth
+    acceptance test is a downstream post-implementation requirement, not an
+    implementation-report blocker; r06 remains prohibited until the new
+    implementation report receives independent Reviewer approval.

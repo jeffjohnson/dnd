@@ -1,0 +1,161 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0022-r10
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 10
+supersedes: IMP-DEC-2026-0022-r09
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0022
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0022.yaml
+  checksum: sha256:ad74f5937d668c02544f8d610c2fae236e6022fdeb7f434f5f5b26366604923f
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:5ce7a224d6ff188ca5b0384a86eea4e5d8e7992688af010a7d33d04a6ab186d7
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:57c3cae8ede50551e065c981e39d8a2c4fd0afde34ca496c5f4818a2d3d640a4
+- path: tooling/common/scan-agent-queues.ps1
+  checksum: sha256:fdb356ffc2f40d9a40237530b287ee6fd0a5b657b13d48e0f32054d814928d7c
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'live repository check: the scanner no longer reports REV-GUP-MIG-DEC-2026-0015-0016-r03-r01
+    as ready Analyst work. Decision handoff replacement was skipping its suppression loop for a migration-required
+    Decision carrying a ready Builder handoff, so DEC-2026-0021 could not replace the stale handoff; the
+    double-count guard now runs after the suppression rather than before it. Regression: test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_migration_decision_still_replaces_the_stale_handoff
+    and test_a_migration_decision_does_not_double_count_its_builder_job, both of which fail when the guard
+    is moved back -> Ran 1 tests in 0.017s OK Re-verified for r10 at the current file checksums: both
+    suites pass (common 363, builder 569) and the claim above is unchanged.'
+- acceptance_test_index: 2
+  result: retired_by_lineage
+  evidence: 'DEC-2026-0021 left the Builder queue by completing its migration work, not by suppression:
+    consumed by GUP-MIG-DEC-2026-0016-PAGE-r01, approved as APPROVED-GUP-MIG-DEC-2026-0016-PAGE-r01-r01
+    and integrated by INT-20260804-002. Retired under DEC-2026-0028 authorization for this index. Re-verified
+    for r10 at the current file checksums: both suites pass (common 363, builder 569) and the claim above
+    is unchanged.'
+  retirement_authority:
+    id: DEC-2026-0028
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0028.yaml
+    checksum: sha256:368749c4bae0f1c61cbfc0a874f1e73c302258192c6836accb5cd1088b2f1064
+    authorized_acceptance_test_index: 2
+  retired_subjects:
+  - id: DEC-2026-0021
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0021.yaml
+    retirement_state: consumed_by_integrated_bundle
+    integration_record_path: books/adnd1e/phb/artifacts/integrated/INT-20260804-002-APPROVED-GUP-MIG-DEC-2026-0016-PAGE-r01-r01.json
+    integration_record_checksum: sha256:394a24a43e6b61cd54bf6c10004227e84b06b051167f576a81d5ef38be173dc0
+- acceptance_test_index: 3
+  result: retired_by_lineage
+  evidence: 'Both GURs were compiled and integrated: GUP-PKT-PHB-033-035-alignment-hp-languages-r06 and
+    GUP-PKT-PHB-043-054-cleric-spells-r06, each approved and integrated by INT-20260804-001. They ceased
+    to be Builder jobs because the Builder did them. Retired under DEC-2026-0028 authorization for this
+    index. Re-verified for r10 at the current file checksums: both suites pass (common 363, builder 569)
+    and the claim above is unchanged.'
+  retirement_authority:
+    id: DEC-2026-0028
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0028.yaml
+    checksum: sha256:368749c4bae0f1c61cbfc0a874f1e73c302258192c6836accb5cd1088b2f1064
+    authorized_acceptance_test_index: 3
+  retired_subjects:
+  - id: GUR-PKT-PHB-033-035-alignment-hp-languages
+    path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-033-035-alignment-hp-languages.yaml
+    retirement_state: consumed_by_integrated_bundle
+    integration_record_path: books/adnd1e/phb/artifacts/integrated/INT-20260804-001-APPROVED-GUP-PKT-PHB-033-035-alignment-hp-languages-r06-r01.json
+    integration_record_checksum: sha256:425cdbd6147f89e70396d26fefae135141551f1d148ff2b8b3f5cf4d9cfcea35
+  - id: GUR-PKT-PHB-043-054-cleric-spells
+    path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-043-054-cleric-spells.yaml
+    retirement_state: consumed_by_integrated_bundle
+    integration_record_path: books/adnd1e/phb/artifacts/integrated/INT-20260804-001-APPROVED-GUP-PKT-PHB-043-054-cleric-spells-r06-r01.json
+    integration_record_checksum: sha256:702ee3235b0041bd7e55de173060bc8346f6895b9fe87563143ec3b713eb72a0
+- acceptance_test_index: 4
+  result: retired_by_lineage
+  evidence: 'GUP-PKT-PHB-035-038-money-equipment-r05 was superseded through ordinary Review revision by
+    r06 and then r07; r07 was approved and integrated by INT-20260804-001. The integrated successor is
+    what retires r05 -- supersession alone would not. Retired under DEC-2026-0028 authorization for this
+    index. Re-verified for r10 at the current file checksums: both suites pass (common 363, builder 569)
+    and the claim above is unchanged.'
+  retirement_authority:
+    id: DEC-2026-0028
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0028.yaml
+    checksum: sha256:368749c4bae0f1c61cbfc0a874f1e73c302258192c6836accb5cd1088b2f1064
+    authorized_acceptance_test_index: 4
+  retired_subjects:
+  - id: GUP-PKT-PHB-035-038-money-equipment-r05
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-035-038-money-equipment-r05.yaml
+    retirement_state: superseded_by_integrated_revision
+    integration_record_path: books/adnd1e/phb/artifacts/integrated/INT-20260804-001-APPROVED-GUP-PKT-PHB-035-038-money-equipment-r07-r01.json
+    integration_record_checksum: sha256:b283f269149c2cd7e24efb639f311a48f0dda207ba555ac41df3e88023d6e036
+    integrated_successor_id: GUP-PKT-PHB-035-038-money-equipment-r07
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'live repository check: REV-GUP-MIG-DEC-2026-0015-0016-r03-r01 present on disk and unmodified
+    in git status (re-verified for r08) Re-verified for r10 at the current file checksums: both suites
+    pass (common 363, builder 569) and the claim above is unchanged.'
+- acceptance_test_index: 6
+  result: passed
+  evidence: 'unit test test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_mismatched_escalation_id_does_not_suppress
+    -> Ran 1 tests in 0.017s OK Re-verified for r10 at the current file checksums: both suites pass (common
+    363, builder 569) and the claim above is unchanged.'
+- acceptance_test_index: 7
+  result: passed
+  evidence: 'unit test test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_mismatched_originating_path_does_not_suppress,
+    test_scan_agent_queues.DecisionHandoffReplacementCase.test_free_text_without_a_path_does_not_suppress
+    -> Ran 2 tests in 0.030s OK Re-verified for r10 at the current file checksums: both suites pass (common
+    363, builder 569) and the claim above is unchanged.'
+- acceptance_test_index: 8
+  result: passed
+  evidence: 'unit test test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_superseded_originating_artifact_does_not_suppress_the_leaf
+    -> Ran 1 tests in 0.017s OK Re-verified for r10 at the current file checksums: both suites pass (common
+    363, builder 569) and the claim above is unchanged.'
+- acceptance_test_index: 9
+  result: passed
+  evidence: 'unit test test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_blocked_replacement_produces_blocked_state_and_no_ready_item
+    -> Ran 1 tests in 0.016s OK Re-verified for r10 at the current file checksums: both suites pass (common
+    363, builder 569) and the claim above is unchanged.'
+- acceptance_test_index: 10
+  result: passed
+  evidence: 'unit test test_scan_agent_queues.DecisionHandoffReplacementCase.test_a_terminal_replacement_produces_no_downstream_item
+    -> Ran 1 tests in 0.016s OK Re-verified for r10 at the current file checksums: both suites pass (common
+    363, builder 569) and the claim above is unchanged.'
+- acceptance_test_index: 11
+  result: passed
+  evidence: 'live repository check: decision_migration_lineage_error still reported (re-verified for r08)
+    Re-verified for r10 at the current file checksums: both suites pass (common 363, builder 569) and
+    the claim above is unchanged.'
+- acceptance_test_index: 12
+  result: passed
+  evidence: 'unit test test_scan_agent_queues.TestScannerParity.test_powershell_and_python_return_the_same_jobs_and_exit_code
+    -> Ran 1 tests in 31.255s OK Re-verified for r10 at the current file checksums: both suites pass (common
+    363, builder 569) and the claim above is unchanged.'
+- acceptance_test_index: 13
+  result: passed
+  evidence: 'live repository check: complete common queue-scanner suite passed (re-verified for r08) Re-verified
+    for r10 at the current file checksums: both suites pass (common 363, builder 569) and the claim above
+    is unchanged.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Re-issued because r09 recorded checksums for 2 file(s) that later, unrelated work modified:
+    tooling/common/scan_agent_queues.py, tooling/common/tests/test_scan_agent_queues.py. Nothing about
+    this Decision''s implementation changed; the report is republished so its provenance matches the bytes
+    on disk and it can carry the now-passing validation evidence. r09 remains on disk as history and was
+    not edited.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0022-r10.validation.json
+validation_report_checksum: sha256:2572ed597cffd8ff108f68a3a49b100656dfaffbf867144a1376a7339abf9dc6
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 363 tests in 79.892s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 569 tests in 71.835s (30 skipped) OK

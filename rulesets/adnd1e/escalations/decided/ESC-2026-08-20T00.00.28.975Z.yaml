@@ -1,0 +1,136 @@
+schema_version: '1.0'
+id: ESC-2026-08-20T00.00.28.975Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-094-100-illusionist-spells
+constitution_version: '1.8'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-08-20'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: The illusionist packet has no role with a ready item, and two Integrator queue items
+    depend on it. A Reviewer used the edge disposition `approved_but_excluded_from_bundle`, which
+    no schema defines; the Builder compiler refuses it as review_disposition_unknown and blocks
+    its GUP successor on the Review, while the Review lineage leaf hands off to Builder. Each
+    side is correctly waiting for the other and neither can move.
+  blocking_ids: []
+trigger: 'Integrator queue check. Both REVIEWER-owned successors this Integrator is waiting on
+  declare `readiness: blocked` pending an illusionist successor that cannot currently be produced.'
+question: Is `approved_but_excluded_from_bundle` a legal edge-decision disposition, and if so
+  what is Builder required to do with a row carrying it? If it is not legal, which role republishes
+  the two Reviews that already use it, given both are immutable and one of them is the approved
+  Review that emitted a bundle the Integrator has already refused?
+the_stuck_artifact:
+  gup:
+    id: GUP-PKT-PHB-094-100-illusionist-spells-r06
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-094-100-illusionist-spells-r06.yaml
+    checksum: sha256:6e0e867e9e231376e5b690e5227f0ccdc43d7758f084c94ffe10b8695a8f43d1
+    status: blocked
+    handoff: next_role reviewer, readiness blocked
+    blocking_reason: 6 validation error(s) and 0 unresolved escalation(s); a schema-valid patch
+      is not an approvable one
+    blocking_ids:
+    - REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05
+  review_lineage_leaf:
+    id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05.yaml
+    checksum: sha256:c22451791c8a03bb9033175167e694d9eeb97f928e23c6cc931bb55da2bd9b61
+    status: revision_required
+    handoff: next_role builder, readiness ready
+  reviews_carrying_the_unknown_disposition:
+  - id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r03
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r03.yaml
+    checksum: sha256:6b9830bf693ff50a590b20ffbc02211faebd65aed960a4e8ca480f90086b29d0
+    status: approved
+    note: This is the Review that emitted APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r05-r01.
+  - id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r04
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r04.yaml
+    checksum: sha256:9e33f023d4ea0191d622cc7e12d2e230b64ea01bf5623393c86a7dea9d382617
+    status: revision_required
+  refs_carrying_it:
+  - M025
+  - M026
+  - M058
+  - M072
+  - M073
+  - M074
+  builder_validation_report:
+    path: build/reports/GUP-PKT-PHB-094-100-illusionist-spells-r06.validation.json
+    checksum: sha256:5c85e50e1ba1f3dd32e5c5438bdafe39c4e00116a10fae12d2e726f2cb5f8ab7
+    errors: 6
+    rule: review_disposition_unknown
+    detail: 'review carries an unrecognised disposition for <ref>: ''approved_but_excluded_from_bundle'''
+why_the_loop_has_no_exit:
+- GUP-...-r06 is blocked and names the Review as its blocker, so Builder has no ready illusionist
+  item; its three ready items are DEC-2026-0045, 0046 and 0048.
+- The Review lineage leaf hands off to Builder, so Reviewer has no ready illusionist item either;
+  its only illusionist entry is REVIEWER-BLOCKED-GUP, itself waiting on that same Review.
+- Neither role can clear the condition without the other. The disposition is a vocabulary question,
+  and Integrator is prohibited from resolving ontology conflicts or reinterpreting source rows,
+  so it cannot be broken from here.
+- 'Republishing is not obviously available either: both Reviews carrying the term are immutable,
+  and r05-r03 is the approved Review that emitted a bundle. Whether a successor may restate those
+  six dispositions, and under what term, is the decision being asked for.'
+why_it_matters: 'Two Integrator items, REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06 and
+  REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05, both declare `readiness: blocked` and
+  both state the same precondition: the illusionist packet must first publish a successor without
+  its duplicate copies, after which Integrator re-runs the five-field batch preflight. The Reviewer
+  has already made the ownership call those two depend on. Until the illusionist packet can move,
+  231 and 203 approved rows stay out of canonical and the DEC-2026-0047 packaging correction cannot
+  complete for any of the three packets.'
+what_is_not_in_question:
+- The Builder is right to refuse. An unrecognised disposition is exactly the case where guessing
+  would silently rewrite a Review decision, and the compiler declining to infer one is the behavior
+  the contracts ask for.
+- 'The Reviewer''s intent is legible: six rows are approved as source-supported but deliberately
+  excluded from the Approved edge component, which is the blocked.csv exclusion DEC-2026-0047
+  records as `excluded_rows: 6`. The semantics are not disputed here, only the vocabulary and
+  the Builder obligation attached to it.'
+- The nine duplicate assertions are settled. REV-...-r05-r05 dispositioned all nine `rejected`
+  with source loci, and the Builder applied them in `reviewer_directives_applied.rejected_rows`.
+  That part of the packet is done.
+- INT-20260819-002 already withdrew the incorrect three-field duplicate claims and cleared the
+  psionics bundle, which has since been integrated as INT-20260819-003. No part of this escalation
+  reopens that.
+options_considered:
+- 'Add `approved_but_excluded_from_bundle` to the approved disposition vocabulary and define the
+  Builder obligation: most plausibly compile the row into blocked.csv and exclude it from the
+  edge component, which is what the Reviewer appears to intend and what the existing bundle already
+  does.'
+- Rule the term illegal and name the role that republishes. This needs an explicit answer on r05-r03,
+  which is approved and immutable and emitted a bundle the Integrator has already refused.
+- 'Map the term to an existing disposition. Integrator did not attempt this: choosing which existing
+  term preserves the Reviewer''s meaning is an ontology decision this role is prohibited from
+  making.'
+affected_canonical_ids: []
+migration_impact:
+  canonical_data_change: false
+  registry_change: false
+  note: Nothing in canonical is wrong. Canonical stands at 4501 edges, 1226 nodes and 1243 registry
+    rows after INT-20260819-003 and INT-20260819-004, with 1697 findings and none introduced by
+    either batch. This escalation is about reachability of pending work, not about state already
+    integrated.
+governance_impact: 'Narrower than DEC-2026-0043 but the same shape: an artifact state that produces
+  no ready item for any role. There the gap was an Integrator rejection with an approved Review;
+  here it is a Review vocabulary term the Builder cannot honour. A durable fix would validate
+  edge-decision dispositions against a declared vocabulary at Review publication, so an unrecognised
+  term is caught before it can strand a packet.'
+systemic_finding: Edge-decision dispositions are not validated against any schema vocabulary.
+  The Reviewer published `approved_but_excluded_from_bundle` twice, including in an approved Review
+  that emitted an Approved bundle, and nothing rejected it until the Builder compiler met it two
+  revisions later. Any Review can introduce a term no downstream role can act on, and the cost
+  surfaces only after the artifacts carrying it are immutable.
+blocking: true
+
+resolution:
+  decision_id: DEC-2026-0051
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0051.yaml
+  disposition: >-
+    The fifth disposition is invalid. DEC-2026-0051 requires an opt-in Review
+    schema gate and a Reviewer r06 successor that uses `approved` for the six
+    source-supported rows while recording their blocked-component exclusion as
+    packaging evidence.

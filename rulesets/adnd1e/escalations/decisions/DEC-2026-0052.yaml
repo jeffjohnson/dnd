@@ -1,0 +1,249 @@
+schema_version: '1.0'
+id: DEC-2026-0052
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-094-100-illusionist-spells
+constitution_version: '1.8'
+revision: 2
+supersedes: DEC-2026-0051
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Reissue the existing Review 1.1 schema implementation report against this
+    corrected Decision. The r06 Review successor is a required downstream
+    artifact after independent implementation approval; it is not evidence the
+    Builder can produce or a condition of that approval.
+  blocking_ids: []
+
+decision_date: '2026-08-20'
+escalation_id: ESC-2026-08-20T02.50.21.676Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  How may the Review 1.1 direct implementation be independently approved when
+  DEC-2026-0051 makes the later Reviewer r06 successor both an acceptance test
+  and conditional on that prior approval?
+
+ruling: >-
+  Supersede DEC-2026-0051 with this lifecycle-only correction. Its acceptance
+  test 5 was misclassified: r06 is a downstream ordinary Review artifact, not
+  a direct implementation acceptance test. It must therefore not appear in,
+  block, or be used to approve a Decision Implementation Report. The existing
+  order is retained: Builder first reissues the implementation report against
+  this Decision; Reviewer independently approves that report; Reviewer then
+  publishes r06 under the now-reviewed Review 1.1 schema gate.
+
+  No Reviewer is authorized to publish r06 before the independent
+  implementation Review, and no party may amend IMP-DEC-2026-0051-r01 to
+  manufacture a passed result. That blocked report and DEC-2026-0051 remain
+  immutable history. The reissued report is the sole direct-implementation
+  handoff for this active Decision leaf.
+
+rationale:
+  - >-
+    A Decision Implementation Report can only evidence work the assigned
+    implementation role has performed. r06 is owned by Reviewer and its source
+    package can exist only after the Reviewer has verified the opt-in schema
+    gate that validates it.
+  - >-
+    Reversing the order would publish the new Review 1.1 artifact before an
+    independent check of the exact schema behavior that governs it. Moving r06
+    to explicit post-implementation requirements preserves both the safety
+    boundary and the established ordinary Review/GUP lifecycle.
+  - >-
+    A fresh Decision and report retain immutable artifact history and give the
+    queue scanner a current, evidenceable completion chain. No contract,
+    schema, source interpretation, registry identity, or canonical assertion
+    changes are needed for this correction.
+
+affected_artifacts:
+  superseded_decision:
+    id: DEC-2026-0051
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0051.yaml
+    checksum: sha256:acd32e14c2073a0fa7148bdfa17b894d437de3959c0296b080b6f2158035d0ed
+    disposition: retain_unchanged_superseded_by_current_leaf
+  blocked_implementation_history:
+    id: IMP-DEC-2026-0051-r01
+    path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0051-r01.yaml
+    checksum: sha256:40bfa0b3dfaaa3d91385bf6fb8bab74a1fa16947c7e371f1503a2f14f406fd47
+    disposition: retain_unchanged_not_approvable
+  required_implementation_report:
+    id: IMP-DEC-2026-0052-r01
+    owner: builder
+    disposition: publish_against_this_decision
+  required_implementation_review:
+    id: REV-IMP-DEC-2026-0052-r01-r01
+    owner: reviewer
+    disposition: independently_approve_before_r06
+  downstream_review_successor:
+    id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06
+    predecessor: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05
+    reviewed_gup: GUP-PKT-PHB-094-100-illusionist-spells-r05
+    disposition: publish_only_after_approved_implementation_review
+
+affected_contracts: []
+affected_registries: []
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  profile_change: false
+  source_interpretation_change: false
+  contract_or_schema_change: false
+  artifact_lineage_change: >-
+    The active non-migration implementation lineage changes from the blocked
+    DEC-2026-0051 report to a new evidence report for this corrected leaf;
+    r06 remains an ordinary downstream Review successor.
+  direct_implementation: >-
+    Builder performs no schema, test, contract, or compiler rewrite. It
+    revalidates the already-published Review 1.1 implementation against this
+    Decision's current checksum and publishes IMP-DEC-2026-0052-r01 with only
+    the four direct acceptance results below. If that validation finds the
+    implementation no longer satisfies a test, Builder must report the failure
+    rather than infer a repair from this Decision.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this correction Decision and close the escalation. Do not modify
+      DEC-2026-0051, IMP-DEC-2026-0051-r01, any Review, GUP, bundle, schema,
+      contract, registry, or canonical data.
+  - step: 2
+    owner: builder
+    action: >-
+      Revalidate the implementation recorded by IMP-DEC-2026-0051-r01 and
+      publish IMP-DEC-2026-0052-r01 against this Decision's exact current
+      checksum. Carry only acceptance tests 1 through 4, each as passed with
+      current evidence; set approval_ready true, status proposed, and hand off
+      ready to Reviewer. Do not alter the implementation files merely to
+      reissue evidence, and do not publish r06 or any ordinary GUP.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0052-r01. Re-derive the two versioned
+      contract checks, verify the Review 1.1 legal-vocabulary and legacy
+      compatibility tests, and approve the implementation review only when all
+      four direct acceptance results are evidenced and valid.
+  - step: 4
+    owner: reviewer
+    action: >-
+      Only after the approved implementation Review, publish
+      REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06, superseding r05-r05.
+      Declare review_contract_version 1.1; restate M025, M026, M058, M072,
+      M073, and M074 as approved; and record their checksummed blocked
+      component as packaging evidence, never as a row disposition.
+  - step: 5
+    owner: builder
+    action: >-
+      Consume r06 through the normal compiler and publish
+      GUP-PKT-PHB-094-100-illusionist-spells-r07 without creating an unknown
+      disposition or a no-op artifact.
+  - step: 6
+    owner: reviewer
+    action: >-
+      Review r07 and publish the normal Approved bundle only when its approved,
+      pending, and blocked components are complete and checksummed.
+  - step: 7
+    owner: integrator
+    action: >-
+      Integrate only the ordinary approved r07 bundle and run the normal
+      five-field batch preflight for dependent Magic-User bundles.
+
+acceptance_tests:
+  - >-
+    WORK_QUEUES version 1.17 or later retains the four legal Review row
+    dispositions, the separation of Review outcome from Approved-bundle
+    membership, and the review_contract_version 1.1 publication check.
+  - >-
+    ARTIFACT_LIFECYCLE version 1.13 or later retains the same four-term Review
+    disposition vocabulary and requires a successor Review to record packaging
+    exclusions outside the per-row disposition field.
+  - >-
+    Under review_contract_version 1.1, schemas/common/review.schema.json
+    accepts the four legal values in edge_decisions and row_decisions and
+    rejects approved_but_excluded_from_bundle. A legacy Review omitting that
+    field still validates as immutable history.
+  - >-
+    IMP-DEC-2026-0052-r01 has this Decision's exact checksum, reports each of
+    acceptance tests 1 through 3 as passed with current evidence, records a
+    passing focused Review-vocabulary and legacy-corpus validation run, and is
+    approval-ready for independent Reviewer verification.
+
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.17'
+        substantive_anchors:
+          - review_contract_version
+          - approved_but_excluded_from_bundle is invalid
+          - Approved-bundle membership
+  - acceptance_test_index: 2
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/ARTIFACT_LIFECYCLE.md
+        minimum_version: '1.13'
+        substantive_anchors:
+          - approved_with_revision
+          - packaging exclusions
+          - per-row disposition
+
+post_implementation_requirements:
+  - >-
+    The approved implementation Review is required before r06, but r06 itself
+    is not an acceptance result of the implementation report and must not be
+    used as its approval evidence.
+  - >-
+    r06 supersedes r05-r05 without changing r03 or r04; declares Review 1.1;
+    uses approved for exactly M025, M026, M058, M072, M073, and M074; records
+    their checksummed blocked component as packaging evidence; and introduces
+    no novel disposition.
+  - >-
+    The subsequent Builder r07, Reviewer r07, Approved bundle, and Integrator
+    preflight are ordinary downstream artifacts. They do not block the direct
+    schema implementation review and must follow the sequence above.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This corrects only the lifecycle classification of an existing acceptance
+    test. It does not alter ontology, source meaning, assertion identity, or
+    graph semantics.
+
+governance_changelog:
+  - >-
+    DEC-2026-0052 corrects DEC-2026-0051's direct-implementation boundary:
+    the r06 ordinary Review successor is a downstream requirement rather than
+    a fifth implementation-report acceptance test.
+
+exact_diff:
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml:
+    - 'Publish the corrected active Decision leaf that supersedes DEC-2026-0051.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-20T02.50.21.676Z.yaml:
+    - 'Record DEC-2026-0052 as the lifecycle correction and move the immutable escalation out of pending.'
+
+exact_diff_ownership:
+  - path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml
+    owner: architect
+    sequence_step: 1
+  - path: rulesets/adnd1e/escalations/decided/ESC-2026-08-20T02.50.21.676Z.yaml
+    owner: architect
+    sequence_step: 1
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Do not rewrite DEC-2026-0051, IMP-DEC-2026-0051-r01, or prior Reviews.
+  builder:
+    - Reissue current evidence against DEC-2026-0052; do not change code or publish a Reviewer artifact.
+  reviewer:
+    - Approve the new implementation report before publishing r06, and treat blocked-component exclusion as packaging evidence only.
+  integrator:
+    - Wait for the ordinary approved r07 bundle and never infer a row disposition from a blocked component.

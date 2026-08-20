@@ -1,0 +1,132 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0052-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0052
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml
+  checksum: sha256:980c112825f5d3b57eab371bb6e20338c750e0a65b30b578ed8f897c0f63acbd
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:5bba3cbfb661e8264fd912e292928b1e16b278f4ad914619358b6e50ee99a1ae
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:8cfc8426863f771d546264cfa9c19aef4c358ca14c618c393916e7cd0058cafb
+- path: agents/reviewer/INSTRUCTIONS.md
+  checksum: sha256:2a086ead7c51170dcf28abe7f91b91950431245970de97dea86447d755900e9a
+- path: schemas/common/review.schema.json
+  checksum: sha256:657733ed7a1e59dca020866c1b69dfe7a74eadeb78ba144c44ab49213a7a757e
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:6d3374b272358a2a29b5190e44b4ba151daf331ae66a99125f566d4c331925d2
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml
+  checksum: sha256:980c112825f5d3b57eab371bb6e20338c750e0a65b30b578ed8f897c0f63acbd
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-20T02.50.21.676Z.yaml
+  checksum: sha256:41d811bf8fb8e4130eca2a4faa1473249fb64a920f4d21fb1a21a25b6da6ad36
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'VERIFIED AGAINST THE PUBLISHED FILE, WHICH THE ARCHITECT WROTE, as current-state contract
+    evidence under this Decision''s declared versioned_contract_content semantics. contracts/WORK_QUEUES.md
+    is Version 1.17, at the declared floor. All three anchors are present: the Review Disposition Vocabulary
+    section states the four legal per-row dispositions and that `approved_but_excluded_from_bundle` is
+    invalid; it separates the Review outcome from Approved-bundle membership, saying the disposition records
+    the judgment about the row while an excluded row''s exclusion is packaging evidence rather than a
+    fifth disposition; and the `review_contract_version: ''1.1''` publication check is stated directly.'
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0052
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml
+      checksum: sha256:980c112825f5d3b57eab371bb6e20338c750e0a65b30b578ed8f897c0f63acbd
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:5bba3cbfb661e8264fd912e292928b1e16b278f4ad914619358b6e50ee99a1ae
+      observed_version: '1.17'
+      minimum_version: '1.17'
+      anchors_present:
+      - review_contract_version
+      - approved_but_excluded_from_bundle is invalid
+      - Approved-bundle membership
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'VERIFIED AGAINST THE PUBLISHED FILE, WHICH THE ARCHITECT WROTE. contracts/ARTIFACT_LIFECYCLE.md
+    is Version 1.13, at the declared floor. Section 4 lists the same four dispositions including `approved_with_revision`,
+    requires every per-row `edge_decisions` or `row_decisions` value under Review 1.1 to be one of them
+    and to validate through schemas/common/review.schema.json before publication, and requires a packaging
+    exclusion to be recorded outside the disposition field: a source-supported `approved` row may remain
+    in a checksummed `blocked.csv` outside the bundle, and that exclusion is recorded as packaging evidence.'
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0052
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml
+      checksum: sha256:980c112825f5d3b57eab371bb6e20338c750e0a65b30b578ed8f897c0f63acbd
+      authorized_acceptance_test_index: 2
+    authorized_acceptance_test_index: 2
+    contracts:
+    - path: contracts/ARTIFACT_LIFECYCLE.md
+      checksum: sha256:8cfc8426863f771d546264cfa9c19aef4c358ca14c618c393916e7cd0058cafb
+      observed_version: '1.13'
+      minimum_version: '1.13'
+      anchors_present:
+      - approved_with_revision
+      - packaging exclusions
+      - per-row disposition
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED, BOTH DIRECTIONS AND BOTH SHAPES; unchanged from the implementation
+    published under DEC-2026-0051 and re-verified here at its current checksum. schemas/common/review.schema.json
+    carries an opt-in branch: when review_contract_version is ''1.1'', every per-row decision in edge_decisions
+    and row_decisions must carry one of the four legal dispositions. TestReviewDispositionVocabulary proves
+    each of the four is accepted, that approved_but_excluded_from_bundle is rejected in edge_decisions
+    and in row_decisions, that any other unknown term is rejected rather than only the named one, and
+    that one bad row among good ones still fails. test_both_published_shapes_are_checked pins the mapping
+    form as well as the list form, because the corpus uses both -- 28 Reviews carry the list shape and
+    15 the mapping -- and checking one while silently passing the other is how an invalid value survives
+    a validator. Legacy compatibility is pinned three ways: a Review omitting the field validates even
+    carrying the illegal term, the same holds in the mapping shape, and declaring any other version does
+    not opt in. Two false-positive guards: a grouped summary such as `edge_decisions: {approved_refs:
+    [...]}` states no per-row judgment and is left alone, and a row carrying no disposition is untouched.
+    Live corpus: all 111 published Reviews validate, verified by TestPublishedReviewsStillValidate.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'THIS REPORT SATISFIES IT AS WRITTEN. It pins this Decision''s exact current checksum in decision_input,
+    reports acceptance tests 1 through 3 as passed with evidence measured against the current files, and
+    records two real runs with exact exit codes: the focused Review-vocabulary and legacy-corpus classes
+    at 14 tests passing, and the full common suite -- which contains both the schema and those tests --
+    at 647 tests passing. approval_ready is true and the handoff is a ready Reviewer handoff with no blocking
+    IDs. The r06 Review that DEC-2026-0051 acceptance test 5 required is correctly absent from this Decision:
+    DEC-2026-0052 reclassified it as a downstream ordinary Review artifact that follows independent implementation
+    approval rather than conditioning it. IMP-DEC-2026-0051-r01 and DEC-2026-0051 remain immutable history
+    and neither was amended to manufacture a passed result.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'All four acceptance tests are evidenced against the current files. The Review 1.1 vocabulary
+    gate is unchanged from the implementation published under DEC-2026-0051 and re-verified at its current
+    checksum: 14 focused tests pass, all 111 published Reviews still validate as immutable history, and
+    the common suite is 647 OK. This is a new report for the active Decision leaf rather than an amendment;
+    IMP-DEC-2026-0051-r01 stays blocked and immutable, as DEC-2026-0052 requires. Once this report is
+    independently approved, the Reviewer may publish REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06
+    under the reviewed gate.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0052-r01.validation.json
+validation_report_checksum: sha256:f06eadbfc09d46323bd83a9fa5d2e21bcbeed3521ea2b581405d51517c840e3f
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_common_schemas.TestReviewDispositionVocabulary
+      test_common_schemas.TestPublishedReviewsStillValidate'
+    exit_code: 0
+    result: passed
+    summary: Ran 14 tests in 4.288s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 647 tests in 102.271s OK

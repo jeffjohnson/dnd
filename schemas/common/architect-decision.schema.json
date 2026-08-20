@@ -2,10 +2,33 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.invalid/schemas/common/architect-decision.schema.json",
   "title": "Architect Decision",
-  "$comment": "WORK_QUEUES 1.6: a Decision may classify its own acceptance tests, and may authorize a retired-by-lineage outcome for an earlier Decision that could not. Both shapes are exact by construction: an index, a checksum, and a complete subject list, so neither Builder nor Reviewer can widen a named subject into an inferred class of work.",
+  "$comment": "WORK_QUEUES 1.6: a Decision may classify its own acceptance tests, and may authorize a retired-by-lineage outcome for an earlier Decision that could not. Both shapes are exact by construction: an index, a checksum, and a complete subject list, so neither Builder nor Reviewer can widen a named subject into an inferred class of work. DEC-2026-0045: a Decision declaring decision_authoring_contract_version 1.1 must also record who owns every path its exact_diff changes. The requirement is keyed on that declaration so the Decisions published before it remain valid immutable history rather than being retroactively invalidated. DEC-2026-0048: a Decision testing mutable contract content declares versioned_contract_content semantics -- a minimum version plus the substantive anchors that must survive -- so a later approved edit to that contract cannot silently falsify the test. A legacy exact-version test gains that reading only through contract_version_acceptance_authorizations, which pins the exact Decision checksum and test index.",
   "allOf": [
     {
       "$ref": "artifact-envelope.schema.json"
+    },
+    {
+      "$comment": "A version-1.1 Decision that changes files must say who changes them. Without this, DEC-2026-0043 could name four Architect-owned governance files, assign them to nobody, and still validate.",
+      "if": {
+        "properties": {
+          "decision_authoring_contract_version": {
+            "const": "1.1"
+          },
+          "exact_diff": {
+            "type": "object",
+            "minProperties": 1
+          }
+        },
+        "required": [
+          "decision_authoring_contract_version",
+          "exact_diff"
+        ]
+      },
+      "then": {
+        "required": [
+          "exact_diff_ownership"
+        ]
+      }
     }
   ],
   "type": "object",
@@ -40,6 +63,24 @@
                 "subjects"
               ]
             }
+          },
+          {
+            "$comment": "A versioned-contract-content test is meaningless without the contracts it reads; requiring them here is what makes the minimum and the anchors checkable.",
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "versioned_contract_content"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "required": [
+                "contracts"
+              ]
+            }
           }
         ],
         "properties": {
@@ -49,7 +90,8 @@
           },
           "kind": {
             "enum": [
-              "live_queue_snapshot"
+              "live_queue_snapshot",
+              "versioned_contract_content"
             ]
           },
           "retirement_allowed": {
@@ -61,6 +103,14 @@
             "uniqueItems": true,
             "items": {
               "$ref": "#/$defs/namedSubject"
+            }
+          },
+          "contracts": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/contractAnchorSet"
             }
           }
         }
@@ -103,6 +153,52 @@
             "uniqueItems": true,
             "items": {
               "$ref": "#/$defs/authorizedSubject"
+            }
+          }
+        }
+      }
+    },
+    "decision_authoring_contract_version": {
+      "$comment": "Opt-in marker for the authoring requirements introduced by DEC-2026-0045. Absent means the Decision predates them.",
+      "type": "string",
+      "minLength": 1
+    },
+    "exact_diff_ownership": {
+      "$comment": "One entry per exact_diff path, naming the role accountable for publishing it. uniqueItems does not make a path unique on its own -- two entries differing only in owner are distinct items -- so the exactly-once rule and the requirement that the owner be scheduled are enforced by the queue scanner against the whole Decision.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/exactDiffOwner"
+      }
+    },
+    "contract_version_acceptance_authorizations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "$comment": "Issued by a later approved Decision to give an already-published exact-version acceptance test the minimum-version reading. It pins the authorized Decision by checksum, so rewriting that Decision invalidates the authorization instead of silently widening it, and it names one test index: an authorization never spreads to another test or another Decision revision.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "decision_input",
+          "acceptance_test_index",
+          "contracts"
+        ],
+        "properties": {
+          "decision_input": {
+            "$ref": "#/$defs/decisionInput"
+          },
+          "acceptance_test_index": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "contracts": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/contractAnchorSet"
             }
           }
         }
@@ -207,6 +303,68 @@
         "integration_record_path": {
           "type": "string",
           "pattern": "^books/[a-z0-9-]+/[a-z0-9-]+/artifacts/integrated/INT-.+\\.json$"
+        }
+      }
+    },
+    "exactDiffOwner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "owner"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "$comment": "A role that can be handed the work. Free text here would reintroduce the ambiguity this field exists to remove.",
+          "enum": [
+            "architect",
+            "analyst",
+            "builder",
+            "reviewer",
+            "integrator"
+          ]
+        },
+        "sequence_step": {
+          "$comment": "Optional precision: the sequence step that publishes this path. When present the scanner checks it names a real step owned by this entry's owner.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "contractAnchorSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "$comment": "One mutable contract the test depends on: where it lives, the lowest version that still satisfies the test, and the substantive content that must remain present. The anchors are what stop a minimum-version rule from passing a contract that kept its number and dropped the rule.",
+      "required": [
+        "path",
+        "minimum_version",
+        "substantive_anchors"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "minimum_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "substantive_anchors": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     }

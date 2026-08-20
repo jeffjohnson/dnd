@@ -1,0 +1,160 @@
+schema_version: '1.0'
+id: ESC-2026-08-15T13.10.23.383Z
+status: decided
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-015-015-cavaliers
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-15'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    GUR-PKT-UA-015-015-cavaliers-r02 declares a handoff no schema admits. It is
+    the only failing artifact in the common suite, and because
+    `validation.passed` gates `approval_ready`, it is the sole reason seven
+    approved Architect Decisions have no implementation report. The artifact is
+    Analyst-owned and published; the Builder will not edit it.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. A published artifact is schema-invalid, no role's
+  queue names it as that role's work, and the repository-wide validation it
+  fails is a precondition for unrelated approved work.
+
+question: >-
+  How should a role withdraw a GUR that a later packet supersedes, and who
+  repairs `GUR-PKT-UA-015-015-cavaliers-r02`, whose attempt to do so is
+  schema-invalid and mis-routes to the Builder?
+
+what_is_not_in_question:
+  - >-
+    The intent. The artifact is correct about the facts: PKT-UA-014-016-cavalier
+    supersedes this packet, and this GUR produces no Builder job. It carries
+    zero candidate edges and zero candidate nodes.
+  - >-
+    The vocabulary. `schemas/common/artifact-envelope.schema.json` already
+    defines exactly the terminal handoff this artifact is reaching for, so no
+    new governance concept is needed.
+  - >-
+    Ownership of the repair. A published GUR belongs to the Analyst;
+    `agents/builder/INSTRUCTIONS.md` forbids the Builder editing or replacing
+    one. This escalation asks for routing, not for permission.
+
+evidence:
+  the_invalid_handoff:
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r02.yaml
+    declared:
+      next_role: null
+      readiness: withdrawn
+      reason: Superseded by PKT-UA-014-016-cavalier; produces no Builder job.
+      blocking_ids: []
+    why_invalid:
+      - >-
+        `readiness` admits only `ready`, `blocked` or `terminal`. `withdrawn` is
+        not in the enum and appears in no contract.
+      - >-
+        `next_role` admits only the five role names or the string `none`. A YAML
+        null is not the string `none`.
+    conforming_form:
+      next_role: none
+      readiness: terminal
+      reason: unchanged
+      blocking_ids: []
+    note: >-
+      The schema already requires `next_role: none` whenever `readiness` is
+      `terminal`, so the two-token change is fully determined. The Builder is
+      not proposing a wording; it is reporting that one already exists.
+
+  the_failing_test:
+    suite: tooling/common/tests
+    result: 326 tests, 1 failure
+    test: >-
+      test_common_schemas.TestLegacyArtifactsStayValid
+      .test_every_published_artifact_still_validates
+      (artifact='GUR-PKT-UA-015-015-cavaliers-r02.yaml')
+    note: This is the whole of the failure. No other published artifact is invalid.
+
+  the_misrouting:
+    observed: >-
+      `scan_agent_queues.py` lists this GUR under BUILDER-GUR as ready work,
+      "Active-leaf GUR has no consuming GUP".
+    cause: >-
+      With an unreadable handoff the scanner falls back to legacy inference,
+      which cannot see the withdrawal and derives the ordinary
+      active-leaf-needs-a-GUP job.
+    consequence: >-
+      The artifact appears in the queue of the one role forbidden to repair it
+      and never appears in the Analyst's. That is why it has gone unrepaired
+      while blocking other work.
+    builder_action_taken: >-
+      Refused to compile it. A GUP from a GUR with no candidate rows would be an
+      empty artifact asserting that a withdrawn packet was built.
+
+blocked_work:
+  - ids:
+      - DEC-2026-0018
+      - DEC-2026-0020
+      - DEC-2026-0022
+      - DEC-2026-0023
+      - DEC-2026-0028
+      - DEC-2026-0029
+      - DEC-2026-0033
+    blocks: >-
+      Every one of these approved Decisions needs an implementation report, and
+      an approval-ready report requires `validation.passed`. The common suite
+      cannot pass while this artifact is invalid, so all seven are held by a
+      two-token defect in an unrelated book.
+
+systemic_finding:
+  observation: >-
+    An artifact that fails validation is exactly the artifact whose handoff
+    cannot be trusted to route it. Queue derivation reads the field the defect
+    is in, so the more broken the handoff, the less likely the right role sees
+    it.
+  builder_recommendation: >-
+    Have the scanner emit a distinct diagnostic when an artifact's handoff is
+    present but does not conform, naming the artifact's owning role rather than
+    silently falling back to legacy inference. The Builder can implement and
+    test this on request; it is not doing so unasked, because which role owns a
+    nonconforming artifact is a governance question rather than a queue
+    heuristic.
+  scope_note: >-
+    This is separate from the repair itself. The repair unblocks seven
+    Decisions; the diagnostic prevents the next such artifact from sitting in
+    the wrong queue.
+
+options_considered:
+  - option: Route the repair to the Analyst as an ordinary revision
+    impact: >-
+      Two tokens in the artifact that already owns the withdrawal. Restores the
+      common suite and releases all seven Decision implementation reports.
+    builder_preference: recommended
+  - option: Add `withdrawn` to the readiness enum
+    impact: >-
+      Makes the artifact valid as written, but introduces a second spelling of
+      `terminal` and would require every consumer to learn it. The existing
+      terminal form already carries the meaning.
+    builder_preference: not_recommended
+  - option: Let the Builder correct the handoff in place
+    impact: >-
+      Fastest, and not offered. Editing a published Analyst artifact is
+      prohibited, and the fact that it is a small change is not a reason to make
+      role boundaries depend on the size of the edit.
+    builder_preference: refused
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  contract_change: possible
+  note: >-
+    Only if the queue diagnostic is adopted. The repair itself changes no
+    governance artifact and needs no new vocabulary.
+
+blocking: >-
+  Seven approved Architect Decisions cannot receive approval-ready
+  implementation reports, and the UA cavaliers lineage cannot be shown as
+  properly withdrawn.

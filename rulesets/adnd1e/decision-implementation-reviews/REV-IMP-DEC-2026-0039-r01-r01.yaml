@@ -1,0 +1,30 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0039-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-015-015-cavaliers
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation: {id: IMP-DEC-2026-0039-r01, path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0039-r01.yaml, checksum: sha256:befe3bad77e95d0f3e2243c69c82899745110f9fabb5770b333f375097c4f574}
+decision_input: {id: DEC-2026-0039, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0039.yaml, checksum: sha256:3811b5d8ede97cf5f047e611e215c7fdf2a712cc0a146afa017d213f05a47e67}
+implementation_inventory: {declared_files: 3, checksum_matches: 3, noncanonical_scope: verified}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: 'Independently confirmed the scanner emits exactly the specified gur_invalid_handoff diagnostic for r02 and no BUILDER-GUR or legacy-inference routing for it.'}
+  - {acceptance_test_index: 2, disposition: verified, evidence: 'The active r03 terminal withdrawal produces no Builder or Analyst repair work.'}
+  - {acceptance_test_index: 3, disposition: verified, evidence: 'Targeted scanner tests retain both legacy missing-handoff routing and ordinary valid-ready Builder routing.'}
+  - {acceptance_test_index: 4, disposition: verified, evidence: 'The current non-leaf r02 is diagnostically reported but does not create a repair or Builder job.'}
+  - {acceptance_test_index: 5, disposition: verified, evidence: 'r03 is the immutable successor of r02, has terminal handoff, replacement withdrawal record, and empty proposal collections.'}
+  - {acceptance_test_index: 6, disposition: verified, evidence: 'The narrowly tested superseded-handoff exemption preserves r02 immutably while preventing it from failing the full schema suite; no unrelated invalid artifact is exempted.'}
+  - {acceptance_test_index: 7, disposition: verified, evidence: 'Implementation checksums match; independent common-suite run and the reported current Builder suite are passing, with no canonical data mutation.'}
+independent_validation:
+  passed: true
+  commands:
+    - {command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover -s tests -p ''test_*.py''', exit_code: 0, result: passed, summary: 'Independent common-suite run completed without test failures.'}
+    - {command: 'python tooling/common/scan_agent_queues.py --root . --json', exit_code: 2, result: passed, summary: 'Expected malformed non-leaf r02 diagnostic appears exactly once; it creates no Builder or Analyst repair job.'}
+overall_disposition: approved
+handoff: {next_role: none, readiness: terminal, reason: 'All DEC-2026-0039 acceptance requirements and implementation checksums are independently verified.', blocking_ids: []}

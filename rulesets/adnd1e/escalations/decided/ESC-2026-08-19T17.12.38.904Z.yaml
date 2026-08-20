@@ -1,0 +1,185 @@
+schema_version: '1.0'
+id: ESC-2026-08-19T17.12.38.904Z
+status: decided
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-steward-intake
+packet_id: PKT-UA-014-016-cavalier
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-19'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The cavalier packet added four rows to the known validation debt that
+    DEC-2026-0014 pinned and DEC-2026-0004 slated for removal. The canonical
+    audit now reports 64 errors across 57 rows against the 53 rows and 60 errors
+    DEC-2026-0014 records in its acceptance test 5 and its
+    `known_preexisting_validation_debt` block. The Builder raised this rather
+    than updating the pinned figures, because those figures are what an approved
+    Decision recorded and the constant exists to make exactly this growth
+    visible.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. The constitution and production data disagree in a way
+  that cannot be fixed mechanically: an approved Decision records an exact
+  canonical audit result that approved downstream work has since changed, and
+  only the Architect can say whether the debt may grow or must now be migrated.
+
+question: >-
+  May new source-supported work add rows to the DEC-2026-0014 validation debt,
+  and if not, is the `training` to `rule_training` migration DEC-2026-0014
+  already records now due?
+
+what_is_not_in_question:
+  - >-
+    The four assertions themselves. They are source-supported cavalier rows that
+    the Reviewer approved individually and the Integrator applied. Nothing here
+    proposes deleting them.
+  - >-
+    The identity ruling. DEC-2026-0004 ruled the bare ID `training` invalid and
+    directed a reviewed migration rather than widening the vocabulary. That
+    stands.
+  - >-
+    The debt pin. Keeping the figures fixed is what surfaced this within one
+    integration. The Builder is not asking for the check to be relaxed.
+
+evidence:
+  what_the_decision_records:
+    source: DEC-2026-0014
+    acceptance_test_5: >-
+      "A full canonical audit reports exactly 60 errors across 53 rows: 46
+      unprefixed endpoints using only comeliness, fatigue, or training, plus
+      seven blank source labels and seven blank target labels."
+    known_preexisting_validation_debt:
+      failing_rows: 53
+      validation_errors: 60
+      unprefixed_source_endpoints: 18
+      unprefixed_target_endpoints: 28
+    disposition_quoted: >-
+      "Preserve schema enforcement. Builder prepares migration artifacts,
+      Reviewer confirms the mappings and label normalization, and Integrator
+      changes canonical data only after approval."
+
+  what_the_audit_reports_now:
+    canonical_rows: 4501
+    failing_rows: 57
+    validation_errors: 64
+    unprefixed_source_endpoints: 21
+    unprefixed_target_endpoints: 29
+    blank_source_labels: 7
+    blank_target_labels: 7
+    unprefixed_ids_seen: {comeliness: 25, training: 14, fatigue: 11}
+    note: >-
+      The identity set is unchanged: still only the three IDs DEC-2026-0004
+      names, so `test_the_unprefixed_ids_are_only_the_three_dec_2026_0004_named`
+      still passes. Only the row and error counts grew.
+
+  where_the_four_rows_came_from: >-
+    Of the fourteen `training` rows, ten are DMG and pre-date this. Four are UA
+    and entered through GUP-PKT-UA-014-016-cavalier, refs M041, M042, M043 and
+    M050. That packet is the Builder's own output, which is why this is raised
+    rather than reported as someone else's defect.
+
+  every_gate_saw_it_and_none_compared_it_to_the_pin:
+    - >-
+      The GUR disclosed it under `pending_identity_migration.known_tension_disclosed`,
+      naming the rejected prefix explicitly.
+    - >-
+      The Builder compiler emitted an `endpoint_pending_migration` warning on
+      each of the four rows, naming DEC-2026-0004 and the intended
+      `rule_training` successor.
+    - >-
+      The Reviewer approved all sixty-nine rows individually.
+    - >-
+      The Integrator applied the bundle.
+    - >-
+      Nothing in that chain compares a proposed row against the pinned debt, so
+      four rows joined a set that only shrinks by design, and the first thing to
+      notice was the Builder suite after integration.
+
+  a_conflict_worth_resolving: >-
+    The cavalier GUR states that "No survivor ID has been decided, so there is
+    nothing to migrate to yet." DEC-2026-0014 does record survivors, in
+    `known_preexisting_validation_debt.unprefixed_ids`: comeliness to
+    abil_comeliness, fatigue to rule_exhaustion, training to rule_training. If
+    those mappings are current, the Analyst's premise for carrying the bare ID
+    was wrong and the migration is already specified.
+
+options_considered:
+  - option: >-
+      Rule the `training`, `comeliness` and `fatigue` migration due now, and
+      assign the Builder a decision migration using the mappings DEC-2026-0014
+      already records
+    impact: >-
+      Removes all fifty-seven debt rows rather than re-recording a larger number,
+      which is what the DEC-2026-0014 disposition describes as the intended
+      route. It needs a Decision carrying `migration_required: true`, because
+      DEC-2026-0014 declares false and changed no canonical rows.
+    builder_preference: recommended
+  - option: >-
+      Add a Builder guard that refuses to emit a new row whose endpoint is a
+      known-debt ID, escalating instead of warning
+    impact: >-
+      Closes the class. The compiler already knows these IDs are governed; it
+      warns and continues. Making it refuse would have stopped these four rows at
+      compile time instead of after integration. Cheap, Builder-owned, and
+      wanted regardless of how the rest is ruled.
+    builder_preference: recommended_alongside
+  - option: >-
+      Publish a successor Decision re-recording the debt at 57 rows and 64 errors
+      as authorized growth
+    impact: >-
+      Restores a true pin and unblocks the suite, but concedes that a set meant
+      to shrink may grow whenever a packet discloses the tension. Acceptable only
+      with the guard above, otherwise the figure will drift again.
+    builder_preference: acceptable_only_with_the_guard
+  - option: Update the pinned constants in the Builder test to match
+    impact: >-
+      Not offered, and not done. The comment on those constants says they exist
+      "to keep the debt from growing unnoticed", and the figures are what
+      DEC-2026-0014 acceptance test 5 states. Editing them would falsify an
+      approved Decision's recorded result to make the Builder's own suite pass.
+    builder_preference: refused
+  - option: Delete the four cavalier rows
+    impact: >-
+      Not offered. They are source-supported and Reviewer-approved, and only the
+      Integrator may change canonical data.
+    builder_preference: refused
+
+current_state:
+  builder_suite: >-
+    617 tests, 3 failures, all in test_edge_schema.TestFullCorpus and all the
+    same cause: the audit no longer matches the pinned figures.
+  other_suites: common 633 OK; integrator 128 OK.
+  reports_affected: >-
+    IMP-DEC-2026-0045, IMP-DEC-2026-0046 and IMP-DEC-2026-0048 each record the
+    Builder suite in their validation evidence, so none can be approval-ready
+    while it is red, although none of the three has any connection to this
+    question. Their successors are published blocked and record the failure
+    honestly rather than omitting the suite to obtain a green result.
+
+governance_impact:
+  constitution_change: false
+  registry_change: true
+  contract_change: false
+  note: >-
+    The recommended option changes canonical endpoints and the node registry
+    through an ordinary reviewed migration, and would need a Decision declaring
+    `migration_required: true`.
+
+blocking: >-
+  The Builder suite is red, so three otherwise complete Decision implementations
+  cannot reach approval-ready, and the canonical debt is larger than the approved
+  record of it.
+
+resolution:
+  decision_id: DEC-2026-0050
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0050.yaml
+  disposition: >-
+    The debt cannot grow. DEC-2026-0050 orders an exact reviewed v3 migration
+    for the three previously decided replacements and seven blank-label rows,
+    and requires a narrow ordinary-packet admission guard for the three due IDs.

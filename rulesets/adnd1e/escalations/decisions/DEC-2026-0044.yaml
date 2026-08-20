@@ -1,0 +1,200 @@
+schema_version: '1.0'
+id: DEC-2026-0044
+status: approved
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Implement and independently evidence the already-decided v2 direct-migration
+    discovery and transaction capability before the Reviewer reconsiders the
+    unchanged reviewed ability-merge plan.
+  blocking_ids: []
+
+decision_date: '2026-08-17'
+escalation_id: ESC-2026-08-17T16.15.00.000Z
+implementation_owner: integrator
+
+question: >-
+  What release path applies when DEC-2026-0038 requires a no-edge-CSV
+  `decision_migration_v2` bundle but the installed Integrator recognizes only
+  v1 bundles?
+
+ruling: >-
+  The v2 capability is required implementation, not a GUP, Review, source, or
+  canonical-data defect. The Integrator must implement and evidence v2 manifest
+  discovery, component verification, strict preconditions, transactional merge
+  execution, and provenance exactly as DEC-2026-0038 and WORK_QUEUES require.
+  It must publish an Integrator-owned Decision Implementation Report under the
+  direct-implementation lifecycle established by DEC-2026-0043. Once its
+  independent implementation Review is Approved, the Reviewer reissues the
+  existing v2 migration Review against the current pinned baseline: approve and
+  materialize the no-edge-CSV Approved bundle if the baseline remains exact, or
+  route Builder to re-plan a successor GUP if it moved. No role may rewrite the
+  reviewed r03 plan as v1, add an edge CSV, mutate canonical data before
+  approval, or repair its 33 rows merely to address this tooling gap.
+
+rationale:
+  - >-
+    The current r03 plan and Review independently establish the three merges,
+    all six retired identities, every 33-row before-image, and the v2-only
+    operation shape. The refusal occurs before any canonical snapshot because
+    discovery incorrectly rejects the required no-edge-CSV v2 manifest.
+  - >-
+    Adding an edge CSV or flattening the plan to v1 would discard the explicit
+    decision-migration representation necessary for a bounded many-to-one
+    registry merge.
+  - >-
+    Tool capability must be reviewed before the Reviewer approves an input that
+    depends on it. Rechecking the mutable baseline after capability work keeps
+    the existing transaction preconditions strict.
+
+authority_inputs:
+  governing_decision:
+    id: DEC-2026-0038
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0038.yaml
+    checksum: sha256:d2594445bec2f7f05b4800ee532162d059d90b6169006d82cb4bb9e458748b82
+  reviewed_gup:
+    id: GUP-MIG-DEC-2026-0032-r03
+    path: books/adnd1e/dmg/artifacts/gup/GUP-MIG-DEC-2026-0032-r03.yaml
+    checksum: sha256:f04bd4354a5a366c334a4c340e4c368ffb970e04824424e221c8b8da8fe7e144
+  blocked_review:
+    id: REV-GUP-MIG-DEC-2026-0032-r03-r02
+    path: books/adnd1e/dmg/artifacts/reviews/REV-GUP-MIG-DEC-2026-0032-r03-r02.yaml
+    checksum: sha256:6bd5760da9dac222c2b79dbec236e7fdf10cf3fd2309e7cddcbca33f3f5d26bb
+
+implementation_scope:
+  operation_model: decision_migration_v2
+  required_behavior:
+    - >-
+      Discover an Approved v2 manifest with no edge CSV and exactly one
+      checksummed decision-migration GUP component plus one validation component
+      as one Integrator job.
+    - >-
+      Reject a missing, extra, mismatched, or edge-CSV component; non-approved
+      Review; mismatched GUP/Decision checksum; baseline drift; incomplete
+      before-image or incident set; label mismatch; existing survivor identity;
+      non-paired endpoint change; surviving retired identity; or post-operation
+      duplicate assertion key before committing any canonical or registry write.
+    - >-
+      Treat a v2 `registry_csv_row` only as the advisory locator defined by
+      DEC-2026-0038. Retired ID and label plus the pinned registry checksum are
+      the transaction preconditions.
+    - >-
+      Apply each approved v2 merge and its paired endpoint repoints in one
+      transaction, rebuild derived artifacts only after all invariants pass,
+      record the applied Approved bundle and authority Decision in provenance,
+      and restore all files byte-for-byte after a late failure.
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: false
+  note: >-
+    This Decision authorizes integration capability only. The later approved
+    v2 bundle, if its baseline remains current, is the separate canonical
+    migration authorized by DEC-2026-0038.
+
+sequence:
+  - step: 1
+    owner: integrator
+    action: >-
+      Implement the bounded v2 discovery and transaction path, add regression
+      coverage, and publish IMP-DEC-2026-0044-r01 with `implemented_by:
+      integrator`. Do not alter the GUP, Review, Approved bundle, canonical
+      graph, or registry while implementing this capability.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Independently review the Integrator implementation report, including
+      no-edge-CSV discovery, all stated rejection conditions, transaction
+      rollback, provenance, and v1 non-regression.
+  - step: 3
+    owner: reviewer
+    action: >-
+      After the capability Review is Approved, supersede the current
+      architect-escalation Review with a current-baseline Review of r03. Approve
+      and materialize its direct-migration Approved bundle only if every pinned
+      input still matches; otherwise issue `revision_required` to Builder.
+  - step: 4
+    owner: integrator
+    action: >-
+      Integrate only the newly approved exact v2 bundle, then produce the normal
+      transaction manifest, validation report, diff, and derived outputs.
+  - step: 5
+    owner: analyst
+    action: >-
+      Publish the DEC-2026-0038-required DMG GUR successor only after the
+      Integration record exists.
+
+acceptance_tests:
+  - >-
+    A valid v2 Approved manifest with no edge CSV discovers as exactly one
+    Integrator job, while v1 direct migrations and packet-update bundles retain
+    their existing discovery behavior.
+  - >-
+    Every malformed v2 manifest, component, approval, provenance, baseline,
+    identity, before-image, incident-set, paired-repoint, duplicate-key, and
+    retired-identity condition listed in `implementation_scope` is rejected
+    before a write or restores all affected files byte-for-byte.
+  - >-
+    A moved advisory `registry_csv_row` with matching retired ID and label is
+    recorded as informational and does not reject the transaction; a missing ID,
+    label mismatch, or registry checksum drift still rejects it.
+  - >-
+    The Integrator implementation report is independently Approved under the
+    DEC-2026-0043 direct-implementation lifecycle and records complete current
+    Integrator test evidence.
+  - All applicable Integrator, queue, schema, migration, and repository tests pass.
+
+post_implementation_requirements:
+  - >-
+    The Reviewer independently revalidates GUP-MIG-DEC-2026-0032-r03 against
+    then-current canonical and registry baselines. A baseline change requires a
+    Builder successor plan; unchanged baseline permits a normal approved v2
+    bundle with no edge CSV.
+  - >-
+    The subsequent Integration and Analyst GUR successor follow DEC-2026-0038;
+    neither is evidence for this capability Decision's implementation report.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: The operation model is already defined by DEC-2026-0038 and does not change ontology.
+
+governance_changelog:
+  - >-
+    DEC-2026-0044 makes the existing v2 Integrator requirement a checked,
+    queue-visible direct capability implementation before its reviewed plan is released.
+
+exact_diff:
+  tooling/integrator/src/adnd1e_integrator/bundles.py:
+    - 'Recognize validated decision_migration_v2 manifests with no edge CSV as direct migration bundles.'
+  tooling/integrator/src/adnd1e_integrator/integrate.py:
+    - 'Validate and execute only the bounded v2 merge operation shape transactionally.'
+  tooling/integrator/src/adnd1e_integrator/operations.py:
+    - 'Enforce v2 merge, incident-set, paired-repoint, strict identity, advisory-locator, and post-operation invariants.'
+  tooling/integrator/tests/test_bundles.py:
+    - 'Add v2 no-edge-CSV discovery and malformed component coverage.'
+  tooling/integrator/tests/test_transaction.py:
+    - 'Add v2 transaction, rejection, rollback, provenance, and v1 non-regression coverage.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0044.yaml:
+    - 'Resolve the DEC-2026-0038 v2 capability release path without changing its migration semantics.'
+
+follow_up_owner: integrator
+follow_up_owners:
+  integrator:
+    - Implement only the v2 capability and evidence it; do not author or mutate migration content.
+  reviewer:
+    - Review the capability independently, then re-evaluate the immutable r03 plan at the current baseline.
+  builder:
+    - Re-plan only if the Reviewer finds baseline drift after capability approval.
+  analyst:
+    - Wait for a successful Integration record before publishing the DMG successor GUR.

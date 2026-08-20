@@ -71,12 +71,23 @@ def build_manifest(batch: Batch, root: Path, ruleset_id: str, constitution_versi
             }
             for v in batch.verifications
         ],
-        "architect_decisions": sorted({
-            d
-            for v in batch.verifications
-            for d in ((v.bundle.review.get("input_provenance") or {})
-                      .get("architect_decisions_consulted") or [])
-        }),
+        # A packet Review names the Decisions it consulted. A direct migration has
+        # no such list: its authority is carried per operation by the reviewed
+        # plan, so reading only the Review left the authority unrecorded on
+        # exactly the batches that exist solely to execute a Decision.
+        "architect_decisions": sorted(
+            {
+                d
+                for v in batch.verifications
+                for d in ((v.bundle.review.get("input_provenance") or {})
+                          .get("architect_decisions_consulted") or [])
+            }
+            | {op["authority"]
+               for group in (batch.node_merges, batch.node_replacements,
+                             batch.repoints, batch.removals)
+               for op in group
+               if op.get("authority")}
+        ),
         "counts": {
             "before": {"edges": batch.pre_counts["edges"], "nodes": batch.pre_counts["nodes"],
                        "registry": batch.pre_counts["registry"]},
@@ -110,7 +121,22 @@ def build_manifest(batch: Batch, root: Path, ruleset_id: str, constitution_versi
         "registry_changes": {
             "nodes_added": batch.registrations,
             "nodes_added_without_edges": batch.registrations_without_edges,
-            "nodes_retired": [],
+            # Every identity this batch retired, from both migration models. A
+            # v2 merge retires two or more rows per surviving identity and a v1
+            # replacement retires one; leaving this empty reported a registry
+            # count drop with nothing naming the rows that went.
+            "nodes_retired": [
+                {"id": retired["id"], "label": retired["label"],
+                 "replaced_by": merge["canonical_id"], "authority": merge["authority"],
+                 "operation": "merge", "bundle_id": merge["bundle_id"]}
+                for merge in batch.node_merges
+                for retired in merge["retired"]
+            ] + [
+                {"id": r["retired_id"], "label": r["retired_label"],
+                 "replaced_by": r["canonical_id"], "authority": r["authority"],
+                 "operation": "replacement", "bundle_id": r["bundle_id"]}
+                for r in batch.node_replacements
+            ],
             "derived_columns_resynced": len(batch.registry_resync),
             "preexisting_drift_corrected": batch.registry_preexisting_drift,
             "note": (
@@ -119,6 +145,17 @@ def build_manifest(batch: Batch, root: Path, ruleset_id: str, constitution_versi
                 "resyncing them; that drift is corrected here and the resync is now "
                 "part of every batch."
             ),
+        },
+        "migration": {
+            "node_merges": batch.node_merges,
+            "node_replacements": batch.node_replacements,
+            "endpoint_repoints": batch.repoints,
+            # DEC-2026-0050 requires the label operations recorded separately
+            # from the repoints. They are a different operation with a different
+            # bound -- a repoint changes assertion identity, a normalization
+            # never does -- so folding them together would hide that.
+            "label_normalizations": batch.normalizations,
+            "canonical_removals": batch.removals,
         },
         "edges_added": batch.added,
         "edges_updated": batch.updated,
@@ -256,6 +293,31 @@ def render_diff(batch: Batch, ruleset_id: str) -> str:
                 f"{', '.join(r.get('edges_depending_on_it') or []) or '-'} |")
         add("")
 
+    if batch.node_merges:
+        add("## Node identity merges")
+        add("")
+        add("`decision_migration_v2`: each consolidates two or more approved IDs into one")
+        add("canonical identity. Every retired ID is removed from the registry and every")
+        add("edge incident to it is repointed in the same transaction, so no retired")
+        add("endpoint survives.")
+        add("")
+        add("| Canonical | Kind | Retired | Authority | Incident rows |")
+        add("|---|---|---|---|---|")
+        for m in batch.node_merges:
+            retired = ", ".join(f"`{r['id']}` ({r['label']})" for r in m["retired"])
+            add(f"| `{m['canonical_id']}` ({m['canonical_label']}) | {m['kind']} | "
+                f"{retired} | `{m['authority']}` | "
+                f"{', '.join(str(x) for x in m['incident_rows']) or '-'} |")
+        add("")
+        moved = [(m, r) for m in batch.node_merges for r in m["retired"]
+                 if r.get("advisory_registry_csv_row") is not None]
+        if moved:
+            add(f"{len(moved)} retired row(s) carried an advisory `registry_csv_row`. "
+                "Under DEC-2026-0038 that")
+            add("locator is informational: the transaction keys on retired ID, label and the")
+            add("pinned registry checksum, so a moved row is an observation, not a failure.")
+            add("")
+
     if batch.node_replacements:
         add("## Node identity replacements")
         add("")
@@ -268,6 +330,22 @@ def render_diff(batch: Batch, ruleset_id: str) -> str:
             add(f"| `{r['retired_id']}` ({r['retired_label']}) | "
                 f"`{r['canonical_id']}` ({r['canonical_label']}) | `{r['authority']}` | "
                 f"{', '.join(str(x) for x in r['incident_rows']) or '-'} |")
+        add("")
+
+    if batch.normalizations:
+        add("## Endpoint label normalizations")
+        add("")
+        add("`decision_migration_v3`: each fills a blank endpoint label with that")
+        add("endpoint's exact current registry label. The endpoint ID is not touched and")
+        add("assertion identity is unchanged, which is what separates these from the")
+        add("repoints below.")
+        add("")
+        add("| Row | Field | Endpoint | Filled with | Authority |")
+        add("|---|---|---|---|---|")
+        for r in batch.normalizations:
+            for name, delta in sorted(r["changes"].items()):
+                add(f"| {r['canonical_row']} | `{name}` | `{r['endpoints'][name]}` | "
+                    f"{delta['to']} | `{r['authority']}` |")
         add("")
 
     if batch.repoints:

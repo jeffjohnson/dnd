@@ -4,8 +4,92 @@
   "allOf": [
     {
       "$ref": "artifact-envelope.schema.json"
+    },
+    {
+      "$comment": "Under Review 1.1 an unrecognized disposition is a publication failure, so it cannot reach a downstream role as an otherwise valid handoff. That is what happened on the illusionist lineage: the term was read as unknown only when the Builder tried to compile against it, several artifacts later.",
+      "if": {
+        "properties": {
+          "review_contract_version": {
+            "const": "1.1"
+          }
+        },
+        "required": [
+          "review_contract_version"
+        ]
+      },
+      "then": {
+        "properties": {
+          "edge_decisions": {
+            "$ref": "#/$defs/decisionCollection"
+          },
+          "row_decisions": {
+            "$ref": "#/$defs/decisionCollection"
+          }
+        }
+      }
     }
   ],
   "type": "object",
-  "additionalProperties": true
+  "additionalProperties": true,
+  "$id": "https://example.invalid/schemas/common/review.schema.json",
+  "$comment": "DEC-2026-0051: the only legal per-row Review dispositions are approved, approved_with_revision, rejected and architect_escalation. `approved_but_excluded_from_bundle` conflated two independent facts -- the Reviewer's judgment that a row is correct, and whether the row lands in an Approved edge component. The second is packaging, derived from the GUP's approved/pending/blocked components under DEC-2026-0047, and it is recorded as packaging evidence rather than as a fifth disposition. The check is opt-in on `review_contract_version: '1.1'` so that every Review published before this ruling stays valid immutable history.",
+  "properties": {
+    "review_contract_version": {
+      "$comment": "Opt-in marker for the DEC-2026-0051 vocabulary check. Absent means the Review predates it; a legacy Review is history, not a defect.",
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "legalDisposition": {
+      "$comment": "ARTIFACT_LIFECYCLE section 4, unchanged since it was written.",
+      "enum": [
+        "approved",
+        "approved_with_revision",
+        "rejected",
+        "architect_escalation"
+      ]
+    },
+    "rowDecision": {
+      "$comment": "Constrains only an object that actually carries a disposition. Reviews also use these keys for grouped summaries such as `approved_refs: [...]`, which state no per-row judgment and are left alone.",
+      "if": {
+        "type": "object",
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "properties": {
+          "disposition": {
+            "$ref": "#/$defs/legalDisposition"
+          }
+        }
+      }
+    },
+    "decisionCollection": {
+      "$comment": "Both published shapes are covered on purpose: a list of per-row objects, and a mapping whose values are those objects. Checking one shape and silently passing the other is how an invalid value survives a validator.",
+      "allOf": [
+        {
+          "if": {
+            "type": "array"
+          },
+          "then": {
+            "items": {
+              "$ref": "#/$defs/rowDecision"
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object"
+          },
+          "then": {
+            "additionalProperties": {
+              "$ref": "#/$defs/rowDecision"
+            }
+          }
+        }
+      ]
+    }
+  }
 }

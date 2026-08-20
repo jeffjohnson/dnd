@@ -13,12 +13,19 @@ inference made to reconstruct it is reported.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
 
 from .checksums import checksum_file
+
+
+#: Operation models whose Approved bundle is a manifest plus a GUP plan, with no
+#: edge CSV. WORK_QUEUES rule 31 names both.
+DIRECT_MIGRATION_MODELS = ("decision_migration_v1", "decision_migration_v2",
+                           "decision_migration_v3")
 
 
 def load_yaml(path: Path) -> dict:
@@ -48,13 +55,14 @@ class Bundle:
 
     @property
     def is_direct_migration(self) -> bool:
-        """WORK_QUEUES 1.8 `decision_migration_v1`: the plan is a GUP YAML.
+        """A direct decision-migration bundle: the plan is a checksummed GUP YAML.
 
-        This bundle shape carries no edge CSV at all -- an edge CSV cannot
-        encode registry identity replacement, retirement, or exact deletion --
-        so the operation plan is read from the checksummed GUP component.
+        Both narrow models take this shape and carry no edge CSV at all -- a CSV
+        cannot encode registry identity replacement, retirement, exact deletion
+        (v1, WORK_QUEUES 1.8) or a bounded many-to-one merge (v2, 1.9) -- so the
+        operation plan is read from the GUP component instead.
         """
-        return (self.manifest or {}).get("operation_model") == "decision_migration_v1"
+        return (self.manifest or {}).get("operation_model") in DIRECT_MIGRATION_MODELS
 
     def component_records(self, root: Path) -> list[dict]:
         records = [] if self.edges_path is None else [{
@@ -103,7 +111,7 @@ def discover(root: Path, ruleset_id: str, book_id: str) -> tuple[list[Bundle], l
             # declared operation model rather than from the file simply being
             # absent.
             declared = load_yaml(manifest_path) if manifest_path is not None else None
-            if not declared or declared.get("operation_model") != "decision_migration_v1":
+            if not declared or declared.get("operation_model") not in DIRECT_MIGRATION_MODELS:
                 diagnostics.append(f"{stem}: manifest present with no .edges.csv component")
                 continue
 
@@ -216,6 +224,119 @@ def superseded_gup_ids(root: Path, ruleset_id: str, book_id: str) -> set[str]:
     return superseded
 
 
+def withdrawn_review_ids(root: Path, ruleset_id: str, book_id: str) -> set[str]:
+    """Review ids whose lineage leaf is not approved.
+
+    An Approved bundle pins one exact Review, and only the active leaf of that
+    Review's lineage says anything current (WORK_QUEUES 3 and 6). Supersession
+    alone is not withdrawal: a lineage routinely goes approved -> revision_required
+    -> approved again, and the re-approving leaf may endorse the very bundle the
+    middle revision questioned -- which is exactly what
+    REV-GUP-PKT-PHB-110-117-psionics-r06-r05 does. Treating any superseded Review
+    as stale would strand such a bundle permanently.
+
+    What must never happen is integrating on an approval the lineage has since
+    withdrawn, so the test is the leaf's disposition, not its existence.
+    """
+    review_dir = root / "books" / ruleset_id / book_id / "artifacts" / "reviews"
+    if not review_dir.exists():
+        return set()
+
+    documents, successor = {}, {}
+    for path in sorted(review_dir.glob("REV-*.yaml")):
+        data = load_yaml(path) or {}
+        review_id = str(data.get("id") or path.stem)
+        documents[review_id] = data
+        if data.get("supersedes"):
+            successor[str(data["supersedes"])] = review_id
+
+    withdrawn = set()
+    for review_id in documents:
+        seen, leaf = {review_id}, review_id
+        while leaf in successor and successor[leaf] not in seen:
+            leaf = successor[leaf]
+            seen.add(leaf)
+        status = str((documents.get(leaf) or {}).get("status") or "").strip()
+        if status != "approved":
+            withdrawn.add(review_id)
+    return withdrawn
+
+
+#: DEC-2026-0043 authorizes one already-published record by exact ID pair; every
+#: other record must pin the bundle, its Review and its GUP.
+LEGACY_AUTHORIZED_REJECTIONS = {
+    ("INT-20260815-002",
+     "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r04-r01"),
+}
+
+
+def rejected_bundle_ids(root: Path, ruleset_id: str) -> dict[str, str]:
+    """Bundle IDs a current, valid Integration rejection withdraws from the queue.
+
+    DEC-2026-0043 makes a rejection a first-class queue signal: it suppresses the
+    bundle's Integrator item and routes remediation to the Reviewer instead. A
+    record that cannot be trusted suppresses nothing -- otherwise a stale record
+    would keep a re-issued bundle unqueued *and* unrejected, which is the exact
+    failure this rule exists to end. So each entry must pin the bundle, the
+    Review that approved it and the GUP it carries, to the bytes on disk.
+    """
+    directory = root / "rulesets" / ruleset_id / "reports"
+    if not directory.exists():
+        return {}
+
+    approved = root / "books" / ruleset_id
+    def artifact(artifact_id: str) -> Path | None:
+        for pattern in (f"*/artifacts/approved/{artifact_id}.yaml",
+                        f"*/artifacts/reviews/{artifact_id}.yaml",
+                        f"*/artifacts/gup/{artifact_id}.yaml"):
+            for found in approved.glob(pattern):
+                return found
+        return None
+
+    documents = []
+    for path in sorted(directory.glob("*.rejected.json")):
+        try:
+            documents.append(json.loads(path.read_text(encoding="utf-8")))
+        except (OSError, ValueError):
+            continue
+
+    # A rejection can be wrong. Without honouring `supersedes` an over-broad
+    # record would suppress its bundles forever, because the only way to correct
+    # one is to publish a successor -- editing a published record is prohibited.
+    # A superseded record stays on disk as immutable history; it just stops
+    # deriving queue state.
+    retired = {str(d.get("supersedes")).strip()
+               for d in documents
+               if str(d.get("status") or "").strip() == "rejected" and d.get("supersedes")}
+
+    suppressed: dict[str, str] = {}
+    for document in documents:
+        if str(document.get("status") or "").strip() != "rejected":
+            continue
+        if str(document.get("id") or "").strip() in retired:
+            continue
+        record_id = str(document.get("id") or "")
+        for entry in document.get("rejected_bundles") or []:
+            bundle_id = str(entry.get("bundle_id") or "").strip()
+            if not bundle_id or not (entry.get("blocking_failures") or []):
+                continue
+            if (record_id, bundle_id) not in LEGACY_AUTHORIZED_REJECTIONS:
+                pinned = True
+                for id_field, sum_field in (("bundle_id", "bundle_checksum"),
+                                            ("review_id", "review_checksum"),
+                                            ("gup_id", "gup_checksum")):
+                    declared_id = str(entry.get(id_field) or "").strip()
+                    declared_sum = str(entry.get(sum_field) or "").strip()
+                    target = artifact(declared_id) if declared_id else None
+                    if target is None or checksum_file(target) != declared_sum:
+                        pinned = False
+                        break
+                if not pinned:
+                    continue
+            suppressed[bundle_id] = record_id
+    return suppressed
+
+
 def ready_queue(root: Path, ruleset_id: str, book_ids: list[str]) -> dict:
     """The Integrator queue: ready bundles, already-integrated bundles, diagnostics.
 
@@ -230,17 +351,27 @@ def ready_queue(root: Path, ruleset_id: str, book_ids: list[str]) -> dict:
     provenance would block every future integration of the whole ruleset.
     """
     consumed = integrated_bundle_ids(root, ruleset_id)
-    ready, done, superseded, diagnostics = [], [], [], []
+    rejected = rejected_bundle_ids(root, ruleset_id)
+    ready, done, superseded, refused, diagnostics = [], [], [], [], []
     for book_id in book_ids:
         found, book_diagnostics = discover(root, ruleset_id, book_id)
         diagnostics.extend(book_diagnostics)
         retired = superseded_gup_ids(root, ruleset_id, book_id)
+        stale_reviews = withdrawn_review_ids(root, ruleset_id, book_id)
         for bundle in found:
             if bundle.bundle_id in consumed:
                 done.append((bundle, consumed[bundle.bundle_id]))
+            elif bundle.bundle_id in rejected:
+                # A refusal outranks both history buckets. A rejected bundle
+                # usually *does* acquire a successor Review -- that is the
+                # remediation -- so classifying supersession first would hide the
+                # one signal the Reviewer still has to act on.
+                refused.append((bundle, rejected[bundle.bundle_id]))
             elif bundle.gup_id in retired:
+                superseded.append(bundle)
+            elif bundle.review_id in stale_reviews:
                 superseded.append(bundle)
             else:
                 ready.append(bundle)
     return {"ready": ready, "integrated": done, "superseded": superseded,
-            "diagnostics": diagnostics}
+            "rejected": refused, "diagnostics": diagnostics}

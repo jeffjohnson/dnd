@@ -1,0 +1,234 @@
+schema_version: '1.0'
+id: DEC-2026-0040
+status: approved
+ruleset_id: adnd1e
+book_id: cross-book
+source_id: multiple
+packet_id: cross-packet
+constitution_version: '1.8'
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the checksum-verified, same-session role context verifier and its
+    tests. Do not cache current task evidence, mutable baselines, or canonical
+    state.
+  blocking_ids: []
+
+decision_date: '2026-08-17'
+request_origin:
+  type: repository_owner_directive
+  recorded_on: '2026-08-17'
+  summary: >-
+    Reduce repeated instruction loading without allowing roles to read every
+    repository artifact or rely on stale context from another actor session.
+
+question: >-
+  How may a persistent role avoid repeatedly loading unchanged repository
+  instructions while preserving fresh evidence review, mutable-state validation,
+  and the repository-first stateless-agent model?
+
+ruling: >-
+  Adopt `ROLE_CONTEXT_LOADING` version 1.0 and the checked
+  `ROLE_CONTEXT_MANIFEST.yaml`. A role may reuse stable authority context only
+  after `role_context.py verify` confirms an exact same-session receipt whose
+  manifest, manifest schema, scope, repository root, and every resolved authority
+  file still match by SHA-256. A miss must emit the bounded stable authority set;
+  the role reads it and records a new receipt. A receipt never covers current task
+  inputs, source evidence, mutable registries, canonical data, transaction
+  baselines, artifact provenance, or approval state. A fresh or different actor
+  session is always a miss. Each role follows its updated bounded-read instruction
+  set and must not recursively load unrelated artifacts merely to orient itself.
+
+rationale:
+  - >-
+    Checksum comparison is cheap and keeps unchanged governance documents out of
+    a continuing role's repeated working context, but a checksum list alone does
+    not convey instruction meaning to a fresh actor.
+  - >-
+    Same-session receipts preserve the existing stateless-agent boundary. A role
+    never inherits an unexamined instruction cache from another actor, process,
+    or chat.
+  - >-
+    Review independence and integration safety require current content, not a
+    remembered checksum. The policy therefore excludes source evidence, GUPs,
+    Reviews, Decisions named by a job, registries, canonical state, and all
+    transaction inputs from caching.
+  - >-
+    The manifest's narrow role-specific stable set is less expressive and safer
+    than an unbounded recursive repository cache. It is versioned, schema-valid,
+    deterministic, and auditable.
+
+context_cache_contract:
+  manifest:
+    path: contracts/ROLE_CONTEXT_MANIFEST.yaml
+    schema: schemas/common/role-context-manifest.schema.json
+    stable_common_inputs:
+      - AGENTS.md
+      - README.md
+      - REPOSITORY_STRUCTURE.md
+      - contracts/*.md
+      - schemas/common/*.json
+    role_specific_inputs: >-
+      The manifest declares only stable role instructions, constitution,
+      controlled registries, profiles, and applicable schemas. It excludes node
+      CSVs, canonical outputs, packets, artifacts, reports, and work queues.
+  verifier:
+    path: tooling/common/role_context.py
+    commands:
+      - >-
+        verify --root . --role <role> --ruleset <ruleset-id>
+        [--book <book-id>] --session-id <opaque-session-id>
+      - >-
+        record --root . --role <role> --ruleset <ruleset-id>
+        [--book <book-id>] --session-id <opaque-session-id>
+    cache_location: .local/role-context/
+    receipt_requirements:
+      - cache format version
+      - resolved repository root
+      - role and ruleset/book scope
+      - session ID
+      - manifest and manifest-schema checksums
+      - deterministic sorted path/checksum authority set
+    cache_hit_conditions:
+      - Same session ID and exact resolved repository root.
+      - Exact role, ruleset, and book scope.
+      - Exact manifest and manifest-schema checksums.
+      - Exact checksum for every resolved stable authority file.
+    cache_miss_conditions:
+      - No receipt, a different session, changed scope, changed authority input, changed manifest, or changed schema.
+      - Missing literal path, path outside root, duplicate resolved path, unsupported role, or unverifiable checksum.
+    prohibited:
+      - Cache hits from another actor session.
+      - File modification time as a validity signal.
+      - Caching current task evidence, mutable registry or canonical content, provenance, approval, or transaction preconditions.
+      - Recording a receipt before reading the stable paths emitted by a cache miss.
+
+always_read_by_role:
+  architect:
+    - Pending escalation, named source excerpt, and necessary local graph or registry slice.
+  analyst:
+    - Complete claimed packet, packet metadata, and supplied registry, neighborhood, and general-rule slices.
+  builder:
+    - Active GUR or revision request, named Decisions, current registry, and supplied neighborhood.
+  reviewer:
+    - Active GUP and validation report, current cited source evidence, governed records, neighborhood, and named Decisions.
+  integrator:
+    - Approved bundle, Review, authority Decisions, current canonical and registry inputs, profiles, and transaction snapshot.
+
+affected_artifacts:
+  governance:
+    - AGENTS.md
+    - contracts/ROLE_CONTEXT_LOADING.md
+    - contracts/ROLE_CONTEXT_MANIFEST.yaml
+    - schemas/common/role-context-manifest.schema.json
+  role_instructions:
+    - agents/architect/INSTRUCTIONS.md
+    - agents/analyst/INSTRUCTIONS.md
+    - agents/builder/INSTRUCTIONS.md
+    - agents/reviewer/INSTRUCTIONS.md
+    - agents/integrator/INSTRUCTIONS.md
+  implementation:
+    - tooling/common/role_context.py
+    - tooling/common/tests/test_role_context.py
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: false
+  implementation_kind: checksum_verified_context_cache
+
+sequence:
+  - step: 1
+    owner: builder
+    action: >-
+      Implement the manifest resolver and verifier CLI exactly as ruled, write
+      the targeted tests, and publish a Decision Implementation Report for
+      DEC-2026-0040. Keep receipts only under `.local/role-context/`; do not
+      modify canonical data or any packet artifact.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Independently verify receipt invalidation, scope isolation, bounded input
+      selection, and that live evidence is never accepted from the cache before
+      approving the implementation report.
+
+acceptance_tests:
+  - >-
+    `contracts/ROLE_CONTEXT_MANIFEST.yaml` validates against
+    `schemas/common/role-context-manifest.schema.json`, declares every role once,
+    and resolves a deterministic, sorted, duplicate-free stable path set within
+    the repository root for each supported role and current AD&D scope.
+  - >-
+    A cold `verify` emits `reload_required` and the exact stable paths. After
+    those paths are read and `record` is called, the same role, scope, root, and
+    session produce `cache_hit` without re-emitting stable context content.
+  - >-
+    Changing any resolved authority file, the manifest, its schema, role,
+    ruleset, book, repository root, or session ID produces `reload_required`.
+    A missing literal path, an outside-root expansion, duplicate resolved path,
+    unrecognized role, or unreadable file fails closed and never returns a hit.
+  - >-
+    Receipts contain no authority-file contents and are written only under
+    `.local/role-context/`; no receipt is committed, used as provenance, or
+    accepted across actor sessions.
+  - >-
+    The verifier's cache set excludes current packets, GURs, GUPs, Reviews,
+    Approved bundles, escalation and Decision work items, reports, canonical
+    graph files, nodes.csv, and transaction snapshots. Role instructions require
+    their exact bounded current inputs on every task.
+  - >-
+    The existing Architect, Analyst, Builder, Reviewer, and Integrator role
+    instructions direct workers to avoid whole graph, whole book, whole artifact
+    store, and whole codebase reads for orientation, while preserving their
+    role-specific evidence and validation responsibilities.
+  - All applicable manifest-schema, verifier, queue, and repository tests pass.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    The change governs instruction loading and operational token use; it changes
+    neither graph semantics nor ontology.
+
+governance_changelog:
+  - >-
+    ROLE_CONTEXT_LOADING 1.0 defines same-session checksum receipts and a hard
+    boundary between stable authority context and always-read live evidence.
+  - >-
+    The role manifest and all role instructions replace broad orientation reads
+    with deterministic stable context verification plus bounded task inputs.
+
+exact_diff:
+  AGENTS.md:
+    - 'Replace unconditional startup reads with verifier-based stable context loading and always-read live inputs.'
+  contracts/ROLE_CONTEXT_LOADING.md:
+    - 'Add the cache contract, receipt format, fail-closed behavior, and live-input boundary.'
+  contracts/ROLE_CONTEXT_MANIFEST.yaml:
+    - 'Add the versioned per-role stable authority path patterns.'
+  schemas/common/role-context-manifest.schema.json:
+    - 'Add validation for the role context manifest.'
+  agents/architect/INSTRUCTIONS.md:
+    - 'Bound Architect reads to verified stable authority plus the escalation and necessary local evidence.'
+  agents/analyst/INSTRUCTIONS.md:
+    - 'Bound Analyst reads to verified stable authority plus the complete claimed packet and supplied slices.'
+  agents/builder/INSTRUCTIONS.md:
+    - 'Bound Builder reads to verified stable authority plus active artifacts and relevant implementation files.'
+  agents/reviewer/INSTRUCTIONS.md:
+    - 'Preserve independent evidence review while prohibiting broad orientation reads.'
+  agents/integrator/INSTRUCTIONS.md:
+    - 'Preserve current transaction validation while prohibiting unrelated historical loads.'
+  tooling/common/role_context.py:
+    - 'Implement the same-session verifier and receipt recorder.'
+  tooling/common/tests/test_role_context.py:
+    - 'Add cold, hit, invalidation, scope, containment, and exclusion coverage.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0040.yaml:
+    - 'Authorize the repository-wide role context cache implementation.'
+
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement only the verifier, local receipts, and targeted tests under the Decision.
+  reviewer:
+    - Independently verify the cache cannot replace current evidence or cross a session boundary.

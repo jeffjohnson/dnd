@@ -1,0 +1,63 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0046-r04-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: All DEC-2026-0046 acceptance tests are independently verified.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0046-r04
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0046-r04.yaml
+  checksum: sha256:32ab9e928719f4075a181db1c1231d7f329439f5f3e0b1c951f02322d1a79ba2
+decision_input:
+  id: DEC-2026-0046
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0046.yaml
+  checksum: sha256:2ebc1d44dfb1fb51583415f535896f41dac2bc64a6bfef4157c99e89486bbe0b
+acceptance_dispositions:
+- acceptance_test_index: 1
+  disposition: verified
+  evidence: After a valid Approved implementation Review consumes a report, implementation-file drift is informational only and does not reopen its completed Decision.
+- acceptance_test_index: 2
+  disposition: verified
+  evidence: Drift stays a hard error without a valid Approved Review and for every non-drift report defect.
+- acceptance_test_index: 3
+  disposition: verified
+  evidence: The exception is isolated to the already-completed lineage; a later independently valid Decision remains discoverable.
+- acceptance_test_index: 4
+  disposition: verified_versioned_contract_content
+  evidence: Re-derived against current WORK_QUEUES text under DEC-2026-0048's exact authorization; the current version exceeds the authorized floor and all three required anchors remain present.
+  verified_versioned_contract_content:
+    authority:
+      id: DEC-2026-0048
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml
+      checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698
+      authorized_acceptance_test_index: 4
+    authorized_acceptance_test_index: 4
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:46a70321ce8aca78e4d704e6f3b30c2fec83f89bb9ab3318e9bf2166f07b15b7
+      observed_version: '1.15'
+      minimum_version: '1.13'
+      anchors_present:
+      - approved implementation-review checksum snapshots are historical evidence
+      - pre-approval implementation-file drift remains strict
+      - post-approval implementation-file drift is informational only
+independent_validation:
+  passed: true
+  commands:
+  - command: SHA-256 comparison of the implementation report, Decision, validation report, and all pinned implementation files
+    exit_code: 0
+    result: passed
+    summary: Every reviewed checksum matched current bytes.
+  - command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest test_scan_agent_queues.PostApprovalFileDriftCase test_scan_agent_queues.TestImplementationDriftSink test_scan_agent_queues.VersionedContractContentCase'
+    exit_code: 0
+    result: passed
+    summary: Relevant post-approval drift and versioned-content tests passed in the current targeted run.
+overall_disposition: approved

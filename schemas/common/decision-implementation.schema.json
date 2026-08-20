@@ -99,7 +99,11 @@
       "$ref": "#/$defs/decisionInput"
     },
     "implemented_by": {
-      "const": "builder"
+      "enum": [
+        "builder",
+        "integrator"
+      ],
+      "$comment": "DEC-2026-0043: a non-migration Decision may assign its implementation to Builder or Integrator. The queue requires this to equal the role the Decision hands off to; a mismatch is diagnostic and does not consume the Decision."
     },
     "implementation_files": {
       "type": "array",
@@ -181,6 +185,26 @@
               ]
             }
           }
+        },
+        {
+          "$comment": "The two evidence shapes are mutually exclusive. retired_by_lineage asserts a subject left its queue through integration; versioned_contract_content asserts a contract currently holds required content. Letting one result carry both would let a retirement smuggle in an unchecked contract claim, and vice versa.",
+          "if": {
+            "properties": {
+              "result": {
+                "const": "retired_by_lineage"
+              }
+            },
+            "required": [
+              "result"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "versioned_contract_content"
+              ]
+            }
+          }
         }
       ],
       "properties": {
@@ -209,6 +233,33 @@
           "uniqueItems": true,
           "items": {
             "$ref": "#/$defs/retiredSubject"
+          }
+        },
+        "versioned_contract_content": {
+          "type": "object",
+          "additionalProperties": false,
+          "$comment": "WORK_QUEUES 1.15: current-state evidence for a mutable-contract acceptance test. It is deliberately not retired_by_lineage -- the reported state is still being tested, so the result stays `passed` and the Review verifies it again rather than accepting a retirement.",
+          "required": [
+            "authority",
+            "authorized_acceptance_test_index",
+            "contracts"
+          ],
+          "properties": {
+            "authority": {
+              "$ref": "#/$defs/retirementAuthority"
+            },
+            "authorized_acceptance_test_index": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "contracts": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/observedContract"
+              }
+            }
           }
         }
       }
@@ -370,6 +421,44 @@
         "summary": {
           "type": "string",
           "minLength": 1
+        }
+      }
+    },
+    "observedContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "$comment": "What the reporting role actually measured: the contract's current checksum and version, and the anchors it confirmed are still there. Recording the checksum is what lets a Reviewer re-derive the same reading rather than trusting the summary.",
+      "required": [
+        "path",
+        "checksum",
+        "observed_version",
+        "minimum_version",
+        "anchors_present"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checksum": {
+          "$ref": "#/$defs/checksum"
+        },
+        "observed_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "minimum_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "anchors_present": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     }

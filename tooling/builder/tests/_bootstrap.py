@@ -45,11 +45,22 @@ def unregistered_migration_pair(governance, registry):
     The Integrator retires these one bundle at a time, so any single pair is a
     moving target. Asking for whichever one is still pending keeps the test
     meaningful for as long as the migration is unfinished.
+
+    IDs whose migration DEC-2026-0050 made *due* are skipped. The rule this
+    fixture serves -- that without Reviewer confirmation the legacy ID stands --
+    still governs an ordinary pending migration, but a due ID is refused outright
+    by the compiler, so selecting one would test the new rule while claiming to
+    test the old one. Six pending-not-due pairs remain, and the assertion below
+    fires if that ever stops being true rather than letting the subject drift.
     """
     for legacy, target in sorted(governance.migration_map.items()):
         if legacy in registry and target not in registry:
+            if governance.migration_due(legacy):
+                continue
             return legacy, target
-    raise AssertionError("every DEC-2026-0004 migration target is already registered")
+    raise AssertionError(
+        "every DEC-2026-0004 migration target is registered or its migration is due"
+    )
 
 
 def unregistered_returned_to_workflow(governance, registry):

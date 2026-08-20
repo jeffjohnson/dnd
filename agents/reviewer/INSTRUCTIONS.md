@@ -18,24 +18,19 @@ At startup, resolve and retain these identifiers from the assigned task:
 
 Never infer these from conversation history. Read them from repository manifests. All inputs and outputs must remain inside the resolved ruleset and book namespaces unless an explicit cross-book artifact is required.
 
-## Read at startup
+## Context loading
 
-1. `rulesets/<ruleset-id>/governance/constitution.md`
-2. `contracts/GRAPH_INVARIANTS.md`
-3. `contracts/ARTIFACT_LIFECYCLE.md`
-4. `contracts/WORK_QUEUES.md`
-5. `contracts/SOURCE_MARKDOWN.md`
-6. `contracts/ESCALATION_CONTRACT.md`
-7. the source packet
-8. the active-leaf normalized GUP bundle and validation report
-9. every source cited by an `inferred_rule`
-10. relevant general-rule records
-11. `rulesets/<ruleset-id>/ruleset.yaml` and any referenced controlled taxonomy
-    registry relevant to the review
-12. supplied local graph neighborhood
-13. relevant Architect decisions
+Run `tooling/common/role_context.py verify --role reviewer` after resolving the
+ruleset and book scope. A same-session cache hit avoids rereading stable authority
+files only; on a miss, read the verifier's emitted stable authority set and record
+the receipt. Reviewer independence is not delegated to a cache.
 
-Do not read the Analyst or Builder conversation. Their artifacts are sufficient.
+Always read the active GUP bundle, validation report, cited packet content,
+sources needed for `inferred_rule` assertions, relevant general-rule records,
+supplied local neighborhood, and named Architect Decisions. Re-read this evidence
+for every review, even on a cache hit. Do not read the Analyst or Builder
+conversation, whole source books, full canonical graph, unrelated GUPs, or every
+general rule merely to orient yourself.
 
 ## Inputs
 
@@ -135,7 +130,52 @@ Assign one disposition to every proposed row:
 - `rejected`: relationship does not belong in the graph;
 - `architect_escalation`: cannot be decided under current ontology/contracts.
 
+Every new Review declares `review_contract_version: '1.1'` and validates each
+`edge_decisions` or `row_decisions` value against exactly this vocabulary before
+publication. A disposition judges the row; it does not identify the component
+that carries it. When a correct source-supported row remains in a GUP's
+checksummed `blocked.csv`, keep its disposition `approved` and record the
+component path, checksum, refs, and exclusion reason as packaging evidence.
+Never write `approved_but_excluded_from_bundle` or another ad hoc disposition.
+
 Do not reject an entire edge merely because one field is wrong. Review per field and provide the corrected row when the source supports it.
+
+### Integration-rejection remediation
+
+For a `REVIEWER-INTEGRATION-REJECTION` item, independently inspect the exact
+rejection record and the named immutable Approved bundle, Review, and GUP. Publish
+an immutable successor Review that records `integration_rejection.id`, `.path`,
+and `.checksum`; that exact reference consumes the remediation item. The successor
+routes the ordinary repair to Builder or Analyst, or escalates a genuinely
+architectural defect. Do not alter the rejected bundle or reopen source judgments
+unrelated to the stated mechanical failure.
+
+When the current GUP is correct and the only failure is an incomplete Approved
+edge component, do not direct Builder to publish a no-op GUP revision or an
+Approved bundle. Publish a successor Review for the same GUP and construct the
+Approved edge component from the verified `edges.csv` and `pending.csv` rows in
+their declared `csv_row` order. Record both input paths and checksums, the output
+path, checksum, and row count, and every excluded `blocked.csv` input in the
+successor Review. Reconfirm that every appended pending row is represented in the
+GUP's operation index and has its required node-registration basis. A
+`blocked.csv` row remains outside the bundle unless an Architect Decision defines
+an approved component kind and eligibility rule for it.
+
+### Versioned contract-content acceptance
+
+When reviewing a Decision Implementation Report that uses
+`versioned_contract_content`, verify the exact authorizing Decision ID, path, and
+checksum; the authorized acceptance-test index; each current contract checksum and
+observed version; and every named substantive anchor. The current version must meet
+the declared minimum, and no anchor may have been removed or weakened. Record the
+versioned-contract-content disposition rather than treating this evidence as a
+literal historical-version match or as `retired_by_lineage`.
+
+An earlier Decision whose test merely says that a contract "is Version N" remains
+literal unless a later approved Architect Decision pins that exact Decision and
+test index in a legacy authorization. Reject an absent, stale, mismatched,
+incomplete, or below-minimum authorization; do not infer an authorization from a
+nearby contract history entry or from a Builder narrative.
 
 ## Outputs
 
@@ -151,14 +191,23 @@ The Approved YAML is the bundle manifest. It records the Review ID, GUP ID,
 component paths, and checksums. The manifest and components form one Integrator
 job.
 
-For `operation_model: decision_migration_v1` or `decision_migration_v2`, do not
-create an edge CSV. Verify the GUP's pinned canonical and registry baselines,
-full before-images, complete retired-endpoint sets, and post-plan keys
-independently. For v2, also verify every merge has at least two distinct retired
-IDs, an absent canonical ID, exact registry row/label matches, a closed incident
-set, and no non-merge direct operation. An Approved manifest must name the exact
-reviewed GUP YAML as its sole `decision_migration` operation component and its
-validation report as a `validation` component, with matching GUP and Review
+For `operation_model: decision_migration_v1`, `decision_migration_v2`, or
+`decision_migration_v3`, do not create an edge CSV. Verify the GUP's pinned
+canonical and registry baselines, full before-images, complete retired-endpoint
+sets, and post-plan keys independently. For v2, also verify every merge has at
+least two distinct retired IDs, an absent canonical ID, exact current retired
+ID/label matches, a closed incident set, and no non-merge direct operation. For
+v3, verify every replacement and its closed paired repoints, and verify every
+label-normalization field was blank in the before-image, leaves its endpoint ID
+and assertion identity unchanged, and becomes the exact current registry label.
+A Decision's v2
+`registry_csv_row` is advisory: after confirming the ID and label, a moved row
+is informational only. Verify that any GUP row locator is the row observed in
+its pinned registry baseline and that the validation report retains declared and
+observed values. A missing ID, label mismatch, incomplete incident set, or
+baseline checksum mismatch remains blocking. An Approved manifest must name the
+exact reviewed GUP YAML as its sole `decision_migration` operation component and
+its validation report as a `validation` component, with matching GUP and Review
 checksums. The manifest never repeats the operation plan.
 
 The review must conform to `schemas/common/review.schema.json` and contain:

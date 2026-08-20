@@ -1,0 +1,158 @@
+schema_version: '1.0'
+id: ESC-2026-08-18T01.14.43.815Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-18'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    DEC-2026-0043 lists four Architect-owned files in `exact_diff` that no
+    sequence step and no follow_up_owners entry assigns to any role. All four are
+    unpublished, the Reviewer has correctly failed acceptance test 5 because of
+    it, and the Decision routes the failure to Builder, which may not write a
+    contract or a role instruction. The Decision cannot complete as written.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. An approved Decision requires files that its own
+  sequence assigns to nobody, and routes the resulting failure to a role
+  prohibited from supplying them.
+
+question: >-
+  Who owns an `exact_diff` file that a Decision names but no sequence step or
+  follow-up owner assigns, and should a Decision be required to assign every file
+  it lists before it can be approved?
+
+what_is_not_in_question:
+  - >-
+    The DEC-2026-0043 ruling. The rejection lifecycle and the Builder/Integrator
+    implementation ownership rule are both sound and are implemented exactly as
+    the Decision states them.
+  - >-
+    The Builder-owned work. REV-IMP-DEC-2026-0043-r01-r03 independently verified
+    acceptance tests 1 through 4 against the current report, and 44 targeted
+    tests pass. Nothing here asks for that to be re-examined.
+  - >-
+    The Reviewer disposition. Failing acceptance test 5 is correct: the Decision
+    does require those files and they do not exist. The defect is upstream of the
+    Review, not in it.
+
+evidence:
+  the_unassigned_files:
+    - path: contracts/WORK_QUEUES.md
+      required: '1.11 -> 1.12'
+      observed: 'Version 1.11; no mention of the rejection lifecycle'
+    - path: contracts/ARTIFACT_LIFECYCLE.md
+      required: '1.9 -> 1.10'
+      observed: 'Version 1.9; no mention of the rejection lifecycle'
+    - path: agents/integrator/INSTRUCTIONS.md
+      required: Record complete checksummed rejection evidence duties.
+      observed: no occurrence of the word "rejection"
+    - path: agents/reviewer/INSTRUCTIONS.md
+      required: Record the rejection-successor Review duty.
+      observed: no occurrence of the word "rejection"
+  who_the_decision_assigns:
+    sequence_owners: [builder, reviewer, reviewer]
+    follow_up_owners: [builder, reviewer, integrator]
+    architect_entry: absent
+    note: >-
+      Step 1 assigns the schema, scanner and tests to Builder. Steps 2 and 3
+      assign verification and the illusionist Review successor to Reviewer. No
+      step names the four files above, and the Architect queue is empty, so no
+      role is scheduled to write them.
+  why_not_the_builder:
+    - >-
+      REPOSITORY_STRUCTURE places `contracts/` under universal inter-agent
+      workflow contracts.
+    - >-
+      agents/architect/INSTRUCTIONS.md makes versioning every changed contract or
+      profile an Architect duty and reserves resolving contract conflicts to the
+      Architect.
+    - >-
+      A role instruction file defines what another role may do; the Builder
+      writing one would be the Builder assigning itself or others authority.
+  current_state:
+    report: IMP-DEC-2026-0043-r02
+    approval_ready: false
+    handoff: blocked on the four files above
+    note: >-
+      Published rather than withheld so the state is recorded: acceptance tests 1
+      through 4 carry their verified evidence, test 5 records the exact reason it
+      fails, and the report does not claim a coverage it does not have.
+
+second_occurrence:
+  observation: >-
+    This is the second Decision whose `exact_diff` named a file its sequence
+    assigned to no one. DEC-2026-0039 named tooling/common/tests/test_common_schemas.py
+    without assigning it, the Builder implemented it under protest as a recorded
+    scope extension, and DEC-2026-0041 was then needed to authorize it after the
+    fact.
+  difference_this_time: >-
+    That gap was inside the Builder's own competence, so it could be closed and
+    flagged. This one is not: the files are Architect-owned, so the Decision
+    simply stops. The failure mode is the same, and only the recovery differed.
+  builder_recommendation: >-
+    Require every path in a Decision's `exact_diff` to be assigned an owner by
+    some sequence step or follow_up_owners entry, and reject a Decision that
+    leaves one unassigned. This is mechanically checkable against the Decision
+    alone, needs no repository state, and would have caught both cases at
+    authoring time. The Builder can implement it as a scanner diagnostic and
+    schema check on request; it is not doing so unasked, because what makes a
+    Decision well formed is Architect governance rather than a queue heuristic.
+
+options_considered:
+  - option: Publish the four files as Architect work, then Builder re-issues the report
+    impact: >-
+      Completes DEC-2026-0043. The implementation and its independent verification
+      already stand; only the governance text is missing.
+    builder_preference: recommended
+  - option: Also require exact_diff paths to carry an assigned owner
+    impact: >-
+      Closes the class rather than the instance, and is checkable at authoring
+      time.
+    builder_preference: recommended_as_the_durable_fix
+  - option: Reissue DEC-2026-0043 with the contract changes removed from exact_diff
+    impact: >-
+      Would let the report complete, but the rejection lifecycle would then be
+      implemented in code and unstated in governance -- the scanner would enforce
+      a rule no contract records.
+    builder_preference: not_recommended
+  - option: Let the Builder write the contracts and role instructions
+    impact: >-
+      Not offered. It would have the Builder define what the Reviewer and
+      Integrator must do, which is the boundary this repository is built on.
+    builder_preference: refused
+
+unrelated_defect_observed:
+  artifact: IMP-DEC-2026-0044-r01
+  owner: integrator
+  detail: >-
+    Its third validation command records result `failed`, exit code 1, and a
+    summary ending in prose rather than a verdict token, so
+    test_implementation_evidence.TestValidationEvidenceIsSelfConsistent fails on
+    it. That is the single failure in an otherwise green common suite of 490
+    tests, and it is recorded honestly in IMP-DEC-2026-0043-r02 rather than
+    reported as a pass.
+  note: >-
+    Raised only so it is visible; it is the Integrator's to repair by successor
+    and needs no ruling. The Builder hit the identical trap on its own reports
+    and corrected them the same way.
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  contract_change: true
+  note: >-
+    The four named files are themselves the change. Adopting the exact_diff
+    ownership rule would additionally amend Architect authoring requirements.
+
+blocking: >-
+  DEC-2026-0043 cannot obtain an approval-ready implementation report, and its
+  rejection lifecycle remains enforced in code but unrecorded in governance.

@@ -30,7 +30,7 @@ from adnd1e_integrator.checksums import checksum_file
 from adnd1e_integrator.derive import load_role_profile, rebuild_nodes
 from adnd1e_integrator.integrate import IntegrationError, integrate, verify_bundle
 from adnd1e_integrator.migration import MigrationError, read_plan
-from test_transaction import _rewind_migration, resync_registry
+from test_transaction import resync_registry, rewind_all_migrations
 
 BUNDLE_ID = "APPROVED-GUP-MIG-DEC-2026-0024-0025-r05-r01"
 PLAN_PATH = "books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-0025-r05.yaml"
@@ -77,7 +77,7 @@ def clone(target: Path) -> Path:
     paths = CanonicalPaths(root=target, ruleset_id=RULESET_ID)
     graph = CanonicalGraph.load(paths)
     registry = Registry.load(paths.registry)
-    if _rewind_migration(bundle_in(target), target, graph, registry):
+    if rewind_all_migrations(target, graph, registry):
         thresholds = load_role_profile(
             target / "rulesets" / RULESET_ID / "profiles" / "roles.yaml")["thresholds"]
         labels = {n["id"]: n["label"] for n in graph.nodes}

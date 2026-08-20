@@ -1,0 +1,377 @@
+{
+ "schema_version": "1.0",
+ "id": "INT-20260819-001",
+ "integration_id": "INT-20260819-001",
+ "status": "rejected",
+ "ruleset_id": "adnd1e",
+ "book_id": "phb",
+ "constitution_version": "1.8",
+ "revision": 1,
+ "supersedes": null,
+ "handoff": {
+  "next_role": "reviewer",
+  "readiness": "blocked",
+  "reason": "All four DEC-2026-0047 successor bundles carry duplicate assertion keys (invariant 12) and cannot be applied. The packaging correction itself is correct and is not the defect: each derived component is exactly its GUP's edges.csv followed by pending.csv, one row each, in declared order, with blocked rows excluded and every checksum matching. The duplicates are in the reviewed GUP row content. Most sit in the pending partition, which no earlier bundle shipped, so this is the first batch in which they could reach an integrity check. Eleven keys are shared between the magic-user 1-4 and illusionist packets and one between magic-user 5-9 and illusionist, so the overlap cannot be resolved inside a single packet: the Reviewer must decide which packet owns each shared assertion before any of these four can be integrated.",
+  "blocking_ids": [
+   "APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03",
+   "APPROVED-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02",
+   "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r05-r01",
+   "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02"
+  ]
+ },
+ "rejected_at_utc": "2026-08-19T12:34:59.107Z",
+ "tool": {
+  "name": "adnd1e-integrator",
+  "version": "1.0.0"
+ },
+ "canonical_state": {
+  "mutated": false,
+  "note": "Preconditions and the duplicate-key check run before the snapshot; no bundle in this batch reached a write. Canonical is as left by INT-20260818-001.",
+  "edges": 4224,
+  "nodes": 1162,
+  "registry": 1180,
+  "findings": 1697
+ },
+ "defect_attribution": {
+  "owner": "builder",
+  "approved_by": "reviewer",
+  "detail": "The duplicate rows are GUP content authored by Builder and approved by Reviewer. Under DEC-2026-0043 this record routes to Reviewer, which owns the remediation decision and the packet-ownership call on the twelve shared keys. Integrator does not reinterpret source rows.",
+  "not_a_defect_in": "DEC-2026-0047 derived packaging, component checksums, declared row counts, node registration plans, or blocked-row exclusion, all of which verified clean."
+ },
+ "rejected_bundles": [
+  {
+   "bundle_id": "APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03",
+   "review_id": "REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r04",
+   "gup_id": "GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08",
+   "packet_id": "PKT-PHB-064-079-magic-user-spells-1-4",
+   "edge_csv": {
+    "path": "books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03.edges.csv",
+    "checksum": "sha256:5675effbe5f161a01e324aa2b4661ed4bb577a1ca9c3a6adee7014b899ebace2",
+    "checksum_matches_manifest": true,
+    "declared_rows": 231,
+    "actual_rows": 231
+   },
+   "derived_component_check": {
+    "verdict": "correct",
+    "note": "DEC-2026-0047 derivation verified: the component is exactly edges.csv followed by pending.csv, each row once, in csv_row order. No blocked row is present. This rejection is not a packaging defect.",
+    "gup_edges_rows": 98,
+    "gup_pending_rows": 133,
+    "gup_blocked_rows_excluded": 2,
+    "sum_matches_component": true,
+    "edges_pending_overlap": 0
+   },
+   "duplicate_assertion_keys": {
+    "within_bundle": [
+     {
+      "assertion_key": "exp_level MODIFIES spell_wizard_lock",
+      "csv_rows": [
+       39,
+       40
+      ],
+      "occurrences": 2,
+      "originates_in": [
+       "edges.csv"
+      ]
+     },
+     {
+      "assertion_key": "spell_friends MODIFIES abil_charisma",
+      "csv_rows": [
+       70,
+       71
+      ],
+      "occurrences": 2,
+      "originates_in": [
+       "edges.csv"
+      ]
+     }
+    ],
+    "already_in_canonical": [
+     {
+      "assertion_key": "exp_level MODIFIES spell_detect_magic",
+      "csv_row": 5,
+      "originates_in": "edges.csv"
+     },
+     {
+      "assertion_key": "spell_hold_person TRIGGERS save_spell",
+      "csv_row": 74,
+      "originates_in": "edges.csv"
+     },
+     {
+      "assertion_key": "spell_levitate CONSTRAINS ex_movement_rate",
+      "csv_row": 78,
+      "originates_in": "edges.csv"
+     },
+     {
+      "assertion_key": "spell_polymorph_other TRIGGERS rule_system_shock",
+      "csv_row": 83,
+      "originates_in": "edges.csv"
+     }
+    ],
+    "shared_with_other_bundles": [
+     {
+      "other_bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r05-r01",
+      "shared_assertion_keys": [
+       "exp_level MODIFIES spell_audible_glamer",
+       "exp_level MODIFIES spell_dancing_lights",
+       "exp_level MODIFIES spell_detect_invisibility",
+       "exp_level MODIFIES spell_detect_magic",
+       "exp_level MODIFIES spell_hallucinatory_terrain",
+       "exp_level MODIFIES spell_massmorph",
+       "exp_level MODIFIES spell_mirror_image",
+       "exp_level MODIFIES spell_phantasmal_force",
+       "exp_level MODIFIES spell_rope_trick",
+       "exp_level MODIFIES spell_suggestion",
+       "exp_level MODIFIES spell_ventriloquism"
+      ]
+     }
+    ]
+   },
+   "blocking_failures": [
+    {
+     "check": "no duplicate assertion key within the bundle",
+     "result": "fail",
+     "blocking": true,
+     "invariant": 12,
+     "detail": "exp_level MODIFIES spell_wizard_lock appears 2x at csv rows [39, 40]; spell_friends MODIFIES abil_charisma appears 2x at csv rows [70, 71]"
+    },
+    {
+     "check": "no assertion key already present in canonical",
+     "result": "fail",
+     "blocking": true,
+     "invariant": 12,
+     "detail": "exp_level MODIFIES spell_detect_magic (csv row 5) already exists in canonical; spell_hold_person TRIGGERS save_spell (csv row 74) already exists in canonical; spell_levitate CONSTRAINS ex_movement_rate (csv row 78) already exists in canonical; spell_polymorph_other TRIGGERS rule_system_shock (csv row 83) already exists in canonical"
+    },
+    {
+     "check": "no duplicate assertion key shared with another bundle in the batch",
+     "result": "fail",
+     "blocking": true,
+     "invariant": 12,
+     "detail": "11 key(s) shared with APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r05-r01"
+    }
+   ],
+   "bundle_checksum": "sha256:1798113da8f4a6a9b6111f677908ab77a91c1cefac87d10be58647ef60851f2e",
+   "review_checksum": "sha256:f2650258a145025e639a1ced95ed38f09f6474ac8c28c8ebecdb87e4cbbc03ed",
+   "gup_checksum": "sha256:9800400900806aca6ebcd2af03c69b75a8a00780386468e883eb801105acb366"
+  },
+  {
+   "bundle_id": "APPROVED-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02",
+   "review_id": "REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r03",
+   "gup_id": "GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07",
+   "packet_id": "PKT-PHB-079-094-magic-user-spells-5-9",
+   "edge_csv": {
+    "path": "books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02.edges.csv",
+    "checksum": "sha256:00901a6f4e94ce2d23a0614fba0444b8183ff54bb32f105cf605c93aff69142a",
+    "checksum_matches_manifest": true,
+    "declared_rows": 203,
+    "actual_rows": 203
+   },
+   "derived_component_check": {
+    "verdict": "correct",
+    "note": "DEC-2026-0047 derivation verified: the component is exactly edges.csv followed by pending.csv, each row once, in csv_row order. No blocked row is present. This rejection is not a packaging defect.",
+    "gup_edges_rows": 48,
+    "gup_pending_rows": 155,
+    "gup_blocked_rows_excluded": 7,
+    "sum_matches_component": true,
+    "edges_pending_overlap": 0
+   },
+   "duplicate_assertion_keys": {
+    "within_bundle": [],
+    "already_in_canonical": [
+     {
+      "assertion_key": "exp_level MODIFIES spell_lower_water",
+      "csv_row": 8,
+      "originates_in": "edges.csv"
+     },
+     {
+      "assertion_key": "exp_level MODIFIES spell_part_water",
+      "csv_row": 10,
+      "originates_in": "edges.csv"
+     }
+    ],
+    "shared_with_other_bundles": [
+     {
+      "other_bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r05-r01",
+      "shared_assertion_keys": [
+       "exp_level MODIFIES spell_maze"
+      ]
+     }
+    ]
+   },
+   "blocking_failures": [
+    {
+     "check": "no assertion key already present in canonical",
+     "result": "fail",
+     "blocking": true,
+     "invariant": 12,
+     "detail": "exp_level MODIFIES spell_lower_water (csv row 8) already exists in canonical; exp_level MODIFIES spell_part_water (csv row 10) already exists in canonical"
+    },
+    {
+     "check": "no duplicate assertion key shared with another bundle in the batch",
+     "result": "fail",
+     "blocking": true,
+     "invariant": 12,
+     "detail": "1 key(s) shared with APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r05-r01"
+    }
+   ],
+   "bundle_checksum": "sha256:09ad1c1dec4e6f53940551548bd757980f1f54a0f4ea88429a99b2501c0d05b0",
+   "review_checksum": "sha256:50895dd4af6157da3402fca072679fe6e9f104ee474fc0d81967f74b4d440ca7",
+   "gup_checksum": "sha256:2b9215477bac38a5b543837241d014442c67d2a6b30ed7e9dc333cf218e5f88c"
+  },
+  {
+   "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r05-r01",
+   "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r03",
+   "gup_id": "GUP-PKT-PHB-094-100-illusionist-spells-r05",
+   "packet_id": "PKT-PHB-094-100-illusionist-spells",
+   "edge_csv": {
+    "path": "books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r05-r01.edges.csv",
+    "checksum": "sha256:3a556b7238d8854d9a2636cac843ee35f19dc27ec35e2bb05fcdfe9c98d1a49f",
+    "checksum_matches_manifest": true,
+    "declared_rows": 120,
+    "actual_rows": 120
+   },
+   "derived_component_check": {
+    "verdict": "correct",
+    "note": "DEC-2026-0047 derivation verified: the component is exactly edges.csv followed by pending.csv, each row once, in csv_row order. No blocked row is present. This rejection is not a packaging defect.",
+    "gup_edges_rows": 14,
+    "gup_pending_rows": 106,
+    "gup_blocked_rows_excluded": 6,
+    "sum_matches_component": true,
+    "edges_pending_overlap": 0
+   },
+   "duplicate_assertion_keys": {
+    "within_bundle": [
+     {
+      "assertion_key": "exp_level MODIFIES spell_shadow_monsters",
+      "csv_rows": [
+       54,
+       55
+      ],
+      "occurrences": 2,
+      "originates_in": [
+       "pending.csv"
+      ]
+     },
+     {
+      "assertion_key": "exp_level MODIFIES spell_summon_shadow",
+      "csv_rows": [
+       57,
+       58
+      ],
+      "occurrences": 2,
+      "originates_in": [
+       "pending.csv"
+      ]
+     }
+    ],
+    "already_in_canonical": [
+     {
+      "assertion_key": "exp_level MODIFIES spell_detect_magic",
+      "csv_row": 6,
+      "originates_in": "edges.csv"
+     }
+    ],
+    "shared_with_other_bundles": [
+     {
+      "other_bundle_id": "APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03",
+      "shared_assertion_keys": [
+       "exp_level MODIFIES spell_audible_glamer",
+       "exp_level MODIFIES spell_dancing_lights",
+       "exp_level MODIFIES spell_detect_invisibility",
+       "exp_level MODIFIES spell_detect_magic",
+       "exp_level MODIFIES spell_hallucinatory_terrain",
+       "exp_level MODIFIES spell_massmorph",
+       "exp_level MODIFIES spell_mirror_image",
+       "exp_level MODIFIES spell_phantasmal_force",
+       "exp_level MODIFIES spell_rope_trick",
+       "exp_level MODIFIES spell_suggestion",
+       "exp_level MODIFIES spell_ventriloquism"
+      ]
+     },
+     {
+      "other_bundle_id": "APPROVED-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02",
+      "shared_assertion_keys": [
+       "exp_level MODIFIES spell_maze"
+      ]
+     }
+    ]
+   },
+   "blocking_failures": [
+    {
+     "check": "no duplicate assertion key within the bundle",
+     "result": "fail",
+     "blocking": true,
+     "invariant": 12,
+     "detail": "exp_level MODIFIES spell_shadow_monsters appears 2x at csv rows [54, 55]; exp_level MODIFIES spell_summon_shadow appears 2x at csv rows [57, 58]"
+    },
+    {
+     "check": "no assertion key already present in canonical",
+     "result": "fail",
+     "blocking": true,
+     "invariant": 12,
+     "detail": "exp_level MODIFIES spell_detect_magic (csv row 6) already exists in canonical"
+    },
+    {
+     "check": "no duplicate assertion key shared with another bundle in the batch",
+     "result": "fail",
+     "blocking": true,
+     "invariant": 12,
+     "detail": "11 key(s) shared with APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03; 1 key(s) shared with APPROVED-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02"
+    }
+   ],
+   "bundle_checksum": "sha256:7a04629215c9fd85d02e68c194f0f8550ff02e44b336904e6de78198e5a1eb13",
+   "review_checksum": "sha256:6b9830bf693ff50a590b20ffbc02211faebd65aed960a4e8ca480f90086b29d0",
+   "gup_checksum": "sha256:366dbf305a6fe2483dc9993e58928489ba676a8546fcac1b078273fc6421b049"
+  },
+  {
+   "bundle_id": "APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02",
+   "review_id": "REV-GUP-PKT-PHB-110-117-psionics-r06-r03",
+   "gup_id": "GUP-PKT-PHB-110-117-psionics-r06",
+   "packet_id": "PKT-PHB-110-117-psionics",
+   "edge_csv": {
+    "path": "books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-110-117-psionics-r06-r02.edges.csv",
+    "checksum": "sha256:d7b7810e9732ee43679733fe21f938c62e200f1e21721f7a8d04afb22467f2a6",
+    "checksum_matches_manifest": true,
+    "declared_rows": 208,
+    "actual_rows": 208
+   },
+   "derived_component_check": {
+    "verdict": "correct",
+    "note": "DEC-2026-0047 derivation verified: the component is exactly edges.csv followed by pending.csv, each row once, in csv_row order. No blocked row is present. This rejection is not a packaging defect.",
+    "gup_edges_rows": 14,
+    "gup_pending_rows": 194,
+    "gup_blocked_rows_excluded": 9,
+    "sum_matches_component": true,
+    "edges_pending_overlap": 0
+   },
+   "duplicate_assertion_keys": {
+    "within_bundle": [
+     {
+      "assertion_key": "psi_domination CONSUMES psi_strength_points",
+      "csv_rows": [
+       111,
+       112
+      ],
+      "occurrences": 2,
+      "originates_in": [
+       "pending.csv"
+      ]
+     }
+    ],
+    "already_in_canonical": [],
+    "shared_with_other_bundles": []
+   },
+   "blocking_failures": [
+    {
+     "check": "no duplicate assertion key within the bundle",
+     "result": "fail",
+     "blocking": true,
+     "invariant": 12,
+     "detail": "psi_domination CONSUMES psi_strength_points appears 2x at csv rows [111, 112]"
+    }
+   ],
+   "bundle_checksum": "sha256:d3065bee743d930180647dde52dcf899eec968a1a272d4e03a381f1572135001",
+   "review_checksum": "sha256:b54e57f4f18e10666d4cadfe9a0db41f5a019f1c9a32034052ff51b50daa6506",
+   "gup_checksum": "sha256:054fd585f1a63e8ffbb5cd35949cc3056edac3fa25ffc19a0e888d4e781c9a6f"
+  }
+ ]
+}

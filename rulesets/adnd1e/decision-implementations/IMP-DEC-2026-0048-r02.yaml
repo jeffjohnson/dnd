@@ -1,0 +1,124 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0048-r02
+artifact_kind: decision_implementation
+status: blocked
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: IMP-DEC-2026-0048-r01
+approval_ready: false
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0048
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml
+  checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:46a70321ce8aca78e4d704e6f3b30c2fec83f89bb9ab3318e9bf2166f07b15b7
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:a243b60067d9b0694a8b7185c89dd414d0c9db11338271f87fa8f80b1f6c9b0f
+- path: agents/architect/INSTRUCTIONS.md
+  checksum: sha256:c2911033c12bcaf1f9411730c17c2a8d19cfc040ea13944826fefe382a4e75c4
+- path: agents/reviewer/INSTRUCTIONS.md
+  checksum: sha256:71863c4ce975b86f4bc868259939120c319369cae896edd9b1e1e0f25e635582
+- path: schemas/common/architect-decision.schema.json
+  checksum: sha256:b4004bd9fb4d3704c15670c6880416f60d07f9e9563ff4a4e0f030a7b4fc0d2e
+- path: schemas/common/decision-implementation.schema.json
+  checksum: sha256:32530912b31236fc8f3573ae4fefcd2eda33f8e8c417c35907bcbf854389cee4
+- path: schemas/common/decision-implementation-review.schema.json
+  checksum: sha256:461c54b38668c3ba95309f73fe816731a98b0351e2c8bc52a2ffc7fb39c8c007
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:a9abe770369ae7a58f1d2992a93ceca4e972e276987853ba15fe73ce90626fed
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:7cd6c52adb115dbc12e5c7146d5ae73a467207370f460cff628f0fe4b2355103
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-19T09.31.06.244Z.yaml
+  checksum: sha256:3d5f4f24c157f95d76c667006e208fc5820a7363bf0d71124ca0820a931fc53d
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml
+  checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: VERIFIED AGAINST THE PUBLISHED FILES, WHICH THE ARCHITECT WROTE. contracts/WORK_QUEUES.md
+    is Version 1.15; core rule 16 (lines 58-64) makes a contract version a minimum-version predicate only
+    under declared versioned_contract_content semantics or a later legacy authorization, and states that
+    an unstructured exact-version statement stays literal. The 'Versioned Contract-Content Acceptance'
+    section (line 66) requires 'Version N or later' plus enumerated paths, minimums and anchors, fixes
+    the outcome as passed in the report and verified_versioned_contract_content in the Review, and says
+    in terms that it is not retired_by_lineage. Contract acceptance test 48 records the queue criteria.
+    contracts/ARTIFACT_LIFECYCLE.md is Version 1.11 and its section 6 (lines 197-203) gives the same rule
+    as current-state verification rather than a retirement outcome. Re-verified at the current checksums
+    for this revision, which carries the DEC-2026-0048 Review-branch correction; the claim above is unchanged.
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED, AND THE GAP r01 LEFT IS CLOSED. r01 added the schema shapes but left
+    the queue''s approved-review validator falling through to ''rather than verified'', so a Review using
+    the disposition this Decision requires was rejected. REV-IMP-DEC-2026-0048-r01-r02 named it exactly
+    and the two authorized reports demonstrated it. scan_agent_queues.py now carries a verified_versioned_contract_content
+    branch that requires the report to record the result as passed, requires the report to actually claim
+    versioned contract-content evidence for that index, requires the Review to record its own re-derivation,
+    and validates that re-derivation through _versioned_block_errors -- the same function the report is
+    checked with, extracted for the purpose so the two cannot drift apart. The converse guard is in place
+    too: plain `verified` on an index the report backs with this evidence is refused, mirroring the retired-by-lineage
+    rule. Schema side unchanged from r01: acceptance_test_semantics gains the kind and requires its contracts;
+    contract_version_acceptance_authorizations pins decision_input, index and contracts; the report evidence
+    block is forbidden on a retired_by_lineage result; the Review disposition requires its evidence and
+    forbids it elsewhere.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'IMPLEMENTED AND TESTED, BOTH DIRECTIONS. Rejection: VersionedContractContentCase covers absent
+    authority, stale authority checksum, an authorization pinned to a different Decision checksum, a mismatched
+    authorized index, no authorization for the claimed index, below-minimum version, incomplete anchors,
+    stale contract checksum, an observed version disagreeing with the file, a declared minimum below the
+    authorized one, evidence for an unauthorized contract, missing evidence for an authorized one, and
+    this outcome on a failed result; test_an_invalid_report_is_not_approval_ready fixes that such a report
+    does not reach Reviewer. Acceptance: VersionedContractReviewCase adds the half r01 lacked -- test_a_valid_versioned_review_is_accepted
+    and test_a_valid_versioned_review_consumes_the_decision prove valid evidence now reaches an effective
+    approved Review and completes the Decision, while test_the_reviewer_evidence_is_re_derived_not_trusted,
+    test_a_reviewer_dropping_an_anchor_is_rejected, test_the_disposition_requires_its_own_verification,
+    test_the_disposition_needs_the_report_to_claim_the_evidence and test_plain_verified_cannot_approve_this_evidence
+    hold the line. 73 targeted tests pass.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'DONE IN THIS SAME BATCH, AND NOW ACTUALLY APPROVABLE. IMP-DEC-2026-0045-r06 and IMP-DEC-2026-0046-r05
+    carry versioned_contract_content built directly from this Decision''s contract_version_acceptance_authorizations,
+    so the minimums and anchors are the Architect''s rather than retyped, each using only its own authorized
+    index: DEC-2026-0045 test 1 against WORK_QUEUES 1.12 or later and ARTIFACT_LIFECYCLE 1.10 or later,
+    DEC-2026-0046 test 4 against WORK_QUEUES 1.13 or later. Current state checked against the files: WORK_QUEUES
+    is 1.15, ARTIFACT_LIFECYCLE is 1.11, both at or above every floor, and all eight authorized anchors
+    were located in the current text before being claimed present. Both authorization checksums match
+    the live Decision files. With the Review branch published, a Reviewer can now dispose these as verified_versioned_contract_content
+    and have that accepted, which r01 made impossible.'
+handoff:
+  next_role: architect
+  readiness: blocked
+  reason: 'Supersedes r01 with the Review-branch correction REV-IMP-DEC-2026-0048-r01-r02 required: the
+    approved-review validator now accepts and independently re-derives verified_versioned_contract_content
+    through the same validation the report uses. All four acceptance tests are evidenced and 73 targeted
+    tests pass. Not approval-ready only because the Builder suite is red on the DEC-2026-0014 canonical
+    debt pin, which has nothing to do with this Decision and is escalated as ESC-2026-08-19T17.12.38.904Z.'
+  blocking_ids:
+  - ESC-2026-08-19T17.12.38.904Z
+validation_report: build/reports/IMP-DEC-2026-0048-r02.validation.json
+validation_report_checksum: sha256:00fab9db7e8ac8a01229271848635d20bd326602de8ae2ba95320005822edfd6
+validation:
+  passed: false
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 633 tests in 98.006s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.VersionedContractContentCase
+      test_scan_agent_queues.VersionedContractReviewCase test_scan_agent_queues.TestVersionedContractHelpers'
+    exit_code: 0
+    result: passed
+    summary: Ran 73 tests in 1.089s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 1
+    result: failed
+    summary: 'Ran 617 tests in 82.862s, 3 failures, all in test_edge_schema.TestFullCorpus and all one
+      cause: the canonical audit now reports 64 errors across 57 rows against the 60 and 53 DEC-2026-0014
+      pinned, after the cavalier integration added four `training` rows to that known debt. Unrelated
+      to this implementation and escalated as ESC-2026-08-19T17.12.38.904Z rather than resolved by editing
+      the pinned figures FAILED'

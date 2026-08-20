@@ -1,0 +1,110 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0044-r01
+artifact_kind: decision_implementation
+status: blocked
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: false
+implemented_by: integrator
+decision_input:
+  id: DEC-2026-0044
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0044.yaml
+  checksum: sha256:ba23be39f14bf07ffc50e01d6ff0c7fb43531b4ddeb293e87db4498057ddb157
+implementation_files:
+- path: tooling/integrator/src/adnd1e_integrator/migration.py
+  checksum: sha256:87a910ce3835cbbd545d608d4ee83259d32c9d5ead096b672dec8e60fa801db8
+- path: tooling/integrator/src/adnd1e_integrator/integrate.py
+  checksum: sha256:ef8a81c3b847add33db5f04c1ed6d43eb2be59a08373a87145798c19f9d017f5
+- path: tooling/integrator/src/adnd1e_integrator/bundles.py
+  checksum: sha256:56128fc48e9e9df8e8250cd6b2149abd01fb0a76ce4f45c7236cd29bf1801fae
+- path: tooling/integrator/tests/test_migration_v2.py
+  checksum: sha256:4e34507e39d01a4a4fb79d30c17c4d18e0a234a3393f27bb3cf175be8b6ffabf
+- path: tooling/integrator/tests/test_transaction.py
+  checksum: sha256:52d4dbdb4c581ed0dfb843a3edacd134d537d360e91832c17df04174d3a2c639
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'TestDiscoveryAndPreconditions.test_a_v2_bundle_discovers_as_one_job_with_no_edge_csv
+    asserts exactly one Bundle with edges_path None and is_direct_migration true. bundles.DIRECT_MIGRATION_MODELS
+    now names both models, so the rule 31 exemption is read from the declared operation_model
+    rather than from a file simply being absent. v1 and packet-update discovery are unchanged:
+    the 30 tests in test_migration pass, and both exclusions stay in force via test_a_forbidden_edge_csv_is_refused
+    and rule 32 coverage in test_migration.TestDiscovery.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'TestPlanShape covers the grammar: fewer than two retired IDs, duplicate retired
+    IDs, a retired ID claimed by two merges, a nonempty additions_proposed / relabels / replacements,
+    a canonical_removals entry, a wrong registry_action, a non-paired repoint, and a v1 model
+    carrying a merge are each refused with MigrationError. TestDiscoveryAndPreconditions covers
+    bundle and corpus conditions: a forbidden edge CSV, baseline drift, an existing survivor
+    identity, a retired label mismatch and an incomplete incident set are each blocking before
+    any snapshot is taken. TestTransactional covers the post-operation duplicate assertion
+    key with a byte-for-byte rollback assertion. Every assertion runs against the real reviewed
+    r03 plan.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: test_a_moved_advisory_locator_is_informational_only sets a retired node registry_csv_row
+    to 99999 with ID and label intact and asserts blocking_failures is empty while an advisory
+    precondition records the observation; migration.merge_locator_observations reports the
+    moved row and never blocks. The strict conditions are asserted separately by test_a_retired_label_mismatch_is_refused,
+    the missing-ID branch of check_merge_registry, and test_baseline_drift_is_refused for
+    the pinned registry checksum.
+- acceptance_test_index: 4
+  result: not_run
+  evidence: Not the Integrator to record. This report is the artifact acceptance test 4 refers
+    to, and its independent Review under the DEC-2026-0043 direct-implementation lifecycle
+    is step 2 and the only completion record. Recording a pass here would be the implementing
+    role certifying its own review.
+- acceptance_test_index: 5
+  result: failed
+  evidence: 'Recorded as failed rather than passed. Integrator suite: 121 tests, 0 failures,
+    5 errors, improved from 7 during this work. The v2 suite is 25 of 25 and the v1 migration
+    suite 30 of 30; no error is in the applier and none was introduced by v2. All five are
+    one limitation of the shared clone fixture in test_transaction: _rewind reverses every
+    discovered bundle and strips each one registry registrations, while these five tests re-apply
+    a single bundle. A bundle whose endpoint a different, already integrated bundle registered
+    then fails invariant 1 - rule_prime_requisite comes from ability-scores-r06 and rule_alignment_change
+    from alignment-hp-languages-r04, both consumed by earlier Integration records. Copying
+    rulesets/adnd1e/manifests into the clone fixed two of the seven by letting integrated_bundle_ids
+    see that those batches already landed. The remaining five need the rewind narrowed to
+    only the bundle under test; that was attempted here, raised the count to six, and was
+    reverted rather than left half-applied. It is fixture debt, not v2 scope, and is the sole
+    reason this report is not approval-ready.'
+handoff:
+  next_role: reviewer
+  readiness: blocked
+  reason: 'decision_migration_v2 discovery, component verification, strict preconditions,
+    transactional merge execution and provenance are implemented and covered by 25 targeted
+    tests against the real reviewed r03 plan. Acceptance test 5 is recorded as failed: five
+    clone-fixture errors remain in the Integrator suite, down from seven, none introduced
+    by this work and none in the applier. The Reviewer should decide whether that fixture
+    debt blocks approval or is tracked separately.'
+  blocking_ids:
+  - IMP-DEC-2026-0044-r01#acceptance_test_5
+validation:
+  passed: false
+  commands:
+  - command: '[cwd tooling/integrator/tests] python -m unittest test_migration_v2 -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 25 tests in 4.6s OK
+  - command: '[cwd tooling/integrator/tests] python -m unittest test_migration -q'
+    exit_code: 0
+    result: passed
+    summary: Ran 30 tests OK
+  - command: '[cwd tooling/integrator/tests] python -m unittest discover -s . -q'
+    exit_code: 1
+    result: failed
+    summary: Ran 121 tests in 155.6s, 0 failures, 5 errors, all clone-fixture
+notes:
+- 'No GUP, Review, Approved bundle, canonical file or registry was altered. books/adnd1e/dmg/artifacts/approved
+  remains empty: materializing the v2 bundle is step 3 and belongs to the Reviewer.'
+- 'Exercised on a clone against the current corpus, the v2 merge reduces invariant 3 findings
+  by three: dex_reaction_adj, dex_defensive_adj and str_exceptional use prefixes constitution
+  3.1 does not approve, and consolidating them into abil_ identities clears them. The applier
+  still refuses any batch that raises a finding.'
+- 'bundles.ready_queue now honours DEC-2026-0043 rejection records, so the Integrator CLI
+  agrees with the queue scanner: all four rejected bundles are suppressed and the live ready
+  count is 0. This was required for the queue half of acceptance test 5.'

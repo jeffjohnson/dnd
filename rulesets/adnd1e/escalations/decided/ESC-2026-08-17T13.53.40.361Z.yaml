@@ -1,0 +1,189 @@
+schema_version: '1.0'
+id: ESC-2026-08-17T13.53.40.361Z
+status: decided
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-014-016-cavalier
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-17'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    DEC-2026-0033 acceptance test 4 examines an Analyst artifact the same Decision
+    sequences after the Reviewer approves the Builder report that must evidence it.
+    No Builder action can satisfy it at step 1. Separately, this escalation records
+    the Builder-side mechanism already implemented for DEC-2026-0039 acceptance
+    test 6, so the ruling on ESC-2026-08-17T13.29.36.700Z can adopt or redirect a
+    concrete implementation rather than specify one blind.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. An approved Decision's acceptance test cannot be
+  satisfied by the work that Decision assigns, and a second Decision's required
+  outcome was reachable only by changing a file outside its stated
+  implementation scope.
+
+question: >-
+  When a Decision's acceptance test examines an artifact owned by a role the same
+  Decision sequences later, how should the earlier role's implementation report
+  account for it, and should such a test be authored against the sequence at all?
+
+what_is_not_in_question:
+  - >-
+    The DEC-2026-0033 ruling or its implementation. The `weapon_` prefix, its
+    separation from `wpn_` and `item_`, constitution v1.8, and the six ability
+    abbreviations are all implemented and evidenced.
+  - >-
+    Ownership of the UA GUR. `GUR-PKT-UA-014-016-cavalier-r02` is the Analyst's,
+    and the Builder neither authored nor predicted it.
+  - >-
+    The DEC-2026-0039 ruling. The handoff vocabulary, terminal withdrawal form and
+    Analyst repair routing are implemented exactly as `queue_contract` states, and
+    all seven of its acceptance tests are evidenced.
+
+the_circular_acceptance_test:
+  decision: DEC-2026-0033
+  acceptance_test_index: 4
+  text: >-
+    The UA r02 GUR supersedes r01, contains no numeric magnitude or threshold in
+    the Cavalier progression assertion, and retains source-backed node and edge
+    selection by the Analyst.
+  sequence_as_written:
+    - step: 1
+      owner: builder
+      action: Implement the v1.8 vocabulary and publish the implementation report.
+    - step: 2
+      owner: reviewer
+      action: Approve the report only after every acceptance test is evidenced.
+    - step: 3
+      owner: analyst
+      action: Publish GUR-PKT-UA-014-016-cavalier-r02.
+  the_loop: >-
+    Step 2 requires evidence for a test whose subject step 3 creates. At step 1 the
+    file is guaranteed absent, and `books/adnd1e/ua/artifacts/gur/` holds only r01
+    today.
+  builder_disposition: >-
+    Recorded as `not_run` with the reason, which makes IMP-DEC-2026-0033-r01
+    `approval_ready: false` and blocked on the Analyst. The four Builder-owned
+    acceptance tests are evidenced and the implementation is complete. Recording
+    `passed` for an assertion about a file that is not on disk was refused: that is
+    precisely the unchecked authority the report format exists to prevent.
+  options_considered:
+    - option: Leave the report blocked until the Analyst publishes r02
+      impact: >-
+        Honest and already done, but DEC-2026-0033 keeps producing a ready Builder
+        queue item that no Builder action can clear, and the Reviewer cannot
+        complete step 2.
+      builder_preference: current_state_not_a_recommendation
+    - option: Reorder the Decision so the Analyst GUR precedes the report
+      impact: >-
+        Removes the loop for this Decision. Requires a reissue naming the corrected
+        sequence; the implementation and its evidence are unaffected.
+      builder_preference: recommended
+    - option: >-
+        Rule generally that an acceptance test whose subject a later step creates is
+        discharged by the owning role's own artifact, not by the earlier report
+      impact: >-
+        Fixes the class rather than the instance. Two Decisions in three days have
+        now specified an acceptance test the assigned role cannot satisfy.
+      builder_preference: recommended_as_the_durable_fix
+    - option: Have the Builder evidence it from r01 plus the ruling
+      impact: >-
+        Not offered. r01 is not r02, and asserting what an unwritten Analyst
+        artifact will contain is source interpretation the Builder may not perform.
+      builder_preference: refused
+
+the_implementation_behind_the_analyst_escalation:
+  escalation: ESC-2026-08-17T13.29.36.700Z
+  note: >-
+    Filed by the Analyst on the same day and asking the right question. This section
+    supplies only what that escalation could not: the Builder-side mechanism now on
+    disk. It is not a second request for the same ruling.
+  what_was_implemented: >-
+    A bounded exemption in the repository-wide envelope assertion. A published
+    artifact may fail validation only when all three hold: every error is inside the
+    `handoff` block; some published artifact names it in `supersedes`; and that
+    successor validates with zero errors. It is closest to the Analyst's first
+    option, generalized by rule rather than by artifact name, but pinned by test to
+    exactly the one artifact that qualifies today.
+  why_not_leaf_status_alone: >-
+    Scoping the assertion to active leaves would stop validating every superseded
+    artifact for every kind of defect, including identity and provenance. Keying on
+    "the defect is in queue-derivation metadata and a valid successor exists" keeps
+    semantic coverage on the whole corpus while excusing exactly the field
+    WORK_QUEUES already declines to read from a superseded revision.
+  narrowness_evidence:
+    tests: tooling/common/tests/test_common_schemas.py
+    denied_conditions:
+      - A predecessor with no successor is not exempt.
+      - A successor naming a different predecessor does not repair it.
+      - An invalid successor repairs nothing.
+      - An error outside the handoff block is never exempt.
+      - The exempt set is pinned to one named artifact, so a new invalid artifact fails.
+  scope_deviation:
+    file: tooling/common/tests/test_common_schemas.py
+    stated_in: DEC-2026-0039.exact_diff
+    present: false
+    builder_position: >-
+      Recorded as an exact_diff extension in IMP-DEC-2026-0039-r01 acceptance test
+      6 rather than presented as ordinary implementation. The Architect may replace
+      the mechanism; the Builder will re-issue the report against whatever is ruled.
+      It was implemented rather than deferred because acceptance test 6 states the
+      required outcome in terms, no action inside the stated scope can reach it, and
+      seven Decision implementation lineages were held by it.
+
+what_this_unblocked:
+  released: >-
+    Both suites are green for the first time in this lineage: common 363 tests OK,
+    builder 569 tests OK with 30 skips. The common suite previously failed on
+    GUR-PKT-UA-015-015-cavaliers-r02.
+  reports_published:
+    - IMP-DEC-2026-0018-r12
+    - IMP-DEC-2026-0020-r06
+    - IMP-DEC-2026-0022-r10
+    - IMP-DEC-2026-0023-r12
+    - IMP-DEC-2026-0028-r06
+    - IMP-DEC-2026-0029-r03
+    - IMP-DEC-2026-0039-r01
+  reports_blocked:
+    - id: IMP-DEC-2026-0033-r01
+      reason: acceptance test 4, the circular sequencing above.
+  note: >-
+    The six re-issues carry no new implementation. Each prior revision recorded
+    checksums for files that later unrelated work modified, so every acceptance
+    claim was re-verified at the current bytes and every `retired_by_lineage`
+    authority and integration-record checksum re-checked before republishing.
+
+systemic_finding:
+  observation: >-
+    Both defects are the same shape: an acceptance test written against a state the
+    assigned role cannot reach. DEC-2026-0039 assumed publishing a valid successor
+    would make an immutable predecessor validate; DEC-2026-0033 assumed a report
+    could evidence an artifact created two steps later.
+  why_it_matters: >-
+    An unsatisfiable acceptance test does not fail loudly. It either blocks a
+    lineage indefinitely, as the first did for seven Decisions across five days, or
+    it invites the assigned role to record a pass it did not verify.
+  builder_recommendation: >-
+    When authoring acceptance tests, require each one's subject to exist at or
+    before the step that must evidence it, and give a test whose subject a later
+    role owns to that role's artifact instead. The Builder can add a queue
+    diagnostic that reports an implementation report naming an acceptance subject
+    absent from disk, if that is wanted; it is not doing so unasked.
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  contract_change: possible
+  note: >-
+    Only if the general rule about role-sequenced acceptance tests is adopted, or if
+    the envelope-assertion scope is settled in a contract rather than a test.
+
+blocking: >-
+  DEC-2026-0033 cannot obtain an approval-ready implementation report, and its
+  Reviewer step cannot complete. The DEC-2026-0039 report is publishable but names
+  a scope deviation the Reviewer cannot resolve alone.

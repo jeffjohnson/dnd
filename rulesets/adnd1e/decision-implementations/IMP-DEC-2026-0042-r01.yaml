@@ -1,0 +1,75 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0042-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0042
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0042.yaml
+  checksum: sha256:5abdc189bae443427a97dade63b0c3074cd7af5232544584a4656d8307373677
+implementation_files:
+- path: rulesets/adnd1e/governance/constitution.md
+  checksum: sha256:861e7dfe3aad011759042075fb4db65f2d6c628e2b4140ec4f0defa5180f0734
+- path: rulesets/adnd1e/ruleset.yaml
+  checksum: sha256:84751d1da8193ca7c47d0c200e760e58bd90f735d5e95e2cdb1161de09466f06
+- path: tooling/builder/src/adnd1e_builder/vocab.py
+  checksum: sha256:2287c957b9f86cb75282171733756b9158519cd124c5cfa99a176f64cf3fc015
+- path: tooling/builder/tests/test_registry_and_vocab.py
+  checksum: sha256:8973765ac9192f4635af2a0262c909c01ac45cd5d828e040891963acd4cc1ef7
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'rulesets/adnd1e/governance/constitution.md declares ''**Version 1.8.**'' and its section
+    3.1 prefix table carries three distinct rows: `weapon_` for a mundane weapon, weapon category or source-named
+    weapon family (weapon_lance); `wpn_` for a weapon property or statistic (wpn_speed_factor); `item_`
+    for a magic item or item class (item_ring). rulesets/adnd1e/ruleset.yaml declares constitution_version:
+    "1.8". test_version_matches_ruleset_yaml pins the manifest to the compiler constant and test_1_8_separates_the_mundane_weapon_from_its_statistics
+    asserts the three namespaces stay distinct.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: adnd1e_builder.vocab declares CONSTITUTION_VERSION '1.8' and accepts '1.8' in ACCEPTED_GUR_CONSTITUTION_VERSIONS.
+    registry.prefix_of resolves weapon_lance to 'weapon_' and abil_dex_reaction_adjustment and abil_str_exceptional
+    to 'abil_', all accepted, while the bare legacy forms dex_reaction_adj and str_exceptional resolve
+    to None and are refused. ABILITY_ABBREVIATIONS is exactly {cha, con, dex, int, str, wis}. test_the_prefix_set_is_exactly_the_constitution_table
+    derives the expected prefixes by parsing the constitution's own 3.1 table rather than pinning a count,
+    so the vocabulary cannot drift from governance.
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'This report names DEC-2026-0042 by exact sha256 in decision_input and carries one acceptance_results
+    entry per acceptance test. The independent Approved Review the test also requires is the Reviewer''s
+    step and is not claimed here: this report asserts its own completeness, never its own approval.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Full common suite: Ran 474 tests in 84.363s OK. Full builder suite: Ran 569 tests in 76.003s
+    OK, 30 skipped. Canonical edges_master.csv and the node registry are unchanged by this implementation.
+    The Cavalier GUR assertion that made DEC-2026-0033''s acceptance test 4 unsatisfiable is now a post_implementation_requirement
+    verified through that artifact''s own lifecycle, so nothing in this report depends on an artifact
+    a later role has not yet created.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: The v1.8 weapon_ prefix vocabulary and class-condition ruling are implemented and unchanged
+    from DEC-2026-0033; this Decision moved the later-role Cavalier GUR assertion out of the acceptance
+    tests, so every remaining test is evidenceable by the Builder at this step and the report is approval-ready.
+    IMP-DEC-2026-0033-r01 remains on disk as history.
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0042-r01.validation.json
+validation_report_checksum: sha256:7a6c1566e2901b9a8c7a9440076fa53272e400c8f291d649637ffa500f396e19
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 474 tests in 84.363s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 569 tests in 76.003s (30 skipped) OK
