@@ -609,7 +609,10 @@ def _handoff_shape(root: Path) -> dict[str, frozenset[str]]:
     Restating the enums here would let the scanner and the schema disagree about
     what a valid handoff is -- and the scanner's whole job under WORK_QUEUES
     1.11 is to say which artifacts do not conform. Read with `json` rather than
-    validated with `jsonschema` so this stays a dependency-free reporting tool.
+    validated with `jsonschema`: this shape is consulted for every artifact in
+    the repository, and a schema-validation pass over all of them would cost far
+    more than reading four enums. DEC-2026-0061 does use the real validator, but
+    only for the active Decision Implementation Review of each lineage.
     """
     if root in _HANDOFF_SHAPE_CACHE:
         return _HANDOFF_SHAPE_CACHE[root]
@@ -1372,6 +1375,8 @@ def _versioned_content_errors(
     root: Path,
     artifact: Artifact,
     decisions: dict[str, tuple[Path, dict[str, Any]]],
+    *,
+    drift_sink: list[str] | None = None,
 ) -> list[str]:
     """WORK_QUEUES 1.15 acceptance test 48, over one implementation report.
 
@@ -1410,6 +1415,7 @@ def _versioned_content_errors(
                 block,
                 decisions,
                 result_value=str(entry.get("result") or ""),
+                drift_sink=drift_sink,
             )
         )
     return errors
@@ -1424,6 +1430,7 @@ def _versioned_block_errors(
     decisions: dict[str, tuple[Path, dict[str, Any]]],
     *,
     result_value: str,
+    drift_sink: list[str] | None = None,
 ) -> list[str]:
     """Validate one versioned contract-content evidence block.
 
@@ -1432,9 +1439,21 @@ def _versioned_block_errors(
     authority, versions and anchors; running a second, similar implementation for
     the Review is how two checks drift until one quietly accepts what the other
     rejects.
+
+    `drift_sink` separates the two kinds of failure this can find, which
+    DEC-2026-0057 treats differently. Contract *state* -- the checksum, the
+    declared version, whether the file is still there -- describes the world
+    outside this artifact, and once an exact Approved Review has verified it,
+    later movement is history rather than a defect. Everything else is a defect
+    in the record itself: an authority that does not grant this, a minimum the
+    authority never authorized, an anchor the Reviewer did not evidence, a
+    contract outside the authorized set. Those stay strict forever, because
+    approval cannot make a bad record good.
     """
 
     errors: list[str] = []
+    #: Contract-state findings. `errors` when the caller wants one strict list.
+    state = drift_sink if drift_sink is not None else errors
     label = f"acceptance test {index}"
 
     if result_value != "passed":
@@ -1506,10 +1525,16 @@ def _versioned_block_errors(
 
         current_sum = _sha256_of(root / relative) if (root / relative).is_file() else None
         if current_sum is None:
-            errors.append(f"{label} names {relative}, which does not exist")
+            state.append(f"{label} names {relative}, which does not exist")
             continue
-        if str(record.get("checksum") or "") != current_sum:
-            errors.append(
+        # The discriminator for everything below. A matching checksum means the
+        # file is byte-for-byte what this evidence pinned, so any disagreement
+        # with it was wrong when recorded and no amount of later approval makes
+        # it right. Only a moved file can turn a correct finding into history.
+        moved = str(record.get("checksum") or "") != current_sum
+        drifted = state if moved else errors
+        if moved:
+            state.append(
                 f"{label} records a stale checksum for {relative}, which now hashes to "
                 f"{current_sum}"
             )
@@ -1521,18 +1546,18 @@ def _versioned_block_errors(
 
         live_version = _declared_contract_version(root, relative)
         if live_version is None:
-            errors.append(f"{label} names {relative}, which declares no version")
+            drifted.append(f"{label} names {relative}, which declares no version")
             continue
         if str(record.get("observed_version") or "") != live_version:
-            errors.append(
+            drifted.append(
                 f"{label} reports {relative} at version "
                 f"{record.get('observed_version')!r} but the file declares {live_version!r}"
             )
         live_tuple, minimum_tuple = _version_tuple(live_version), _version_tuple(minimum)
         if live_tuple is None or minimum_tuple is None:
-            errors.append(f"{label} cannot compare versions for {relative}")
+            drifted.append(f"{label} cannot compare versions for {relative}")
         elif live_tuple < minimum_tuple:
-            errors.append(
+            drifted.append(
                 f"{label} requires {relative} at {minimum} or later, but it is {live_version}"
             )
 
@@ -1743,9 +1768,86 @@ def _implementation_report_errors(
     # WORK_QUEUES 1.15: current-state contract evidence is validated against the
     # current files, so an authorization that has gone stale or a contract that
     # has fallen below its floor stops the report here rather than at Review.
-    reasons.extend(_versioned_content_errors(root, artifact, decisions))
+    # DEC-2026-0057 extends the rule 15 snapshot to contract-content evidence.
+    # It travels with implementation-file drift because it means the same thing
+    # and turns on the same fact: after an exact Approved Review has verified
+    # these checksums, they record what was verified, and a later contract edit
+    # by an unrelated Decision says nothing about this one. Before approval it
+    # is still a live defect. `drift` is `reasons` when the caller asks for no
+    # sink, so the strict reading is the default.
+    reasons.extend(
+        _versioned_content_errors(
+            root, artifact, decisions,
+            drift_sink=drift if drift_sink is not None else None,
+        )
+    )
 
     return reasons
+
+
+_REVIEW_VALIDATOR_CACHE: dict[Path, Any] = {}
+_REVIEW_SCHEMA = "decision-implementation-review.schema.json"
+
+
+def _review_validator(root: Path) -> Any:
+    """The exact Review schema validator, or `None` if it cannot be built.
+
+    DEC-2026-0061 requires the validator and reference registry the common
+    schema suite uses, against the schema file itself. A second hand-written
+    field list here could drift from the schema, and then the scanner and the
+    validation suite would disagree about what a Review is -- which is the
+    disagreement that let a malformed Review complete a Decision in the first
+    place.
+    """
+    if root in _REVIEW_VALIDATOR_CACHE:
+        return _REVIEW_VALIDATOR_CACHE[root]
+
+    validator = None
+    try:
+        from jsonschema import Draft202012Validator
+        from referencing import Registry, Resource
+        from referencing.jsonschema import DRAFT202012
+
+        common = root / "schemas" / "common"
+        resources = [
+            (
+                path.name,
+                Resource(
+                    contents=json.loads(path.read_text(encoding="utf-8")),
+                    specification=DRAFT202012,
+                ),
+            )
+            for path in sorted(common.glob("*.json"))
+        ]
+        validator = Draft202012Validator(
+            json.loads((common / _REVIEW_SCHEMA).read_text(encoding="utf-8")),
+            registry=Registry().with_resources(resources),
+        )
+    except (ImportError, OSError, ValueError, KeyError, TypeError):
+        validator = None
+
+    _REVIEW_VALIDATOR_CACHE[root] = validator
+    return validator
+
+
+def _review_schema_errors(root: Path, review: Artifact) -> list[str]:
+    """Why one implementation Review does not satisfy its own schema, or [].
+
+    An unavailable validator is reported rather than treated as a pass. The
+    scanner cannot say a Review is sound when it has not checked, and silently
+    trusting one is the exact failure DEC-2026-0061 closes.
+    """
+    validator = _review_validator(root)
+    if validator is None:
+        return [
+            f"could not be validated against schemas/common/{_REVIEW_SCHEMA}: the "
+            f"jsonschema and referencing packages are required for DEC-2026-0061 "
+            f"Review validation and are not importable"
+        ]
+    return [
+        f"{list(error.path)}: {error.message}"
+        for error in validator.iter_errors(review.data)
+    ]
 
 
 def _implementation_review_errors(
@@ -1753,6 +1855,8 @@ def _implementation_review_errors(
     review: Artifact,
     report: Artifact,
     decisions: dict[str, tuple[Path, dict[str, Any]]],
+    *,
+    drift_sink: list[str] | None = None,
 ) -> list[str]:
     """Every provenance condition WORK_QUEUES 1.4 puts on an implementation Review.
 
@@ -1919,6 +2023,15 @@ def _implementation_review_errors(
                     f"verification"
                 )
                 continue
+            # DEC-2026-0057. The Reviewer's own re-derivation is the record of
+            # what they verified, so it snapshots with the report's. Routed to
+            # the sink only when the caller offers one, which it does only for a
+            # Review that already pins this exact report and Decision: a Review
+            # that fails those checks has established no completed state and
+            # cannot confer the exception on itself.
+            # Only contract-state findings are eligible for the snapshot; a
+            # defect in the Reviewer's own record is reported either way.
+            state: list[str] = []
             reasons.extend(
                 f"independent verification: {reason}"
                 for reason in _versioned_block_errors(
@@ -1929,8 +2042,11 @@ def _implementation_review_errors(
                     mirrored,
                     decisions,
                     result_value=reported,
+                    drift_sink=state if drift_sink is not None else None,
                 )
             )
+            if drift_sink is not None:
+                drift_sink.extend(f"independent verification: {r}" for r in state)
         elif disposition_value == "verified":
             if reported == "retired_by_lineage":
                 reasons.append(
@@ -1975,6 +2091,350 @@ def _implementation_review_errors(
     return reasons
 
 
+def _consumed_review_ids(artifacts: list[Artifact]) -> set[str]:
+    """Review IDs that some GUP in this lineage names as the one it answers.
+
+    DEC-2026-0054: an exact `provenance.review_id` is the only thing that
+    consumes a revision-required Review handoff. Superseding the reviewed GUP
+    does not, because supersession is not evidence that the Review's findings
+    were addressed -- GUP-PKT-PHB-094-100-illusionist-spells-r06 superseded r05
+    while answering the *previous* Review, and the outstanding correction request
+    silently left every queue.
+    """
+    consumed: set[str] = set()
+    for artifact in artifacts:
+        provenance = artifact.data.get("provenance")
+        if isinstance(provenance, dict) and provenance.get("review_id"):
+            consumed.add(str(provenance["review_id"]))
+    return consumed
+
+
+def _pending_revision_reviews(
+    root: Path,
+    gups: list[Artifact],
+    reviews_by_gup: dict[str, list[Artifact]],
+    diagnostics: list[dict[str, Any]],
+    review_retirements: dict[str, dict[str, Any]] | None = None,
+) -> list[tuple[Artifact, bool]]:
+    """Active revision-required Reviews in this lineage that nothing has answered.
+
+    Selection is per reviewed GUP, not over the lineage as a whole: each GUP
+    revision has its own Review chain, and only that chain leaf is active.
+
+    A Review is consumed when some GUP in the lineage names it exactly in
+    `provenance.review_id`. That is the only form of consumption. An earlier
+    revision of this function also treated a successor that recorded no
+    `review_id` at all as consuming under the historical rule;
+    REV-IMP-DEC-2026-0054-r02-r01 removed it as an exception no Decision
+    authorizes. Pre-field history now surfaces as ready work until an Architect
+    Decision defines and bounds that case.
+
+    Ordered by the reviewed GUP revision so the queue reads oldest first.
+    """
+    pending: list[tuple[Artifact, bool]] = []
+    consumed = _consumed_review_ids(gups)
+    retirements = review_retirements or {}
+    for gup in sorted(
+        (g for g in gups if g.revision is not None), key=lambda a: a.revision
+    ):
+        candidates = reviews_by_gup.get(gup.artifact_id) or []
+        if not candidates:
+            continue
+        leaf, inferred = _active_leaf(
+            root, candidates, diagnostics, f"{gup.artifact_id} Review"
+        )
+        if leaf is None or leaf.artifact_id in consumed:
+            continue
+        disposition = str(
+            leaf.data.get("overall_disposition") or leaf.data.get("status") or ""
+        )
+        if disposition != "revision_required":
+            continue
+
+        # DEC-2026-0056 rule 20. An explicit, checksummed Decision record is the
+        # only thing besides exact provenance that takes a Review handoff out of
+        # the queue. Recorded rather than dropped, so the repository can show
+        # which Decision retired it and on what evidence.
+        retirement = retirements.get(leaf.artifact_id)
+        if retirement is not None:
+            record = retirement["record"]
+            _diag(
+                diagnostics,
+                "info",
+                "review_handoff_retired",
+                f"{leaf.artifact_id} is retired by {retirement['decision_id']} as "
+                f"historical: {record['reason']} Resolution "
+                f"{record['resolution_gup']['id']} was independently approved by "
+                f"{record['resolution_review']['id']}.",
+                path=_relative(root, leaf.path),
+                artifact_id=leaf.artifact_id,
+            )
+            continue
+
+        pending.append((leaf, inferred))
+    return pending
+
+
+def _retirement_record_errors(
+    root: Path, decision_id: str, index: int, record: Any
+) -> list[str]:
+    """Why one retirement record cannot be trusted, or [] if it can.
+
+    DEC-2026-0055 rule 50. Every named artifact must exist and still hash to the
+    checksum the Decision recorded. A record that fails any of these is inert:
+    the stale migration it names keeps its ordinary Builder reissue error, so a
+    typo or a drifted checksum can never quietly retire live work.
+    """
+    label = f"{decision_id} migration_lineage_retirements[{index}]"
+    if not isinstance(record, dict):
+        return [f"{label} is not a mapping"]
+
+    errors: list[str] = []
+    disposition = str(record.get("disposition") or "")
+    if disposition not in ("retired_historical", "consumed_by_integrated_successor"):
+        errors.append(f"{label} declares unknown disposition {disposition!r}")
+    if not str(record.get("lineage_id") or "").strip():
+        errors.append(f"{label} names no lineage_id")
+    if not str(record.get("reason") or "").strip():
+        errors.append(f"{label} records no reason")
+
+    required = ["current_leaf"]
+    if disposition == "consumed_by_integrated_successor":
+        # The successor and the manifest are the whole claim: without both, this
+        # says only that someone believes the work happened elsewhere.
+        required += ["consuming_gup", "integration_manifest"]
+    if "basis_decision" in record:
+        required.append("basis_decision")
+
+    for field in required:
+        block = record.get(field)
+        if not isinstance(block, dict):
+            errors.append(f"{label} has no {field} block")
+            continue
+        relative = str(block.get("path") or "")
+        declared = str(block.get("checksum") or "")
+        if not relative:
+            errors.append(f"{label} {field} names no path")
+            continue
+        target = root / relative
+        if not target.is_file():
+            errors.append(f"{label} {field} names {relative}, which does not exist")
+            continue
+        current = _sha256_of(target)
+        if declared != current:
+            errors.append(
+                f"{label} {field} records {declared or 'no checksum'} for {relative}, "
+                f"which now hashes to {current}"
+            )
+    return errors
+
+
+def _migration_retirements(
+    root: Path,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+    active_decision_ids: set[str],
+    diagnostics: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Valid retirement records from active approved Decisions, keyed by leaf ID.
+
+    Only an active approved Decision retires anything. A superseded revision may
+    still carry the record it was published with, and honouring that would let a
+    reissued Decision keep retiring a leaf its own successor no longer mentions.
+    """
+    retirements: dict[str, dict[str, Any]] = {}
+    for decision_id in sorted(active_decision_ids):
+        entry = decisions.get(decision_id)
+        if entry is None:
+            continue
+        path, document = entry
+        if str(document.get("status") or "") != "approved":
+            continue
+        records = document.get("migration_lineage_retirements")
+        if not isinstance(records, list):
+            continue
+        for index, record in enumerate(records):
+            errors = _retirement_record_errors(root, decision_id, index, record)
+            if errors:
+                _diag(
+                    diagnostics,
+                    "error",
+                    "migration_retirement_record_invalid",
+                    "; ".join(errors)
+                    + ". The named migration keeps its ordinary reissue handling.",
+                    path=_relative(root, path),
+                    artifact_id=decision_id,
+                )
+                continue
+            leaf = record["current_leaf"]
+            retirements[str(leaf["id"])] = {
+                "decision_id": decision_id,
+                "record": record,
+            }
+    return retirements
+
+
+def _revision_lineage(artifact_id: str) -> tuple[str, int] | None:
+    """Split a `...-rNN` artifact ID into its lineage stem and revision."""
+    stem, _, tail = artifact_id.rpartition("-r")
+    if not stem or not tail.isdigit():
+        return None
+    return stem, int(tail)
+
+
+def _review_retirement_errors(
+    root: Path, decision_id: str, index: int, record: Any
+) -> list[str]:
+    """Why one historical Review-handoff retirement cannot be trusted, or [].
+
+    WORK_QUEUES 1.21 rule 20. Three artifacts must exist and still hash to the
+    checksums the Decision recorded, and two predicates must hold: the
+    resolution GUP is a strictly later revision in the same lineage as the GUP
+    the retired Review reviewed, and the resolution Review is approved and
+    covers that lineage at or after the resolution GUP.
+
+    Both predicates are checked here rather than trusted from the record,
+    because the record is the claim and this is the verification. A retirement
+    is the one classification that removes ready work, and DEC-2026-0056 exists
+    precisely because an unverified version of this reasoning -- inferring
+    consumption from a missing field -- was implemented and rejected.
+    """
+    label = f"{decision_id} review_handoff_retirements[{index}]"
+    if not isinstance(record, dict):
+        return [f"{label} is not a mapping"]
+
+    errors: list[str] = []
+    if str(record.get("disposition") or "") != "retired_historical":
+        errors.append(
+            f"{label} declares disposition {record.get('disposition')!r} rather than "
+            f"'retired_historical'"
+        )
+    if not str(record.get("reason") or "").strip():
+        errors.append(f"{label} records no reason")
+
+    documents: dict[str, dict[str, Any]] = {}
+    for field in ("retired_review", "resolution_gup", "resolution_review"):
+        block = record.get(field)
+        if not isinstance(block, dict):
+            errors.append(f"{label} has no {field} block")
+            continue
+        relative = str(block.get("path") or "")
+        if not relative:
+            errors.append(f"{label} {field} names no path")
+            continue
+        target = root / relative
+        if not target.is_file():
+            errors.append(f"{label} {field} names {relative}, which does not exist")
+            continue
+        current = _sha256_of(target)
+        if str(block.get("checksum") or "") != current:
+            errors.append(
+                f"{label} {field} records {block.get('checksum') or 'no checksum'} for "
+                f"{relative}, which now hashes to {current}"
+            )
+            continue
+        document = _load_yaml(root, target, [])
+        if document is None:
+            errors.append(f"{label} {field} names {relative}, which does not parse")
+            continue
+        documents[field] = document
+
+    if len(documents) < 3:
+        return errors
+
+    retired = documents["retired_review"]
+    disposition = str(
+        retired.get("overall_disposition") or retired.get("status") or ""
+    )
+    if disposition != "revision_required":
+        errors.append(
+            f"{label} retires {record['retired_review']['id']}, whose disposition is "
+            f"{disposition!r} rather than 'revision_required'"
+        )
+
+    reviewed = retired.get("reviewed_gup")
+    reviewed_id = str(reviewed.get("id") or "") if isinstance(reviewed, dict) else ""
+    reviewed_lineage = _revision_lineage(reviewed_id)
+    resolution_lineage = _revision_lineage(str(record["resolution_gup"]["id"]))
+    if reviewed_lineage is None or resolution_lineage is None:
+        errors.append(f"{label} cannot derive a revision lineage for its GUPs")
+    elif reviewed_lineage[0] != resolution_lineage[0]:
+        errors.append(
+            f"{label} names resolution GUP {record['resolution_gup']['id']}, which is "
+            f"not in the lineage of the reviewed GUP {reviewed_id}"
+        )
+    elif resolution_lineage[1] <= reviewed_lineage[1]:
+        errors.append(
+            f"{label} names resolution GUP {record['resolution_gup']['id']}, which does "
+            f"not follow the reviewed GUP {reviewed_id}"
+        )
+
+    resolution_review = documents["resolution_review"]
+    resolution_disposition = str(
+        resolution_review.get("overall_disposition")
+        or resolution_review.get("status")
+        or ""
+    )
+    if resolution_disposition != "approved":
+        errors.append(
+            f"{label} names resolution Review {record['resolution_review']['id']}, whose "
+            f"disposition is {resolution_disposition!r} rather than 'approved'"
+        )
+    resolution_reviewed = resolution_review.get("reviewed_gup")
+    resolution_reviewed_id = (
+        str(resolution_reviewed.get("id") or "")
+        if isinstance(resolution_reviewed, dict)
+        else ""
+    )
+    covered = _revision_lineage(resolution_reviewed_id)
+    if covered is None or resolution_lineage is None:
+        errors.append(f"{label} cannot derive a revision lineage for its Reviews")
+    elif covered[0] != resolution_lineage[0] or covered[1] < resolution_lineage[1]:
+        errors.append(
+            f"{label} names resolution Review {record['resolution_review']['id']}, which "
+            f"reviews {resolution_reviewed_id} rather than the resolution GUP "
+            f"{record['resolution_gup']['id']} or a later revision of its lineage"
+        )
+    return errors
+
+
+def _review_handoff_retirements(
+    root: Path,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+    active_decision_ids: set[str],
+    diagnostics: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Valid historical Review-handoff retirements, keyed by retired Review ID."""
+    retirements: dict[str, dict[str, Any]] = {}
+    for decision_id in sorted(active_decision_ids):
+        entry = decisions.get(decision_id)
+        if entry is None:
+            continue
+        path, document = entry
+        if str(document.get("status") or "") != "approved":
+            continue
+        records = document.get("review_handoff_retirements")
+        if not isinstance(records, list):
+            continue
+        for index, record in enumerate(records):
+            errors = _review_retirement_errors(root, decision_id, index, record)
+            if errors:
+                _diag(
+                    diagnostics,
+                    "error",
+                    "review_retirement_record_invalid",
+                    "; ".join(errors)
+                    + ". The named Review handoff keeps its ordinary ready routing.",
+                    path=_relative(root, path),
+                    artifact_id=decision_id,
+                )
+                continue
+            retirements[str(record["retired_review"]["id"])] = {
+                "decision_id": decision_id,
+                "record": record,
+            }
+    return retirements
+
+
 def _article(word: str) -> str:
     return "an" if word[:1].lower() in "aeiou" else "a"
 
@@ -2014,10 +2474,129 @@ def _review_revision_roles(document: dict[str, Any]) -> list[str]:
     return roles
 
 
+def _gur_exemption_errors(
+    root: Path, decision_id: str, index: int, record: Any
+) -> list[str]:
+    """Why one GUR historical-exemption record cannot be trusted, or [].
+
+    DEC-2026-0060. Both artifacts must exist and still hash to what the Decision
+    recorded, the successor must supersede the historical GUR *directly*, the
+    historical GUR's only envelope defects must be in `handoff`, and the
+    successor must itself be fully valid. Every one of those is checked here
+    rather than taken from the record: the record is the claim, and this is what
+    makes it evidence.
+    """
+    label = f"{decision_id} gur_handoff_historical_exemptions[{index}]"
+    if not isinstance(record, dict):
+        return [f"{label} is not a mapping"]
+
+    errors: list[str] = []
+    if str(record.get("disposition") or "") != "historical_handoff_only":
+        errors.append(
+            f"{label} declares disposition {record.get('disposition')!r} rather than "
+            f"'historical_handoff_only'"
+        )
+    if not str(record.get("reason") or "").strip():
+        errors.append(f"{label} records no reason")
+
+    documents: dict[str, dict[str, Any]] = {}
+    for field in ("historical_gur", "valid_successor_gur"):
+        block = record.get(field)
+        if not isinstance(block, dict):
+            errors.append(f"{label} has no {field} block")
+            continue
+        relative = str(block.get("path") or "")
+        if not relative:
+            errors.append(f"{label} {field} names no path")
+            continue
+        target = root / relative
+        if not target.is_file():
+            errors.append(f"{label} {field} names {relative}, which does not exist")
+            continue
+        current = _sha256_of(target)
+        if str(block.get("checksum") or "") != current:
+            errors.append(
+                f"{label} {field} records {block.get('checksum') or 'no checksum'} for "
+                f"{relative}, which now hashes to {current}"
+            )
+            continue
+        document = _load_yaml(root, target, [])
+        if document is None:
+            errors.append(f"{label} {field} names {relative}, which does not parse")
+            continue
+        documents[field] = document
+
+    if len(documents) < 2:
+        return errors
+
+    shape = _handoff_shape(root)
+    historical, successor = documents["historical_gur"], documents["valid_successor_gur"]
+
+    # The exemption is for a handoff-only defect. Anything else about the
+    # envelope stays an ordinary error, because the successor's existence says
+    # nothing about a defect the successor does not address.
+    if not _handoff_defects(historical, shape):
+        errors.append(
+            f"{label} exempts {record['historical_gur']['id']}, whose handoff conforms; "
+            f"there is nothing to exempt"
+        )
+    if _handoff_defects(successor, shape):
+        errors.append(
+            f"{label} names {record['valid_successor_gur']['id']} as a valid successor, "
+            f"but its own handoff does not conform"
+        )
+    if str(successor.get("supersedes") or "") != str(record["historical_gur"]["id"]):
+        errors.append(
+            f"{label} names {record['valid_successor_gur']['id']} as the successor of "
+            f"{record['historical_gur']['id']}, but it supersedes "
+            f"{successor.get('supersedes')!r}"
+        )
+    return errors
+
+
+def _gur_handoff_exemptions(
+    root: Path,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+    active_decision_ids: set[str],
+    diagnostics: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Valid GUR handoff exemptions from active approved Decisions, by GUR ID."""
+    exemptions: dict[str, dict[str, Any]] = {}
+    for decision_id in sorted(active_decision_ids):
+        entry = decisions.get(decision_id)
+        if entry is None:
+            continue
+        path, document = entry
+        if str(document.get("status") or "") != "approved":
+            continue
+        records = document.get("gur_handoff_historical_exemptions")
+        if not isinstance(records, list):
+            continue
+        for index, record in enumerate(records):
+            errors = _gur_exemption_errors(root, decision_id, index, record)
+            if errors:
+                _diag(
+                    diagnostics,
+                    "error",
+                    "gur_exemption_record_invalid",
+                    "; ".join(errors)
+                    + ". The named GUR keeps its ordinary invalid-handoff error.",
+                    path=_relative(root, path),
+                    artifact_id=decision_id,
+                )
+                continue
+            exemptions[str(record["historical_gur"]["id"])] = {
+                "decision_id": decision_id,
+                "record": record,
+            }
+    return exemptions
+
+
 def _diagnose_gur_handoffs(
     root: Path,
     gurs: list[Artifact],
     diagnostics: list[dict[str, Any]],
+    exemptions: dict[str, dict[str, Any]] | None = None,
 ) -> None:
     """Report every GUR whose present handoff does not conform.
 
@@ -2028,10 +2607,35 @@ def _diagnose_gur_handoffs(
     asking for a repair of history would be asking to rewrite it.
     """
     shape = _handoff_shape(root)
+    exempt = exemptions or {}
     for artifact in gurs:
         defects = _handoff_defects(artifact.data, shape)
         if not defects:
             continue
+
+        # DEC-2026-0060. One checksummed record, naming this exact GUR and its
+        # exact valid successor. Reported rather than dropped: the artifact is
+        # still invalid and the repository has to be able to say why that is not
+        # work. The remediation text the ordinary error carries would be wrong
+        # here -- it tells the Analyst to publish a successor that already
+        # exists and that DEC-2026-0039 forbids duplicating.
+        exemption = exempt.get(artifact.artifact_id)
+        if exemption is not None:
+            record = exemption["record"]
+            _diag(
+                diagnostics,
+                "info",
+                "gur_handoff_historical_exemption",
+                f"{artifact.artifact_id} declares a non-conforming handoff "
+                f"({'; '.join(defects)}), and {exemption['decision_id']} classifies it "
+                f"as historical: {record['reason']} "
+                f"{record['valid_successor_gur']['id']} is its exact valid successor, so "
+                f"no repair is owed and none may be published.",
+                path=_relative(root, artifact.path),
+                artifact_id=artifact.artifact_id,
+            )
+            continue
+
         _diag(
             diagnostics,
             "error",
@@ -2500,6 +3104,12 @@ def scan_repository(root: Path) -> dict[str, Any]:
     #: cross-book, so its Review may sit in any book's store and the per-book
     #: index cannot see it.
     reviews_by_gup_global: dict[str, list[Artifact]] = defaultdict(list)
+    #: DEC-2026-0055 and DEC-2026-0056 retirement maps, per ruleset. Built before
+    #: the book loop because the packet pass consumes the Review-handoff map and
+    #: runs first.
+    review_retirements_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
+    migration_retirements_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
+    gur_exemptions_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     rulesets_root = root / "rulesets"
     if rulesets_root.is_dir():
         for ruleset_dir in sorted(path for path in rulesets_root.iterdir() if path.is_dir()):
@@ -2547,6 +3157,25 @@ def scan_repository(root: Path) -> dict[str, Any]:
                             components=[_relative(root, path)],
                         )
                     )
+
+    for ruleset, decisions in sorted(decisions_by_ruleset.items()):
+        # WORK_QUEUES 1.7. Called once per ruleset: it emits lineage diagnostics,
+        # and the loops below all read the answer rather than recomputing it.
+        reissued_by_ruleset[ruleset] = _decision_reissue_leaves(
+            root, ruleset, decisions, decisions_by_ruleset, diagnostics
+        )
+        # Not named `active`: that is the scan's list of active queue items.
+        active_decision_ids = set(decisions) - reissued_by_ruleset[ruleset]
+        migration_retirements_by_ruleset[ruleset] = _migration_retirements(
+            root, decisions, active_decision_ids, diagnostics
+        )
+        review_retirements_by_ruleset[ruleset] = _review_handoff_retirements(
+            root, decisions, active_decision_ids, diagnostics
+        )
+        # DEC-2026-0060, the GUR-envelope counterpart.
+        gur_exemptions_by_ruleset[ruleset] = _gur_handoff_exemptions(
+            root, decisions, active_decision_ids, diagnostics
+        )
 
     books_root = root / "books"
     for ruleset_dir in sorted(path for path in books_root.iterdir() if path.is_dir()):
@@ -2687,7 +3316,10 @@ def scan_repository(root: Path) -> dict[str, Any]:
             leaf_gup_by_packet: dict[str, tuple[Artifact | None, bool]] = {}
             for packet_id in all_packets:
                 _diagnose_gur_handoffs(
-                    root, gurs_by_packet.get(packet_id, []), diagnostics
+                    root,
+                    gurs_by_packet.get(packet_id, []),
+                    diagnostics,
+                    gur_exemptions_by_ruleset[ruleset],
                 )
                 leaf_gur_by_packet[packet_id] = _active_leaf(
                     root,
@@ -2806,6 +3438,66 @@ def scan_repository(root: Path) -> dict[str, Any]:
                             )
                         )
 
+                # DEC-2026-0054 / WORK_QUEUES 19. A revision-required Review
+                # owns a handoff lineage of its own: it stays ready until a
+                # same-lineage GUP names it exactly in provenance.review_id.
+                # Reading only the current GUP leaf Reviews hid the illusionist
+                # r05-r06 correction outright, because r06 moved the leaf on
+                # while answering r05-r05, so the newer request had nowhere to
+                # appear and left every queue silently.
+                for pending_review, pending_inferred in _pending_revision_reviews(
+                    root,
+                    gups_by_packet.get(packet_id, []),
+                    reviews_by_gup,
+                    diagnostics,
+                    review_retirements_by_ruleset[ruleset],
+                ):
+                    # WORK_QUEUES makes a Builder job "a Review that requests
+                    # Builder revision", and handoff.next_role is where a Review
+                    # says whose revision it wants. Routing every
+                    # revision_required Review to Builder regardless sends back
+                    # work no Builder may perform: where the finding is that the
+                    # GUR omits source assertions, the only Builder response is
+                    # to reinterpret source, which the role forbids, or to
+                    # publish a byte-identical no-op leaf.
+                    roles = _review_revision_roles(pending_review.data)
+                    # A Review with neither a handoff block nor any actionable
+                    # finding is legacy. The contract keeps those valid under the
+                    # legacy rules, which is the historical Builder routing,
+                    # reported as an inference.
+                    inferred = pending_inferred or not roles
+                    if not roles:
+                        roles = ["builder"]
+                        _diag(
+                            diagnostics,
+                            "warning",
+                            "review_handoff_inferred",
+                            f"{pending_review.artifact_id} requires revision but names "
+                            f"no handoff role and no actionable finding; routed to "
+                            f"Builder under the legacy rule.",
+                            path=_relative(root, pending_review.path),
+                            artifact_id=pending_review.artifact_id,
+                        )
+                    for role in roles:
+                        ready.append(
+                            _queue_item(
+                                state="ready",
+                                queue=f"{role.upper()}-REVISION",
+                                role=role.capitalize(),
+                                ruleset=ruleset,
+                                book=book,
+                                packet_id=packet_id,
+                                input_id=pending_review.artifact_id,
+                                reason=(
+                                    f"Active Review requires "
+                                    f"{_article(role)} {role.capitalize()} revision."
+                                ),
+                                path=_relative(root, pending_review.path),
+                                components=[_relative(root, pending_review.path)],
+                                legacy_inference=inferred,
+                            )
+                        )
+
                 review_leaf = None
                 review_inferred = False
                 if leaf_gup.artifact_id in reviews_by_gup:
@@ -2849,51 +3541,10 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         review_blockers - decided_by_ruleset[ruleset]
                     )
                     if disposition == "revision_required":
-                        # WORK_QUEUES makes a Builder job "a Review that requests
-                        # Builder revision", and `handoff.next_role` is where a
-                        # Review says whose revision it wants. Routing every
-                        # revision_required Review to Builder regardless sends
-                        # back work no Builder may perform: where the finding is
-                        # that the GUR omits source assertions, the only Builder
-                        # response is to reinterpret source, which the role
-                        # forbids, or to publish a byte-identical no-op leaf.
-                        roles = _review_revision_roles(review_leaf.data)
-                        # A Review with neither a handoff block nor any
-                        # actionable finding is legacy. The contract keeps those
-                        # valid under the legacy rules, which is the historical
-                        # Builder routing, reported as an inference.
-                        inferred = review_inferred or not roles
-                        if not roles:
-                            roles = ["builder"]
-                            _diag(
-                                diagnostics,
-                                "warning",
-                                "review_handoff_inferred",
-                                f"{review_leaf.artifact_id} requires revision but names "
-                                f"no handoff role and no actionable finding; routed to "
-                                f"Builder under the legacy rule.",
-                                path=_relative(root, review_leaf.path),
-                                artifact_id=review_leaf.artifact_id,
-                            )
-                        for role in roles:
-                            ready.append(
-                                _queue_item(
-                                    state="ready",
-                                    queue=f"{role.upper()}-REVISION",
-                                    role=role.capitalize(),
-                                    ruleset=ruleset,
-                                    book=book,
-                                    packet_id=packet_id,
-                                    input_id=review_leaf.artifact_id,
-                                    reason=(
-                                        f"Active Review requires "
-                                        f"{_article(role)} {role.capitalize()} revision."
-                                    ),
-                                    path=_relative(root, review_leaf.path),
-                                    components=[_relative(root, review_leaf.path)],
-                                    legacy_inference=inferred,
-                                )
-                            )
+                        # Routed by the lineage pass above, which finds this
+                        # Review whether or not its reviewed GUP is still the
+                        # current leaf.
+                        pass
                     elif (
                         disposition == "architect_escalation"
                         and review_blockers
@@ -3213,10 +3864,9 @@ def scan_repository(root: Path) -> dict[str, Any]:
             # Kept per ruleset because the handoff-replacement pass at the end of
             # the scan runs in its own loop and needs the same answer -- and
             # recomputing it there would emit every lineage diagnostic twice.
-            reissued_decision_ids = _decision_reissue_leaves(
-                root, ruleset, decisions, decisions_by_ruleset, diagnostics
-            )
-            reissued_by_ruleset[ruleset] = reissued_decision_ids
+            reissued_decision_ids = reissued_by_ruleset[ruleset]
+            # DEC-2026-0055 rule 21, resolved with the rest of the ruleset state.
+            migration_retirements = migration_retirements_by_ruleset[ruleset]
 
             # WORK_QUEUES 1.12 rule 14. Checked here, before either Decision loop
             # below derives work, because an unowned exact_diff path is a defect
@@ -3294,6 +3944,39 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         break
 
                 reasons = _decision_migration_errors(root, leaf, decisions)
+
+                retirement = migration_retirements.get(leaf.artifact_id)
+                if retirement is not None:
+                    # The leaf is immutable history, not work. Recorded as
+                    # informational rather than dropped: the repository has to be
+                    # able to show *why* a stale migration stopped asking for a
+                    # reissue, and which Decision said so.
+                    record = retirement["record"]
+                    detail = (
+                        f"{leaf.artifact_id} is retired by "
+                        f"{retirement['decision_id']} as "
+                        f"{record['disposition']}: {record['reason']}"
+                    )
+                    if record["disposition"] == "consumed_by_integrated_successor":
+                        detail += (
+                            f" Consumed by {record['consuming_gup']['id']} under "
+                            f"{record['integration_manifest']['id']}."
+                        )
+                    _diag(
+                        diagnostics,
+                        "info",
+                        "migration_lineage_retired",
+                        detail,
+                        path=_relative(root, leaf.path),
+                        artifact_id=leaf.artifact_id,
+                    )
+                    # Its authority Decisions are spoken for by the retirement,
+                    # so they must not resurface as ready Builder work either.
+                    consumed_decision_ids.update(
+                        str(a) for a in leaf.data.get("authority") or []
+                    )
+                    continue
+
                 if lineage_integrated and BASELINE_MOVED_REASON in reasons:
                     # Applying the migration is what moved the baseline. Any other
                     # reason still stands: an integrated artifact with a forbidden
@@ -3600,10 +4283,69 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         f"{ruleset} implementation review {leaf.artifact_id}",
                     )
 
+                review_content_drift: list[str] = []
+
+                # DEC-2026-0061. Schema validity comes first: an invalid Review's
+                # status, disposition, reviewed-report reference and handoff are
+                # untrusted, so there is nothing in it worth checking provenance
+                # against and nothing it can be allowed to decide.
+                invalid_review: Artifact | None = None
                 if review_leaf is not None:
-                    review_errors = _implementation_review_errors(
+                    schema_errors = _review_schema_errors(root, review_leaf)
+                    if schema_errors:
+                        # Whatever the provenance check can still say about it is
+                        # said here too. The schema is the reason it is rejected;
+                        # the predicate is often the reason a Reviewer cares.
+                        also = _implementation_review_errors(
+                            root, review_leaf, leaf, decisions
+                        )
+                        detail = (
+                            f"{review_leaf.artifact_id} does not satisfy "
+                            f"schemas/common/{_REVIEW_SCHEMA}: "
+                            + "; ".join(schema_errors)
+                        )
+                        if also:
+                            detail += ". It also " + "; ".join(also)
+                        _diag(
+                            diagnostics,
+                            "error",
+                            "decision_implementation_review_invalid",
+                            detail
+                            + f". Under DEC-2026-0061 an invalid Review is untrusted "
+                            f"in every field: it completes no Decision and requests no "
+                            f"revision, and {decision_id} stays open until a "
+                            f"schema-valid successor Review replaces it.",
+                            path=_relative(root, review_leaf.path),
+                            artifact_id=review_leaf.artifact_id,
+                        )
+                        invalid_review = review_leaf
+                        review_leaf = None
+
+                if review_leaf is not None:
+                    # Strict first. Whether the snapshot applies depends on this
+                    # answer, so it cannot be computed with the exception already
+                    # in force -- that would let a Review whose only sound claim
+                    # is stale evidence approve itself into being sound.
+                    strict_errors = _implementation_review_errors(
                         root, review_leaf, leaf, decisions
                     )
+                    approved = str(
+                        review_leaf.data.get("overall_disposition")
+                        or review_leaf.data.get("status")
+                        or ""
+                    ) == "approved"
+                    review_errors = strict_errors
+                    if strict_errors and approved:
+                        # DEC-2026-0057: re-derive with contract-content drift
+                        # separated. Anything still in `review_errors` is a real
+                        # defect; what lands in the sink is the historical record
+                        # of evidence this Review verified before the contract
+                        # moved.
+                        review_content_drift = []
+                        review_errors = _implementation_review_errors(
+                            root, review_leaf, leaf, decisions,
+                            drift_sink=review_content_drift,
+                        )
                     if review_errors:
                         # An unsound Review neither consumes the Decision nor
                         # hides the report that is still waiting for a sound one.
@@ -3636,14 +4378,32 @@ def scan_repository(root: Path) -> dict[str, Any]:
                             "implementation_files_drifted_after_approval",
                             f"{leaf.artifact_id} " + "; ".join(file_drift) + ". "
                             f"{review_leaf.artifact_id} already approved this exact "
-                            f"report, so these checksums are the reviewed snapshot "
-                            f"and {decision_id} stays complete. Validating the "
-                            f"current file belongs to whatever changed it.",
+                            f"report, so these checksums -- implementation files and "
+                            f"versioned contract-content evidence alike -- are the "
+                            f"reviewed snapshot and {decision_id} stays complete. "
+                            f"Validating the current file belongs to whatever "
+                            f"changed it.",
                             path=_relative(root, leaf.path),
                             artifact_id=leaf.artifact_id,
                         )
                     else:
                         report_errors = report_errors + file_drift
+
+                if review_content_drift and review_leaf is not None:
+                    _diag(
+                        diagnostics,
+                        "info",
+                        "review_contract_content_drifted_after_approval",
+                        f"{review_leaf.artifact_id} "
+                        + "; ".join(review_content_drift)
+                        + f". This Review already verified {decision_id} against the "
+                        f"contract content of its day, and DEC-2026-0057 makes that "
+                        f"finding the historical record rather than a claim about the "
+                        f"contract now. Whatever edited the contract proves its own "
+                        f"current version and anchors.",
+                        path=_relative(root, review_leaf.path),
+                        artifact_id=review_leaf.artifact_id,
+                    )
 
                 if report_errors:
                     _diag(
@@ -3658,6 +4418,41 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     # Review. Discarding the leaf here keeps every pre-approval
                     # case behaving exactly as it did before rule 15.
                     review_leaf = None
+
+                if invalid_review is not None:
+                    # One job, owned by the role that publishes Reviews. It is
+                    # deliberately not the "report has no Review" job: there is
+                    # a Review, it is the active leaf, and reviewing the report
+                    # again would publish a second Review beside a broken one
+                    # instead of superseding it.
+                    ready.append(
+                        _queue_item(
+                            state="ready",
+                            queue="REVIEWER-DECISION-IMPLEMENTATION-REPAIR",
+                            role="Reviewer",
+                            ruleset=ruleset,
+                            book=str(document.get("book_id") or "") or None,
+                            packet_id=str(document.get("packet_id") or "") or None,
+                            input_id=invalid_review.artifact_id,
+                            reason=(
+                                f"Active implementation Review for {decision_id} does "
+                                f"not satisfy its schema and must be replaced by a "
+                                f"schema-valid successor."
+                            ),
+                            path=_relative(root, invalid_review.path),
+                            components=[_relative(root, invalid_review.path)],
+                        )
+                    )
+                    if (
+                        leaf is not None
+                        and not report_errors
+                        and leaf.data.get("approval_ready") is True
+                    ):
+                        # This job stands exactly where "the report is waiting
+                        # for a Review" would have stood, so it ends the lineage
+                        # the same way. A report with defects of its own falls
+                        # through to its owner as it always did.
+                        continue
 
                 if review_leaf is not None:
                     disposition = str(

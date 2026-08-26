@@ -1,0 +1,105 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0053-r03-r03
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 3
+supersedes: REV-IMP-DEC-2026-0053-r03-r02
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    Schema-valid successor to r02. DEC-2026-0061 confirms the retained report's
+    standard unittest success summary is valid, and all DEC-2026-0053
+    acceptance tests are independently verified without a Builder reissue.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0053-r03
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0053-r03.yaml
+  checksum: sha256:039ab65233ad8e3e839c7770c01df0d9e247a415616c43a6df4aed01fef9cfd1
+decision_input:
+  id: DEC-2026-0053
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0053.yaml
+  checksum: sha256:60700a3eb29fd8aad8e725ae831e1328043233e5a0154a5690c165def467b320
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      WORK_QUEUES remains at or above the Decision-authorized minimum and
+      retains the required create-only publication and checksum-integrity
+      anchors.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0053
+        path: rulesets/adnd1e/escalations/decisions/DEC-2026-0053.yaml
+        checksum: sha256:60700a3eb29fd8aad8e725ae831e1328043233e5a0154a5690c165def467b320
+        authorized_acceptance_test_index: 1
+      authorized_acceptance_test_index: 1
+      contracts:
+        - path: contracts/WORK_QUEUES.md
+          checksum: sha256:19301981edde1fd17f60a6e489439e2a46fac7f622dfca6d080c5e7eab8646da
+          observed_version: '1.22'
+          minimum_version: '1.18'
+          anchors_present:
+            - create-only publication preflight
+            - no repository artifact overwrite override
+            - checksum no longer resolves
+  - acceptance_test_index: 2
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      ARTIFACT_LIFECYCLE remains at or above the authorized minimum and retains
+      the required immutable-consumer and successor-revision anchors.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0053
+        path: rulesets/adnd1e/escalations/decisions/DEC-2026-0053.yaml
+        checksum: sha256:60700a3eb29fd8aad8e725ae831e1328043233e5a0154a5690c165def467b320
+        authorized_acceptance_test_index: 2
+      authorized_acceptance_test_index: 2
+      contracts:
+        - path: contracts/ARTIFACT_LIFECYCLE.md
+          checksum: sha256:1ef84af8cb98b4b63c8a6bd0802b8e9e29d2e73e6055067b914f519024c2c6b7
+          observed_version: '1.18'
+          minimum_version: '1.14'
+          anchors_present:
+            - published-checksum integrity breach
+            - retain altered artifact and consumer unchanged
+            - successor revision
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      The focused Builder tests confirm every publication entrypoint preflights
+      durable outputs before mutation and preserves bytes on refusal with no
+      durable overwrite path.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      IMP-DEC-2026-0053-r03 pins DEC-2026-0053 exactly and its original
+      standard unittest success summaries are valid under DEC-2026-0061. No
+      successor implementation report is required.
+independent_validation:
+  passed: true
+  commands:
+    - command: >-
+        SHA-256 comparison of the retained report, DEC-2026-0053, and both
+        versioned contracts.
+      exit_code: 0
+      result: passed
+      summary: Exact report, Decision, and contract provenance matched.
+    - command: >-
+        [cwd tooling/builder] PYTHONPATH=src;tests python -m unittest
+        test_compiler.TestPublicationPreflightCoversEveryOutput
+        test_compiler.TestAPublishedRevisionIsImmutable
+        test_decision_migration.MigrationPublicationPreflightCase -q
+      exit_code: 0
+      result: passed
+      summary: Ran 22 tests in 3.137s OK
+    - command: >-
+        [cwd tooling/builder] PYTHONPATH=src python -m unittest discover
+        -s tests -p test_*.py
+      exit_code: 0
+      result: passed
+      summary: Ran 655 tests in 103.879s OK (skipped=38)
+overall_disposition: approved

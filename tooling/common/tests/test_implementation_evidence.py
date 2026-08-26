@@ -27,8 +27,64 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[3]
 STORE = REPO_ROOT / "rulesets" / "adnd1e" / "decision-implementations"
 
-#: A summary ends in the verdict its runner printed.
-VERDICT = re.compile(r"\b(OK|FAILED)\s*$")
+#: The counters `unittest` prints after its verdict, and nothing else.
+#: `TextTestResult.printErrors` emits exactly these names, in one parenthesis,
+#: comma-separated, each with an integer count.
+VERDICT_COUNTERS = (
+    "failures",
+    "errors",
+    "skipped",
+    "expected failures",
+    "unexpected successes",
+)
+
+#: The counters that can appear beside a passing verdict. A skipped or expected
+#: failure is compatible with success; the other three are the runner saying the
+#: run did not succeed, so `OK` beside one of them is self-contradictory however
+#: it got written.
+PASSING_COUNTERS = frozenset({"skipped", "expected failures"})
+
+#: A summary ends in the verdict its runner printed, with the runner's own
+#: optional counter list and nothing after it. DEC-2026-0061 fixes the grammar
+#: to the bounded standard form: an end-anchored bare `OK|FAILED` rejected the
+#: literal successful output of every suite that skips a test.
+VERDICT = re.compile(
+    r"\b(?P<verdict>OK|FAILED)(?:\s*\((?P<counters>[^()]*)\))?\s*$"
+)
+COUNTER = re.compile(
+    r"^(?P<name>" + "|".join(VERDICT_COUNTERS) + r")=(?P<count>\d+)$"
+)
+
+
+def parse_verdict(summary):
+    """`(verdict, {counter: count})` for a standard terminal line, else `None`.
+
+    `None` means the text is not something `unittest` printed: a bare prose
+    summary, a malformed counter, an unrecognized counter name, or anything
+    trailing the verdict. Returning it rather than raising keeps the caller's
+    assertion message about the artifact rather than about a regex.
+    """
+    match = VERDICT.search(str(summary))
+    if match is None:
+        return None
+
+    text = match.group("counters")
+    if text is None:
+        return match.group("verdict"), {}
+    if not text.strip():
+        # `unittest` prints no empty parenthesis; it omits the group entirely.
+        return None
+
+    counters = {}
+    for field in text.split(","):
+        found = COUNTER.match(field.strip())
+        if found is None:
+            return None
+        name = found.group("name")
+        if name in counters:
+            return None
+        counters[name] = int(found.group("count"))
+    return match.group("verdict"), counters
 
 
 def active_leaves():
@@ -80,14 +136,23 @@ class TestValidationEvidenceIsSelfConsistent(unittest.TestCase):
                         command.get("exit_code") == 0, passed,
                         f"{path.name}: exit_code contradicts result",
                     )
-                    verdict = VERDICT.search(str(command.get("summary", "")))
+                    parsed = parse_verdict(command.get("summary", ""))
                     self.assertIsNotNone(
-                        verdict, f"{path.name}: summary records no verdict",
+                        parsed,
+                        f"{path.name}: summary records no standard unittest verdict",
                     )
+                    verdict, counters = parsed
                     self.assertEqual(
-                        verdict.group(1) == "OK", passed,
+                        verdict == "OK", passed,
                         f"{path.name}: summary verdict contradicts result",
                     )
+                    if verdict == "OK":
+                        contradicting = sorted(set(counters) - PASSING_COUNTERS)
+                        self.assertEqual(
+                            contradicting, [],
+                            f"{path.name}: summary says OK but records "
+                            f"{', '.join(contradicting)}",
+                        )
 
     def test_a_passing_validation_has_no_failing_command(self):
         for path, document in self.leaves:
@@ -220,6 +285,195 @@ class TestValidationEvidenceIsSelfConsistent(unittest.TestCase):
                     f"{path.name}: two command records are textually identical, so their "
                     f"summaries cannot be attributed",
                 )
+
+class TestVerdictGrammar(unittest.TestCase):
+    """The bounded grammar DEC-2026-0061 fixes, driven directly.
+
+    The guard reads immutable evidence, so what it accepts has to be settled by
+    cases rather than by whichever summaries happen to be in the store today.
+    """
+
+    def parse(self, summary):
+        return parse_verdict(summary)
+
+    def test_the_form_that_broke_the_old_matcher(self):
+        """The literal reason this Decision exists."""
+        self.assertEqual(
+            self.parse("Ran 655 tests in 103.582s OK (skipped=38)"),
+            ("OK", {"skipped": 38}),
+        )
+
+    def test_a_bare_verdict(self):
+        self.assertEqual(self.parse("Ran 800 tests in 163.074s OK"), ("OK", {}))
+
+    def test_a_failing_verdict_with_counters(self):
+        self.assertEqual(
+            self.parse("Ran 800 tests in 159.226s FAILED (failures=3)"),
+            ("FAILED", {"failures": 3}),
+        )
+
+    def test_several_counters(self):
+        self.assertEqual(
+            self.parse("Ran 12 tests in 1.0s FAILED (failures=2, errors=1, skipped=3)"),
+            ("FAILED", {"failures": 2, "errors": 1, "skipped": 3}),
+        )
+
+    def test_the_two_word_counter_names(self):
+        self.assertEqual(
+            self.parse("Ran 9 tests in 0.5s OK (expected failures=2)"),
+            ("OK", {"expected failures": 2}),
+        )
+        self.assertEqual(
+            self.parse("Ran 9 tests in 0.5s FAILED (unexpected successes=1)"),
+            ("FAILED", {"unexpected successes": 1}),
+        )
+
+    def test_prose_after_the_verdict_is_not_a_verdict(self):
+        """The whole point of anchoring: a summary must end where the run did."""
+        for summary in (
+            "Ran 655 tests in 103.582s OK (skipped=38) and everything looks fine",
+            "Ran 655 tests OK, then I fixed the rest",
+            "OK (skipped=38) FAILED later",
+        ):
+            with self.subTest(summary=summary):
+                parsed = self.parse(summary)
+                if parsed is not None:
+                    # A trailing `FAILED` is itself a terminal verdict, so the
+                    # only reading that survives is the one at the end.
+                    self.assertEqual(parsed[0], "FAILED")
+
+    def test_no_verdict_at_all(self):
+        for summary in ("Ran 129 focused lifecycle and queue tests; all passed.", "", "passed"):
+            with self.subTest(summary=summary):
+                self.assertIsNone(self.parse(summary))
+
+    def test_a_malformed_counter_is_not_a_verdict(self):
+        for summary in (
+            "Ran 1 test in 0.1s OK (skipped=)",
+            "Ran 1 test in 0.1s OK (skipped=many)",
+            "Ran 1 test in 0.1s OK (skipped)",
+            "Ran 1 test in 0.1s OK ()",
+            "Ran 1 test in 0.1s OK (skipped=1;errors=2)",
+        ):
+            with self.subTest(summary=summary):
+                self.assertIsNone(self.parse(summary))
+
+    def test_an_unrecognized_counter_name_is_not_a_verdict(self):
+        """`unittest` prints a closed set. Anything else was written by hand."""
+        for summary in (
+            "Ran 1 test in 0.1s OK (flaky=1)",
+            "Ran 1 test in 0.1s OK (skipped=1, flaky=1)",
+        ):
+            with self.subTest(summary=summary):
+                self.assertIsNone(self.parse(summary))
+
+    def test_a_repeated_counter_is_not_a_verdict(self):
+        self.assertIsNone(self.parse("Ran 1 test in 0.1s OK (skipped=1, skipped=2)"))
+
+    def test_counters_that_contradict_a_passing_verdict_are_still_parsed(self):
+        """Parsing and judging are separate.
+
+        `OK (failures=1)` is well-formed text and a false claim. The parser
+        reports what it says; the guard below is what rejects it. Collapsing the
+        two would make the failure message say `no verdict`, which is not the
+        problem.
+        """
+        self.assertEqual(
+            self.parse("Ran 3 tests in 0.2s OK (failures=1)"), ("OK", {"failures": 1})
+        )
+        self.assertFalse(PASSING_COUNTERS & {"failures", "errors", "unexpected successes"})
+
+
+class TestPassingVerdictRejectsFailureCounters(unittest.TestCase):
+    """`OK` beside a failure counter must not read as a passing record.
+
+    Driven through the guard rather than the parser, because this is the
+    assertion a report would trip.
+    """
+
+    def check(self, summary):
+        document = {
+            "id": "IMP-DEC-2026-9999-r01",
+            "validation": {
+                "passed": True,
+                "commands": [{
+                    "command": "[cwd tooling/common] python -m unittest discover -s tests",
+                    "exit_code": 0,
+                    "result": "passed",
+                    "summary": summary,
+                }],
+            },
+        }
+        case = TestValidationEvidenceIsSelfConsistent("test_exit_code_result_and_summary_agree")
+        case.leaves = [(Path("IMP-DEC-2026-9999-r01.yaml"), document)]
+        return case
+
+    def test_a_clean_ok_passes(self):
+        self.check("Ran 3 tests in 0.2s OK (skipped=1)").test_exit_code_result_and_summary_agree()
+
+    def test_ok_with_failures_is_rejected(self):
+        for summary in (
+            "Ran 3 tests in 0.2s OK (failures=1)",
+            "Ran 3 tests in 0.2s OK (errors=1)",
+            "Ran 3 tests in 0.2s OK (unexpected successes=1)",
+            "Ran 3 tests in 0.2s OK (skipped=1, errors=2)",
+        ):
+            with self.subTest(summary=summary):
+                case = self.check(summary)
+                with self.assertRaises(AssertionError):
+                    case.test_exit_code_result_and_summary_agree()
+
+    def test_prose_is_rejected(self):
+        case = self.check("Ran 3 tests in 0.2s OK and the rest is fine")
+        with self.assertRaises(AssertionError):
+            case.test_exit_code_result_and_summary_agree()
+
+
+class TestTheRetainedReportsPass(unittest.TestCase):
+    """DEC-2026-0061 AT2, pinned to the two reports the ruling names.
+
+    The Decision retains IMP-DEC-2026-0053-r03 and IMP-DEC-2026-0060-r01
+    unchanged and authorizes no successor for either. If the corrected grammar
+    did not accept their existing summaries, the only remaining remedy would be
+    a reissue the Decision forbids -- so this is checked by name, not left to
+    the corpus sweep above.
+    """
+
+    RETAINED = ("IMP-DEC-2026-0053-r03", "IMP-DEC-2026-0060-r01")
+
+    def test_each_retained_report_is_still_the_active_leaf(self):
+        leaves = {str(document.get("id")) for _, document in active_leaves()}
+        for identifier in self.RETAINED:
+            with self.subTest(artifact=identifier):
+                self.assertIn(identifier, leaves)
+
+    def test_every_summary_in_them_parses_and_agrees(self):
+        for identifier in self.RETAINED:
+            document = yaml.safe_load(
+                (STORE / f"{identifier}.yaml").read_text(encoding="utf-8")
+            )
+            for command in document.get("validation", {}).get("commands", []):
+                with self.subTest(artifact=identifier, command=command.get("command")):
+                    parsed = parse_verdict(command.get("summary", ""))
+                    self.assertIsNotNone(parsed, command.get("summary"))
+                    verdict, counters = parsed
+                    self.assertEqual(verdict == "OK", command.get("result") == "passed")
+                    if verdict == "OK":
+                        self.assertEqual(sorted(set(counters) - PASSING_COUNTERS), [])
+
+    def test_no_successor_was_published_for_either(self):
+        """The Decision says no Builder reissue is authorized. Prove none exists."""
+        for identifier in self.RETAINED:
+            lineage, _, revision = identifier.rpartition("-r")
+            later = sorted(
+                path.name
+                for path in STORE.glob(f"{lineage}-r*.yaml")
+                if path.stem.rpartition("-r")[2].isdigit()
+                and int(path.stem.rpartition("-r")[2]) > int(revision)
+            )
+            with self.subTest(artifact=identifier):
+                self.assertEqual(later, [])
+
 
 
 if __name__ == "__main__":

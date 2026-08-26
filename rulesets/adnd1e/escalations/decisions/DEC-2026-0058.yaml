@@ -1,0 +1,181 @@
+schema_version: '1.0'
+id: DEC-2026-0058
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 2
+supersedes: DEC-2026-0057
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement DEC-2026-0057's unchanged approved-snapshot queue rule under
+    this corrected Decision, repair only the reports whose purported approved
+    Reviews are schema-invalid, and publish a Decision Implementation Report.
+  blocking_ids: []
+
+decision_date: '2026-08-23'
+escalation_id: ESC-2026-08-23T22.56.50.647Z
+decision_authoring_contract_version: '1.1'
+reissue_reason: >-
+  DEC-2026-0057's follow_up_owners incorrectly ordered a second Analyst repair
+  of GUR-PKT-UA-015-015-cavaliers-r02. It overlooked DEC-2026-0039's existing
+  r03 successor and the test-guarded historical exemption. This reissue changes
+  no queue-policy ruling and no governance file; it corrects the executable
+  worker instruction before implementation.
+
+question: >-
+  Does the intentionally invalid, superseded r02 GUR require another Analyst
+  repair after DEC-2026-0039's valid r03 successor exists?
+
+ruling: >-
+  No. GUR-PKT-UA-015-015-cavaliers-r02 is immutable historical evidence of a
+  handoff-only defect. DEC-2026-0039 required exactly one successor,
+  GUR-PKT-UA-015-015-cavaliers-r03; that successor exists, supersedes r02, and
+  has the conforming terminal handoff. The common-schema exemption deliberately
+  retains r02 as invalid and verifies r03 as its valid successor. No role may
+  publish r04 or otherwise attempt to repair r02 again.
+
+  DEC-2026-0057's substantive ruling remains unchanged: after an exact valid
+  Approved Decision Implementation Review consumes a report,
+  versioned-contract-content evidence is historical snapshot evidence. Builder
+  implements that rule under this active reissue. The three current malformed
+  implementation Reviews are not valid Approved Reviews and therefore receive
+  no snapshot exception until their ordinary replacement report and Review
+  lineages validate.
+
+rationale:
+  - >-
+    A successor can repair an immutable predecessor's workflow state only once.
+    r03 already does so. A second r02 successor forks immutable lineage and a
+    successor to r03 would add a semantically empty artifact without changing
+    the historical exemption.
+  - >-
+    The exemption is explicit and narrow: it names only r02, permits only
+    handoff invalidity, and requires r03 to validate. Treating it as current
+    work contradicts both DEC-2026-0039 and its regression guards.
+  - >-
+    The three malformed Reviewer artifacts are current schema defects. They
+    require Reviewer-owned successor Reviews, preceded by Builder reissues of
+    their now-unapproved reports, not Analyst source or GUR work.
+
+affected_artifacts:
+  exempt_historical_gur:
+    id: GUR-PKT-UA-015-015-cavaliers-r02
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r02.yaml
+    disposition: retain_invalid_handoff_only_as_explicit_historical_exemption
+  valid_repair_successor:
+    id: GUR-PKT-UA-015-015-cavaliers-r03
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r03.yaml
+    disposition: retain_as_the_only_authorized_repair
+  malformed_current_reviews:
+    - id: REV-IMP-DEC-2026-0046-r09-r01
+      path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0046-r09-r01.yaml
+      defect: unquoted comma-containing evidence in a YAML flow map
+      replacement_report: IMP-DEC-2026-0046-r10
+    - id: REV-IMP-DEC-2026-0054-r04-r01
+      path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0054-r04-r01.yaml
+      defect: unquoted comma-containing evidence in a YAML flow map
+      replacement_report: IMP-DEC-2026-0054-r05
+    - id: REV-IMP-DEC-2026-0056-r01-r01
+      path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0056-r01-r01.yaml
+      defect: unquoted comma-containing evidence in a YAML flow map
+      replacement_report: IMP-DEC-2026-0056-r02
+
+affected_contracts: []
+affected_registries: []
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  profile_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    DEC-2026-0057 is superseded by this corrected Decision. r02 and r03 remain
+    immutable UA history. The three malformed Review artifacts are repaired
+    only by normal successor report and Review publication. No graph artifact
+    changes.
+  direct_implementation: >-
+    Builder implements the existing 0057 scanner and test change under this
+    active Decision and reissues the three specified reports. Reviewer then
+    publishes ordinary schema-valid successor Reviews. No Analyst action exists.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision reissue and close the escalation. Preserve
+      DEC-2026-0057, r02, r03, and every published report and Review unchanged.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement DEC-2026-0057's approved versioned-contract-content snapshot
+      queue rule under this active reissue. Publish IMP-DEC-2026-0058-r01 and
+      successor reports IMP-DEC-2026-0046-r10, IMP-DEC-2026-0054-r05, and
+      IMP-DEC-2026-0056-r02 with current, approval-ready evidence. Do not issue
+      any UA GUR.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Publish schema-valid successor Reviews for the three Builder report
+      successors and independently review IMP-DEC-2026-0058-r01. Use quoted or
+      block-scalar evidence text; validate every artifact before publication.
+
+acceptance_tests:
+  - >-
+    The published-artifact exemption set remains exactly
+    GUR-PKT-UA-015-015-cavaliers-r02.yaml; r02 remains invalid only in its
+    handoff and r03 is its exact valid successor. No r04 is published.
+  - >-
+    The active DEC-2026-0058 contains no Analyst work and states that the UA
+    lineage is resolved historical evidence; its only direct implementation
+    owner is Builder and its only Review owner is Reviewer.
+  - >-
+    The DEC-2026-0057 approved versioned-contract-content snapshot rule remains
+    implemented only after exact valid approval. Before that, the three named
+    report lineages remain strict and require ordinary Builder and Reviewer
+    successors.
+  - >-
+    IMP-DEC-2026-0058-r01 pins this Decision checksum, records passing focused
+    exemption and queue tests, and is approval-ready for independent Reviewer
+    verification without claiming any Analyst repair.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This corrects workflow instruction and immutable artifact-lineage handling,
+    not ontology, source meaning, assertion identity, or graph semantics.
+
+governance_changelog:
+  - >-
+    DEC-2026-0058 supersedes DEC-2026-0057 solely to remove an erroneous
+    Analyst repair directive. DEC-2026-0057's approved-snapshot queue-policy
+    ruling and contracts remain unchanged.
+
+exact_diff:
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0058.yaml:
+    - 'Publish the corrected active Decision reissue; no governance document is changed.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-23T22.56.50.647Z.yaml:
+    - 'Record DEC-2026-0058 as the resolution and retain the Analyst correction as decided history.'
+
+exact_diff_ownership:
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0058.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-23T22.56.50.647Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Preserve all named Decisions, GURs, reports, Reviews, and graph artifacts unchanged.
+  builder:
+    - Implement the corrected active Decision and reissue only the three named reports; do not create a UA GUR.
+  reviewer:
+    - Repair the three named current Review lineages by valid successors and review the new implementation report.
+  analyst:
+    - No action. Do not publish r04 or a successor to r03 for the UA cavaliers withdrawal lineage.
+  integrator:
+    - Continue ordinary ready Integration work; this Decision assigns no canonical action.

@@ -1,0 +1,110 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0059-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0059
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0059.yaml
+  checksum: sha256:24ef0d0a1a12ffd67215682fb2ee67eeea79bbc21dfafeaf9b273056752f488a
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:19301981edde1fd17f60a6e489439e2a46fac7f622dfca6d080c5e7eab8646da
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:d933733bc05dc12712a998be7243b1eeba502518cd2b62f5366956a4c2fbebe8
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:e9259c9653f14c2d9ebe33f4b99b72341a357c75407d61b7ece8f3c5a20d1763
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:58c30353233932ff5c26f8e37d16c6e2daf36463a5e67e53b52489ae05774d89
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0057.yaml
+  checksum: sha256:2abed7f4afabd5dff1b72787feef4582c2f2d4767d6ebe647981c55a0579733d
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0058.yaml
+  checksum: sha256:486d0b6094284209524e9302257940ed40222bbc7b00391329b268a7abe51420
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0059.yaml
+  checksum: sha256:24ef0d0a1a12ffd67215682fb2ee67eeea79bbc21dfafeaf9b273056752f488a
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-23T22.59.17.296Z.yaml
+  checksum: sha256:68bbfdee776facbfeebb39d3f1c825bdf49623b9c6c7c87ce36f14157f1b3c79
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: REV-IMP-DEC-2026-0046-r09-r02, REV-IMP-DEC-2026-0054-r04-r02 and REV-IMP-DEC-2026-0056-r01-r02
+    are published, schema-valid, and the active leaf of their Review lineages. Each records supersedes
+    of its malformed r01 predecessor, carries status and overall_disposition revision_required, and hands
+    its exact reviewed implementation -- IMP-DEC-2026-0046-r09, IMP-DEC-2026-0054-r04 and IMP-DEC-2026-0056-r01
+    respectively -- back to Builder with a ready handoff. The scanner reports no decision_implementation_review_invalid
+    diagnostic for any of the three, which it did for the malformed r01 predecessors they supersede.
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'No Reviewer successor approved a stale report: all three r02 Reviews are revision_required,
+    and no approved Review exists for the three stale reports. Builder reissued exactly the three named
+    reports and no others -- IMP-DEC-2026-0046-r10, IMP-DEC-2026-0054-r05 and IMP-DEC-2026-0056-r02 --
+    each with contract-content evidence re-measured against the current files. IMP-DEC-2026-0053-r02 was
+    deliberately not reissued despite carrying the same stale-checksum diagnostic, because this Decision
+    names three reports and DEC-2026-0053 is not among them; it remains strict and Builder-owned.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'The snapshot is gated on exact valid approval and nothing else. ContractContentSnapshotCase
+    drives one fixture through every relevant state: approved and drifted is informational and assigns
+    no work; revision_required, report-checksum-stale, decision-checksum-stale, and no-Review-at-all each
+    keep the report strictly invalid; an undrifted approved lineage produces no diagnostic at all. Two
+    further cases hold the boundary inside the evidence itself -- a Reviewer who drops an anchor, or records
+    a version the file does not carry while its checksum still matches, is rejected whether or not the
+    Review is approved, because a matching checksum proves the record was wrong when written rather than
+    overtaken. Live: the three named lineages are still reported strict and Builder-owned, exactly as
+    this test requires.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: GUR-PKT-UA-015-015-cavaliers-r02 remains the sole entry in the published-artifact exemption
+    set, invalid only in its handoff (next_role null, readiness 'withdrawn'). GUR-PKT-UA-015-015-cavaliers-r03
+    is published, supersedes r02 exactly, and carries the conforming terminal handoff. No r04 exists on
+    disk. test_common_schemas.TestLegacyArtifactsStayValid holds all three conditions, 6 tests passing.
+- acceptance_test_index: 5
+  result: passed
+  evidence: This report pins DEC-2026-0059 by checksum, reports acceptance tests 1 through 4 as passed
+    against current evidence, and records the focused runs of ContractContentSnapshotCase with LiveContractContentSnapshotCase
+    (51 tests, OK) and TestLegacyArtifactsStayValid (6 tests, OK) alongside the full tooling/common suite
+    (773 tests, OK).
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'DEC-2026-0059 is the active leaf of the DEC-2026-0057 lineage, so this one report carries the
+    whole lineage: the post-approval versioned contract-content snapshot, the UA exemption findings, and
+    the repair sequence. The snapshot closes a loop this Builder reported twice -- implementation-file
+    checksums had a post-approval snapshot under DEC-2026-0046 and contract-content evidence did not,
+    so each governance bump reopened every completed Decision that pinned the contract. It is visible
+    working in this scan: WORK_QUEUES moved 1.21 to 1.22 and ARTIFACT_LIFECYCLE 1.17 to 1.18 in the same
+    change, and the 0045, 0052 and 0055 lineages stayed complete instead of returning to Builder as they
+    did on the previous bump. One implementation note the Reviewer should look at directly. The first
+    attempt routed every contract-content finding into the snapshot, which made two existing tests fail
+    -- a Reviewer who dropped an anchor, and one who recorded a version the file never carried, both became
+    invisible once approved. The rule now turns on whether the file actually moved: if the contract still
+    hashes to what the evidence pinned, any disagreement with it was false when written and stays an error
+    permanently, and only a changed checksum can turn a once-correct finding into history. That discriminator
+    is mine, not stated in WORK_QUEUES 1.22, and it is what keeps the snapshot from laundering a bad record.
+    Separately, IMP-DEC-2026-0053-r02 still carries a stale-checksum diagnostic and was deliberately left
+    alone: this Decision names three reports for reissue and 0053 is not one of them.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0059-r01.validation.json
+validation_report_checksum: sha256:37d1f44596ecdfe74792fbbcc418908bfcf2936c83dd0907744130051df73ba3
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 773 tests in 142.624s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.ContractContentSnapshotCase
+      test_scan_agent_queues.LiveContractContentSnapshotCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 51 tests in 18.395s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_common_schemas.TestLegacyArtifactsStayValid'
+    exit_code: 0
+    result: passed
+    summary: Ran 6 tests in 14.618s OK

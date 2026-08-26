@@ -1,0 +1,232 @@
+schema_version: '1.0'
+id: DEC-2026-0057
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Extend post-approval queue classification to checksummed
+    versioned-contract-content evidence and publish a Decision Implementation
+    Report for independent review.
+  blocking_ids: []
+
+decision_date: '2026-08-23'
+escalation_id: ESC-2026-08-23T22.20.24.267Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  Once an exact Approved Decision Implementation Review has independently
+  verified checksummed versioned-contract-content evidence, should a later
+  contract version or content change reopen that completed Decision?
+
+ruling: >-
+  No. Extend DEC-2026-0046's approved-review snapshot rule to the report's
+  checksummed versioned-contract-content evidence and the corresponding
+  independent Review evidence. Once an exact active Approved implementation
+  Review consumes the exact report and Decision, those recorded contract
+  checksums, versions, and substantive-anchor findings are the immutable record
+  of what the Reviewer verified. A later contract edit is informational for the
+  completed Decision and must not create a Builder reissue or invalidate its
+  approved Review.
+
+  This rule is deliberately temporal. Before exact approval, versioned contract
+  evidence remains live: the report and candidate Review must prove the current
+  contract checksum, minimum version, and anchors. A missing, revision-required,
+  malformed, report-checksum-stale, or Decision-checksum-stale Review preserves
+  current strict validation. The snapshot neither claims nor checks that the
+  current contract still meets an old Decision's evidence; every later Decision
+  that relies on that contract proves its own current version and anchors.
+
+rationale:
+  - >-
+    The approved Review already pins both the exact implementation report and
+    the independent contract-content verification. Treating either artifact as
+    a permanent dependency on future governance edits makes completed Decisions
+    non-convergent.
+  - >-
+    DEC-2026-0056 demonstrated the failure directly: contract edits alone
+    reopened six independently approved reports without changing any reviewed
+    implementation, source interpretation, or canonical data.
+  - >-
+    Keeping pre-approval evidence strict preserves the audit guarantee where it
+    matters, while making the completed state durable in the same way as
+    implementation-file snapshots.
+
+affected_artifacts:
+  completed_snapshot_lineages:
+    - decision: DEC-2026-0045
+      report: IMP-DEC-2026-0045-r10
+      approved_review: REV-IMP-DEC-2026-0045-r10-r01
+    - decision: DEC-2026-0046
+      report: IMP-DEC-2026-0046-r09
+      approved_review: REV-IMP-DEC-2026-0046-r09-r01
+    - decision: DEC-2026-0052
+      report: IMP-DEC-2026-0052-r03
+      approved_review: REV-IMP-DEC-2026-0052-r03-r01
+    - decision: DEC-2026-0054
+      report: IMP-DEC-2026-0054-r04
+      approved_review: REV-IMP-DEC-2026-0054-r04-r01
+    - decision: DEC-2026-0055
+      report: IMP-DEC-2026-0055-r03
+      approved_review: REV-IMP-DEC-2026-0055-r03-r01
+    - decision: DEC-2026-0056
+      report: IMP-DEC-2026-0056-r01
+      approved_review: REV-IMP-DEC-2026-0056-r01-r01
+  still_strict:
+    - decision: DEC-2026-0053
+      report: IMP-DEC-2026-0053-r02
+      reason: >-
+        The active report is not approval-ready and has no exact approved
+        implementation Review; current validation remains mandatory.
+
+affected_contracts:
+  - path: contracts/WORK_QUEUES.md
+    change: >-
+      Snapshot approved report and Review versioned-contract-content evidence,
+      while retaining strict live validation before approval.
+  - path: contracts/ARTIFACT_LIFECYCLE.md
+    change: >-
+      Describe the post-approval historical evidence lifecycle and the
+      continuing current-evidence responsibility of later Decisions.
+affected_registries: []
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  profile_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    Existing approved report and Review lineages gain the same historical
+    snapshot classification already applied to implementation files. No report,
+    Review, Decision, GUP, Approved bundle, Integration record, registry, or
+    canonical artifact is rewritten.
+  direct_implementation: >-
+    Builder changes queue derivation and tests only. The scanner reports later
+    contract-content drift as informational after exact approval and retains
+    existing pre-approval errors.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision; version the queue and lifecycle contracts; and
+      close the escalation. Do not rewrite any named report, Review, Decision,
+      GUP, Approved bundle, Integration record, or canonical artifact.
+  - step: 2
+    owner: builder
+    action: >-
+      Update queue derivation so an exact active approved implementation Review
+      snapshots the report's and Review's versioned-contract-content evidence.
+      Emit later drift as informational only; retain strict errors before exact
+      approval. Publish IMP-DEC-2026-0057-r01 with focused queue-test evidence.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0057-r01. Verify exact approved-review
+      provenance, post-approval informational behavior, all strict
+      pre-approval negative cases, and no loss of current validation for a
+      later Decision.
+
+acceptance_tests:
+  - >-
+    WORK_QUEUES Version 1.22 or later states that versioned-contract-content
+    evidence becomes a historical snapshot only after an exact approved
+    implementation Review, and preserves strict current verification before
+    approval.
+  - >-
+    ARTIFACT_LIFECYCLE Version 1.18 or later distinguishes current strict
+    versioned-contract-content verification from its exact approved-review
+    historical snapshot without asserting old evidence about current contracts.
+  - >-
+    Queue tests show that later version, checksum, or anchor drift in an exact
+    approved report/Review lineage is informational and creates no Builder job;
+    an otherwise identical unapproved, revision-required, malformed,
+    report-checksum-stale, or Decision-checksum-stale candidate Review remains
+    a current error and returns work to the implementation owner.
+  - >-
+    The live completed 0045, 0046, 0052, 0054, 0055, and 0056 lineages remain
+    completed after this contract version bump, while DEC-2026-0053 remains
+    strict and no named current Integrator or Analyst job is removed.
+  - >-
+    IMP-DEC-2026-0057-r01 pins this Decision's exact checksum, reports every
+    direct acceptance test as passed with current evidence, records passing
+    focused queue tests, and is approval-ready for independent Reviewer
+    verification.
+
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.22'
+        substantive_anchors:
+          - exact Approved implementation Review snapshots versioned-contract-content evidence
+          - later contract drift is informational for completed Decision
+          - strict current verification before approval
+  - acceptance_test_index: 2
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/ARTIFACT_LIFECYCLE.md
+        minimum_version: '1.18'
+        substantive_anchors:
+          - current strict precondition before exact approval
+          - approved Review historical record
+          - later Decision proves its own current evidence
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This changes workflow-provenance handling only, not ontology, source
+    meaning, assertion identity, or graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.22 and ARTIFACT_LIFECYCLE 1.18 extend DEC-2026-0046's exact
+    approved-review snapshot rule to versioned-contract-content evidence.
+  - >-
+    Current verification remains strict until approval; completed lineages no
+    longer reopen merely because later governance advances a shared contract.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.21 -> 1.22; snapshot approved versioned-contract-content evidence and retain strict pre-approval validation.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.17 -> 1.18; define post-approval historical lifecycle for versioned-contract-content evidence.'
+  tooling/common/scan_agent_queues.py:
+    - 'Classify post-approval versioned-contract-content drift as informational only after exact approved Review provenance.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Cover post-approval contract-content snapshot behavior, strict negative cases, and the six completed live lineages.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0057.yaml:
+    - 'Record the bounded post-approval versioned-contract-content snapshot rule.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-23T22.20.24.267Z.yaml:
+    - 'Record DEC-2026-0057 as the resolution and retain the Builder escalation as decided history.'
+
+exact_diff_ownership:
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: contracts/ARTIFACT_LIFECYCLE.md, owner: architect, sequence_step: 1}
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0057.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-23T22.20.24.267Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Preserve all named reports, implementation Reviews, Decisions, and downstream graph artifacts unchanged.
+  builder:
+    - Implement only exact approved-review snapshot handling and tests; do not reissue a completed report solely for later contract drift.
+  reviewer:
+    - Verify exact approval provenance and every strict pre-approval negative case before approving the implementation report.
+  analyst:
+    - Repair GUR-PKT-UA-015-015-cavaliers-r02 through an ordinary schema-valid successor; that independent error is unaffected by this Decision.
+  integrator:
+    - Continue current ready Integration work under its ordinary lifecycle; no canonical action is assigned by this Decision.

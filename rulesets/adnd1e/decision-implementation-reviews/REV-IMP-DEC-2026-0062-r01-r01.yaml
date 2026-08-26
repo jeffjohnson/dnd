@@ -1,0 +1,97 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0062-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    All DEC-2026-0062 acceptance tests are independently verified. The
+    contract guard is fail-closed and the reviewed r08 packet is handled by
+    its ordinary packet-review lifecycle.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0062-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0062-r01.yaml
+  checksum: sha256:cbc7c9615144e480ee872c6c6d2ad7e5e13d23ccd6581b106cc7f8a10754f2fd
+decision_input:
+  id: DEC-2026-0062
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0062.yaml
+  checksum: sha256:5f8f88300c89b24164978abd383033639f54638828550c594efc8c5f940f008d
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      The contract schema accepts row-local exact_corrections for 1.2
+      approved_with_revision rows and rejects absent, empty, non-mapping, and
+      alias payloads. Independent focused run: 18 tests passed.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      The loader and CLI refuse an alias-bearing 1.2 review with exit code 2
+      before producing either a GUP or validation report. Independent focused
+      CorrectionContractCase and CorrectionRefusalProducesNothingCase run:
+      16 tests passed.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r03 is a 1.2 successor
+      and places the three executable mappings on M035, M036, and M070. Its
+      r05-r05 inherited review checksum is exact.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      GUP-PKT-PHB-094-100-illusionist-spells-r08 is derived from r07-r03 and
+      contains only the three required aspect-and-condition corrections; its
+      ordinary review is published separately.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      No canonical file was modified. The eight named historical reviews were
+      audited against current approved and integrated lineages; no
+      source-supported difference changes a current canonical mechanic.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: >-
+      The report pins the exact Decision and implementation files and covers
+      all six tests. Independent full validation passed: common 878 tests and
+      Builder 673 tests (38 skipped).
+independent_validation:
+  passed: true
+  commands:
+    - command: >-
+        SHA-256 comparison of the implementation report, Decision, validation
+        report, and all six listed implementation files.
+      exit_code: 0
+      result: passed
+      summary: Exact report and Decision provenance, including every listed implementation file, matched.
+    - command: >-
+        [cwd tooling/common] PYTHONPATH=.;tests python -m unittest
+        test_common_schemas.TestReviewCorrectionContract -q
+      exit_code: 0
+      result: passed
+      summary: Ran 18 tests in 4.279s OK.
+    - command: >-
+        [cwd tooling/builder] PYTHONPATH=src;tests python -m unittest
+        test_review.CorrectionContractCase test_review.CorrectionRefusalProducesNothingCase -q
+      exit_code: 0
+      result: passed
+      summary: Ran 16 tests in 0.056s OK; alias refusal emitted no GUP or report.
+    - command: >-
+        [cwd tooling/common] PYTHONPATH=.;tests python -m unittest discover
+        -s tests -p test_*.py
+      exit_code: 0
+      result: passed
+      summary: Ran 878 tests in 190.216s OK.
+    - command: >-
+        [cwd tooling/builder] PYTHONPATH=src python -m unittest discover
+        -s tests -p test_*.py
+      exit_code: 0
+      result: passed
+      summary: Ran 673 tests in 111.176s OK (skipped=38).
+overall_disposition: approved

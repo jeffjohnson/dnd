@@ -1,0 +1,94 @@
+schema_version: '1.0'
+id: ESC-2026-08-22T15.00.03.733Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: user
+decision_owner: architect
+raised_on: '2026-08-22'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Queue derivation hides an active ready Builder handoff when the reviewed
+    GUP has a later revision that does not consume that Review. The user also
+    requested confirmation of whether the approved DEC-2026-0050 bundle must
+    be requeued.
+  blocking_ids: []
+
+trigger: >-
+  Queue semantics are not explicit enough to distinguish Review-handoff
+  consumption from ordinary GUP supersession.
+
+question: >-
+  When an active revision-required Review has a ready Builder handoff, does a
+  later GUP revision consume that handoff merely by superseding the reviewed GUP,
+  and should an already integrated approved bundle be rediscovered as Integrator
+  work?
+
+evidence:
+  active_review:
+    id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06.yaml
+    checksum: sha256:5698cbc9eadb3a87f0502e495a737369b50111f776f577b7316155e4a96cd1a2
+    reviewed_gup_id: GUP-PKT-PHB-094-100-illusionist-spells-r05
+    handoff: {next_role: builder, readiness: ready}
+  later_unconsuming_gup:
+    id: GUP-PKT-PHB-094-100-illusionist-spells-r06
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-094-100-illusionist-spells-r06.yaml
+    checksum: sha256:6e0e867e9e231376e5b690e5227f0ccdc43d7758f084c94ffe10b8695a8f43d1
+    supersedes: GUP-PKT-PHB-094-100-illusionist-spells-r05
+    provenance_review_id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05
+  approved_bundle:
+    id: APPROVED-GUP-MIG-DEC-2026-0050-r04-r01
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-MIG-DEC-2026-0050-r04-r01.yaml
+    checksum: sha256:e550d5ec677e8743ef4bcd4a7970955702a8e2abadda1a66670dbae71fdef605
+  integration_record:
+    id: INT-20260820-001
+    path: books/adnd1e/phb/artifacts/integrated/INT-20260820-001-APPROVED-GUP-MIG-DEC-2026-0050-r04-r01.json
+    checksum: sha256:be0e2957a3b8bb6669c09f1c4a7571477356876d1c70c7eda75d22c66ea9857e
+
+options_considered:
+  - option: >-
+      Give each active revision-required Review an independent handoff lineage
+      and consume it only through an exact provenance.review_id reference from
+      a later GUP in the same GUP lineage.
+    impact: >-
+      Preserves the active illusionist correction without permitting unrelated
+      or unconsuming revisions to suppress it.
+    recommendation: recommended
+  - option: Treat any later GUP superseding the reviewed GUP as consumption.
+    impact: >-
+      Retains the current under-reporting defect and loses a ready revision
+      request without evidence that the later GUP addressed it.
+    recommendation: rejected
+  - option: Requeue the 0050 approved bundle.
+    impact: >-
+      Duplicates already completed Integrator work despite an exact immutable
+      Integration record and manifest.
+    recommendation: rejected
+
+governance_impact:
+  constitution_change: false
+  registry_change: false
+  canonical_data_change: false
+  contract_change: true
+  note: >-
+    This changes only queue derivation and provenance consumption. It does not
+    alter any reviewed GUP, bundle, Integration record, registry, or canonical
+    graph state.
+
+blocking: >-
+  The scanner implementation cannot be changed until an Architect Decision
+  defines the distinct Review-handoff consumption rule.
+resolution:
+  decision_id: DEC-2026-0054
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0054.yaml
+  outcome: >-
+    An active revision-required Review retains an independent handoff until a
+    later GUP in the reviewed lineage records that exact Review ID in
+    provenance.review_id. The approved DEC-2026-0050 bundle remains terminally
+    consumed by INT-20260820-001 and is not requeued.

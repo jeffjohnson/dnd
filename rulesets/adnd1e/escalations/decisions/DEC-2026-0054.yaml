@@ -1,0 +1,245 @@
+schema_version: '1.0'
+id: DEC-2026-0054
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement distinct revision-required Review handoff lineage in queue
+    derivation and publish an implementation report for independent Review.
+  blocking_ids: []
+
+decision_date: '2026-08-22'
+escalation_id: ESC-2026-08-22T15.00.03.733Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  When an active revision-required Review has a ready Builder handoff, does a
+  later GUP revision consume that handoff merely by superseding the reviewed GUP,
+  and should an already integrated approved bundle be rediscovered as Integrator
+  work?
+
+ruling: >-
+  No. An active revision-required Review owns an independent Review-handoff
+  lineage. A later GUP in the same lineage as the reviewed GUP consumes that
+  handoff only when its provenance.review_id exactly names the active Review ID.
+  Superseding the reviewed GUP alone is not consumption, and a successor that
+  names an earlier Review does not consume a later Review. Queue derivation must
+  therefore route the active Review handoff even when its reviewed GUP is no
+  longer the current GUP leaf, unless this exact consumption evidence exists.
+
+  The existing approved DEC-2026-0050 bundle remains consumed. Its exact
+  Integration record, INT-20260820-001, names the approved bundle and reviewed
+  GUP, and its ruleset manifest records the resulting canonical transaction.
+  Neither the Review-lineage rule nor this Decision reopens it or creates an
+  Integrator job.
+
+  Accordingly, REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06 is active
+  Builder work after the scanner correction. Builder then publishes the ordinary
+  GUP-PKT-PHB-094-100-illusionist-spells-r07 correction in the same GUP lineage,
+  with provenance.review_id set exactly to that Review ID. That r07 is the only
+  ordinary artifact authorized to consume this ready Review handoff.
+
+rationale:
+  - >-
+    A Review's revision request is evidence about the reviewed GUP, but it is
+    not proof that every later GUP revision satisfies its findings. Exact
+    provenance distinguishes a responding revision from an unrelated one.
+  - >-
+    Keeping Review and GUP leaves distinct preserves append-only history while
+    ensuring a later current GUP cannot make ready correction work disappear.
+  - >-
+    An Integration record is the terminal exact consumer for an Approved
+    bundle. Requeueing 0050 would duplicate a canonical transaction rather
+    than recover omitted work.
+
+affected_artifacts:
+  active_revision_review:
+    id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06.yaml
+    checksum: sha256:5698cbc9eadb3a87f0502e495a737369b50111f776f577b7316155e4a96cd1a2
+    disposition: retain_immutable_and_route_its_ready_builder_handoff
+  unconsuming_successor_gup:
+    id: GUP-PKT-PHB-094-100-illusionist-spells-r06
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-094-100-illusionist-spells-r06.yaml
+    checksum: sha256:6e0e867e9e231376e5b690e5227f0ccdc43d7758f084c94ffe10b8695a8f43d1
+    disposition: >-
+      Retain unchanged. Its provenance.review_id names r05-r05 and therefore
+      does not consume the later r05-r06 Review handoff.
+  integrated_bundle:
+    id: APPROVED-GUP-MIG-DEC-2026-0050-r04-r01
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-MIG-DEC-2026-0050-r04-r01.yaml
+    checksum: sha256:e550d5ec677e8743ef4bcd4a7970955702a8e2abadda1a66670dbae71fdef605
+    integration_id: INT-20260820-001
+    integration_path: books/adnd1e/phb/artifacts/integrated/INT-20260820-001-APPROVED-GUP-MIG-DEC-2026-0050-r04-r01.json
+    integration_checksum: sha256:be0e2957a3b8bb6669c09f1c4a7571477356876d1c70c7eda75d22c66ea9857e
+    disposition: retain_consumed_do_not_requeue
+
+affected_contracts:
+  - path: contracts/WORK_QUEUES.md
+    change: define distinct revision-required Review-handoff lineage and its exact GUP provenance consumer
+  - path: contracts/ARTIFACT_LIFECYCLE.md
+    change: preserve active revision-required Review handoff until an exact same-lineage GUP successor consumes it
+  - path: agents/builder/INSTRUCTIONS.md
+    change: require an ordinary responding GUP to record the exact active Review ID in provenance.review_id
+affected_registries: []
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  profile_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    Queue derivation obtains a distinct Review-handoff lineage. No published
+    GUP, Review, Approved bundle, or Integration record is rewritten.
+  direct_implementation: >-
+    Builder changes queue-scanner derivation and its tests only. The subsequent
+    r07 is ordinary downstream Builder work, not a direct implementation
+    artifact or Decision acceptance result.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, amend the queue and lifecycle contracts, update
+      Builder instructions, and close the escalation. Do not modify the active
+      Review, r06 GUP, 0050 bundle, Integration record, registry, or canonical
+      data.
+  - step: 2
+    owner: builder
+    action: >-
+      Update queue derivation to discover active revision-required Review leaves
+      independently of the current GUP leaf. Suppress a Review handoff only when
+      a later same-lineage GUP has provenance.review_id exactly equal to the
+      active Review ID. Preserve exact Integration consumption and publish
+      IMP-DEC-2026-0054-r01 with focused test evidence.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0054-r01. Verify the active illusionist
+      Review is ready for Builder despite r06, exact r07 provenance consumes it,
+      no duplicate Review job occurs, and the exact 0050 Integration remains
+      terminal.
+  - step: 4
+    owner: builder
+    action: >-
+      After the implementation Review is approved, publish the normal
+      GUP-PKT-PHB-094-100-illusionist-spells-r07 correction. It must remain in
+      r05's GUP lineage and set provenance.review_id exactly to
+      REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06.
+
+acceptance_tests:
+  - >-
+    WORK_QUEUES Version 1.19 or later defines an active revision-required
+    Review as an independent handoff lineage, requires exact same-lineage
+    provenance.review_id consumption, and retains exact Integration consumption
+    for Approved bundles.
+  - >-
+    ARTIFACT_LIFECYCLE Version 1.15 or later retains an active
+    revision-required Review handoff until an exact same-lineage GUP successor
+    records it in provenance.review_id.
+  - >-
+    With r05-r06 active and r06 superseding r05 while naming r05-r05 in
+    provenance.review_id, the scanner produces exactly one ready Builder job
+    for r05-r06. A same-lineage r07 that names r05-r06 consumes that job.
+  - >-
+    APPROVED-GUP-MIG-DEC-2026-0050-r04-r01 remains consumed and produces no
+    Integrator job when INT-20260820-001 exactly names it.
+  - >-
+    IMP-DEC-2026-0054-r01 pins this Decision's exact checksum, reports every
+    direct acceptance test as passed with current evidence, records passing
+    focused scanner tests, and is approval-ready for independent Reviewer
+    verification.
+
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.19'
+        substantive_anchors:
+          - revision-required Review handoff lineage
+          - exact provenance.review_id consumption
+          - exact Integration consumption
+  - acceptance_test_index: 2
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/ARTIFACT_LIFECYCLE.md
+        minimum_version: '1.15'
+        substantive_anchors:
+          - active revision-required Review handoff
+          - same-lineage GUP successor
+          - provenance.review_id
+
+post_implementation_requirements:
+  - >-
+    The independent approved implementation Review is required before Builder
+    publishes the ordinary r07 correction. r07 is not direct implementation
+    acceptance evidence.
+  - >-
+    r07 must address only the active r05-r06 correction request through the
+    normal GUP and Review lifecycle. Its exact provenance.review_id consumes
+    the ready Review handoff; supersession alone never does.
+  - >-
+    The integrated 0050 bundle remains immutable terminal history. No role may
+    reissue, rescan as ready work, or reintegrate it under this Decision.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This is queue provenance and lifecycle governance. It changes neither
+    ontology, source meaning, assertion identity, nor graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.19 and ARTIFACT_LIFECYCLE 1.15 distinguish a
+    revision-required Review handoff from ordinary GUP leaf selection and use
+    exact same-lineage provenance as its only GUP consumer.
+  - >-
+    DEC-2026-0054 preserves the already completed DEC-2026-0050 Integration
+    while restoring the visible illusionist r05-r06 Builder correction.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.18 -> 1.19; define independent revision-required Review handoff lineage and exact GUP provenance consumption.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.14 -> 1.15; retain an active revision-required Review handoff until exact same-lineage GUP consumption.'
+  agents/builder/INSTRUCTIONS.md:
+    - 'Require a GUP responding to an active revision-required Review to set exact provenance.review_id.'
+  tooling/common/scan_agent_queues.py:
+    - 'Discover active revision-required Review leaves independently of current GUP leaves and suppress only on exact same-lineage provenance.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Cover unconsuming supersession, exact Review consumption, one-job derivation, and terminal Integration preservation.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0054.yaml:
+    - 'Record the queue-lineage decision.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-22T15.00.03.733Z.yaml:
+    - 'Record DEC-2026-0054 as the resolution and move the escalation out of pending.'
+
+exact_diff_ownership:
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: contracts/ARTIFACT_LIFECYCLE.md, owner: architect, sequence_step: 1}
+  - {path: agents/builder/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0054.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-22T15.00.03.733Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Preserve the named Review, GUP, bundle, and Integration record as immutable evidence.
+  builder:
+    - Implement only the bounded scanner and test changes, publish the Decision Implementation Report, then publish r07 only after independent approval.
+  reviewer:
+    - Independently verify positive and negative Review-lineage routing and the unchanged terminal Integration behavior.
+  integrator:
+    - Do not requeue or reintegrate the exact 0050 bundle; its Integration record remains terminal.

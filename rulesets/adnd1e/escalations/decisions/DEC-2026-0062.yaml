@@ -1,0 +1,295 @@
+schema_version: '1.0'
+id: DEC-2026-0062
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-094-100-illusionist-spells
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement Review-contract 1.2 correction validation and fail-fast compiler
+    handling, then publish a Decision Implementation Report for independent
+    review. The separately required illusionist Review successor may proceed in
+    parallel and is ordinary packet work.
+  blocking_ids: []
+
+decision_date: '2026-08-25'
+escalation_id: ESC-2026-08-25T18.14.36.902Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  Which key is normative for a Reviewer row correction, what must the compiler
+  do when an `approved_with_revision` row carries a correction it cannot read,
+  and how are already-integrated rows whose corrections never applied
+  reconciled?
+
+ruling: >-
+  `exact_corrections` is the sole normative executable correction key for an
+  `approved_with_revision` entry in `edge_decisions` or `row_decisions`. It is
+  a nonempty mapping directly on that row. `exact_correction`,
+  `corrected_fields`, and `corrected_row` are not aliases and are never
+  executable. A top-level `required_builder_revision.exact_corrections` list is
+  likewise not a row correction and is prohibited in a new Review declaring
+  Review-contract 1.2. Narrative and preservation requirements may remain at
+  that top level, but every field value the compiler must apply belongs in the
+  row-local mapping.
+
+  Review-contract 1.2 makes that structure a publication requirement. The
+  compiler must reject, with the ref and offending key, any 1.2
+  `approved_with_revision` row that lacks a usable row-local
+  `exact_corrections` mapping or carries one of the three non-normative keys.
+  It must never guess, alias, or silently drop such a correction. The guard is
+  version-scoped: published Reviews declaring 1.1 or omitting the field remain
+  immutable historical evidence and are not retroactively reclassified solely
+  by this grammar change.
+
+  REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r02 is repaired by the direct
+  Reviewer successor r03 under Review-contract 1.2. That successor restates
+  M035, M036, and M070 under their row-local `exact_corrections` mappings and
+  points `inherited_edge_decisions.from_review` to the direct rejecting Review,
+  REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05, not to its inheriting r06
+  successor. Builder then compiles ordinary GUP r08 from r03; it must preserve
+  the remaining r07 rows, six blocked rows, and nine direct inherited
+  rejections.
+
+  No historical correction is automatically applied to canonical data. Reviewer
+  assesses the eight named historical Review artifacts against current packet
+  evidence and current canonical state. A material, source-supported canonical
+  discrepancy requires a new, scoped Architect escalation containing the exact
+  source reading, current canonical rows, intended before/after state, and
+  affected Integration provenance. A nonintegrated or still-active packet
+  correction follows the ordinary 1.2 Review successor, GUP, Review, Approved,
+  and Integration lifecycle. Neither Builder nor Integrator may infer a
+  canonical migration from an unread legacy key.
+
+rationale:
+  - >-
+    One exact machine-readable spelling prevents near-miss keys from producing
+    a superficially successful but semantically incomplete GUP. Reading all
+    variants would turn historic authoring mistakes into unreviewed canonical
+    mutations and gives no principled answer when their structures conflict.
+  - >-
+    The Review schema previously constrained dispositions but not the required
+    executable payload. Versioned opt-in validation protects every new Review
+    without rewriting immutable pre-1.2 artifacts.
+  - >-
+    The two identified canonical rows differ from both the submitted and
+    requested values. Materiality and source support are Reviewer judgments;
+    a broad Builder replay would conflate an audit finding with authority to
+    alter canonical data.
+
+affected_contracts:
+  - contracts/WORK_QUEUES.md
+  - contracts/ARTIFACT_LIFECYCLE.md
+  - schemas/common/review.schema.json
+  - agents/reviewer/INSTRUCTIONS.md
+  - agents/builder/INSTRUCTIONS.md
+affected_registries: []
+
+affected_artifacts:
+  immediate_review_repair:
+    predecessor: REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r02
+    predecessor_checksum: sha256:9303205fb1a0a9a7c4c0eab0004b91bfaa8b2c5080d1bc2d7183186352ac2163
+    required_successor: REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r03
+    inherited_rejection_source:
+      id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05
+      checksum: sha256:c22451791c8a03bb9033175167e694d9eeb97f928e23c6cc931bb55da2bd9b61
+    ordinary_builder_output: GUP-PKT-PHB-094-100-illusionist-spells-r08
+  historical_review_audit:
+    - REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r01
+    - REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r02
+    - REV-GUP-PKT-PHB-117-119-bards-r03-r01
+    - REV-GUP-PKT-PHB-119-119-alignment-graph-r01-r01
+    - REV-GUP-PKT-PHB-120-120-planes-of-existence-r02-r01
+    - REV-GUP-PKT-PHB-120-120-planes-of-existence-r03-r01
+    - REV-GUP-PKT-PHB-122-122-division-of-treasure-r02-r01
+    - REV-GUP-PKT-PHB-122-122-division-of-treasure-r03-r01
+  canonical_assessment_examples:
+    - ref: M001
+      required_aspect: undead power source
+      current_canonical_aspect: source of their power
+    - ref: M002
+      required_aspect: interplanar movement
+      current_canonical_aspect: movement between planes
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  profile_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    All published legacy Reviews, GUPs, Approved bundles, Integrations, and
+    canonical rows remain immutable. The illusionist Review receives one normal
+    successor and its GUP receives one normal successor. Any material historic
+    canonical correction requires a separate evidence-backed escalation and
+    Decision before a decision migration or normal correction lineage begins.
+  direct_implementation: >-
+    Architect versions the Review contract, schema, and role instructions.
+    Builder implements the version-scoped compiler guard and tests, including
+    schema regression tests, then publishes IMP-DEC-2026-0062-r01. Historical
+    audit and the ordinary illusionist packet line are downstream work, not
+    acceptance evidence for that report.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, decide the escalation, and version the Review
+      contract, schema, and Builder/Reviewer instructions to 1.2 semantics.
+      Preserve all published packet, Review, GUP, Approved, Integration,
+      registry, and canonical artifacts unchanged.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Publish REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r03 as the direct
+      schema-valid successor to r02. Declare `review_contract_version: '1.2'`,
+      use exactly the three row-local corrections named in this Decision, and
+      name r05-r05 with its exact checksum as the inherited rejection source.
+      Do not copy an executable correction into required_builder_revision.
+  - step: 3
+    owner: builder
+    action: >-
+      Implement the 1.2 schema and compiler enforcement, add positive and
+      negative tests, and publish IMP-DEC-2026-0062-r01. Do not normalize or
+      auto-apply legacy aliases. After r07-r03 exists, compile ordinary r08
+      using its exact Review provenance; its routine Review remains independent
+      of this Decision implementation report.
+  - step: 4
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0062-r01 and independently review r08
+      through the normal packet lifecycle. Verify r08 applies exactly M035,
+      M036, and M070, retains the six blocked rows and nine rejections, and
+      introduces no other assertion changes.
+  - step: 5
+    owner: reviewer
+    action: >-
+      Assess the named historical Reviews only to determine whether a stated,
+      unread correction is material and remains inconsistent with current
+      canonical data. For each material discrepancy, publish a new scoped
+      Architect escalation with source support and canonical/Integration
+      provenance. For other live packet work, issue a normal 1.2 successor
+      Review; do not reopen consumed artifacts merely to make their history
+      conform.
+  - step: 6
+    owner: integrator
+    action: >-
+      Perform no canonical change from the historical audit alone. Integrate an
+      ordinary correction bundle only after its current GUP and Review complete
+      normally, or perform a Decision migration only after a later scoped
+      Decision authorizes its exact before/after operation.
+
+acceptance_tests:
+  - >-
+    Review-contract 1.2 validates legal dispositions as before and additionally
+    rejects an `approved_with_revision` edge or row decision with an absent,
+    empty, or non-mapping `exact_corrections`; it rejects the direct aliases
+    `exact_correction`, `corrected_fields`, and `corrected_row`, and rejects a
+    top-level `required_builder_revision.exact_corrections` payload. A 1.1 or
+    omitted-version historical Review remains schema-valid under its original
+    contract treatment.
+  - >-
+    The compiler accepts a 1.2 row-local correction and applies it through the
+    normal column and ownership validators. It rejects every missing or alias
+    form with a deterministic diagnostic that names the row ref, observed key,
+    and required `exact_corrections` key; it neither produces a GUP nor alters
+    a component on failure.
+  - >-
+    REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r03 validates under Review
+    contract 1.2, directly supersedes r02, applies only the stated M035, M036,
+    and M070 corrections, and names r05-r05's exact ID and checksum for the
+    inherited nine rejections. It does not name r05-r06 as their source.
+  - >-
+    Compiling r08 from r07-r03 applies the three required aspect and condition
+    values, preserves every other r07 row and node proposal, preserves the six
+    blocked rows, and preserves the nine rejected duplicate refs. The correction
+    is emitted only through an ordinary checksummed GUP and Review lineage.
+  - >-
+    No current canonical row changes merely because an audit locates an unread
+    legacy key. A material source-supported canonical discrepancy is actionable
+    only through a new escalation and later exact correction lineage; all other
+    historical artifacts remain immutable provenance.
+  - >-
+    IMP-DEC-2026-0062-r01 pins this Decision's checksum, reports every direct
+    acceptance test passed with passing focused and full applicable validation,
+    and is approval-ready for independent Reviewer verification. Historical
+    audit and ordinary r08 lifecycle work do not block that Review.
+
+post_implementation_requirements:
+  - >-
+    Reviewer performs the specified historical correction assessment without
+    bulk rewriting old Reviews or current canonical data. Every material result
+    is a new, independently complete escalation; it must not reuse this
+    escalation ID.
+  - >-
+    Builder and Integrator do not infer a migration from the legacy aliases or
+    use the audit count as an operation list.
+  - >-
+    Analyst has no work under this Decision.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This defines Review directive syntax and fail-fast workflow handling, not
+    source meaning, ontology, edge semantics, identity, controlled vocabulary,
+    registry, profile, or canonical assertion content.
+
+governance_changelog:
+  - >-
+    DEC-2026-0062 establishes Review-contract 1.2: `exact_corrections` is the
+    only executable row-local correction mapping, aliases fail explicitly, and
+    historic alias sightings require assessment rather than automatic migration.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version the Review directive contract and require row-local exact_corrections for new 1.2 Reviews.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version lifecycle Review publication requirements for Review-contract 1.2.'
+  schemas/common/review.schema.json:
+    - 'Add opt-in 1.2 structural validation for executable row corrections and prohibited aliases.'
+  agents/reviewer/INSTRUCTIONS.md:
+    - 'Require Review-contract 1.2 and direct row-local correction authoring.'
+  agents/builder/INSTRUCTIONS.md:
+    - 'Require fail-fast handling of 1.2 correction directives and prohibit alias inference.'
+  tooling/builder/src/adnd1e_builder/review.py:
+    - 'Reject unread, missing, or non-row-local 1.2 approved_with_revision corrections without publishing output.'
+  tooling/builder/tests/test_review.py:
+    - 'Cover normative correction application and every required failure diagnostic.'
+  tooling/common/tests/test_common_schemas.py:
+    - 'Cover Review-contract 1.2 schema acceptance, alias denial, and legacy compatibility.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0062.yaml:
+    - 'Record the directive grammar, immediate repair, and historical-audit boundary.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-25T18.14.36.902Z.yaml:
+    - 'Record DEC-2026-0062 as the escalation resolution.'
+
+exact_diff_ownership:
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: contracts/ARTIFACT_LIFECYCLE.md, owner: architect, sequence_step: 1}
+  - {path: schemas/common/review.schema.json, owner: architect, sequence_step: 1}
+  - {path: agents/reviewer/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/builder/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: tooling/builder/src/adnd1e_builder/review.py, owner: builder, sequence_step: 3}
+  - {path: tooling/builder/tests/test_review.py, owner: builder, sequence_step: 3}
+  - {path: tooling/common/tests/test_common_schemas.py, owner: builder, sequence_step: 3}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0062.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-25T18.14.36.902Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Preserve all published packet and canonical artifacts; decide any later scoped material-correction escalation.
+  reviewer:
+    - Publish illusionist r07-r03, review the implementation report and ordinary r08, and assess only the named historical correction scope.
+  builder:
+    - Implement the exact 1.2 guard and tests without alias inference; publish IMP-DEC-2026-0062-r01 and ordinary r08 only from r07-r03.
+  integrator:
+    - Do not alter canonical data absent a normally reviewed correction bundle or a later exact migration Decision.
+  analyst:
+    - No action.

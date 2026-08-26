@@ -1,0 +1,181 @@
+schema_version: '1.0'
+id: ESC-2026-08-25T14.02.11.480Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-094-100-illusionist-spells
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-25'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    A Decision Implementation Report that corrects its predecessor's evidence
+    shape can never record a passing full-suite run, because the suite is red
+    precisely while the predecessor it supersedes is still the active leaf.
+    Separately, queue derivation accepts a schema-invalid Review as an approval.
+    Both are workflow-scope questions and both currently block Builder work.
+  blocking_ids:
+    - REV-IMP-DEC-2026-0053-r03-r01
+    - REV-IMP-DEC-2026-0060-r01-r01
+
+question: >-
+  When a report's only defect is the shape of its own recorded evidence, how
+  must its successor record full applicable suite evidence, given that the suite
+  fails on the predecessor until the successor is published? And must queue
+  derivation treat a schema-invalid implementation Review as capable of
+  approving a Decision?
+
+evidence:
+  source_excerpt: >-
+    Not applicable: this escalation concerns workflow evidence rules, not an
+    interpretation of rulebook text.
+
+  reviewer_finding:
+    reviews:
+      - id: REV-IMP-DEC-2026-0053-r03-r01
+        disposition: revision_required
+      - id: REV-IMP-DEC-2026-0060-r01-r01
+        disposition: revision_required
+    instruction: >-
+      Reissue the exact report with validation-command summaries that contain a
+      recognizable passing verdict.
+    concurrence: >-
+      The finding is correct and Builder owns it. The Builder-suite summary was
+      recorded as `Ran 655 tests in 103.582s OK (skipped=38)`. The guard is
+      test_implementation_evidence.VERDICT, `\b(OK|FAILED)\s*$`, which requires
+      the verdict at end of string; the trailing skip count defeats it. A
+      reissue can state the same run truthfully as
+      `Ran 655 tests in 99.491s, 38 skipped, OK`.
+
+  blocking_condition:
+    guard:
+      path: tooling/common/tests/test_implementation_evidence.py
+      checksum: sha256:d889cfaba7d8398670d622437ecdde716402fb1f59923ee9d856f77d7431a1f0
+      scope: >-
+        `active_leaves()` inspects only the newest revision of each report
+        lineage. A malformed revision therefore fails the suite for exactly as
+        long as it remains the leaf, and stops failing the moment a successor is
+        published.
+    consequence: >-
+      DEC-2026-0060 acceptance test 4 requires the report to record passing full
+      applicable suite evidence. A report's recorded run is necessarily taken
+      before that report exists. For an ordinary implementation this is sound.
+      For a correction of a predecessor's evidence shape it is unsatisfiable:
+      the pre-publication run is red because of the predecessor, and no
+      post-publication run can be written into an artifact that publication
+      already froze under DEC-2026-0053 rule 17.
+    current_measurement:
+      command: >-
+        [cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests
+        python -m unittest discover -s tests -p 'test_*.py'
+      summary: Ran 800 tests in 159.226s, FAILED (failures=3)
+      failures:
+        - artifact: IMP-DEC-2026-0053-r03
+          checksum: sha256:039ab65233ad8e3e839c7770c01df0d9e247a415616c43a6df4aed01fef9cfd1
+          test: TestValidationEvidenceIsSelfConsistent.test_exit_code_result_and_summary_agree
+          attribution: superseded by the reissue this escalation is blocked on
+        - artifact: IMP-DEC-2026-0060-r01
+          checksum: sha256:759b95a3690f227151041870c53ade084458cd01d933679cda9319286bff41c3
+          test: TestValidationEvidenceIsSelfConsistent.test_exit_code_result_and_summary_agree
+          attribution: superseded by the reissue this escalation is blocked on
+        - artifact: REV-IMP-DEC-2026-0046-r11-r01
+          checksum: sha256:5123f0feb0aec1a5f5be46545449a08fffd0b803a0f28f40d1cbf29d9c329eca
+          test: TestImplementationArtifactsValidate.test_every_active_implementation_artifact_validates
+          attribution: Reviewer-owned; not superseded by any Builder work
+
+  invalid_review_accepted_as_approval:
+    artifact: REV-IMP-DEC-2026-0046-r11-r01
+    checksum: sha256:5123f0feb0aec1a5f5be46545449a08fffd0b803a0f28f40d1cbf29d9c329eca
+    defect: >-
+      acceptance_dispositions[1] was written as an unquoted YAML flow mapping
+      whose evidence text contains commas, so the loader split the sentence into
+      keys. The recorded evidence for DEC-2026-0046 acceptance test 2 is the
+      single word `Missing`, and `revision-required`, `malformed`, and
+      `and stale-checksum Reviews retain strict pre-approval drift handling.`
+      became sibling properties. The schema rejects the artifact.
+    scanner_behaviour: >-
+      `_implementation_review_errors` verifies pinning and checksums but not
+      schema validity, so the scan reports zero errors and treats this Review as
+      the approval that completes DEC-2026-0046. The queue shows no owner for
+      it, while the schema suite says the approving artifact is invalid.
+    recurrence:
+      note: >-
+        The same flow-scalar corruption is present in three superseded Reviews,
+        so it is a repeating emitter defect rather than a single slip.
+      artifacts:
+        - REV-IMP-DEC-2026-0046-r09-r01
+        - REV-IMP-DEC-2026-0054-r04-r01
+        - REV-IMP-DEC-2026-0056-r01-r01
+
+affected_artifacts:
+  awaiting_reissue:
+    - IMP-DEC-2026-0053-r03
+    - IMP-DEC-2026-0060-r01
+  reviewer_owned_repair:
+    - REV-IMP-DEC-2026-0046-r11-r01
+  unaffected: >-
+    No GUR, GUP, Approved bundle, Integration record, registry row, or canonical
+    row is implicated. The four approved Reviews issued in the same batch --
+    0046 aside -- are sound.
+
+options_considered:
+  - >-
+    Publish the reissues recording the red run truthfully. Rejected: a failing
+    command forces validation.passed false, which forces approval_ready false,
+    which is precisely what the Reviewer refused. It would consume an immutable
+    revision to produce another unapprovable report.
+  - >-
+    Publish the reissues claiming a passing run and verify afterwards. Rejected:
+    the claim would be false at the moment of writing, and the third failure
+    above guarantees it would stay false. Builder will not record evidence it
+    has not observed.
+  - >-
+    Relax test_implementation_evidence.VERDICT to accept `OK (skipped=N)`.
+    Rejected as a Builder action: it edits the guard that caught Builder's own
+    defect, without authority, to make Builder's work pass. Raised here instead
+    because it is the Architect's call, and it is worth noting the guard rejects
+    the literal verdict line unittest prints for any suite with skips.
+  - >-
+    Rule that a report's recorded full-suite run may carry failures attributable
+    solely to the exact revisions that report supersedes, named by ID and
+    checksum, and still count as passing.
+
+recommended_resolution: >-
+  Adopt the fourth option, bounded the way DEC-2026-0056 and DEC-2026-0060 bound
+  their exemptions. A report may record a full-suite run as passing when every
+  failure in it is attributable to an artifact that this exact report supersedes,
+  and it names each one by ID and checksum in the record. The predicate is
+  verifiable rather than asserted: the superseded ID is already in the report's
+  `supersedes` field, and re-running the suite after publication confirms the
+  failure is gone. Nothing else is excused, and a failure anywhere else stays
+  strict. The Reviewer's `independent_validation` remains the post-publication
+  check, which is the only run that can observe the corrected state.
+
+  On the second question, queue derivation should not let a schema-invalid
+  Review consume a Decision. Whatever the rule's final shape, DEC-2026-0046 is
+  currently recorded complete on an approval the schema suite rejects, and no
+  role holds a queue item for it.
+
+expected_migration_impact:
+  canonical_data: none
+  registry: none
+  historical_artifacts: retained unchanged
+  tooling: >-
+    Builder reissues two reports. Any scanner change for the second question is
+    Builder work under the resulting Decision. The Reviewer republishes
+    REV-IMP-DEC-2026-0046-r11-r01 as a schema-valid successor with quoted or
+    block-scalar evidence; Builder does not edit published Review artifacts.
+
+resolution:
+  decision_id: DEC-2026-0061
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0061.yaml
+  outcome: >-
+    Standard unittest `OK (skipped=N)` summaries are valid passed evidence, so
+    the two reports remain current immutable leaves. Invalid implementation
+    Reviews cannot consume Decisions; Reviewer repairs the malformed 0046
+    Review through its normal successor lineage before Builder implements the
+    evidence and scanner guards.

@@ -1,0 +1,57 @@
+schema_version: '1.0'
+id: ESC-2026-08-23T12.54.56.268Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-23'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    DEC-2026-0054 correctly made exact provenance.review_id the only implicit
+    consumer of a revision-required Review handoff. Eight historical Analyst
+    handoffs now surface because their correction GUPs predate that field and
+    record it as null. Each correction chain reached a later independently
+    approved Review, and six have also integrated; the remaining two currently
+    belong to the Integrator. Builder cannot infer a historical exception.
+  blocking_ids: []
+
+question: >-
+  Should the eight exact historical Analyst handoffs remain open solely because
+  their later same-lineage correction GUPs have null provenance.review_id, even
+  though each has a later independently approved Review?
+
+evidence:
+  strict_rule:
+    decision: DEC-2026-0054
+    contract: contracts/WORK_QUEUES.md rule 19
+    finding: >-
+      The strict rule is correct for current and future work: no absent, null,
+      or different provenance.review_id may implicitly consume a Review.
+  historical_handoffs:
+    count: 8
+    current_queue_role: analyst
+    resolution: >-
+      Every named Review's GUP lineage contains a later GUP with null review_id
+      and an independently approved Review of a later correcting GUP. Six
+      lineages also have an exact Integration record. The two magic-user
+      lineages have current Integrator work, so their older Analyst handoffs are
+      duplicate workflow signals rather than unresolved source-reading.
+
+architectural_boundary: >-
+  Whether checksummed historical evidence can administratively retire a strict
+  Review handoff is queue-governance semantics. Builder may implement only an
+  exact rule that an approved Architect Decision has authorized.
+
+resolution:
+  decision_id: DEC-2026-0056
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0056.yaml
+  outcome: >-
+    Retire only the eight checksummed historical Review handoffs through an
+    active Decision record that also pins a later same-lineage resolution GUP
+    and its approved Review. No missing-field fallback is authorized.

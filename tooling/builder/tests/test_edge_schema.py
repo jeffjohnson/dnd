@@ -40,15 +40,26 @@ APPROVED_DIR = REPO_ROOT / "books" / "adnd1e" / "phb" / "artifacts" / "approved"
 
 # DEC-2026-0014, `migration_required: false` / `known_preexisting_validation_debt`.
 # Legacy rows that predate DEC-2026-0004 prefixing and carry blank labels. The
-# decision rules these are fixed through ordinary workflow, not by weakening the
-# schema, so they are pinned here to keep the debt from growing unnoticed.
-DEBT_ROWS = 53
-DEBT_ERRORS = 60
-DEBT_UNPREFIXED_SOURCE = 18
-DEBT_UNPREFIXED_TARGET = 28
-DEBT_BLANK_SOURCE_LABELS = 7
-DEBT_BLANK_TARGET_LABELS = 7
-DEBT_IDS = frozenset({"comeliness", "fatigue", "training"})
+# decision ruled these are fixed through ordinary workflow, not by weakening the
+# schema, and pinned the counts here to keep the debt from growing unnoticed.
+#
+# The debt is now zero. DEC-2026-0050 authorized the migration that repoints
+# `comeliness`, `fatigue` and `training` onto prefixed identities and normalizes
+# the blank endpoint labels; GUP-MIG-DEC-2026-0050-r04 was approved and
+# INT-20260820-001 integrated it. Measured against live canonical: 4501 rows,
+# 0 failing rows, 0 errors.
+#
+# The pins stay, at zero. They were a ceiling on the debt, and a ceiling of zero
+# is the same guard doing more work -- the audit below now fails on the first
+# row of new debt instead of the fifty-fourth. Restoring a non-zero value would
+# require an approved Decision recording debt this corpus does not have.
+DEBT_ROWS = 0
+DEBT_ERRORS = 0
+DEBT_UNPREFIXED_SOURCE = 0
+DEBT_UNPREFIXED_TARGET = 0
+DEBT_BLANK_SOURCE_LABELS = 0
+DEBT_BLANK_TARGET_LABELS = 0
+DEBT_IDS: frozenset[str] = frozenset()
 
 VALID_ROW = {
     "source_id": "abil_strength",
@@ -199,9 +210,12 @@ class TestFullCorpus(unittest.TestCase):
         self.assertEqual(sum(len(e) for _, _, e in self.failures), DEBT_ERRORS)
 
     def test_the_debt_is_only_unprefixed_endpoints_and_blank_labels(self):
+        # `+Counter()` drops zero counts, so this compares equal to the empty
+        # counter a clean corpus produces while still failing loudly, and
+        # informatively, the moment any of the four reappears.
         self.assertEqual(
             self.error_fields(),
-            Counter(
+            +Counter(
                 {
                     "source_id": DEBT_UNPREFIXED_SOURCE,
                     "target_id": DEBT_UNPREFIXED_TARGET,
@@ -211,7 +225,7 @@ class TestFullCorpus(unittest.TestCase):
             ),
         )
 
-    def test_the_unprefixed_ids_are_only_the_three_dec_2026_0004_named(self):
+    def test_no_unprefixed_id_survives_the_dec_2026_0050_migration(self):
         seen = {
             row[field]
             for _, row, errors in self.failures

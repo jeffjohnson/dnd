@@ -1,0 +1,293 @@
+schema_version: '1.0'
+id: DEC-2026-0055
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement exact cross-lineage decision-migration retirement classification
+    in queue derivation and publish a Decision Implementation Report for
+    independent review.
+  blocking_ids: []
+
+decision_date: '2026-08-22'
+escalation_id: ESC-2026-08-22T15.02.35.116Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  How should queue derivation classify a stale decision-migration leaf when
+  its Decision work was integrated through another lineage, or when a later
+  Decision explicitly retires the leaf pending a separately governed source
+  prerequisite?
+
+ruling: >-
+  Do not reissue either reported stale migration. DEC-2026-0016 was completed
+  by the exact integrated page-only lineage: GUP-MIG-DEC-2026-0016-PAGE-r01
+  was approved and INT-20260804-002 applied its nine page revisions. The
+  current canonical pages are therefore evidence of a completed migration, not
+  an unplanned result needing a fresh GUP.
+
+  DEC-2026-0024 was completed by the later integrated combined lineage
+  GUP-MIG-DEC-2026-0024-0025-r05. That GUP checksums DEC-2026-0024 as
+  authority, and INT-20260814-001 records its approved bundle, removal, and
+  registry outcome. Its `rule_greater_mistletoe` identity is the later
+  DEC-2026-0026 refinement of the original mistletoe work. The obsolete
+  single-Decision GUP-MIG-DEC-2026-0024-r01 is historical and must not be
+  replanned.
+
+  GUP-MIG-DEC-2026-0015-0016-r03 is explicitly retired as historical. It is
+  neither integrated nor satisfied. DEC-2026-0021 already prohibited a reduced
+  r04 and established the separate `MIG-DEC-2026-0015-IDENTITY` lineage,
+  blocked until the required DMG and UA source-read polarity cleanups exist and
+  integrate. Current canonical row positions, legacy before-images, and an
+  apparent offset are not a substitute for that source prerequisite. No actor
+  may re-enumerate or publish the 0015 identity migration now.
+
+  Queue tooling must distinguish these exact, checksummed retirement records
+  from an ordinary stale migration. A malformed, checksum-mismatched, inactive,
+  or incomplete retirement record remains diagnostic and leaves the normal
+  Builder reissue signal visible. The rule changes queue classification only;
+  it does not alter the retired GUPs, Decisions, source evidence, registry, or
+  canonical graph.
+
+rationale:
+  - >-
+    A canonical end state alone cannot prove which approved work produced it.
+    The exact Integration manifests do prove the completed 0016 and 0024
+    outcomes, so regenerating those migrations would duplicate completed work.
+  - >-
+    DEC-2026-0021 deliberately separated page corrections from the unresolved
+    identity migration and made the latter source-gated. Replacing that gate
+    with a positional row inference would reintroduce the source-provenance
+    exception it expressly rejected.
+  - >-
+    Explicit, checksummed cross-lineage retirement lets the scanner report
+    historical artifacts accurately without treating arbitrary later GUPs or
+    changed canonical bytes as implied consumption.
+
+migration_lineage_retirements:
+  - lineage_id: MIG-DEC-2026-0015-0016
+    current_leaf:
+      id: GUP-MIG-DEC-2026-0015-0016-r03
+      path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0015-0016-r03.yaml
+      checksum: sha256:2257a44ea94f01a979ff1300c6e5590fe3d16a54f29d39c03ca075dba7c4c7ce
+    disposition: retired_historical
+    basis_decision:
+      id: DEC-2026-0021
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0021.yaml
+      checksum: sha256:8f46da6dd7450ecea3d86f866c47aa92ffb791127a0f175139fa9cedd66a2714
+    reason: >-
+      DEC-2026-0021 prohibits a combined-lineage r04 and leaves the complete
+      0015 identity migration blocked until all required DMG and UA source-read
+      cleanup work is integrated in its separately defined future lineage.
+  - lineage_id: MIG-DEC-2026-0024
+    current_leaf:
+      id: GUP-MIG-DEC-2026-0024-r01
+      path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-r01.yaml
+      checksum: sha256:cbf777445c7a5687cde51eadaf14e468841f7ffcb97ce4b9c7a9dd300cc28c5b
+    disposition: consumed_by_integrated_successor
+    consuming_gup:
+      id: GUP-MIG-DEC-2026-0024-0025-r05
+      path: books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-0025-r05.yaml
+      checksum: sha256:87d83fc3284e0b946975c656d5b979d8cb00c0aa8a5b9fbddf8da971a12873a2
+    integration_manifest:
+      id: INT-20260814-001
+      path: rulesets/adnd1e/manifests/INT-20260814-001.json
+      checksum: sha256:11c9bddf5da42c68a59d25cb4ebb2e04c2e806ab4fe459d3592c48d52800fe3c
+    reason: >-
+      The approved combined successor names DEC-2026-0024 as exact authority
+      and INT-20260814-001 consumes its bundle; it performed the authorized
+      mistletoe removal within the combined lineage.
+
+affected_artifacts:
+  completed_page_migration:
+    decision: DEC-2026-0016
+    gup: GUP-MIG-DEC-2026-0016-PAGE-r01
+    integration_id: INT-20260804-002
+    integration_path: rulesets/adnd1e/manifests/INT-20260804-002.json
+    disposition: retain_terminal_do_not_reissue
+  retired_combined_history:
+    gup: GUP-MIG-DEC-2026-0015-0016-r03
+    disposition: retain_immutable_historical_no_r04
+  completed_mistletoe_migration:
+    decision: DEC-2026-0024
+    original_gup: GUP-MIG-DEC-2026-0024-r01
+    consuming_gup: GUP-MIG-DEC-2026-0024-0025-r05
+    integration_id: INT-20260814-001
+    disposition: retain_original_gup_as_consumed_by_exact_combined_successor
+  unrelated_terminal_prerequisite:
+    id: APPROVED-GUP-MIG-DEC-2026-0050-r04-r01
+    integration_id: INT-20260820-001
+    disposition: already_integrated_not_a_current_builder_blocker
+
+affected_contracts:
+  - path: contracts/WORK_QUEUES.md
+    change: define exact Decision-recorded retirement of a stale decision-migration leaf
+  - path: contracts/ARTIFACT_LIFECYCLE.md
+    change: preserve retired decision-migration leaves as immutable history without a false reissue
+  - path: schemas/common/architect-decision.schema.json
+    change: validate checksummed decision-migration retirement records
+affected_registries: []
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  profile_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    The two exact stale GUP leaves gain historical classifications only. The
+    completed 0016 and 0024 transactions, the deferred 0015 identity work, and
+    all published provenance remain unchanged.
+  direct_implementation: >-
+    Builder changes schema-aware queue derivation and tests only. No source
+    packet, GUP, Review, Approved bundle, Integration manifest, registry, or
+    canonical artifact is republished under this Decision.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision; version the queue and lifecycle contracts; add the
+      structured retirement-record schema; and close the escalation. Do not
+      rewrite GUP-MIG-DEC-2026-0015-0016-r03, GUP-MIG-DEC-2026-0024-r01, any
+      Decision, or any integrated artifact.
+  - step: 2
+    owner: builder
+    action: >-
+      Update the scanner to validate active approved Decisions'
+      migration_lineage_retirements. It must classify the two exact leaves
+      above as informational history, retain a real unretired stale migration
+      as a Builder reissue diagnostic, and publish IMP-DEC-2026-0055-r01 with
+      focused schema and queue-test evidence.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0055-r01. Verify both exact retirement
+      outcomes, all checksum and active-Decision negative cases, and that no
+      current source-gated DEC-2026-0015 work is silently marked complete.
+
+acceptance_tests:
+  - >-
+    WORK_QUEUES Version 1.20 or later permits an active approved Decision to
+    retire only an exact current decision-migration leaf through a checksummed
+    retirement record; a malformed record leaves ordinary stale-work handling
+    unchanged.
+  - >-
+    ARTIFACT_LIFECYCLE Version 1.16 or later preserves a retired
+    decision-migration leaf as immutable historical evidence and distinguishes
+    retirement from completed canonical work.
+  - >-
+    schemas/common/architect-decision.schema.json accepts both legal
+    retirement dispositions only with their required exact artifacts, and
+    rejects a missing current leaf, malformed checksum, or a
+    consumed-by-integrated-successor record without its successor and manifest.
+  - >-
+    The scanner classifies GUP-MIG-DEC-2026-0015-0016-r03 as informational
+    retired history, not a Builder reissue; it classifies
+    GUP-MIG-DEC-2026-0024-r01 as informational consumed-by-successor history;
+    and an otherwise equivalent unretired stale GUP remains an error that
+    requests a Builder reissue.
+  - >-
+    IMP-DEC-2026-0055-r01 pins this Decision's exact checksum, reports every
+    direct acceptance test as passed with current evidence, records passing
+    focused scanner and schema tests, and is approval-ready for independent
+    Reviewer verification.
+
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.20'
+        substantive_anchors:
+          - decision-migration retirement record
+          - exact current leaf
+          - malformed retirement leaves ordinary stale-work handling unchanged
+  - acceptance_test_index: 2
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/ARTIFACT_LIFECYCLE.md
+        minimum_version: '1.16'
+        substantive_anchors:
+          - immutable historical evidence
+          - retirement is not completed canonical work
+          - checksummed successor and integration evidence
+
+post_implementation_requirements:
+  - >-
+    DEC-2026-0015 remains source-gated exactly as DEC-2026-0021 requires. The
+    future MIG-DEC-2026-0015-IDENTITY migration starts only after its named
+    DMG and UA source-read polarity work is Approved and integrated.
+  - >-
+    DEC-2026-0016 and DEC-2026-0024 require no successor GUP, Review, or
+    Integration. Their exact existing Integration evidence remains terminal.
+  - >-
+    INT-20260820-001 has already consumed the 0050 bundle. The stale suite
+    assertion described in the escalation is historical and must not block new
+    Builder publication.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This is artifact-lifecycle and queue-provenance governance, not a change to
+    ontology, source meaning, assertion identity, or graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.20 and ARTIFACT_LIFECYCLE 1.16 define an active Decision's
+    exact retirement of obsolete decision-migration leaves while retaining
+    strict diagnostics for every unretired stale migration.
+  - >-
+    DEC-2026-0055 records that 0016 and 0024 are already integrated, and that
+    the 0015/0016 combined r03 leaf is historical pending DEC-2026-0021's
+    separate source-gated identity lineage.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.19 -> 1.20; define exact Decision-recorded retirement of stale decision-migration leaves.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.15 -> 1.16; preserve retired decision-migration leaves as immutable history rather than false reissue work.'
+  schemas/common/architect-decision.schema.json:
+    - 'Add validated migration_lineage_retirements with exact GUP and Integration-manifest evidence.'
+  tooling/common/scan_agent_queues.py:
+    - 'Validate active Decision retirement records and classify only exact retired decision-migration leaves as informational history.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Cover both retirement outcomes, malformed evidence, and the unchanged unretired stale-migration error.'
+  tooling/common/tests/test_common_schemas.py:
+    - 'Cover valid and invalid architect Decision migration-lineage retirement records.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml:
+    - 'Record the bounded stale-decision-migration disposition.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-22T15.02.35.116Z.yaml:
+    - 'Record DEC-2026-0055 as the resolution and move the escalation out of pending.'
+
+exact_diff_ownership:
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: contracts/ARTIFACT_LIFECYCLE.md, owner: architect, sequence_step: 1}
+  - {path: schemas/common/architect-decision.schema.json, owner: architect, sequence_step: 1}
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_common_schemas.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-22T15.02.35.116Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Preserve the named historical GUPs, Decisions, manifests, and Integration records unchanged.
+  builder:
+    - Implement only the exact schema-aware scanner classification and tests; do not replan any named migration.
+  reviewer:
+    - Verify exact evidence requirements and the negative stale-migration path before approving the implementation report.
+  integrator:
+    - Treat the completed 0016, 0024, and 0050 integrations as terminal; no repeat canonical transaction is authorized.
+  analyst:
+    - Resume the 0015 prerequisite only when DEC-2026-0021's bounded DMG and UA packets are claimed and source-read.

@@ -130,15 +130,29 @@ Assign one disposition to every proposed row:
 - `rejected`: relationship does not belong in the graph;
 - `architect_escalation`: cannot be decided under current ontology/contracts.
 
-Every new Review declares `review_contract_version: '1.1'` and validates each
+Every new Review declares `review_contract_version: '1.3'` and validates each
 `edge_decisions` or `row_decisions` value against exactly this vocabulary before
-publication. A disposition judges the row; it does not identify the component
-that carries it. When a correct source-supported row remains in a GUP's
+publication. Every `approved_with_revision` row carries a nonempty,
+row-local `exact_corrections` mapping for every executable field or instruction.
+Never write `exact_correction`, `corrected_fields`, or `corrected_row` as an
+alias, and never place executable corrections under
+`required_builder_revision`; that block is only for successor identity and
+preservation requirements. A disposition judges the row; it does not identify
+the component that carries it. When a correct source-supported row remains in a GUP's
 checksummed `blocked.csv`, keep its disposition `approved` and record the
 component path, checksum, refs, and exclusion reason as packaging evidence.
 Never write `approved_but_excluded_from_bundle` or another ad hoc disposition.
 
-Do not reject an entire edge merely because one field is wrong. Review per field and provide the corrected row when the source supports it.
+Do not reject an entire edge merely because one field is wrong. Review per field
+and place the source-supported values in that row's `exact_corrections` mapping.
+
+An approved Review sends Integrator only an exact Approved bundle. Never assign
+Integrator a standalone preflight or pass/fail check from a
+`revision_required` Review. When an external condition decides whether the same
+GUP is now approvable, independently re-run or verify the exact method, inputs,
+and checksums, then record the result in the approving successor Review's
+`independent_validation`. Do not ask Integrator to create a manifest or
+rejection record for a passing check.
 
 ### Integration-rejection remediation
 

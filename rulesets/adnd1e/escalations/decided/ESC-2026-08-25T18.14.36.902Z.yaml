@@ -1,0 +1,225 @@
+schema_version: '1.0'
+id: ESC-2026-08-25T18.14.36.902Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-094-100-illusionist-spells
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-25'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Reviewer row corrections are stated under four different key spellings and
+    the compiler reads only one of them. Thirty-eight required corrections
+    across eight published Reviews were silently dropped, and at least two of
+    them are in integrated canonical rows carrying wording the Reviewer
+    explicitly replaced. The illusionist r08 revision is blocked on the same
+    defect.
+  blocking_ids:
+    - REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r02
+
+originating_artifacts:
+  review:
+    id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r02
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r02.yaml
+
+question: >-
+  Which key is normative for a Reviewer row correction, what must the compiler
+  do when an `approved_with_revision` row carries a correction it cannot read,
+  and how are the already-integrated rows whose corrections never applied to be
+  reconciled?
+
+evidence:
+  source_excerpt: >-
+    Not applicable: this concerns the machine-readable directive format and its
+    consumption, not an interpretation of rulebook text.
+
+  immediate_blocker:
+    review:
+      id: REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r02
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r02.yaml
+      checksum: sha256:9303205fb1a0a9a7c4c0eab0004b91bfaa8b2c5080d1bc2d7183186352ac2163
+    required_of_builder: >-
+      Publish GUP-PKT-PHB-094-100-illusionist-spells-r08 applying exactly three
+      field corrections -- M035 aspect 'to-hit rolls' condition 'hate or rage',
+      M036 aspect 'saving throws' condition 'hate', M070 aspect 'activation'
+      condition 'depicting the alteration through Phantasmal Force' -- and
+      preserving everything else.
+    trial_compile:
+      command: >-
+        [copy of the repository] adnd1e_builder compile
+        GUR-PKT-PHB-094-100-illusionist-spells-r02.yaml --review (r04-r01,
+        r04-r04, r05-r01 .. r05-r06, r07-r02) --revision 8 --skip-tests
+      buckets: 9 additions, 102 pending, 6 blocked, 9 rejected, 52 node proposals
+      note: >-
+        Run against a throwaway copy, never the repository, because `compile`
+        writes its GUP in place and publication is create-only.
+      observed_field_values:
+        M035: {aspect: hate and rage, condition: ''}
+        M036: {aspect: the hate emotion, condition: ''}
+        M070: {aspect: framing the alteration, condition: ''}
+      finding: >-
+        None of the three corrections applied. The compiled r08 is
+        field-identical to r07 on exactly the rows the Review exists to correct,
+        and nothing in the compile said so.
+    blocking_error:
+      rule: review_decision_key_not_read
+      detail: >-
+        The Review's `inherited_edge_decisions.from_review` names
+        REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06 as the source of the
+        nine duplicate rejections. r05-r06 does not reject them; it inherits
+        them from r05-r05, which rejects all nine directly. Verified in both
+        files: r05-r05 checksum
+        sha256:c22451791c8a03bb9033175167e694d9eeb97f928e23c6cc931bb55da2bd9b61
+        carries nine `rejected` row dispositions and no inherited block; r05-r06
+        checksum sha256:5698cbc9eadb3a87f0502e495a737369b50111f776f577b7316155e4a96cd1a2
+        carries no direct rejection and an inherited block naming r05-r05. The
+        compiler refuses to follow the link rather than guessing, which is
+        correct; the Review names one hop too few.
+
+  directive_format:
+    read_by_the_compiler: exact_corrections
+    reader:
+      path: tooling/builder/src/adnd1e_builder/review.py
+      checksum: sha256:a60e7fc3aff0f9ba3a34ec19970a6582cce9363b02658a5b013003b1b77b40e9
+    spellings_found_in_published_reviews:
+      - key: exact_corrections
+        reviews: 61
+        status: read
+      - key: exact_correction
+        note: singular; one character from the key that works
+        status: not read
+      - key: corrected_fields
+        note: used by the illusionist r07 Review lineage only
+        status: not read
+      - key: corrected_row
+        note: used once, with a companion required_node_addition
+        status: not read
+    duplicate_statement: >-
+      The illusionist Review states the same three corrections a second time
+      under a top-level `required_builder_revision.exact_corrections` list whose
+      entries nest the values under `set`. That block is neither a `*_decisions`
+      nor a `*_policy` key, so it is not reported as unread either.
+
+  silent_failure:
+    behaviour: >-
+      The loader reports an unread top-level `*_decisions` key as an error, and
+      reports unknown column names found inside `exact_corrections`. It does not
+      report an `approved_with_revision` row whose correction block it never
+      found. Such a row is indistinguishable from one that needed no change, so
+      the revision compiles clean and looks complete.
+    measured_scope:
+      rows_with_unreadable_corrections: 44
+      reviews_affected: 8
+      corrections_absent_from_the_current_gup_leaf: 38
+      corrections_present_anyway: 6
+      method: >-
+        For each `approved_with_revision` row carrying a correction block under
+        an unread key, the stated field values were compared with the same row
+        in the current GUP leaf of that packet.
+    reached_canonical:
+      verified_examples:
+        - review: REV-GUP-PKT-PHB-120-120-planes-of-existence-r02-r01
+          checksum: sha256:20af9cc14fd267b14c04f205c2e325b9fc35f01b5afc346f31aa89e6b1bc4e95
+          ref: M001
+          required_aspect: undead power source
+          canonical_row: rule_negative_material_plane GATES monster_undead
+          canonical_aspect: source of their power
+        - review: REV-GUP-PKT-PHB-120-120-planes-of-existence-r02-r01
+          ref: M002
+          required_aspect: interplanar movement
+          canonical_row: rule_ethereal_plane GATES rule_planar_travel
+          canonical_aspect: movement between planes
+      note: >-
+        Both aspects did change between r02 and r03, so something edited them --
+        but to neither the submitted nor the Reviewer's required wording. Only
+        these two were traced to canonical rows by hand. The remaining 36 are
+        not assessed here; establishing which reached canonical, and whether the
+        difference is material, is Reviewer and Integrator work, not Builder's.
+
+affected_artifacts:
+  blocked_builder_work:
+    - GUP-PKT-PHB-094-100-illusionist-spells-r08
+  reviews_with_unread_corrections:
+    - REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r01
+    - REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r02
+    - REV-GUP-PKT-PHB-117-119-bards-r03-r01
+    - REV-GUP-PKT-PHB-119-119-alignment-graph-r01-r01
+    - REV-GUP-PKT-PHB-120-120-planes-of-existence-r02-r01
+    - REV-GUP-PKT-PHB-120-120-planes-of-existence-r03-r01
+    - REV-GUP-PKT-PHB-122-122-division-of-treasure-r02-r01
+    - REV-GUP-PKT-PHB-122-122-division-of-treasure-r03-r01
+  unchanged: >-
+    No artifact was edited to raise this. The trial compile ran in a copy of the
+    repository, which has been deleted. No canonical row, registry row, GUP,
+    GUR, or Review was modified.
+
+options_considered:
+  - >-
+    Hand-edit the three fields into a compiled r08. Rejected: the GUP is
+    compiler output, and writing values straight into it bypasses every
+    validator the compile exists to run. It is also how the 38 dropped
+    corrections appear to have been partly papered over already -- the two
+    canonical aspects above changed without matching what any Review asked for.
+  - >-
+    Teach the compiler to read `corrected_fields` so this one revision proceeds.
+    Rejected as a Builder action: three unread spellings exist, adding a
+    diagnostic for them would turn 44 published rows red at once, and some of
+    those rows are already in integrated canonical data. The blast radius makes
+    this a governance decision rather than a tooling tidy-up.
+  - >-
+    Ask the Reviewer for a successor Review that states the corrections under
+    `exact_corrections` and names r05-r05 as the inherited source. This unblocks
+    the illusionist packet but leaves the silent-drop defect and the 38 dropped
+    corrections in place.
+  - >-
+    Fix the format question and the guard together, and assess the historical
+    rows separately.
+
+recommended_resolution: >-
+  Adopt the fourth option. Name `exact_corrections` normative and have the
+  Builder reject, not absorb, an `approved_with_revision` row whose correction
+  block is absent or written under any other key -- the loader already refuses
+  unread `*_decisions` keys for exactly this reason, and a row-level correction
+  deserves the same treatment. The error should name the key it found, so a
+  Reviewer sees `exact_correction` against `exact_corrections` immediately; that
+  near-miss accounts for 37 of the 44 rows.
+
+  Sequence it so the guard does not strand the repository: the Reviewer restates
+  the outstanding corrections in the readable key first, and the guard lands
+  with or after that, since 44 rows would otherwise fail at once.
+
+  The illusionist blocker needs only a successor Review -- corrections under
+  `exact_corrections`, and `inherited_edge_decisions.from_review` pointing at
+  REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05. Builder compiles r08 the
+  moment it lands, and the chain and bucket counts are already confirmed.
+
+  The already-integrated rows are the part Builder cannot judge. Whether
+  `source of their power` versus `undead power source` is a material difference
+  is a Reviewer question about what the source supports, and any canonical
+  change is the Integrator's.
+
+expected_migration_impact:
+  canonical_data: >-
+    Unknown pending Reviewer assessment. At least two integrated rows carry an
+    aspect the Reviewer replaced. Builder proposes no canonical change and may
+    not make one.
+  registry: none
+  historical_artifacts: retained unchanged
+  tooling: >-
+    Builder adds the correction-key guard and its tests under the resulting
+    Decision, in the order that Decision sets.
+
+resolution:
+  decision_id: DEC-2026-0062
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0062.yaml
+  outcome: >-
+    Review-contract 1.2 makes row-local exact_corrections the sole executable
+    correction form and requires fail-fast alias detection. The illusionist
+    repair proceeds through a normal r07-r03 Review successor and r08 GUP;
+    possible legacy canonical discrepancies require scoped Reviewer evidence
+    and later Decisions, never automatic replay.

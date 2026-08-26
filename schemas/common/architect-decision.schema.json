@@ -163,6 +163,24 @@
       "type": "string",
       "minLength": 1
     },
+    "migration_lineage_retirements": {
+      "$comment": "DEC-2026-0055: an active Decision may classify an exact current decision-migration leaf as historical only through checksummed evidence. The scanner validates the runtime lineage and never treats this record as source or canonical authority.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/migrationLineageRetirement"
+      }
+    },
+    "review_handoff_retirements": {
+      "$comment": "DEC-2026-0056: an active Decision may retire only an exact historical revision-required Review handoff after a later same-lineage GUP has an independently approved Review. A missing provenance.review_id is never an inferred consumer; this field is an explicit, checksummed exception record for its named historical subjects only.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/reviewHandoffRetirement"
+      }
+    },
     "exact_diff_ownership": {
       "$comment": "One entry per exact_diff path, naming the role accountable for publishing it. uniqueItems does not make a path unique on its own -- two entries differing only in owner are distinct items -- so the exactly-once rule and the requirement that the owner be scheduled are enforced by the queue scanner against the whole Decision.",
       "type": "array",
@@ -232,6 +250,159 @@
         },
         "checksum": {
           "$ref": "#/$defs/checksum"
+        }
+      }
+    },
+    "gupArtifactInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "checksum"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^GUP-.+"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^books/[a-z0-9-]+/[a-z0-9-]+/artifacts/gup/GUP-.+\\.yaml$"
+        },
+        "checksum": {
+          "$ref": "#/$defs/checksum"
+        }
+      }
+    },
+    "reviewArtifactInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "checksum"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^REV-GUP-.+"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^books/[a-z0-9-]+/[a-z0-9-]+/artifacts/reviews/REV-GUP-.+\\.yaml$"
+        },
+        "checksum": {
+          "$ref": "#/$defs/checksum"
+        }
+      }
+    },
+    "integrationManifestInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "checksum"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^INT-.+"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^rulesets/[a-z0-9-]+/manifests/INT-.+\\.json$"
+        },
+        "checksum": {
+          "$ref": "#/$defs/checksum"
+        }
+      }
+    },
+    "migrationLineageRetirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lineage_id",
+        "current_leaf",
+        "disposition",
+        "reason"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "consumed_by_integrated_successor"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "required": [
+              "consuming_gup",
+              "integration_manifest"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "lineage_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_leaf": {
+          "$ref": "#/$defs/gupArtifactInput"
+        },
+        "disposition": {
+          "enum": [
+            "retired_historical",
+            "consumed_by_integrated_successor"
+          ]
+        },
+        "basis_decision": {
+          "$ref": "#/$defs/decisionInput"
+        },
+        "consuming_gup": {
+          "$ref": "#/$defs/gupArtifactInput"
+        },
+        "integration_manifest": {
+          "$ref": "#/$defs/integrationManifestInput"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "reviewHandoffRetirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retired_review",
+        "resolution_gup",
+        "resolution_review",
+        "disposition",
+        "reason"
+      ],
+      "properties": {
+        "retired_review": {
+          "$ref": "#/$defs/reviewArtifactInput"
+        },
+        "resolution_gup": {
+          "$ref": "#/$defs/gupArtifactInput"
+        },
+        "resolution_review": {
+          "$ref": "#/$defs/reviewArtifactInput"
+        },
+        "disposition": {
+          "const": "retired_historical"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
         }
       }
     },

@@ -1,0 +1,33 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0060-r01-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Reissue the exact report with validation-command summaries that contain a
+    recognizable passing verdict; this report cannot be approved as published.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation: {id: IMP-DEC-2026-0060-r01, path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0060-r01.yaml, checksum: sha256:759b95a3690f227151041870c53ade084458cd01d933679cda9319286bff41c3}
+decision_input: {id: DEC-2026-0060, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0060.yaml, checksum: sha256:cc0af2c6bb2236d415c2ee065370c1c39c2f805ae6e1e85dd69ac755f9c25139}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: Current-state compiler coverage was independently present.}
+  - {acceptance_test_index: 2, disposition: verified, evidence: The exact bounded historical GUR exemption evidence was independently present.}
+  - {acceptance_test_index: 3, disposition: verified, evidence: Focused ordinary GUR routing coverage was independently present.}
+  - acceptance_test_index: 4
+    disposition: failed
+    evidence: >-
+      The full Builder-suite summary says Ran 655 tests but has no recognizable
+      pass verdict. test_implementation_evidence rejects it, so the report is
+      not approval-ready for independent Review.
+independent_validation:
+  passed: true
+  commands:
+    - {command: '[cwd tooling/common] python -m unittest discover -s tests -p test_*.py', exit_code: 1, result: failed, summary: Ran 800 tests; two evidence-summary failures identified IMP-DEC-2026-0060-r01.}
+overall_disposition: revision_required

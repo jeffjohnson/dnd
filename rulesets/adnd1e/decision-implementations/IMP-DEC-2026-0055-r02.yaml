@@ -1,0 +1,126 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0055-r02
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: IMP-DEC-2026-0055-r01
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0055
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml
+  checksum: sha256:46a06f296d1e477a69a808c5e4f7c714812bcb5191b09e5541e71fdc914abb59
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:b93ab9904c09b4c0e5305b6ca166be116c9aec2fb912ba3f0368572b7e427f8a
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:ae80ac861e26f95616fdb77575e7bf5d58d23f2d7b5b20407dccac7fa88db189
+- path: schemas/common/architect-decision.schema.json
+  checksum: sha256:5ead62795409750ac88631fbdffce25ee736677c7add54946b866d79a48cd38f
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:138498368c3514fdb4751c692eef12618d80608a5bd460109430b557d005f7fb
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:fed8cf580d8fcbcb43c6c89b0f2b46bd4677722ef2aad022a20ffc28bb0cdaad
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:45952fea7fb920d8fd145788de96ed7b7ae0199e67341fa3259d2513f7ef71b6
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml
+  checksum: sha256:46a06f296d1e477a69a808c5e4f7c714812bcb5191b09e5541e71fdc914abb59
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-22T15.02.35.116Z.yaml
+  checksum: sha256:f0c3dc0fa0d3f6f645ce9cc6b3e2027e871c34f540792f5615948c8b9b24fea6
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: contracts/WORK_QUEUES.md declares Version 1.20. Tooling-proof rule 50 states that an exact
+    active Decision retirement record makes only its named current decision-migration leaf informational
+    history, that each legal disposition requires its exact evidence, and that a missing or invalid record
+    leaves an otherwise stale migration as the normal Builder reissue diagnostic.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0055
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml
+      checksum: sha256:46a06f296d1e477a69a808c5e4f7c714812bcb5191b09e5541e71fdc914abb59
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      minimum_version: '1.20'
+      observed_version: '1.20'
+      checksum: sha256:b93ab9904c09b4c0e5305b6ca166be116c9aec2fb912ba3f0368572b7e427f8a
+      anchors_present:
+      - decision-migration retirement record
+      - exact current leaf
+      - malformed retirement leaves ordinary stale-work handling unchanged
+- acceptance_test_index: 2
+  result: passed
+  evidence: contracts/ARTIFACT_LIFECYCLE.md declares Version 1.16. Section 3 states that an active approved
+    Decision may retain an exact current decision-migration leaf as immutable historical evidence through
+    a validated migration_lineage_retirements record; that retired_historical means later governance forbids
+    replanning and is not completed canonical work; and that consumed_by_integrated_successor additionally
+    pins an exact successor GUP and Integration manifest.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0055
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml
+      checksum: sha256:46a06f296d1e477a69a808c5e4f7c714812bcb5191b09e5541e71fdc914abb59
+      authorized_acceptance_test_index: 2
+    authorized_acceptance_test_index: 2
+    contracts:
+    - path: contracts/ARTIFACT_LIFECYCLE.md
+      minimum_version: '1.16'
+      observed_version: '1.16'
+      checksum: sha256:ae80ac861e26f95616fdb77575e7bf5d58d23f2d7b5b20407dccac7fa88db189
+      anchors_present:
+      - immutable historical evidence
+      - retirement is not completed canonical work
+      - checksummed successor and integration evidence
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'test_common_schemas.TestMigrationLineageRetirementRecords, 9 tests: both legal dispositions
+    validate with their required artifacts; consumed_by_integrated_successor is rejected when either the
+    consuming GUP or the Integration manifest is absent; a missing current_leaf, a malformed checksum,
+    an unknown disposition, and an empty reason are all rejected. The published DEC-2026-0055 validates
+    against the amended schema.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Live corpus: GUP-MIG-DEC-2026-0015-0016-r03 and GUP-MIG-DEC-2026-0024-r01 now emit info migration_lineage_retired
+    naming DEC-2026-0055, its disposition, and its reason, and neither emits decision_migration_lineage_error.
+    Fixture coverage in test_scan_agent_queues.MigrationLineageRetirementCase holds the negative side:
+    an otherwise identical unretired stale migration still raises decision_migration_lineage_error, and
+    so does one whose record carries a stale leaf checksum, names an absent successor, sits on an unapproved
+    Decision, or names a different leaf.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: This report pins DEC-2026-0055 by checksum, reports acceptance tests 1 through 4 as passed
+    against current evidence, and records the focused run of MigrationLineageRetirementCase with TestMigrationLineageRetirementRecords
+    (27 tests, OK) alongside the full tooling/common suite (691 tests, OK).
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'The scanner validates migration_lineage_retirements on active approved Decisions and classifies
+    only an exact, checksum-matching current leaf as informational history. Both reported stale migrations
+    are now history rather than false Builder reissue work, each recorded with the retiring Decision,
+    disposition, and reason so the repository can show why the signal stopped. Validation is deliberately
+    strict: every named artifact must exist and still hash to the recorded checksum, an unapproved or
+    superseded Decision retires nothing, and any failure emits migration_retirement_record_invalid while
+    leaving the ordinary reissue error standing. Retirement is the one classification that makes work
+    disappear, so a record that no longer describes the corpus must never be the thing that cancels it.
+    This implementation touches tooling/common only; the tooling/builder suite is red on 5 pre-existing
+    DEC-2026-0014 legacy-endpoint debt failures, unrelated to and untouched by this Decision.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0055-r02.validation.json
+validation_report_checksum: sha256:d60ba1806867364e4f4744c95ae9b0d61dfe3010577156f7a9d09d0c4fd20e03
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 691 tests in 100.428s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.MigrationLineageRetirementCase
+      test_common_schemas.TestMigrationLineageRetirementRecords'
+    exit_code: 0
+    result: passed
+    summary: Ran 27 tests in 0.267s OK

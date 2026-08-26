@@ -1,6 +1,6 @@
 # Artifact Lifecycle
 
-**Version 1.14.**
+**Version 1.20.**
 
 Artifact files are durable, append-only records. Their directories preserve
 artifact kind, not current queue state. Role readiness, revision leaves,
@@ -132,6 +132,15 @@ its manifest plus the exact reviewed migration GUP YAML and validation report;
 it must not add a synthetic edge CSV. Every new revision names the immediately
 prior GUP in `supersedes`.
 
+An active approved Architect Decision may retain an exact current
+decision-migration leaf as immutable historical evidence through a validated
+`migration_lineage_retirements` record. `retired_historical` means later
+governance forbids replanning that leaf; it is not completed canonical work.
+`consumed_by_integrated_successor` additionally pins an exact successor GUP and
+Integration manifest that completed the named authority through another
+lineage. In either case, a malformed or stale record resolves nothing and the
+ordinary stale-migration lifecycle remains in force.
+
 For a v2 merge, `retired_nodes[].registry_csv_row` is optional and advisory: it
 is an auditable observed-row locator, not the retirement identity or a
 transaction precondition. The retired ID and label, complete incident set, and
@@ -146,13 +155,19 @@ Created by Reviewer. Every GUP row receives a disposition:
 - `rejected`
 - `architect_escalation`
 
-For a new Review declaring `review_contract_version: '1.1'`, every per-row
+For a new Review declaring `review_contract_version: '1.2'`, every per-row
 `edge_decisions` or `row_decisions` value must be one of those four dispositions
-and validate through `schemas/common/review.schema.json` before publication.
-The disposition records the judgment about the row, not whether the row belongs
-in an Approved edge component. A source-supported `approved` row may remain in a
-checksummed `blocked.csv` outside the bundle; record that exclusion as packaging
-evidence. `approved_but_excluded_from_bundle` is not a legal disposition.
+and validate through `schemas/common/review.schema.json` before publication. An
+`approved_with_revision` row must carry its entire executable correction in one
+nonempty, row-local `exact_corrections` mapping. `exact_correction`,
+`corrected_fields`, `corrected_row`, and
+`required_builder_revision.exact_corrections` are not executable aliases and
+must be rejected rather than interpreted. The disposition records the judgment
+about the row, not whether the row belongs in an Approved edge component. A
+source-supported `approved` row may remain in a checksummed `blocked.csv`
+outside the bundle; record that exclusion as packaging evidence.
+`approved_but_excluded_from_bundle` is not a legal disposition. Reviews
+declaring 1.1 or omitting a review-contract version remain immutable history.
 
 Review is per field, not only per edge. The Reviewer produces either:
 
@@ -160,9 +175,30 @@ Review is per field, not only per edge. The Reviewer produces either:
 - Revision Request
 - Architect Escalation
 
-A Review records the reviewed GUP ID and an explicit handoff to Integrator,
-Builder, Analyst, Architect, or no downstream role. A reviewed GUP is never
-Reviewer-ready again.
+An approved Review records the reviewed GUP ID, emits its exact Approved bundle,
+and hands that bundle to Integrator. A `revision_required` Review records a
+concrete Builder, Analyst, Reviewer, or Architect correction; it must not hand
+Integrator a standalone check or preflight. A passing check that decides whether
+the same GUP is approvable is independently recorded in the Reviewer's approving
+successor, not in an Integration manifest or rejection record. A reviewed GUP
+is never Reviewer-ready again.
+
+An active `revision_required` Review retains its own ready handoff when the
+reviewed GUP gains a later revision. Only a GUP in that reviewed GUP's lineage
+whose `provenance.review_id` exactly names the active Review consumes the
+handoff. A GUP supersession alone, or a successor that names an earlier Review,
+does not consume it.
+
+An active approved Architect Decision may retire one exact historical
+`revision_required` Review handoff only through a validated,
+checksummed `review_handoff_retirements` record. That record pins the historical
+Review, a later GUP in its reviewed GUP's lineage, and an approved Review of
+that later GUP. It is an explicit historical classification, not an inferred
+missing-provenance exception or a replacement for normal Review consumption.
+An absent, null, or different `provenance.review_id` therefore leaves ordinary
+future Review handoffs active unless a Decision records that exact historical
+case. A malformed, stale, non-descendant, or non-approved-resolution record
+retires nothing.
 
 ## 5. Architect Decision
 
@@ -225,6 +261,15 @@ corresponding versioned-contract-content disposition. This is current-state
 verification, not a retirement outcome, and an unstructured legacy exact-version
 test has no such path without a later checksummed Architect authorization.
 
+Until an exact Approved implementation Review consumes the report, that evidence
+is a current strict precondition. When an exact Approved Review consumes it, the
+report's and Review's checksummed versioned-contract-content evidence become the
+historical record of the state independently reviewed at that time. Later contract
+version, checksum, or anchor drift is informational for that completed Decision;
+it does not assert that the current contract still meets the old test or reopen
+the completed lineage. A later Decision that relies on the contract verifies its
+own current evidence.
+
 Exact schemas, naming, and queue behavior follow
 `schemas/common/decision-implementation.schema.json`,
 `schemas/common/decision-implementation-review.schema.json`,
@@ -263,6 +308,21 @@ An Integration manifest consumes each Approved bundle by ID and checksum.
 
 ## Version History
 
+- **1.20 - 2026-08-26:** Established Review-contract 1.3: a passing standalone
+  preflight is evidence in a Reviewer successor, never a synthetic Integrator
+  record or revision-required Integrator handoff.
+- **1.19 - 2026-08-25:** Added Review-contract 1.2's row-local
+  `exact_corrections` publication requirement and explicit rejection of
+  correction aliases; historic Review artifacts remain immutable.
+- **1.18 - 2026-08-23:** Made approved versioned-contract-content evidence a
+  historical snapshot while retaining strict current validation before approval.
+- **1.17 - 2026-08-23:** Allowed a checksummed Architect Decision to retire an
+  exact historical Review handoff only after a later same-lineage GUP has an
+  independently approved Review; missing provenance remains non-consumption.
+- **1.16 - 2026-08-22:** Distinguished checksummed historical retirement of a
+  decision-migration leaf from canonical completion and ordinary stale work.
+- **1.15 - 2026-08-22:** Preserved an active revision-required Review handoff
+  until exact same-lineage GUP provenance consumes it.
 - **1.14 - 2026-08-20:** Defined immutable handling and Architect recording of
   an unrecoverable published checksum; all corrective work is a successor
   revision.

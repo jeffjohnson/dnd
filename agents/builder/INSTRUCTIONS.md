@@ -107,6 +107,15 @@ Any Builder tool that inspects packet source Markdown must use a Pandoc-compatib
 parser and pass the page-marker acceptance tests in
 `contracts/SOURCE_MARKDOWN.md`.
 
+For a Review declaring `review_contract_version: '1.2'`, apply executable row
+corrections only from the nonempty row-local `exact_corrections` mapping. Reject
+an `approved_with_revision` row with a missing, empty, or non-mapping payload,
+or with `exact_correction`, `corrected_fields`, or `corrected_row`; name the ref,
+observed key, and required key in the diagnostic. Never infer an alias or use
+`required_builder_revision.exact_corrections` as an executable directive. Keep
+1.1 and unversioned Reviews immutable historical inputs unless a Decision names
+their correction path explicitly.
+
 ## Migration responsibility
 
 The supplied legacy dump uses a 13-field schema while the constitution defines 18 fields. Build a migration tool rather than hand-editing the master file.
@@ -137,6 +146,11 @@ The YAML, edge CSV, and validation report are one logical bundle. Every new GUP
 records `revision`, `supersedes` (null for the first GUP), and a `handoff`.
 Approval-ready output hands off to Reviewer. Blocked output names the next role
 and every blocking escalation or artifact ID.
+
+When a GUP responds to an active `revision_required` Review, it must remain in
+the reviewed GUP's lineage and set `provenance.review_id` to that Review's exact
+ID. A later GUP that merely supersedes the reviewed GUP, or names an earlier
+Review, does not consume the active Review handoff.
 
 For a `decision_migration_v1`, `decision_migration_v2`, or
 `decision_migration_v3`, write the GUP YAML and its validation report but do not

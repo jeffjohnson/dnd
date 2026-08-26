@@ -1,0 +1,267 @@
+schema_version: '1.0'
+id: DEC-2026-0063
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-064-079-magic-user-spells-1-4
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement Review-contract 1.3 standalone-preflight routing and preserve
+    blocked Review handoffs as blocked in the scanner, then publish a Decision
+    Implementation Report for independent review.
+  blocking_ids: []
+
+decision_date: '2026-08-26'
+escalation_id: ESC-2026-08-26T11.24.32.014Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  Which artifact records the outcome of an Integrator-assigned check that is
+  neither an integration nor a rejection, and does a passing result discharge
+  the Integrator handoff on its own, or must the Reviewer publish approving
+  successors first?
+
+ruling: >-
+  No third Integrator record kind is created. A standalone passing preflight is
+  approval evidence, not an Integration or Integration Rejection: its durable
+  home is the Reviewer successor that independently verifies the exact inputs,
+  method, and result, then approves the reviewed GUP and emits its ordinary
+  Approved bundle. A passing Integrator run alone does not complete a
+  `revision_required` Review, does not consume its handoff, and does not release
+  canonical integration.
+
+  Review-contract 1.3 prohibits a `revision_required` Review from handing
+  Integrator a standalone check. Integrator handoff is reserved for an approved
+  Review with an exact Approved bundle to integrate. A check that only decides
+  whether the reviewed GUP is approvable belongs in the Reviewer's independent
+  validation. An Integrator may provide a reproducible working measurement, but
+  must not manufacture an Integration manifest or rejected record for a pass;
+  the Reviewer independently re-derives or verifies it in the successor Review.
+
+  The two current Magic-User Reviews are immutable legacy evidence. Their ready
+  handoffs are replaced by this Decision. Reviewer immediately publishes
+  schema-valid 1.3 approving successors for the same GUPs, recording the
+  exact five-field preflight, exact component checksums, current canonical
+  comparison, and INT-20260825-001 provenance. The successors emit ordinary
+  Approved bundles, which then create normal Integrator work. No Builder GUP
+  revision and no synthetic Integrator artifact is authorized.
+
+  The scanner must honor a Review handoff's `readiness`: a revision-required
+  Review with `readiness: blocked` appears only as blocked work, never as ready.
+  This fixes the reported general queue defect without inferring that a blocked
+  prerequisite has been resolved.
+
+rationale:
+  - >-
+    Integration records assert a canonical transaction and rejection records
+    assert a nonempty failed bundle set. Writing either for a passing check
+    would place a false immutable statement in repository provenance.
+  - >-
+    Review already owns the judgment whether its GUP is approvable and can
+    record exact independent validation. A new record type would add a second
+    approval path while leaving the Review as the required consumer.
+  - >-
+    Readiness is a contract state, not descriptive prose. Treating blocked
+    Review handoffs as ready misreports real work for any role and inflates the
+    queue count the user uses for coordination.
+
+affected_contracts:
+  - contracts/WORK_QUEUES.md
+  - contracts/ARTIFACT_LIFECYCLE.md
+  - schemas/common/review.schema.json
+  - agents/reviewer/INSTRUCTIONS.md
+  - agents/integrator/INSTRUCTIONS.md
+affected_registries: []
+
+affected_artifacts:
+  resolved_legacy_reviews:
+    - id: REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06.yaml
+      checksum: sha256:290057b4289ddf1a5fd8e801c12c7621c970d8a2dd46e976c640fb43c8f4d5cc
+      required_successor: REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r07
+    - id: REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05.yaml
+      checksum: sha256:6b8fa7f100d16345790c609840c00c776896aeda056bdf2c7b3d261aefe64911
+      required_successor: REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r06
+  completed_preflight:
+    integration:
+      id: INT-20260825-001
+      path: rulesets/adnd1e/manifests/INT-20260825-001.json
+      checksum: sha256:6db7a7691f95b29a54f2562b4848d0159688b5330151c3e366aa7ecf5231e046
+    method: tooling/integrator/src/adnd1e_integrator/invariants.py assertion_key()
+    outcomes:
+      - component: APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03.edges.csv
+        rows: 231
+        clashes_against_canonical: 0
+        within_component_duplicates: 0
+      - component: APPROVED-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02.edges.csv
+        rows: 203
+        clashes_against_canonical: 0
+        within_component_duplicates: 0
+      - cross_component_clashes: 0
+        canonical_rows_compared: 4612
+
+migration_required: false
+migration_scope:
+  canonical_data_change: true
+  registry_change: false
+  profile_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    The two legacy Reviews remain immutable and gain normal approving successor
+    Reviews. Their reviewed GUPs remain immutable; the successors create
+    ordinary Approved bundles. No Decision-migration GUP, registry migration,
+    Integration rejection rewrite, or synthetic preflight artifact is created.
+  direct_implementation: >-
+    Architect versions Review-contract 1.3 and role instructions. Builder fixes
+    the scanner and its tests, including schema regression coverage, then
+    publishes IMP-DEC-2026-0063-r01. Reviewer successor Reviews and their
+    ordinary Approved/Integration lifecycle are downstream work, not acceptance
+    evidence for that report.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, decide the escalation, version Review-contract 1.3
+      and the named instructions, and preserve all existing Reviews, GUPs,
+      Approved bundles, rejection records, Integration manifests, registries,
+      and canonical data unchanged.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Immediately publish the two exact 1.3 Review successors named above. Each
+      reviews the same immutable GUP, independently records the exact five-field
+      assertion-key check and current checksums, cites the decided escalation
+      and INT-20260825-001, is approved, terminal as a Review, and emits its
+      normal Approved bundle. Do not request a Builder GUP revision and do not
+      create an Integrator report for the passing check.
+  - step: 3
+    owner: integrator
+    action: >-
+      Integrate only the ordinary Approved bundles emitted by the two successor
+      Reviews. Run the full transaction normally; no special record exists for
+      the earlier standalone preflight.
+  - step: 4
+    owner: builder
+    action: >-
+      Implement the 1.3 scanner behavior and tests. Respect every active
+      revision-required Review handoff's readiness: report `blocked` as blocked
+      and preserve its role, reason, and unresolved blockers; do not emit a
+      ready item. Publish IMP-DEC-2026-0063-r01.
+  - step: 5
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0063-r01. Confirm that approved Review
+      bundle handoffs still reach Integrator, standalone-check legacy work is
+      replaced only by the exact Decision record, and blocked Review handoffs
+      never inflate ReadyCount.
+
+acceptance_tests:
+  - >-
+    Review-contract 1.3 rejects a Review whose effective disposition is
+    `revision_required` and whose handoff names Integrator. It continues to
+    accept an approved Review that hands off its exact Approved bundle to
+    Integrator, and 1.2 and older immutable Reviews retain their historical
+    schema treatment.
+  - >-
+    The scanner reports a revision-required Review with a blocked handoff as
+    one blocked item for its named role, with its unresolved blockers and no
+    ready duplicate. Changing that handoff to ready produces its ordinary ready
+    item; existing approved-Review-to-Integrator bundle routing remains
+    unchanged.
+  - >-
+    The decided escalation records both exact originating Review IDs and paths,
+    so their legacy Integrator handoffs are suppressed and only DEC-2026-0063's
+    Builder implementation job is derived until the named successor Reviews
+    create normal Approved bundles.
+  - >-
+    The two required Reviewer successors preserve their exact reviewed GUP and
+    source judgments, record passing independently verified five-field results
+    against the checksummed components and current canonical state, and emit
+    Approved bundles without a Builder GUP revision or a fabricated Integrator
+    record.
+  - >-
+    IMP-DEC-2026-0063-r01 pins this Decision checksum, reports every direct
+    acceptance test passed with passing focused and full applicable validation,
+    and is approval-ready for independent Reviewer verification. The two
+    ordinary successor Review and Integration lineages do not block that Review.
+
+post_implementation_requirements:
+  - >-
+    The Reviewer successors and their Approved bundles are the only durable
+    record of the passing preflight. Integrator's working measurement and this
+    decided escalation are inputs to that independent evidence, not a substitute
+    for it.
+  - >-
+    No role supersedes, withdraws, or fabricates a passing replacement for
+    INT-20260819-002. The old rejection remains immutable historical evidence.
+  - >-
+    Analyst has no work under this Decision.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This changes workflow evidence and queue-state handling only. It changes no
+    ontology, source interpretation, assertion identity, edge semantics,
+    controlled vocabulary, registry, profile, or canonical content rule.
+
+governance_changelog:
+  - >-
+    DEC-2026-0063 establishes Review-contract 1.3: a standalone preflight is
+    Reviewer approval evidence rather than an Integrator artifact, and blocked
+    Review handoffs remain blocked in queue derivation.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version Review-contract 1.3, reserve Integrator handoffs for Approved bundles, and define blocked Review queue state.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version Review lifecycle handling for standalone approval preflights and Integrator handoffs.'
+  schemas/common/review.schema.json:
+    - 'Add opt-in 1.3 denial of revision-required Review handoffs to Integrator.'
+  agents/reviewer/INSTRUCTIONS.md:
+    - 'Require Review-contract 1.3 and record standalone preflight evidence in Review successors.'
+  agents/integrator/INSTRUCTIONS.md:
+    - 'Forbid standalone-pass Integration records and route reproducible measurements to Reviewer evidence.'
+  tooling/common/scan_agent_queues.py:
+    - 'Honor revision-required Review handoff readiness when deriving ready or blocked work.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Cover blocked Review routing, ready recovery, and no duplicate queue item.'
+  tooling/common/tests/test_common_schemas.py:
+    - 'Cover Review-contract 1.3 Integrator-handoff denial and historical compatibility.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0063.yaml:
+    - 'Record the no-new-artifact ruling, exact review successors, and queue-state correction.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-26T11.24.32.014Z.yaml:
+    - 'Record DEC-2026-0063 as the escalation resolution and its two originating Review references.'
+
+exact_diff_ownership:
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: contracts/ARTIFACT_LIFECYCLE.md, owner: architect, sequence_step: 1}
+  - {path: schemas/common/review.schema.json, owner: architect, sequence_step: 1}
+  - {path: agents/reviewer/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/integrator/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 4}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 4}
+  - {path: tooling/common/tests/test_common_schemas.py, owner: builder, sequence_step: 4}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0063.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-26T11.24.32.014Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: reviewer
+follow_up_owners:
+  architect:
+    - Preserve all historical Review, rejection, Integration, registry, and canonical artifacts unchanged.
+  reviewer:
+    - Publish both specified approving 1.3 successors, then review IMP-DEC-2026-0063-r01.
+  integrator:
+    - Integrate only the ordinary Approved bundles emitted by those successors; write no standalone-pass record.
+  builder:
+    - Implement the exact queue-state rule and tests; publish IMP-DEC-2026-0063-r01.
+  analyst:
+    - No action.

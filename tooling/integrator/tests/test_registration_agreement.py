@@ -11,15 +11,15 @@ absorbed; the same ID carrying a different label or kind is a real identity
 conflict, and choosing between two definitions is not an integration decision --
 so it must abort the batch rather than pick one.
 
-The fixture uses the two real magic-user bundles, which between them declare
-`rule_hit_dice` and `monster_extra_dimensional` twice over with agreeing values.
-Their only other blocker is three spell identities the unpublished druid-spells
-packet owns, so the clone registers those to isolate the behaviour under test.
+The fixture uses the two real magic-user bundles, rewound from the clone so the
+batch is measured against canonical as it stood before they landed. Pinning them
+without the rewind tests a different thing entirely: once their rows are in
+canonical the batch aborts on invariant 12 long before it reaches a registration
+decision.
 """
 
 from __future__ import annotations
 
-import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -27,54 +27,38 @@ from pathlib import Path
 import yaml
 
 import _bootstrap
-from _bootstrap import REPO_ROOT, RULESET_ID
+from _bootstrap import RULESET_ID
+from test_transaction import clone_repo
 
 from adnd1e_integrator.bundles import discover
 from adnd1e_integrator.canonical import CanonicalPaths, Registry
 from adnd1e_integrator.checksums import checksum_file
 from adnd1e_integrator.integrate import IntegrationError, integrate
 
-FIRST = "APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r07-r01"
-SECOND = "APPROVED-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r06-r01"
+FIRST = "APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r04"
+SECOND = "APPROVED-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r03"
 
-#: Declared by both bundles above, with identical label and kind in each. The
-#: two exercise different paths: `rule_hit_dice` was already registered by
-#: playing-the-game in INT-20260815-001, so it collides with the *registry*,
-#: while `monster_extra_dimensional` is new and collides only within the batch.
-ALREADY_REGISTERED = {"rule_hit_dice": ("Hit Dice", "rule")}
+#: The two absorption paths this module exists to separate.
+#:
+#: `rule_concentration` is declared by SECOND and was already registered by the
+#: illusionist packet in INT-20260825-001, so it collides with the *registry*.
+#: `monster_extra_dimensional` is new to canonical and declared by both bundles,
+#: so it collides only *within the batch*. Neither is special: what must hold is
+#: that one identity keeps one registry row however many Reviews approve it.
+ALREADY_REGISTERED = {"rule_concentration": ("Concentration", "rule")}
 NEW_TO_THIS_BATCH = {"monster_extra_dimensional": ("Extra-Dimensional Creature", "monster")}
 SHARED = {**ALREADY_REGISTERED, **NEW_TO_THIS_BATCH}
 
-#: Owned by GUP-PKT-PHB-054-064-druid-spells-r01, which is not yet published.
-DRUID_SPELLS = {
-    "spell_charm_person_or_mammal": ("Charm Person or Mammal", "spell"),
-    "spell_heat_metal": ("Heat Metal", "spell"),
-    "spell_pyrotechnics": ("Pyrotechnics", "spell"),
-}
-
 
 def clone(target: Path) -> Path:
-    for relative in [
-        f"rulesets/{RULESET_ID}/canonical",
-        f"rulesets/{RULESET_ID}/registries",
-        f"rulesets/{RULESET_ID}/profiles",
-        f"rulesets/{RULESET_ID}/governance",
-        f"books/{RULESET_ID}/phb/artifacts",
-    ]:
-        source = REPO_ROOT / relative
-        if source.exists():
-            shutil.copytree(source, target / relative, dirs_exist_ok=True)
+    """A clone rewound to just before these two bundles were integrated.
 
-    # Stand in for the unpublished druid packet so the batch fails or succeeds
-    # on the registration question alone, not on a missing endpoint.
-    paths = CanonicalPaths(root=target, ruleset_id=RULESET_ID)
-    registry = Registry.load(paths.registry)
-    for node_id, (label, kind) in DRUID_SPELLS.items():
-        if node_id not in registry.ids:
-            registry.add({"id": node_id, "label": label, "kind": kind,
-                          "degree": "0", "roles": ""})
-    registry.save(paths.registry)
-    return target
+    Only these two are rewound. The registry is shared, so rewinding a sibling
+    as well would retire identities these bundles depend on but do not
+    themselves register -- including the eight the illusionist packet landed,
+    which are exactly what makes the already-in-the-registry path testable here.
+    """
+    return clone_repo(target, rewind_only={FIRST, SECOND})
 
 
 def bundles_in(root: Path):
@@ -141,13 +125,28 @@ class TestAgreeingRedeclaration(unittest.TestCase):
             by_id: dict[str, list[dict]] = {}
             for entry in batch.registrations_redeclared:
                 by_id.setdefault(entry["id"], []).append(entry)
-            self.assertEqual(set(by_id), set(SHARED))
+            # Absorption must never be silent: every redeclaration records the
+            # bundle that declared it and where the identity already came from.
+            for node_id, entries in by_id.items():
+                for entry in entries:
+                    self.assertTrue(entry["bundle_id"], node_id)
+                    self.assertTrue(entry["first_declared_by"], node_id)
 
-            # Already in the registry: both bundles' declarations are absorbed.
+            # The two pinned identities exercise the two distinct absorption
+            # paths, which is what this test is for. Other packets may
+            # legitimately come to share an identity with these bundles -- the
+            # illusionist packet registered ten of them in INT-20260825-001 --
+            # and reaching this line at all proves those agreed, because a
+            # label or kind mismatch aborts the batch (TestDisagreeingRedeclaration).
+            # So the pinned set must be absorbed; it need not be all that is.
+            self.assertLessEqual(set(SHARED), set(by_id))
+
+            # Already in the registry: the declaration is absorbed and says so,
+            # naming the registry rather than a sibling bundle as the origin.
             for node_id in ALREADY_REGISTERED:
                 sources = {e["first_declared_by"] for e in by_id[node_id]}
                 self.assertEqual(sources, {"already in the registry"})
-                self.assertEqual({e["bundle_id"] for e in by_id[node_id]}, {FIRST, SECOND})
+                self.assertEqual({e["bundle_id"] for e in by_id[node_id]}, {SECOND})
 
             # New to the batch: the first declaration registers it, the second
             # is absorbed and names the bundle that got there first.
@@ -175,7 +174,7 @@ class TestDisagreeingRedeclaration(unittest.TestCase):
             self.assertEqual({p: checksum_file(p) for p in paths.writable()}, before)
 
     def test_conflicting_with_the_existing_registry_aborts(self):
-        self._assert_aborts("rule_hit_dice", "Hit Die", "INT-19700101-202")
+        self._assert_aborts("rule_concentration", "Concentrating", "INT-19700101-202")
 
     def test_conflicting_with_a_sibling_bundle_aborts(self):
         self._assert_aborts(

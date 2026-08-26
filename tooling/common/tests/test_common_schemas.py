@@ -468,13 +468,31 @@ class TestImplementationArtifactsValidate(unittest.TestCase):
         archive to satisfy today's schema would make the rule unenforceable and
         the test permanently red. The active leaf is what routes work, so that
         is what must be clean.
+
+        Supersession is read two ways, because either alone is incomplete. The
+        `-rNN` suffix groups a lineage, and an explicit `supersedes` retires a
+        revision by name. The second matters most exactly where the first
+        breaks: a malformed ID parses into a lineage of its own, and its valid
+        successor into another, so the retired artifact comes back as a leaf and
+        the archive fails on the ID error the successor was published to fix.
         """
-        leaves: dict[str, tuple[int, Path, dict]] = {}
+        documents = []
         for path in sorted(paths):
             document = yaml.safe_load(path.read_text(encoding="utf-8"))
-            if not isinstance(document, dict):
-                continue
+            if isinstance(document, dict):
+                documents.append((path, document))
+
+        superseded = {
+            str(document["supersedes"])
+            for _, document in documents
+            if document.get("supersedes")
+        }
+
+        leaves: dict[str, tuple[int, Path, dict]] = {}
+        for path, document in documents:
             identifier = str(document.get("id") or path.stem)
+            if identifier in superseded:
+                continue
             lineage, _, revision = identifier.rpartition("-r")
             try:
                 number = int(revision)
@@ -663,3 +681,421 @@ class TestPublishedReviewsStillValidate(unittest.TestCase):
 
     def test_the_corpus_is_not_empty(self):
         self.assertGreater(len(self.reviews()), 50)
+
+
+class TestMigrationLineageRetirementRecords(unittest.TestCase):
+    """DEC-2026-0055: the schema for retiring a stale decision-migration leaf.
+
+    Retirement is the one Decision field that makes queue work vanish, so the
+    schema carries the shape and the scanner carries the checksums. Neither is
+    sufficient alone: a well-formed record pointing at a file that has changed is
+    exactly the case the runtime check exists for.
+    """
+
+    DECISION = json.loads(
+        (COMMON / "architect-decision.schema.json").read_text(encoding="utf-8")
+    )
+
+    def base(self, **overrides):
+        document = {
+            "schema_version": "1.0",
+            "id": "DEC-2026-9101",
+            "status": "approved",
+            "ruleset_id": "adnd1e",
+            "book_id": "phb",
+            "constitution_version": "1.8",
+            "migration_required": False,
+            "handoff": {
+                "next_role": "none",
+                "readiness": "terminal",
+                "reason": "retire",
+                "blocking_ids": [],
+            },
+        }
+        document.update(overrides)
+        return document
+
+    def artifact(self, artifact_id="GUP-MIG-DEC-2026-9101-r01"):
+        return {
+            "id": artifact_id,
+            "path": f"books/adnd1e/phb/artifacts/gup/{artifact_id}.yaml",
+            "checksum": CHECKSUM,
+        }
+
+    def retirement(self, **overrides):
+        record = {
+            "lineage_id": "MIG-DEC-2026-9101",
+            "current_leaf": self.artifact(),
+            "disposition": "retired_historical",
+            "reason": "blocked behind a source prerequisite",
+        }
+        record.update(overrides)
+        return record
+
+    def errors_for(self, record):
+        return errors(self.DECISION, self.base(migration_lineage_retirements=[record]))
+
+    def test_a_retired_historical_record_is_valid(self):
+        self.assertEqual(self.errors_for(self.retirement()), [])
+
+    def test_a_consumed_by_successor_record_is_valid(self):
+        self.assertEqual(
+            self.errors_for(
+                self.retirement(
+                    disposition="consumed_by_integrated_successor",
+                    consuming_gup=self.artifact("GUP-MIG-DEC-2026-9101-9102-r02"),
+                    integration_manifest={
+                        "id": "INT-20260101-001",
+                        "path": "rulesets/adnd1e/manifests/INT-20260101-001.json",
+                        "checksum": CHECKSUM,
+                    },
+                )
+            ),
+            [],
+        )
+
+    def test_consumed_by_successor_requires_both_artifacts(self):
+        """The claim is that another lineage did the work. Both halves prove it."""
+        self.assertTrue(
+            self.errors_for(
+                self.retirement(disposition="consumed_by_integrated_successor")
+            )
+        )
+
+    def test_consumed_by_successor_requires_the_manifest(self):
+        self.assertTrue(
+            self.errors_for(
+                self.retirement(
+                    disposition="consumed_by_integrated_successor",
+                    consuming_gup=self.artifact("GUP-MIG-DEC-2026-9101-9102-r02"),
+                )
+            )
+        )
+
+    def test_a_missing_current_leaf_is_rejected(self):
+        record = self.retirement()
+        del record["current_leaf"]
+        self.assertTrue(self.errors_for(record))
+
+    def test_a_malformed_checksum_is_rejected(self):
+        leaf = self.artifact()
+        leaf["checksum"] = "not-a-checksum"
+        self.assertTrue(self.errors_for(self.retirement(current_leaf=leaf)))
+
+    def test_an_unknown_disposition_is_rejected(self):
+        self.assertTrue(self.errors_for(self.retirement(disposition="withdrawn")))
+
+    def test_a_reasonless_record_is_rejected(self):
+        """A retirement nobody explained is one nobody can review."""
+        self.assertTrue(self.errors_for(self.retirement(reason="")))
+
+    def test_the_published_decision_validates(self):
+        path = (
+            REPO_ROOT
+            / "rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml"
+        )
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        self.assertEqual(errors(self.DECISION, document), [])
+
+
+class TestReviewHandoffRetirementRecords(unittest.TestCase):
+    """DEC-2026-0056: the schema for retiring a pre-field Review handoff.
+
+    The schema carries the shape; the scanner carries the checksums and the
+    same-lineage and approved-resolution predicates. A record can be perfectly
+    well formed and still describe evidence that does not hold.
+    """
+
+    DECISION = json.loads(
+        (COMMON / "architect-decision.schema.json").read_text(encoding="utf-8")
+    )
+    REVIEWS = "books/adnd1e/phb/artifacts/reviews"
+    GUPS = "books/adnd1e/phb/artifacts/gup"
+
+    def base(self, **overrides):
+        document = {
+            "schema_version": "1.0",
+            "id": "DEC-2026-9201",
+            "status": "approved",
+            "ruleset_id": "adnd1e",
+            "book_id": "phb",
+            "constitution_version": "1.8",
+            "migration_required": False,
+            "handoff": {
+                "next_role": "none",
+                "readiness": "terminal",
+                "reason": "retire",
+                "blocking_ids": [],
+            },
+        }
+        document.update(overrides)
+        return document
+
+    def review(self, artifact_id):
+        return {
+            "id": artifact_id,
+            "path": f"{self.REVIEWS}/{artifact_id}.yaml",
+            "checksum": CHECKSUM,
+        }
+
+    def gup(self, artifact_id):
+        return {
+            "id": artifact_id,
+            "path": f"{self.GUPS}/{artifact_id}.yaml",
+            "checksum": CHECKSUM,
+        }
+
+    def retirement(self, **overrides):
+        record = {
+            "retired_review": self.review("REV-GUP-PKT-PHB-001-002-fixture-r01-r01"),
+            "resolution_gup": self.gup("GUP-PKT-PHB-001-002-fixture-r02"),
+            "resolution_review": self.review("REV-GUP-PKT-PHB-001-002-fixture-r02-r01"),
+            "disposition": "retired_historical",
+            "reason": "answered before provenance.review_id existed",
+        }
+        record.update(overrides)
+        return record
+
+    def errors_for(self, record):
+        return errors(self.DECISION, self.base(review_handoff_retirements=[record]))
+
+    def test_a_complete_record_is_valid(self):
+        self.assertEqual(self.errors_for(self.retirement()), [])
+
+    def test_each_of_the_three_artifacts_is_required(self):
+        for field in ("retired_review", "resolution_gup", "resolution_review"):
+            with self.subTest(field=field):
+                record = self.retirement()
+                del record[field]
+                self.assertTrue(self.errors_for(record))
+
+    def test_a_malformed_checksum_is_rejected(self):
+        record = self.retirement()
+        record["retired_review"]["checksum"] = "not-a-checksum"
+        self.assertTrue(self.errors_for(record))
+
+    def test_a_non_review_reference_is_rejected(self):
+        """The retired handoff is a Review. A GUP in that slot is not one."""
+        self.assertTrue(
+            self.errors_for(
+                self.retirement(
+                    retired_review=self.gup("GUP-PKT-PHB-001-002-fixture-r01")
+                )
+            )
+        )
+
+    def test_a_non_historical_disposition_is_rejected(self):
+        self.assertTrue(
+            self.errors_for(
+                self.retirement(disposition="consumed_by_integrated_successor")
+            )
+        )
+
+    def test_a_reasonless_record_is_rejected(self):
+        self.assertTrue(self.errors_for(self.retirement(reason="")))
+
+    def test_the_published_decision_validates(self):
+        path = REPO_ROOT / "rulesets/adnd1e/escalations/decisions/DEC-2026-0056.yaml"
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        self.assertEqual(errors(self.DECISION, document), [])
+
+    def test_the_published_decision_names_eight_retirements(self):
+        path = REPO_ROOT / "rulesets/adnd1e/escalations/decisions/DEC-2026-0056.yaml"
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        self.assertEqual(len(document["review_handoff_retirements"]), 8)
+
+class TestReviewCorrectionContract(unittest.TestCase):
+    """DEC-2026-0062: under Review contract 1.2 a correction is executable at publication.
+
+    The schema constrained which dispositions were legal but never what an
+    `approved_with_revision` had to carry, so a Review could rule "revise this
+    row" and name the field values under a key nothing executes. Forty-four
+    published rows do, thirty-seven of them under `exact_correction` -- one
+    character from the key the compiler reads -- and thirty-eight of those
+    corrections never reached a GUP. The revision compiled clean every time.
+
+    The three other spellings are refused rather than aliased. Reading them now
+    would turn old authoring mistakes into output changes long after the
+    Reviewer who wrote them could check the result.
+
+    Opt-in on 1.2, so every Review published before the ruling stays valid
+    history under the contract it was written to.
+    """
+
+    ALIASES = ("exact_correction", "corrected_fields", "corrected_row")
+
+    def review(self, **overrides):
+        return dict(REVIEW_BASE, **overrides)
+
+    def row(self, **overrides):
+        entry = {"ref": "M1", "disposition": "approved_with_revision"}
+        entry.update(overrides)
+        return entry
+
+    def under_12(self, row, **extra):
+        return self.review(review_contract_version="1.2", edge_decisions=[row], **extra)
+
+    # -- what 1.2 accepts ----------------------------------------------------
+
+    def test_a_row_local_mapping_is_accepted(self):
+        document = self.under_12(self.row(exact_corrections={"aspect": "to-hit rolls"}))
+        self.assertEqual(errors(REVIEW, document), [])
+
+    def test_the_mapping_shape_of_the_collection_is_accepted_too(self):
+        document = self.review(
+            review_contract_version="1.2",
+            row_decisions={"M1": self.row(exact_corrections={"aspect": "x"})},
+        )
+        self.assertEqual(errors(REVIEW, document), [])
+
+    def test_the_other_dispositions_need_no_correction(self):
+        for disposition in ("approved", "rejected", "architect_escalation"):
+            with self.subTest(disposition=disposition):
+                document = self.under_12(self.row(disposition=disposition))
+                self.assertEqual(errors(REVIEW, document), [])
+
+    def test_a_narrative_required_builder_revision_is_accepted(self):
+        """The top-level block keeps everything that is not a field value."""
+        document = self.under_12(
+            self.row(exact_corrections={"aspect": "x"}),
+            required_builder_revision={
+                "successor_gup_id": "GUP-PKT-PHB-999-999-fixture-r02",
+                "preservation_requirements": ["Preserve every other row."],
+            },
+        )
+        self.assertEqual(errors(REVIEW, document), [])
+
+    # -- what 1.2 refuses ----------------------------------------------------
+
+    def test_a_missing_correction_is_rejected(self):
+        self.assertNotEqual(errors(REVIEW, self.under_12(self.row())), [])
+
+    def test_an_empty_correction_is_rejected(self):
+        document = self.under_12(self.row(exact_corrections={}))
+        self.assertNotEqual(errors(REVIEW, document), [])
+
+    def test_a_non_mapping_correction_is_rejected(self):
+        for payload in ([{"aspect": "x"}], "aspect: x", 3):
+            with self.subTest(payload=payload):
+                document = self.under_12(self.row(exact_corrections=payload))
+                self.assertNotEqual(errors(REVIEW, document), [])
+
+    def test_every_alias_is_rejected(self):
+        for alias in self.ALIASES:
+            with self.subTest(alias=alias):
+                document = self.under_12(self.row(**{alias: {"aspect": "x"}}))
+                self.assertNotEqual(errors(REVIEW, document), [])
+
+    def test_an_alias_beside_a_valid_mapping_is_still_rejected(self):
+        """Two spellings on one row is the ambiguity the rule exists to remove."""
+        for alias in self.ALIASES:
+            with self.subTest(alias=alias):
+                document = self.under_12(
+                    self.row(exact_corrections={"aspect": "x"}, **{alias: {"aspect": "y"}})
+                )
+                self.assertNotEqual(errors(REVIEW, document), [])
+
+    def test_a_top_level_executable_payload_is_rejected(self):
+        document = self.under_12(
+            self.row(exact_corrections={"aspect": "x"}),
+            required_builder_revision={
+                "successor_gup_id": "GUP-PKT-PHB-999-999-fixture-r02",
+                "exact_corrections": [{"ref": "M1", "set": {"aspect": "x"}}],
+            },
+        )
+        self.assertNotEqual(errors(REVIEW, document), [])
+
+    def test_the_mapping_shape_is_checked_as_well(self):
+        """Checking one collection shape and passing the other is how one survives."""
+        document = self.review(
+            review_contract_version="1.2",
+            row_decisions={"M1": self.row(exact_correction={"aspect": "x"})},
+        )
+        self.assertNotEqual(errors(REVIEW, document), [])
+
+    def test_1_2_still_enforces_the_disposition_vocabulary(self):
+        document = self.under_12(
+            self.row(disposition="approved_but_excluded_from_bundle")
+        )
+        self.assertNotEqual(errors(REVIEW, document), [])
+
+    # -- the opt-in boundary -------------------------------------------------
+
+    def test_a_1_1_review_keeps_its_own_treatment(self):
+        for alias in self.ALIASES:
+            with self.subTest(alias=alias):
+                document = self.review(
+                    review_contract_version="1.1",
+                    edge_decisions=[self.row(**{alias: {"aspect": "x"}})],
+                )
+                self.assertEqual(errors(REVIEW, document), [])
+
+    def test_a_1_1_review_may_omit_a_correction_entirely(self):
+        document = self.review(
+            review_contract_version="1.1", edge_decisions=[self.row()]
+        )
+        self.assertEqual(errors(REVIEW, document), [])
+
+    def test_a_review_without_the_field_is_untouched(self):
+        document = self.review(edge_decisions=[self.row(corrected_fields={"aspect": "x"})])
+        self.assertEqual(errors(REVIEW, document), [])
+
+    def test_every_published_review_still_validates(self):
+        """The rule must not have made immutable history invalid.
+
+        This is the check that would catch a 1.2 clause written so broadly that
+        it reaches back over the corpus it was scoped to spare.
+        """
+        root = REPO_ROOT / "books"
+        for path in sorted(root.glob("*/*/artifacts/reviews/REV-*.yaml")):
+            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            if not isinstance(document, dict):
+                continue
+            with self.subTest(review=path.name):
+                self.assertEqual(errors(REVIEW, document), [], path.name)
+
+    def test_the_illusionist_successor_validates_under_1_2(self):
+        """DEC-2026-0062's named repair, checked by name."""
+        path = (
+            REPO_ROOT
+            / "books/adnd1e/phb/artifacts/reviews"
+            / "REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r03.yaml"
+        )
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        self.assertEqual(document.get("review_contract_version"), "1.2")
+        self.assertEqual(errors(REVIEW, document), [])
+        corrected = {
+            row["ref"]: row["exact_corrections"]
+            for row in document["edge_decisions"]
+            if row.get("disposition") == "approved_with_revision"
+        }
+        self.assertEqual(
+            corrected,
+            {
+                "M035": {"aspect": "to-hit rolls", "condition": "hate or rage"},
+                "M036": {"aspect": "saving throws", "condition": "hate"},
+                "M070": {
+                    "aspect": "activation",
+                    "condition": "depicting the alteration through Phantasmal Force",
+                },
+            },
+        )
+
+    def test_the_successor_names_the_rejecting_review_not_its_heir(self):
+        """The other half of the r02 defect, and the one a schema cannot catch."""
+        base = REPO_ROOT / "books/adnd1e/phb/artifacts/reviews"
+        successor = yaml.safe_load(
+            (base / "REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r03.yaml")
+            .read_text(encoding="utf-8")
+        )
+        inherited = successor["inherited_edge_decisions"]
+        named = inherited["from_review"]
+        self.assertEqual(named, "REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05")
+
+        source = yaml.safe_load((base / f"{named}.yaml").read_text(encoding="utf-8"))
+        rejected = {
+            row["ref"] for row in source["edge_decisions"]
+            if row.get("disposition") == "rejected"
+        }
+        self.assertEqual(rejected, set(inherited["preserved_rejected_refs"]))
+

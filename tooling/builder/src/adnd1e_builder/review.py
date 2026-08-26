@@ -37,6 +37,16 @@ _TOLERATED_CORRECTION_KEYS = frozenset(
     }
 )
 
+#: The Review contract that makes a row correction an executable contract.
+CORRECTION_CONTRACT_VERSION = "1.2"
+
+#: Spellings seen in published Reviews that are *not* aliases for
+#: `exact_corrections`. DEC-2026-0062 names them explicitly so the diagnostic can
+#: say which one it found: `exact_correction` differs from the working key by a
+#: single character, and reading the difference off an error message is much
+#: faster than reading it off a Review.
+NON_NORMATIVE_CORRECTION_KEYS = ("exact_correction", "corrected_fields", "corrected_row")
+
 APPROVED = "approved"
 APPROVED_WITH_REVISION = "approved_with_revision"
 REJECTED = "rejected"
@@ -283,6 +293,38 @@ def _parse_operation_records(records) -> BucketInstruction:
         obsolete_row=obsolete_row,
         detail=detail,
     )
+
+
+def _correction_defect(row: dict) -> str:
+    """Why a 1.2 `approved_with_revision` row cannot be executed, or `""`.
+
+    Only the row-local mapping counts. A correction that names no row cannot be
+    applied to one, and a mapping the Builder has to guess at is the thing this
+    rule exists to stop.
+    """
+    found = [key for key in NON_NORMATIVE_CORRECTION_KEYS if key in row]
+    if found:
+        return (
+            f"states its correction under "
+            + ", ".join(repr(key) for key in found)
+            + ", which DEC-2026-0062 makes non-normative rather than an alias; the "
+            "executable key is 'exact_corrections'"
+        )
+
+    raw = row.get("exact_corrections")
+    if raw is None:
+        return (
+            "records no 'exact_corrections' mapping, so there is no field value to "
+            "apply"
+        )
+    if not isinstance(raw, dict):
+        return (
+            f"records 'exact_corrections' as {type(raw).__name__} rather than a "
+            f"mapping of column to value"
+        )
+    if not raw:
+        return "records an empty 'exact_corrections' mapping"
+    return ""
 
 
 def _parse_bucket_instruction(corrections: dict, records=None) -> BucketInstruction:
@@ -813,6 +855,14 @@ class ReviewDirectives:
     #: does not apply -- the revision comes out looking clean while ignoring
     #: what the Reviewer asked for.
     unread_decision_keys: list[str] = field(default_factory=list)
+    #: The Review contract this artifact declares. Absent on every Review
+    #: published before the field existed, which is why the correction rule is
+    #: keyed on it rather than applied to everything.
+    contract_version: str = ""
+    #: DEC-2026-0062. Corrections a 1.2 Review states in a form the compiler
+    #: cannot execute. Never applied, never guessed at, and never dropped: the
+    #: compile refuses and names the row and the key.
+    unreadable_corrections: list[str] = field(default_factory=list)
     #: Rulings on a GUP-level field. Kept apart from `rows` because they name no
     #: row: the compiler surfaces them for the Builder to satisfy in how the
     #: patch is emitted, and never silently treats one as applied.
@@ -842,7 +892,17 @@ class ReviewDirectives:
             or document.get("status")
             or "",
             input_gur=str(input_gur or ""),
+            contract_version=str(document.get("review_contract_version") or "").strip(),
         )
+
+        if directives.contract_version == CORRECTION_CONTRACT_VERSION:
+            block = document.get("required_builder_revision")
+            if isinstance(block, dict) and "exact_corrections" in block:
+                directives.unreadable_corrections.append(
+                    "required_builder_revision states 'exact_corrections' at the top "
+                    "level, where it names no row; DEC-2026-0062 requires every "
+                    "executable value in the row's own mapping"
+                )
 
         for name, ruling in sorted((document.get(FIELD_DECISION_KEY) or {}).items()):
             if not isinstance(ruling, dict):
@@ -871,7 +931,19 @@ class ReviewDirectives:
             disposition = (row.get("disposition") or "").strip()
             if disposition not in DISPOSITIONS:
                 directives.unknown_dispositions.append(f"{ref}: {disposition!r}")
+            if (
+                directives.contract_version == CORRECTION_CONTRACT_VERSION
+                and disposition == APPROVED_WITH_REVISION
+            ):
+                defect = _correction_defect(row)
+                if defect:
+                    directives.unreadable_corrections.append(f"{ref} {defect}")
             raw = row.get("exact_corrections") or {}
+            if not isinstance(raw, dict):
+                # Already recorded as unexecutable above. Reading past it keeps
+                # the loader reporting every defect in the Review rather than
+                # stopping at the first one.
+                raw = {}
             corrections = {
                 str(k): ("" if v is None else str(v))
                 for k, v in raw.items()
@@ -975,8 +1047,13 @@ class ReviewDirectives:
             merged.overall_disposition = later.overall_disposition
             merged.packet_id = later.packet_id or merged.packet_id
             merged.input_gur = later.input_gur or merged.input_gur
+            merged.contract_version = later.contract_version or merged.contract_version
             merged.unknown_dispositions.extend(later.unknown_dispositions)
             merged.unread_decision_keys.extend(later.unread_decision_keys)
+            # A chain is refused if any Review in it carries an unexecutable
+            # correction. A later Review supersedes an earlier ruling; it does
+            # not make an earlier unreadable directive acceptable.
+            merged.unreadable_corrections.extend(later.unreadable_corrections)
             merged.field_directives.extend(later.field_directives)
             merged.superseded_reviews.append(merged.review_id)
             for ref, directive in later.rows.items():

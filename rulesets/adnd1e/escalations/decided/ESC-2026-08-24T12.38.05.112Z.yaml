@@ -1,0 +1,88 @@
+schema_version: '1.0'
+id: ESC-2026-08-24T12.38.05.112Z
+status: decided
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-015-015-cavaliers
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-24'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    A live Builder test applies the current node-retirement set to an immutable
+    historical cavalier GUP, and the queue scanner still reports the known
+    handoff-only-invalid r02 GUR as an error even though its valid r03 successor
+    is the sole common-schema exemption. Both are workflow-scope questions.
+  blocking_ids: []
+
+question: >-
+  How must current-state validation distinguish immutable historical artifacts
+  from current canonical state, and how must queue derivation represent the
+  one already-ratified r02 handoff-only GUR exemption?
+
+evidence:
+  source_excerpt: >-
+    Not applicable: this escalation changes workflow and validation scope, not
+    an interpretation of rulebook text.
+  historical_gup_test:
+    path: tooling/builder/tests/test_compiler.py
+    case: LiveCavalierRepointCase.test_no_emitted_row_names_a_retired_identity
+    effect: >-
+      It reads the immutable GUP-PKT-UA-014-016-cavalier-r01 CSV components and
+      compares their historical `training` endpoints with the current registry
+      retirement set.
+  current_state:
+    integration: INT-20260820-001
+    effect: >-
+      The Integration repointed the current canonical Cavalier rows from
+      `training` to `rule_training`; it did not and must not rewrite the
+      published GUP components.
+  handoff_exemption:
+    historical_gur:
+      id: GUR-PKT-UA-015-015-cavaliers-r02
+      path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r02.yaml
+      defects: [handoff.next_role null, handoff.readiness withdrawn]
+    successor_gur:
+      id: GUR-PKT-UA-015-015-cavaliers-r03
+      path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r03.yaml
+      effect: schema-valid terminal successor that directly supersedes r02.
+    existing_guards:
+      - test_the_exemption_is_reported_rather_than_silent
+      - test_the_exempt_artifact_is_invalid_only_in_its_handoff
+      - test_the_exempt_artifact_has_a_valid_successor
+      - test_a_successor_that_names_another_predecessor_is_not_exempt
+
+affected_canonical_ids:
+  retired: training
+  current: rule_training
+
+options_considered:
+  - Keep the LiveCavalier test and rewrite historical GUP components.
+  - Delete the historical test without a lifecycle rule.
+  - Treat immutable artifacts as provenance and test current identity only from
+    current state or fresh compilation; model the r02 exemption through an
+    exact checksummed Decision record.
+
+recommended_resolution: >-
+  Adopt the third option. It preserves publication immutability, makes the test
+  exercise a current-state boundary, and keeps the one r02 exception narrow and
+  auditable rather than hard-coding an artifact name or relaxing malformed-GUR
+  routing generally.
+
+expected_migration_impact:
+  canonical_data: none
+  registry: none
+  historical_artifacts: retained unchanged
+  tooling: Builder updates the test and scanner only.
+
+resolution:
+  decision_id: DEC-2026-0060
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0060.yaml
+  outcome: >-
+    Current-state tests no longer judge immutable published artifact IDs against
+    later registry retirement state. Queue derivation gains one exact,
+    checksummed historical-handoff-only GUR exemption for r02 and r03.

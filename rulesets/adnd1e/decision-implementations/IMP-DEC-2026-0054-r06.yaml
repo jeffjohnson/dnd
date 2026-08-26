@@ -1,0 +1,143 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0054-r06
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 6
+supersedes: IMP-DEC-2026-0054-r05
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0054
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0054.yaml
+  checksum: sha256:0dd54b57c8378b0a8c44150aca719421178f95946ae27d28b06bd9b585501e62
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:19301981edde1fd17f60a6e489439e2a46fac7f622dfca6d080c5e7eab8646da
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:1ef84af8cb98b4b63c8a6bd0802b8e9e29d2e73e6055067b914f519024c2c6b7
+- path: agents/builder/INSTRUCTIONS.md
+  checksum: sha256:5783c6c2170f99844039d298404364bbea0fcbbfb992bea787fac9599c90eb79
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:fcdf415f7f10d276790f3c73fb99e5588302ad7e30e195ba4457c36e08abd694
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:598f32ed04e613bdc7b2aab7e5691e7a806b0a2cf130718debd65b1fc15dc373
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0054.yaml
+  checksum: sha256:0dd54b57c8378b0a8c44150aca719421178f95946ae27d28b06bd9b585501e62
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-22T15.00.03.733Z.yaml
+  checksum: sha256:2abde47871fe09f86db85674af5d5d5bc623de92aaef90d3b514aae98341ce44
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: contracts/WORK_QUEUES.md declares Version 1.20, above the authorized minimum of 1.19. Rule
+    19 defines an active revision_required Review as owning a Review-handoff lineage separate from current
+    GUP leaf selection, consumed only when a later GUP is in the reviewed GUP's lineage and its provenance.review_id
+    exactly names the active Review ID, and states that exact Integration consumption of an Approved bundle
+    remains terminal. Tooling-proof rule 49 restates all three as obligations on queue derivation. Queue
+    derivation now implements rule 19 with no exception of any kind. Re-verified at current checksums
+    for this revision, which exists only because DEC-2026-0056 advanced the contracts this report pins;
+    the claim above is unchanged. Re-verified at current checksums for this revision, which exists only
+    because the DEC-2026-0057 lineage advanced the contracts this report pins; the claim above is unchanged.
+    Re-verified at current checksums for this revision, which exists only because DEC-2026-0060 edited
+    the scanner this report pins; the claim above is unchanged.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0054
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0054.yaml
+      checksum: sha256:0dd54b57c8378b0a8c44150aca719421178f95946ae27d28b06bd9b585501e62
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      minimum_version: '1.19'
+      observed_version: '1.22'
+      checksum: sha256:19301981edde1fd17f60a6e489439e2a46fac7f622dfca6d080c5e7eab8646da
+      anchors_present:
+      - revision-required Review handoff lineage
+      - exact provenance.review_id consumption
+      - exact Integration consumption
+- acceptance_test_index: 2
+  result: passed
+  evidence: contracts/ARTIFACT_LIFECYCLE.md declares Version 1.16, above the authorized minimum of 1.15.
+    Section 4 states that an active revision_required Review retains its own ready handoff when the reviewed
+    GUP gains a later revision, and that only a GUP in that reviewed GUP's lineage whose provenance.review_id
+    exactly names the active Review consumes the handoff. Re-verified at current checksums for this revision,
+    which exists only because DEC-2026-0056 advanced the contracts this report pins; the claim above is
+    unchanged. Re-verified at current checksums for this revision, which exists only because the DEC-2026-0057
+    lineage advanced the contracts this report pins; the claim above is unchanged. Re-verified at current
+    checksums for this revision, which exists only because DEC-2026-0060 edited the scanner this report
+    pins; the claim above is unchanged.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0054
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0054.yaml
+      checksum: sha256:0dd54b57c8378b0a8c44150aca719421178f95946ae27d28b06bd9b585501e62
+      authorized_acceptance_test_index: 2
+    authorized_acceptance_test_index: 2
+    contracts:
+    - path: contracts/ARTIFACT_LIFECYCLE.md
+      minimum_version: '1.15'
+      observed_version: '1.18'
+      checksum: sha256:1ef84af8cb98b4b63c8a6bd0802b8e9e29d2e73e6055067b914f519024c2c6b7
+      anchors_present:
+      - active revision-required Review handoff
+      - same-lineage GUP successor
+      - provenance.review_id
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'Live corpus: REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06 is active and revision_required;
+    GUP-...-r06 supersedes r05 while naming r05-r05 in provenance.review_id. The scanner produces exactly
+    one ready Builder job, BUILDER-REVISION on r05-r06. test_scan_agent_queues.RevisionReviewHandoffLineageCase
+    covers the consumption rule end to end, including test_only_exact_provenance_consumes, which drives
+    one fixture through all three successor states: no review_id, a different review_id, and the exact
+    review_id, and asserts the job persists for the first two and disappears only for the third. Re-verified
+    at current checksums for this revision, which exists only because DEC-2026-0056 advanced the contracts
+    this report pins; the claim above is unchanged. Re-verified at current checksums for this revision,
+    which exists only because the DEC-2026-0057 lineage advanced the contracts this report pins; the claim
+    above is unchanged. Re-verified at current checksums for this revision, which exists only because
+    DEC-2026-0060 edited the scanner this report pins; the claim above is unchanged.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'APPROVED-GUP-MIG-DEC-2026-0050-r04-r01 is consumed by INT-20260820-001-APPROVED-GUP-MIG-DEC-2026-0050-r04-r01.json
+    and appears nowhere in the scan: a grep of the full scanner output for ''0050'' returns zero lines,
+    and the Integrator queue holds only its two pre-existing magic-user Review jobs. The Review-handoff
+    lineage rule adds no Integrator work. Re-verified at current checksums for this revision, which exists
+    only because DEC-2026-0056 advanced the contracts this report pins; the claim above is unchanged.
+    Re-verified at current checksums for this revision, which exists only because the DEC-2026-0057 lineage
+    advanced the contracts this report pins; the claim above is unchanged. Re-verified at current checksums
+    for this revision, which exists only because DEC-2026-0060 edited the scanner this report pins; the
+    claim above is unchanged.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: This report pins DEC-2026-0054 by checksum, reports acceptance tests 1 through 4 as passed
+    against current evidence, and records the focused run of RevisionReviewHandoffLineageCase with MigrationLineageRetirementCase
+    (35 tests, OK) alongside the full tooling/common suite (691 tests, OK). Re-verified at current checksums
+    for this revision, which exists only because DEC-2026-0056 advanced the contracts this report pins;
+    the claim above is unchanged. Re-verified at current checksums for this revision, which exists only
+    because the DEC-2026-0057 lineage advanced the contracts this report pins; the claim above is unchanged.
+    Re-verified at current checksums for this revision, which exists only because DEC-2026-0060 edited
+    the scanner this report pins; the claim above is unchanged.
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Supersedes r05. Exact provenance.review_id consumption is now visible end to end: GUP-PKT-PHB-094-100-illusionist-spells-r07
+    is published under this rule, naming REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r06 exactly, and
+    that handoff has left the Builder queue as a result. Reissued at current checksums after DEC-2026-0060
+    edited tooling/common/scan_agent_queues.py. The implementation is unchanged and this report is pre-approval,
+    so its evidence is verified strictly rather than snapshotted.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0054-r06.validation.json
+validation_report_checksum: sha256:dbbd9fe1ae7e6d8f446019a2261379bf12f545ee8a83a257c531ada7953f4fcc
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 800 tests in 163.074s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.RevisionReviewHandoffLineageCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 17 tests in 0.229s OK

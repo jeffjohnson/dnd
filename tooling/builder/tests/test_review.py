@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import tempfile
 import hashlib
+import io
+import contextlib
 import unittest
 from pathlib import Path
 
@@ -16,6 +18,8 @@ from adnd1e_builder.compiler import Compiler
 from adnd1e_builder.duplicates import CanonicalEdges
 from adnd1e_builder.governance import Governance
 from adnd1e_builder.registry import NodeRegistry
+from adnd1e_builder import cli
+from adnd1e_builder import review as review_module
 from adnd1e_builder.review import ReviewDirectives
 
 REGISTRY_PATH = REPO_ROOT / "rulesets" / "adnd1e" / "registries" / "nodes.csv"
@@ -771,6 +775,28 @@ class LiveReviewSpellingCase(unittest.TestCase):
         root = Path(__file__).resolve().parents[3]
         return sorted((root / "books" / "adnd1e" / "phb" / "artifacts" / "reviews").glob("REV-*.yaml"))
 
+    @classmethod
+    def active_reviews(cls):
+        """The newest revision of each Review lineage.
+
+        A superseded Review is immutable history. Two of them state their
+        inherited rejections against the Review that inherited those rejections
+        rather than the one that made them, and the repair for that is exactly
+        what happened -- a successor. Requiring the whole archive to satisfy
+        today's rule would make it unsatisfiable by any permitted action, which
+        is the defect DEC-2026-0060 ruled on. What routes work is the leaf.
+        """
+        leaves: dict[str, tuple[int, Path]] = {}
+        for path in cls.reviews():
+            lineage, _, revision = path.stem.rpartition("-r")
+            try:
+                number = int(revision)
+            except ValueError:
+                lineage, number = path.stem, 0
+            if number >= leaves.get(lineage, (-1,))[0]:
+                leaves[lineage] = (number, path)
+        return [path for _, path in leaves.values()]
+
     def test_both_spellings_are_present_in_the_corpus(self):
         """If this stops being true the compatibility is still required."""
         spellings = set()
@@ -781,12 +807,35 @@ class LiveReviewSpellingCase(unittest.TestCase):
                     spellings.add(key)
         self.assertEqual(spellings, {"row_decisions", "edge_decisions"})
 
-    def test_no_published_review_states_rulings_the_loader_cannot_read(self):
+    def test_no_active_review_states_rulings_the_loader_cannot_read(self):
         offenders = {}
-        for path in self.reviews():
+        for path in self.active_reviews():
             directives = ReviewDirectives.load(path)
             if directives.unread_decision_keys:
                 offenders[path.name] = directives.unread_decision_keys
+        self.assertEqual(offenders, {})
+
+    def test_every_unreadable_review_in_the_archive_has_been_superseded(self):
+        """The exclusion above is a fact about the corpus, not an amnesty.
+
+        A Review the loader cannot read is only history if something replaced
+        it. If one ever appears with no successor, this fails rather than
+        letting the leaf-scoping quietly excuse it.
+        """
+        active = {path.name for path in self.active_reviews()}
+        for path in self.reviews():
+            if not ReviewDirectives.load(path).unread_decision_keys:
+                continue
+            with self.subTest(review=path.name):
+                self.assertNotIn(path.name, active)
+
+    def test_no_active_review_states_an_unexecutable_correction(self):
+        """DEC-2026-0062, corpus-wide."""
+        offenders = {}
+        for path in self.active_reviews():
+            directives = ReviewDirectives.load(path)
+            if directives.unreadable_corrections:
+                offenders[path.name] = directives.unreadable_corrections
         self.assertEqual(offenders, {})
 
     def test_every_review_that_states_rulings_loads_them(self):
@@ -1428,3 +1477,260 @@ class ChainSupersedesUnknownDispositionCase(unittest.TestCase):
         self.assertEqual(
             sum(1 for r in merged.rows.values() if r.disposition == "rejected"), 9
         )
+
+
+class CorrectionContractCase(unittest.TestCase):
+    """DEC-2026-0062: under Review contract 1.2 a correction is executable or refused.
+
+    The rule exists because the failure was silent. `exact_correction` is one
+    character from `exact_corrections`, the loader read only the second, and a
+    row whose correction it never found is indistinguishable from a row that
+    needed no change -- so thirty-eight required corrections across eight
+    Reviews compiled clean and never reached a GUP.
+
+    Reading the other spellings was the obvious fix and the wrong one: it would
+    turn old authoring mistakes into output changes nobody reviewed. So the
+    Builder refuses and names the key it found.
+    """
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def write(self, row, *, contract="1.2", extra=None, name="REV-GUP-PKT-PHB-001-002-fixture-r01-r01"):
+        document = {
+            "id": name,
+            "packet_id": "PKT-PHB-001-002-fixture",
+            "reviewed_gup": "GUP-PKT-PHB-001-002-fixture-r01",
+            "overall_disposition": "revision_required",
+            "edge_decisions": [row],
+        }
+        if contract is not None:
+            document["review_contract_version"] = contract
+        document.update(extra or {})
+        path = self.root / f"{name}.yaml"
+        path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+        return path
+
+    def load(self, *args, **kwargs):
+        return ReviewDirectives.load(self.write(*args, **kwargs))
+
+    def row(self, **overrides):
+        entry = {"ref": "M001", "disposition": "approved_with_revision"}
+        entry.update(overrides)
+        return entry
+
+    # -- the form that works --------------------------------------------------
+
+    def test_a_row_local_mapping_is_read(self):
+        directives = self.load(self.row(exact_corrections={"aspect": "to-hit rolls"}))
+        self.assertEqual(directives.unreadable_corrections, [])
+        self.assertEqual(directives.rows["M001"].corrections, {"aspect": "to-hit rolls"})
+
+    def test_several_fields_in_one_mapping(self):
+        directives = self.load(
+            self.row(exact_corrections={"aspect": "saving throws", "condition": "hate"})
+        )
+        self.assertEqual(directives.unreadable_corrections, [])
+        self.assertEqual(
+            directives.rows["M001"].corrections,
+            {"aspect": "saving throws", "condition": "hate"},
+        )
+
+    # -- the forms that are refused -------------------------------------------
+
+    def test_each_non_normative_key_is_refused_by_name(self):
+        for key in review_module.NON_NORMATIVE_CORRECTION_KEYS:
+            with self.subTest(key=key):
+                directives = self.load(self.row(**{key: {"aspect": "x"}}))
+                self.assertEqual(len(directives.unreadable_corrections), 1)
+                message = directives.unreadable_corrections[0]
+                self.assertIn("M001", message)
+                self.assertIn(repr(key), message)
+                self.assertIn("exact_corrections", message)
+
+    def test_the_near_miss_key_is_named_in_the_diagnostic(self):
+        """Thirty-seven of the forty-four rows differ by one character.
+
+        Reading that off an error message is the difference between a minute
+        and an afternoon, so the observed key is quoted rather than described.
+        """
+        directives = self.load(self.row(exact_correction={"aspect": "x"}))
+        message = directives.unreadable_corrections[0]
+        self.assertIn("'exact_correction'", message)
+        self.assertIn("'exact_corrections'", message)
+
+    def test_a_missing_mapping_is_refused(self):
+        directives = self.load(self.row())
+        self.assertEqual(len(directives.unreadable_corrections), 1)
+        self.assertIn("no 'exact_corrections'", directives.unreadable_corrections[0])
+
+    def test_an_empty_mapping_is_refused(self):
+        directives = self.load(self.row(exact_corrections={}))
+        self.assertIn("empty", directives.unreadable_corrections[0])
+
+    def test_a_non_mapping_is_refused(self):
+        directives = self.load(self.row(exact_corrections=["aspect: x"]))
+        self.assertIn("rather than a mapping", directives.unreadable_corrections[0])
+
+    def test_a_top_level_payload_is_refused(self):
+        directives = self.load(
+            self.row(exact_corrections={"aspect": "x"}),
+            extra={"required_builder_revision": {
+                "successor_gup_id": "GUP-PKT-PHB-001-002-fixture-r02",
+                "exact_corrections": [{"ref": "M001", "set": {"aspect": "x"}}],
+            }},
+        )
+        self.assertEqual(len(directives.unreadable_corrections), 1)
+        self.assertIn("names no row", directives.unreadable_corrections[0])
+
+    def test_a_top_level_block_without_a_payload_is_fine(self):
+        """Narrative and preservation requirements stay where they are."""
+        directives = self.load(
+            self.row(exact_corrections={"aspect": "x"}),
+            extra={"required_builder_revision": {
+                "successor_gup_id": "GUP-PKT-PHB-001-002-fixture-r02",
+                "preservation_requirements": ["Preserve every other row."],
+            }},
+        )
+        self.assertEqual(directives.unreadable_corrections, [])
+
+    # -- the rule is scoped to the contract that declares it ------------------
+
+    def test_a_1_1_review_is_not_reclassified(self):
+        for contract in ("1.1", None):
+            with self.subTest(contract=contract):
+                directives = self.load(
+                    self.row(corrected_fields={"aspect": "x"}), contract=contract
+                )
+                self.assertEqual(directives.unreadable_corrections, [])
+
+    def test_a_1_1_review_with_no_correction_at_all_is_not_reclassified(self):
+        directives = self.load(self.row(), contract="1.1")
+        self.assertEqual(directives.unreadable_corrections, [])
+
+    def test_other_dispositions_are_unaffected(self):
+        for disposition in ("approved", "rejected", "architect_escalation"):
+            with self.subTest(disposition=disposition):
+                directives = self.load(self.row(disposition=disposition))
+                self.assertEqual(directives.unreadable_corrections, [])
+
+    # -- chains ---------------------------------------------------------------
+
+    def test_a_chain_carries_the_refusal_from_any_member(self):
+        """A later Review supersedes a ruling; it does not launder an earlier one."""
+        first = self.write(
+            self.row(exact_correction={"aspect": "x"}),
+            name="REV-GUP-PKT-PHB-001-002-fixture-r01-r01",
+        )
+        second = self.write(
+            self.row(exact_corrections={"aspect": "y"}),
+            name="REV-GUP-PKT-PHB-001-002-fixture-r01-r02",
+        )
+        merged = ReviewDirectives.load_chain([first, second])
+        self.assertEqual(len(merged.unreadable_corrections), 1)
+        self.assertIn("'exact_correction'", merged.unreadable_corrections[0])
+
+    def test_a_clean_chain_stays_clean(self):
+        first = self.write(
+            self.row(exact_corrections={"aspect": "x"}),
+            name="REV-GUP-PKT-PHB-001-002-fixture-r01-r01",
+        )
+        second = self.write(
+            self.row(exact_corrections={"aspect": "y"}),
+            name="REV-GUP-PKT-PHB-001-002-fixture-r01-r02",
+        )
+        merged = ReviewDirectives.load_chain([first, second])
+        self.assertEqual(merged.unreadable_corrections, [])
+        self.assertEqual(merged.contract_version, "1.2")
+
+
+class CorrectionRefusalProducesNothingCase(unittest.TestCase):
+    """DEC-2026-0062 acceptance test 2: no GUP, no component, on refusal.
+
+    An error finding alone was not enough. `compile` writes its output and
+    reports `status=blocked`, so a run with errors still leaves five files on
+    disk and spends a revision number that create-only publication never
+    returns.
+    """
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.gup_dir = self.root / "books/adnd1e/phb/artifacts/gup"
+        self.gur_dir = self.root / "books/adnd1e/phb/artifacts/gur"
+        for directory in (self.gup_dir, self.gur_dir, self.root / "build/reports"):
+            directory.mkdir(parents=True, exist_ok=True)
+        registry = self.root / "rulesets/adnd1e/registries"
+        registry.mkdir(parents=True, exist_ok=True)
+        (registry / "nodes.csv").write_text(
+            "id,label,kind,degree,roles\ncbt_tohit,To-Hit Roll,cbt,1,\n",
+            encoding="utf-8",
+        )
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def review(self, row):
+        path = self.root / "REV-GUP-PKT-PHB-001-002-fixture-r01-r01.yaml"
+        path.write_text(
+            yaml.safe_dump({
+                "id": "REV-GUP-PKT-PHB-001-002-fixture-r01-r01",
+                "review_contract_version": "1.2",
+                "packet_id": "PKT-PHB-001-002-fixture",
+                "reviewed_gup": "GUP-PKT-PHB-001-002-fixture-r01",
+                "overall_disposition": "revision_required",
+                "edge_decisions": [row],
+            }, sort_keys=False),
+            encoding="utf-8",
+        )
+        return path
+
+    def gur(self):
+        path = self.gur_dir / "GUR-PKT-PHB-001-002-fixture-r01.yaml"
+        path.write_text(
+            yaml.safe_dump({
+                "id": "GUR-PKT-PHB-001-002-fixture-r01",
+                "packet_id": "PKT-PKT-PHB-001-002-fixture",
+                "revision": 1,
+            }, sort_keys=False),
+            encoding="utf-8",
+        )
+        return path
+
+    def test_the_cli_refuses_and_writes_nothing(self):
+        review = self.review(
+            {"ref": "M001", "disposition": "approved_with_revision",
+             "exact_correction": {"aspect": "x"}}
+        )
+        gur = self.gur()
+        before = sorted(p.name for p in self.gup_dir.iterdir())
+        code = cli.main([
+            "compile", str(gur), "--repo-root", str(self.root),
+            "--review", str(review), "--revision", "2", "--skip-tests",
+        ])
+        self.assertEqual(code, 2)
+        self.assertEqual(sorted(p.name for p in self.gup_dir.iterdir()), before)
+        self.assertEqual(list((self.root / "build/reports").iterdir()), [])
+
+    def test_the_refusal_names_the_row_and_both_keys(self):
+        review = self.review(
+            {"ref": "M001", "disposition": "approved_with_revision",
+             "corrected_fields": {"aspect": "x"}}
+        )
+        gur = self.gur()
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            cli.main([
+                "compile", str(gur), "--repo-root", str(self.root),
+                "--review", str(review), "--revision", "2", "--skip-tests",
+            ])
+        message = stderr.getvalue()
+        self.assertIn("M001", message)
+        self.assertIn("'corrected_fields'", message)
+        self.assertIn("exact_corrections", message)
+        self.assertIn("no GUP was produced", message)
+

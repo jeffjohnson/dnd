@@ -1,0 +1,78 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0060-r01-r02
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: REV-IMP-DEC-2026-0060-r01-r01
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    DEC-2026-0061 confirms the retained report's standard unittest success
+    summary is valid. All DEC-2026-0060 acceptance tests are independently
+    verified without a Builder reissue.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0060-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0060-r01.yaml
+  checksum: sha256:759b95a3690f227151041870c53ade084458cd01d933679cda9319286bff41c3
+decision_input:
+  id: DEC-2026-0060
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0060.yaml
+  checksum: sha256:cc0af2c6bb2236d415c2ee065370c1c39c2f805ae6e1e85dd69ac755f9c25139
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      Current compiler coverage verifies endpoint repointing without comparing
+      immutable published GUP content against later registry retirements.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      The exact r02 and r03 historical-handoff exemption remains informational,
+      while missing, stale, indirect, and invalid-record cases retain normal
+      malformed-GUR errors and routing.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      Existing terminal, ready, missing-handoff, malformed leaf, and malformed
+      non-leaf GUR cases remain covered outside the one checksummed exemption.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      IMP-DEC-2026-0060-r01 pins DEC-2026-0060 exactly and its original
+      standard unittest success summaries are valid under DEC-2026-0061. No
+      successor implementation report is required.
+independent_validation:
+  passed: true
+  commands:
+    - command: >-
+        SHA-256 comparison of the retained report and DEC-2026-0060.
+      exit_code: 0
+      result: passed
+      summary: Exact reviewed-report and Decision provenance matched.
+    - command: >-
+        [cwd tooling/common] PYTHONPATH=.;tests python -m unittest
+        test_scan_agent_queues.GurHandoffHistoricalExemptionCase
+        test_scan_agent_queues.LiveGurHandoffExemptionCase
+        test_common_schemas.TestLegacyArtifactsStayValid
+        test_implementation_evidence -q
+      exit_code: 0
+      result: passed
+      summary: Ran 58 tests in 40.213s OK
+    - command: >-
+        [cwd tooling/common] PYTHONPATH=.;tests python -m unittest discover
+        -s tests -p test_*.py
+      exit_code: 0
+      result: passed
+      summary: Ran 860 tests in 188.210s OK
+    - command: >-
+        [cwd tooling/builder] PYTHONPATH=src python -m unittest discover
+        -s tests -p test_*.py
+      exit_code: 0
+      result: passed
+      summary: Ran 655 tests in 103.879s OK (skipped=38)
+overall_disposition: approved

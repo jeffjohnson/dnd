@@ -1,0 +1,150 @@
+schema_version: '1.0'
+id: ESC-2026-08-26T11.24.32.014Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-064-079-magic-user-spells-1-4
+constitution_version: '1.8'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-08-26'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: Two active Reviews hand the Integrator a named check rather than a bundle. The check
+    has been run and it passes, but no artifact kind can record that outcome, so the result cannot
+    enter repository memory and neither Review can be discharged.
+  blocking_ids: []
+originating_artifacts:
+  reviews:
+    - id: REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06.yaml
+    - id: REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05.yaml
+trigger: 'Integrator queue check. Both INTEGRATOR-REVISION items assign a five-field batch preflight
+  whose stated precondition is now fully satisfied: the Illusionist packet published its successor
+  without the duplicate copies and it has been integrated as INT-20260825-001.'
+question: Which artifact records the outcome of an Integrator-assigned check that is neither an
+  integration nor a rejection, and does a passing result discharge the Integrator handoff on its
+  own, or must the Reviewer publish approving successors first?
+the_completed_check:
+  assigned_by:
+  - id: REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06.yaml
+    checksum: sha256:290057b4289ddf1a5fd8e801c12c7621c970d8a2dd46e976c640fb43c8f4d5cc
+    status: revision_required
+    approval_ready: false
+    approved_bundle_emitted: null
+    handoff: next_role integrator, readiness blocked
+    instruction: The eight shared assertions are retained in this Magic-User packet; PHB's Illusionist
+      packet must first publish the required successor without its duplicate copies, after which
+      Integrator can re-run the exact five-field batch preflight.
+  - id: REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05.yaml
+    checksum: sha256:6b8fa7f100d16345790c609840c00c776896aeda056bdf2c7b3d261aefe64911
+    status: revision_required
+    approval_ready: false
+    approved_bundle_emitted: null
+    handoff: next_role integrator, readiness blocked
+  precondition_now_satisfied_by:
+    integration_id: INT-20260825-001
+    bundle_id: APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01
+    manifest: rulesets/adnd1e/manifests/INT-20260825-001.json
+    manifest_checksum: sha256:6db7a7691f95b29a54f2562b4848d0159688b5330151c3e366aa7ecf5231e046
+    note: The nine inherited duplicate Magic-User assertions are rejected on the Illusionist side
+      and absent from the integrated component. Canonical stands at 4612 edges, 1275 nodes and
+      1295 registry rows with 1691 findings, none introduced by that batch.
+  method: 'assertion_key() from tooling/integrator/src/adnd1e_integrator/invariants.py, the five-field
+    key of DEC-2026-0020 and constitution 5.1 with ALTERNATIVE_TO endpoint normalization. The
+    key was imported, never reconstructed: INT-20260819-001 was withdrawn precisely because a
+    hand-rolled three-field comparison produced twelve false duplicate claims.'
+  result:
+    magic_user_1_4:
+      component: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03.edges.csv
+      checksum: sha256:5675effbe5f161a01e324aa2b4661ed4bb577a1ca9c3a6adee7014b899ebace2
+      rows: 231
+      clashes_against_canonical: 0
+      within_component_duplicates: 0
+    magic_user_5_9:
+      component: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02.edges.csv
+      checksum: sha256:00901a6f4e94ce2d23a0614fba0444b8183ff54bb32f105cf605c93aff69142a
+      rows: 203
+      clashes_against_canonical: 0
+      within_component_duplicates: 0
+    cross_component_clashes: 0
+    canonical_rows_compared: 4612
+    verdict: The surviving cross-bundle identity finding recorded in INT-20260819-002 no longer
+      holds against current canonical.
+  corroborating_evidence: Independently, integrating the Illusionist bundle absorbed ten node
+    identities the two Magic-User bundles also declare, among them spell_maze, spell_ventriloquism
+    and spell_detect_invisibility. Absorption occurs only on exact label and kind agreement; a
+    mismatch aborts the batch under invariant 4. The batch completed, so the shared identities
+    agree across the packets.
+why_it_cannot_be_recorded:
+- schemas/common/ defines exactly two Integrator record kinds. integration-record.schema.json
+  describes an integration that happened; none did, because neither Review emits an Approved bundle.
+- integration-rejection.schema.json fixes status to the constant rejected and requires a nonempty
+  rejected_bundles array. A passing preflight rejects nothing, so using it would enter a false
+  statement into immutable history. The Integrator is required to write immutable records, which
+  makes publishing a knowingly inaccurate one the worse of the two failures.
+- 'Superseding INT-20260819-002 to withdraw its surviving finding was considered and rejected
+  for the same reason: the superseding record would itself have to declare status rejected while
+  asserting that nothing is rejected. The mechanism exists, since rejected_bundle_ids honours
+  supersedes, but the schema can express correction of a rejection, not resolution of one.'
+- Withdrawing the rejection would not release the bundles in any case. Both Review lineage leaves
+  are revision_required, so withdrawn_review_ids keeps APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r03
+  and APPROVED-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r02 out of the ready queue on a second,
+  independent ground.
+why_it_matters: 231 and 203 approved rows stay out of canonical. The mechanical blocker these
+  two Reviews named is gone and provably gone, but the proof has nowhere to live, so the Reviewer
+  has no repository-visible basis on which to publish the approving successors that would release
+  them. Chat history is not provenance.
+options_considered:
+- Define a third Integrator record kind, a preflight or batch-check report, declaring a status
+  other than rejected and naming the inputs, method, key and per-component results. This is the
+  option the Integrator would choose, but creating an artifact kind is governance authorship rather
+  than integration.
+- Rule that a passing Integrator check needs no artifact and is discharged by the Reviewer re-running
+  it. Coherent, but it duplicates the work in the role the current handoff routes away from.
+- Rule that a Review must not hand the Integrator a check without a bundle, and that this class
+  of precondition belongs in the Reviewer's own independent validation. That retires the INTEGRATOR-REVISION
+  shape for this case entirely.
+what_is_not_in_question:
+- The preflight result itself. It is reproducible from the checksummed components and canonical
+  named above using the repository's own assertion_key().
+- INT-20260825-001. It validated clean, introduced no findings, and the full Integrator suite
+  passes 163 of 163 with the common suites at 295 of 295.
+- The Reviewer's ownership decision. Which packet owns the eight shared assertions was settled
+  in the Reviews and is not reopened here.
+affected_canonical_ids: []
+migration_impact:
+  canonical_data_change: false
+  registry_change: false
+  note: Nothing in canonical is wrong. This escalation concerns the recordability of a completed
+    check, not integrated state.
+systemic_finding: 'Separately and mechanically: tooling/common/scan_agent_queues.py emits every
+  revision_required Review as state ready routed by handoff.next_role, without consulting handoff.readiness.
+  It computes review_blockers and review_unresolved immediately above and uses them only in the
+  following architect_escalation branch. Both Reviews here declare readiness blocked with an unresolved
+  blocking_id, and the scanner still reports Integrator Ready 2, Blocked 0. WORK_QUEUES states
+  that readiness blocked produces blocked state, never ready state, and that ReadyCount counts
+  ready jobs only. This misroutes work for any role, not only the Integrator. Queue-scanner implementation
+  is Builder-owned per DEC-2026-0012 as recorded in DEC-2026-0018, so the Integrator has not touched
+  it.'
+governance_impact: 'Same family as DEC-2026-0043 and DEC-2026-0051: an artifact state no role
+  can discharge. There the gaps were an Integrator rejection paired with an approved Review, and
+  a Review disposition outside every vocabulary. Here it is a completed Integrator obligation
+  with no output artifact. A durable fix would require that any handoff assigning a role a non-integration
+  check also name the artifact kind that records its outcome.'
+blocking: true
+
+resolution:
+  decision_id: DEC-2026-0063
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0063.yaml
+  outcome: >-
+    A standalone passing preflight is recorded in the Reviewer's approving
+    successor, not in a new Integrator artifact. The two legacy Integrator
+    handoffs are replaced by this Decision; Reviewer publishes approving
+    successors and ordinary Approved bundles, while Builder corrects blocked
+    Review queue derivation.

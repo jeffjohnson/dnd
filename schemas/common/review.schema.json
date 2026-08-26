@@ -27,6 +27,120 @@
           }
         }
       }
+    },
+    {
+      "$comment": "DEC-2026-0062: Review-contract 1.2 turns an approved_with_revision directive into an executable, row-local contract. The earlier spellings are deliberately not aliases: treating them as equivalent would convert historic authoring defects into unreviewed output changes. The top-level required_builder_revision block can describe publication and preservation, but cannot carry an executable row correction.",
+      "if": {
+        "properties": {
+          "review_contract_version": {
+            "enum": [
+              "1.2",
+              "1.3"
+            ]
+          }
+        },
+        "required": [
+          "review_contract_version"
+        ]
+      },
+      "then": {
+        "allOf": [
+          {
+            "properties": {
+              "edge_decisions": {
+                "$ref": "#/$defs/correctionDecisionCollection"
+              },
+              "row_decisions": {
+                "$ref": "#/$defs/correctionDecisionCollection"
+              }
+            }
+          },
+          {
+            "not": {
+              "properties": {
+                "required_builder_revision": {
+                  "type": "object",
+                  "required": [
+                    "exact_corrections"
+                  ]
+                }
+              },
+              "required": [
+                "required_builder_revision"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$comment": "DEC-2026-0063: Integrator records only completed transactions or rejected bundles. A revision-required Review cannot route Integrator a pass/fail check with no record kind; the Reviewer must place passing check evidence in its approving successor. Both status fields are checked because queue derivation reads overall_disposition when present.",
+      "if": {
+        "properties": {
+          "review_contract_version": {
+            "const": "1.3"
+          }
+        },
+        "required": [
+          "review_contract_version"
+        ]
+      },
+      "then": {
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "revision_required"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "properties": {
+                "handoff": {
+                  "type": "object",
+                  "properties": {
+                    "next_role": {
+                      "not": {
+                        "const": "integrator"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "overall_disposition": {
+                  "const": "revision_required"
+                }
+              },
+              "required": [
+                "overall_disposition"
+              ]
+            },
+            "then": {
+              "properties": {
+                "handoff": {
+                  "type": "object",
+                  "properties": {
+                    "next_role": {
+                      "not": {
+                        "const": "integrator"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
     }
   ],
   "type": "object",
@@ -66,6 +180,56 @@
         }
       }
     },
+    "correctionRowDecision": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/rowDecision"
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "disposition": {
+                "const": "approved_with_revision"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "required": [
+              "exact_corrections"
+            ],
+            "properties": {
+              "exact_corrections": {
+                "type": "object",
+                "minProperties": 1
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "exact_correction"
+                  ]
+                },
+                {
+                  "required": [
+                    "corrected_fields"
+                  ]
+                },
+                {
+                  "required": [
+                    "corrected_row"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
     "decisionCollection": {
       "$comment": "Both published shapes are covered on purpose: a list of per-row objects, and a mapping whose values are those objects. Checking one shape and silently passing the other is how an invalid value survives a validator.",
       "allOf": [
@@ -86,6 +250,31 @@
           "then": {
             "additionalProperties": {
               "$ref": "#/$defs/rowDecision"
+            }
+          }
+        }
+      ]
+    },
+    "correctionDecisionCollection": {
+      "$comment": "The same list-or-mapping forms as decisionCollection, with the 1.2 correction payload rule on every actual disposition-bearing row.",
+      "allOf": [
+        {
+          "if": {
+            "type": "array"
+          },
+          "then": {
+            "items": {
+              "$ref": "#/$defs/correctionRowDecision"
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object"
+          },
+          "then": {
+            "additionalProperties": {
+              "$ref": "#/$defs/correctionRowDecision"
             }
           }
         }

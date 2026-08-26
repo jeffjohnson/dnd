@@ -25,6 +25,7 @@ from adnd1e_builder.decision_migration import (  # noqa: E402
     to_gup,
     validation_report,
 )
+from adnd1e_builder import cli  # noqa: E402
 from adnd1e_builder.duplicates import CanonicalEdges, assertion_key  # noqa: E402
 from adnd1e_builder.registry import NodeRegistry  # noqa: E402
 from adnd1e_builder.vocab import COLUMNS as COLUMNS_FOR_TEST  # noqa: E402
@@ -2525,3 +2526,137 @@ class LiveAbilityMergeV2Case(MigrationCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+class MigrationPublicationPreflightCase(unittest.TestCase):
+    """DEC-2026-0053 AT3 for the two migration publication entrypoints.
+
+    Both write through the CLI rather than through emit.write_all, so the
+    ordinary GUP preflight does not cover them. plan-decision-migration is the
+    sharper case: it writes the validation report first, because the GUP pins it
+    by checksum, so a per-file check would destroy the report of a published
+    revision before ever looking at the GUP.
+    """
+
+    HEADER = (
+        "source_id,source_label,edge_type,target_id,target_label,aspect,condition,"
+        "polarity,polarity_basis,book,page,section,evidence,pass,status,"
+        "supersession_basis,general_rule_id,review_flag"
+    )
+    ROW = (
+        "exp_level,Level,MODIFIES,spell_old,Old Name,adds to the chance,,neutral,"
+        "unset,DMG,44,SPELL EXPLANATIONS,explicit_rule,page-sweep,core,,,"
+    )
+
+    def setUp(self):
+        import tempfile
+
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        ruleset = self.root / "rulesets" / "adnd1e"
+        (ruleset / "canonical").mkdir(parents=True)
+        (ruleset / "registries").mkdir(parents=True)
+        (ruleset / "escalations" / "decisions").mkdir(parents=True)
+        (ruleset / "canonical" / "edges_master.csv").write_text(
+            self.HEADER + "\n" + self.ROW + "\n", encoding="utf-8", newline="\n"
+        )
+        (ruleset / "registries" / "nodes.csv").write_text(
+            "id,label,kind,degree,roles\n"
+            "exp_level,Level,rule,1,\n"
+            "spell_old,Old Name,spell,1,\n"
+            "spell_new,New Name,spell,0,\n",
+            encoding="utf-8", newline="\n",
+        )
+        self.decisions = ruleset / "escalations" / "decisions"
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def write_decision(self, name, document):
+        path = self.decisions / f"{name}.yaml"
+        path.write_text(
+            yaml.safe_dump(
+                {"id": name, "status": "approved", "ruleset_id": "adnd1e",
+                 "migration_required": True, **document},
+                sort_keys=False,
+            ),
+            encoding="utf-8",
+        )
+        return path
+
+    def decision_migration_argv(self, out):
+        decision = self.write_decision(
+            "DEC-2026-9001",
+            {
+                "canonical_migration": {
+                    "endpoint_repoints": [
+                        {"canonical_row": 2, "field": "target_id",
+                         "from": "spell_old", "to": "spell_new", "label": "New Name"}
+                    ]
+                }
+            },
+        )
+        return [
+            "plan-decision-migration", str(decision),
+            "--repo-root", str(self.root),
+            "--out", str(out),
+            "--gup-id", "GUP-MIG-DEC-2026-9001-r01",
+            "--skip-tests",
+        ]
+
+    def identity_merge_argv(self, out):
+        self.write_decision(
+            "DEC-2026-9002",
+            {"identity_merges": [
+                {"survivor_id": "spell_new", "retired_id": "spell_old",
+                 "label": "New Name"}
+            ]},
+        )
+        return [
+            "plan-migration",
+            "--repo-root", str(self.root),
+            "--out", str(out),
+            "--skip-tests",
+        ]
+
+    def test_plan_decision_migration_refuses_an_existing_gup(self):
+        out = self.root / "out" / "GUP-MIG-DEC-2026-9001-r01.yaml"
+        argv = self.decision_migration_argv(out)
+        self.assertEqual(cli.main(argv), 0)
+        before = out.read_bytes()
+        self.assertEqual(cli.main(argv), 2)
+        self.assertEqual(out.read_bytes(), before)
+
+    def test_plan_decision_migration_refuses_an_existing_report(self):
+        """The report is the output a per-file check would have already lost."""
+        out = self.root / "out" / "GUP-MIG-DEC-2026-9001-r01.yaml"
+        argv = self.decision_migration_argv(out)
+        self.assertEqual(cli.main(argv), 0)
+        report = self.root / "build" / "reports" / "GUP-MIG-DEC-2026-9001-r01.validation.json"
+        self.assertTrue(report.is_file())
+        before = report.read_bytes()
+        out.unlink()
+        self.assertEqual(cli.main(argv), 2)
+        self.assertEqual(report.read_bytes(), before)
+        self.assertFalse(out.exists())
+
+    def test_plan_migration_refuses_an_existing_gup(self):
+        out = self.root / "out" / "identity-merge.yaml"
+        argv = self.identity_merge_argv(out)
+        self.assertEqual(cli.main(argv), 0)
+        before = out.read_bytes()
+        self.assertEqual(cli.main(argv), 2)
+        self.assertEqual(out.read_bytes(), before)
+
+    def test_no_publication_entrypoint_offers_an_overwrite_flag(self):
+        import contextlib
+        import io
+
+        for command in ("compile", "plan-migration", "plan-decision-migration"):
+            with self.subTest(command=command):
+                captured = io.StringIO()
+                with contextlib.redirect_stdout(captured), self.assertRaises(SystemExit):
+                    cli.main([command, "--help"])
+                self.assertNotIn("--allow-overwrite", captured.getvalue())
+                self.assertNotIn("--force", captured.getvalue())

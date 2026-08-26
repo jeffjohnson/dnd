@@ -1,0 +1,31 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0045-r10-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff: {next_role: none, readiness: terminal, reason: All DEC-2026-0045 implementation acceptance tests are independently verified at the current authorized contract versions., blocking_ids: []}
+reviewed_by: reviewer
+reviewed_implementation: {id: IMP-DEC-2026-0045-r10, path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0045-r10.yaml, checksum: sha256:1dfea447e7faf5d38aed7e2e68da198fb2b35c9277181042740802a84e50aaf8}
+decision_input: {id: DEC-2026-0045, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0045.yaml, checksum: sha256:25dedbb5ca47f8b3084a9b1546610fa66c8f8da33923c9cdd1b9f2f059aee341}
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: DEC-2026-0048 exactly authorizes DEC-2026-0045 test 1 as current minimum-version evidence; both contracts exceed their floors and retain every named anchor.
+    verified_versioned_contract_content:
+      authority: {id: DEC-2026-0048, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml, checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698, authorized_acceptance_test_index: 1}
+      authorized_acceptance_test_index: 1
+      contracts:
+        - {path: contracts/WORK_QUEUES.md, checksum: sha256:259b49a6998382d440f57c7307f266cc8b1af43b01fa469992aa30fd5d2dab72, observed_version: '1.21', minimum_version: '1.12', anchors_present: [checksummed Integration rejection remediation, Builder-or-Integrator direct non-migration implementation ownership, exact_diff ownership planning for version-1.1 Decisions]}
+        - {path: contracts/ARTIFACT_LIFECYCLE.md, checksum: sha256:0d15ec4fe6d5fb0a5f6c43cd48a5d5c4ecb405b6af4d6b3995873cb07ef29956, observed_version: '1.17', minimum_version: '1.10', anchors_present: [immutable checksummed Integration rejection records, Builder-or-Integrator direct non-migration implementation ownership]}
+  - {acceptance_test_index: 2, disposition: verified, evidence: Current Integrator and Reviewer instructions retain the exact immutable rejection-record and remediation obligations.}
+  - {acceptance_test_index: 3, disposition: verified, evidence: Exact-diff ownership schema and scanner checks accept complete version-1.1 ownership plans.}
+  - {acceptance_test_index: 4, disposition: verified, evidence: Focused ownership tests cover each named invalid ownership shape while preserving pre-version history.}
+independent_validation:
+  passed: true
+  commands:
+    - {command: 'SHA-256 comparison of report, Decision, validation report, and every listed implementation file', exit_code: 0, result: passed, summary: Every listed checksum matched current bytes.}
+    - {command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest discover -s tests -p test_*.py', exit_code: 0, result: passed, summary: Ran 722 tests; all passed.}
+overall_disposition: approved

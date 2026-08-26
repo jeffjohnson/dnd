@@ -1165,28 +1165,82 @@ class LiveCavalierRepointCase(unittest.TestCase):
         self.assertEqual(report["summary"]["escalations"], 0)
         self.assertEqual(report["summary"]["edges_rejected"], 0)
 
-    def test_no_emitted_row_names_a_retired_identity(self):
-        import csv
+    # DEC-2026-0060 removed a third test here, which read this published GUP's
+    # frozen component CSVs and required that none of them named an identity
+    # retired *today*. GUP-PKT-UA-014-016-cavalier-r03 was approved and
+    # integrated on 2026-08-19; GUP-MIG-DEC-2026-0050-r04 integrated on 08-20 and
+    # retired `training`. Those rows were correct when written, and a published
+    # artifact is never updated to match a later migration -- so the assertion
+    # could not be satisfied by any action any role was permitted to take, and it
+    # held the entire Builder suite red for days.
+    #
+    # A current-state identity test belongs on current state. That is
+    # `FreshCompileNamesNoRetiredIdentityCase` below, which compiles against the
+    # live registry instead of reading history.
 
-        if not self.GUP.is_file():  # pragma: no cover
-            self.skipTest("the cavalier GUP has not been compiled")
+
+
+class FreshCompileNamesNoRetiredIdentityCase(CompilerCase):
+    """Repoint behaviour, proved against current state instead of history.
+
+    This is the half of the removed test that was always sound: a patch compiled
+    *now* must not emit an endpoint the registry has retired, because the
+    compiler either repoints it onto the survivor or blocks. What it must not do
+    is judge an artifact published before the retirement existed.
+    """
+
+    def retired_ids(self):
         registry = NodeRegistry.load(REGISTRY_PATH)
-        retired = set(registry.retirements)
-        if not retired:
-            self.skipTest("no integration has retired a node yet")
-        offenders = []
-        for suffix in ("edges", "pending", "blocked"):
-            path = self.GUP.with_suffix("").with_suffix(f".{suffix}.csv")
-            path = self.GUP.parent / f"{self.GUP.stem}.{suffix}.csv"
-            if not path.is_file():
-                continue
-            with path.open(encoding="utf-8", newline="") as handle:
-                for row in csv.DictReader(handle):
-                    for field in ("source_id", "target_id"):
-                        if row.get(field) in retired:
-                            offenders.append((path.name, row.get("ref"), row.get(field)))
+        return set(registry.retirements)
+
+    def test_the_live_registry_actually_records_retirements(self):
+        """Without this the case below could pass by having nothing to check."""
+        self.assertTrue(self.retired_ids())
+
+    def test_a_freshly_compiled_patch_emits_no_retired_identity(self):
+        retired = self.retired_ids()
+        result = self.compile_gur(candidate_edges=[dict(BASE_EDGE)])
+        emitted = [
+            row
+            for bucket in (
+                result.additions,
+                result.batch_satisfiable_additions,
+                result.blocked_additions,
+            )
+            for row in bucket
+        ]
+        offenders = [
+            (row.get("ref"), row[field])
+            for row in emitted
+            for field in ("source_id", "target_id")
+            if row.get(field) in retired
+        ]
         self.assertEqual(offenders, [])
 
+    def test_a_row_naming_a_retired_id_is_repointed_or_blocked_never_emitted(self):
+        """The behaviour itself, driven rather than observed.
+
+        A GUR that names a retired identity must not produce a row carrying it.
+        Whether the compiler repoints onto the survivor or refuses the row is a
+        separate rule; what this holds is that the retired ID never reaches a
+        component.
+        """
+        retired = sorted(self.retired_ids())
+        if not retired:  # pragma: no cover - guarded by the case above
+            self.skipTest("no integration has retired a node yet")
+        edge = dict(BASE_EDGE)
+        edge["target_id"] = retired[0]
+        result = self.compile_gur(candidate_edges=[edge])
+        emitted = [
+            row
+            for bucket in (
+                result.additions,
+                result.batch_satisfiable_additions,
+                result.blocked_additions,
+            )
+            for row in bucket
+        ]
+        self.assertNotIn(retired[0], [row["target_id"] for row in emitted])
 
 
 class ReviewOwnedDefectRoutingCase(CompilerCase):
@@ -1943,3 +1997,99 @@ class LivePsionicsBlockedCase(CompilerCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+class TestPublicationPreflightCoversEveryOutput(CompilerCase):
+    """DEC-2026-0053 AT3: the check is over the whole output set, before any write.
+
+    A per-file check is not the same rule. Publication writes up to five files,
+    and the report is written after the YAML, so a per-file check would already
+    have clobbered one output by the time it noticed another was in the way.
+    That partial-write shape is what destroyed GUP-MIG-DEC-2026-0050-r01.
+    """
+
+    def outputs(self, gup_dir, reports, result):
+        return {
+            "yaml": gup_dir / f"{result.gup_id}.yaml",
+            "edges": gup_dir / f"{result.gup_id}.edges.csv",
+            "report": reports / f"{result.gup_id}.validation.json",
+            "pending": gup_dir / f"{result.gup_id}.pending.csv",
+            "blocked": gup_dir / f"{result.gup_id}.blocked.csv",
+        }
+
+    def refuses_when_present(self, which):
+        """Plant one output, then publish, and assert nothing at all was written."""
+        from adnd1e_builder.emit import write_all
+
+        with tempfile.TemporaryDirectory() as tmp:
+            gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
+            gup_dir.mkdir(parents=True)
+            reports.mkdir(parents=True)
+            result = self.compile_gur(candidate_edges=[dict(BASE_EDGE)])
+            paths = self.outputs(gup_dir, reports, result)
+
+            planted = paths[which]
+            planted.write_text("pre-existing\n", encoding="utf-8")
+
+            with self.assertRaises(FileExistsError) as raised:
+                write_all(result, gup_dir, reports, {"ran": False})
+
+            # The planted file is untouched and no sibling was created: the
+            # refusal happened before the first write, not part-way through.
+            self.assertEqual(planted.read_text(encoding="utf-8"), "pre-existing\n")
+            for name, path in paths.items():
+                if name != which:
+                    self.assertFalse(path.exists(), f"{name} was written despite refusal")
+            return str(raised.exception)
+
+    def test_an_existing_yaml_refuses_the_publication(self):
+        self.assertIn(".yaml", self.refuses_when_present("yaml"))
+
+    def test_an_existing_validation_report_refuses_the_publication(self):
+        self.assertIn(".validation.json", self.refuses_when_present("report"))
+
+    def test_an_existing_edges_component_refuses_the_publication(self):
+        self.assertIn(".edges.csv", self.refuses_when_present("edges"))
+
+    def test_a_stale_pending_component_refuses_the_publication(self):
+        """A companion this run would not write is still a same-ID output.
+
+        Left in place beside a fresh patch that holds no pending rows, it reads
+        as current. The clean GUP compiled here writes no pending.csv at all, so
+        nothing but the preflight can catch it.
+        """
+        self.assertIn(".pending.csv", self.refuses_when_present("pending"))
+
+    def test_a_stale_blocked_component_refuses_the_publication(self):
+        self.assertIn(".blocked.csv", self.refuses_when_present("blocked"))
+
+    def test_the_refusal_names_every_pre_existing_path(self):
+        """Not just the first one found -- the operator needs the whole list."""
+        from adnd1e_builder.emit import write_all
+
+        with tempfile.TemporaryDirectory() as tmp:
+            gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
+            gup_dir.mkdir(parents=True)
+            reports.mkdir(parents=True)
+            result = self.compile_gur(candidate_edges=[dict(BASE_EDGE)])
+            paths = self.outputs(gup_dir, reports, result)
+            for name in ("yaml", "report", "blocked"):
+                paths[name].write_text("pre-existing\n", encoding="utf-8")
+
+            with self.assertRaises(FileExistsError) as raised:
+                write_all(result, gup_dir, reports, {"ran": False})
+
+            message = str(raised.exception)
+            for name in ("yaml", "report", "blocked"):
+                self.assertIn(paths[name].name, message)
+
+    def test_a_clean_directory_still_publishes(self):
+        """The guard must not be the reason nothing can be published."""
+        from adnd1e_builder.emit import write_all
+
+        with tempfile.TemporaryDirectory() as tmp:
+            gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
+            result = self.compile_gur(candidate_edges=[dict(BASE_EDGE)])
+            written = write_all(result, gup_dir, reports, {"ran": False})
+            self.assertEqual(len(written), 3)

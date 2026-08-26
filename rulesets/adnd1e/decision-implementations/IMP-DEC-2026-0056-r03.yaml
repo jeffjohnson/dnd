@@ -1,0 +1,142 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0056-r03
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 3
+supersedes: IMP-DEC-2026-0056-r02
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0056
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0056.yaml
+  checksum: sha256:7e1d198be9e75e2acef6de319b03f8e0a3ba4cb485e726068a849f1aed736166
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:19301981edde1fd17f60a6e489439e2a46fac7f622dfca6d080c5e7eab8646da
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:1ef84af8cb98b4b63c8a6bd0802b8e9e29d2e73e6055067b914f519024c2c6b7
+- path: schemas/common/architect-decision.schema.json
+  checksum: sha256:a751e2bb51cd752dd862e280eff63f502d8cc8b3504657743f80c0d339e86d37
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:fcdf415f7f10d276790f3c73fb99e5588302ad7e30e195ba4457c36e08abd694
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:598f32ed04e613bdc7b2aab7e5691e7a806b0a2cf130718debd65b1fc15dc373
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:f8bec149c0bc42c3484efed0e70acec1f137affdc011223998e438fefb5b4d28
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0056.yaml
+  checksum: sha256:7e1d198be9e75e2acef6de319b03f8e0a3ba4cb485e726068a849f1aed736166
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-23T12.54.56.268Z.yaml
+  checksum: sha256:c85a818c1d809f94de7a393c7438c8790c0450db80ebbdb6fdec4464624b1113
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: contracts/WORK_QUEUES.md declares Version 1.21, at the authorized minimum. Rule 20 permits
+    an active approved Decision to retire one exact historical revision_required Review handoff only through
+    a validated review_handoff_retirements record pinning the Review, a later same-lineage resolution
+    GUP, and an approved Review of that resolution GUP; states that this is not implicit consumption;
+    and states that a later GUP with an absent, null, or different provenance.review_id still does not
+    consume a Review handoff. A missing, malformed, inactive, checksum-mismatched, non-descendant, or
+    non-approved-resolution record is diagnostic and leaves the ordinary ready handoff unchanged. Re-verified
+    at current checksums for this revision, which exists only because the DEC-2026-0057 lineage advanced
+    the contracts this report pins; the claim above is unchanged. Re-verified at current checksums for
+    this revision, which exists only because DEC-2026-0060 edited the scanner this report pins; the claim
+    above is unchanged.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0056
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0056.yaml
+      checksum: sha256:7e1d198be9e75e2acef6de319b03f8e0a3ba4cb485e726068a849f1aed736166
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      minimum_version: '1.21'
+      observed_version: '1.22'
+      checksum: sha256:19301981edde1fd17f60a6e489439e2a46fac7f622dfca6d080c5e7eab8646da
+      anchors_present:
+      - exact historical revision-required Review handoff
+      - later same-lineage resolution GUP
+      - approved resolution Review
+      - absent null or different provenance.review_id remains non-consumption
+- acceptance_test_index: 2
+  result: passed
+  evidence: contracts/ARTIFACT_LIFECYCLE.md declares Version 1.17, at the authorized minimum. Section
+    4 states that the record pins the historical Review, a later GUP in its reviewed GUP's lineage, and
+    an approved Review of that later GUP; that it is an explicit historical classification, not an inferred
+    missing-provenance exception or a replacement for normal Review consumption; and that a malformed,
+    stale, non-descendant, or non-approved-resolution record retires nothing. Re-verified at current checksums
+    for this revision, which exists only because the DEC-2026-0057 lineage advanced the contracts this
+    report pins; the claim above is unchanged. Re-verified at current checksums for this revision, which
+    exists only because DEC-2026-0060 edited the scanner this report pins; the claim above is unchanged.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0056
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0056.yaml
+      checksum: sha256:7e1d198be9e75e2acef6de319b03f8e0a3ba4cb485e726068a849f1aed736166
+      authorized_acceptance_test_index: 2
+    authorized_acceptance_test_index: 2
+    contracts:
+    - path: contracts/ARTIFACT_LIFECYCLE.md
+      minimum_version: '1.17'
+      observed_version: '1.18'
+      checksum: sha256:1ef84af8cb98b4b63c8a6bd0802b8e9e29d2e73e6055067b914f519024c2c6b7
+      anchors_present:
+      - immutable historical Review handoff
+      - explicit historical classification
+      - not an inferred missing-provenance exception
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'test_common_schemas.TestReviewHandoffRetirementRecords, 9 tests: a complete record validates;
+    each of the three artifacts is individually required; a malformed checksum is rejected; a GUP in the
+    retired_review slot is rejected by the REV-GUP- id and reviews-path patterns; a non-historical disposition
+    is rejected by the const; an empty reason is rejected. The published DEC-2026-0056 validates and carries
+    exactly eight retirements. Re-verified at current checksums for this revision, which exists only because
+    the DEC-2026-0057 lineage advanced the contracts this report pins; the claim above is unchanged. Re-verified
+    at current checksums for this revision, which exists only because DEC-2026-0060 edited the scanner
+    this report pins; the claim above is unchanged.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Live corpus, asserted directly by test_scan_agent_queues.LiveReviewHandoffRetirementCase
+    against a real scan: the set of review_handoff_retired diagnostics equals exactly the eight named
+    Reviews; none of the eight is assigned to any role; REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06
+    and REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05 remain Integrator work; and no retirement
+    record is invalid. The Analyst queue returns to 2. Strict consumption is unchanged, held by ReviewHandoffRetirementCase.test_retirement_does_not_relax_current_consumption,
+    which puts a second unretired lineage with a null review_id in the same repository and asserts it
+    stays ready, alongside negative cases for a stale checksum, an unapproved resolution Review, a non-descendant
+    resolution GUP, an earlier resolution GUP, and an unapproved retiring Decision. Re-verified at current
+    checksums for this revision, which exists only because the DEC-2026-0057 lineage advanced the contracts
+    this report pins; the claim above is unchanged. Re-verified at current checksums for this revision,
+    which exists only because DEC-2026-0060 edited the scanner this report pins; the claim above is unchanged.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: This report pins DEC-2026-0056 by checksum, reports acceptance tests 1 through 4 as passed
+    against current evidence, and records the focused run of ReviewHandoffRetirementCase, LiveReviewHandoffRetirementCase
+    and TestReviewHandoffRetirementRecords (31 tests, OK) alongside the full tooling/common suite (722
+    tests, OK). Re-verified at current checksums for this revision, which exists only because the DEC-2026-0057
+    lineage advanced the contracts this report pins; the claim above is unchanged. Re-verified at current
+    checksums for this revision, which exists only because DEC-2026-0060 edited the scanner this report
+    pins; the claim above is unchanged.
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: Supersedes r02. Reissued at current checksums after DEC-2026-0060 edited tooling/common/scan_agent_queues.py.
+    The implementation is unchanged and this report is pre-approval, so its evidence is verified strictly
+    rather than snapshotted.
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0056-r03.validation.json
+validation_report_checksum: sha256:56ce1df46a27f83459221da25ce47a3c63fa879cc66e9cec2fb8476cd7ba6990
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 800 tests in 163.074s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.ReviewHandoffRetirementCase
+      test_scan_agent_queues.LiveReviewHandoffRetirementCase test_common_schemas.TestReviewHandoffRetirementRecords'
+    exit_code: 0
+    result: passed
+    summary: Ran 31 tests in 18.907s OK

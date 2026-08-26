@@ -2117,6 +2117,19 @@ class Compiler:
                         f"review carries an unrecognised disposition for {name}",
                     )
                 )
+            # DEC-2026-0062. Stated but not executable: the Reviewer asked for a
+            # field value the compiler will not guess at. Reported per row so the
+            # Reviewer sees which ruling to restate, not merely that one exists.
+            for entry in directives.unreadable_corrections:
+                result.findings.append(
+                    Finding(
+                        "review_correction_not_executable",
+                        "error",
+                        f"review {directives.review_id} rules approved_with_revision "
+                        f"under Review contract 1.2 but {entry}. The correction is not "
+                        f"applied and no revision may be published from it.",
+                    )
+                )
             for key in sorted(set(directives.unread_decision_keys)):
                 result.findings.append(
                     Finding(

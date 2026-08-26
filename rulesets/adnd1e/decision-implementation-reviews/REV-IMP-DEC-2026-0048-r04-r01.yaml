@@ -1,0 +1,23 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0048-r04-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff: {next_role: none, readiness: terminal, reason: All DEC-2026-0048 acceptance tests independently verified., blocking_ids: []}
+reviewed_by: reviewer
+reviewed_implementation: {id: IMP-DEC-2026-0048-r04, path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0048-r04.yaml, checksum: sha256:5900689d712c00f5da9351fc7be072c747d1523585652b36bc5fdf2ee030073b}
+decision_input: {id: DEC-2026-0048, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml, checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: Current contracts correctly distinguish declared versioned content from literal historical version tests.}
+  - {acceptance_test_index: 2, disposition: verified, evidence: 'Schemas require exact Decision, index, contract, floor, and anchor evidence for new semantics and legacy authorization.'}
+  - {acceptance_test_index: 3, disposition: verified, evidence: 'Focused queue validation rejects absent, stale, mismatched, incomplete, and below-floor evidence.'}
+  - {acceptance_test_index: 4, disposition: verified, evidence: The exact DEC-0045 and DEC-0046 authorizations are consumed only at their named acceptance indices with current checksums and anchors.}
+independent_validation:
+  passed: true
+  commands:
+    - {command: 'SHA-256 comparison of report, Decision, report component, and implementation files', exit_code: 0, result: passed, summary: Every expected checksum matched current bytes.}
+    - {command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest VersionedContractContentCase VersionedContractReviewCase and related focused suites -q', exit_code: 0, result: passed, summary: Combined focused suite passed 182 tests.}
+overall_disposition: approved

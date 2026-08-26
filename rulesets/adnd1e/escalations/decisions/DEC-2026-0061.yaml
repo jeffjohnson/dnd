@@ -1,0 +1,249 @@
+schema_version: '1.0'
+id: DEC-2026-0061
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-094-100-illusionist-spells
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Correct standard-unittest validation-summary recognition and prevent a
+    schema-invalid implementation Review from consuming a Decision; then
+    publish one Decision Implementation Report for independent review.
+  blocking_ids: []
+
+decision_date: '2026-08-25'
+escalation_id: ESC-2026-08-25T14.02.11.480Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  How must immutable Decision Implementation Report evidence recognize standard
+  unittest success output, and may a schema-invalid Decision Implementation
+  Review consume a Decision in queue derivation?
+
+ruling: >-
+  A validation summary ending in the standard unittest form `OK (skipped=N)`
+  is passing evidence when its exit code and recorded result also say passed.
+  It is not a report defect and must not cause a create-only report successor
+  or an exception for a pre-publication failing suite. The evidence guard must
+  recognize only the standard unittest terminal verdict grammar: `OK` or
+  `FAILED`, optionally followed by parenthesized, comma-separated recognized
+  integer counters. A passing `OK` record may contain only non-failing counters
+  (`skipped` and `expected failures`); arbitrary trailing prose, malformed
+  counters, and an `OK` record with failure, error, or unexpected-success
+  counters remain invalid.
+
+  The existing reports IMP-DEC-2026-0053-r03 and IMP-DEC-2026-0060-r01 record
+  authentic `OK (skipped=38)` Builder-suite output. They remain immutable
+  current leaves and require no Builder reissue. Their active
+  `revision_required` Reviews are repaired in the ordinary Review lineage by
+  schema-valid, independently approved successor Reviews after this Decision's
+  implementation is itself reviewed.
+
+  A Decision Implementation Review is capable of consuming a Decision only if
+  it validates against `schemas/common/decision-implementation-review.schema.json`
+  as well as satisfying its existing provenance and approval predicates. An
+  invalid Review's `status`, `overall_disposition`, reviewed-artifact reference,
+  and handoff are untrusted: it completes no Decision and creates no Builder
+  revision request. The scanner emits one error and one Reviewer repair item for
+  the active invalid Review. This applies existing lifecycle language requiring
+  exact schemas; it changes no contract, schema, or ontology.
+
+rationale:
+  - >-
+    The former end-of-string matcher rejects literal successful unittest output
+    whenever tests are skipped. Rewording the historical summary or recording
+    a fictitious post-publication run would weaken immutable provenance; parsing
+    the runner's actual bounded grammar preserves it.
+  - >-
+    A checksummed implementation Review is the consuming artifact. Treating
+    fields from a schema-invalid file as approval makes malformed YAML complete
+    a Decision while the repository validation suite rejects the same file.
+  - >-
+    A general predecessor-failure exemption would let a report self-assert that
+    a red pre-publication suite is acceptable. The reported issue is instead a
+    parser defect with an objective, standard runner syntax and has no need for
+    an evidence exception.
+
+affected_contracts: []
+affected_registries: []
+
+affected_artifacts:
+  reports_retained:
+    - id: IMP-DEC-2026-0053-r03
+      checksum: sha256:039ab65233ad8e3e839c7770c01df0d9e247a415616c43a6df4aed01fef9cfd1
+      disposition: retained; its standard unittest success summary is valid.
+    - id: IMP-DEC-2026-0060-r01
+      checksum: sha256:759b95a3690f227151041870c53ade084458cd01d933679cda9319286bff41c3
+      disposition: retained; its standard unittest success summary is valid.
+  invalid_review:
+    id: REV-IMP-DEC-2026-0046-r11-r01
+    checksum: sha256:5123f0feb0aec1a5f5be46545449a08fffd0b803a0f28f40d1cbf29d9c329eca
+    disposition: immutable invalid predecessor; it cannot complete DEC-2026-0046.
+    required_successor: REV-IMP-DEC-2026-0046-r11-r02
+  historical_reviews:
+    ids:
+      - REV-IMP-DEC-2026-0046-r09-r01
+      - REV-IMP-DEC-2026-0054-r04-r01
+      - REV-IMP-DEC-2026-0056-r01-r01
+    disposition: superseded history; not a current scanner repair target.
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  profile_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    No published report or Review is edited. Reviewer publishes the one required
+    schema-valid successor for the invalid 0046 Review, then later publishes
+    ordinary approved successors for the two existing revision-required Review
+    lineages. No GUR, GUP, Approved bundle, Integration, registry, or canonical
+    row changes.
+  direct_implementation: >-
+    Builder changes only the evidence guard, scanner, and their tests, then
+    publishes IMP-DEC-2026-0061-r01. The Reviewer successors named here are
+    downstream ordinary lifecycle work and are not acceptance evidence for that
+    implementation report.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision and decide the escalation. Do not modify contracts,
+      schemas, reports, Reviews, graph artifacts, registry rows, or canonical
+      data.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Publish REV-IMP-DEC-2026-0046-r11-r02 as the schema-valid direct successor
+      to r01 before Builder's full-suite evidence is collected. Quote or use a
+      block scalar for every comma-containing evidence value. Reuse the exact
+      reviewed report and Decision checksums, independently verify the 0046
+      acceptance tests, and make the successor approved and terminal only if
+      that verification passes. Do not request a Builder reissue merely to
+      repair r01's YAML shape.
+  - step: 3
+    owner: builder
+    action: >-
+      Implement this Decision after the r11-r02 Review validates. Use the common
+      schema suite's supported JSON Schema validator and reference registry to
+      validate each active Decision Implementation Review against the exact
+      Review schema; do not duplicate a partial field list. Add bounded parser
+      tests for standard unittest terminal summaries and queue tests for invalid
+      Review non-consumption and Reviewer repair routing. Publish
+      IMP-DEC-2026-0061-r01 with passing focused and full applicable suite
+      evidence.
+  - step: 4
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0061-r01. Verify the grammar does not
+      accept arbitrary suffixes, invalid Reviews cannot complete or route a
+      Decision to Builder, a valid successor restores ordinary approved
+      completion, and existing valid implementation-Review behavior is intact.
+  - step: 5
+    owner: reviewer
+    action: >-
+      After step 4 is approved, independently re-review the retained reports
+      and publish REV-IMP-DEC-2026-0053-r03-r02 and
+      REV-IMP-DEC-2026-0060-r01-r02 as schema-valid approved successors to their
+      respective r01 revision-required Reviews if their existing report evidence
+      and acceptance tests pass. These successors, not new Builder reports,
+      consume the two report lineages.
+
+acceptance_tests:
+  - >-
+    The evidence guard accepts `Ran 655 tests in 103.582s OK (skipped=38)` only
+    when `exit_code: 0` and `result: passed` agree. It accepts the standard
+    terminal `OK` and `FAILED` forms with recognized integer counters, rejects
+    arbitrary trailing text and malformed counters, and rejects a passing `OK`
+    record containing `failures`, `errors`, or `unexpected successes` counters.
+  - >-
+    IMP-DEC-2026-0053-r03 and IMP-DEC-2026-0060-r01 pass the corrected
+    self-consistency guard unchanged. No successor implementation report is
+    published for either solely to restate its existing Builder-suite summary.
+  - >-
+    An active Review that fails the exact Decision Implementation Review schema
+    emits one `decision_implementation_review_invalid` error and one Reviewer
+    repair item; its claimed approval does not complete the Decision and its
+    claimed revision request does not create Builder work. Schema failure text
+    identifies the Review and cause.
+  - >-
+    A schema-valid direct Review successor for the same report and Decision
+    clears the repair condition and permits normal approved or revision-required
+    handling. Existing valid approved Review consumption and valid
+    revision-required routing remain unchanged.
+  - >-
+    REV-IMP-DEC-2026-0046-r11-r02 is a schema-valid direct successor of r01
+    with quoted or block-scalar comma-containing evidence. It preserves the
+    exact report and Decision provenance and, if approved, is the only Review
+    that completes DEC-2026-0046.
+  - >-
+    IMP-DEC-2026-0061-r01 pins this Decision's checksum, reports every direct
+    acceptance test passed with passing focused and full applicable validation,
+    and is approval-ready for independent Reviewer verification. The downstream
+    0053 and 0060 Review successors do not block that Review.
+
+post_implementation_requirements:
+  - >-
+    Reviewer publishes the two named approved successors for IMP-DEC-2026-0053-r03
+    and IMP-DEC-2026-0060-r01 only after approving IMP-DEC-2026-0061-r01. The
+    reports remain byte-immutable and no Builder report reissue is authorized by
+    this Decision.
+  - >-
+    Builder must not author or edit decision-implementation Review artifacts.
+    Reviewer must validate every successor Review against its schema before
+    publication.
+  - >-
+    Analyst and Integrator have no work under this Decision.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This resolves implementation-evidence parsing and workflow consumption.
+    It changes no source interpretation, ontology, identity, edge semantics,
+    controlled vocabulary, registry, profile, or canonical assertion.
+
+governance_changelog:
+  - >-
+    DEC-2026-0061 recognizes bounded standard unittest terminal summaries and
+    requires full schema validity before an implementation Review can consume a
+    Decision. It rejects a self-supersession exception for a parsing defect.
+
+exact_diff:
+  tooling/common/tests/test_implementation_evidence.py:
+    - 'Recognize bounded standard unittest terminal verdict syntax and prove strict counter and outcome handling.'
+  tooling/common/scan_agent_queues.py:
+    - 'Validate active Decision Implementation Reviews with the exact Review schema before consumption or routing.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Prove invalid Review non-consumption and Reviewer repair routing, valid-successor recovery, and unchanged valid behavior.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0061.yaml:
+    - 'Record the bounded evidence grammar and invalid-Review consumption ruling.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-25T14.02.11.480Z.yaml:
+    - 'Record DEC-2026-0061 as the escalation resolution.'
+
+exact_diff_ownership:
+  - {path: tooling/common/tests/test_implementation_evidence.py, owner: builder, sequence_step: 3}
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 3}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 3}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0061.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-25T14.02.11.480Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: reviewer
+follow_up_owners:
+  architect:
+    - Preserve all reports, Reviews, contracts, schemas, graph artifacts, registry rows, and canonical data unchanged.
+  builder:
+    - Implement only the named guard and queue behavior after r11-r02 validates; publish IMP-DEC-2026-0061-r01.
+  reviewer:
+    - Publish r11-r02 first, review IMP-DEC-2026-0061-r01, then resolve the two retained report Review lineages without report reissues.
+  analyst:
+    - No action.
+  integrator:
+    - No action.

@@ -1,0 +1,108 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0060-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0060
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0060.yaml
+  checksum: sha256:cc0af2c6bb2236d415c2ee065370c1c39c2f805ae6e1e85dd69ac755f9c25139
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:fcdf415f7f10d276790f3c73fb99e5588302ad7e30e195ba4457c36e08abd694
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:598f32ed04e613bdc7b2aab7e5691e7a806b0a2cf130718debd65b1fc15dc373
+- path: tooling/builder/tests/test_compiler.py
+  checksum: sha256:fdcfd52c41488465d7dc97bde418148c0f0795b8b7f8e445b31f8d54da1fab9f
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0060.yaml
+  checksum: sha256:cc0af2c6bb2236d415c2ee065370c1c39c2f805ae6e1e85dd69ac755f9c25139
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-24T12.38.05.112Z.yaml
+  checksum: sha256:cc2aa9e3169c18c163d34841e84e672072c09becce425567f854ec763f07049e
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'LiveCavalierRepointCase no longer opens a published GUP CSV or reads NodeRegistry.retirements;
+    the removed assertion is replaced in place by a comment recording why it could not be satisfied. Its
+    two remaining tests read only the validation report. Current-state repoint coverage moved to FreshCompileNamesNoRetiredIdentityCase,
+    which compiles a fresh patch against the live registry and asserts no emitted row in any component
+    names a retired identity, plus a driven case feeding a retired ID into a GUR and asserting it never
+    reaches a component. A third test asserts the live registry actually records retirements, so the case
+    cannot pass by having nothing to check. 5 tests, OK. No GUR, GUP, Review, Approved bundle, Integration
+    record, registry or canonical file was modified: the only Builder-owned edits are the three paths
+    this Decision names.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'The live scan emits exactly one gur_handoff_historical_exemption, for GUR-PKT-UA-015-015-cavaliers-r02,
+    naming DEC-2026-0060, its reason, and GUR-PKT-UA-015-015-cavaliers-r03 as its exact valid successor.
+    No gur_invalid_handoff diagnostic and no Analyst repair item exists for r02, and no gur_exemption_record_invalid
+    diagnostic exists at all. Every denial case is covered by GurHandoffHistoricalExemptionCase: no record,
+    a stale historical checksum, a stale successor checksum, an indirect successor two revisions along,
+    a successor whose own handoff is invalid, a predecessor whose handoff conforms and so has nothing
+    to exempt, and an unapproved retiring Decision. Each leaves the ordinary gur_invalid_handoff error
+    standing.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'The full tooling/common suite passes at 800 tests with no change to any pre-existing GUR
+    routing case: terminal, ready, missing-handoff, malformed leaf and malformed non-leaf behaviour are
+    all untouched, and test_an_unrecorded_malformed_gur_is_untouched holds the boundary directly by putting
+    an exempt GUR and an unrecorded malformed GUR in one repository and asserting only the second errors.
+    The common-schema singleton guards continue to report only r02 and r03: TestLegacyArtifactsStayValid
+    passes at 6 tests, and no r04 exists.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'This report pins DEC-2026-0060 by checksum, reports acceptance tests 1 through 3 as passed
+    against current evidence, and records focused runs of GurHandoffHistoricalExemptionCase with LiveGurHandoffExemptionCase
+    (27 tests, OK), LiveCavalierRepointCase with FreshCompileNamesNoRetiredIdentityCase (5 tests, OK)
+    and TestLegacyArtifactsStayValid (6 tests, OK), alongside both full suites: tooling/common at 800
+    tests and tooling/builder at 655, each passing.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Both halves of this Decision are implemented and both had the same cause: a check that could
+    not tell immutable history from current state. The Cavalier assertion demanded that a GUP integrated
+    on 2026-08-19 not name an identity retired on 08-20, which no permitted action could satisfy, and
+    it held the Builder suite red for days and blocked two Decisions and a packet revision behind it.
+    The GUR diagnostic told the Analyst to publish a successor that already existed and that DEC-2026-0039
+    forbids duplicating, and it was the sole reason the whole scan exited 2. Both are now correct and
+    both suites are green: tooling/common 800, tooling/builder 655. The exemption is verified rather than
+    believed -- the record''s two checksums, the direct supersedes link, the predecessor''s defects being
+    confined to handoff, and the successor''s own validity are each re-derived from the files, so a record
+    that stops describing the corpus stops exempting anything. Downstream, the green suite let GUP-PKT-PHB-094-100-illusionist-spells-r07
+    publish with 9 additions, 102 pending and 6 blocked, removing the nine inherited duplicates and holding
+    the six source-supported rows in the blocked component only, and it let IMP-DEC-2026-0053-r03 become
+    approval-ready at last.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0060-r01.validation.json
+validation_report_checksum: sha256:ff73c944cf4ebef4cbfc55aaaad817628620cc0ee830b59695ef6eeff058b7c8
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 800 tests in 163.074s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 655 tests in 103.582s OK (skipped=38)
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.GurHandoffHistoricalExemptionCase
+      test_scan_agent_queues.LiveGurHandoffExemptionCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 27 tests in 18.305s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      test_compiler.LiveCavalierRepointCase test_compiler.FreshCompileNamesNoRetiredIdentityCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 5 tests in 1.011s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_common_schemas.TestLegacyArtifactsStayValid'
+    exit_code: 0
+    result: passed
+    summary: Ran 6 tests in 15.177s OK

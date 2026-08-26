@@ -1,0 +1,153 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0062-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0062
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0062.yaml
+  checksum: sha256:5f8f88300c89b24164978abd383033639f54638828550c594efc8c5f940f008d
+implementation_files:
+- path: tooling/builder/src/adnd1e_builder/review.py
+  checksum: sha256:de9b3aefe3b6d313c66b71051169a15c8cc6dad1e81b051546f945303f6ee38b
+- path: tooling/builder/src/adnd1e_builder/compiler.py
+  checksum: sha256:59432d1198526e7a5df3cbc8a3a3a0a1264fe2dce948bc78a64f5a3730be1668
+- path: tooling/builder/src/adnd1e_builder/cli.py
+  checksum: sha256:c2fd53fdef3c0b84f94ae12f97ecb6fc1ce20af0b266cfdfdf3656280737219d
+- path: tooling/builder/tests/test_review.py
+  checksum: sha256:0a4eb094f39d7f63afd253004e109a25e2413856819b0dbfa48d1fea40aa77fd
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:241e6693b8f8a801c5c17b67e3adbe5d3a2b061bab3a293f08483e94e4d8199a
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0062.yaml
+  checksum: sha256:5f8f88300c89b24164978abd383033639f54638828550c594efc8c5f940f008d
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-25T18.14.36.902Z.yaml
+  checksum: sha256:9cccf2bc8189297ec119a6299aaa4fc25229505a70b840e8853d08aeaf0496e2
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'Review-contract 1.2 keeps the DEC-2026-0051 disposition vocabulary and adds the correction
+    payload rule. TestReviewCorrectionContract drives both sides against schemas/common/review.schema.json.
+    Accepted: a row-local exact_corrections mapping in the list shape and the mapping shape, other dispositions
+    with no correction, and a required_builder_revision block carrying only successor_gup_id and preservation_requirements.
+    Rejected: an absent, empty, or non-mapping exact_corrections; each of exact_correction, corrected_fields,
+    and corrected_row alone; each alias beside a valid mapping, since two spellings on one row is the
+    ambiguity the rule removes; a top-level required_builder_revision.exact_corrections payload; and an
+    illegal disposition under 1.2. A 1.1 Review and a Review that omits the field keep their own treatment,
+    including with an alias present. Every published Review in books/ still validates, which is the check
+    that would catch a 1.2 clause written broadly enough to reach the corpus it was scoped to spare. These
+    unit tests ran: Ran 18 tests in 4.350s OK.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'The loader reads the row-local mapping and applies it through the existing column and ownership
+    validators; nothing about how a correction is executed changed. Every other form is refused with a
+    diagnostic naming the row ref, the observed key in quotes, and exact_corrections as the required key
+    -- CorrectionContractCase covers each alias by name, the missing, empty, and non-mapping forms, the
+    top-level payload, and a chain in which one member is unexecutable and a later member is clean. The
+    near-miss case is asserted separately: thirty-seven of the forty-four rows differ from the working
+    key by one character, so the message quotes both spellings. On refusal nothing is produced: CorrectionRefusalProducesNothingCase
+    runs the CLI against a fixture repository and asserts exit code 2, no new file in the GUP directory,
+    and an empty build/reports. These unit tests ran: Ran 108 tests in 38.903s OK.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r03 declares review_contract_version 1.2,
+    validates against the Review schema with zero errors, and directly supersedes r02. Its three approved_with_revision
+    rows carry exactly the stated row-local corrections and no others: M035 aspect ''to-hit rolls'' condition
+    ''hate or rage'', M036 aspect ''saving throws'' condition ''hate'', M070 aspect ''activation'' condition
+    ''depicting the alteration through Phantasmal Force''. Its required_builder_revision carries only
+    successor_gup_id and preservation_requirements. inherited_edge_decisions.from_review names REV-GUP-PKT-PHB-094-100-illusionist-spells-r05-r05,
+    and the test re-derives that rather than trusting it: the nine refs r05-r05 rejects directly are compared
+    with the nine the successor preserves. r05-r06 is not named. These unit tests ran: Ran 18 tests in
+    4.350s OK.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Deferred to the ordinary packet lineage, which is where this Decision places it. r08 is compiled
+    from r07-r03 immediately after this report and carries its own checksummed GUP and validation report;
+    DEC-2026-0062 states that the ordinary r08 lifecycle is not acceptance evidence for this implementation
+    report and does not block its Review. The guard this report delivers is what makes that compile trustworthy:
+    before it, a compile from a Review whose corrections were unreadable produced a clean-looking GUP
+    with the corrections silently absent, which is exactly what the r07-r02 trial compile did.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'No canonical row, registry row, Approved bundle, or Integration record was read for write
+    or modified by this implementation. The eight historical Reviews named in the Decision are untouched
+    and remain immutable; the guard is scoped to review_contract_version 1.2 and none of them declares
+    it, which is asserted directly -- a 1.1 Review and an unversioned Review carrying an alias both load
+    with no unreadable correction recorded. The two canonical aspects the escalation identified are unchanged
+    and Builder proposes no migration from them. The live corpus check reports no active Review stating
+    an unexecutable correction. These unit tests ran: Ran 108 tests in 38.903s OK.'
+- acceptance_test_index: 6
+  result: passed
+  evidence: 'This report pins DEC-2026-0062 by checksum, reports acceptance tests 1 through 5 as passed
+    against current evidence, and records passing focused runs of test_review (108 tests) and TestReviewCorrectionContract
+    (18 tests) alongside both full applicable suites: tooling/common Ran 878 tests in 196.282s OK, and
+    tooling/builder Ran 673 tests in 113.599s OK (skipped=38).'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'The 1.2 correction guard is implemented and both applicable suites are green. Four things the
+    Reviewer should look at directly.
+
+
+    First, and most important: I changed two files beyond this Decision''s exact_diff -- tooling/builder/src/adnd1e_builder/cli.py
+    and tooling/builder/src/adnd1e_builder/compiler.py. Acceptance test 2 requires that a refused directive
+    produce neither a GUP nor an altered component, and that cannot be satisfied inside review.py. `compile`
+    writes its output and reports status=blocked even with errors, so an error finding alone still leaves
+    five files on disk and spends a revision number that create-only publication never returns. The refusal
+    therefore lives in the CLI, ahead of the registry, the canonical baseline, the governance load and
+    the test suite, since everything it refuses is knowable from the Review alone. The compiler also records
+    the finding, for anything calling compile directly. Both files are listed in this report''s implementation_files.
+    If the Architect wants the exact_diff to be exhaustive, this is the gap.
+
+
+    Second, two live corpus tests were scoped to active leaves rather than the whole archive. test_review''s
+    spelling check failed on REV-GUP-PKT-PHB-094-100-illusionist-spells-r07-r01 and r07-r02, whose inherited_edge_decisions
+    name the Review that inherited the nine rejections instead of the one that made them. Both are superseded
+    by r07-r03 and are immutable, so no permitted action could satisfy the check -- the DEC-2026-0060
+    pattern. A companion test asserts that every unreadable Review in the archive really is superseded,
+    so the scoping is a fact about the corpus rather than an amnesty.
+
+
+    Third, and the one I would look at hardest: TestImplementationArtifactsValidate.active_leaves derived
+    a lineage by splitting an ID on its last ''-r''. REV-IMP-DEC-2026-0061-r01 was published missing its
+    review-revision suffix, so it parsed as a lineage of its own, and REV-IMP-DEC-2026-0061-r01-r02 --
+    which explicitly supersedes it -- parsed as a different lineage. The retired artifact came back as
+    an active leaf and failed on the exact ID error its successor was published to correct. active_leaves
+    now also honours a written `supersedes`, because the case where the naming convention breaks is precisely
+    the case where the ID is the defect. The queue scanner was already right about this lineage and reported
+    zero errors throughout.
+
+
+    Fourth, on scope I did not take. The escalation counted 44 rows across 8 Reviews and 38 corrections
+    that never reached a GUP. This implementation changes none of them and proposes no canonical migration;
+    the guard is version-scoped and none of those Reviews declares 1.2. Assessing whether any is material
+    is Reviewer work under step 5, and the count is not an operation list.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0062-r01.validation.json
+validation_report_checksum: sha256:e28d81261f504efee15194835c0cd2685092428c75ccb95e8ded57561dea249e
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 878 tests in 196.282s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 673 tests in 113.599s OK (skipped=38)
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      test_review'
+    exit_code: 0
+    result: passed
+    summary: Ran 108 tests in 38.903s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_common_schemas.TestReviewCorrectionContract'
+    exit_code: 0
+    result: passed
+    summary: Ran 18 tests in 4.350s OK

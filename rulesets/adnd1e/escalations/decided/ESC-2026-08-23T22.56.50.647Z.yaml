@@ -1,0 +1,50 @@
+schema_version: '1.0'
+id: ESC-2026-08-23T22.56.50.647Z
+status: decided
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-015-015-cavaliers
+constitution_version: '1.8'
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-08-23'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    DEC-2026-0057 incorrectly directs Analyst to repair
+    GUR-PKT-UA-015-015-cavaliers-r02. DEC-2026-0039 already authorized and
+    required r03 as the sole successor; r03 exists, is schema-valid, and is the
+    exact exemption that allows immutable r02's handoff-only invalidity to
+    remain historical. Another Analyst successor would not clear r02 and would
+    fork the supersession lineage.
+  blocking_ids: []
+
+question: >-
+  Does the intentionally invalid, superseded r02 GUR require another Analyst
+  repair after DEC-2026-0039's valid r03 successor exists?
+
+evidence:
+  governing_decision: DEC-2026-0039
+  invalid_historical_artifact:
+    id: GUR-PKT-UA-015-015-cavaliers-r02
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r02.yaml
+    invalidity: handoff.next_role null and handoff.readiness withdrawn
+  completed_successor:
+    id: GUR-PKT-UA-015-015-cavaliers-r03
+    path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r03.yaml
+    supersedes: GUR-PKT-UA-015-015-cavaliers-r02
+    handoff: {next_role: none, readiness: terminal}
+  test_guards:
+    - test_the_exemption_is_reported_rather_than_silent
+    - test_the_exempt_artifact_is_invalid_only_in_its_handoff
+    - test_the_exempt_artifact_has_a_valid_successor
+    - test_a_successor_that_names_another_predecessor_is_not_exempt
+
+resolution:
+  decision_id: DEC-2026-0058
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0058.yaml
+  outcome: >-
+    Supersede the erroneous 0057 follow-up instruction. No Analyst work is
+    authorized or required for this lineage; retain r02 and r03 unchanged.

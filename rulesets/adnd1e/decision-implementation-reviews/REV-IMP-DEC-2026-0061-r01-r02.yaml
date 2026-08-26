@@ -1,0 +1,96 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0061-r01-r02
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: REV-IMP-DEC-2026-0061-r01
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    Schema-valid successor to the malformed r01. All DEC-2026-0061 acceptance
+    tests are independently verified.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0061-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0061-r01.yaml
+  checksum: sha256:dffae46f2719a3272151167d91505d0234cbb4921c67039836a4fe032a01f2c6
+decision_input:
+  id: DEC-2026-0061
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0061.yaml
+  checksum: sha256:843076ab254269c452b8ad308b4ae87814480438b820c590fe5633c5fba9234a
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      The bounded unittest verdict parser accepts standard OK and FAILED terminal
+      forms with recognized counters, rejects malformed counter lists and
+      arbitrary suffixes, and rejects passing records with failure counters.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      The unchanged active reports IMP-DEC-2026-0053-r03 and
+      IMP-DEC-2026-0060-r01 pass the corrected evidence guard with their
+      recorded OK (skipped=38) Builder-suite summaries.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      The scanner validates active implementation Reviews using the common
+      decision-implementation Review schema. A schema-invalid Review emits one
+      repair diagnostic and one Reviewer repair item without completing the
+      Decision or creating Builder revision work.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      A schema-valid direct successor clears the repair condition and restores
+      ordinary approved or revision-required handling. Existing valid Review
+      consumption and normal no-Review routing remain covered.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      REV-IMP-DEC-2026-0046-r11-r02 directly supersedes the invalid r01,
+      validates against the exact Review schema, and preserves the report and
+      Decision provenance checksums.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: >-
+      IMP-DEC-2026-0061-r01 pins DEC-2026-0061 exactly, covers all six direct
+      acceptance tests, and records passing focused plus full common and Builder
+      validation. The downstream 0053 and 0060 Review successors do not block
+      this implementation Review.
+independent_validation:
+  passed: true
+  commands:
+    - command: >-
+        SHA-256 comparison of the implementation report, Decision, validation
+        report, and each implementation file.
+      exit_code: 0
+      result: passed
+      summary: >-
+        Exact reviewed-report and Decision provenance matched. Every listed
+        implementation file matched the report.
+    - command: >-
+        [cwd tooling/common] PYTHONPATH=.;tests python -m unittest
+        test_implementation_evidence
+        test_scan_agent_queues.InvalidImplementationReviewCase
+        test_scan_agent_queues.LiveInvalidImplementationReviewCase
+        test_common_schemas.TestImplementationArtifactsValidate -q
+      exit_code: 0
+      result: passed
+      summary: Ran 69 tests in 26.775s OK
+    - command: >-
+        [cwd tooling/common] PYTHONPATH=.;tests python -m unittest discover
+        -s tests -p test_*.py
+      exit_code: 0
+      result: passed
+      summary: Ran 860 tests in 188.210s OK
+    - command: >-
+        [cwd tooling/builder] PYTHONPATH=src python -m unittest discover
+        -s tests -p test_*.py
+      exit_code: 0
+      result: passed
+      summary: Ran 655 tests in 103.879s OK (skipped=38)
+overall_disposition: approved

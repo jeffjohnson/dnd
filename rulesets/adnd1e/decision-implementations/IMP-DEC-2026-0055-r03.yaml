@@ -1,0 +1,129 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0055-r03
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 3
+supersedes: IMP-DEC-2026-0055-r02
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0055
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml
+  checksum: sha256:46a06f296d1e477a69a808c5e4f7c714812bcb5191b09e5541e71fdc914abb59
+implementation_files:
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:259b49a6998382d440f57c7307f266cc8b1af43b01fa469992aa30fd5d2dab72
+- path: contracts/ARTIFACT_LIFECYCLE.md
+  checksum: sha256:0d15ec4fe6d5fb0a5f6c43cd48a5d5c4ecb405b6af4d6b3995873cb07ef29956
+- path: schemas/common/architect-decision.schema.json
+  checksum: sha256:a751e2bb51cd752dd862e280eff63f502d8cc8b3504657743f80c0d339e86d37
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:a0478b958cf9b0ddb5d5d617dbeb73bd4651e64d76f7bf4481e15a08e066b4df
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:69d2c638c45cee3fe6b9ec3f0b3d79cf6f00c3714a575921c1b138e8c953d3c0
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:f8bec149c0bc42c3484efed0e70acec1f137affdc011223998e438fefb5b4d28
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml
+  checksum: sha256:46a06f296d1e477a69a808c5e4f7c714812bcb5191b09e5541e71fdc914abb59
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-22T15.02.35.116Z.yaml
+  checksum: sha256:f0c3dc0fa0d3f6f645ce9cc6b3e2027e871c34f540792f5615948c8b9b24fea6
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: contracts/WORK_QUEUES.md declares Version 1.20. Tooling-proof rule 50 states that an exact
+    active Decision retirement record makes only its named current decision-migration leaf informational
+    history, that each legal disposition requires its exact evidence, and that a missing or invalid record
+    leaves an otherwise stale migration as the normal Builder reissue diagnostic. Re-verified at current
+    checksums for this revision, which exists only because DEC-2026-0056 advanced the contracts this report
+    pins; the claim above is unchanged.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0055
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml
+      checksum: sha256:46a06f296d1e477a69a808c5e4f7c714812bcb5191b09e5541e71fdc914abb59
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      minimum_version: '1.20'
+      observed_version: '1.21'
+      checksum: sha256:259b49a6998382d440f57c7307f266cc8b1af43b01fa469992aa30fd5d2dab72
+      anchors_present:
+      - decision-migration retirement record
+      - exact current leaf
+      - malformed retirement leaves ordinary stale-work handling unchanged
+- acceptance_test_index: 2
+  result: passed
+  evidence: contracts/ARTIFACT_LIFECYCLE.md declares Version 1.16. Section 3 states that an active approved
+    Decision may retain an exact current decision-migration leaf as immutable historical evidence through
+    a validated migration_lineage_retirements record; that retired_historical means later governance forbids
+    replanning and is not completed canonical work; and that consumed_by_integrated_successor additionally
+    pins an exact successor GUP and Integration manifest. Re-verified at current checksums for this revision,
+    which exists only because DEC-2026-0056 advanced the contracts this report pins; the claim above is
+    unchanged.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0055
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml
+      checksum: sha256:46a06f296d1e477a69a808c5e4f7c714812bcb5191b09e5541e71fdc914abb59
+      authorized_acceptance_test_index: 2
+    authorized_acceptance_test_index: 2
+    contracts:
+    - path: contracts/ARTIFACT_LIFECYCLE.md
+      minimum_version: '1.16'
+      observed_version: '1.17'
+      checksum: sha256:0d15ec4fe6d5fb0a5f6c43cd48a5d5c4ecb405b6af4d6b3995873cb07ef29956
+      anchors_present:
+      - immutable historical evidence
+      - retirement is not completed canonical work
+      - checksummed successor and integration evidence
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'test_common_schemas.TestMigrationLineageRetirementRecords, 9 tests: both legal dispositions
+    validate with their required artifacts; consumed_by_integrated_successor is rejected when either the
+    consuming GUP or the Integration manifest is absent; a missing current_leaf, a malformed checksum,
+    an unknown disposition, and an empty reason are all rejected. The published DEC-2026-0055 validates
+    against the amended schema. Re-verified at current checksums for this revision, which exists only
+    because DEC-2026-0056 advanced the contracts this report pins; the claim above is unchanged.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Live corpus: GUP-MIG-DEC-2026-0015-0016-r03 and GUP-MIG-DEC-2026-0024-r01 now emit info migration_lineage_retired
+    naming DEC-2026-0055, its disposition, and its reason, and neither emits decision_migration_lineage_error.
+    Fixture coverage in test_scan_agent_queues.MigrationLineageRetirementCase holds the negative side:
+    an otherwise identical unretired stale migration still raises decision_migration_lineage_error, and
+    so does one whose record carries a stale leaf checksum, names an absent successor, sits on an unapproved
+    Decision, or names a different leaf. Re-verified at current checksums for this revision, which exists
+    only because DEC-2026-0056 advanced the contracts this report pins; the claim above is unchanged.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: This report pins DEC-2026-0055 by checksum, reports acceptance tests 1 through 4 as passed
+    against current evidence, and records the focused run of MigrationLineageRetirementCase with TestMigrationLineageRetirementRecords
+    (27 tests, OK) alongside the full tooling/common suite (691 tests, OK). Re-verified at current checksums
+    for this revision, which exists only because DEC-2026-0056 advanced the contracts this report pins;
+    the claim above is unchanged.
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: Supersedes r02, approved by REV-IMP-DEC-2026-0055-r02-r01. Reissued only because DEC-2026-0056
+    advanced WORK_QUEUES to 1.21 and ARTIFACT_LIFECYCLE to 1.17, which invalidated this report's versioned
+    contract-content checksums after its Review had already approved it. The implementation is unchanged
+    and its evidence is re-verified against the live files; both contracts remain above their authorized
+    floors and every named anchor is still present.
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0055-r03.validation.json
+validation_report_checksum: sha256:a5603490f360ed4a09c7f3d876393eea5cbc8b08fa8fb11c1a76a39aa731349a
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 722 tests in 122.899s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.MigrationLineageRetirementCase
+      test_common_schemas.TestMigrationLineageRetirementRecords'
+    exit_code: 0
+    result: passed
+    summary: Ran 27 tests in 0.267s OK

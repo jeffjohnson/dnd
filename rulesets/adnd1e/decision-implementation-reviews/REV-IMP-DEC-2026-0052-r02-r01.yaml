@@ -1,0 +1,35 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0052-r02-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff: {next_role: none, readiness: terminal, reason: All DEC-2026-0052 acceptance tests independently verified., blocking_ids: []}
+reviewed_by: reviewer
+reviewed_implementation: {id: IMP-DEC-2026-0052-r02, path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0052-r02.yaml, checksum: sha256:d1b5dd27ff63a45e03778d2e6a44ef770813ae8559d7dbed9d6a59da01827620}
+decision_input: {id: DEC-2026-0052, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml, checksum: sha256:980c112825f5d3b57eab371bb6e20338c750e0a65b30b578ed8f897c0f63acbd}
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: WORK_QUEUES Version 1.20 meets the 1.17 floor and retains the complete Review 1.1 vocabulary and packaging anchors.
+    verified_versioned_contract_content:
+      authority: {id: DEC-2026-0052, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml, checksum: sha256:980c112825f5d3b57eab371bb6e20338c750e0a65b30b578ed8f897c0f63acbd, authorized_acceptance_test_index: 1}
+      authorized_acceptance_test_index: 1
+      contracts: [{path: contracts/WORK_QUEUES.md, checksum: sha256:b93ab9904c09b4c0e5305b6ca166be116c9aec2fb912ba3f0368572b7e427f8a, observed_version: '1.20', minimum_version: '1.17', anchors_present: [review_contract_version, approved_but_excluded_from_bundle is invalid, Approved-bundle membership]}]
+  - acceptance_test_index: 2
+    disposition: verified_versioned_contract_content
+    evidence: ARTIFACT_LIFECYCLE Version 1.16 meets the 1.13 floor and retains all disposition and packaging-exclusion anchors.
+    verified_versioned_contract_content:
+      authority: {id: DEC-2026-0052, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0052.yaml, checksum: sha256:980c112825f5d3b57eab371bb6e20338c750e0a65b30b578ed8f897c0f63acbd, authorized_acceptance_test_index: 2}
+      authorized_acceptance_test_index: 2
+      contracts: [{path: contracts/ARTIFACT_LIFECYCLE.md, checksum: sha256:ae80ac861e26f95616fdb77575e7bf5d58d23f2d7b5b20407dccac7fa88db189, observed_version: '1.16', minimum_version: '1.13', anchors_present: [approved_with_revision, packaging exclusions, per-row disposition]}]
+  - {acceptance_test_index: 3, disposition: verified, evidence: Review schema tests accept exactly the legal vocabulary and retain legacy Review compatibility.}
+  - {acceptance_test_index: 4, disposition: verified, evidence: The reissued report pins DEC-0052 exactly and has passing focused and current validation evidence.}
+independent_validation:
+  passed: true
+  commands:
+    - {command: 'SHA-256 comparison of report, Decision, report component, and implementation files', exit_code: 0, result: passed, summary: Every expected checksum matched current bytes.}
+    - {command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest TestReviewDispositionVocabulary TestPublishedReviewsStillValidate and related focused suites -q', exit_code: 0, result: passed, summary: Combined focused suite passed 182 tests.}
+overall_disposition: approved

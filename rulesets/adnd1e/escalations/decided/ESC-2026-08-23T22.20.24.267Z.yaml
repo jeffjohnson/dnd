@@ -1,0 +1,67 @@
+schema_version: '1.0'
+id: ESC-2026-08-23T22.20.24.267Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-23'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    An exact approved implementation Review freezes implementation-file
+    checksums under DEC-2026-0046, but versioned-contract-content evidence is
+    separately revalidated against current bytes. DEC-2026-0056's contract
+    update therefore reopened six already-approved implementation lineages even
+    though no reviewed implementation had changed. Builder can identify the
+    gap but cannot alter approval or contract-lifecycle semantics.
+  blocking_ids: []
+
+question: >-
+  Once an exact Approved Decision Implementation Review has independently
+  verified checksummed versioned-contract-content evidence, should a later
+  contract version or content change reopen that completed Decision?
+
+evidence:
+  existing_rule:
+    decision: DEC-2026-0046
+    rule: WORK_QUEUES rule 15
+    effect: >-
+      Implementation-file checksums become historical after exact approved
+      review, so ordinary later shared-file drift does not reopen a Decision.
+  missing_parallel_rule:
+    decision: DEC-2026-0048
+    rule: WORK_QUEUES rule 16
+    effect: >-
+      Versioned contract evidence correctly requires current minimum-version
+      and substantive-anchor checks before approval, but has no post-approval
+      historical-snapshot rule.
+  observed_impact:
+    triggering_change: DEC-2026-0056 contract versions 1.21 and 1.17
+    affected_completed_reports:
+      - IMP-DEC-2026-0045-r10
+      - IMP-DEC-2026-0046-r09
+      - IMP-DEC-2026-0052-r03
+      - IMP-DEC-2026-0054-r04
+      - IMP-DEC-2026-0055-r03
+      - IMP-DEC-2026-0056-r01
+    finding: >-
+      Each listed report has an exact approved independent Review. The contract
+      change alone causes the scanner's current-evidence check to invalidate
+      the completed lineage, which would recur on every future contract bump.
+
+architectural_boundary: >-
+  Deciding when independently verified mutable-contract evidence changes from a
+  live precondition into immutable history is workflow-governance semantics.
+  Builder may implement only an explicit Architect rule.
+
+resolution:
+  decision_id: DEC-2026-0057
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0057.yaml
+  outcome: >-
+    Extend the exact approved-review snapshot rule to versioned-contract-content
+    evidence. Strict current verification remains mandatory before approval.

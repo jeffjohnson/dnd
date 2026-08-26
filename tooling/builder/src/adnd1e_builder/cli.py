@@ -522,6 +522,39 @@ def main(argv: list[str] | None = None) -> int:
 
     root: Path = args.repo_root.resolve()
 
+    # The Review chain first. Everything refused below is knowable from the
+    # Review alone, and DEC-2026-0062 requires a refused directive to leave no
+    # artifact behind -- which is easiest to guarantee by not having read the
+    # graph, or run the suite, before deciding.
+    directives = None
+    if getattr(args, "review", None):
+        directives = ReviewDirectives.load_chain(args.review)
+        if len(args.gur) != 1:
+            print("--review applies to exactly one GUR", file=sys.stderr)
+            return 2
+        if args.revision is None:
+            print(
+                "--review requires --revision: a revision request advances the GUP number, and "
+                "FILE_NAMING forbids overwriting a prior revision",
+                file=sys.stderr,
+            )
+            return 2
+        if directives.unreadable_corrections:
+            print(
+                f"review {directives.review_id} states a correction this compiler will "
+                f"not execute, so no GUP was produced:",
+                file=sys.stderr,
+            )
+            for entry in directives.unreadable_corrections:
+                print(f"  {entry}", file=sys.stderr)
+            print(
+                "DEC-2026-0062 makes 'exact_corrections' on the row itself the only "
+                "executable form. Restate the ruling there in a successor Review; the "
+                "Builder does not infer it from another key.",
+                file=sys.stderr,
+            )
+            return 2
+
     registry = NodeRegistry.load(root / "rulesets" / args.ruleset / "registries" / "nodes.csv")
     canonical = CanonicalEdges.load(root / "rulesets" / args.ruleset / "canonical" / "edges_master.csv")
     general_rules = load_general_rules(root / "rulesets" / args.ruleset / "registries" / "general_rules.json")
@@ -539,19 +572,6 @@ def main(argv: list[str] | None = None) -> int:
     compiler = Compiler(registry, canonical, general_rules, governance)
     exit_code = 0
 
-    directives = None
-    if args.review:
-        directives = ReviewDirectives.load_chain(args.review)
-        if len(args.gur) != 1:
-            print("--review applies to exactly one GUR", file=sys.stderr)
-            return 2
-        if args.revision is None:
-            print(
-                "--review requires --revision: a revision request advances the GUP number, and "
-                "FILE_NAMING forbids overwriting a prior revision",
-                file=sys.stderr,
-            )
-            return 2
 
     for gur_path in args.gur:
         import yaml as _yaml

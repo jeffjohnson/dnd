@@ -44,6 +44,14 @@ historical integration batches merely for orientation.
 
 Reject any input whose checksums, approvals, or schema versions do not match.
 
+## Standalone Checks
+
+Do not create an Integration manifest or Integration Rejection for a passing
+preflight that changes no canonical state and rejects no Approved bundle. A
+reproducible measurement may inform the Reviewer, but the Reviewer independently
+records it in an approving successor Review and emits the ordinary Approved
+bundle before Integration begins. Integrator work starts only from that bundle.
+
 For `decision_migration_v1`, `decision_migration_v2`, or
 `decision_migration_v3`, the Approved manifest has no edge CSV. Read the
 operation plan only from its checksummed GUP YAML component and reject any

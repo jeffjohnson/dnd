@@ -1,0 +1,223 @@
+schema_version: '1.0'
+id: DEC-2026-0060
+status: approved
+ruleset_id: adnd1e
+book_id: ua
+source_id: ua-legacy-unspecified
+packet_id: PKT-UA-015-015-cavaliers
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement current-state test scope and the exact historical r02 GUR
+    handoff exemption in queue derivation; then publish a Decision
+    Implementation Report for independent review.
+  blocking_ids: []
+
+decision_date: '2026-08-24'
+escalation_id: ESC-2026-08-24T12.38.05.112Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  How must current-state validation distinguish immutable historical artifacts
+  from current canonical state, and how must queue derivation represent the
+  one already-ratified r02 handoff-only GUR exemption?
+
+ruling: >-
+  A published GUR, GUP, Review, Approved bundle, or Integration record is
+  immutable provenance. A later current-state migration may update a registry or
+  canonical endpoint but must not cause a test to declare an older immutable
+  artifact defective solely because it retains its historically correct ID.
+  Current-state identity tests must instead inspect the current registry,
+  canonical baseline, or freshly compiled output. Accordingly,
+  LiveCavalierRepointCase must not scan a published Cavalier GUP CSV against
+  current retirements; retain only live compiler/registry fixtures for repoint
+  behavior.
+
+  Queue derivation implements the common-schema suite's narrow historical
+  treatment as an exact checksummed record in this active Decision. The record
+  below is the sole authorized instance: r02 is immutable history because its
+  envelope errors are confined to `handoff` and r03 is its direct fully valid
+  successor. The scanner emits one informational historical-exemption diagnostic
+  for r02, no `gur_invalid_handoff` error, and no repair work. This does not
+  relax the ordinary rule for any active leaf, any non-handoff defect, or any
+  unrecorded malformed predecessor.
+
+rationale:
+  - >-
+    INT-20260820-001 correctly repointed the current canonical Cavalier rows
+    from `training` to `rule_training`. The older GUP is evidence of the input
+    and output available when it was published; retroactively applying a later
+    registry migration to it contradicts append-only provenance.
+  - >-
+    The schema suite already permits r02 only when a successor has repaired all
+    non-handoff validity concerns, and reports the singleton exemption. Queue
+    derivation must use the same lifecycle truth to avoid a permanent false
+    repository error.
+  - >-
+    A checksummed Decision record prevents the generic successor rule from
+    silently becoming permission for future malformed GURs. Future cases need
+    their own Architect Decision.
+
+gur_handoff_historical_exemptions:
+  - historical_gur:
+      id: GUR-PKT-UA-015-015-cavaliers-r02
+      path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r02.yaml
+      checksum: sha256:7ebfac9651b70bd149e9774d9c23f156366f111e5f824d5d90d8e96526cd425b
+    valid_successor_gur:
+      id: GUR-PKT-UA-015-015-cavaliers-r03
+      path: books/adnd1e/ua/artifacts/gur/GUR-PKT-UA-015-015-cavaliers-r03.yaml
+      checksum: sha256:3d93a53a2f72af3e00f0cc1d722452576d47e9d069903c91da4308f9883d19d8
+    disposition: historical_handoff_only
+    reason: >-
+      DEC-2026-0039 required r03 as r02's sole immutable successor. The common
+      schema suite proves r02 is invalid only in handoff fields and r03 fully
+      validates; another successor would fork the lineage and is prohibited.
+
+affected_contracts: []
+affected_registries: []
+
+affected_artifacts:
+  historical_gur:
+    id: GUR-PKT-UA-015-015-cavaliers-r02
+    disposition: retained immutable historical handoff-only exception
+  valid_successor:
+    id: GUR-PKT-UA-015-015-cavaliers-r03
+    disposition: retained as the sole valid direct successor
+  historical_gup_test:
+    gup_id: GUP-PKT-UA-014-016-cavalier-r01
+    test: LiveCavalierRepointCase.test_no_emitted_row_names_a_retired_identity
+    disposition: remove historical-artifact versus current-registry comparison
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  profile_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    No GUR, GUP, Review, Approved bundle, Integration, registry, or canonical
+    row is rewritten. r02 and r03 retain their existing one-predecessor
+    lineage. The Decision supplies queue classification only.
+  direct_implementation: >-
+    Builder changes queue derivation and its tests, changes the historical test
+    scope, and publishes a Decision Implementation Report. The separately
+    requested 0053 reissue and Illusionist GUP are normal downstream work and
+    do not evidence or block this Decision's implementation review.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision and its decided escalation; version the queue and
+      lifecycle contracts and the Decision schema. Preserve all GURs, GUPs,
+      Reviews, Approved bundles, Integrations, registry rows, and canonical
+      data unchanged.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement the exact contract. Replace the published-artifact scan in
+      LiveCavalierRepointCase with current compiler or registry fixture coverage;
+      do not modify any Cavalier GUP CSV. Add scanner support for only validated
+      active-Decision `gur_handoff_historical_exemptions` record below, using
+      full envelope validation to prove handoff-only invalidity and successor
+      validity. Publish IMP-DEC-2026-0060-r01.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0060-r01. Confirm the historical GUP
+      remains untouched, r02's exemption is exact and informational, all
+      malformed-GUR negative cases stay errors, and the full applicable suites
+      pass.
+
+acceptance_tests:
+  - >-
+    LiveCavalierRepointCase no longer reads an immutable published GUP CSV or
+    compares it with current `NodeRegistry.retirements`. Focused current
+    compiler/registry tests still prove endpoint repointing, and no GUR, GUP,
+    Review, Approved bundle, Integration, registry, or canonical artifact is
+    mutated to make the test pass.
+  - >-
+    The sole DEC-2026-0060 record for r02 and r03 produces exactly one
+    informational `gur_handoff_historical_exemption` diagnostic, no
+    `gur_invalid_handoff` diagnostic or Analyst repair item for r02, and no
+    scanner error. Removing the record, changing either checksum, naming a
+    non-direct successor, giving the predecessor an error outside `handoff`, or
+    making the successor invalid preserves the ordinary malformed-GUR error and
+    its normal repair routing where applicable.
+  - >-
+    Existing terminal, ready, missing-handoff, malformed leaf, and malformed
+    non-leaf GUR scanner cases remain unchanged except for the expressly
+    checksummed r02/r03 historical classification. The common schema singleton
+    guards continue to report only r02 and r03 remains its sole valid successor.
+  - >-
+    IMP-DEC-2026-0060-r01 pins this Decision's exact checksum, records passing
+    focused and full applicable suite evidence, reports every direct acceptance
+    test as passed, and is approval-ready for independent Reviewer verification.
+
+post_implementation_requirements:
+  - >-
+    Builder reissues IMP-DEC-2026-0053-r03 under DEC-2026-0053 with truthful
+    passing current evidence once the corrected suite permits it; Reviewer
+    reviews that report through the normal implementation-review lifecycle.
+  - >-
+    Builder publishes GUP-PKT-PHB-094-100-illusionist-spells-r07 under its
+    existing Review/Decision lineage. Reviewer then performs its ordinary GUP
+    review. Neither artifact is acceptance evidence for DEC-2026-0060 and
+    neither blocks its implementation Review.
+  - >-
+    No Analyst action is authorized. Do not publish a further successor to
+    GUR-PKT-UA-015-015-cavaliers-r03, and do not edit r02 or r03.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This governs immutable workflow evidence and queue derivation. It changes
+    no ontology, source meaning, canonical identity, node prefix, edge type,
+    profile, registry, or graph assertion.
+
+governance_changelog:
+  - >-
+    DEC-2026-0060 distinguishes immutable published provenance from later
+    current-state identity migration and defines the exact checksummed r02/r03
+    historical-handoff-only queue classification.
+  - >-
+    The self-contained Decision record makes this one historical exception
+    auditable without changing a shared contract or schema and reopening
+    unrelated pre-approval implementation lineages.
+
+exact_diff:
+  tooling/common/scan_agent_queues.py:
+    - 'Validate exact GUR historical-exemption records and classify only the named r02 predecessor as informational history.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Prove the live exemption and every missing, stale, mismatched, non-direct, invalid-predecessor, and invalid-successor denial case.'
+  tooling/builder/tests/test_compiler.py:
+    - 'Remove the historical published-GUP versus current-registry assertion and retain fresh current-state repoint coverage.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0060.yaml:
+    - 'Record the current-state boundary and exact r02/r03 queue exemption.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-24T12.38.05.112Z.yaml:
+    - 'Record the Builder escalation and DEC-2026-0060 resolution.'
+
+exact_diff_ownership:
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_compiler.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0060.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-24T12.38.05.112Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Preserve r02, r03, the historical Cavalier GUP, current registry, and canonical data unchanged.
+  builder:
+    - Implement only the named queue and test-scope behavior; publish IMP-DEC-2026-0060-r01, then perform the separately named ordinary follow-up publications.
+  reviewer:
+    - Independently verify the exact record, strict negative routing, historical artifact preservation, and both implementation reports through their normal review lineages.
+  analyst:
+    - No action. Do not add r04 or alter the r02/r03 withdrawal lineage.
+  integrator:
+    - No action from this Decision. Continue ordinary work using current canonical state only.

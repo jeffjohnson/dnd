@@ -1,0 +1,882 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20260825-001",
+  "ruleset_id": "adnd1e",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-08-26T03:05:25.539Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:eac8181c6c676af041a13a02d33a2d48e8c7738e77039e4437c2ccdcf6d1851a actual=sha256:eac8181c6c676af041a13a02d33a2d48e8c7738e77039e4437c2ccdcf6d1851a"
+        },
+        {
+          "check": "component checksum matches: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:1a0aa4ba0c5121eb484f559c8e976fdbe5eb4f706e2067d23717caad7ffae110 actual=sha256:1a0aa4ba0c5121eb484f559c8e976fdbe5eb4f706e2067d23717caad7ffae110"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-094-100-illusionist-spells-r08.yaml: declared=sha256:b77b87e384fd93df6b86c05801bccdc9fa66d57a1a76872fbf72240d0144b7ac actual=sha256:b77b87e384fd93df6b86c05801bccdc9fa66d57a1a76872fbf72240d0144b7ac"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=111 actual=111"
+        },
+        {
+          "check": "review approved-row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "review approved 111 row(s), CSV carries 111"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 9, 'pending_additions': 102, 'updates': 0, 'node_registrations': 52}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 1691,
+      "by_invariant": {
+        "3": 10,
+        "11": 9,
+        "16": 1672
+      },
+      "affected_rows": 1674,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 1691,
+      "by_invariant": {
+        "3": 10,
+        "11": 9,
+        "16": 1672
+      }
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 4501,
+    "edges_after": 4612,
+    "edges_updated_in_place": 0,
+    "nodes_before": 1226,
+    "nodes_after": 1275,
+    "registry_before": 1243,
+    "registry_after": 1295,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "spell_audible_glamer",
+        "label": "Audible Glamer",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M088"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_blindness",
+        "label": "Blindness",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M010",
+          "M011",
+          "M012"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_blur",
+        "label": "Blur",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M013",
+          "M014",
+          "M089"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_chaos",
+        "label": "Chaos",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M050",
+          "M110"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_color_spray",
+        "label": "Color Spray",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M002",
+          "M003",
+          "M004",
+          "M005",
+          "M081"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_deafness",
+        "label": "Deafness",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M015"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_demi_shadow_magic",
+        "label": "Demi-Shadow Magic",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M060",
+          "M117"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_demi_shadow_monsters",
+        "label": "Demi-Shadow Monsters",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M051",
+          "M066",
+          "M125"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_detect_illusion",
+        "label": "Detect Illusion",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M006",
+          "M084"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_detect_invisibility",
+        "label": "Detect Invisibility",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M021"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_dispel_exhaustion",
+        "label": "Dispel Exhaustion",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M033",
+          "M034",
+          "M104"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_dispel_illusion",
+        "label": "Dispel Illusion",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M022",
+          "M023",
+          "M031"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_fear",
+        "label": "Fear",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M037"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_first_level_magic_user_spells",
+        "label": "First Level Magic-User Spells",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M076",
+          "M077",
+          "M078",
+          "M079"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_fog_cloud",
+        "label": "Fog Cloud",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M091"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_gaze_reflection",
+        "label": "Gaze Reflection",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M007"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_hallucinatory_terrain",
+        "label": "Hallucinatory Terrain",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M068"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_hypnotic_pattern",
+        "label": "Hypnotic Pattern",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M016",
+          "M017"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_hypnotism",
+        "label": "Hypnotism",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M008"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_illusionary_script",
+        "label": "Illusionary Script",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M024",
+          "M097"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_improved_invisibility",
+        "label": "Improved Invisibility",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M038",
+          "M039",
+          "M040",
+          "M106"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_improved_phantasmal_force",
+        "label": "Improved Phantasmal Force",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M018",
+          "M032",
+          "M092"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_major_creation",
+        "label": "Major Creation",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M052",
+          "M111"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_mass_suggestion",
+        "label": "Mass Suggestion",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M061",
+          "M062",
+          "M118"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_massmorph",
+        "label": "Massmorph",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M107"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_maze",
+        "label": "Maze",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_minor_creation",
+        "label": "Minor Creation",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M041",
+          "M052",
+          "M108"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_mirror_image",
+        "label": "Mirror Image",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M093"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_misdirection",
+        "label": "Misdirection",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M019",
+          "M020",
+          "M021",
+          "M094"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_non_detection",
+        "label": "Non-detection",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M025",
+          "M026",
+          "M027",
+          "M028",
+          "M098"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_paralyzation",
+        "label": "Paralyzation",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M029",
+          "M030",
+          "M031",
+          "M099"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_permanent_illusion",
+        "label": "Permanent Illusion",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M063",
+          "M064",
+          "M119"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_phantasmal_killer",
+        "label": "Phantasmal Killer",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M042",
+          "M043",
+          "M044",
+          "M045",
+          "M046",
+          "M047",
+          "M109"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_prismatic_spray",
+        "label": "Prismatic Spray",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M072"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_prismatic_wall",
+        "label": "Prismatic Wall",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M073",
+          "M124"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_programmed_illusion",
+        "label": "Programmed Illusion",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M065",
+          "M120"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_projected_image",
+        "label": "Projected Image",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M113"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_shades",
+        "label": "Shades",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M066",
+          "M121"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_shadow_door",
+        "label": "Shadow Door",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M053",
+          "M054",
+          "M114"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_shadow_magic",
+        "label": "Shadow Magic",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M055",
+          "M056",
+          "M057",
+          "M058",
+          "M060",
+          "M115"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_shadow_monsters",
+        "label": "Shadow Monsters",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M048",
+          "M049",
+          "M051",
+          "M126"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_spectral_force",
+        "label": "Spectral Force",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M032",
+          "M063",
+          "M065",
+          "M101"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_summon_shadow",
+        "label": "Summon Shadow",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M059",
+          "M116"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_true_sight",
+        "label": "True Sight",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M054",
+          "M067",
+          "M069",
+          "M122"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_veil",
+        "label": "Veil",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M068",
+          "M069",
+          "M123"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_ventriloquism",
+        "label": "Ventriloquism",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_vision",
+        "label": "Vision",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M074",
+          "M075"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "spell_wall_of_fog",
+        "label": "Wall of Fog",
+        "kind": "spell",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M009",
+          "M087"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "rule_blindness",
+        "label": "Blindness",
+        "kind": "rule",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M003",
+          "M010"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "rule_disbelief",
+        "label": "Disbelief",
+        "kind": "rule",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M006",
+          "M047",
+          "M048"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "rule_stunned",
+        "label": "Stunned",
+        "kind": "rule",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M004"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      },
+      {
+        "id": "rule_concentration",
+        "label": "Concentration",
+        "kind": "rule",
+        "basis": "Directly verified current r05 proposal: approved prefix and kind, valid ID, no canonical identity collision, and DEC-2026-0003 reviewer authority.",
+        "edges_depending_on_it": [
+          "M018"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "review_id": "REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01",
+        "integration_id": "INT-20260825-001"
+      }
+    ],
+    "registry_derived_resync": 35,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

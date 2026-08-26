@@ -1,0 +1,50 @@
+schema_version: '1.0'
+id: ESC-2026-08-23T22.59.17.296Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: architect
+decision_owner: architect
+raised_on: '2026-08-23'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    DEC-2026-0058 correctly removed the nonexistent Analyst repair, but ordered
+    Builder before the three malformed active implementation Reviews were
+    superseded. Those active Review leaves make the full common schema suite
+    fail, so Builder cannot publish a passing report. A schema-valid Reviewer
+    revision_required successor is the required first action; it removes the
+    malformed leaves from active validation and returns the three reports to
+    Builder without approving stale evidence.
+  blocking_ids: []
+
+question: >-
+  In what order must the three malformed implementation-Review lineages be
+  repaired so the Builder can again produce passing implementation evidence?
+
+evidence:
+  active_leaf_rule:
+    test: TestImplementationArtifactsValidate.active_leaves
+    effect: >-
+      Only the highest rNN implementation Review in each lineage enters the
+      schema sweep; a valid r02 makes malformed r01 immutable history.
+  review_repair_rule:
+    schema: schemas/common/decision-implementation-review.schema.json
+    effect: >-
+      A revision_required implementation Review has a required Builder handoff
+      and does not approve a report with stale current evidence.
+  affected_active_reviews:
+    - REV-IMP-DEC-2026-0046-r09-r01
+    - REV-IMP-DEC-2026-0054-r04-r01
+    - REV-IMP-DEC-2026-0056-r01-r01
+
+resolution:
+  decision_id: DEC-2026-0059
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0059.yaml
+  outcome: >-
+    Reviewer publishes valid revision_required r02 successors first; Builder
+    then reissues the three reports and implements the unchanged snapshot rule.

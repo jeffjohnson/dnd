@@ -1,6 +1,6 @@
 # Agent Work Queue Contract
 
-**Version 1.18.**
+**Version 1.24.**
 
 ## Purpose
 
@@ -50,18 +50,26 @@ paths and checksums are provenance and must remain valid.
     implementation-planning invalid; it cannot become approval-ready. Historical
     Decisions without that declaration remain valid immutable history.
 15. After an Approved Decision Implementation Review consumes the exact active
-    report leaf, that report's `implementation_files` are a checksummed snapshot
-    of what was reviewed. Later current-file drift is informational and never
-    reopens the completed Decision. Before an exact Approved Review exists,
-    implementation-file drift remains a diagnostic and restores the Decision to
-    its implementation owner.
+    report leaf, that report's `implementation_files` and its checksummed
+    `versioned_contract_content` evidence, together with the corresponding
+    independent Review evidence, are a historical snapshot of what was
+    reviewed. Later current-file, contract-version, or substantive-anchor drift
+    is informational and never reopens the completed Decision. The snapshot
+    does not assert that the current contract still satisfies the historical
+    evidence; a later Decision that depends on that contract validates its own
+    current evidence. Before an exact Approved Review exists, implementation
+    file and versioned-contract-content evidence remain current strict
+    preconditions and any drift restores the Decision to its implementation
+    owner.
 16. A mutable contract's version in an acceptance test is a minimum-version
     predicate only when the Decision explicitly declares
     `versioned_contract_content` semantics, or a later approved Decision pins a
     legacy-test authorization. The report and its independent Review must prove
     the named contract remains at or above the authorized version and that every
-    named substantive anchor remains present. An unstructured exact-version
-    statement remains literal; it is not silently widened by a later edit.
+    named substantive anchor remains present while they are awaiting an exact
+    Approved implementation Review. After that Review, their recorded evidence
+    is historical under rule 15. An unstructured exact-version statement remains
+    literal; it is not silently widened by a later edit.
 17. Durable artifact publication is create-only. Before writing any artifact,
     component, or checksummed validation report, its publisher must preflight
     every intended output and every same-ID companion path. If any path exists,
@@ -74,6 +82,42 @@ paths and checksums are provenance and must remain valid.
     affected artifact and consumers remain unchanged. The discovering role
     raises an Architect escalation that records the expected and current
     checksums; the resolving Decision is the durable incident record.
+19. An active `revision_required` Review owns a Review-handoff lineage separate
+    from current GUP leaf selection. A later GUP consumes that ready handoff
+    only when it is in the reviewed GUP's lineage and its
+    `provenance.review_id` exactly names the active Review ID. Superseding the
+    reviewed GUP alone, or naming an earlier Review, is not consumption.
+    Exact Integration consumption of an Approved bundle remains terminal and
+    is not reopened by this Review-handoff rule.
+20. An active approved Architect Decision may retire one exact historical
+    `revision_required` Review handoff only through a validated
+    `review_handoff_retirements` record. The record pins the Review, a later
+    same-lineage resolution GUP, and an approved Review of that resolution GUP.
+    It classifies only the named historical handoff as informational history;
+    it is not implicit consumption and it does not make another Review, GUP,
+    Approved bundle, or Integration record complete. This route exists only
+    for an explicit, checksummed Decision record covering pre-field history.
+    A later GUP with an absent, null, or different `provenance.review_id` still
+    does not consume a Review handoff. A missing, malformed, inactive,
+    checksum-mismatched, non-descendant, or non-approved-resolution record is
+    diagnostic and leaves the ordinary ready Review handoff unchanged.
+21. An active approved Architect Decision may classify one exact current
+    decision-migration leaf as `retired_historical` or
+    `consumed_by_integrated_successor` through its validated
+    `migration_lineage_retirements` record. The record pins the leaf's ID,
+    path, and checksum; the integrated-successor disposition additionally pins
+    the consuming GUP and Integration manifest. It classifies only that stale
+    GUP as history, never implies a source reading, canonical mutation, or
+    completion of other Decision work. A missing, malformed, inactive,
+    checksum-mismatched, or non-leaf record is diagnostic and leaves ordinary
+    stale-migration handling unchanged.
+22. An approved Review may hand its exact Approved bundle to Integrator. A
+    `revision_required` Review must not hand Integrator a standalone preflight
+    or check: that result is Reviewer independent-validation evidence and a
+    passing result is recorded only in the Reviewer's approving successor.
+    Neither an Integration manifest nor an Integration Rejection records a
+    standalone pass. A Review handoff with `readiness: blocked` produces only a
+    blocked item for its named role; it never contributes to ReadyCount.
 
 ## Versioned Contract-Content Acceptance
 
@@ -94,10 +138,24 @@ may remain in a checksummed `blocked.csv` outside an Approved bundle under the
 ordinary packaging rules, but that exclusion is packaging evidence and not a
 fifth disposition.
 
-Every new Review declares `review_contract_version: '1.1'`. At publication, the
+Every new Review declares `review_contract_version: '1.3'`. At publication, the
 common Review schema validates every `edge_decisions` and `row_decisions`
-disposition against this four-term vocabulary. Reviews that omit the field are
-immutable legacy history and retain their existing structural treatment.
+disposition against this four-term vocabulary. In a 1.2-or-later Review, each
+`approved_with_revision` row carries one nonempty, row-local
+`exact_corrections` mapping containing every executable correction. The strings
+`exact_correction`, `corrected_fields`, and `corrected_row` are not aliases.
+They are invalid on such a row, as is an executable correction nested under
+`required_builder_revision`. The compiler rejects a missing, unread, or
+non-row-local 1.2 correction with the ref and observed key; it never guesses or
+silently drops a correction. Reviews declaring 1.1 or omitting the field remain
+immutable historical evidence under their original structural treatment.
+
+An approved Review hands Integrator only its exact Approved bundle. A
+`revision_required` Review may request a concrete Builder, Analyst, Reviewer,
+or Architect action, but never a standalone Integrator check. A check that
+decides whether the same GUP is now approvable is reproduced or independently
+verified in the Reviewer's successor `independent_validation`; that successor,
+not an Integration-side pass record, is the durable approval evidence.
 
 The ordinary outcome remains `passed` in a Decision Implementation Report and
 `verified_versioned_contract_content` in its independent Review. It is not
@@ -913,9 +971,44 @@ Queue tooling must prove that:
     checksums, minimum versions, and substantive-anchor evidence validate; a
     legacy exact-version test has this path only through a later checksummed
     authorization that names it exactly.
+49. an active revision-required Review remains one ready handoff even when its
+    reviewed GUP has a later unconsuming revision; a same-lineage successor GUP
+    with the exact `provenance.review_id` consumes that handoff, while an
+    unrelated or earlier Review reference does not; and an exact Integration
+    record continues to consume its Approved bundle.
+50. an exact active Decision Review-handoff retirement record makes only its
+    named historical `revision_required` Review informational history when its
+    resolution GUP is a later same-lineage descendant and its exact resolution
+    Review is approved; absent, null, or different `provenance.review_id` never
+    supplies an inferred exception.
+51. an exact active Decision retirement record makes only its named current
+    decision-migration leaf informational history; each legal disposition
+    requires its exact evidence, and a missing or invalid record leaves an
+    otherwise stale migration as the normal Builder reissue diagnostic.
 
 ## Version History
 
+- **1.24 - 2026-08-26:** Established Review-contract 1.3: standalone
+  preflights are Reviewer approval evidence, not Integrator artifacts; a
+  revision-required Review cannot route Integrator a check, and blocked Review
+  handoffs never count as ready work.
+- **1.23 - 2026-08-25:** Established Review-contract 1.2: executable
+  `approved_with_revision` corrections are nonempty row-local
+  `exact_corrections` mappings; alias and non-row-local forms fail explicitly
+  without retroactively rewriting historical Reviews.
+- **1.22 - 2026-08-23:** Made approved implementation-report and independent
+  Review versioned-contract-content evidence a historical snapshot, while
+  preserving strict current verification before approval.
+- **1.21 - 2026-08-23:** Added explicit, checksummed Architect retirement of
+  exact pre-field Review handoffs after a later same-lineage GUP has an
+  independently approved Review; missing Review provenance remains
+  non-consumption.
+- **1.20 - 2026-08-22:** Added exact active-Decision retirement of obsolete
+  decision-migration leaves while retaining strict handling of unretired stale
+  work.
+- **1.19 - 2026-08-22:** Made active revision-required Review handoffs a
+  distinct lineage, consumed only by exact same-lineage GUP provenance, without
+  reopening exact Integrated Approved bundles.
 - **1.18 - 2026-08-20:** Made durable publication create-only across all
   artifact components and validation reports, and defined Architect-recorded
   handling of a published checksum that no longer resolves.

@@ -1,0 +1,176 @@
+schema_version: '1.0'
+id: ESC-2026-08-22T15.02.35.116Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-22'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The queue asks the Builder to re-issue GUP-MIG-DEC-2026-0015-0016-r03 and
+    GUP-MIG-DEC-2026-0024-r01 against the current canonical baseline. Neither can
+    be re-issued mechanically. All three Decisions were enumerated against a
+    corpus of 3961 and 4118 rows; canonical now holds 4501. DEC-2026-0016 and
+    DEC-2026-0024 are already satisfied in canonical, and DEC-2026-0015 row
+    locators no longer identify their rows unambiguously. Re-enumeration is an
+    Architect act, not a Builder replan.
+  blocking_ids: []
+
+trigger: >-
+  ESCALATION_CONTRACT 1.2. Completing the assigned work would require the Builder
+  to resolve an ambiguous identity by guess and to reinterpret what an approved
+  Decision enumerated.
+
+question: >-
+  DEC-2026-0015 canonical row locators, DEC-2026-0016 citation revisions, and
+  DEC-2026-0024 legacy row removal were all written against corpus states that
+  have since moved. Two of the three appear already satisfied. How should each be
+  dispositioned, and how should the shared MIG-DEC-2026-0015-0016 lineage be
+  split when its two Decisions now need opposite outcomes?
+
+what_happened:
+  assigned_work: >-
+    The queue scanner reports decision_migration_lineage_error against both
+    GUP-MIG-DEC-2026-0015-0016-r03 and GUP-MIG-DEC-2026-0024-r01: each was
+    planned against a canonical baseline that has since changed, and the Builder
+    must re-issue it.
+  what_the_builder_did: >-
+    Replanned both from their source Decisions against the current canonical and
+    registry, changing nothing. Both plans return blocks_approval true.
+    GUP-MIG-DEC-2026-0015-0016 raises 20 errors; GUP-MIG-DEC-2026-0024 raises 1.
+    Each error was then characterised individually against live canonical to
+    establish whether the enumerated work is still owed, already done, or absent.
+  baselines:
+    canonical_now:
+      checksum: sha256:c83cefd3d7d92b4d910001fa514d9dbdc74b3a3e2aea060fc3656dce5f88df09
+      data_rows: 4501
+    gup_mig_dec_2026_0015_0016_r03_planned_against:
+      checksum: sha256:8389d42f5373422715964f4d589bc948ac8930b24f7d4940f86e10a92a50926f
+      data_rows: 3961
+    gup_mig_dec_2026_0024_r01_planned_against:
+      checksum: sha256:43b5be90b9110943f3369daa9e82fd78b190c5586b5ec4260f8d685bc4f0261c
+      data_rows: 4118
+  decision_checksums_unchanged: >-
+    All three Decision files still hash to the values their GUPs pinned, so the
+    authority itself has not moved. Only the corpus underneath it has.
+
+current_state:
+  DEC-2026-0015:
+    finding: >-
+      All 16 endpoint repoints are still owed. Every from value survives in
+      canonical, but not one of the 16 row locators still identifies its row.
+    displacement: >-
+      Eight locators are displaced by exactly one row (1984 to 1983, 1990 to
+      1989, 2107 to 2106, 2215 to 2214, 2867 to 2866, 3001 to 3000, 3350 to 3349,
+      1702 to 1701), consistent with a single deletion above them.
+    why_the_builder_will_not_infer_it: >-
+      A tidy off-by-one is still a guess. It is also not uniformly resolvable:
+      spell_hold_person appears as a target_id at rows 2214, 3349, 4054 and 4450,
+      and the Decision names two of them. Choosing which two is exactly the
+      ambiguous-identity resolution the Builder is prohibited from performing.
+      Further, rows 2258, 2259 and 3184 already carry the repoint target
+      rule_immobile, so the corpus is in a mixed state that a positional re-read
+      cannot distinguish from work already done.
+    also_pending: >-
+      9 node relabels, 7 node additions, 10 label normalizations without repoint,
+      and 1 merged-and-removed row were not separately characterised, because the
+      repoint locators already block the plan.
+  DEC-2026-0016:
+    finding: >-
+      All 9 citation revisions are already applied in canonical. Each assertion
+      resolves cleanly on its five-field key and each already cites its to_page.
+    detail:
+      - spell_bless MODIFIES cbt_morale improves morale - row 531 cites 43, to_page 43
+      - spell_bless MODIFIES cbt_tohit attack bonus - row 532 cites 43, to_page 43
+      - spell_know_alignment FEEDS_INTO sys_alignment - row 525 cites 45, to_page 45
+      - spell_cure_disease OVERRIDES rule_disease - row 520 cites 47, to_page 47
+      - spell_glyph_of_warding TRIGGERS exp_level_loss - row 535 cites 47, to_page 47
+      - spell_neutralize_poison OVERRIDES save_poison - row 521 cites 48, to_page 48
+      - spell_atonement OVERRIDES sys_alignment - row 524 cites 49, to_page 49
+      - align_change CONSTRAINS sys_alignment - row 413 cites 34, to_page 34
+      - align_change ALTERNATIVE_TO rule_involuntary_change - row 414 cites 34, to_page 34
+    why_the_planner_rejects_it: >-
+      The planner checks the from_page precondition, which now fails on all nine.
+      That rejection is correct behaviour and not a defect: a before-image guard
+      cannot distinguish already-done from wrong, and must not try. But it does
+      mean no GUP can be produced for this Decision, because there is no
+      remaining work for one to carry.
+  DEC-2026-0024:
+    finding: >-
+      Already satisfied. The node the Decision authorises,
+      rule_greater_mistletoe, is present in the registry at degree 0. The legacy
+      row it names for removal is absent from canonical by all three locators.
+    searched:
+      by_row_number: >-
+        Row 1502 now carries spell_sleep to monster_hd, unrelated to the
+        class_druid to spell_component_material row the Decision names.
+      by_exact_before_image: no match anywhere in canonical
+      by_five_field_assertion_key: no match anywhere in canonical
+      by_subject: no class_druid row with a mistletoe source_label survives
+
+options_considered:
+  - option: >-
+      Architect re-enumerates DEC-2026-0015 against the current canonical
+      baseline, and rules DEC-2026-0016 and DEC-2026-0024 discharged without
+      migration.
+    impact: >-
+      Matches what the evidence shows for each of the three. Costs one Architect
+      pass over 16 repoints plus the uncharacterised node and label operations.
+    builder_preference: preferred
+  - option: >-
+      Architect restates DEC-2026-0015 locators as content-addressed five-field
+      assertion keys rather than physical row numbers.
+    impact: >-
+      Fixes the recurrence rather than this instance. Every canonical insertion
+      invalidates every physical_csv_row locator in every open Decision, and this
+      is the second time that has blocked a Builder re-issue. Costs more now.
+      DEC-2026-0016 already uses assertion keys and its identities resolved
+      perfectly across 540 rows of drift, which is the evidence that it works.
+    builder_preference: preferred as a follow-up if not done here
+  - option: Builder applies the off-by-one shift and re-issues.
+    impact: >-
+      Rejected. It is a guess, it is not uniformly resolvable for
+      spell_hold_person, and a wrong repoint writes a false edge into canonical
+      carrying an approved Decision authority.
+    builder_preference: refused
+  - option: Withdraw both GUPs and close the lineage with no successor.
+    impact: >-
+      Rejected on its own. The 16 DEC-2026-0015 repoints are genuinely still
+      owed; closing the lineage would silently drop them.
+    builder_preference: refused
+
+governance_impact: >-
+  MIG-DEC-2026-0015-0016 is a single lineage over two Decisions that now require
+  opposite dispositions: 0015 re-enumerated, 0016 discharged. The Architect will
+  need to say whether the successor covers 0015 alone under a new lineage id, or
+  whether the joint lineage is closed and reopened. The Builder has not chosen,
+  because lineage identity is not its to assign.
+
+blocking:
+  builder_work_blocked:
+    - GUP-MIG-DEC-2026-0015-0016 successor
+    - GUP-MIG-DEC-2026-0024 successor
+  independent_second_blocker: >-
+    Even a clean plan could not be published right now. plan-decision-migration
+    refuses on a failing Builder suite, and the suite is red with 5 failures:
+    LiveCavalierRepointCase.test_no_emitted_row_names_a_retired_identity plus
+    four in test_edge_schema.TestFullCorpus, all tracing to the DEC-2026-0014
+    legacy-endpoint debt pin. APPROVED-GUP-MIG-DEC-2026-0050-r04-r01 removes that
+    debt and is published, approved, and awaiting the Integrator with no
+    integration record against it. That integration is the prerequisite for any
+    Builder publication, this one included.
+
+resolution:
+  decision_id: DEC-2026-0055
+  decision_path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml
+  outcome: >-
+    DEC-2026-0016 and DEC-2026-0024 are already integrated through exact
+    successor lineages, while the combined 0015/0016 r03 leaf is historical
+    under DEC-2026-0021's source gate. Builder must not replan either stale
+    GUP; it must implement exact retirement-aware scanner classification.

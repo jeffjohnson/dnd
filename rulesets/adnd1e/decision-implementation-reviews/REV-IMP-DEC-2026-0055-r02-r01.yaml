@@ -1,0 +1,54 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0055-r02-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: All five DEC-2026-0055 direct implementation acceptance tests are independently verified.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0055-r02
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0055-r02.yaml
+  checksum: sha256:17c6759a8f3b49f56880c6ab7bacee73689766d6790dc8d9cea19f10512c9bb3
+decision_input:
+  id: DEC-2026-0055
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml
+  checksum: sha256:46a06f296d1e477a69a808c5e4f7c714812bcb5191b09e5541e71fdc914abb59
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: WORK_QUEUES is Version 1.20 and independently retains every authorized retirement-record anchor.
+    verified_versioned_contract_content:
+      authority: {id: DEC-2026-0055, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml, checksum: sha256:46a06f296d1e477a69a808c5e4f7c714812bcb5191b09e5541e71fdc914abb59, authorized_acceptance_test_index: 1}
+      authorized_acceptance_test_index: 1
+      contracts:
+        - {path: contracts/WORK_QUEUES.md, checksum: sha256:b93ab9904c09b4c0e5305b6ca166be116c9aec2fb912ba3f0368572b7e427f8a, observed_version: '1.20', minimum_version: '1.20', anchors_present: [decision-migration retirement record, exact current leaf, malformed retirement leaves ordinary stale-work handling unchanged]}
+  - acceptance_test_index: 2
+    disposition: verified_versioned_contract_content
+    evidence: ARTIFACT_LIFECYCLE is Version 1.16 and independently retains every authorized historical-retirement anchor.
+    verified_versioned_contract_content:
+      authority: {id: DEC-2026-0055, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0055.yaml, checksum: sha256:46a06f296d1e477a69a808c5e4f7c714812bcb5191b09e5541e71fdc914abb59, authorized_acceptance_test_index: 2}
+      authorized_acceptance_test_index: 2
+      contracts:
+        - {path: contracts/ARTIFACT_LIFECYCLE.md, checksum: sha256:ae80ac861e26f95616fdb77575e7bf5d58d23f2d7b5b20407dccac7fa88db189, observed_version: '1.16', minimum_version: '1.16', anchors_present: [immutable historical evidence, retirement is not completed canonical work, checksummed successor and integration evidence]}
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: The amended Decision schema accepts both legal checksummed retirement shapes and the focused schema suite rejects every named malformed case.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: Independently recomputed the two current-leaf checksums, DEC-2026-0021 basis checksum, combined successor checksum, and INT-20260814-001 checksum; scanner reports both leaves as informational migration_lineage_retired history.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: The report pins DEC-2026-0055 exactly, records all direct tests as passed, and its focused scanner/schema suite passed independently.
+independent_validation:
+  passed: true
+  commands:
+    - {command: 'SHA-256 comparison of report, Decision, validation report, implementation files, and every retirement artifact', exit_code: 0, result: passed, summary: Every expected checksum matched current bytes.}
+    - {command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest test_scan_agent_queues.MigrationLineageRetirementCase test_common_schemas.TestMigrationLineageRetirementRecords test_common_schemas.TestPublishedReviewsStillValidate -q', exit_code: 0, result: passed, summary: Ran 29 focused retirement and published-review tests; all passed.}
+overall_disposition: approved

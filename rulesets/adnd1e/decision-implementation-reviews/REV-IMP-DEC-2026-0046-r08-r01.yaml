@@ -1,0 +1,30 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0046-r08-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff: {next_role: none, readiness: terminal, reason: All DEC-2026-0046 acceptance tests independently verified., blocking_ids: []}
+reviewed_by: reviewer
+reviewed_implementation: {id: IMP-DEC-2026-0046-r08, path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0046-r08.yaml, checksum: sha256:666e0a29627c93b6abfeeda04234b152535f9ff5cefee6897b32b65f5ac20a49}
+decision_input: {id: DEC-2026-0046, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0046.yaml, checksum: sha256:2ebc1d44dfb1fb51583415f535896f41dac2bc64a6bfef4157c99e89486bbe0b}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: Exact approved Review consumption makes later implementation-file drift informational only for completed lineages.}
+  - {acceptance_test_index: 2, disposition: verified, evidence: 'Missing, revision-required, malformed, or stale-checksum Reviews leave pre-approval drift strict and restore owner work.'}
+  - {acceptance_test_index: 3, disposition: verified, evidence: The completed Decision exemption does not suppress the independently discoverable Decision that changed a shared file.}
+  - acceptance_test_index: 4
+    disposition: verified_versioned_contract_content
+    evidence: DEC-0048 exactly authorizes DEC-0046 test 4 as current minimum-version evidence; all three current anchors remain present.
+    verified_versioned_contract_content:
+      authority: {id: DEC-2026-0048, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0048.yaml, checksum: sha256:13f3b9423419741ac2e01b87451b7b9a64e0fd5e721efa6e5fb6f97c1f4d5698, authorized_acceptance_test_index: 4}
+      authorized_acceptance_test_index: 4
+      contracts:
+        - {path: contracts/WORK_QUEUES.md, checksum: sha256:b93ab9904c09b4c0e5305b6ca166be116c9aec2fb912ba3f0368572b7e427f8a, observed_version: '1.20', minimum_version: '1.13', anchors_present: [approved implementation-review checksum snapshots are historical evidence, pre-approval implementation-file drift remains strict, post-approval implementation-file drift is informational only]}
+independent_validation:
+  passed: true
+  commands:
+    - {command: 'SHA-256 comparison of report, Decision, report component, and implementation files', exit_code: 0, result: passed, summary: Every expected checksum matched current bytes.}
+    - {command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest PostApprovalFileDriftCase and related focused suites -q', exit_code: 0, result: passed, summary: Combined focused suite passed 182 tests.}
+overall_disposition: approved
