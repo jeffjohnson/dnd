@@ -1,0 +1,233 @@
+schema_version: '1.0'
+id: DEC-2026-0065
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-054-064-druid-spells
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Make Integrator queue traversal honor the exact DEC-2026-0064 historical
+    unreadable-Review repair, fail closed for every other parse failure, and
+    publish a Decision Implementation Report for independent review.
+  blocking_ids: []
+
+decision_date: '2026-08-27'
+escalation_id: ESC-2026-08-27T10.18.22.038Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  How must Integrator queue traversal handle the exact immutable unreadable
+  Druid Review bridge already authorized by DEC-2026-0064, while remaining
+  fail-closed for every unrecognized malformed artifact?
+
+ruling: >-
+  Do not edit, delete, reserialize, or supersede r04. DEC-2026-0064 remains the
+  sole authority for treating r04 as historical unreadable evidence. Before
+  Integrator traverses any Review directory, it must load active approved
+  Architect Decisions and independently validate the exact DEC-2026-0064
+  `review_malformed_lineage_repairs` record: Decision checksum, every pinned
+  artifact checksum, r04's required YAML failure, r05-to-r04 and r06-to-r05
+  direct links, r06's reviewed GUP, disposition, handoff, and exact r01+r06
+  input set. Only then may the traversal omit r04's unreadable bytes from
+  Review-lineage state. It must record one informational historical notice; it
+  must not recover or use any r04 content.
+
+  Every other unreadable Review, an absent or inactive governing Decision, a
+  changed DEC-2026-0064 checksum, or any invalid field of that repair record is
+  a fatal queue-integrity diagnostic. The Integrator queue returns no ready
+  bundles, `queue` and `integrate` return exit code 2 without a traceback, and
+  no dry run or canonical transaction begins. This applies equally to an
+  unreadable approving Review, a mid-lineage Review, and a Review unrelated to
+  the selected bundle.
+
+rationale:
+  - >-
+    A malformed Review can change whether a published bundle is withdrawn, so
+    silently skipping an unknown parse failure makes every reported ready bundle
+    untrustworthy. Failure must be explicit and fail closed.
+  - >-
+    r04 is exceptional only because DEC-2026-0064 pins its bytes, expected
+    parser failure, direct bridge, active successor, and Builder input boundary.
+    The same record proves that no current Integration decision depends on r04
+    content.
+  - >-
+    Integrator is an independent transactional consumer. It cannot trust an
+    earlier scanner result in place of its own admission checks, but it may
+    apply the same checksummed Decision record without inventing a second
+    semantic exception.
+
+affected_contracts: []
+affected_registries: []
+
+affected_artifacts:
+  governing_decision:
+    id: DEC-2026-0064
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0064.yaml
+    checksum: sha256:3ad3bbc7386c47fb432b6863a3e8ae5ca739ea11567a3fe003e3fafd04630a18
+  unreadable_review:
+    id: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04.yaml
+    checksum: sha256:f28b9d2b15dcebf4053e3931b9190e54d70b27ca6da9ceadf3a2aebbefc1fd29
+  bridge_review:
+    id: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r05
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r05.yaml
+    checksum: sha256:f29829b4a44f5021b8c5944a9ea501eb200fd4d0f269fa4e28d1da55d2505505
+  active_successor_review:
+    id: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r06
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r06.yaml
+    checksum: sha256:8ae549d4c845e1dca9c246c536d8a6c8db22a897b8f5e277fa2b49c8b73fadd2
+  blocked_ready_bundle:
+    id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01.yaml
+    checksum: sha256:e0203d0138fa8b7599e7eacc9437fdb4dbc304412498c465866b96c9160eee42
+    component_path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01.edges.csv
+    component_checksum: sha256:b8342ceb08970d1fc65cfe2bc1af2c40255e4717d08a765a221ba50c9af54f33
+
+governing_repair_record:
+  decision_input:
+    id: DEC-2026-0064
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0064.yaml
+    checksum: sha256:3ad3bbc7386c47fb432b6863a3e8ae5ca739ea11567a3fe003e3fafd04630a18
+  field: review_malformed_lineage_repairs
+  record_index: 0
+  required_disposition: historical_unreadable_bridge
+  informational_code: historical_unreadable_review
+  fatal_code: review_yaml_unreadable
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  profile_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    No lineage changes. Integrator consumes the existing checksummed
+    DEC-2026-0064 record as queue-admission evidence and does not deserialize
+    the named historical Review.
+  direct_implementation: >-
+    Integrator hardens its queue loader and CLI, then publishes
+    IMP-DEC-2026-0065-r01. No GUP, Review, Approved bundle, Integration record,
+    registry, or canonical file is an implementation artifact for this Decision.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision and decide the escalation. Preserve DEC-2026-0064,
+      every named Review, the Bards bundle, registry, and canonical artifacts
+      unchanged.
+  - step: 2
+    owner: integrator
+    action: >-
+      Implement Decision-governed Review admission in the Integrator queue. It
+      must independently validate the exact active DEC-2026-0064 repair record
+      before omitting r04, emit the named informational notice separately from
+      fatal diagnostics, and fail closed without tracebacks for every denied or
+      unrecognized parse failure. `cmd_integrate`, including `--dry-run`, must
+      refuse whenever fatal queue diagnostics exist. Publish IMP-DEC-2026-0065-r01.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0065-r01. Verify exact DEC-2026-0064
+      validation, the separate informational channel, fatal no-transaction
+      behavior, and preservation of ordinary bundle queue semantics.
+
+acceptance_tests:
+  - >-
+    A fixture containing DEC-2026-0064's exact repair record and pinned r04,
+    r05, and r06 bytes returns from `ready_queue` without an exception. It emits
+    one `historical_unreadable_review` informational record naming DEC-2026-0064
+    and r04, produces no fatal diagnostic, and continues to classify unrelated
+    valid Approved bundles by their ordinary Review lineages.
+  - >-
+    Each condition that invalidates DEC-2026-0064's repair route in the common
+    scanner also invalidates Integrator admission: an absent, inactive, or
+    checksum-mismatched Decision; a missing or altered record; any mismatched
+    pinned artifact; parseable r04; wrong parser-failure fragment; broken direct
+    r05/r06 links; wrong r06 GUP, disposition, or handoff; or a changed r01+r06
+    input set. Each yields `review_yaml_unreadable`, no ready bundles, and exit
+    code 2 without a Python traceback.
+  - >-
+    A different unreadable Review, including an approving Review or a Review in
+    another packet lineage, is never informational history. Queue and integrate
+    return exit code 2, do not call the transaction runner, do not write an
+    Integration or rejection record, and do not mutate canonical or registry
+    state. Restoring valid YAML restores ordinary queue behavior.
+  - >-
+    Existing valid bundle discovery, manifest checks, Review-withdrawal rules,
+    rejected and integrated buckets, direct decision-migration bundles, and
+    normal dry-run behavior remain unchanged. Informational history alone does
+    not make `queue` exit 2 or prevent a normal transaction.
+  - >-
+    IMP-DEC-2026-0065-r01 pins this Decision checksum, records passing focused
+    and full applicable Integrator-suite evidence, reports every direct
+    acceptance test as passed, and is approval-ready for independent Reviewer
+    verification.
+
+post_implementation_requirements:
+  - >-
+    The existing Bards bundle is not approved or integrated by this Decision.
+    After the repaired admission checks publish, Integrator evaluates it through
+    the normal bundle-verification and transaction lifecycle.
+  - >-
+    DEC-2026-0064's Builder implementation and the ordinary Druid GUP lifecycle
+    remain independent work. This Decision neither completes nor replaces them.
+  - >-
+    No role may edit r04 in place or create an r04 successor. The exact current
+    r05-to-r06 bridge remains the only authorized lineage treatment.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This governs an exact transaction-admission failure and immutable workflow
+    evidence. It changes no ontology, source interpretation, identity, edge
+    semantics, controlled vocabulary, registry, profile, or canonical content.
+
+governance_changelog:
+  - >-
+    DEC-2026-0065 extends DEC-2026-0064's exact historical-unreadable Review
+    classification to Integrator admission. It separates trusted historical
+    notices from fatal queue-integrity diagnostics and forbids both silent skips
+    and tracebacks.
+
+exact_diff:
+  tooling/integrator/src/adnd1e_integrator/bundles.py:
+    - 'Validate the exact active DEC-2026-0064 repair record before Review traversal and return informational versus fatal queue state.'
+  tooling/integrator/src/adnd1e_integrator/cli.py:
+    - 'Render informational history and refuse queue or integrate operations with fatal admission diagnostics.'
+  tooling/integrator/tests/test_bundles.py:
+    - 'Cover exact historical admission, all denial cases, unrelated malformed Reviews, and ordinary queue preservation.'
+  tooling/integrator/tests/test_transaction.py:
+    - 'Prove queue-integrity failure prevents dry-run and transaction invocation without canonical mutation.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0065.yaml:
+    - 'Record the exact Integrator admission rule, fail-closed behavior, and acceptance tests.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-27T10.18.22.038Z.yaml:
+    - 'Record DEC-2026-0065 as the resolution of the Integrator queue-blocker escalation.'
+
+exact_diff_ownership:
+  - {path: tooling/integrator/src/adnd1e_integrator/bundles.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/src/adnd1e_integrator/cli.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/tests/test_bundles.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/tests/test_transaction.py, owner: integrator, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0065.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-27T10.18.22.038Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: integrator
+follow_up_owners:
+  architect:
+    - Preserve DEC-2026-0064, the Druid Review lineage, the Bards bundle, and all canonical artifacts unchanged.
+  integrator:
+    - Implement only exact Decision-governed admission, publish IMP-DEC-2026-0065-r01, then process ordinary ready bundles through normal verification.
+  reviewer:
+    - Independently review the implementation report and preserve ordinary bundle Review authority.
+  builder:
+    - No action from this Decision. Complete DEC-2026-0064 independently.
+  analyst:
+    - No action.

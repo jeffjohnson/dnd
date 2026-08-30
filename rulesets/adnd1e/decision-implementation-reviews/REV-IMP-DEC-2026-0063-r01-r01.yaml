@@ -1,0 +1,102 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0063-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    All DEC-2026-0063 acceptance tests are independently verified. The
+    completed Magic-User successor and Integration lineages remain historical
+    evidence and do not reopen this terminal implementation review.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0063-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0063-r01.yaml
+  checksum: sha256:82b9b90c6bfbd8cd47549fe9936d6a835621603958444e433b12b6dbb3df82b2
+decision_input:
+  id: DEC-2026-0063
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0063.yaml
+  checksum: sha256:4afb916691c021be27ba2879cdd3da1ef380d153d8ce005a8d331954ba7f0652
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      Review-contract 1.3 rejects either status or overall_disposition set to
+      revision_required when the handoff targets Integrator, while preserving
+      approved bundle handoff and historical 1.1/1.2 treatment. The focused
+      contract suite passed.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      A blocked revision-required Review now produces exactly one blocked item
+      for its named role with unresolved blockers and no ready duplicate;
+      changing only readiness to ready restores ordinary routing. Approved
+      bundle routing remains available alongside blocked work.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      The exact decided escalation names both legacy Reviews, suppresses their
+      standalone Integrator handoffs, and leaves the Decision implementation as
+      the only direct Builder work until the named successors exist. The live
+      replacement case passed.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      The two exact Review-contract 1.3 successors preserve their immutable
+      GUPs and source judgments, record the five-field preflight, emit ordinary
+      bundles, and are consumed by INT-20260826-001. That record applies 434
+      edges and names both exact bundle and Review checksums; no standalone-pass
+      Integrator record was created.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      The report pins the Decision and every listed implementation file,
+      accounts for all five acceptance tests, and its validation report is
+      schema-valid. Independent focused validation passed 38 tests; full common
+      and Builder suites passed 916 and 674 tests respectively.
+scope_assessment: >-
+  In addition to DEC-2026-0063's three common-tool paths, the report records
+  narrow changes to two Builder tests. They change no production behavior,
+  source interpretation, registry, or canonical data: each updates a test that
+  had asserted a pre-integration endpoint state now resolved by the two
+  ordinary bundles DEC-2026-0063 released. The added guards retain the actual
+  invariant—only unresolved endpoints must stay out of additions, and unreadable
+  Reviews must be superseded or consumed—so this is accepted as necessary live
+  validation maintenance rather than an unapproved workflow or data change.
+independent_validation:
+  passed: true
+  commands:
+    - command: >-
+        SHA-256 comparison of the implementation report, Decision, decided
+        escalation, validation report, and all seven listed implementation files.
+      exit_code: 0
+      result: passed
+      summary: Exact Decision provenance and every listed implementation checksum matched.
+    - command: >-
+        [cwd tooling/common] PYTHONPATH=.;tests python -m unittest
+        test_scan_agent_queues.BlockedReviewReadinessCase
+        test_scan_agent_queues.LiveBlockedReviewReadinessCase
+        test_scan_agent_queues.DecisionHandoffReplacementLiveCase
+        test_common_schemas.TestReviewIntegratorHandoffContract -q
+      exit_code: 0
+      result: passed
+      summary: Ran 38 tests in 19.222s OK.
+    - command: >-
+        [cwd tooling/common] PYTHONPATH=.;tests python -m unittest discover
+        -s tests -p test_*.py
+      exit_code: 0
+      result: passed
+      summary: Ran 916 tests in 220.832s OK.
+    - command: >-
+        [cwd tooling/builder] PYTHONPATH=src;tests python -m unittest discover
+        -s tests -p test_*.py
+      exit_code: 0
+      result: passed
+      summary: Ran 674 tests in 116.631s OK (skipped=38).
+overall_disposition: approved

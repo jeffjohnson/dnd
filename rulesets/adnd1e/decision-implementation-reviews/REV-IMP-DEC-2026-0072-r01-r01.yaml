@@ -1,0 +1,79 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0072-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: DEC-2026-0072's exact historical implementation-Review repair and staged publication preflight are independently verified.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0072-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0072-r01.yaml
+  checksum: sha256:19f26821b1d671a496c13802758d963b1c8a41be654d500e0ad7ccce0ac42d7c
+decision_input:
+  id: DEC-2026-0072
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0072.yaml
+  checksum: sha256:f20f080c28f0fddaf66296887ffe86223931e01738dcbd46f881344ad2cbae69
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: The 31 focused repair tests pass and verify only the pinned unreadable r01 and its schema-valid direct r02 successor.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: The same focused suite exercises all record-denial cases and preserves ordinary fatal treatment for every other unreadable implementation Review.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: The 22 target-only validator tests pass, including invalid YAML, schema, root-shape, reference, no-write, and no-corpus-read denial cases.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: Current Reviewer instructions require explicit-schema target-only staged preflight before durable Review, Approved, implementation-Review, and escalation publication.
+  - acceptance_test_index: 5
+    disposition: verified_versioned_contract_content
+    evidence: Both current contracts meet their stated minimum versions and retain every Decision-pinned substantive anchor.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0072
+        path: rulesets/adnd1e/escalations/decisions/DEC-2026-0072.yaml
+        checksum: sha256:f20f080c28f0fddaf66296887ffe86223931e01738dcbd46f881344ad2cbae69
+        authorized_acceptance_test_index: 5
+      authorized_acceptance_test_index: 5
+      contracts:
+        - path: contracts/WORK_QUEUES.md
+          checksum: sha256:d615ee560701830132f62b8dc73932c748bada97692ebf6a480d867634bb4ce1
+          observed_version: '1.27'
+          minimum_version: '1.27'
+          anchors_present: [decision_implementation_review_unreadable_predecessor_repairs, Every role stages a YAML artifact outside its durable destination]
+        - path: contracts/ARTIFACT_LIFECYCLE.md
+          checksum: sha256:3e0da0f6e674ec4bbf42a51c9168370b5ea555a02e07490c57ac72c457f0df78
+          observed_version: '1.21'
+          minimum_version: '1.21'
+          anchors_present: [Before creating a durable YAML artifact, its publisher stages the intended exact, It is not a repository sweep]
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: The report schema, validation report, Decision, and every implementation-file checksum match current bytes; all six acceptance results are passed.
+scope_assessment: >-
+  The implementation admits only the exact unreadable implementation-Review
+  history record and validates staged target bytes before publication. It does
+  not recover historic content or mutate source, registry, or canonical data.
+independent_validation:
+  passed: true
+  commands:
+    - command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest test_scan_agent_queues.ImplementationReviewRepairCase test_scan_agent_queues.LiveImplementationReviewRepairCase -q'
+      exit_code: 0
+      result: passed
+      summary: Ran 31 focused implementation-Review repair tests successfully.
+    - command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest test_validate_artifact -q'
+      exit_code: 0
+      result: passed
+      summary: Ran 22 target-only staged-preflight tests successfully.
+    - command: JSON Schema validation and SHA-256 comparison of the report, validation report, DEC-2026-0072, decided escalation, implementation files, and current versioned contracts.
+      exit_code: 0
+      result: passed
+      summary: All declared schemas, checksums, versions, and substantive anchors matched current bytes.
+overall_disposition: approved

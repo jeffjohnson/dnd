@@ -1,0 +1,81 @@
+schema_version: '1.0'
+id: ESC-2026-08-27T23.46.27.645Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+raised_by: reviewer
+decision_owner: architect
+raised_on: '2026-08-27'
+decision_id: DEC-2026-0068
+decided_on: '2026-08-28'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    DEC-2026-0067 requires a narrow checksummed admission decision for the
+    published Bards r03 successors before normal Integrator admission.
+  blocking_ids: []
+originating_artifacts:
+  authorizing_decision:
+    id: DEC-2026-0067
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0067.yaml
+    checksum: sha256:0169dce390f2301879d9b73c5ecb2288df35b9996530bbbdcb080f362d828532
+  trusted_parent_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r01.yaml
+    checksum: sha256:e2fa7d7677024976a146ad9a12d4946461897ca6e56372751d4e0e09d0a89d98
+  unreadable_direct_predecessor:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r02
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r02.yaml
+    checksum: sha256:e06eb90dee6c5a14a2aef14518a759da1dece6d5874c2ddf83f7cd6782a8fb56
+    parser_failure: "could not find expected ':'"
+  active_successor_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r03
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+    checksum: sha256:e0788ce7a183c8409450af65073054464d685d2bca484398abb2a04b6e9b2288
+  active_successor_bundle:
+    id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+    checksum: sha256:7064290c50c069776e5f28aab6cff8762eb56f21aa3b69161240fe507d2d0faa
+  integration_rejection:
+    id: INT-20260827-001
+    path: rulesets/adnd1e/reports/INT-20260827-001.rejected.json
+    checksum: sha256:682171a699a9afc81dda51d94a246f0d6d6c723726ea4604df92aa50f5f9e221
+question: >-
+  May Integrator admit exactly APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03 by
+  treating the checksummed r02 Review only as an unreadable historical direct
+  predecessor and by consuming the checksummed r03 successor instead?
+evidence:
+  published_r03_review: >-
+    The schema-valid r03 Review directly supersedes r02, independently pins the
+    trusted r01 Review, r04 GUP, and exact rejection, and declares the unchanged
+    57-row component as 29 additions followed by 28 pending additions after
+    eleven node registrations.
+  published_r03_bundle: >-
+    The schema-valid r03 manifest directly supersedes the r02 manifest, pins the
+    r03 Review and r04 GUP checksums, names the unchanged 57-row component, and
+    supplies complete operation-index coverage for rows 1 through 57.
+  scope: >-
+    No source interpretation, GUP assertion, node decision, registry entry,
+    edge assertion, component bytes, or canonical data was changed.
+options_considered:
+  - >-
+    Continue to fail closed for r02 and leave r03 inadmissible. This preserves
+    safety but leaves the DEC-2026-0067-authorized packaging correction unusable.
+  - >-
+    Admit only the exact checksummed r03 lineage under a narrow r02 historical
+    unreadability record. Recommended.
+recommended_resolution: >-
+  Record an exact direct-unreadable-predecessor admission for the checksummed
+  r02 Review, r03 Review, r03 Approved manifest, trusted r01 Review, and
+  rejection record. Permit normal Integrator admission of this one r03 bundle
+  only; preserve fail-closed behavior for every other unreadable Review.
+expected_migration_impact:
+  canonical_data: none
+  registry: none
+  source_interpretation: none
+  constitution_or_profile: narrow queue-admission support only if Architect approves
+  artifact_lineage: exact Bards r03 successor admission after r02 historical unreadability verification

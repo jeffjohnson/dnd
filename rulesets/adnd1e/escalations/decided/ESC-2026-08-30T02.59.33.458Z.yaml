@@ -1,0 +1,103 @@
+schema_version: '1.0'
+id: ESC-2026-08-30T02.59.33.458Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+raised_by: reviewer
+decision_owner: architect
+raised_on: '2026-08-30'
+decision_id: DEC-2026-0073
+decided_on: '2026-08-30'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The Bards integration-rejection queue item persists even though DEC-2026-0071
+    authorized and Reviewer published its sole r04 remedy. Decide the bounded
+    immutable-lineage treatment; Reviewer may not create an unauthorized r05.
+  blocking_ids: []
+originating_artifacts:
+  integration_rejection:
+    id: INT-20260827-001
+    path: rulesets/adnd1e/reports/INT-20260827-001.rejected.json
+    checksum: sha256:682171a699a9afc81dda51d94a246f0d6d6c723726ea4604df92aa50f5f9e221
+  rejection_recording_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r03
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+    checksum: sha256:e0788ce7a183c8409450af65073054464d685d2bca484398abb2a04b6e9b2288
+  authorized_current_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r04
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r04.yaml
+    checksum: sha256:51b9774672da9a7e5abb536b2213a76aaa5f6543f451a3d0f2f1c8bda1e51c22
+  authorized_current_bundle:
+    id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04.yaml
+    checksum: sha256:b125f97b06294e15e58fafa1faa09ddc764719696d4fb25aaa7931923c338d5d
+  governing_decision:
+    id: DEC-2026-0071
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0071.yaml
+    checksum: sha256:1a51e8af663c2b33e796483ca681baf40bad5607411d77192674a8e8610bcd27
+  reviewed_gup:
+    id: GUP-PKT-PHB-117-119-bards-r04
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-117-119-bards-r04.yaml
+    checksum: sha256:b8b29061f939c1e279a3207d1a4f51a27618ad2dbb4d46fbe002dea5b8b88357
+question: >-
+  Does the exact `integration_rejection_input` record in immutable Bards r03
+  consume INT-20260827-001 for queue purposes, or must a new Decision authorize
+  a further immutable successor that repeats the same record under the scanner's
+  recognized `integration_rejection` key?
+evidence:
+  review_lineage_observation: >-
+    r03 pins INT-20260827-001 by ID, path, and checksum under
+    integration_rejection_input and independently verifies the 29 additions /
+    28 pending additions partition. r04 directly supersedes r03, preserves the
+    exact GUP and 57-row component, restores the eleven proposed-node decisions
+    and the Pipes existing-identity reuse, and hands its matching bundle to
+    Integrator ready.
+  queue_observation: >-
+    scan_agent_queues.py's rejection-remediation predicate recognizes only the
+    keys integration_rejection, rejection_input, and rejected_by. It therefore
+    emits REVIEWER-INTEGRATION-REJECTION for APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01
+    despite the checksummed r03 record and DEC-2026-0071's ordinary r04 leaf.
+  governing_authority_observation: >-
+    DEC-2026-0071 authorizes exactly one r04 Review and matching Approved bundle
+    and directs Reviewer to publish only those artifacts. It does not authorize
+    an r05 successor or a scanner-contract reinterpretation.
+  source_and_graph_scope:
+    source_assertion_dispute: none
+    registry_or_canonical_change: none
+    gup_change: none
+options_considered:
+  - >-
+    Treat integration_rejection_input as an unstated scanner alias. Rejected
+    because queue behavior is contract and tool authority, not Reviewer
+    interpretation of immutable free-form fields.
+  - >-
+    Publish r05 with a recognized rejection key. Rejected because DEC-2026-0071
+    authorizes exactly one r04 Review and matching bundle, and published r04
+    artifacts cannot be altered.
+  - >-
+    Leave the stale remediation item unresolved. Rejected because it continues
+    to misassign completed Bards packaging work to Reviewer.
+  - >-
+    Issue a narrow Decision that either recognizes the exact r03 record as the
+    historical remediation evidence or authorizes one named successor with the
+    required key and handoff. Recommended.
+recommended_resolution: >-
+  Preserve every cited artifact byte-for-byte. Decide the exact checked lineage
+  treatment for INT-20260827-001 and, only if a new successor is necessary,
+  authorize its precise ID, predecessor, required rejection reference, bundle
+  treatment, and handoff. Do not reopen PHB source assertions, node identity,
+  GUP content, registry state, or canonical data.
+expected_migration_impact:
+  canonical_data: none
+  registry: none
+  source_interpretation: none
+  constitution_or_profile: none
+  artifact_lineage: >-
+    A Decision must resolve one queue-remediation recognition mismatch without
+    altering immutable Bards artifacts or widening the integration-rejection
+    contract generally.

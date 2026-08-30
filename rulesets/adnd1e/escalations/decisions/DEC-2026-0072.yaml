@@ -1,0 +1,283 @@
+schema_version: '1.0'
+id: DEC-2026-0072
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-054-064-druid-spells
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the exact unreadable Decision Implementation Review record and
+    the required target-only YAML publication preflight.
+  blocking_ids: []
+
+decision_date: '2026-08-29'
+escalation_id: ESC-2026-08-29T19.28.35.054Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  How is the immutable, unreadable DEC-2026-0065 r01 implementation Review
+  handled, and how must the repository prevent free-text YAML serialization
+  defects from reaching durable publication?
+
+ruling: >-
+  The existing r02 is the one valid direct successor of the unreadable r01
+  Decision Implementation Review. Builder must implement the exact record below
+  so r01 is reported as historical unreadable evidence rather than a fatal
+  scanner and schema-sweep error. The record is valid only while r01 retains its
+  pinned bytes and parser failure, r02 retains its pinned bytes, schema validity,
+  direct supersedes link, reviewed implementation, Decision provenance, and
+  revision-required disposition. It does not deserialize r01, infer its fields,
+  complete DEC-2026-0065, or exempt any other artifact.
+
+  The prevention rule is a required target-only staged preflight, not a mandated
+  YAML serialization library. Before any role creates a durable YAML artifact,
+  it must validate the exact staged UTF-8 bytes through the shared parser and
+  applicable JSON Schema, then perform the existing create-only destination
+  preflight. Parsing or schema validation failure prohibits publication. The
+  validator must not scan the corpus, reload packets, or inspect canonical data.
+  Existing durable artifacts remain immutable; this rule applies prospectively.
+
+rationale:
+  - >-
+    r02 already provides the only lawful correction to r01. Publishing another
+    Reviewer artifact would duplicate a completed successor rather than repair
+    the historical parse failure.
+  - >-
+    All three known unreadable Reviews arose while rendering free-text YAML.
+    Exact-byte parsing and schema validation catches both colon-space and
+    continuation failures regardless of how a role constructs YAML.
+  - >-
+    A per-artifact preflight gives each role the needed guarantee without the
+    cost and unrelated failure surface of re-reading the repository on every
+    publication.
+
+affected_contracts:
+  - path: contracts/WORK_QUEUES.md
+    previous_version: '1.26'
+    new_version: '1.27'
+    change: >-
+      Define exact unreadable Decision Implementation Review history and require
+      target-only staged YAML/schema preflight.
+  - path: contracts/ARTIFACT_LIFECYCLE.md
+    previous_version: '1.20'
+    new_version: '1.21'
+    change: >-
+      Require staged exact-byte YAML parsing and schema validation before
+      create-only durable publication.
+affected_registries: []
+affected_artifacts:
+  governing_decision:
+    id: DEC-2026-0065
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0065.yaml
+    checksum: sha256:abf453e11110a18577bc7ce8854358e48883f3edf5e1701380599dfbe19ac38e
+  reviewed_implementation:
+    id: IMP-DEC-2026-0065-r01
+    path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0065-r01.yaml
+    checksum: sha256:3043e9b139b273d6dfe681b4716beafdd40545d878d6fee696f8efe0f5bf026c
+  unreadable_review:
+    id: REV-IMP-DEC-2026-0065-r01-r01
+    path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0065-r01-r01.yaml
+    checksum: sha256:ad2503d214f53963af42845b5914be2157e015f275d6005e36d56bee66806cda
+  direct_successor_review:
+    id: REV-IMP-DEC-2026-0065-r01-r02
+    path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0065-r01-r02.yaml
+    checksum: sha256:bc775075b485c2a0aafad65c3b23ea5cd23790dbe30798db78ac4e64d205da07
+
+decision_implementation_review_unreadable_predecessor_repairs:
+  - disposition: historical_unreadable_direct_predecessor
+    reason: >-
+      DEC-2026-0065 implementation Review r01 is immutable YAML-unreadable
+      history. r02 is its sole schema-valid direct successor and records the
+      original report's required reissue without recovering r01 content.
+    unreadable_review:
+      id: REV-IMP-DEC-2026-0065-r01-r01
+      path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0065-r01-r01.yaml
+      checksum: sha256:ad2503d214f53963af42845b5914be2157e015f275d6005e36d56bee66806cda
+      parse_failure:
+        diagnostic_code: yaml_unreadable
+        message_fragment: 'mapping values are not allowed here'
+    successor_review:
+      id: REV-IMP-DEC-2026-0065-r01-r02
+      path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0065-r01-r02.yaml
+      checksum: sha256:bc775075b485c2a0aafad65c3b23ea5cd23790dbe30798db78ac4e64d205da07
+      required_supersedes: REV-IMP-DEC-2026-0065-r01-r01
+      required_disposition: revision_required
+    reviewed_implementation:
+      id: IMP-DEC-2026-0065-r01
+      path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0065-r01.yaml
+      checksum: sha256:3043e9b139b273d6dfe681b4716beafdd40545d878d6fee696f8efe0f5bf026c
+    decision_input:
+      id: DEC-2026-0065
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0065.yaml
+      checksum: sha256:abf453e11110a18577bc7ce8854358e48883f3edf5e1701380599dfbe19ac38e
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    No artifact lineage changes. r01 remains immutable unreadable history and
+    r02 remains its already-published direct successor; the scanner gains only
+    the exact historical classification.
+  direct_implementation: >-
+    Builder implements the record validator, target-only preflight command, and
+    tests, then publishes IMP-DEC-2026-0072-r01. No GUR, GUP, Review, Approved
+    bundle, registry, or canonical artifact is an implementation output.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, update the two contracts and all role publication
+      instructions, and move the escalation to decided state. Do not modify any
+      published Review or graph artifact.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement the exact r01/r02 Decision Implementation Review record in the
+      common scanner and schema sweep. Implement the target-only staged YAML and
+      schema preflight command and focused tests. Publish IMP-DEC-2026-0072-r01.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0072-r01, including every denial case,
+      the r01 informational classification, and target-only preflight behavior.
+
+acceptance_tests:
+  - >-
+    With this active record and the pinned live files, r01 remains unreadable at
+    its recorded parser fragment, r02 parses and validates against the Decision
+    Implementation Review schema, directly supersedes r01, and has matching
+    reviewed-implementation and Decision provenance. The scanner and common
+    schema suite report exactly one informational historical finding for r01
+    rather than a fatal parse error.
+  - >-
+    A missing, inactive, malformed, parseable, checksum-mismatched, wrong-parser
+    fragment, wrong direct supersedes, schema-invalid successor, wrong
+    disposition, wrong reviewed implementation, or wrong Decision provenance
+    record is fatal and does not suppress r01's ordinary YAML error. No other
+    unreadable implementation Review receives an exemption.
+  - >-
+    validate_artifact.py accepts a valid staged YAML mapping against its supplied
+    schema; rejects invalid YAML including colon-space and continuation prose;
+    rejects a non-mapping root, schema failure, missing schema, and unresolved
+    schema reference; makes no final artifact write; and reads no corpus,
+    packets, or canonical data.
+  - >-
+    Every role instruction requires the target-only staged preflight before its
+    existing create-only final-path preflight for its YAML outputs. The command
+    accepts an explicit applicable schema rather than inferring authority from
+    an artifact filename.
+  - >-
+    contracts/WORK_QUEUES.md is Version 1.27 or later and
+    contracts/ARTIFACT_LIFECYCLE.md is Version 1.21 or later, retaining the
+    exact unreadable implementation-Review record and target-only staged
+    YAML/schema preflight rules.
+  - >-
+    IMP-DEC-2026-0072-r01 pins this Decision checksum, records passing focused
+    and full applicable common-tooling evidence, reports every direct test as
+    passed, and is approval-ready for independent Reviewer verification.
+
+acceptance_test_semantics:
+  - acceptance_test_index: 5
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.27'
+        substantive_anchors:
+          - 'decision_implementation_review_unreadable_predecessor_repairs'
+          - 'Every role stages a YAML artifact outside its durable destination'
+      - path: contracts/ARTIFACT_LIFECYCLE.md
+        minimum_version: '1.21'
+        substantive_anchors:
+          - 'Before creating a durable YAML artifact, its publisher stages the intended exact'
+          - 'It is not a repository sweep'
+
+post_implementation_requirements:
+  - >-
+    Future roles use the staged preflight as part of ordinary publication. A
+    preflight pass does not approve semantic content or replace each role's
+    normal source, graph, provenance, component, and create-only checks.
+  - >-
+    Any future unreadable artifact remains fatal unless a separate active
+    Architect Decision validates an exact record. This Decision creates no
+    generic historical bypass.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This is artifact validity and publication mechanics, not graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.27 defines the exact r01 Decision Implementation Review
+    history record and target-only YAML publication preflight.
+  - >-
+    ARTIFACT_LIFECYCLE 1.21 and all publisher instructions require preflight
+    before create-only durable YAML publication.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.26 -> 1.27; define the exact unreadable implementation-Review record and staged preflight rule.'
+  contracts/ARTIFACT_LIFECYCLE.md:
+    - 'Version 1.20 -> 1.21; require target-only staged YAML/schema preflight before durable publication.'
+  agents/architect/INSTRUCTIONS.md:
+    - 'Require target-only Decision and escalation YAML preflight before final publication.'
+  agents/analyst/INSTRUCTIONS.md:
+    - 'Require target-only GUR and escalation YAML preflight before final publication.'
+  agents/builder/INSTRUCTIONS.md:
+    - 'Require target-only GUP, implementation-report, and escalation YAML preflight before final publication.'
+  agents/reviewer/INSTRUCTIONS.md:
+    - 'Require target-only Review, Approved, implementation-Review, and escalation YAML preflight before final publication.'
+  agents/integrator/INSTRUCTIONS.md:
+    - 'Require target-only Integration, implementation-report, and escalation YAML preflight before final publication.'
+  tooling/common/validate_artifact.py:
+    - 'Implement explicit-schema, exact-byte, target-only YAML mapping and JSON Schema validation.'
+  tooling/common/scan_agent_queues.py:
+    - 'Validate and classify only the exact unreadable Decision Implementation Review record.'
+  tooling/common/tests/test_validate_artifact.py:
+    - 'Cover valid and invalid staged YAML, schema and reference failures, and target-only no-write behavior.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Cover the r01/r02 record and every record denial case.'
+  tooling/common/tests/test_common_schemas.py:
+    - 'Derive the exact implementation-Review unreadable exemption from the active Decision and reject every other unreadable artifact.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0072.yaml:
+    - 'Record the exact r01 history treatment and prospective publication gate.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-29T19.28.35.054Z.yaml:
+    - 'Record DEC-2026-0072 as the immediate repair and publication-prevention resolution.'
+
+exact_diff_ownership:
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: contracts/ARTIFACT_LIFECYCLE.md, owner: architect, sequence_step: 1}
+  - {path: agents/architect/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/analyst/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/builder/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/reviewer/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/integrator/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: tooling/common/validate_artifact.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_validate_artifact.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_common_schemas.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0072.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-29T19.28.35.054Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Preserve every cited unreadable artifact and all graph data as immutable history.
+  builder:
+    - Implement only DEC-2026-0072 and publish its Decision Implementation Report.
+  reviewer:
+    - Review the Builder report and use target-only preflight for future YAML publication.
+  analyst:
+    - Use target-only preflight for future YAML publication.
+  integrator:
+    - Use target-only preflight for future YAML publication.

@@ -1,0 +1,93 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0064-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    DEC-2026-0064's exact historical-unreadable bridge is independently
+    verified. The ordinary Druid r02 GUP now occupies the downstream Reviewer
+    lifecycle stage; this terminal implementation review does not replace it.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0064-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0064-r01.yaml
+  checksum: sha256:d4f8949c9f081bfe0cb787f13a1f18a05c8d34ce8bc73ff6d09109819590671c
+decision_input:
+  id: DEC-2026-0064
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0064.yaml
+  checksum: sha256:3ad3bbc7386c47fb432b6863a3e8ae5ca739ea11567a3fe003e3fafd04630a18
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      The fixture suite independently derives the one informational
+      historical-unreadable diagnostic and the exact r01+r06 Builder input
+      pair. In the live repository, that Builder item has correctly advanced
+      to the ordinary Reviewer item GUP-PKT-PHB-054-064-druid-spells-r02, so
+      the live pre-build assertion no longer applies; the route was consumed
+      exactly as DEC-2026-0064's post-implementation requirement permits.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      The 35 focused fixture tests pass, including the checksum, parser-shape,
+      direct-chain, reviewed-GUP, disposition, handoff, schema, and exact
+      input-set denial cases. The repair is denied rather than generalized.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      The pinned r04 exemption suite passes. It rechecks r04's exact checksum
+      and parser failure, requires r05 to parse and r06 to validate, and
+      rejects an identical unreadable file elsewhere or changed bytes at the
+      pinned path.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      The implementation report and all six listed implementation inputs hash
+      exactly to their recorded values; it pins the approved Decision and
+      accounts for all four acceptance tests. Its validation report is
+      schema-valid and reports five passing checks with no warnings.
+scope_assessment: >-
+  The handoff-replacement exemption is necessary and acceptably narrow. The
+  decided escalation names r06, while the Decision's own repair record is the
+  only authority that can expose r06. Without an exception, the generic stale
+  handoff rule would permanently suppress the one item the Decision expressly
+  requires. The implementation keys the exception to the exact Decision, item
+  ID, and path, leaves every other originating artifact subject to ordinary
+  replacement, and does not inspect or recover r04 content. Extending the
+  Decision-derived checksum reading to the affected Builder review test is
+  likewise limited to the same raw unreadable evidence; it changes no graph,
+  source, registry, or canonical data.
+independent_validation:
+  passed: true
+  commands:
+    - command: >-
+        SHA-256 comparison of IMP-DEC-2026-0064-r01, DEC-2026-0064, the
+        decided escalation, and every file recorded in implementation_files.
+      exit_code: 0
+      result: passed
+      summary: All six implementation-file and Decision checksums matched exactly.
+    - command: >-
+        [cwd tooling/common] PYTHONPATH=.;tests python -m unittest
+        test_scan_agent_queues.MalformedReviewLineageRepairCase -q
+      exit_code: 0
+      result: passed
+      summary: Ran 35 tests in 2.013s OK, including all exact repair denial cases.
+    - command: >-
+        [cwd tooling/common] PYTHONPATH=.;tests python -m unittest
+        test_common_schemas.TestTheUnreadableReviewExemption -q
+      exit_code: 0
+      result: passed
+      summary: Ran 8 tests in 0.413s OK.
+    - command: >-
+        python tooling/common/scan_agent_queues.py --json
+      exit_code: 0
+      result: passed
+      summary: Zero lineage errors; the r06 Builder stage has advanced to the normal Druid r02 Reviewer item.
+overall_disposition: approved

@@ -20,6 +20,9 @@ import sys
 import unittest
 from pathlib import Path
 
+import yaml
+
+from .admission import FATAL_CODE
 from .bundles import ready_queue
 from .canonical import EDGE_COLUMNS, CanonicalGraph, CanonicalPaths
 from .derive import load_role_profile
@@ -68,9 +71,14 @@ def cmd_queue(args) -> int:
                       "rejection_record_id": record}
                      for b, record in queue["rejected"]],
         "diagnostics": queue["diagnostics"],
+        # DEC-2026-0065 keeps these two apart. Trusted historical evidence must
+        # never read as a queue failure, and a queue failure must never be
+        # filed as history: one is a notice, the other stops the role.
+        "queue_integrity": queue["queue_integrity"],
+        "informational": queue["informational"],
     }
     print(json.dumps(payload, indent=2))
-    if queue["diagnostics"]:
+    if queue["queue_integrity"] or queue["diagnostics"]:
         return 2
     return 1 if queue["ready"] else 0
 
@@ -105,6 +113,17 @@ def cmd_integrate(args) -> int:
     root = Path(args.repo_root).resolve()
     queue = ready_queue(root, args.ruleset_id, args.books)
     ready = queue["ready"]
+
+    # DEC-2026-0065: a fatal queue-integrity failure stops the transaction before
+    # it starts, dry run included. Naming a bundle explicitly is not a way past
+    # it -- the failure says the queue cannot be trusted about any bundle, and
+    # that includes whether this one has been withdrawn.
+    if queue["queue_integrity"]:
+        for entry in queue["queue_integrity"]:
+            print(f"{entry['code']}: {entry['detail']}", file=sys.stderr)
+        print("queue integrity failed; no bundle is integrated and canonical is "
+              "untouched", file=sys.stderr)
+        return 2
 
     if args.bundle_ids:
         wanted = set(args.bundle_ids)
@@ -176,7 +195,16 @@ def main(argv=None) -> int:
     run.set_defaults(func=cmd_integrate)
 
     args = parser.parse_args(argv)
-    return args.func(args)
+    try:
+        return args.func(args)
+    except yaml.YAMLError as exc:
+        # DEC-2026-0065 forbids a traceback here. An unreadable artifact reached
+        # from a path admission does not cover is still a queue-integrity
+        # failure, and the operator needs the file and the reason, not a stack.
+        print(f"{FATAL_CODE}: an artifact is not parseable YAML: {exc}", file=sys.stderr)
+        print("queue integrity failed; no bundle is integrated and canonical is "
+              "untouched", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

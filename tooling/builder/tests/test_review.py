@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import tempfile
+import functools
 import hashlib
 import io
 import contextlib
+import json
 import unittest
 from pathlib import Path
 
@@ -767,13 +769,106 @@ class ReviewDecisionKeyCase(unittest.TestCase):
         self.assertIn("assertion_decisions", merged.unread_decision_keys)
 
 
+def _parses(path: Path) -> bool:
+    try:
+        yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (yaml.YAMLError, UnicodeError):
+        return False
+    return True
+
+
+@functools.cache
+def _decision_unreadable_pins() -> dict[str, str]:
+    """`{relative path: checksum}` for every Decision-pinned unreadable artifact.
+
+    Read from the Decisions rather than restated here. A checksum copied into a
+    test is a second source of truth that can drift from the ruling it claims to
+    follow, and the whole point of the pin is that the exemption stops applying
+    the moment the file changes.
+    """
+    pins: dict[str, str] = {}
+    decisions = REPO_ROOT / "rulesets" / "adnd1e" / "escalations" / "decisions"
+    for path in sorted(decisions.glob("DEC-*.yaml")):
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if not isinstance(document, dict):
+            continue
+        if str(document.get("status") or "") != "approved":
+            continue
+        # Two record kinds pin an unreadable file: DEC-2026-0064's two-hop
+        # bridge and DEC-2026-0068's direct predecessor. Reading only the first
+        # would leave the second's file failing every sweep, which is the
+        # failure this loader exists to make impossible to get wrong twice.
+        for key in (
+            "review_malformed_lineage_repairs",
+            "review_direct_predecessor_repairs",
+            "decision_implementation_review_unreadable_predecessor_repairs",
+        ):
+            for record in document.get(key) or []:
+                block = (record or {}).get("unreadable_review") or {}
+                if block.get("path") and block.get("checksum"):
+                    pins[str(block["path"])] = str(block["checksum"])
+    return pins
+
+
+def is_expected_unreadable(path: Path) -> bool:
+    """Whether an approved Decision records this exact file as unreadable history."""
+    try:
+        relative = path.resolve().relative_to(REPO_ROOT).as_posix()
+    except ValueError:  # pragma: no cover - a path outside the repository
+        return False
+    expected = _decision_unreadable_pins().get(relative)
+    if expected is None:
+        return False
+    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest() == expected
+
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+
+
 class LiveReviewSpellingCase(unittest.TestCase):
     """Every published Review must load the rulings it states."""
 
     @staticmethod
+    def unreadable():
+        """Non-exempt Reviews that will not parse, by repository-relative path.
+
+        Reported rather than raised. A bare load in a corpus sweep turns one
+        malformed file into an opaque ScannerError from whichever test reached
+        it first, which reads as five broken suites instead of one bad Review.
+        """
+        root = Path(__file__).resolve().parents[3]
+        broken = []
+        for path in sorted(
+            (root / "books" / "adnd1e" / "phb" / "artifacts" / "reviews").glob("REV-*.yaml")
+        ):
+            if is_expected_unreadable(path):
+                continue
+            try:
+                yaml.safe_load(path.read_text(encoding="utf-8"))
+            except (yaml.YAMLError, UnicodeError):
+                broken.append(path.relative_to(root).as_posix())
+        return sorted(broken)
+
+    def test_no_review_outside_the_decision_pin_fails_to_parse(self):
+        self.assertEqual(
+            self.unreadable(), [],
+            "an unreadable published Review needs a ruling, not a skip",
+        )
+
+    @staticmethod
     def reviews():
         root = Path(__file__).resolve().parents[3]
-        return sorted((root / "books" / "adnd1e" / "phb" / "artifacts" / "reviews").glob("REV-*.yaml"))
+        return [
+            path
+            for path in sorted(
+                (root / "books" / "adnd1e" / "phb" / "artifacts" / "reviews").glob("REV-*.yaml")
+            )
+            # DEC-2026-0064 records this file as permanently unreadable, and
+            # anything else that will not parse is reported by name in
+            # `test_no_review_outside_the_decision_pin_fails_to_parse` above.
+            # Both are excluded here so the sweeps below can load what remains.
+            if not is_expected_unreadable(path) and _parses(path)
+        ]
 
     @classmethod
     def active_reviews(cls):
@@ -807,27 +902,61 @@ class LiveReviewSpellingCase(unittest.TestCase):
                     spellings.add(key)
         self.assertEqual(spellings, {"row_decisions", "edge_decisions"})
 
-    def test_no_active_review_states_rulings_the_loader_cannot_read(self):
+    @classmethod
+    def consumed_review_ids(cls):
+        """Reviews whose Approved bundle an Integration record has applied.
+
+        Such a Review is finished, not merely current. No revision will ever be
+        compiled from it, because the transaction it authorised is in canonical
+        data, and superseding it to tidy its wording would reopen a consumed
+        artifact for no gain.
+        """
+        root = Path(__file__).resolve().parents[3]
+        consumed = set()
+        for path in sorted((root / "rulesets/adnd1e/manifests").glob("INT-*.json")):
+            record = json.loads(path.read_text(encoding="utf-8"))
+            if str(record.get("status")) != "integrated":
+                continue
+            for bundle in record.get("approved_bundles") or []:
+                if bundle.get("review_id"):
+                    consumed.add(str(bundle["review_id"]))
+        return consumed
+
+    @classmethod
+    def routing_reviews(cls):
+        """Active Reviews a compile could still be run from."""
+        consumed = cls.consumed_review_ids()
+        return [path for path in cls.active_reviews() if path.stem not in consumed]
+
+    def test_no_routing_review_states_rulings_the_loader_cannot_read(self):
         offenders = {}
-        for path in self.active_reviews():
+        for path in self.routing_reviews():
             directives = ReviewDirectives.load(path)
             if directives.unread_decision_keys:
                 offenders[path.name] = directives.unread_decision_keys
         self.assertEqual(offenders, {})
 
-    def test_every_unreadable_review_in_the_archive_has_been_superseded(self):
-        """The exclusion above is a fact about the corpus, not an amnesty.
+    def test_every_unreadable_review_is_superseded_or_consumed(self):
+        """The exclusions above are facts about the corpus, not an amnesty.
 
-        A Review the loader cannot read is only history if something replaced
-        it. If one ever appears with no successor, this fails rather than
-        letting the leaf-scoping quietly excuse it.
+        A Review the loader cannot read is tolerable only where nothing will be
+        compiled from it: something replaced it, or an Integration already
+        applied what it approved. One that is neither fails here rather than
+        being quietly excused by the scoping.
         """
-        active = {path.name for path in self.active_reviews()}
+        routing = {path.name for path in self.routing_reviews()}
         for path in self.reviews():
             if not ReviewDirectives.load(path).unread_decision_keys:
                 continue
             with self.subTest(review=path.name):
-                self.assertNotIn(path.name, active)
+                self.assertNotIn(path.name, routing)
+
+    def test_the_consumed_exclusion_is_not_empty_and_is_real(self):
+        """Guards the exclusion itself: it must name integrated Reviews only."""
+        consumed = self.consumed_review_ids()
+        self.assertTrue(consumed)
+        active = {path.stem for path in self.active_reviews()}
+        self.assertTrue(consumed & active)
 
     def test_no_active_review_states_an_unexecutable_correction(self):
         """DEC-2026-0062, corpus-wide."""
@@ -1734,3 +1863,95 @@ class CorrectionRefusalProducesNothingCase(unittest.TestCase):
         self.assertIn("exact_corrections", message)
         self.assertIn("no GUP was produced", message)
 
+
+class PolicyRefsMustBeAListCase(unittest.TestCase):
+    """A bulk ruling names its refs in a list, or says nothing at all.
+
+    `applies_to` written as a sentence used to be iterated character by
+    character, so the loader ruled on ' ', ',' and '-' and the compile returned
+    32 `review_ref_not_in_gur` errors naming punctuation. Every one was true and
+    none of them said what was wrong. The Druid r02-r01 Review is the live case.
+
+    Expanding the prose is deliberately not attempted: reading `L20-L22` out of
+    a sentence is inferring the Reviewer's intent, which is the thing a
+    machine-readable directive exists to make unnecessary.
+    """
+
+    PROSE = "Every submitted r02 edge: L1-L18, L20-L22, and M2-M6."
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def load(self, applies_to, key="field_decision_policy"):
+        document = {
+            "id": "REV-GUP-PKT-PHB-001-002-fixture-r01-r01",
+            "packet_id": "PKT-PHB-001-002-fixture",
+            "reviewed_gup": {"id": "GUP-PKT-PHB-001-002-fixture-r01"},
+            "overall_disposition": "revision_required",
+            key: {"disposition": "approved", "applies_to": applies_to},
+        }
+        path = self.root / "REV.yaml"
+        path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+        return ReviewDirectives.load(path)
+
+    def test_a_list_of_refs_is_read(self):
+        directives = self.load(["L1", "L2", "M3"])
+        self.assertEqual(sorted(directives.rows), ["L1", "L2", "M3"])
+        self.assertEqual(directives.malformed_policies, [])
+
+    def test_prose_yields_no_rulings_at_all(self):
+        """Not one ruling per character, which is what it used to do."""
+        directives = self.load(self.PROSE)
+        self.assertEqual(directives.rows, {})
+
+    def test_prose_is_reported_once_with_its_cause(self):
+        directives = self.load(self.PROSE)
+        self.assertEqual(len(directives.malformed_policies), 1)
+        message = directives.malformed_policies[0]
+        self.assertIn("applies_to", message)
+        self.assertIn("not a list of refs", message)
+        self.assertIn(self.PROSE, message)
+
+    def test_the_node_policy_is_covered_too(self):
+        directives = self.load(self.PROSE, key="node_registry_policy")
+        self.assertEqual(directives.nodes, {})
+        self.assertEqual(len(directives.malformed_policies), 1)
+
+    def test_an_absent_applies_to_is_not_an_error(self):
+        """Omitting the block entirely is a different thing from writing prose."""
+        directives = self.load(None)
+        self.assertEqual(directives.malformed_policies, [])
+
+    def test_a_chain_carries_the_report(self):
+        first = self.root / "REV1.yaml"
+        second = self.root / "REV2.yaml"
+        for path, applies_to in ((first, self.PROSE), (second, ["L1"])):
+            path.write_text(yaml.safe_dump({
+                "id": f"REV-GUP-PKT-PHB-001-002-fixture-r01-r{path.stem[-1]}",
+                "packet_id": "PKT-PHB-001-002-fixture",
+                "reviewed_gup": {"id": "GUP-PKT-PHB-001-002-fixture-r01"},
+                "overall_disposition": "revision_required",
+                "field_decision_policy": {
+                    "disposition": "approved", "applies_to": applies_to,
+                },
+            }, sort_keys=False), encoding="utf-8")
+        merged = ReviewDirectives.load_chain([first, second])
+        self.assertEqual(len(merged.malformed_policies), 1)
+
+    def test_the_live_druid_review_reports_exactly_this(self):
+        """The case that produced the rule, checked by name."""
+        root = Path(__file__).resolve().parents[3]
+        path = (
+            root / "books/adnd1e/phb/artifacts/reviews"
+            / "REV-GUP-PKT-PHB-054-064-druid-spells-r02-r01.yaml"
+        )
+        if not path.is_file():  # pragma: no cover - the Review may be superseded
+            self.skipTest("the Druid r02-r01 Review is no longer present")
+        directives = ReviewDirectives.load(path)
+        if not directives.malformed_policies:  # pragma: no cover - once repaired
+            self.skipTest("the Druid policy block has been restated as a list")
+        self.assertEqual(directives.rows, {})

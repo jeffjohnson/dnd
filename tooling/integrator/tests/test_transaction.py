@@ -300,8 +300,14 @@ def _rewind(root: Path, only: set[str] | None = None) -> None:
         if only is not None and bundle.bundle_id not in only:
             continue
         rows = read_csv_rows(bundle.edges_path)
-        review = bundle.review or yaml.safe_load(
-            bundle.review_path.read_text(encoding="utf-8"))
+        try:
+            review = bundle.review or yaml.safe_load(
+                bundle.review_path.read_text(encoding="utf-8"))
+        except yaml.YAMLError:
+            # DEC-2026-0065/0070: a bundle whose approving Review is unreadable
+            # is never integrated, so there is nothing to rewind. Parsing it here
+            # would crash the fixture on a file the queue deliberately withholds.
+            continue
         try:
             operations = read_operations(bundle.manifest, review, len(rows))
         except (KeyError, ValueError):
@@ -356,18 +362,34 @@ def _rewind(root: Path, only: set[str] | None = None) -> None:
     registry.save(paths.registry)
 
 
+#: The bundles the atomicity and determinism tests re-apply.
+#:
+#: These tests need a batch that verifies, not whatever happens to be ready.
+#: Reading the live queue coupled them to the corpus: the day the only ready
+#: bundle was one the Integrator refuses, atomicity and determinism started
+#: failing on a defect in someone else's packaging rather than on anything they
+#: test. Pinning a set that is rewound and re-applied together keeps them honest;
+#: whether a *given* bundle verifies is asserted by TestPreconditions.
+PINNED = {
+    "APPROVED-GUP-PKT-PHB-009-013-ability-scores-r06-r01",
+    "APPROVED-GUP-PKT-PHB-040-042-spells-intro-r04-r01",
+    "APPROVED-GUP-PKT-PHB-018-033-classes-r09-r01",
+    "APPROVED-GUP-PKT-PHB-043-054-cleric-spells-r04-r01",
+}
+
+
 def applicable_batch(root: Path) -> list:
-    """The edge-CSV bundles these transaction tests are about.
+    """Exactly the bundles `clone_repo(rewind_only=PINNED)` rewound.
 
     Direct migrations are excluded on purpose. `_rewind` returns canonical to a
-    state before *every* queued bundle was applied, which is far below the exact
+    state before those bundles were applied, which is far below the exact
     baseline a migration plan pins, so no migration can verify against this
     fixture by construction. Their transaction, rollback and determinism are
     covered against their own pinned baselines in `test_migration` and
     `test_migration_v2`.
     """
-    return [b for b in ready_queue(root, RULESET_ID, ["phb"])["ready"]
-            if not b.is_direct_migration]
+    found = {b.bundle_id: b for b in discover(root, RULESET_ID, "phb")[0]}
+    return [found[bundle_id] for bundle_id in sorted(PINNED)]
 
 
 class TestSnapshot(unittest.TestCase):
@@ -421,7 +443,7 @@ class TestIntegrationIsAtomic(unittest.TestCase):
 
     def test_dry_run_writes_nothing(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = clone_repo(Path(tmp))
+            root = clone_repo(Path(tmp), rewind_only=PINNED)
             paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
             before = {p: checksum_file(p) for p in paths.writable()}
 
@@ -435,7 +457,7 @@ class TestIntegrationIsAtomic(unittest.TestCase):
         digests = []
         for _ in range(2):
             with tempfile.TemporaryDirectory() as tmp:
-                root = clone_repo(Path(tmp))
+                root = clone_repo(Path(tmp), rewind_only=PINNED)
                 paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
                 bundles = applicable_batch(root)
                 integrate(root, RULESET_ID, bundles, integration_id="INT-19700101-004")

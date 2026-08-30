@@ -46,6 +46,13 @@ Reject any input whose checksums, approvals, or schema versions do not match.
 
 ## Standalone Checks
 
+Before publishing an Integration manifest, Integration Rejection, Decision
+Implementation Report, or escalation YAML, stage the exact output outside its
+durable path and run `python tooling/common/validate_artifact.py --path
+<staged-yaml> --schema <applicable-schema>` before the create-only final-path
+preflight. The check is limited to that staged artifact and its schemas; it must
+not scan the corpus, packets, or canonical graph for publication orientation.
+
 Do not create an Integration manifest or Integration Rejection for a passing
 preflight that changes no canonical state and rejects no Approved bundle. A
 reproducible measurement may inform the Reviewer, but the Reviewer independently

@@ -1,0 +1,72 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0072-r01-r02
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: REV-IMP-DEC-2026-0072-r01-r01
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Reissue IMP-DEC-2026-0072 with the Decision-required structured
+    versioned_contract_content evidence for acceptance test 5. The existing
+    report supplies no such evidence, so its contract assertion cannot support
+    an Approved Review.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0072-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0072-r01.yaml
+  checksum: sha256:19f26821b1d671a496c13802758d963b1c8a41be654d500e0ad7ccce0ac42d7c
+decision_input:
+  id: DEC-2026-0072
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0072.yaml
+  checksum: sha256:f20f080c28f0fddaf66296887ffe86223931e01738dcbd46f881344ad2cbae69
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: The 31 focused repair tests pass and verify only the pinned unreadable r01 and its schema-valid direct r02 successor.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: The focused suite exercises all record-denial cases and preserves ordinary fatal treatment for every other unreadable implementation Review.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: The 22 target-only validator tests pass, including invalid YAML, schema, root-shape, reference, no-write, and no-corpus-read denial cases.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: Current Reviewer instructions require explicit-schema target-only staged preflight before durable Review, Approved, implementation-Review, and escalation publication.
+  - acceptance_test_index: 5
+    disposition: failed
+    evidence: >-
+      DEC-2026-0072 declares versioned_contract_content semantics, but
+      IMP-DEC-2026-0072-r01's acceptance result supplies no required
+      versioned_contract_content block. Current contracts cannot replace the
+      report's own required evidence.
+  - acceptance_test_index: 6
+    disposition: failed
+    evidence: >-
+      The report is not approval-ready because its claimed acceptance test 5
+      cannot be independently reviewed as versioned contract-content evidence.
+scope_assessment: >-
+  The implementation and its focused test evidence are independently current,
+  but the report omits structured evidence mandated by its governing Decision.
+  This successor requests only a report reissue; it neither changes code nor
+  recovers authority from the superseded approval attempt.
+independent_validation:
+  passed: false
+  commands:
+    - command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest test_scan_agent_queues.ImplementationReviewRepairCase test_scan_agent_queues.LiveImplementationReviewRepairCase -q'
+      exit_code: 0
+      result: passed
+      summary: Ran 31 focused implementation-Review repair tests successfully.
+    - command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest test_validate_artifact -q'
+      exit_code: 0
+      result: passed
+      summary: Ran 22 target-only staged-preflight tests successfully.
+    - command: Inspect acceptance test 5 for required report-side versioned_contract_content evidence and independently verify current contracts, checksums, versions, and anchors.
+      exit_code: 1
+      result: failed
+      summary: Current contracts meet DEC-2026-0072, but IMP-DEC-2026-0072-r01 contains no versioned_contract_content block to mirror and independently approve.
+overall_disposition: revision_required

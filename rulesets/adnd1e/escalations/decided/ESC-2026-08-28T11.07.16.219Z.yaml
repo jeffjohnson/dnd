@@ -1,0 +1,136 @@
+schema_version: '1.0'
+id: ESC-2026-08-28T11.07.16.219Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-08-28'
+decision_id: DEC-2026-0070
+decided_on: '2026-08-28'
+concerns_decision: DEC-2026-0069
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: DEC-2026-0069 step 2 is implemented and its admission behaviour is correct, but two
+    of its acceptance tests cannot pass within its declared exact_diff. The remaining blocker
+    is in bundle discovery, which the Decision scopes out, and widening it has a second-order
+    effect the Integrator will not decide alone.
+  blocking_ids: []
+what_is_already_done: Direct-predecessor admission is implemented in admission.py exactly as ruled.
+  Against the live corpus the queue now reports zero fatal admission diagnostics and two informational
+  historical_unreadable_review notices, the Druid file authorised by DEC-2026-0064 and the Bards
+  file by DEC-2026-0068. Field names are fixed per delegation form rather than read from the Decision,
+  and self-delegation is refused outright, both as DEC-2026-0069 requires.
+question: May Integrator bundle discovery locate an Approved bundle's edge component by the path
+  the manifest declares rather than by filename stem, and if so, what excludes the historical
+  r02 bundle that the same change would make discoverable even though its approving Review is
+  the admitted-unreadable one?
+blocker_1_discovery_matches_by_stem:
+  finding: 'bundles.discover pairs a manifest with an edge CSV whose filename stem matches the
+    manifest''s. The r03 manifest declares the r01 component, which is the exact path and checksum
+    DEC-2026-0068 pins as edge_component, so nothing is missing: the file is simply not where
+    the stem rule looks. Discovery therefore emits `manifest present with no .edges.csv component`
+    and drops the bundle.'
+  proof: Reproduced in an isolated clone whose only difference from the live repository was a
+    stem-named copy of the component the r03 manifest already declares. With that copy present
+    ready_queue offered exactly APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03, with zero fatal diagnostics
+    and both informational notices. Nothing else changed, so the stem lookup is the sole cause.
+  consequence_for_the_decision: Acceptance test 1 requires ready_queue to offer the normal r03
+    Approved bundle; it currently offers none. Acceptance test 4 requires that informational history
+    alone does not make queue exit 2; queue exits 2 today on the two discovery diagnostics, not
+    on any admission failure. Neither can be satisfied by a change confined to admission.py, which
+    is the whole of the declared exact_diff.
+  declared_component:
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01.edges.csv
+    checksum: sha256:b8342ceb08970d1fc65cfe2bc1af2c40255e4717d08a765a221ba50c9af54f33
+    rows: 57
+  affected_bundle:
+    id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+    checksum: sha256:7064290c50c069776e5f28aab6cff8762eb56f21aa3b69161240fe507d2d0faa
+blocker_2_the_same_change_surfaces_the_historical_bundle:
+  finding: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r02 declares the same r01 component, so a manifest-path
+    rule would make it discoverable too. It carries status approved and supersedes the r01 bundle,
+    and its approving Review is REV-GUP-PKT-PHB-117-119-bards-r04-r02, the unreadable file DEC-2026-0068
+    admits as history.
+  consequence: Because that Review is omitted from lineage state, withdrawn_review_ids cannot
+    evaluate it, and the bundle is not integrated, not rejected and not superseded at GUP level.
+    On the present rules it would be classified ready. The Integrator would then offer a bundle
+    whose approving Review no role can read, which is the outcome DEC-2026-0065's fail-closed
+    rule exists to prevent, reached through discovery rather than through admission.
+  the_natural_hook: DEC-2026-0068 already pins this bundle as historical_bundle. A rule excluding
+    any bundle whose approving Review is an admitted-unreadable one, or specifically the pinned
+    historical_bundle, would close it. Choosing between those is a queue- semantics decision,
+    so the Integrator has not made it.
+  affected_bundle:
+    id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r02
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r02.yaml
+    checksum: sha256:ce3ba8e21821f7a54c74e4ead7ffcaffabbc96567d1b17fa036dec5a77de217f
+    status: approved
+    supersedes: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01
+    review_id: REV-GUP-PKT-PHB-117-119-bards-r04-r02
+why_the_integrator_did_not_simply_widen_the_diff:
+- DEC-2026-0069's exact_diff names admission.py alone. Honouring declared component paths changes
+  which bundles every packet in the ruleset offers as ready, which is queue semantics rather than
+  implementation drift, and DEC-2026-0046's informational drift allowance does not reach it.
+- The change is not self-contained. Blocker 2 shows it would admit a bundle the current rules
+  cannot evaluate, so a correct implementation needs a companion exclusion that only the Architect
+  can specify.
+options_considered:
+- 'Authorise discovery to read components from the manifest, with an explicit exclusion for a
+  bundle whose approving Review is admitted-unreadable. This is the option the Integrator would
+  choose: the manifest is already the authority for its components, and verify_bundle already
+  checksums them.'
+- Require every Approved bundle to carry a stem-named component of its own, making the r03 bundle
+  a Reviewer packaging correction. This preserves discovery unchanged but duplicates an immutable
+  57-row component and contradicts DEC-2026-0068, which pins the shared component by path.
+- Narrow the acceptance tests so DEC-2026-0069 is satisfied by admission behaviour alone and treat
+  discovery as separate work. This lets the implemented step close honestly, but leaves the Bards
+  bundle unintegrable until that work is decided.
+what_is_not_in_question:
+- The admission implementation. Both delegation forms validate independently, the Druid exception
+  is unaffected by the Bards one, and every denial case is fatal with exit code 2 and no traceback.
+- DEC-2026-0068's record. Every pinned artifact, the parse failure, both supersession links, the
+  rejection, the component and the 29 plus 28 operation partition were re-derived from the files
+  and all agree.
+- Canonical state, unchanged at 5046 edges, 1392 nodes and 1407 registry rows with 1691 findings.
+  No transaction was attempted.
+implementation_state:
+  decision:
+    id: DEC-2026-0069
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0069.yaml
+    checksum: sha256:53577e45f77b3bd070c6016f2eee6265b1abee040a61f6abf5783db2fbf750e2
+  governing:
+    id: DEC-2026-0068
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+    checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+  changed:
+  - path: tooling/integrator/src/adnd1e_integrator/admission.py
+    checksum: sha256:38ed837da70a02607b7bf0c90c1d033cbcc185af1d3b5fe83b9297ddc2e792eb
+  unchanged_and_at_issue:
+  - path: tooling/integrator/src/adnd1e_integrator/bundles.py
+    checksum: sha256:975803c5b8f65e409fc1652500b4ef30e598ca75bb033256d349ce22aaf1d58c
+  report: IMP-DEC-2026-0069-r01 is not published yet. Publishing it would have to report acceptance
+    tests 1 and 4 as failed for a cause outside the Decision's declared scope, so the Integrator
+    is asking first rather than filing a report that reads as an implementation defect.
+affected_canonical_ids: []
+migration_impact:
+  canonical_data_change: false
+  registry_change: false
+  note: No canonical or registry write is proposed or has occurred.
+systemic_finding: 'Discovery infers a bundle''s components from its filename while verification
+  reads them from the manifest. The two agreed as long as every bundle shipped its own CSV, and
+  this is the first bundle to re-package an existing component. An inference that silently disagrees
+  with the declared truth is the same class of defect as the queue scanner reading readiness from
+  lineage rather than from the handoff: correct until an artifact exercises the difference, then
+  wrong without saying so.'
+governance_impact: A Decision's exact_diff is the scope the implementing role works to. When a
+  Decision's own acceptance tests cannot be met inside it, the role can either exceed the scope
+  silently or stop and ask. Stopping is right, but it costs a round trip per instance. It may
+  be worth stating that an implementing role reports a scope insufficiency rather than widening
+  the diff, so this is handled by rule rather than by judgement each time.
+blocking: true

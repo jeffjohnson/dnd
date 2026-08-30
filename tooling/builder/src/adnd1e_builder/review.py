@@ -677,6 +677,27 @@ def _policy_disposition(block: dict, directives=None, key: str = "") -> str:
     return ""
 
 
+def _policy_applies_to(block: dict, key: str, directives=None) -> list:
+    """The refs a policy block covers, or [] with the reason recorded.
+
+    A string here is the failure worth naming. Iterating one yields its
+    characters, so the loader rules on ' ' and ',' and the compile reports a
+    couple of dozen unknown refs made of punctuation -- all true, none of them
+    the problem. The problem is that the block states its refs in prose.
+    """
+    refs = block.get("applies_to")
+    if refs is None:
+        return []
+    if isinstance(refs, list):
+        return refs
+    if directives is not None:
+        directives.malformed_policies.append(
+            f"{key}.applies_to is {type(refs).__name__}, not a list of refs"
+            + (f": {refs!r}" if isinstance(refs, str) else "")
+        )
+    return []
+
+
 def _policy_entries(document: dict, directives=None) -> list[dict]:
     """Per-ref rulings expanded from the row policy block, if there is one."""
     block = document.get(ROW_POLICY_KEY)
@@ -687,7 +708,7 @@ def _policy_entries(document: dict, directives=None) -> list[dict]:
         return []
     return [
         {"ref": str(ref), "disposition": disposition, "rationale": block.get("rationale") or ""}
-        for ref in block.get("applies_to") or []
+        for ref in _policy_applies_to(block, ROW_POLICY_KEY, directives)
     ]
 
 
@@ -863,6 +884,9 @@ class ReviewDirectives:
     #: cannot execute. Never applied, never guessed at, and never dropped: the
     #: compile refuses and names the row and the key.
     unreadable_corrections: list[str] = field(default_factory=list)
+    #: Policy blocks whose `applies_to` is not a list of refs. Reported as one
+    #: cause rather than as one bogus ruling per character.
+    malformed_policies: list[str] = field(default_factory=list)
     #: Rulings on a GUP-level field. Kept apart from `rows` because they name no
     #: row: the compiler surfaces them for the Builder to satisfy in how the
     #: patch is emitted, and never silently treats one as applied.
@@ -993,7 +1017,9 @@ class ReviewDirectives:
             if disposition:
                 node_rulings.extend(
                     {"proposed_id": str(node_id), "disposition": disposition}
-                    for node_id in node_policy.get("applies_to") or []
+                    for node_id in _policy_applies_to(
+                        node_policy, NODE_POLICY_KEY, directives
+                    )
                 )
         node_rulings.extend(
             entry
@@ -1054,6 +1080,7 @@ class ReviewDirectives:
             # correction. A later Review supersedes an earlier ruling; it does
             # not make an earlier unreadable directive acceptable.
             merged.unreadable_corrections.extend(later.unreadable_corrections)
+            merged.malformed_policies.extend(later.malformed_policies)
             merged.field_directives.extend(later.field_directives)
             merged.superseded_reviews.append(merged.review_id)
             for ref, directive in later.rows.items():

@@ -1,0 +1,112 @@
+schema_version: '1.0'
+id: ESC-2026-08-29T19.28.35.054Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-054-064-druid-spells
+constitution_version: '1.8'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-08-29'
+decision_id: DEC-2026-0072
+decided_on: '2026-08-29'
+concerns_decisions:
+- DEC-2026-0064
+- DEC-2026-0068
+- DEC-2026-0070
+- DEC-2026-0071
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: A third permanently unreadable published Review has appeared, this time in the decision-implementation-review
+    lineage where no admission machinery exists. It is named by no Decision, so the common queue
+    scanner exits 2 for every role. All three unreadable artifacts share one preventable authoring
+    cause, which no role has yet been asked to fix at the point where it happens.
+  blocking_ids: []
+question: Who repairs REV-IMP-DEC-2026-0065-r01-r01, which is unreadable, superseded, and named
+  by no Decision? And should artifact authoring be required to serialise free text through a quoting-safe
+  emitter, so that this class of defect stops reaching publication rather than being ruled on
+  one file at a time?
+the_immediate_blocker:
+  finding: 'REV-IMP-DEC-2026-0065-r01-r01 is not parseable YAML. It is the first Review of the
+    Integrator''s own DEC-2026-0065 implementation report, was superseded by REV-IMP-DEC-2026-0065-r01-r02,
+    and is named by no active Decision. Supersession does not excuse it: tooling/common/tests/test_common_schemas.py
+    asserts that an unreadable published artifact needs a ruling rather than a skip, and it is
+    the sole remaining failure in that suite.'
+  observed: 'yaml_unreadable: mapping values are not allowed here, line 80 column 25. The scanner
+    reports it at error severity and exits 2, so every role''s queue currently carries a fatal
+    lineage diagnostic.'
+  why_the_integrator_does_not_repair_it: 'It is a Reviewer-authored artifact. Repairing it would
+    mean rewriting a published upstream artifact, which the Integrator is prohibited from doing,
+    and inferring what the Reviewer meant to record, which is interpretation the Integrator may
+    not perform. The existing admission machinery does not reach it either: DEC-2026-0064 and
+    DEC-2026-0068 pin specific packet Reviews, and neither names this file or this lineage.'
+  evidence:
+    id: REV-IMP-DEC-2026-0065-r01-r01
+    path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0065-r01-r01.yaml
+    checksum: sha256:ad2503d214f53963af42845b5914be2157e015f275d6005e36d56bee66806cda
+the_common_cause:
+  finding: 'All three permanently unreadable Reviews fail for the same reason: free-text prose
+    was emitted as an unquoted YAML scalar. Two contain a colon-space inside the text, which YAML
+    reads as a nested mapping key. The third continues prose onto later lines without a block
+    scalar indicator, so a prose line is scanned as a key. None is a corrupted byte, a truncated
+    write, or an encoding fault. Each would have been prevented by serialising through an emitter
+    that quotes automatically, or by parsing the file once before publishing it.'
+  instances:
+  - id: REV-IMP-DEC-2026-0065-r01-r01
+    path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0065-r01-r01.yaml
+    checksum: sha256:ad2503d214f53963af42845b5914be2157e015f275d6005e36d56bee66806cda
+    failure: mapping values are not allowed here
+    offending_text: 'summary: One error: validation contains additional property summary.'
+    cause: unquoted scalar containing a colon-space
+    ruled_on_by: null
+  - id: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04.yaml
+    checksum: sha256:f28b9d2b15dcebf4053e3931b9190e54d70b27ca6da9ceadf3a2aebbefc1fd29
+    failure: mapping values are not allowed here
+    offending_text: 'rationale: Source-supported but omitted: its exact assertion key is already
+      canonical row 4619.'
+    cause: unquoted scalar containing a colon-space
+    ruled_on_by: DEC-2026-0064
+  - id: REV-GUP-PKT-PHB-117-119-bards-r04-r02
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r02.yaml
+    checksum: sha256:e06eb90dee6c5a14a2aef14518a759da1dece6d5874c2ddf83f7cd6782a8fb56
+    failure: while scanning a simple key / could not find expected ':'
+    offending_text: This successor consumes INT-20260827-001 only. The rejection independently
+    cause: multi-line prose without a block scalar indicator
+    ruled_on_by: DEC-2026-0068
+  cost_so_far: 'Two of the three have each required a full Architect Decision to admit as historical
+    evidence, plus the Integrator admission subsystem that validates those records: DEC-2026-0064
+    and DEC-2026-0068, with DEC-2026-0065, DEC-2026-0069, DEC-2026-0070 and part of DEC-2026-0071
+    following from them. The third has no ruling yet. The cost per instance is roughly one Decision,
+    one implementation report, one independent Review and one Integrator escalation, and it recurs
+    because nothing prevents the next one.'
+recommendation: The Integrator recommends prevention at the authoring step rather than a fourth
+  admission record. Two options, and the choice is the Architect's. First, require every role
+  that publishes a YAML artifact to emit it through a quoting-safe serialiser rather than by assembling
+  text, which removes the cause entirely. Second, require a parse-and-schema check of the exact
+  bytes before publication, which catches the cause without constraining how artifacts are written.
+  The second is cheaper to adopt because the check already exists in tooling/common/tests/test_common_schemas.py
+  and only needs to run before publication rather than after. Neither option asks anyone to modify
+  an artifact already published.
+what_is_not_in_question:
+- The three existing rulings. DEC-2026-0064 and DEC-2026-0068 remain valid and every artifact
+  they pin was re-verified byte-for-byte as part of this session's work.
+- Canonical state, unchanged at 5046 edges, 1392 nodes, 1407 registry rows and 1691 findings.
+  No transaction was attempted and no snapshot taken.
+- The Bards r04 bundle, which is ready and verifies cleanly. It is held only until an approved
+  Review consumes IMP-DEC-2026-0070-r01, as that Decision requires.
+affected_canonical_ids: []
+migration_impact:
+  canonical_data_change: false
+  registry_change: false
+  note: No canonical or registry write is proposed or has occurred.
+systemic_finding: The repository has treated each unreadable artifact as a novel governance event
+  requiring its own record, and has produced high-quality rulings each time. What none of those
+  rulings addresses is that the defect has a single mechanical cause that occurs before publication.
+  Three instances now share it, in three different lineages, authored by the same role. The admission
+  machinery is correct and should stay, because a published artifact is immutable and history
+  has to remain readable as history; but it is a way of living with the defect rather than a way
+  of stopping it.
+blocking: true

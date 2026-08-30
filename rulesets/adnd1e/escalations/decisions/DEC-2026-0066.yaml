@@ -1,0 +1,139 @@
+schema_version: '1.0'
+id: DEC-2026-0066
+status: returned_incomplete
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: >-
+    Republish the unreadable escalation as a new, parseable YAML package before
+    requesting an Architect ruling.
+  blocking_ids: []
+
+decision_date: '2026-08-27'
+escalation_id: ESC-2026-08-28T00.41.24.104Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  May Architect decide an escalation package that cannot itself be parsed as
+  YAML?
+
+ruling: >-
+  No. ESC-2026-08-28T00.41.24.104Z is returned without a substantive ruling.
+  Its unindented continuation following the folded `question` scalar prevents a
+  YAML parser from establishing the package's question, evidence, or claimed
+  checksums. Architect must not infer fields from raw text or repair the
+  published package in place. Preserve its bytes as returned history and submit
+  a new, parseable package with a newly allocated timestamped ID and
+  `prior_escalation_id: ESC-2026-08-28T00.41.24.104Z`. The replacement must
+  recollect every current artifact checksum rather than copy the malformed
+  package's stale claims.
+
+rationale:
+  - >-
+    An escalation package is the bounded evidence an Architect Decision relies
+    on. A parser failure means neither its structure nor any selected field is
+    trustworthy evidence.
+  - >-
+    The live Bards r02 Review hashes to a value different from the value printed
+    in the unreadable package. That mismatch confirms that partial recovery
+    would risk deciding against stale input.
+  - >-
+    Returned state preserves the original, invalid submission without allowing
+    an unreadable package to stay in the Architect queue or resolve a blocker.
+
+resubmission_requirements:
+  - >-
+    Publish a parseable YAML escalation under a new
+    ESC-YYYY-MM-DDTHH.mm.ss.fffZ identifier and record
+    `prior_escalation_id: ESC-2026-08-28T00.41.24.104Z`.
+  - >-
+    Recompute and provide exact SHA-256 checksums for every cited current
+    Review, Approved bundle, GUP, rejection record, and any proposed successor.
+  - >-
+    State the parser observation as valid YAML and retain the complete options,
+    local-impact statement, and recommended immutable-lineage treatment.
+
+affected_contracts: []
+affected_registries: []
+affected_artifacts:
+  returned_escalation:
+    id: ESC-2026-08-28T00.41.24.104Z
+    from: rulesets/adnd1e/escalations/pending/ESC-2026-08-28T00.41.24.104Z.yaml
+    to: rulesets/adnd1e/escalations/returned/ESC-2026-08-28T00.41.24.104Z.yaml
+    parse_status: yaml_unreadable
+  observed_live_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r02
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r02.yaml
+    checksum: sha256:e06eb90dee6c5a14a2aef14518a759da1dece6d5874c2ddf83f7cd6782a8fb56
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    Only the escalation changes retention state. No source, GUR, GUP, Review,
+    Approved bundle, registry, or canonical artifact is interpreted or changed.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this return Decision and move the unchanged unreadable package
+      from pending to returned state.
+  - step: 2
+    owner: reviewer
+    action: >-
+      Submit the parseable replacement escalation with fresh evidence and the
+      required prior_escalation_id. Do not edit the returned package.
+
+acceptance_tests:
+  - >-
+    The returned package is absent from escalations/pending and present under
+    escalations/returned at the same immutable filename and byte content.
+  - >-
+    The return Decision records no source, identity, operation, packaging, or
+    canonical ruling derived from the unreadable package.
+  - >-
+    A replacement package has a new timestamped ID, parses as YAML, names this
+    package in prior_escalation_id, and carries freshly verified checksums.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This is evidence-admission handling only; no graph contract changes.
+
+governance_changelog:
+  - >-
+    DEC-2026-0066 returns one YAML-unreadable Bards escalation and requires a
+    newly identified, parseable submission with fresh evidence.
+
+exact_diff:
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0066.yaml:
+    - Record the no-inference return for the unreadable escalation.
+  rulesets/adnd1e/escalations/returned/ESC-2026-08-28T00.41.24.104Z.yaml:
+    - Retain the unchanged unreadable package outside the pending queue.
+
+exact_diff_ownership:
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0066.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/returned/ESC-2026-08-28T00.41.24.104Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: reviewer
+follow_up_owners:
+  architect:
+    - Make no substantive ruling until a replacement package is parseable.
+  reviewer:
+    - Publish the required replacement escalation with fresh current evidence.
+  analyst:
+    - No action.
+  builder:
+    - No action.
+  integrator:
+    - No action.

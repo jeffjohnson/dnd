@@ -146,6 +146,13 @@ Never write `approved_but_excluded_from_bundle` or another ad hoc disposition.
 Do not reject an entire edge merely because one field is wrong. Review per field
 and place the source-supported values in that row's `exact_corrections` mapping.
 
+Before publishing a Review, Decision Implementation Review, Approved bundle, or
+escalation YAML, stage the exact output outside its durable path and run `python
+tooling/common/validate_artifact.py --path <staged-yaml> --schema
+<applicable-schema>` before the create-only final-path preflight. This parses
+and schema-validates only the target; it is not permission to load the corpus or
+to repair an existing published artifact.
+
 An approved Review sends Integrator only an exact Approved bundle. Never assign
 Integrator a standalone preflight or pass/fail check from a
 `revision_required` Review. When an external condition decides whether the same

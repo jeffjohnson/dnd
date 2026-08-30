@@ -1,0 +1,237 @@
+schema_version: '1.0'
+id: DEC-2026-0073
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the exact historical Bards integration-rejection record so the
+    scanner stops assigning a completed remedy to Reviewer without creating an
+    unauthorized r05 successor.
+  blocking_ids: []
+
+decision_date: '2026-08-30'
+escalation_id: ESC-2026-08-30T02.59.33.458Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  Can the immutable Bards r03 Review's checksummed integration_rejection_input
+  record consume INT-20260827-001 for queue derivation after the single r04
+  successor authorized by DEC-2026-0071, or must Reviewer publish a further
+  successor solely to use a scanner-recognized field name?
+
+ruling: >-
+  The exact record below is sufficient historical remediation evidence for
+  INT-20260827-001. Builder must make the scanner recognize only this active,
+  checksummed record: the named r03 Review's integration_rejection_input mapping
+  is equivalent to a recognized rejection reference only after every pinned
+  input, rejection record, rejected bundle, and r04 Review and bundle successor
+  constraint validates. Then the scanner classifies the r01 rejection handoff
+  as resolved historical evidence and emits the normal r04 Integrator work.
+
+  This is not a generic alias for integration_rejection_input, an inferred
+  convention for another Review, or authority to alter published Bards
+  artifacts. No r05 is authorized. A missing, changed, malformed, or
+  nonconforming named record must fail closed and retain ordinary rejection
+  remediation behavior.
+
+rationale:
+  - >-
+    r03 named the rejection by exact ID, path, and checksum and independently
+    verified the defect was packaging-only. r04 is the one ordinary successor
+    DEC-2026-0071 authorized, and it has already restored the normal Integrator
+    handoff.
+  - >-
+    Requiring r05 would create a lineage revision with no source, graph,
+    identity, or packaging change solely to rename an immutable historical field.
+  - >-
+    A decision-pinned, checksum-verified exception preserves the scanner's
+    default strict recognized-key rule for every other artifact.
+
+affected_contracts: []
+affected_registries: []
+affected_artifacts:
+  governing_decision:
+    id: DEC-2026-0071
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0071.yaml
+    checksum: sha256:1a51e8af663c2b33e796483ca681baf40bad5607411d77192674a8e8610bcd27
+  integration_rejection:
+    id: INT-20260827-001
+    path: rulesets/adnd1e/reports/INT-20260827-001.rejected.json
+    checksum: sha256:682171a699a9afc81dda51d94a246f0d6d6c723726ea4604df92aa50f5f9e221
+  rejected_bundle:
+    id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01.yaml
+    checksum: sha256:e0203d0138fa8b7599e7eacc9437fdb4dbc304412498c465866b96c9160eee42
+  rejection_recording_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r03
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+    checksum: sha256:e0788ce7a183c8409450af65073054464d685d2bca484398abb2a04b6e9b2288
+  active_successor_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r04
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r04.yaml
+    checksum: sha256:51b9774672da9a7e5abb536b2213a76aaa5f6543f451a3d0f2f1c8bda1e51c22
+  active_successor_bundle:
+    id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04.yaml
+    checksum: sha256:b125f97b06294e15e58fafa1faa09ddc764719696d4fb25aaa7931923c338d5d
+  reviewed_gup:
+    id: GUP-PKT-PHB-117-119-bards-r04
+    path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-117-119-bards-r04.yaml
+    checksum: sha256:b8b29061f939c1e279a3207d1a4f51a27618ad2dbb4d46fbe002dea5b8b88357
+
+integration_rejection_historical_remediations:
+  - disposition: historical_rejection_remediation
+    reason: >-
+      Bards r03 recorded the exact rejected integration under its immutable
+      integration_rejection_input field. DEC-2026-0071 then authorized exactly
+      one normal r04 Review and Approved-bundle successor, which is now the
+      active Integrator-ready leaf.
+    rejection_recording_review:
+      id: REV-GUP-PKT-PHB-117-119-bards-r04-r03
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+      checksum: sha256:e0788ce7a183c8409450af65073054464d685d2bca484398abb2a04b6e9b2288
+      required_field: integration_rejection_input
+    integration_rejection:
+      id: INT-20260827-001
+      path: rulesets/adnd1e/reports/INT-20260827-001.rejected.json
+      checksum: sha256:682171a699a9afc81dda51d94a246f0d6d6c723726ea4604df92aa50f5f9e221
+    rejected_bundle:
+      id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01
+      path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01.yaml
+      checksum: sha256:e0203d0138fa8b7599e7eacc9437fdb4dbc304412498c465866b96c9160eee42
+    active_successor_review:
+      id: REV-GUP-PKT-PHB-117-119-bards-r04-r04
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r04.yaml
+      checksum: sha256:51b9774672da9a7e5abb536b2213a76aaa5f6543f451a3d0f2f1c8bda1e51c22
+      required_supersedes: REV-GUP-PKT-PHB-117-119-bards-r04-r03
+      required_handoff: {next_role: integrator, readiness: ready}
+    active_successor_bundle:
+      id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04
+      path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04.yaml
+      checksum: sha256:b125f97b06294e15e58fafa1faa09ddc764719696d4fb25aaa7931923c338d5d
+      required_supersedes: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03
+      required_review_id: REV-GUP-PKT-PHB-117-119-bards-r04-r04
+      required_handoff: {next_role: integrator, readiness: ready}
+    reviewed_gup:
+      id: GUP-PKT-PHB-117-119-bards-r04
+      path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-117-119-bards-r04.yaml
+      checksum: sha256:b8b29061f939c1e279a3207d1a4f51a27618ad2dbb4d46fbe002dea5b8b88357
+    governing_decision:
+      id: DEC-2026-0071
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0071.yaml
+      checksum: sha256:1a51e8af663c2b33e796483ca681baf40bad5607411d77192674a8e8610bcd27
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    No artifact lineage changes. r01 remains rejected immutable history, r03
+    remains the recorded historical rejection evidence, and r04 remains the
+    single authorized active successor pair.
+  direct_implementation: >-
+    Builder changes only the queue scanner and its focused tests, then publishes
+    IMP-DEC-2026-0073-r01. No GUR, GUP, Review, Approved bundle, registry, or
+    canonical transaction is an implementation output.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision and move the escalation to decided state. Do not
+      modify any Bards artifact, source assertion, registry, or canonical data.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement only the exact historical-remediation record validator and
+      scanner classification. Add focused live and denial tests, then publish
+      IMP-DEC-2026-0073-r01.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0073-r01. Verify that the exact record
+      resolves the historical Reviewer item, keeps the r04 bundle in
+      Integrator's queue, and fails closed for every altered record.
+
+acceptance_tests:
+  - >-
+    With every pinned live artifact unchanged, the scanner verifies r03's
+    integration_rejection_input mapping equals the exact INT-20260827-001
+    reference, verifies the rejected record names the exact rejected r01 bundle
+    and reviewed r04 GUP, and verifies the r04 Review and bundle have every
+    required direct successor, provenance, and ready Integrator handoff. It
+    emits no REVIEWER-INTEGRATION-REJECTION job for r01 and retains exactly the
+    normal Integrator-ready r04 bundle job.
+  - >-
+    A missing, inactive, malformed, unreadable, checksum-mismatched, wrong-ID,
+    wrong-path, or wrong-field record; a non-mapping field; an INT record that
+    does not name r01 and r04 by the pinned values; a wrong r04 direct
+    successor, approval link, reviewed GUP, or handoff; or a changed governing
+    Decision suppresses nothing and retains ordinary rejection remediation.
+  - >-
+    integration_rejection_input has no effect for any Review not named by this
+    Decision, including one with a matching-looking rejection ID. The existing
+    recognized keys integration_rejection, rejection_input, and rejected_by
+    retain their ordinary behavior.
+  - >-
+    IMP-DEC-2026-0073-r01 pins this Decision checksum, records focused and full
+    applicable scanner evidence, and is approval-ready for independent Reviewer
+    verification.
+
+post_implementation_requirements:
+  - >-
+    Integrator proceeds only through its normal verification and transaction
+    lifecycle for the r04 bundle. This Decision does not pre-approve a
+    transaction or change Bards source, node, edge, registry, or canonical data.
+  - >-
+    A future nonstandard rejection-reference field requires its own escalation
+    and exact Architect Decision. Neither Builder nor Reviewer may add aliases
+    by inference.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This is narrow queue evidence classification, not graph semantics.
+
+governance_changelog:
+  - >-
+    DEC-2026-0073 admits one checksummed Bards historical rejection record for
+    queue derivation and expressly rejects a general field-name alias.
+
+exact_diff:
+  tooling/common/scan_agent_queues.py:
+    - 'Validate and classify only the DEC-2026-0073 historical Bards rejection-remediation record.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Cover the exact live record and every specified denial case without widening rejection-reference keys.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0073.yaml:
+    - 'Record the exact historical-rejection queue treatment.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-30T02.59.33.458Z.yaml:
+    - 'Record DEC-2026-0073 as the historical Bards rejection-remediation resolution.'
+
+exact_diff_ownership:
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0073.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-30T02.59.33.458Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Preserve all cited Bards artifacts and canonical data as immutable history.
+  builder:
+    - Implement only DEC-2026-0073 and publish its Decision Implementation Report.
+  reviewer:
+    - Review the Builder report; do not publish an unauthorized Bards r05.
+  analyst:
+    - No action.
+  integrator:
+    - Retain the ordinary r04 bundle work after the scanner implementation is approved.

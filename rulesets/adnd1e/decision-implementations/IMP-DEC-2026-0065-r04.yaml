@@ -1,0 +1,107 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0065-r04
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 4
+supersedes: IMP-DEC-2026-0065-r03
+approval_ready: true
+implemented_by: integrator
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: Every acceptance test this Decision owns now passes. The blocker r03 recorded was resolved
+    by DEC-2026-0070's manifest-authoritative discovery, which is implemented and reported separately
+    in IMP-DEC-2026-0070-r01.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0065
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0065.yaml
+  checksum: sha256:abf453e11110a18577bc7ce8854358e48883f3edf5e1701380599dfbe19ac38e
+implementation_files:
+- path: tooling/integrator/src/adnd1e_integrator/admission.py
+  checksum: sha256:f83d7dc15dc8c6bceeacd8f962ba60fbe9573783cc553a68aac5fee41c998da8
+- path: tooling/integrator/src/adnd1e_integrator/bundles.py
+  checksum: sha256:c04cf9b9e14e9ceb65650a69ec4de9af61c62fde824f1b8d0cd00f339d901820
+- path: tooling/integrator/src/adnd1e_integrator/cli.py
+  checksum: sha256:70b8558769144297763957f4bc7b0cc29f93cd0d64b580b47a7cde8e1813be1c
+- path: tooling/integrator/tests/test_admission.py
+  checksum: sha256:957bfd37d0ba228625f17d499b06c08c63bdf41e6a42d7ba23e32793ef1beb3c
+- path: tooling/integrator/tests/test_transaction.py
+  checksum: sha256:6f82b6f6c1f1544016d085d6422033b9ad9c4b7f975fd751c4d3598211947a27
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: TestTheAuthorisedException in the 42-test test_admission run above. The Druid r04 parse
+    failure is admitted only through DEC-2026-0064's exact record, emits one historical_unreadable_review
+    naming DEC-2026-0064 and r04, raises no fatal diagnostic, and leaves every unrelated bundle classified
+    by its ordinary Review lineage. Against the live corpus the same notice appears alongside two
+    others and the queue still offers ordinary work.
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'TestEveryConditionThatDeniesTheException covers all twelve denials in the 42-test run:
+    absent, inactive and re-hashed Decision; missing and altered record; each mismatched pinned artifact;
+    a now-parseable r04; a wrong parser fragment; broken r05/r06 links; wrong r06 GUP, disposition
+    and handoff; and a changed r01+r06 input set. Each yields review_yaml_unreadable, no ready bundles,
+    exit code 2 and no traceback. Field names are fixed per delegation form and a self-delegating
+    Decision is refused outright.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'TestAnyOtherUnreadableReview in the 42-test run: an approving Review and an unrelated
+    packet''s Review are never informational history. Queue and integrate both return exit code 2,
+    the transaction runner is not called, no Integration or rejection record is written, and canonical
+    and registry bytes are unchanged; restoring valid YAML restores ordinary behaviour.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: Blocked in r03, resolved here. TestOrdinarySemanticsAreUnchanged and the 20-test test_bundles
+    run cover valid discovery, manifest checks, Review-withdrawal rules, the rejected and integrated
+    buckets, direct decision-migration bundles and dry runs. Against the live corpus queue now exits
+    1 on ready work rather than 2, with zero discovery diagnostics, zero queue-integrity entries and
+    three informational notices; the dry run completes and reports 57 edges, 11 created identities
+    and findings unchanged at 1691. Informational history alone neither forces exit 2 nor prevents
+    a transaction.
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'This revision is the active leaf of the IMP-DEC-2026-0065 lineage the test names. It
+    pins this Decision at its current checksum, records focused and full-suite evidence with every
+    command naming its working directory, reports all five direct acceptance tests as passed, and
+    is approval-ready. r01 through r03 remain immutable history: r01 and r02 were refused by Review,
+    and r03 was honestly blocked.'
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/integrator/tests] PYTHONPATH=../src python -m unittest test_admission -v'
+    exit_code: 0
+    result: passed
+    summary: Ran 42 tests in 1101.980s OK
+  - command: '[cwd tooling/integrator/tests] PYTHONPATH=../src python -m unittest test_bundles -v'
+    exit_code: 0
+    result: passed
+    summary: Ran 20 tests in 153.410s OK
+  - command: '[cwd tooling/integrator] PYTHONPATH=src python -m unittest discover -s tests -t tests'
+    exit_code: 0
+    result: passed
+    summary: Ran 217 tests in 1522.138s OK
+live_queue_observation:
+  command: '[cwd tooling/integrator] PYTHONPATH=src python -m adnd1e_integrator.cli --repo-root=../..
+    --books=phb queue'
+  exit_code: 1
+  meaning_of_exit_1: Ready work exists. It is not a failure code and this is not a unittest command,
+    so it is recorded here as an observation rather than in validation.commands, where exit code,
+    result and unittest verdict must agree.
+  reading: 'ready_count 1 (APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04), queue_integrity [], diagnostics
+    [], three informational notices: two historical_unreadable_review (Druid r01-r04, Bards r04-r02)
+    and one historical_unadmitted_bundle (Bards r04-r02). Exit 1 means ready work, not failure. OK'
+why_this_revision: Two reasons, both correcting r03 rather than the implementation. First, r03's second
+  validation command named neither a working directory nor a suite path, which tooling/common/tests/test_implementation_evidence.py::test_each_command_says_where_it_ran
+  rejects on the active leaf of a report lineage; every command here names its cwd. Second, r03's
+  acceptance test 4 was blocked on component discovery reading the filename stem, and DEC-2026-0070
+  has since ruled on that and been implemented, so the test now passes on its own terms. The DEC-2026-0065
+  admission behaviour itself is unchanged; the pinned file checksums moved because the same files
+  carry the later direct-predecessor and discovery work.
+scope_note: DEC-2026-0065's exact_diff names bundles.py, cli.py, test_bundles.py and test_transaction.py.
+  The admission logic was placed in a new admission.py and its focused tests in test_admission.py,
+  a deviation first disclosed in r01 and subsequently named by DEC-2026-0069 and DEC-2026-0070 in
+  their own exact diffs. This report pins the files that actually carry the behaviour, including test_transaction.py,
+  which r03 omitted.

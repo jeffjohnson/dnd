@@ -1,0 +1,143 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0065-r02
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: IMP-DEC-2026-0065-r01
+approval_ready: true
+implemented_by: integrator
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Reissue of IMP-DEC-2026-0065-r01 without the schema-forbidden validation.summary field,
+    per REV-IMP-DEC-2026-0065-r01-r02. The implementation is unchanged: no source file was edited
+    for this revision and every recorded run is the same evidence r01 pinned.'
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0065
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0065.yaml
+  checksum: sha256:abf453e11110a18577bc7ce8854358e48883f3edf5e1701380599dfbe19ac38e
+consumed_review:
+  id: REV-IMP-DEC-2026-0065-r01-r02
+  path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0065-r01-r02.yaml
+  checksum: sha256:bc775075b485c2a0aafad65c3b23ea5cd23790dbe30798db78ac4e64d205da07
+  overall_disposition: revision_required
+  finding_consumed: 'validation carried a summary field, which the schema forbids: validation
+    sets additionalProperties false and allows only passed and commands. The field is removed
+    here and nothing else changed.'
+governing_decision:
+  id: DEC-2026-0064
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0064.yaml
+  checksum: sha256:3ad3bbc7386c47fb432b6863a3e8ae5ca739ea11567a3fe003e3fafd04630a18
+  note: Consumed as queue-admission evidence only. It was not edited, and the Review it pins was
+    not deserialized, reserialized, superseded, or read for content.
+implementation_files:
+- path: tooling/integrator/src/adnd1e_integrator/admission.py
+  checksum: sha256:6b8ea4953251e208fd993d1da6c088a4b26c57a6eeaef59929fd3b1688bc74c7
+- path: tooling/integrator/src/adnd1e_integrator/bundles.py
+  checksum: sha256:975803c5b8f65e409fc1652500b4ef30e598ca75bb033256d349ce22aaf1d58c
+- path: tooling/integrator/src/adnd1e_integrator/cli.py
+  checksum: sha256:70b8558769144297763957f4bc7b0cc29f93cd0d64b580b47a7cde8e1813be1c
+- path: tooling/integrator/tests/test_admission.py
+  checksum: sha256:50cae6c716ac07e18b5c1d5c8dc70e63c762bed97fe537d60f809d35c243d5ca
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: TestTheAuthorisedException. ready_queue returns without raising against a clone carrying
+    DEC-2026-0064's exact record and the pinned r04, r05 and r06 bytes. It emits exactly one historical_unreadable_review
+    record naming DEC-2026-0064 and r04, produces no fatal diagnostic, and still classifies every
+    discovered bundle into exactly one ordinary bucket, with the union of the buckets equal to
+    discovery. test_no_content_of_the_unreadable_review_is_recovered additionally asserts the
+    notice carries none of the file's content, because recording a notice must not become recovering
+    the file.
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'TestEveryConditionThatDeniesTheException, twelve cases: an absent Decision, an inactive
+    Decision, a re-hashed Decision, a removed record, a wrong disposition, a mismatched pinned
+    checksum, an r04 that now parses, a wrong parser-failure fragment, a broken bridge link, a
+    wrong successor handoff, a wrong reviewed GUP, and a shortened Builder input set. Each yields
+    review_yaml_unreadable, an empty ready list, an empty informational list, CLI exit code 2,
+    and no Python traceback. Each mutation that edits the governing Decision also re-pins the
+    delegating Decision''s checksum, so the field-level check under test is the one that fires
+    rather than the hash alone.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: TestAnyOtherUnreadableReview. A broken Review in another packet lineage and a broken
+    approving Review are both fatal, never informational, and the Bards bundle disappears from
+    ready in the approving case. All four integrate forms, bare, --dry-run, by bundle ID, and
+    --dry-run by bundle ID, return exit code 2 with review_yaml_unreadable on stderr and no traceback,
+    and every writable canonical and registry path is byte-identical afterwards. Restoring valid
+    YAML clears the fatal diagnostic and returns the ready bucket to exactly the contents it held
+    before the file was broken.
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'TestOrdinarySemanticsAreUnchanged plus the unchanged remainder of the suite. The
+    integrated, rejected and superseded buckets are still populated, load_admission permits exactly
+    one file under exactly one Decision and reports fails_closed false, and `queue` does not exit
+    2 with the notice present. A --dry-run with history present is not stopped by admission: it
+    reaches the ordinary lifecycle, which is the only thing that may refuse it. Direct decision-migration
+    discovery, manifest checks, Review-withdrawal rules and rollback behavior are covered by the
+    pre-existing modules, which are unchanged and green.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'This report pins the DEC-2026-0065 checksum above and records both evidence runs.
+    Focused: the 24-test test_admission module. Full: the Integrator suite at 187 tests in 820.588s,
+    OK. Every direct acceptance test is reported passed and the report is approval-ready for independent
+    Reviewer verification.'
+validation:
+  passed: true
+  commands:
+  - command: PYTHONPATH=tooling/integrator/src python -m adnd1e_integrator.cli test
+    exit_code: 0
+    result: passed
+    summary: Ran 187 tests in 820.588s OK
+  - command: '[cwd tooling/integrator/tests] python -m unittest test_admission -v'
+    exit_code: 0
+    result: passed
+    summary: Ran 24 tests in 557.067s OK
+  - command: python tooling/common/tests/test_common_schemas.py
+    exit_code: 0
+    result: passed
+    summary: Ran 38 tests in 15.633s OK
+  - command: python tooling/common/tests/test_implementation_evidence.py
+    exit_code: 0
+    result: passed
+    summary: Ran 25 tests in 6.509s OK
+  - command: python tooling/common/tests/test_role_context.py
+    exit_code: 0
+    result: passed
+    summary: Ran 50 tests in 1.099s OK
+  - command: python tooling/common/tests/test_scan_agent_queues.py
+    exit_code: 0
+    result: passed
+    summary: Ran 186 tests in 60.098s OK
+implementation_scope:
+  queue_admission: 'adnd1e_integrator.admission resolves admission before any Review directory
+    is walked. It reads active approved Architect Decisions, follows the delegating governing_repair_record
+    block to the governing Decision by pinned checksum, and re-derives every field of the named
+    repair record from the files: each pinned artifact is re-hashed, the four readable references
+    must parse and declare their recorded IDs, and the unreadable reference must still fail to
+    parse with the recorded message fragment. The two supersession links, the successor''s disposition,
+    handoff and reviewed GUP, and the exact two-entry Builder input set are each checked against
+    the file rather than against the record''s restatement of itself.'
+  fail_closed: An empty permit set is the default, so with no governing Decision every parse failure
+    is fatal. ready_queue returns an empty ready list whenever any fatal diagnostic exists, cmd_integrate
+    refuses before the transaction runner is called including under --dry-run and including when
+    a bundle is named explicitly, and main catches YAMLError as a backstop so no path can produce
+    a traceback.
+  separate_channels: queue_integrity carries fatal records and informational carries the historical
+    notice. They are distinct keys in both the ready_queue result and the CLI payload, so a trusted
+    notice can never read as a queue failure and a queue failure can never be filed as history.
+    Only queue_integrity and pre-existing diagnostics set exit code 2.
+  not_changed: No canonical, registry, graph, GUP, Review, Approved bundle, Integration record
+    or rejection record was created or modified. The unreadable Review was not edited, reserialized,
+    superseded or read for content. The Bards bundle was not integrated.
+post_implementation_note: 'With admission repaired, APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01
+  reaches ordinary verification and is refused there with 29 of 48 preconditions failing. The
+  cause is packaging, not admission: the bundle carries no operation_index, so every CSV row is
+  read as an addition, and 28 rows reference nodes the same batch registers and therefore belong
+  in pending_additions. Under DEC-2026-0047 that is a Reviewer packaging correction. It is reported
+  here as the outcome of the normal lifecycle this Decision directs, and is not implemented by
+  this report.'

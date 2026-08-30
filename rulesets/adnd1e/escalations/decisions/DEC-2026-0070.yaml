@@ -1,0 +1,264 @@
+schema_version: '1.0'
+id: DEC-2026-0070
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+revision: 2
+supersedes: DEC-2026-0069
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Reissue the Bards unreadable-predecessor admission implementation with
+    manifest-authoritative component discovery and exact historical-bundle
+    exclusion.
+  blocking_ids: []
+
+decision_date: '2026-08-28'
+escalation_id: ESC-2026-08-28T11.07.16.219Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  How must Integrator discover the Bards r03 bundle's declared shared edge
+  component while preventing the same discovery rule from offering the
+  unreadable r02 predecessor bundle?
+
+ruling: >-
+  This reissues DEC-2026-0069 because its acceptance tests require normal r03
+  bundle discovery but its ruling did not state the component-discovery and
+  historical-bundle semantics needed to accomplish that result. The former
+  Decision already named `bundles.py` in its exact diff; this correction changes
+  its executable rule, not the prior Decision's immutable history.
+
+  For every manifested Approved bundle, Integrator must obtain components only
+  from the manifest's declared, checksummed `components` entries. A packet-update
+  manifest's sole `edges` component is resolved from its declared
+  repository-relative path, not the manifest filename stem. Manifestless legacy
+  bundles alone retain stem-based inference. The Bards r03 manifest therefore
+  uses the exact r01 edge component it declares; it does not need a copied
+  r03-stem CSV.
+
+  Integrator must independently validate DEC-2026-0068's active
+  `review_direct_predecessor_repairs[0]` record through the pinned delegation
+  below. That record permits the r02 Review to be omitted only as unreadable
+  history. It also names exactly one historical bundle: after the record,
+  historical-bundle manifest, manifest checksum, and manifest approving Review
+  identity validate, exclude only APPROVED-GUP-PKT-PHB-117-119-bards-r04-r02
+  from ready discovery and report it as historical unadmitted evidence. The
+  r03 bundle remains eligible for ordinary bundle verification. No missing,
+  stale, malformed, or merely similar record suppresses any bundle.
+
+  Any other unreadable Review, a failed direct-predecessor prerequisite, an
+  invalid declared component, or a malformed manifest remains fail-closed. The
+  queue and every integrate form return exit code 2 without a traceback, offer
+  no ready bundles, and begin neither dry run nor canonical transaction.
+
+rationale:
+  - >-
+    The Approved manifest already declares the component path and checksum that
+    verification trusts. Discovering a different component by filename makes a
+    derived convention override the artifact's explicit provenance.
+  - >-
+    r02 and r03 intentionally name the same component. A generic path-based
+    discovery change without exact historical-bundle exclusion would expose an
+    unreviewable r02 bundle as ready, defeating the unreadable-Review boundary.
+  - >-
+    The record-based exclusion is bounded by its Decision-pinned IDs, paths,
+    checksums, and approving Review identity. It does not establish a general
+    category of silently ignored approved bundles.
+
+affected_contracts:
+  - path: contracts/WORK_QUEUES.md
+    previous_version: '1.24'
+    new_version: '1.25'
+    change: >-
+      Make manifest-declared components authoritative for manifested Approved
+      bundles and define exact validated historical-bundle exclusion.
+affected_registries: []
+affected_artifacts:
+  reissued_decision:
+    id: DEC-2026-0069
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0069.yaml
+    checksum: sha256:53577e45f77b3bd070c6016f2eee6265b1abee040a61f6abf5783db2fbf750e2
+  governing_decision:
+    id: DEC-2026-0068
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+    checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+  unreadable_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r02
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r02.yaml
+    checksum: sha256:e06eb90dee6c5a14a2aef14518a759da1dece6d5874c2ddf83f7cd6782a8fb56
+  historical_bundle:
+    id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r02
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r02.yaml
+    checksum: sha256:ce3ba8e21821f7a54c74e4ead7ffcaffabbc96567d1b17fa036dec5a77de217f
+  active_successor_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r03
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+    checksum: sha256:e0788ce7a183c8409450af65073054464d685d2bca484398abb2a04b6e9b2288
+  active_successor_bundle:
+    id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+    checksum: sha256:7064290c50c069776e5f28aab6cff8762eb56f21aa3b69161240fe507d2d0faa
+  declared_edge_component:
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01.edges.csv
+    checksum: sha256:b8342ceb08970d1fc65cfe2bc1af2c40255e4717d08a765a221ba50c9af54f33
+    rows: 57
+
+governing_direct_predecessor_repair_record:
+  decision_input:
+    id: DEC-2026-0068
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+    checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+  field: review_direct_predecessor_repairs
+  record_index: 0
+  required_disposition: historical_unreadable_direct_predecessor
+  informational_code: historical_unreadable_review
+  historical_bundle_code: historical_unadmitted_bundle
+  fatal_code: review_yaml_unreadable
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    No artifact lineage changes. r02 remains unreadable historical evidence and
+    r03 remains the sole current bundle; the Integrator changes only discovery
+    and admission classification.
+  direct_implementation: >-
+    Integrator replaces the unfinished DEC-2026-0069 implementation target with
+    this complete reissue and publishes IMP-DEC-2026-0070-r01. No report may
+    claim to implement superseded DEC-2026-0069.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, amend WORK_QUEUES to version 1.25, and move this
+      escalation to decided state. Preserve every Bards and Druid artifact.
+  - step: 2
+    owner: integrator
+    action: >-
+      Implement manifest-authoritative discovery and the exact validated
+      historical-bundle exclusion in admission and bundle discovery. Preserve
+      legacy manifestless inference, direct migration behavior, Druid admission,
+      and fail-closed handling. Publish IMP-DEC-2026-0070-r01 with rerun
+      evidence for every acceptance test.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0070-r01. Validate the contract anchors,
+      Bards r03 availability, r02 exclusion, all denial cases, no content
+      recovery, and no canonical mutation on fatal paths.
+
+acceptance_tests:
+  - >-
+    With active DEC-2026-0068 at its pinned checksum, ready_queue validates r02
+    as historical unreadable evidence without reading its content, emits exactly
+    one historical_unreadable_review notice for it, has no fatal admission
+    diagnostic, and offers APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03 through
+    ordinary verification.
+  - >-
+    The r03 manifest resolves its sole edges component from the declared r01
+    component path and checksum even though its filename stem differs. Adding,
+    removing, or renaming a colocated r03-stem CSV does not alter that result;
+    a missing, outside-root, wrong-kind, or checksum-invalid declared component
+    remains diagnostic and produces no ready Bards r03 bundle.
+  - >-
+    The exact r02 historical bundle is reported only as
+    historical_unadmitted_bundle and never appears ready, rejected, integrated,
+    or superseded. Altering its ID, path, checksum, or approving Review identity
+    in the record or manifest; making the record absent or invalid; or changing
+    the unreadable Review's parser state removes the exclusion and restores the
+    ordinary fail-closed unreadable-Review diagnostic rather than admitting r02.
+  - >-
+    The existing Druid two-hop admission, every other unreadable Review, legacy
+    manifestless bundle inference, decision-migration no-edge-CSV discovery,
+    ordinary rejection handling, named-bundle dry runs, and rollback behavior
+    remain unchanged. No arbitrary record field or self-delegating Decision is
+    accepted.
+  - >-
+    `contracts/WORK_QUEUES.md` is Version 1.25 or later and retains the
+    manifest-component-authority rule, manifestless-only filename inference,
+    and exact validated historical-bundle exclusion rule.
+  - >-
+    IMP-DEC-2026-0070-r01 pins this Decision checksum, records passing focused
+    and full applicable Integrator-suite evidence, reports every direct test as
+    passed, and is approval-ready for independent Reviewer verification.
+
+acceptance_test_semantics:
+  - acceptance_test_index: 5
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.25'
+        substantive_anchors:
+          - 'manifest''s `components` entries are the only authority for component discovery'
+          - 'Filename-stem component discovery remains a legacy-only fallback'
+          - 'historical_bundle whose approving Review is the record''s exact unreadable Review'
+
+post_implementation_requirements:
+  - >-
+    After an Approved implementation Review consumes IMP-DEC-2026-0070-r01,
+    Integrator may evaluate only the existing Bards r03 manifest through normal
+    bundle verification and transaction handling. This Decision alone writes no
+    canonical or registry data.
+  - >-
+    Any later historical-bundle exclusion requires an active, fully checksummed
+    Architect repair record. Similarity of a filename, component, GUP, or Review
+    does not authorize reuse.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This corrects queue and component provenance mechanics, not graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.25 makes manifested component paths authoritative and defines
+    exact historical-bundle exclusion for a validated unreadable-Review record.
+  - >-
+    DEC-2026-0070 supersedes DEC-2026-0069 with the full executable Bards
+    admission and discovery rule.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.24 -> 1.25; define manifested component authority and exact historical-bundle exclusion.'
+  tooling/integrator/src/adnd1e_integrator/admission.py:
+    - 'Expose only validated exact historical-bundle exclusions from the fixed direct-predecessor delegation.'
+  tooling/integrator/src/adnd1e_integrator/bundles.py:
+    - 'Resolve manifested components from declared paths and suppress only validated historical bundles before readiness.'
+  tooling/integrator/tests/test_admission.py:
+    - 'Cover Bards admission, r02 historical-bundle exclusion, and every record denial case.'
+  tooling/integrator/tests/test_bundles.py:
+    - 'Cover manifest-path component discovery, legacy fallback, and no-edge direct migrations.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0070.yaml:
+    - 'Record the DEC-2026-0069 reissue and complete implementation contract.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-28T11.07.16.219Z.yaml:
+    - 'Record DEC-2026-0070 as the discovery-semantics escalation resolution.'
+
+exact_diff_ownership:
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: tooling/integrator/src/adnd1e_integrator/admission.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/src/adnd1e_integrator/bundles.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/tests/test_admission.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/tests/test_bundles.py, owner: integrator, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0070.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-28T11.07.16.219Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: integrator
+follow_up_owners:
+  architect:
+    - Preserve DEC-2026-0069 as immutable superseded history and the named artifact set unchanged.
+  integrator:
+    - Implement only DEC-2026-0070 and publish the new Decision Implementation Report.
+  reviewer:
+    - Review the reissued implementation report and its versioned contract-content evidence.
+  builder:
+    - Continue the independent DEC-2026-0068 scanner implementation.
+  analyst:
+    - No action.

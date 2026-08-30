@@ -132,6 +132,15 @@ For each escalation:
 
 ## Outputs
 
+## YAML publication preflight
+
+Before publishing an Architect Decision or returning an escalation, stage each
+YAML output outside its durable path and run `python
+tooling/common/validate_artifact.py --path <staged-yaml> --schema
+schemas/common/architect-decision.schema.json` for a Decision or
+`schemas/common/artifact-envelope.schema.json` for an escalation. Do this before
+the create-only final-path preflight. Do not run a corpus scan for this check.
+
 Write `rulesets/<ruleset-id>/escalations/decisions/DEC-YYYY-NNNN.yaml` conforming to `schemas/common/architect-decision.schema.json`.
 
 Every decision must contain:

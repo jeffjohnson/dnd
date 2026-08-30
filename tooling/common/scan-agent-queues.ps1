@@ -25,6 +25,10 @@
 .PARAMETER All
     Also prints active, blocked, and informational items in console mode.
 
+.PARAMETER Verbose
+    Displays the Diagnostics section. Defaults to true. Use `-Verbose false`
+    or `-v false` to suppress it.
+
 .EXAMPLE
     .\tooling\common\scan-agent-queues.ps1
 
@@ -33,18 +37,20 @@
 
 .EXAMPLE
     .\tooling\common\scan-agent-queues.ps1 -Root D:\analysis\dnd -All
+
+.EXAMPLE
+    .\tooling\common\scan-agent-queues.ps1 -Verbose false
 #>
 
-[CmdletBinding()]
 param(
-    [Parameter()]
     [string]$Root,
 
-    [Parameter()]
     [switch]$Json,
 
-    [Parameter()]
-    [switch]$All
+    [switch]$All,
+
+    [Alias("v")]
+    [string]$Verbose = "true"
 )
 
 Set-StrictMode -Version Latest
@@ -76,11 +82,25 @@ $arguments = @(
     ([System.IO.Path]::GetFullPath($Root))
 )
 
+$showDiagnostics = switch ($Verbose.Trim().ToLowerInvariant()) {
+    { $_ -in "1", "true", "yes", "on" } { $true; break }
+    { $_ -in "0", "false", "no", "off" } { $false; break }
+    default {
+        throw (
+            "Verbose must be one of: true, false, yes, no, 1, 0, on, off. " +
+            "Received: $Verbose"
+        )
+    }
+}
+
 if ($Json) {
     $arguments += "--json"
 }
 if ($All) {
     $arguments += "--all"
+}
+if (-not $showDiagnostics) {
+    $arguments += @("--verbose", "false")
 }
 
 & $pythonCommand.Source @arguments

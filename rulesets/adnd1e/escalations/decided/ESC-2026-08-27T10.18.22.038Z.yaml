@@ -1,0 +1,116 @@
+schema_version: '1.0'
+id: ESC-2026-08-27T10.18.22.038Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-054-064-druid-spells
+constitution_version: '1.8'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-08-27'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: A published Review is not parseable YAML. It halts every Integrator entry point before
+    any bundle is examined, and the ordinary repair is unavailable because a successor to this
+    revision would fork a chain that already continues past it.
+  blocking_ids: []
+trigger: Integrator queue check with one ready item. Both the queue command and a dry-run integration
+  abort with yaml.scanner.ScannerError before reaching the ready bundle.
+question: 'How is a malformed published artifact repaired when it sits mid-lineage, so the successor
+  mechanism that ARTIFACT_LIFECYCLE prescribes would fork a revision chain that WORK_QUEUES forbids
+  from forking? Specifically: may the Reviewer correct this file in place as a non-semantic serialization
+  fix, must the whole r01 Review chain be reissued, or does some other instrument apply?'
+the_malformed_artifact:
+  id: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04
+  path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04.yaml
+  checksum: sha256:f28b9d2b15dcebf4053e3931b9190e54d70b27ca6da9ceadf3a2aebbefc1fd29
+  status: revision_required
+  revision: 4
+  supersedes: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r03
+  defect: Five plain YAML scalars carry a colon-space inside an unquoted value, which the parser
+    reads as a nested mapping key. The values are prose rationales, so the content is fine and
+    only the serialization is invalid.
+  offending_lines:
+  - 115
+  - 119
+  - 123
+  - 127
+  - 131
+  offending_key: row_decisions[].rationale
+  example_line: 'rationale: Source-supported but omitted: its exact assertion key is already canonical
+    row 4619.'
+  parser_error: 'yaml.scanner.ScannerError: mapping values are not allowed here, line 115 column
+    44.'
+  verified_remediation: Quoting exactly those five values, and nothing else, makes the document
+    parse with its structure intact. This was confirmed on a scratch copy outside the repository;
+    the published artifact was not modified, read-repaired, or staged.
+  why_the_ordinary_repair_does_not_apply: 'The r01 Review chain already continues past this revision:
+    r01-r05 supersedes r01-r04 and r01-r06 supersedes r01-r05, and a further Review r02-r01 exists
+    on the r02 GUP. Publishing a successor to r01-r04 would create a second child of r01-r03 and
+    fork the chain, which WORK_QUEUES prohibits: revision chains must not fork.'
+what_it_blocks:
+  ready_item:
+    bundle_id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01.yaml
+    checksum: sha256:e0203d0138fa8b7599e7eacc9437fdb4dbc304412498c465866b96c9160eee42
+    component: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01.edges.csv
+    component_checksum: sha256:b8342ceb08970d1fc65cfe2bc1af2c40255e4717d08a765a221ba50c9af54f33
+    status: approved
+    review_id: REV-GUP-PKT-PHB-117-119-bards-r04-r01
+    note: Nothing is known to be wrong with this bundle. It has not been verified, because verification
+      cannot begin.
+  failure_path: adnd1e_integrator.cli.cmd_queue calls bundles.ready_queue, which calls withdrawn_review_ids,
+    which walks every Review lineage in the book and calls load_yaml on each. The malformed file
+    raises before any bundle is classified, so queue, integrate and integrate --dry-run all abort
+    identically. The Integrator has no entry point that skips this walk, and adding one to route
+    around a defective input is not a repair this role may make.
+  scope: This is the only unparseable YAML artifact in the repository. Every .yaml file under
+    books/ and rulesets/ was parsed; exactly one failed.
+why_it_matters: One approved bundle is ready and cannot be integrated, and no future Integrator
+  work of any kind can proceed while this file is on disk in this state. The blocked bundle belongs
+  to an unrelated packet, so a defect in a superseded druid-spells Review now gates the whole
+  role.
+options_considered:
+- Rule the correction non-semantic and let the Reviewer requote the five values in place, recording
+  the before and after checksums. This preserves the chain and changes no decision, but it edits
+  a published artifact, which the Integrator will not do on its own authority and cannot authorize.
+- Require the Reviewer to reissue the r01 chain from r01-r04 onward as new revisions. This honours
+  immutability but rewrites three artifacts to fix a quoting error in one, and the reissued leaf
+  would have to re-derive dispositions already settled downstream.
+- Rule that parse-level defects are queue-tooling concerns and require the scanner and the Integrator
+  to quarantine an unparseable artifact as a diagnostic rather than abort. This keeps the pipeline
+  moving but leaves a published artifact that no tool can read, and it is a Builder implementation
+  question as much as a governance one.
+what_is_not_in_question:
+- The content of the malformed Review. The five rationales are ordinary prose and no disposition
+  is disputed here; only the serialization is invalid.
+- The bards bundle. It is not implicated and has not been assessed either way.
+- Canonical state. It stands at 5046 edges, 1392 nodes and 1407 registry rows after INT-20260825-001
+  and INT-20260826-001, with 1691 findings and none introduced by either batch. The Integrator
+  suite passes 163 of 163 and the common suites 295 of 295.
+affected_canonical_ids: []
+migration_impact:
+  canonical_data_change: false
+  registry_change: false
+  note: Nothing in canonical is wrong. This escalation is about an unreadable artifact blocking
+    the role, not about integrated state.
+systemic_finding: tooling/common/scan_agent_queues.py does not report this file at all. It emits
+  five diagnostics, none of them naming the malformed Review, exits 1, and presents Integrator
+  Ready 1 as a trustworthy result while having silently skipped an artifact it could not read.
+  WORK_QUEUES reserves exit code 2 for the case where invalid or ambiguous lineage prevents a
+  trustworthy result, and requires a queue scanner to separate a diagnostic class for broken or
+  ambiguous lineage. An unparseable published Review is that case. A role acting on the scanner's
+  output alone would not learn the queue is unreliable. Queue-scanner implementation is Builder-owned
+  per DEC-2026-0012 as recorded in DEC-2026-0018. This is the second scanner-fidelity finding
+  from this role; the first, blocked Review handoffs inflating ReadyCount, is DEC-2026-0063 step
+  4 and still open.
+governance_impact: Immutability and the no-fork rule are individually sound and jointly leave
+  no route to repair a mid-lineage artifact whose defect is serialization rather than judgment.
+  DEC-2026-0043, DEC-2026-0051 and DEC-2026-0063 each resolved a state no role could discharge;
+  this is the same shape at the file level rather than the decision level. A durable fix would
+  name, once, how a non-semantic defect in a published artifact is corrected without forking its
+  chain.
+blocking: true
+resolution: DEC-2026-0065

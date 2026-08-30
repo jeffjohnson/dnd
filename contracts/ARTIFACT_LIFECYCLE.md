@@ -1,6 +1,6 @@
 # Artifact Lifecycle
 
-**Version 1.20.**
+**Version 1.21.**
 
 Artifact files are durable, append-only records. Their directories preserve
 artifact kind, not current queue state. Role readiness, revision leaves,
@@ -10,6 +10,18 @@ component grouping, and downstream consumption follow
 Do not move, rename, overwrite, or delete a published GUR, GUP, Review, Approved
 bundle, or Integration record to indicate progress. Downstream artifacts consume
 upstream artifacts through IDs, paths, and checksums.
+
+## YAML Publication Gate
+
+Before creating a durable YAML artifact, its publisher stages the intended exact
+UTF-8 bytes outside the final artifact path and runs the target-only preflight
+defined in `contracts/WORK_QUEUES.md` with the artifact's applicable schema.
+The preflight must parse the staged bytes as a YAML mapping and validate the
+schema successfully. It is not a repository sweep: it reads only the staged
+artifact and the schema-reference set needed for that artifact. A failure stops
+publication before the create-only destination preflight. A passing result does
+not weaken any role-specific source, graph, provenance, or companion-component
+validation.
 
 ## Artifact Integrity Breach
 
@@ -307,6 +319,9 @@ Required outputs:
 An Integration manifest consumes each Approved bundle by ID and checksum.
 
 ## Version History
+
+- **1.21 - 2026-08-29:** Required target-only staged YAML parsing and schema
+  validation before every durable YAML publication.
 
 - **1.20 - 2026-08-26:** Established Review-contract 1.3: a passing standalone
   preflight is evidence in a Reviewer successor, never a synthetic Integrator

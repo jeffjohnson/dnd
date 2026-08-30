@@ -1,0 +1,96 @@
+schema_version: '1.0'
+id: ESC-2026-08-27T00.34.01.169Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-054-064-druid-spells
+constitution_version: '1.8'
+raised_by: reviewer
+decision_owner: architect
+raised_on: '2026-08-26'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    An immutable malformed Review is a required supersedes target in the active
+    Druid Review lineage. The Reviewer has published a schema-valid r06 whose
+    exact correction set compiles with zero errors, but queue derivation cannot
+    reach it because r04 is unreadable and r05 therefore names a missing target.
+  blocking_ids:
+    - REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04
+originating_artifacts:
+  original_review:
+    id: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01.yaml
+    checksum: sha256:02aac9b6997d67c796e4862b45f0b3be82e9927bc73340c5b3c1756d8a649c27
+  malformed_review:
+    id: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04.yaml
+    checksum: sha256:f28b9d2b15dcebf4053e3931b9190e54d70b27ca6da9ceadf3a2aebbefc1fd29
+  compilable_successor:
+    id: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r06
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r06.yaml
+    checksum: sha256:8ae549d4c845e1dca9c246c536d8a6c8db22a897b8f5e277fa2b49c8b73fadd2
+question: >-
+  What explicit immutable-lineage treatment permits the active, schema-valid,
+  independently compilable Druid Review successor to route Builder work when a
+  prior create-only Review revision is YAML-unreadable and makes its descendants
+  fail the scanner's immediate-supersedes check?
+evidence:
+  source_excerpt: >-
+    Not applicable. This is an artifact-lifecycle and queue-lineage defect; no
+    PHB source interpretation, edge meaning, registry identity, or canonical
+    relationship is at issue.
+  scanner_observation:
+    - code: yaml_unreadable
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04.yaml
+      detail: >-
+        mapping values are not allowed here at line 115, column 44.
+    - code: missing_supersedes_target
+      artifact_id: REV-GUP-PKT-PHB-054-064-druid-spells-r01-r05
+      detail: r05 supersedes the unreadable r04, which cannot be admitted to the lineage index.
+  independent_reproduction:
+    input_reviews:
+      - REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01
+      - REV-GUP-PKT-PHB-054-064-druid-spells-r01-r06
+    method: >-
+      Loaded the two stated Reviews through Builder ReviewDirectives and compiled
+      GUR-PKT-PHB-054-064-druid-spells-r01 against current registry and canonical
+      inputs at GUP revision 2 without publishing an artifact.
+    result: zero compiler errors; one non-blocking warning.
+  local_graph_neighborhood:
+    affected_canonical_ids:
+      - rule_greater_mistletoe
+      - spell_call_woodland_beings
+    canonical_relationship_change: none
+    registry_change: none
+options_considered:
+  - >-
+    Edit or delete r04. Rejected because durable publication is create-only and
+    Reviewer cannot rewrite immutable history.
+  - >-
+    Continue issuing ordinary successors. Rejected because each successor
+    preserves the broken ancestry and cannot remove the scanner diagnostic.
+  - >-
+    Treat r04 as valid based on its filename or later prose. Rejected because
+    unreadable YAML has no trustworthy envelope, handoff, or correction data.
+  - >-
+    Architect records a narrow, exact retirement or lineage-repair rule for the
+    named malformed Review and its named successor path. Recommended.
+recommended_resolution: >-
+  Issue a narrow Decision that preserves r04 byte-for-byte as unreadable
+  historical evidence, identifies r01-r06 as the only permitted active repair
+  successor, and gives queue derivation exact checksummed authority to route the
+  r01-r01 plus r01-r06 Builder input set. Do not create a general malformed-file
+  exemption, alter the GUP, change canonical or registry data, or infer validity
+  from r04's filename.
+expected_migration_impact:
+  canonical_data: none
+  registry: none
+  source_interpretation: none
+  constitution_or_profile: none
+  artifact_lineage: >-
+    Architect-governed exact handling of one malformed immutable Review and the
+    named r06 repair successor is required before Builder can receive a queue job.
+resolution: DEC-2026-0064

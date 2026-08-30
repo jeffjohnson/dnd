@@ -1,0 +1,58 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0065-r04-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Reissue IMP-DEC-2026-0065-r04 with the declared validation report present
+    at its pinned path and checksum; queue derivation assigns this direct
+    implementation revision to its Integrator owner.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0065-r04
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0065-r04.yaml
+  checksum: sha256:4b83929b143165a8f5049623825e6b59adeb598af171619a196a6bc65c2c1213
+decision_input:
+  id: DEC-2026-0065
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0065.yaml
+  checksum: sha256:abf453e11110a18577bc7ce8854358e48883f3edf5e1701380599dfbe19ac38e
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: Exact Decision, implementation-file, and Druid repair-record checksums match current bytes; recorded focused admission evidence covers the authorized route.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: The report records the exact denial set and current implementation hashes match every named file.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: The report records fatal handling for unrelated unreadable Reviews and no-transaction behavior.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: The reported ordinary-discovery evidence is consistent with the current manifest-authoritative Bards route.
+  - acceptance_test_index: 5
+    disposition: failed
+    evidence: build/reports/IMP-DEC-2026-0065-r04.validation.json is absent, so the report's declared validation_report_checksum cannot be independently verified.
+scope_assessment: >-
+  The implementation bytes and Decision provenance are current, but an
+  approval-ready implementation report must provide every declared checksummed
+  validation artifact. This is a report-publication defect, not authority to
+  infer or recreate the missing report.
+independent_validation:
+  passed: false
+  commands:
+    - command: JSON Schema validation and SHA-256 comparison of IMP-DEC-2026-0065-r04, DEC-2026-0065, and every listed implementation file.
+      exit_code: 0
+      result: passed
+      summary: The report schema, Decision checksum, and all five implementation-file checksums matched current bytes.
+    - command: Verify build/reports/IMP-DEC-2026-0065-r04.validation.json against the report's declared checksum.
+      exit_code: 1
+      result: failed
+      summary: The declared validation report does not exist at the recorded path.
+overall_disposition: revision_required

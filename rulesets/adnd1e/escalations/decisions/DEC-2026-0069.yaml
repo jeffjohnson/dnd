@@ -1,0 +1,203 @@
+schema_version: '1.0'
+id: DEC-2026-0069
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Extend Integrator admission to the exact DEC-2026-0068 Bards direct-
+    predecessor repair record and publish a Decision Implementation Report.
+  blocking_ids: []
+
+decision_date: '2026-08-28'
+escalation_id: ESC-2026-08-28T04.22.19.062Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  How must Integrator admit only the checksummed Bards r03 bundle when its r02
+  Review is immutable unreadable direct-predecessor history?
+
+ruling: >-
+  Integrator may omit REV-GUP-PKT-PHB-117-119-bards-r04-r02 from Review parsing
+  only after it independently validates DEC-2026-0068's active
+  `review_direct_predecessor_repairs[0]` record in full. The delegation pins
+  DEC-2026-0068 by its final checksum, so this Decision does not delegate to
+  itself. The admission implementation must accept precisely the r02 parse
+  failure, r03 Review, r03 Approved manifest, r01 parent, r04 GUP,
+  INT-20260827-001 rejection, 57-row component, eleven node registrations, and
+  29 additions plus 28 pending additions pinned in that record.
+
+  A valid direct-predecessor record produces one informational
+  `historical_unreadable_review` notice and otherwise permits normal processing
+  of APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03. The unreadable r02 bytes are
+  checked only for their hash and expected parser failure; their content is
+  never recovered or interpreted. Any unrecognized unreadable Review or any
+  failed Bards prerequisite is fatal: queue and every integrate form return
+  exit code 2 without a traceback, ready bundles are empty, and neither a dry
+  run nor a canonical transaction starts.
+
+rationale:
+  - >-
+    DEC-2026-0068 establishes the exact evidence shape for the one Bards
+    direct-predecessor lineage. Integrator must validate it independently rather
+    than trust the common scanner's result.
+  - >-
+    A delegation Decision can pin a predecessor Decision checksum. A single
+    self-delegating Decision could not: it would require its own final hash
+    before its content was complete.
+  - >-
+    The exception is data-specific and fail-closed. It does not convert a
+    serialization defect into an approval or broaden admission for another
+    packet.
+
+affected_contracts: []
+affected_registries: []
+affected_artifacts:
+  governing_decision:
+    id: DEC-2026-0068
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+    checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+  unreadable_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r02
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r02.yaml
+    checksum: sha256:e06eb90dee6c5a14a2aef14518a759da1dece6d5874c2ddf83f7cd6782a8fb56
+  active_successor_review:
+    id: REV-GUP-PKT-PHB-117-119-bards-r04-r03
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+    checksum: sha256:e0788ce7a183c8409450af65073054464d685d2bca484398abb2a04b6e9b2288
+  active_successor_bundle:
+    id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+    checksum: sha256:7064290c50c069776e5f28aab6cff8762eb56f21aa3b69161240fe507d2d0faa
+
+governing_direct_predecessor_repair_record:
+  decision_input:
+    id: DEC-2026-0068
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+    checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+  field: review_direct_predecessor_repairs
+  record_index: 0
+  required_disposition: historical_unreadable_direct_predecessor
+  informational_code: historical_unreadable_review
+  fatal_code: review_yaml_unreadable
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    No lineage changes. Integrator consumes the existing checksummed
+    DEC-2026-0068 record and does not deserialize r02 for content.
+  direct_implementation: >-
+    Integrator adds only exact direct-predecessor admission support, then
+    publishes IMP-DEC-2026-0069-r01. The Bards r03 bundle is not an
+    implementation artifact and remains subject to normal later integration.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision and move the Integrator supplement escalation to
+      decided state. Preserve all Bards and Druid artifacts unchanged.
+  - step: 2
+    owner: integrator
+    action: >-
+      Implement support for only the fixed
+      `governing_direct_predecessor_repair_record` form. Pin and re-derive
+      DEC-2026-0068's record before traversal; preserve the existing Druid
+      delegation form; emit informational versus fatal state without a
+      traceback; and publish IMP-DEC-2026-0069-r01.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0069-r01. Verify both exact admission
+      forms, all Bards denial cases, no recovered r02 content, and no canonical
+      transaction during fatal admission.
+
+acceptance_tests:
+  - >-
+    With active DEC-2026-0068 at its pinned checksum and its complete live
+    record, `ready_queue` returns without raising, reports exactly one
+    historical_unreadable_review notice naming Bards r02 and DEC-2026-0068,
+    has no fatal admission diagnostic, and offers only the normal r03 Approved
+    bundle for the Bards lineage.
+  - >-
+    An absent, inactive, checksum-mismatched, missing, malformed, or wrong-
+    field DEC-2026-0068 record; a changed pin; parseable r02; wrong parser
+    fragment; broken r03 or bundle supersession; changed r01, r03, bundle, GUP,
+    rejection, component, node count, or operation partition; or schema-invalid
+    r03 Review or bundle yields review_yaml_unreadable, no ready bundles, exit
+    code 2 for queue and every integrate form, and no transaction invocation.
+  - >-
+    DEC-2026-0065's Druid two-hop delegation remains independently admitted
+    under its existing fixed governing_repair_record, while every other
+    unreadable Review remains fatal. No code accepts a self-delegating record
+    or an arbitrary field selected from a Decision.
+  - >-
+    Existing ordinary bundle discovery, rejection handling, integrated and
+    superseded buckets, named-bundle dry runs, and rollback semantics remain
+    unchanged when there is no fatal admission diagnostic.
+  - >-
+    IMP-DEC-2026-0069-r01 pins this Decision checksum, records passing focused
+    and full applicable Integrator-suite evidence, reports every direct test as
+    passed, and is approval-ready for independent Reviewer verification.
+
+post_implementation_requirements:
+  - >-
+    Integrator processes only APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03 through
+    normal bundle verification and the ordinary transaction lifecycle after the
+    direct implementation Reviews are approved. This Decision authorizes no
+    canonical or registry write by itself.
+  - >-
+    A later unreadable Review requires its own checksummed Architect record and
+    may not reuse this Decision by analogy.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This changes exact queue-admission mechanics, not graph semantics.
+
+governance_changelog:
+  - >-
+    DEC-2026-0069 pairs with DEC-2026-0068 to admit exactly the Bards r03
+    bundle after independently validating its immutable unreadable predecessor.
+
+exact_diff:
+  tooling/integrator/src/adnd1e_integrator/admission.py:
+    - Validate only DEC-2026-0068's direct-predecessor delegation beside the existing Druid form.
+  tooling/integrator/src/adnd1e_integrator/bundles.py:
+    - Consume the direct-predecessor admission state before any Review traversal.
+  tooling/integrator/tests/test_admission.py:
+    - Cover the Bards exact route, every denial case, and coexistence with Druid admission.
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0069.yaml:
+    - Record the exact Integrator admission rule and acceptance tests.
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-28T04.22.19.062Z.yaml:
+    - Record DEC-2026-0069 as the Integrator supplement resolution.
+
+exact_diff_ownership:
+  - {path: tooling/integrator/src/adnd1e_integrator/admission.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/src/adnd1e_integrator/bundles.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/tests/test_admission.py, owner: integrator, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0069.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-28T04.22.19.062Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: integrator
+follow_up_owners:
+  architect:
+    - Preserve all named records and reject inferred extensions of this exception.
+  integrator:
+    - Implement the exact delegated admission form and publish its report.
+  reviewer:
+    - Review the Integrator report; do not author another Bards packaging successor.
+  builder:
+    - Implement the separate common-scanner record under DEC-2026-0068.
+  analyst:
+    - No action.

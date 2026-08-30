@@ -175,6 +175,13 @@ revision; publish the next revision with `supersedes` instead. Route every
 publication entrypoint through the shared preflight rather than writing a GUP or
 report directly from a command-specific script.
 
+Before that create-only final-path preflight, stage every GUP, Decision
+Implementation Report, or escalation YAML and run `python
+tooling/common/validate_artifact.py --path <staged-yaml> --schema
+<applicable-schema>`. The command validates only the staged bytes and required
+schemas; it must not trigger a corpus scan, source reload, or canonical-graph
+reload merely to publish one artifact.
+
 When an approved Decision declares exact `migration_due_ids`, ordinary
 packet/GUR compilation must refuse a new endpoint using one of those exact
 legacy IDs and name the Decision and mandated successor. Do not auto-map a

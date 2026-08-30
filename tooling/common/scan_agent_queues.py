@@ -121,17 +121,27 @@ def _load_yaml(
     root: Path,
     path: Path,
     diagnostics: list[dict[str, Any]],
+    expected_unreadable: set[str] | None = None,
 ) -> dict[str, Any] | None:
+    """Parse one artifact, or report why not.
+
+    `expected_unreadable` holds the repository-relative paths an active Decision
+    has recorded as permanently unreadable history. Those are still skipped --
+    nothing can be read from them -- but the parse failure is the Decision's
+    informational finding rather than a fresh error, and it is reported once
+    where the record is validated instead of once per scan pass.
+    """
     try:
         document = yaml.safe_load(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, yaml.YAMLError) as exc:
-        _diag(
-            diagnostics,
-            "error",
-            "yaml_unreadable",
-            str(exc),
-            path=_relative(root, path),
-        )
+        if not (expected_unreadable and _relative(root, path) in expected_unreadable):
+            _diag(
+                diagnostics,
+                "error",
+                "yaml_unreadable",
+                str(exc),
+                path=_relative(root, path),
+            )
         return None
     if not isinstance(document, dict):
         _diag(
@@ -152,6 +162,7 @@ def _load_artifacts(
     ruleset: str,
     book: str | None,
     diagnostics: list[dict[str, Any]],
+    expected_unreadable: set[str] | None = None,
 ) -> list[Artifact]:
     artifacts: list[Artifact] = []
     if not directory.is_dir():
@@ -159,7 +170,7 @@ def _load_artifacts(
     for path in sorted(directory.glob("*.yaml")):
         if path.name.startswith("."):
             continue
-        document = _load_yaml(root, path, diagnostics)
+        document = _load_yaml(root, path, diagnostics, expected_unreadable)
         if document is None:
             continue
         artifacts.append(Artifact(path, kind, ruleset, book, document))
@@ -207,6 +218,13 @@ def _packaged_gup_id(manifest: dict[str, Any] | None, review: "Artifact") -> str
     for source in (manifest or {}), ((manifest or {}).get("provenance") or {}):
         if isinstance(source, dict) and source.get("gup_id"):
             return str(source["gup_id"])
+    if review is None:
+        # The fallback Review is looked up by a name derived from the bundle, so
+        # it is absent whenever that Review does not exist or does not parse. An
+        # unreadable artifact must be reported as a diagnostic, not raised
+        # through the scan: this function is the only thing standing between one
+        # malformed file and every role losing its queue.
+        return ""
     reviewed = review.data.get("reviewed_gup")
     if isinstance(reviewed, dict):
         return str(reviewed.get("id") or "")
@@ -367,8 +385,17 @@ def _active_leaf(
     artifacts: list[Artifact],
     diagnostics: list[dict[str, Any]],
     group_label: str,
+    bridged_predecessors: dict[str, str] | None = None,
 ) -> tuple[Artifact | None, bool]:
-    """Return the active leaf and whether legacy revision inference was used."""
+    """Return the active leaf and whether legacy revision inference was used.
+
+    `bridged_predecessors` maps the ID of an artifact an active Decision records
+    as permanently unreadable to the ID of the parent it superseded. Such a file
+    is deliberately absent from `artifacts` -- nothing can be read from it -- so
+    the walk would otherwise report its successor as dangling and its parent as
+    a second leaf. Both facts come from the checksummed record; nothing is
+    inferred from the unreadable file itself.
+    """
     if not artifacts:
         return None, False
 
@@ -400,6 +427,7 @@ def _active_leaf(
                 return None, False
             revisions[revision] = artifact
 
+    bridged = bridged_predecessors or {}
     successor_count: Counter[str] = Counter()
     superseded: set[str] = set()
     for artifact in artifacts:
@@ -407,6 +435,15 @@ def _active_leaf(
         if not predecessor:
             continue
         if predecessor not in by_id:
+            if predecessor in bridged:
+                # Absent because a Decision records it unreadable, not missing.
+                # Its parent is superseded too, which is the fact the file would
+                # have carried if it could be opened.
+                superseded.add(predecessor)
+                parent = bridged[predecessor]
+                if parent:
+                    superseded.add(parent)
+                continue
             _diag(
                 diagnostics,
                 "error",
@@ -1785,11 +1822,12 @@ def _implementation_report_errors(
     return reasons
 
 
-_REVIEW_VALIDATOR_CACHE: dict[Path, Any] = {}
+_REVIEW_VALIDATOR_CACHE: dict[tuple[Path, str], Any] = {}
 _REVIEW_SCHEMA = "decision-implementation-review.schema.json"
+_GUP_REVIEW_SCHEMA = "review.schema.json"
 
 
-def _review_validator(root: Path) -> Any:
+def _review_validator(root: Path, schema_name: str = _REVIEW_SCHEMA) -> Any:
     """The exact Review schema validator, or `None` if it cannot be built.
 
     DEC-2026-0061 requires the validator and reference registry the common
@@ -1799,8 +1837,9 @@ def _review_validator(root: Path) -> Any:
     disagreement that let a malformed Review complete a Decision in the first
     place.
     """
-    if root in _REVIEW_VALIDATOR_CACHE:
-        return _REVIEW_VALIDATOR_CACHE[root]
+    cache_key = (root, schema_name)
+    if cache_key in _REVIEW_VALIDATOR_CACHE:
+        return _REVIEW_VALIDATOR_CACHE[cache_key]
 
     validator = None
     try:
@@ -1820,14 +1859,34 @@ def _review_validator(root: Path) -> Any:
             for path in sorted(common.glob("*.json"))
         ]
         validator = Draft202012Validator(
-            json.loads((common / _REVIEW_SCHEMA).read_text(encoding="utf-8")),
+            json.loads((common / schema_name).read_text(encoding="utf-8")),
             registry=Registry().with_resources(resources),
         )
     except (ImportError, OSError, ValueError, KeyError, TypeError):
         validator = None
 
-    _REVIEW_VALIDATOR_CACHE[root] = validator
+    _REVIEW_VALIDATOR_CACHE[cache_key] = validator
     return validator
+
+
+def _review_schema_errors_for(
+    root: Path, document: dict[str, Any], schema_name: str = _GUP_REVIEW_SCHEMA
+) -> list[str]:
+    """Validate a plain mapping, for callers holding no Artifact.
+
+    Defaults to the packet Review schema: DEC-2026-0064's only caller is checking
+    a GUP Review, and the implementation-Review schema is a different artifact
+    kind entirely.
+    """
+    validator = _review_validator(root, schema_name)
+    if validator is None:
+        return [
+            f"could not be validated against schemas/common/{schema_name}: the "
+            f"jsonschema and referencing packages are required and are not importable"
+        ]
+    return [
+        f"{list(error.path)}: {error.message}" for error in validator.iter_errors(document)
+    ]
 
 
 def _review_schema_errors(root: Path, review: Artifact) -> list[str]:
@@ -2115,6 +2174,7 @@ def _pending_revision_reviews(
     reviews_by_gup: dict[str, list[Artifact]],
     diagnostics: list[dict[str, Any]],
     review_retirements: dict[str, dict[str, Any]] | None = None,
+    bridged_predecessors: dict[str, str] | None = None,
 ) -> list[tuple[Artifact, bool]]:
     """Active revision-required Reviews in this lineage that nothing has answered.
 
@@ -2141,7 +2201,8 @@ def _pending_revision_reviews(
         if not candidates:
             continue
         leaf, inferred = _active_leaf(
-            root, candidates, diagnostics, f"{gup.artifact_id} Review"
+            root, candidates, diagnostics, f"{gup.artifact_id} Review",
+            bridged_predecessors,
         )
         if leaf is None or leaf.artifact_id in consumed:
             continue
@@ -2590,6 +2651,747 @@ def _gur_handoff_exemptions(
                 "record": record,
             }
     return exemptions
+
+
+LINEAGE_REPAIR_KEY = "review_malformed_lineage_repairs"
+
+
+def _pinned_artifact_errors(
+    root: Path, label: str, block: Any, *, must_parse: bool
+) -> tuple[list[str], dict[str, Any] | None]:
+    """Check one `{id, path, checksum}` reference, returning its document.
+
+    `must_parse` is the whole point of the record for the unreadable half: one
+    reference must parse and one must not, and asserting the second is what
+    proves the exception is still needed rather than left behind.
+    """
+    if not isinstance(block, dict):
+        return [f"{label} is not a mapping"], None
+
+    identifier = str(block.get("id") or "")
+    relative = str(block.get("path") or "")
+    if not identifier:
+        return [f"{label} names no id"], None
+    if not relative:
+        return [f"{label} names no path"], None
+
+    target = root / relative
+    if not target.is_file():
+        return [f"{label} names {relative}, which does not exist"], None
+
+    current = _sha256_of(target)
+    if str(block.get("checksum") or "") != current:
+        return (
+            [
+                f"{label} records {block.get('checksum') or 'no checksum'} for "
+                f"{relative}, which now hashes to {current}"
+            ],
+            None,
+        )
+
+    try:
+        document = yaml.safe_load(target.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError) as exc:
+        if must_parse:
+            return [f"{label} names {relative}, which does not parse"], None
+        return [], {"_parse_error": str(exc)}
+
+    if not must_parse:
+        return [f"{label} names {relative}, which parses; there is nothing to bridge"], None
+    if not isinstance(document, dict):
+        return [f"{label} names {relative}, whose YAML root is not a mapping"], None
+    if str(document.get("id") or "") != identifier:
+        return (
+            [f"{label} names {identifier}, but {relative} declares "
+             f"{document.get('id')!r}"],
+            None,
+        )
+    return [], document
+
+
+def _lineage_repair_errors(
+    root: Path, decision_id: str, index: int, record: Any
+) -> list[str]:
+    """Why one malformed-lineage repair record cannot be trusted, or [].
+
+    Every field is re-derived. The record is the claim; this is what makes it
+    evidence, and it is what keeps the exception from generalising to the next
+    unreadable file that happens to have a successor.
+    """
+    label = f"{decision_id} {LINEAGE_REPAIR_KEY}[{index}]"
+    if not isinstance(record, dict):
+        return [f"{label} is not a mapping"]
+
+    errors: list[str] = []
+    if str(record.get("disposition") or "") != "historical_unreadable_bridge":
+        errors.append(
+            f"{label} declares disposition {record.get('disposition')!r} rather "
+            f"than 'historical_unreadable_bridge'"
+        )
+    if not str(record.get("reason") or "").strip():
+        errors.append(f"{label} records no reason")
+
+    documents: dict[str, dict[str, Any]] = {}
+    for field, must_parse in (
+        ("original_review", True),
+        ("unreadable_review", False),
+        ("bridge_review", True),
+        ("active_successor_review", True),
+        ("reviewed_gup", True),
+    ):
+        found, document = _pinned_artifact_errors(
+            root, f"{label} {field}", record.get(field), must_parse=must_parse
+        )
+        errors.extend(found)
+        if document is not None:
+            documents[field] = document
+
+    if len(documents) < 5:
+        return errors
+
+    unreadable = record["unreadable_review"]
+    failure = unreadable.get("parse_failure")
+    if not isinstance(failure, dict):
+        errors.append(f"{label} unreadable_review records no parse_failure")
+    else:
+        if str(failure.get("diagnostic_code") or "") != "yaml_unreadable":
+            errors.append(
+                f"{label} parse_failure names diagnostic_code "
+                f"{failure.get('diagnostic_code')!r} rather than 'yaml_unreadable'"
+            )
+        fragment = str(failure.get("message_fragment") or "")
+        if not fragment:
+            errors.append(f"{label} parse_failure records no message_fragment")
+        elif fragment not in str(documents["unreadable_review"]["_parse_error"]):
+            errors.append(
+                f"{label} expects the parser to fail with {fragment!r}, but it "
+                f"reports {documents['unreadable_review']['_parse_error']!r}"
+            )
+
+    # The two links, each stated by the record and each checked against the file
+    # rather than against the record's own restatement of it.
+    for field, predecessor_field in (
+        ("bridge_review", "unreadable_review"),
+        ("active_successor_review", "bridge_review"),
+    ):
+        required = str(record[field].get("required_supersedes") or "")
+        expected = str(record[predecessor_field].get("id") or "")
+        if required != expected:
+            errors.append(
+                f"{label} {field} requires supersedes {required!r}, which is not "
+                f"the {predecessor_field} {expected!r}"
+            )
+        actual = str(documents[field].get("supersedes") or "")
+        if actual != expected:
+            errors.append(
+                f"{label} {field} supersedes {actual!r} rather than {expected!r}"
+            )
+
+    successor_block = record["active_successor_review"]
+    successor = documents["active_successor_review"]
+
+    disposition = str(
+        successor.get("overall_disposition") or successor.get("status") or ""
+    )
+    required_disposition = str(successor_block.get("required_disposition") or "")
+    if disposition != required_disposition or not required_disposition:
+        errors.append(
+            f"{label} active_successor_review requires disposition "
+            f"{required_disposition!r} and the file declares {disposition!r}"
+        )
+
+    required_handoff = successor_block.get("required_handoff")
+    handoff = successor.get("handoff")
+    if not isinstance(required_handoff, dict) or not isinstance(handoff, dict):
+        errors.append(f"{label} active_successor_review has no comparable handoff")
+    else:
+        for key in ("next_role", "readiness"):
+            required_value = str(required_handoff.get(key) or "")
+            actual_value = str(handoff.get(key) or "")
+            if required_value != actual_value or not required_value:
+                errors.append(
+                    f"{label} active_successor_review requires handoff {key} "
+                    f"{required_value!r} and the file declares {actual_value!r}"
+                )
+
+    reviewed = successor.get("reviewed_gup")
+    reviewed_id = str(
+        (reviewed.get("id") if isinstance(reviewed, dict) else reviewed) or ""
+    )
+    expected_gup = str(record["reviewed_gup"].get("id") or "")
+    if reviewed_id != expected_gup:
+        errors.append(
+            f"{label} active_successor_review reviews {reviewed_id!r}, not the "
+            f"recorded {expected_gup!r}"
+        )
+
+    schema_errors = _review_schema_errors_for(root, successor)
+    if schema_errors:
+        errors.append(
+            f"{label} active_successor_review does not satisfy "
+            f"schemas/common/review.schema.json: " + "; ".join(schema_errors)
+        )
+
+    # The Builder's inputs are exactly the original and the successor: an
+    # unreadable predecessor and a bridge are history, and a record that named
+    # either as an input would be asking the compiler to read them.
+    inputs = record.get("exact_builder_review_inputs")
+    if not isinstance(inputs, list) or len(inputs) != 2:
+        errors.append(f"{label} does not record exactly two exact_builder_review_inputs")
+    else:
+        expected_inputs = [record["original_review"], record["active_successor_review"]]
+        for position, (entry, expected) in enumerate(zip(inputs, expected_inputs)):
+            found, _ = _pinned_artifact_errors(
+                root, f"{label} exact_builder_review_inputs[{position}]", entry,
+                must_parse=True,
+            )
+            errors.extend(found)
+            if not isinstance(entry, dict):
+                continue
+            for key in ("id", "path", "checksum"):
+                if str(entry.get(key) or "") != str(expected.get(key) or ""):
+                    errors.append(
+                        f"{label} exact_builder_review_inputs[{position}] {key} "
+                        f"{entry.get(key)!r} does not match the recorded "
+                        f"{expected.get(key)!r}"
+                    )
+    return errors
+
+
+def _review_lineage_repairs(
+    root: Path,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+    active_decision_ids: set[str],
+    diagnostics: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Valid malformed-lineage repairs from active approved Decisions, by GUP ID."""
+    repairs: dict[str, dict[str, Any]] = {}
+    for decision_id in sorted(active_decision_ids):
+        entry = decisions.get(decision_id)
+        if entry is None:
+            continue
+        path, document = entry
+        if str(document.get("status") or "") != "approved":
+            continue
+        records = document.get(LINEAGE_REPAIR_KEY)
+        if not isinstance(records, list):
+            continue
+        for index, record in enumerate(records):
+            errors = _lineage_repair_errors(root, decision_id, index, record)
+            if errors:
+                _diag(
+                    diagnostics,
+                    "error",
+                    "review_lineage_repair_record_invalid",
+                    "; ".join(errors)
+                    + ". The named Reviews keep their ordinary lineage errors and "
+                    "no repaired Builder item is derived.",
+                    path=_relative(root, path),
+                    artifact_id=decision_id,
+                )
+                continue
+            unreadable = record["unreadable_review"]
+            successor = record["active_successor_review"]
+            _diag(
+                diagnostics,
+                "info",
+                "review_malformed_lineage_repaired",
+                f"{unreadable['id']} is a permanent YAML parse failure "
+                f"({unreadable['parse_failure']['message_fragment']}) and "
+                f"{decision_id} records it as historical: {record['reason']} "
+                f"{record['bridge_review']['id']} bridges it and {successor['id']} "
+                f"is the sole routable successor, so any revision compiles from "
+                f"{record['original_review']['id']} and {successor['id']} only. No "
+                f"content is read from the unreadable Review.",
+                path=unreadable["path"],
+                artifact_id=unreadable["id"],
+            )
+            repairs[str(record["reviewed_gup"]["id"])] = {
+                "decision_id": decision_id,
+                "record": record,
+            }
+    return repairs
+
+
+DIRECT_PREDECESSOR_REPAIR_KEY = "review_direct_predecessor_repairs"
+_APPROVED_BUNDLE_SCHEMA = "approved-bundle.schema.json"
+
+
+def _pinned_file_errors(root: Path, label: str, block: Any) -> list[str]:
+    """Existence and checksum only, for a file this scanner does not parse.
+
+    The CSV component and the JSON rejection record are pinned so that a repair
+    cannot be pointed at a different bundle's rows or a different rejection.
+    Their contents are read by whoever owns them; what matters here is that they
+    are the exact files the Decision named.
+    """
+    if not isinstance(block, dict):
+        return [f"{label} is not a mapping"]
+    relative = str(block.get("path") or "")
+    if not relative:
+        return [f"{label} names no path"]
+    target = root / relative
+    if not target.is_file():
+        return [f"{label} names {relative}, which does not exist"]
+    current = _sha256_of(target)
+    if str(block.get("checksum") or "") != current:
+        return [
+            f"{label} records {block.get('checksum') or 'no checksum'} for "
+            f"{relative}, which now hashes to {current}"
+        ]
+    return []
+
+
+def _contiguous_rows(entries: Any, first: Any, last: Any, count: Any) -> str:
+    """Why an operation partition is not the exact contiguous span, or `""`.
+
+    The partition is what tells the Integrator which rows of one component are
+    additions and which are pending. A gap, an overlap, or a miscount there is a
+    different transaction from the one the Reviewer approved.
+    """
+    if not isinstance(entries, list):
+        return "is not a list"
+    rows = []
+    for entry in entries:
+        if isinstance(entry, dict) and isinstance(entry.get("csv_row"), int):
+            rows.append(entry["csv_row"])
+        else:
+            return "contains an entry with no integer csv_row"
+    if len(rows) != count:
+        return f"holds {len(rows)} rows, not the required {count}"
+    if sorted(rows) != list(range(first, last + 1)):
+        return f"is not the contiguous span {first}-{last}"
+    return ""
+
+
+def _direct_predecessor_repair_errors(
+    root: Path, decision_id: str, index: int, record: Any
+) -> list[str]:
+    """Why one direct-predecessor repair record cannot be trusted, or [].
+
+    Every field is re-derived. A record that is believed rather than checked is
+    how one authorized exception becomes a general bypass for the next
+    unreadable file that happens to have a successor.
+    """
+    label = f"{decision_id} {DIRECT_PREDECESSOR_REPAIR_KEY}[{index}]"
+    if not isinstance(record, dict):
+        return [f"{label} is not a mapping"]
+
+    errors: list[str] = []
+    if str(record.get("disposition") or "") != "historical_unreadable_direct_predecessor":
+        errors.append(
+            f"{label} declares disposition {record.get('disposition')!r} rather than "
+            f"'historical_unreadable_direct_predecessor'"
+        )
+    if not str(record.get("reason") or "").strip():
+        errors.append(f"{label} records no reason")
+
+    documents: dict[str, dict[str, Any]] = {}
+    for field, must_parse in (
+        ("original_review", True),
+        ("unreadable_review", False),
+        ("historical_bundle", True),
+        ("active_successor_review", True),
+        ("active_successor_bundle", True),
+        ("reviewed_gup", True),
+    ):
+        found, document = _pinned_artifact_errors(
+            root, f"{label} {field}", record.get(field), must_parse=must_parse
+        )
+        errors.extend(found)
+        if document is not None:
+            documents[field] = document
+
+    # Pinned but not parsed here: the rejection record is JSON owned by the
+    # Integrator, and the component is the CSV whose rows the partition indexes.
+    for field in ("integration_rejection", "edge_component"):
+        errors.extend(_pinned_file_errors(root, f"{label} {field}", record.get(field)))
+
+    if len(documents) < 6:
+        return errors
+
+    unreadable = record["unreadable_review"]
+    failure = unreadable.get("parse_failure")
+    if not isinstance(failure, dict):
+        errors.append(f"{label} unreadable_review records no parse_failure")
+    else:
+        if str(failure.get("diagnostic_code") or "") != "yaml_unreadable":
+            errors.append(
+                f"{label} parse_failure names diagnostic_code "
+                f"{failure.get('diagnostic_code')!r} rather than 'yaml_unreadable'"
+            )
+        fragment = str(failure.get("message_fragment") or "")
+        reported = str(documents["unreadable_review"]["_parse_error"])
+        if not fragment:
+            errors.append(f"{label} parse_failure records no message_fragment")
+        elif fragment not in reported:
+            errors.append(
+                f"{label} expects the parser to fail with {fragment!r}, but it "
+                f"reports {reported!r}"
+            )
+
+    # The two direct links. Each is stated by the record and read from the file,
+    # and both have to agree: the record saying r03 supersedes r02 is a claim,
+    # and r03's own `supersedes` field is the fact.
+    for field, predecessor_field, kind in (
+        ("active_successor_review", "unreadable_review", "Review"),
+        ("active_successor_bundle", "historical_bundle", "bundle"),
+    ):
+        required = str(record[field].get("required_supersedes") or "")
+        expected = str(record[predecessor_field].get("id") or "")
+        if required != expected:
+            errors.append(
+                f"{label} {field} requires supersedes {required!r}, which is not the "
+                f"{predecessor_field} {expected!r}"
+            )
+        actual = str(documents[field].get("supersedes") or "")
+        if actual != expected:
+            errors.append(
+                f"{label} {field} supersedes {actual!r} rather than the {kind} "
+                f"{expected!r} it must directly replace"
+            )
+
+    successor_block = record["active_successor_review"]
+    successor = documents["active_successor_review"]
+
+    disposition = str(
+        successor.get("overall_disposition") or successor.get("status") or ""
+    )
+    required_disposition = str(successor_block.get("required_disposition") or "")
+    if disposition != required_disposition or not required_disposition:
+        errors.append(
+            f"{label} active_successor_review requires disposition "
+            f"{required_disposition!r} and the file declares {disposition!r}"
+        )
+
+    required_handoff = successor_block.get("required_handoff")
+    handoff = successor.get("handoff")
+    if not isinstance(required_handoff, dict) or not isinstance(handoff, dict):
+        errors.append(f"{label} active_successor_review has no comparable handoff")
+    else:
+        for key in ("next_role", "readiness"):
+            required_value = str(required_handoff.get(key) or "")
+            actual_value = str(handoff.get(key) or "")
+            if required_value != actual_value or not required_value:
+                errors.append(
+                    f"{label} active_successor_review requires handoff {key} "
+                    f"{required_value!r} and the file declares {actual_value!r}"
+                )
+
+    reviewed = successor.get("reviewed_gup")
+    reviewed_id = str(
+        (reviewed.get("id") if isinstance(reviewed, dict) else reviewed) or ""
+    )
+    expected_gup = str(record["reviewed_gup"].get("id") or "")
+    if reviewed_id != expected_gup:
+        errors.append(
+            f"{label} active_successor_review reviews {reviewed_id!r}, not the "
+            f"recorded {expected_gup!r}"
+        )
+
+    for field, schema_name in (
+        ("active_successor_review", _GUP_REVIEW_SCHEMA),
+        ("active_successor_bundle", _APPROVED_BUNDLE_SCHEMA),
+    ):
+        schema_errors = _review_schema_errors_for(root, documents[field], schema_name)
+        if schema_errors:
+            errors.append(
+                f"{label} {field} does not satisfy schemas/common/{schema_name}: "
+                + "; ".join(schema_errors)
+            )
+
+    # The bundle must approve the successor Review, not some other one: a repair
+    # that admitted a bundle approving a different Review would route a
+    # transaction nobody in this record approved.
+    approves = documents["active_successor_bundle"].get("approves")
+    approved_review = str(
+        (approves.get("review_id") if isinstance(approves, dict) else approves) or ""
+    )
+    if approved_review != str(successor_block.get("id") or ""):
+        errors.append(
+            f"{label} active_successor_bundle approves {approved_review!r} rather "
+            f"than {successor_block.get('id')!r}"
+        )
+
+    operations = record.get("required_operations")
+    if not isinstance(operations, dict):
+        errors.append(f"{label} records no required_operations")
+        return errors
+
+    index_block = documents["active_successor_bundle"].get("operation_index")
+    if not isinstance(index_block, dict):
+        errors.append(f"{label} active_successor_bundle has no operation_index")
+        return errors
+
+    for bucket in ("additions", "pending_additions"):
+        required = operations.get(bucket)
+        if not isinstance(required, dict):
+            errors.append(f"{label} required_operations records no {bucket}")
+            continue
+        problem = _contiguous_rows(
+            index_block.get(bucket),
+            required.get("first_csv_row"),
+            required.get("last_csv_row"),
+            required.get("count"),
+        )
+        if problem:
+            errors.append(f"{label} operation_index {bucket} {problem}")
+
+    updates = index_block.get("updates")
+    updates_count = len(updates) if isinstance(updates, list) else -1
+    if updates_count != operations.get("updates_count"):
+        errors.append(
+            f"{label} operation_index records {updates_count} updates, not the "
+            f"required {operations.get('updates_count')}"
+        )
+
+    node_operations = documents["active_successor_bundle"].get("node_operations")
+    node_count = (
+        node_operations.get("count") if isinstance(node_operations, dict) else None
+    )
+    if node_count != operations.get("registered_node_count"):
+        errors.append(
+            f"{label} active_successor_bundle registers {node_count!r} nodes, not "
+            f"the required {operations.get('registered_node_count')!r}"
+        )
+    return errors
+
+
+def _direct_predecessor_repairs(
+    root: Path,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+    active_decision_ids: set[str],
+    diagnostics: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Valid direct-predecessor repairs from active approved Decisions.
+
+    Keyed by the unreadable Review's repository-relative path, because that is
+    what the loader has to recognise before it can skip the file.
+    """
+    repairs: dict[str, dict[str, Any]] = {}
+    for decision_id in sorted(active_decision_ids):
+        entry = decisions.get(decision_id)
+        if entry is None:
+            continue
+        path, document = entry
+        if str(document.get("status") or "") != "approved":
+            continue
+        records = document.get(DIRECT_PREDECESSOR_REPAIR_KEY)
+        if not isinstance(records, list):
+            continue
+        for index, record in enumerate(records):
+            errors = _direct_predecessor_repair_errors(root, decision_id, index, record)
+            if errors:
+                _diag(
+                    diagnostics,
+                    "error",
+                    "review_direct_predecessor_repair_record_invalid",
+                    "; ".join(errors)
+                    + ". The named Review keeps its ordinary parse error and no "
+                    "repaired route is derived.",
+                    path=_relative(root, path),
+                    artifact_id=decision_id,
+                )
+                continue
+            unreadable = record["unreadable_review"]
+            successor = record["active_successor_review"]
+            _diag(
+                diagnostics,
+                "info",
+                "review_unreadable_direct_predecessor_repaired",
+                f"{unreadable['id']} is a permanent YAML parse failure "
+                f"({unreadable['parse_failure']['message_fragment']}) and "
+                f"{decision_id} records it as historical: {record['reason']} "
+                f"{successor['id']} directly supersedes it and its bundle "
+                f"{record['active_successor_bundle']['id']} repackages the exact "
+                f"{record['edge_component']['rows']}-row component that "
+                f"{record['integration_rejection']['id']} refused. No content is "
+                f"read from the unreadable Review.",
+                path=unreadable["path"],
+                artifact_id=unreadable["id"],
+            )
+            repairs[str(unreadable["path"])] = {
+                "decision_id": decision_id,
+                "record": record,
+            }
+    return repairs
+
+
+IMPLEMENTATION_REVIEW_REPAIR_KEY = (
+    "decision_implementation_review_unreadable_predecessor_repairs"
+)
+
+
+def _implementation_review_repair_errors(
+    root: Path, decision_id: str, index: int, record: Any
+) -> list[str]:
+    """Why one unreadable implementation-Review record cannot be trusted, or [].
+
+    Every field is re-derived from the files. The successor has to pin the same
+    report and the same Decision its unreadable predecessor was published to
+    review -- without that, the record would admit a successor that reviewed
+    something else entirely, which is the one thing an unreadable predecessor
+    cannot contradict.
+    """
+    label = f"{decision_id} {IMPLEMENTATION_REVIEW_REPAIR_KEY}[{index}]"
+    if not isinstance(record, dict):
+        return [f"{label} is not a mapping"]
+
+    errors: list[str] = []
+    if str(record.get("disposition") or "") != "historical_unreadable_direct_predecessor":
+        errors.append(
+            f"{label} declares disposition {record.get('disposition')!r} rather than "
+            f"'historical_unreadable_direct_predecessor'"
+        )
+    if not str(record.get("reason") or "").strip():
+        errors.append(f"{label} records no reason")
+
+    documents: dict[str, dict[str, Any]] = {}
+    for field, must_parse in (
+        ("unreadable_review", False),
+        ("successor_review", True),
+        ("reviewed_implementation", True),
+        ("decision_input", True),
+    ):
+        found, document = _pinned_artifact_errors(
+            root, f"{label} {field}", record.get(field), must_parse=must_parse
+        )
+        errors.extend(found)
+        if document is not None:
+            documents[field] = document
+
+    if len(documents) < 4:
+        return errors
+
+    unreadable = record["unreadable_review"]
+    failure = unreadable.get("parse_failure")
+    if not isinstance(failure, dict):
+        errors.append(f"{label} unreadable_review records no parse_failure")
+    else:
+        if str(failure.get("diagnostic_code") or "") != "yaml_unreadable":
+            errors.append(
+                f"{label} parse_failure names diagnostic_code "
+                f"{failure.get('diagnostic_code')!r} rather than 'yaml_unreadable'"
+            )
+        fragment = str(failure.get("message_fragment") or "")
+        reported = str(documents["unreadable_review"]["_parse_error"])
+        if not fragment:
+            errors.append(f"{label} parse_failure records no message_fragment")
+        elif fragment not in reported:
+            errors.append(
+                f"{label} expects the parser to fail with {fragment!r}, but it "
+                f"reports {reported!r}"
+            )
+
+    successor_block = record["successor_review"]
+    successor = documents["successor_review"]
+
+    required = str(successor_block.get("required_supersedes") or "")
+    expected = str(unreadable.get("id") or "")
+    if required != expected:
+        errors.append(
+            f"{label} successor_review requires supersedes {required!r}, which is "
+            f"not the unreadable_review {expected!r}"
+        )
+    actual = str(successor.get("supersedes") or "")
+    if actual != expected:
+        errors.append(
+            f"{label} successor_review supersedes {actual!r} rather than the "
+            f"{expected!r} it must directly replace"
+        )
+
+    disposition = str(
+        successor.get("overall_disposition") or successor.get("status") or ""
+    )
+    required_disposition = str(successor_block.get("required_disposition") or "")
+    if disposition != required_disposition or not required_disposition:
+        errors.append(
+            f"{label} successor_review requires disposition "
+            f"{required_disposition!r} and the file declares {disposition!r}"
+        )
+
+    # The successor must review the same report, under the same Decision. An
+    # unreadable predecessor can contradict neither, so both are checked against
+    # the record rather than against it.
+    for field, block_key in (
+        ("reviewed_implementation", "reviewed_implementation"),
+        ("decision_input", "decision_input"),
+    ):
+        block = successor.get(block_key)
+        stated = str(
+            (block.get("id") if isinstance(block, dict) else block) or ""
+        )
+        recorded = str(record[field].get("id") or "")
+        if stated != recorded:
+            errors.append(
+                f"{label} successor_review names {block_key} {stated!r}, not the "
+                f"recorded {recorded!r}"
+            )
+
+    schema_errors = _review_schema_errors_for(root, successor, _REVIEW_SCHEMA)
+    if schema_errors:
+        errors.append(
+            f"{label} successor_review does not satisfy schemas/common/"
+            f"{_REVIEW_SCHEMA}: " + "; ".join(schema_errors)
+        )
+    return errors
+
+
+def _implementation_review_repairs(
+    root: Path,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+    active_decision_ids: set[str],
+    diagnostics: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Valid implementation-Review repairs, keyed by the unreadable file's path."""
+    repairs: dict[str, dict[str, Any]] = {}
+    for decision_id in sorted(active_decision_ids):
+        entry = decisions.get(decision_id)
+        if entry is None:
+            continue
+        path, document = entry
+        if str(document.get("status") or "") != "approved":
+            continue
+        records = document.get(IMPLEMENTATION_REVIEW_REPAIR_KEY)
+        if not isinstance(records, list):
+            continue
+        for index, record in enumerate(records):
+            errors = _implementation_review_repair_errors(
+                root, decision_id, index, record
+            )
+            if errors:
+                _diag(
+                    diagnostics,
+                    "error",
+                    "implementation_review_repair_record_invalid",
+                    "; ".join(errors)
+                    + ". The named Review keeps its ordinary parse error and no "
+                    "repaired classification is derived.",
+                    path=_relative(root, path),
+                    artifact_id=decision_id,
+                )
+                continue
+            unreadable = record["unreadable_review"]
+            successor = record["successor_review"]
+            _diag(
+                diagnostics,
+                "info",
+                "implementation_review_unreadable_predecessor_repaired",
+                f"{unreadable['id']} is a permanent YAML parse failure "
+                f"({unreadable['parse_failure']['message_fragment']}) and "
+                f"{decision_id} records it as historical: {record['reason']} "
+                f"{successor['id']} directly supersedes it and pins the same "
+                f"report {record['reviewed_implementation']['id']} under the same "
+                f"{record['decision_input']['id']}. No content is read from the "
+                f"unreadable Review, which completes no Decision.",
+                path=unreadable["path"],
+                artifact_id=unreadable["id"],
+            )
+            repairs[str(unreadable["path"])] = {
+                "decision_id": decision_id,
+                "record": record,
+            }
+    return repairs
 
 
 def _diagnose_gur_handoffs(
@@ -3110,6 +3912,12 @@ def scan_repository(root: Path) -> dict[str, Any]:
     review_retirements_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     migration_retirements_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     gur_exemptions_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
+    lineage_repairs_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
+    #: (decision id, item id, item path) triples a lineage repair routed. A
+    #: Decision's own handoff replacement must not remove them.
+    repair_routed: set[tuple[str, str, str]] = set()
+    direct_repairs_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
+    impl_review_repairs_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     rulesets_root = root / "rulesets"
     if rulesets_root.is_dir():
         for ruleset_dir in sorted(path for path in rulesets_root.iterdir() if path.is_dir()):
@@ -3176,6 +3984,19 @@ def scan_repository(root: Path) -> dict[str, Any]:
         gur_exemptions_by_ruleset[ruleset] = _gur_handoff_exemptions(
             root, decisions, active_decision_ids, diagnostics
         )
+        # DEC-2026-0064, keyed by the reviewed GUP whose Review chain is bridged.
+        lineage_repairs_by_ruleset[ruleset] = _review_lineage_repairs(
+            root, decisions, active_decision_ids, diagnostics
+        )
+        # DEC-2026-0068, the direct predecessor-successor pair, keyed by the
+        # unreadable file's path because that is what the loader must recognise.
+        direct_repairs_by_ruleset[ruleset] = _direct_predecessor_repairs(
+            root, decisions, active_decision_ids, diagnostics
+        )
+        # DEC-2026-0072, the same shape one artifact kind over.
+        impl_review_repairs_by_ruleset[ruleset] = _implementation_review_repairs(
+            root, decisions, active_decision_ids, diagnostics
+        )
 
     books_root = root / "books"
     for ruleset_dir in sorted(path for path in books_root.iterdir() if path.is_dir()):
@@ -3183,6 +4004,16 @@ def scan_repository(root: Path) -> dict[str, Any]:
         for book_root in sorted(path for path in ruleset_dir.iterdir() if path.is_dir()):
             book = book_root.name
             artifacts_root = book_root / "artifacts"
+            expected_unreadable = {
+                str(entry["record"]["unreadable_review"]["path"])
+                for entry in lineage_repairs_by_ruleset[ruleset].values()
+            } | set(direct_repairs_by_ruleset[ruleset])
+            bridged_predecessors = {
+                str(entry["record"]["unreadable_review"]["id"]): str(
+                    entry["record"]["original_review"]["id"]
+                )
+                for entry in direct_repairs_by_ruleset[ruleset].values()
+            }
             gurs = _load_artifacts(
                 root, artifacts_root / "gur", "gur", ruleset, book, diagnostics
             )
@@ -3190,7 +4021,8 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 root, artifacts_root / "gup", "gup", ruleset, book, diagnostics
             )
             reviews = _load_artifacts(
-                root, artifacts_root / "reviews", "review", ruleset, book, diagnostics
+                root, artifacts_root / "reviews", "review", ruleset, book, diagnostics,
+                expected_unreadable,
             )
 
             gurs_by_packet: dict[str, list[Artifact]] = defaultdict(list)
@@ -3226,11 +4058,13 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         path=_relative(root, artifact.path),
                         artifact_id=artifact.artifact_id,
                     )
+            lineage_repairs = lineage_repairs_by_ruleset[ruleset]
             for artifact in reviews:
                 reviewed = artifact.data.get("reviewed_gup")
                 reviewed_id = reviewed.get("id") if isinstance(reviewed, dict) else None
                 if reviewed_id:
-                    reviews_by_gup[str(reviewed_id)].append(artifact)
+                    if str(reviewed_id) not in lineage_repairs:
+                        reviews_by_gup[str(reviewed_id)].append(artifact)
                     # A migration is cross-book, so the Review that consumes it
                     # may sit in any book's review store.
                     reviewed_gup_ids_global.add(str(reviewed_id))
@@ -3340,7 +4174,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 if isinstance((provenance := artifact.data.get("provenance")), dict)
                 and provenance.get("gur_id")
             }
-            reviewed_gup_ids = set(reviews_by_gup)
+            reviewed_gup_ids = set(reviews_by_gup) | set(lineage_repairs)
 
             for packet_id in all_packets:
                 leaf_gur, gur_inferred = leaf_gur_by_packet[packet_id]
@@ -3441,6 +4275,44 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 # DEC-2026-0054 / WORK_QUEUES 19. A revision-required Review
                 # owns a handoff lineage of its own: it stays ready until a
                 # same-lineage GUP names it exactly in provenance.review_id.
+                # The record routes work only while its reviewed GUP is still the
+                # leaf. Once a successor GUP is published the revision it asked
+                # for exists, and the ordinary lineage owns what happens next.
+                # The record stays active either way -- it is what keeps the
+                # unreadable file skipped -- and says so from where it is
+                # validated rather than from here.
+                repair = lineage_repairs.get(leaf_gup.artifact_id)
+                if repair is not None:
+                    record = repair["record"]
+                    successor = record["active_successor_review"]
+                    components = [
+                        str(entry["path"])
+                        for entry in record["exact_builder_review_inputs"]
+                    ]
+                    ready.append(
+                        _queue_item(
+                            state="ready",
+                            queue="BUILDER-REVISION",
+                            role="Builder",
+                            ruleset=ruleset,
+                            book=book,
+                            packet_id=packet_id,
+                            input_id=successor["id"],
+                            reason=(
+                                f"Active Review requires a Builder revision. "
+                                f"{repair['decision_id']} fixes the input set at "
+                                f"{record['original_review']['id']} and "
+                                f"{successor['id']}."
+                            ),
+                            path=str(successor["path"]),
+                            components=components,
+                        )
+                    )
+                    repair_routed.add(
+                        (repair["decision_id"], successor["id"], str(successor["path"]))
+                    )
+                    continue
+
                 # Reading only the current GUP leaf Reviews hid the illusionist
                 # r05-r06 correction outright, because r06 moved the leaf on
                 # while answering r05-r05, so the newer request had nowhere to
@@ -3451,6 +4323,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     reviews_by_gup,
                     diagnostics,
                     review_retirements_by_ruleset[ruleset],
+                    bridged_predecessors,
                 ):
                     # WORK_QUEUES makes a Builder job "a Review that requests
                     # Builder revision", and handoff.next_role is where a Review
@@ -3478,7 +4351,50 @@ def scan_repository(root: Path) -> dict[str, Any]:
                             path=_relative(root, pending_review.path),
                             artifact_id=pending_review.artifact_id,
                         )
+                    # DEC-2026-0063. A Review states whether its revision can
+                    # start, and that answer is the Reviewer's to give. Reporting
+                    # a blocked handoff as ready does not make the prerequisite
+                    # go away; it sends a role to work that cannot proceed and
+                    # inflates the count the user coordinates from.
+                    pending_handoff = pending_review.data.get("handoff")
+                    pending_readiness = str(
+                        (pending_handoff or {}).get("readiness") or ""
+                    ).strip().lower()
+                    pending_blocked = pending_readiness == "blocked"
+                    pending_unresolved = sorted(
+                        _blocking_ids(pending_review.data) - decided_by_ruleset[ruleset]
+                    )
+                    stated_reason = str((pending_handoff or {}).get("reason") or "").strip()
+
                     for role in roles:
+                        if pending_blocked:
+                            reason = (
+                                f"Active Review requires "
+                                f"{_article(role)} {role.capitalize()} revision, and "
+                                f"declares it blocked."
+                            )
+                            if stated_reason:
+                                reason += f" {stated_reason}"
+                            if pending_unresolved:
+                                reason += (
+                                    " Unresolved: " + ", ".join(pending_unresolved) + "."
+                                )
+                            blocked.append(
+                                _queue_item(
+                                    state="blocked",
+                                    queue=f"{role.upper()}-REVISION-BLOCKED",
+                                    role=role.capitalize(),
+                                    ruleset=ruleset,
+                                    book=book,
+                                    packet_id=packet_id,
+                                    input_id=pending_review.artifact_id,
+                                    reason=reason,
+                                    path=_relative(root, pending_review.path),
+                                    components=[_relative(root, pending_review.path)],
+                                    legacy_inference=inferred,
+                                )
+                            )
+                            continue
                         ready.append(
                             _queue_item(
                                 state="ready",
@@ -3506,6 +4422,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         reviews_by_gup[leaf_gup.artifact_id],
                         diagnostics,
                         f"{leaf_gup.artifact_id} Review",
+                        bridged_predecessors,
                     )
 
                 if (
@@ -4186,6 +5103,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 None,
                 diagnostics,
             )
+            impl_review_unreadable = set(impl_review_repairs_by_ruleset[ruleset])
             impl_reviews = _load_artifacts(
                 root,
                 ruleset_dir / "decision-implementation-reviews",
@@ -4193,6 +5111,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 ruleset,
                 None,
                 diagnostics,
+                impl_review_unreadable,
             )
 
             reports_by_decision: dict[str, list[Artifact]] = defaultdict(list)
@@ -4557,6 +5476,13 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     # the same way. Reading that as replacement would retire
                     # Builder work the replacing Decision expressly reaffirms.
                     continue
+                # An item this same Decision's own record routed is not the
+                # stale handoff the replacement exists to supersede -- it is the
+                # work the Decision ordered. Suppressing it would make
+                # implementing the Decision hide its own outcome, permanently,
+                # since the replacement outlives the Decision's consumption.
+                if (decision_id, artifact_id, artifact_path) in repair_routed:
+                    continue
                 # Condition 3: only an item the scan derived for this exact ID
                 # and path is replaced. A Decision naming a superseded artifact
                 # matches nothing, so the active leaf keeps its own handoff.
@@ -4792,7 +5718,12 @@ def _print_items(title: str, items: list[dict[str, Any]]) -> None:
             print("  Legacy inference: yes")
 
 
-def _print_console(result: dict[str, Any], include_all: bool) -> None:
+def _print_console(
+    result: dict[str, Any],
+    include_all: bool,
+    *,
+    show_diagnostics: bool = True,
+) -> None:
     print("\nAgent Queue Status")
     print(f"Repository: {result['RepositoryRoot']}\n")
     summary_rows = [
@@ -4815,7 +5746,7 @@ def _print_console(result: dict[str, Any], include_all: bool) -> None:
         _print_items("Blocked work", result["BlockedItems"])
         _print_items("Informational items", result["InformationalItems"])
 
-    if result["Diagnostics"]:
+    if show_diagnostics and result["Diagnostics"]:
         print("\nDiagnostics\n")
         rows = [
             (
@@ -4837,6 +5768,16 @@ def _print_console(result: dict[str, Any], include_all: bool) -> None:
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    def parse_bool(value: str) -> bool:
+        normalized = value.strip().lower()
+        if normalized in {"1", "true", "yes", "on"}:
+            return True
+        if normalized in {"0", "false", "no", "off"}:
+            return False
+        raise argparse.ArgumentTypeError(
+            "expected one of: true, false, yes, no, 1, 0, on, off"
+        )
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--root",
@@ -4854,6 +5795,19 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Print active, blocked, and informational items in console mode.",
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        type=parse_bool,
+        nargs="?",
+        const=True,
+        default=True,
+        metavar="BOOL",
+        help=(
+            "Show the Diagnostics section in console output (default: true). "
+            "Use --verbose false to hide it."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -4863,7 +5817,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(json.dumps(result, indent=2))
     else:
-        _print_console(result, args.all)
+        _print_console(result, args.all, show_diagnostics=args.verbose)
     if result["LineageErrorCount"]:
         return 2
     if result["ReadyCount"]:

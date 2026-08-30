@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "id": "INT-20260827-001",
+  "integration_id": "INT-20260827-001",
+  "status": "rejected",
+  "ruleset_id": "adnd1e",
+  "book_id": "phb",
+  "constitution_version": "1.8",
+  "revision": 1,
+  "supersedes": null,
+  "rejected_at_utc": "2026-08-27T13:42:10.917Z",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "handoff": {
+    "next_role": "reviewer",
+    "readiness": "ready",
+    "reason": "Packaging-only correction under DEC-2026-0047. The bundle declares no operation_index, so every reviewed row is read as a plain addition and 28 rows that depend on nodes this same batch registers are misclassified. No source judgment, node identity, or edge content is disputed.",
+    "blocking_ids": []
+  },
+  "rejected_bundles": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01",
+      "bundle_checksum": "sha256:e0203d0138fa8b7599e7eacc9437fdb4dbc304412498c465866b96c9160eee42",
+      "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r01",
+      "review_checksum": "sha256:e2fa7d7677024976a146ad9a12d4946461897ca6e56372751d4e0e09d0a89d98",
+      "gup_id": "GUP-PKT-PHB-117-119-bards-r04",
+      "gup_checksum": "sha256:b8b29061f939c1e279a3207d1a4f51a27618ad2dbb4d46fbe002dea5b8b88357",
+      "packet_id": "PKT-PHB-117-119-bards",
+      "edge_csv": {
+        "path": "books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01.edges.csv",
+        "checksum": "sha256:b8342ceb08970d1fc65cfe2bc1af2c40255e4717d08a765a221ba50c9af54f33"
+      },
+      "manifest_path": "books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01.yaml",
+      "blocking_failures": [
+        {
+          "code": "operation_classification_inferred",
+          "check": "operation classification is declared, not inferred",
+          "blocking": false,
+          "detail": "The bundle carries no operation_index, so every CSV row is read as an addition. Classification is the manifest's job; inferring it is what the check refuses to do silently."
+        },
+        {
+          "code": "addition_depends_on_unregistered_node",
+          "check": "addition at CSV row N does not depend on an unregistered node",
+          "blocking": true,
+          "occurrences": 28,
+          "csv_rows": [
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57
+          ],
+          "detail": "Each row references a node this same batch registers, so it belongs in pending_additions rather than additions. Registration must precede the edges that depend on it; an addition that names an unregistered endpoint would violate invariant 1 at insert time."
+        }
+      ],
+      "blocking_failure_count": 28,
+      "advisory_failure_count": 1,
+      "checks_evaluated": 48
+    }
+  ],
+  "defect_attribution": {
+    "role": "reviewer",
+    "basis": "DEC-2026-0047 assigns packaging-only correction to the Reviewer. The defect is in how the approved rows are packaged into an Approved bundle, not in the rows themselves: the same reviewed edge component is expected to be re-emitted with a declared operation_index that separates additions from pending_additions.",
+    "not_builder": "No GUP revision is implied. The reviewed GUP and its edge content are not in question, and the Integrator has neither reinterpreted source nor proposed a classification of its own."
+  },
+  "remediation": [
+    "Publish a successor Review that emits an Approved bundle carrying an operation_index for all rows of the component.",
+    "Classify the 28 named rows as pending_additions, since each depends on a node the same bundle registers, and leave the remaining rows as additions.",
+    "Preserve this bundle and its approving Review as immutable history. Neither is repaired in place."
+  ],
+  "canonical_state": {
+    "unchanged": true,
+    "edges": 5046,
+    "nodes": 1392,
+    "registry": 1407,
+    "note": "Verification failed before the transaction runner was called. No snapshot was taken, no canonical or registry file was opened for writing, and no Integration manifest, validation report or diff was produced."
+  },
+  "governing_decisions": [
+    {
+      "id": "DEC-2026-0047",
+      "role": "packaging-only correction ownership"
+    },
+    {
+      "id": "DEC-2026-0065",
+      "role": "Directs that this bundle is evaluated through the normal bundle-verification and transaction lifecycle once repaired queue admission publishes. This record is that evaluation."
+    }
+  ]
+}

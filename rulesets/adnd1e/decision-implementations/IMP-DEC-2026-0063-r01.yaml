@@ -1,0 +1,149 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0063-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0063
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0063.yaml
+  checksum: sha256:4afb916691c021be27ba2879cdd3da1ef380d153d8ce005a8d331954ba7f0652
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:949d4b1bbe1a70aa60c4235b7c58178fcf0f6fd869ed76f204e67d640205b8ed
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:626ccaf32cce4e7ebda9a8af192b2f1159ac4550db648d80cfc0edcf1c9d52ac
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:ca5f3ec9cb91b034fbe05c60827d2bcd311e43a959bb3e7f816fdbf392d7e3f0
+- path: tooling/builder/tests/test_compiler.py
+  checksum: sha256:215c7730ec328b9e98b328b40decb8d0485d06b401cdfc1f94d5968541433eca
+- path: tooling/builder/tests/test_review.py
+  checksum: sha256:3462009b580d37294843aeb93acf6c1674b728db6b52b3678c8c321def890c09
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0063.yaml
+  checksum: sha256:4afb916691c021be27ba2879cdd3da1ef380d153d8ce005a8d331954ba7f0652
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-26T11.24.32.014Z.yaml
+  checksum: sha256:f764d5eebb6cb8d4b919cf687f372415aa0b10972a97730fbeae0ba6e101d066
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'TestReviewIntegratorHandoffContract drives the 1.3 clause against schemas/common/review.schema.json.
+    A revision_required Review naming Integrator is rejected, whether the disposition is stated in `status`
+    or in `overall_disposition` -- the second matters because queue derivation prefers overall_disposition,
+    and checking only `status` would leave the exact artifact shape the scanner acts on unconstrained.
+    A blocked readiness does not excuse it. An approved Review handing its bundle to Integrator is accepted,
+    as is a revision_required Review naming builder, analyst, architect, reviewer or none. 1.3 also still
+    enforces its predecessors: an illegal disposition and a DEC-2026-0062 aliased correction are both
+    still rejected under it. Contracts 1.1, 1.2 and an absent field keep their own treatment, and the
+    two originating Reviews are checked by name -- neither declares 1.3 and both still validate, which
+    is what keeps them immutable evidence. These unit tests ran: Ran 9 tests in 0.059s OK.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'The pending-revision pass now reads handoff.readiness. BlockedReviewReadinessCase drives
+    one fixture through both states: `blocked` produces exactly one blocked item for the named role on
+    the <ROLE>-REVISION-BLOCKED queue, carrying the Reviewer''s own reason and its unresolved blocking
+    IDs, and no ready item anywhere -- the failure was a false positive, so the absence is the assertion.
+    A blocker that is already decided is not reported as unresolved. Flipping only that one field on the
+    same artifact produces the ordinary ready item and no blocked item. Only `blocked` blocks: ready,
+    terminal, an unrecognised value and an empty string all route normally, so the rule cannot be used
+    to hide work. Where a Review names two roles both are blocked together, since readying half a job
+    is the same defect in miniature. Approved-bundle routing to Integrator is asserted directly in the
+    same case, including in a scan that also contains a blocked Review. These unit tests ran: Ran 29 tests
+    in 20.913s OK.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: DecisionHandoffReplacementLiveCase verifies the replacement on the exact records rather than
+    on the resulting queue. The decided escalation ESC-2026-08-26T11.24.32.014Z names both originating
+    Reviews as id-and-path pairs that WORK_QUEUES 1.3 can read -- re-derived through scanner._originating_artifact_refs,
+    with both paths confirmed to exist -- and DEC-2026-0063 resolves that escalation and hands off to
+    Builder. The scan derives DEC-2026-0063's Builder job and no Integrator job for either legacy Review.
+    Both named successors exist, declare 1.3, directly supersede their predecessor, are approved and emitted
+    a bundle.
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Verified as published, not produced by Builder: this acceptance test is the Reviewer''s step
+    2, which had already completed when this implementation began. REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r07
+    and REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r06 each review the same immutable GUP as their
+    predecessor, declare Review contract 1.3, are approved and terminal, and emitted APPROVED-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r04
+    and APPROVED-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r03. Both bundles were integrated by INT-20260826-001,
+    which records 434 edges added across the two. No GUP revision was compiled for either packet and no
+    Integrator record exists for the standalone preflight.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'This report pins DEC-2026-0063 by checksum, reports acceptance tests 1 through 4 as passed
+    against current evidence, and records passing focused runs of the queue cases (29 tests) and TestReviewIntegratorHandoffContract
+    (9 tests) alongside both full suites: tooling/common Ran 916 tests in 213.772s OK, and tooling/builder
+    Ran 674 tests in 111.568s OK (skipped=38). The Decision''s exact_diff touches tooling/common only,
+    so that is the applicable suite; tooling/builder is recorded because two of its tests needed correcting,
+    described in the handoff.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'The readiness rule is implemented and both suites are green. The Decision''s own scope was
+    small; three things around it need the Reviewer''s attention, and two of them are findings rather
+    than fixes.
+
+
+    First, scope I took beyond exact_diff. Two tests in tooling/builder failed for reasons unrelated to
+    this Decision, both caused by work completing rather than breaking, and I corrected both. LivePsionicsBlockedCase.test_no_rejected_endpoint_reaches_the_integration_input
+    pinned the nine endpoints INT-20260814-003 rejected and required that none ever reach `additions`.
+    INT-20260826-001 integrated the magic-user packets that mint eight of those nine, so they now resolve
+    and belong in additions -- the cross-packet rule working. Its own sibling test already carried the
+    registry guard for exactly this; the second had been left without it. Neither file is in this Decision''s
+    exact_diff.
+
+
+    Second, and this is a finding the Reviewer should act on: three newly published Reviews state an `inherited_edge_decisions`
+    block the compiler cannot read. REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r07 and REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r06
+    name no source review or no preserved refs. REV-GUP-PKT-PHB-094-100-illusionist-spells-r08-r01 names
+    r07-r03 as rejecting the nine duplicates, and r07-r03 does not reject them -- it inherits them from
+    r05-r05. That is the identical defect DEC-2026-0062 had the Reviewer repair one revision earlier,
+    reintroduced one link further along the chain. All three are approved and already integrated, so nothing
+    is wrong with the canonical data and no compile is pending from them; but any future chain that includes
+    one will refuse, exactly as the r08 compile did.
+
+
+    That finding is why the DEC-2026-0062 corpus check now excludes Reviews an Integration has consumed
+    rather than all active leaves. A consumed Review is finished, not merely current: the transaction
+    it authorised is in canonical data and no revision will be compiled from it, so superseding it to
+    tidy its wording would reopen a consumed artifact for nothing. The exclusion is guarded two ways --
+    one test asserts every unreadable Review in the archive is superseded or consumed, and another asserts
+    the consumed set is non-empty and really does name integrated Reviews -- so it cannot silently become
+    an amnesty. I would rather the Reviewer decide whether the three warrant successors than have that
+    decision made by a test I wrote.
+
+
+    Third, on the two live cases I re-pointed. Both asserted that the magic-user Reviews sat in the Integrator
+    queue, which was the observable form of ''the retirement and snapshot mechanisms did not swallow live
+    work'' on the day they were written. This Decision replaced those handoffs and INT-20260826-001 finished
+    the work, so a test reading current queue position now fails on work being completed. They assert
+    the durable claim instead: neither Review is retired, and each lineage reached integration under its
+    own ID.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0063-r01.validation.json
+validation_report_checksum: sha256:1c8b81a30ce2f7c8b60c524b7da10a94f56762094788fe5d0ba7cdbd8a75642a
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 916 tests in 213.772s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 674 tests in 111.568s OK (skipped=38)
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.BlockedReviewReadinessCase
+      test_scan_agent_queues.LiveBlockedReviewReadinessCase test_scan_agent_queues.DecisionHandoffReplacementLiveCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 29 tests in 20.913s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_common_schemas.TestReviewIntegratorHandoffContract'
+    exit_code: 0
+    result: passed
+    summary: Ran 9 tests in 0.059s OK

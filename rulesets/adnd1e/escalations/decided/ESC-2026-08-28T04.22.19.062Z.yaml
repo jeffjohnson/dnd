@@ -1,0 +1,126 @@
+schema_version: '1.0'
+id: ESC-2026-08-28T04.22.19.062Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-08-28'
+decision_id: DEC-2026-0069
+decided_on: '2026-08-28'
+supplements: ESC-2026-08-27T23.46.27.645Z
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: Supplements the Reviewer's pending escalation with two implementation constraints the
+    Integrator discovered while failing closed on the same artifact. Both bound the shape a Decision
+    must take to be honourable, so they are offered before the ruling rather than after it.
+  blocking_ids: []
+does_not_reopen: This escalation asks no new governance question and takes no position on the
+  Reviewer's. It reports only what the DEC-2026-0065 admission implementation can and cannot validate,
+  so that whatever is decided is expressible.
+trigger: Integrator queue check. Admission failed closed on REV-GUP-PKT-PHB-117-119-bards-r04-r02,
+  which is unreadable YAML admitted by no active Decision. queue and both integrate forms return
+  exit code 2 with no traceback, no ready bundle is offered, and canonical is untouched. That
+  is the behaviour DEC-2026-0065 requires and it is working as ruled.
+peer_escalation:
+  id: ESC-2026-08-27T23.46.27.645Z
+  path: rulesets/adnd1e/escalations/pending/ESC-2026-08-27T23.46.27.645Z.yaml
+  checksum: sha256:b3f4eb06026cf078b95875c4defa2d704938185310a6be7b6ff53a443a2fa700
+  raised_by: reviewer
+  question: May Integrator admit exactly APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03 by treating
+    the checksummed r02 Review only as an unreadable historical direct predecessor and by consuming
+    the checksummed r03 successor instead?
+the_unreadable_review:
+  id: REV-GUP-PKT-PHB-117-119-bards-r04-r02
+  path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r02.yaml
+  checksum: sha256:e06eb90dee6c5a14a2aef14518a759da1dece6d5874c2ddf83f7cd6782a8fb56
+  defect: 'Serialization only. Line 52 opens a folded block scalar, `completeness_statement: >-`,
+    at column 0 and lines 53 onward continue at column 0 as well. A block scalar''s content must
+    be indented relative to its key, so the parser reads line 53 as a new mapping key and fails
+    with `while scanning a simple key ... could not find expected '':''`. The same construct at
+    lines 15 and 64 is nested inside a mapping and is correctly indented, so the defect is one
+    unindented block and not a systemic authoring error.'
+  parser_error_fragment: could not find expected ':'
+  position: line 53, column 1
+constraint_1_the_record_shape_assumes_a_two_step_bridge:
+  finding: 'DEC-2026-0064''s review_malformed_lineage_repairs record cannot express this lineage
+    as written. It pins two distinct links: bridge_review.required_supersedes must be the unreadable_review,
+    and active_successor_review.required_supersedes must be the bridge_review. The Druid case
+    had three artifacts in that chain, r04 unreadable, r05 bridging, r06 active. The Bards lineage
+    has two: r04-r02 is unreadable and r04-r03 supersedes it directly and is itself active and
+    approved.'
+  consequence: Naming r04-r03 as both bridge_review and active_successor_review would require
+    its supersedes field to equal both r04-r02 and itself, which no file can satisfy. A ruling
+    that simply directs a second record of the existing shape would therefore be unimplementable
+    without either an Architect-authorised change to the record shape, for example an optional
+    bridge for single-step lineages, or a Builder change to the common scanner's matching validator.
+  evidence:
+    original_review:
+      id: REV-GUP-PKT-PHB-117-119-bards-r04-r01
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r01.yaml
+      checksum: sha256:e2fa7d7677024976a146ad9a12d4946461897ca6e56372751d4e0e09d0a89d98
+      status: approved
+      note: Approved, and emitted the bundle INT-20260827-001 rejected.
+    unreadable_review:
+      id: REV-GUP-PKT-PHB-117-119-bards-r04-r02
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r02.yaml
+      checksum: sha256:e06eb90dee6c5a14a2aef14518a759da1dece6d5874c2ddf83f7cd6782a8fb56
+    active_successor_review:
+      id: REV-GUP-PKT-PHB-117-119-bards-r04-r03
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+      checksum: sha256:e0788ce7a183c8409450af65073054464d685d2bca484398abb2a04b6e9b2288
+      status: approved
+      supersedes: REV-GUP-PKT-PHB-117-119-bards-r04-r02
+      emits: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03
+    blocked_bundle:
+      id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03
+      path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+      checksum: sha256:7064290c50c069776e5f28aab6cff8762eb56f21aa3b69161240fe507d2d0faa
+constraint_2_a_decision_cannot_delegate_to_itself:
+  finding: The implementation reaches a repair record only through a delegating Decision that
+    pins the governing Decision by path and checksum, which is the DEC-2026-0065 to DEC-2026-0064
+    relationship. A single Decision cannot both carry the record and delegate to itself, because
+    its governing_repair_record.decision_input.checksum would have to be the hash of the file
+    containing it.
+  consequence: 'An honourable ruling needs either a Decision pair, one carrying the record and
+    one delegating to it, or an Architect-authorised direct form in which a Decision''s own repair
+    records are validated without a delegation hop. The Integrator will not choose between those:
+    it is the admission contract, and DEC-2026-0065 assigned the contract to the Architect.'
+  implementation:
+    path: tooling/integrator/src/adnd1e_integrator/admission.py
+    checksum: sha256:6b8ea4953251e208fd993d1da6c088a4b26c57a6eeaef59929fd3b1688bc74c7
+    decision: DEC-2026-0065
+    report: IMP-DEC-2026-0065-r01
+what_is_working_as_ruled:
+- Admission failed closed on an unreadable Review that no Decision admits, exactly as DEC-2026-0065
+  requires, on the first live artifact to test it. queue and integrate both return exit code 2
+  with no traceback, including when the bundle is named explicitly, and no dry run or transaction
+  began.
+- 'The one authorised exception is unaffected: the Druid r01-r04 bridge still produces its single
+  historical_unreadable_review notice and no fatal diagnostic.'
+- INT-20260827-001 stands. The Reviewer consumed it and its packaging finding is not in dispute;
+  only the serialization of the successor is.
+why_it_matters: The Bards packet cannot reach canonical while the queue fails closed, and the
+  queue is correct to fail closed. The Reviewer's question is the right one; these two constraints
+  determine whether the answer can be implemented as stated.
+affected_canonical_ids: []
+migration_impact:
+  canonical_data_change: false
+  registry_change: false
+  note: Canonical stands at 5046 edges, 1392 nodes and 1407 registry rows with 1691 findings.
+    Nothing was written, and no snapshot was taken.
+systemic_finding: 'This is the second unreadable published Review in eight days, both serialization-only
+  and both mid-lineage. The first cost two Decisions and an Integrator implementation to absorb.
+  Neither would have been published had Reviews been parsed at publication, and a per-artifact
+  parse gate at authoring time would remove the whole class rather than adjudicating each instance.
+  The Integrator raises this as a pattern, not as a proposal: which role owns such a gate is a
+  governance question.'
+governance_impact: DEC-2026-0064 and DEC-2026-0065 together resolved one instance by pinning its
+  exact bytes. If each recurrence needs its own Decision pair, the cost grows with the defect
+  rate. A durable answer would either prevent unreadable Reviews at publication or define a general,
+  checkable repair shape rather than an instance-specific one.
+blocking: true

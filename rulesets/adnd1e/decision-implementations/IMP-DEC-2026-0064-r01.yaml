@@ -1,0 +1,132 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0064-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0064
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0064.yaml
+  checksum: sha256:3ad3bbc7386c47fb432b6863a3e8ae5ca739ea11567a3fe003e3fafd04630a18
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:8046aeff72bc1a5d5bea486097f6cd08f29196f1c0f248ba2aad1e08ae78dcf3
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:fa059fe6fe5a2f95ebcb853bafc3f3ca1bf5e452f3d6a1aa63d8103207212653
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:0a2ccb4a4d24f1e862aae799696260196aec28a1b56d6ad5e75d2684f9fecbe2
+- path: tooling/builder/tests/test_review.py
+  checksum: sha256:61ff6b2d9ec7eec5843411aa54990a32346993b3e191777dba11c236efa55f89
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0064.yaml
+  checksum: sha256:3ad3bbc7386c47fb432b6863a3e8ae5ca739ea11567a3fe003e3fafd04630a18
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-27T00.34.01.169Z.yaml
+  checksum: sha256:4666bd88b6109bd410231fef97b9482718796cd1585de9aba8e374f6327c62ec
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'Every field of the record is re-derived from the files before the route exists. The scan
+    reports exactly one informational review_malformed_lineage_repaired naming REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04,
+    no yaml_unreadable and no missing_supersedes_target anywhere, zero errors, and exactly one ready Builder
+    item whose InputId is r06 and whose Components are precisely the r01 and r06 files -- neither the
+    unreadable r04 nor the bridge r05 appears in any item''s components. LiveMalformedReviewLineageRepairCase
+    asserts each of those against the repository, and MalformedReviewLineageRepairCase drives the same
+    outcome on a fixture whose unreadable member is a real parser failure rather than a truncated file.
+    These unit tests ran: Ran 41 tests in 20.941s OK.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'Nineteen denial cases, each leaving the repair unapplied and the record''s failure loud:
+    no record at all; an unapproved Decision; a stale checksum on any one of the five pinned files, driven
+    field-by-field; an unreadable_review that actually parses; a parse-failure fragment or diagnostic_code
+    the parser does not produce; a bridge that supersedes something other than the unreadable file; a
+    successor that supersedes something other than the bridge; a successor reviewing a different GUP;
+    a successor whose handoff is blocked or names another role; a successor whose disposition is not revision_required;
+    a successor that fails review.schema.json; and an input set with a member dropped, added, or swapped
+    for the bridge. The assertion is that no item carries the repair''s two-file input set, which is what
+    a denied record would have granted -- deliberately not ''no Builder item exists'', because two of
+    these cases leave a walkable chain whose ordinary leaf routing is real work. An unrelated unreadable
+    Review in another packet still raises yaml_unreadable. These unit tests ran: Ran 41 tests in 20.941s
+    OK.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'The schema suite skips exactly the Decision-pinned file and checks that the exemption is
+    still earned: the file must still hash to the recorded checksum and still fail with the recorded parser
+    message, and TestTheUnreadableReviewExemption drives both, plus r05 and r06 parsing, r06 validating
+    against review.schema.json, no other published artifact matching the exemption, an identical copy
+    at another path not matching it, and a changed file at the pinned path losing the exemption. The pin
+    is read from the approved Decision rather than restated in the test: a checksum copied into a suite
+    is a second source of truth that can drift from the ruling it claims to follow. These unit tests ran:
+    Ran 8 tests in 0.413s OK.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'This report pins DEC-2026-0064 by checksum, reports acceptance tests 1 through 3 as passed
+    against current evidence, and records passing focused runs of the queue cases (41 tests) and the exemption
+    case (8 tests) alongside both full suites: tooling/common Ran 969 tests in 239.295s OK, and tooling/builder
+    Ran 674 tests in 115.352s OK (skipped=38). The Druid GUP revision is not attempted here; it is ordinary
+    downstream lifecycle work under this Decision''s own post-implementation requirements.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'The bridge is implemented, both suites are green, and the scan reports zero errors with the
+    r06 Builder item carrying exactly r01 and r06. Four things need the Reviewer''s judgment rather than
+    mine.
+
+
+    First, and most important. WORK_QUEUES 1.3 replaces an originating artifact''s stale handoff with
+    the handoff of the Decision that resolved its escalation, and ESC-2026-08-27T00.34.01.169Z names r06
+    as an originating artifact. So the rule removed the exact item this Decision exists to expose. Worse,
+    it would have kept removing it: the replacement is computed from the Decision''s `handoff` block,
+    not from whether the Decision''s work is still outstanding, so implementing DEC-2026-0064 would have
+    permanently hidden the Druid revision its own post-implementation requirements describe. I added one
+    narrow exemption -- an item routed by a Decision''s own repair record is not stale work that the same
+    Decision supersedes -- keyed on the exact (decision, item id, item path) triple. Every other artifact
+    the escalation names is replaced as before. This is my judgment, not something the ruling states,
+    and it is the part I would most like checked.
+
+
+    Second, the lineage is routed from the record rather than walked. The ordinary walk cannot cross r04
+    -- the file will not open, so nothing can be learned about what it superseded, and inferring that
+    from its revision number is what the Decision''s own rationale forbids. So the repaired GUP''s Reviews
+    are kept out of the lineage pass entirely and the item is built from the record''s named successor
+    and input pair. The GUP is still counted as reviewed, so it does not also surface as an unreviewed
+    GUP.
+
+
+    Third, scope beyond exact_diff. tooling/builder/tests/test_review.py sweeps every published Review
+    and crashed on r04 exactly as the schema suite did, so it takes the same exemption. Both suites read
+    the pinned path and checksum from the approved Decision instead of restating them, which is why there
+    is no second copy of that checksum to drift.
+
+
+    Fourth, what I did not do. r02 through r05 are excluded from the compiler inputs, no content is read
+    from r04 -- the record establishes that it cannot be read, which is the opposite of interpreting it
+    -- and no Druid GUP was compiled. That revision is ordinary downstream work and I will take it up
+    once this report is reviewed, using only r01 and r06.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0064-r01.validation.json
+validation_report_checksum: sha256:9df6c91b9d15a319a4716aeb7fa44bd06f3969f37a06044fe78e2007ec60c73c
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 969 tests in 239.295s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 674 tests in 115.352s OK (skipped=38)
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.MalformedReviewLineageRepairCase
+      test_scan_agent_queues.LiveMalformedReviewLineageRepairCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 41 tests in 20.941s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_common_schemas.TestTheUnreadableReviewExemption'
+    exit_code: 0
+    result: passed
+    summary: Ran 8 tests in 0.413s OK

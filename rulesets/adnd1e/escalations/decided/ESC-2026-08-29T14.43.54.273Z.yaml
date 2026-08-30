@@ -1,0 +1,123 @@
+schema_version: '1.0'
+id: ESC-2026-08-29T14.43.54.273Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-08-29'
+decision_id: DEC-2026-0071
+decided_on: '2026-08-29'
+concerns_decisions:
+- DEC-2026-0068
+- DEC-2026-0070
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: DEC-2026-0070 is implemented and the Bards r03 bundle now reaches ordinary verification
+    exactly as ruled. It fails there on two blocking checks. One is a Reviewer regression the
+    Reviewer can fix; the other is a direct conflict between DEC-2026-0068's pinned handoff and
+    the ordinary verification rule, which no role below the Architect can resolve.
+  blocking_ids: []
+what_is_implemented: DEC-2026-0070 step 2 is complete. Manifested bundles resolve components from
+  the manifest's declared path and checksum, manifestless legacy bundles keep filename inference,
+  direct migrations keep the no-edge-CSV rule, and the exact validated historical bundle is withheld
+  from every bucket and reported as historical_unadmitted_bundle. Against the live corpus the
+  queue offers exactly APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03 with zero fatal diagnostics,
+  zero discovery diagnostics, and three informational notices. test_admission passes 42 of 42
+  and test_bundles 19 of 19.
+question: DEC-2026-0068 pins the r03 Review's required handoff as next_role architect, and DEC-2026-0070
+  says the r03 bundle remains eligible for ordinary bundle verification, which requires next_role
+  integrator. Which governs? And must the r03 successor Review be reissued to restore the node
+  registration decisions it dropped?
+blocker_1_the_pinned_handoff_cannot_pass_verification:
+  finding: Ordinary bundle verification requires the approving Review to hand off to the Integrator
+    and be ready. The r03 Review declares next_role architect, readiness ready, and DEC-2026-0068
+    pins exactly that as required_handoff, so the file and the record agree with each other and
+    both disagree with verification.
+  observed: handoff routes to integrator and is ready -> next_role='architect' readiness='ready'
+  consequence: The bundle can be discovered and offered, which DEC-2026-0070 requires, but can
+    never be integrated while both rules stand. Changing the Review's handoff would invalidate
+    DEC-2026-0068's pinned record and withdraw the r02 exclusion with it, so the Reviewer cannot
+    fix this without the record being reissued too.
+  evidence:
+    active_successor_review:
+      id: REV-GUP-PKT-PHB-117-119-bards-r04-r03
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+      checksum: sha256:e0788ce7a183c8409450af65073054464d685d2bca484398abb2a04b6e9b2288
+      handoff:
+        next_role: architect
+        readiness: ready
+    governing_decision:
+      id: DEC-2026-0068
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+      checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+      pins: review_direct_predecessor_repairs[0].active_successor_review.required_handoff
+    reissuing_decision:
+      id: DEC-2026-0070
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0070.yaml
+      checksum: sha256:6001db5c9eb07d5858c34e8aa5e99c71f8e1b1508d2995ad9c3f5bcacb88a008
+blocker_2_the_successor_review_dropped_its_registration_decisions:
+  finding: The Integrator reads node registrations from the approving Review's node_registry_decisions,
+    because a registry row needs an approved label and kind and the Integrator may not author
+    either. REV-...-r04-r01 carries twelve such entries, each with proposed_id, submitted_label,
+    kind, basis and edges_depending_on_it. REV-...-r04-r03 carries none. In their place it records
+    node_registration_prerequisite, which lists eleven bare node IDs and a count and supplies
+    no label, kind, basis or dependency for any of them.
+  observed: operation index classifies every CSV row exactly once -> manifest declares 11 node
+    operation(s) but the Review approves 0
+  consequence: The successor meant to correct the packaging of the rejected bundle regressed the
+    data the correction depends on. Eleven identities would have to be registered with labels
+    and kinds no approved artifact states, and authoring them is outside the Integrator's role.
+  a_second_discrepancy_not_resolved_here: r04-r01 approved twelve registrations and the r03 prerequisite
+    block names eleven. Which is correct is a Reviewer determination; the Integrator reports the
+    difference without proposing a resolution.
+  evidence:
+    original_review:
+      id: REV-GUP-PKT-PHB-117-119-bards-r04-r01
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r01.yaml
+      checksum: sha256:e2fa7d7677024976a146ad9a12d4946461897ca6e56372751d4e0e09d0a89d98
+      node_registry_decisions: 12
+    active_successor_review:
+      id: REV-GUP-PKT-PHB-117-119-bards-r04-r03
+      path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+      checksum: sha256:e0788ce7a183c8409450af65073054464d685d2bca484398abb2a04b6e9b2288
+      node_registry_decisions: 0
+      node_registration_prerequisite_count: 11
+    bundle:
+      id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03
+      path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03.yaml
+      checksum: sha256:7064290c50c069776e5f28aab6cff8762eb56f21aa3b69161240fe507d2d0faa
+      node_operations_source: REV-GUP-PKT-PHB-117-119-bards-r04-r03#/node_registration_prerequisite
+      node_operations_count: 11
+why_not_a_rejection_record: 'Blocker 2 alone would be an ordinary Integration rejection attributed
+  to the Reviewer. Blocker 1 is not: the handoff the Reviewer would have to change is pinned by
+  an Architect Decision, and changing it withdraws the r02 historical-bundle exclusion that the
+  same record authorises. Refusing the bundle without resolving that would send the Reviewer a
+  remediation it cannot lawfully perform, so the Integrator is asking rather than filing.'
+what_is_not_in_question:
+- The DEC-2026-0070 implementation. Discovery, the exclusion, fail-closed handling and the Druid
+  form are all covered and green.
+- DEC-2026-0068's record. Every pinned artifact, both supersession links, the parse failure, the
+  component and the operation partition were re-derived from the files and agree.
+- Canonical state, unchanged at 5046 edges, 1392 nodes and 1407 registry rows with 1691 findings.
+  No transaction was attempted and no snapshot taken.
+affected_canonical_ids: []
+migration_impact:
+  canonical_data_change: false
+  registry_change: false
+  note: No canonical or registry write is proposed or has occurred.
+systemic_finding: A Decision that pins a Review's required_handoff can pin a value the ordinary
+  verification rules reject, and nothing checks the two against each other at authoring time.
+  The same shape appeared in DEC-2026-0069, whose acceptance tests could not be met inside its
+  own declared scope. Both are cases where a Decision is internally consistent but inconsistent
+  with a standing rule, and the cost surfaces only when an implementing role reaches the contradiction.
+governance_impact: The Bards packet has now consumed five Decisions and four escalations. Each
+  was correct in isolation. The recurring cost is that a correction pins the exact bytes of the
+  state it corrects, so any later change to those bytes invalidates the correction. A durable
+  answer would either pin less, by naming properties rather than checksums where the property
+  is what matters, or state explicitly which standing rules a pinned record may not contradict.
+blocking: true

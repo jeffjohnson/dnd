@@ -1,0 +1,104 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0069-r01
+artifact_kind: decision_implementation
+status: blocked
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: false
+implemented_by: integrator
+handoff:
+  next_role: architect
+  readiness: blocked
+  reason: Every acceptance test this Decision owns is met except those that require a ready Bards
+    bundle or a non-2 queue exit code. Both depend on bundle discovery reading components from
+    the manifest rather than from the filename, which this Decision does not scope and which the
+    Integrator will not widen unilaterally because the same change surfaces a bundle approved
+    by an unreadable Review.
+  blocking_ids:
+  - ESC-2026-08-28T11.07.16.219Z
+decision_input:
+  id: DEC-2026-0069
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0069.yaml
+  checksum: sha256:53577e45f77b3bd070c6016f2eee6265b1abee040a61f6abf5783db2fbf750e2
+implementation_files:
+- path: tooling/integrator/src/adnd1e_integrator/admission.py
+  checksum: sha256:38ed837da70a02607b7bf0c90c1d033cbcc185af1d3b5fe83b9297ddc2e792eb
+- path: tooling/integrator/src/adnd1e_integrator/bundles.py
+  checksum: sha256:975803c5b8f65e409fc1652500b4ef30e598ca75bb033256d349ce22aaf1d58c
+- path: tooling/integrator/src/adnd1e_integrator/cli.py
+  checksum: sha256:70b8558769144297763957f4bc7b0cc29f93cd0d64b580b47a7cde8e1813be1c
+- path: tooling/integrator/tests/test_admission.py
+  checksum: sha256:37751e424cbd6484405f06a3510fe0fcb3363ffcbb3250a788ed8caee9404035
+acceptance_results:
+- acceptance_test_index: 1
+  result: failed
+  evidence: 'Blocked, not failed by this implementation. `queue` exits 2 while `queue_integrity`
+    is empty and both informational notices are present, so admission is not the cause. The cause
+    is bundle discovery pairing a manifest with an edge CSV by filename stem: the Bards r02 and
+    r03 manifests declare the r01 component, which is the exact path DEC-2026-0068 pins, so both
+    are dropped with `manifest present with no .edges.csv component` and both raise a discovery
+    diagnostic. Reproduced in an isolated clone whose only difference was a stem-named copy of
+    the already-declared component, after which the queue offered the r03 bundle with zero fatal
+    diagnostics. The repair is in bundles.py, which is outside this Decision''s declared exact_diff,
+    and it is not self-contained: the same change would make the historical r02 bundle discoverable
+    and, because its approving Review is the admitted-unreadable one, classifiable as ready. ESC-2026-08-28T11.07.16.219Z
+    carries the reproduction, both blockers and three options.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'Verified in the 38-test run above. TestTheDirectPredecessorException covers the authorised
+    path and eleven denials: a re-hashed or inactive DEC-2026-0068, a delegation naming another
+    field, a self-delegating Decision, a now-parseable r02, a wrong parser fragment, a broken
+    bundle supersession, a changed component row count, a changed operation partition, a changed
+    registered node count, and a mismatched rejection pin. Each yields review_yaml_unreadable,
+    no ready bundles, exit code 2 and no traceback. Field names are fixed per delegation form
+    rather than read from the Decision, and self-delegation is refused outright.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: test_the_druid_form_still_works_alongside_it suspends DEC-2026-0068 and asserts the
+    Bards exception is denied while the Druid notice remains, and the Druid denial suite asserts
+    conversely. Neither exception absorbs the other, no code accepts a self-delegating record,
+    and no delegation may name a field of its own choosing.
+- acceptance_test_index: 4
+  result: failed
+  evidence: 'Blocked, not failed by this implementation. `queue` exits 2 while `queue_integrity`
+    is empty and both informational notices are present, so admission is not the cause. The cause
+    is bundle discovery pairing a manifest with an edge CSV by filename stem: the Bards r02 and
+    r03 manifests declare the r01 component, which is the exact path DEC-2026-0068 pins, so both
+    are dropped with `manifest present with no .edges.csv component` and both raise a discovery
+    diagnostic. Reproduced in an isolated clone whose only difference was a stem-named copy of
+    the already-declared component, after which the queue offered the r03 bundle with zero fatal
+    diagnostics. The repair is in bundles.py, which is outside this Decision''s declared exact_diff,
+    and it is not self-contained: the same change would make the historical r02 bundle discoverable
+    and, because its approving Review is the admitted-unreadable one, classifiable as ready. ESC-2026-08-28T11.07.16.219Z
+    carries the reproduction, both blockers and three options.'
+- acceptance_test_index: 5
+  result: failed
+  evidence: Not approval-ready. Acceptance tests 1 and 4 are unmet for a cause in bundles.py,
+    outside this Decision's declared exact_diff. The implementation this Decision does scope is
+    complete and green.
+validation:
+  passed: false
+  commands:
+  - command: '[cwd tooling/integrator/tests] python -m unittest test_admission -v'
+    exit_code: 1
+    result: failed
+    summary: Ran 38 tests in 943.853s FAILED
+  - command: PYTHONPATH=tooling/integrator/src python -m adnd1e_integrator.cli queue
+    exit_code: 2
+    result: failed
+    summary: queue_integrity empty and two historical_unreadable_review notices, but exit 2 on
+      two discovery diagnostics for the Bards r02 and r03 manifests. FAILED
+blocking_escalation:
+  id: ESC-2026-08-28T11.07.16.219Z
+  path: rulesets/adnd1e/escalations/pending/ESC-2026-08-28T11.07.16.219Z.yaml
+  checksum: sha256:83332f63cab8099541dfa848135056c265ba150eff01a389468a208558afa45f
+governing_decision:
+  id: DEC-2026-0068
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+  checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+  note: 'Re-derived independently from the files: both supersession links, the parse failure and
+    its fragment, the successor disposition, handoff, reviewed GUP and emitted bundle, the JSON
+    rejection record and the 57-row CSV component by hash, and the declared 29 plus 28 plus 0
+    partition and 11 registrations against the bundle''s own operation_index. All agree.'

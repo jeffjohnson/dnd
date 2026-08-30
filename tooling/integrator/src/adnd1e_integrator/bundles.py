@@ -19,6 +19,7 @@ from pathlib import Path
 
 import yaml
 
+from .admission import Admission, load_admission
 from .checksums import checksum_file
 
 
@@ -102,33 +103,91 @@ def discover(root: Path, ruleset_id: str, book_id: str) -> tuple[list[Bundle], l
 
     for stem in sorted(set(manifests) | set(edge_files)):
         manifest_path = manifests.get(stem)
-        edges_path = edge_files.get(stem)
 
-        if edges_path is None:
-            # WORK_QUEUES 1.8 rule 31: a decision_migration_v1 manifest is a
-            # complete job with no edge CSV. Rule 32 keeps every other manifest
-            # missing its CSV a diagnostic, so the exemption is read from the
-            # declared operation model rather than from the file simply being
-            # absent.
-            declared = load_yaml(manifest_path) if manifest_path is not None else None
-            if not declared or declared.get("operation_model") not in DIRECT_MIGRATION_MODELS:
-                diagnostics.append(f"{stem}: manifest present with no .edges.csv component")
-                continue
+        if manifest_path is None:
+            # WORK_QUEUES 1.25 keeps filename inference for manifestless legacy
+            # bundles alone: there is no declaration to be authoritative, so the
+            # stem is the only thing left to go on.
+            bundle = _from_legacy(stem, book_id, edge_files[stem], reviews, diagnostics)
+            if bundle is not None:
+                bundles.append(bundle)
+            continue
 
-        if manifest_path is not None:
-            bundle = _from_manifest(stem, book_id, manifest_path, edges_path, reviews, diagnostics)
-            if bundle is not None and bundle.is_direct_migration and edges_path is not None:
-                # Rule 33: an edge CSV in this shape means the manifest and the
-                # reviewed GUP disagree about what the plan is.
+        declared = load_yaml(manifest_path) or {}
+        if declared.get("operation_model") in DIRECT_MIGRATION_MODELS:
+            # Rule 31: a direct migration is a complete job with no edge CSV, and
+            # rule 33 makes a colocated one evidence that the manifest and the
+            # reviewed plan disagree. Both are read from the declared model.
+            if stem in edge_files:
                 diagnostics.append(
                     f"{stem}: decision_migration_v1 manifest carries a forbidden edge CSV")
                 continue
+            edges_path = None
         else:
-            bundle = _from_legacy(stem, book_id, edges_path, reviews, diagnostics)
+            edges_path = declared_edges_component(root, stem, declared, diagnostics)
+            if edges_path is None:
+                continue
+
+        bundle = _from_manifest(stem, book_id, manifest_path, edges_path, reviews, diagnostics)
         if bundle is not None:
             bundles.append(bundle)
 
     return bundles, diagnostics
+
+
+def declared_edges_component(root: Path, stem: str, manifest: dict,
+                             diagnostics: list[str]) -> Path | None:
+    """The edge CSV a manifested bundle declares, or None with a diagnostic.
+
+    WORK_QUEUES 1.25: for a manifested Approved bundle the manifest is the
+    authority for its own components. Locating a different file by filename stem
+    lets a derived convention override the artifact's explicit provenance, and
+    the two only agreed while every bundle happened to ship its own CSV. The
+    Bards r03 bundle deliberately re-packages the r01 component, which is the
+    case that separates them.
+
+    The checksum is verified here rather than deferred to verification, because
+    a bundle whose declared component does not match its declared hash must not
+    reach the queue as ready at all.
+    """
+    components = manifest.get("components")
+    if not isinstance(components, list):
+        diagnostics.append(f"{stem}: manifest declares no components list")
+        return None
+
+    edges = [c for c in components if isinstance(c, dict) and c.get("kind") == "edges"]
+    if len(edges) != 1:
+        diagnostics.append(
+            f"{stem}: manifest declares {len(edges)} components of kind 'edges'; "
+            "a packet update declares exactly one")
+        return None
+
+    relative = str(edges[0].get("path") or "")
+    if not relative:
+        diagnostics.append(f"{stem}: declared edges component names no path")
+        return None
+
+    root = Path(root).resolve()
+    target = (root / relative).resolve()
+    # A declared path is repository-relative. One that escapes the root would
+    # make the queue depend on files no other role can see or check.
+    if not target.is_relative_to(root):
+        diagnostics.append(
+            f"{stem}: declared edges component {relative!r} resolves outside the repository")
+        return None
+    if not target.is_file():
+        diagnostics.append(
+            f"{stem}: declared edges component {relative!r} does not exist")
+        return None
+
+    declared = str(edges[0].get("checksum") or "")
+    actual = checksum_file(target)
+    if declared != actual:
+        diagnostics.append(
+            f"{stem}: declared edges component {relative!r} records {declared or 'no checksum'} "
+            f"but hashes to {actual}")
+        return None
+    return target
 
 
 def _from_manifest(stem, book_id, manifest_path, edges_path, reviews, diagnostics) -> Bundle | None:
@@ -224,7 +283,29 @@ def superseded_gup_ids(root: Path, ruleset_id: str, book_id: str) -> set[str]:
     return superseded
 
 
-def withdrawn_review_ids(root: Path, ruleset_id: str, book_id: str) -> set[str]:
+def superseded_bundle_ids(root: Path, ruleset_id: str, book_id: str) -> set[str]:
+    """Approved bundle ids that a later bundle names in `supersedes`.
+
+    WORK_QUEUES 3 and 4 make leaf-ness a property of the artifact kind itself,
+    not only of the GUP it packages. A repackaging successor keeps the same GUP
+    and may keep an approved Review lineage leaf, so neither
+    `superseded_gup_ids` nor `withdrawn_review_ids` retires its predecessor --
+    the bards r03/r04 pair is exactly that shape, and both were offered as ready
+    until this read the bundles' own declaration.
+    """
+    approved_dir = root / "books" / ruleset_id / book_id / "artifacts" / "approved"
+    if not approved_dir.exists():
+        return set()
+    superseded = set()
+    for path in sorted(approved_dir.glob("APPROVED-*.yaml")):
+        data = load_yaml(path) or {}
+        if data.get("supersedes"):
+            superseded.add(str(data["supersedes"]))
+    return superseded
+
+
+def withdrawn_review_ids(root: Path, ruleset_id: str, book_id: str,
+                         admission: Admission | None = None) -> set[str]:
     """Review ids whose lineage leaf is not approved.
 
     An Approved bundle pins one exact Review, and only the active leaf of that
@@ -244,7 +325,24 @@ def withdrawn_review_ids(root: Path, ruleset_id: str, book_id: str) -> set[str]:
 
     documents, successor = {}, {}
     for path in sorted(review_dir.glob("REV-*.yaml")):
-        data = load_yaml(path) or {}
+        # DEC-2026-0065: an unreadable Review is admitted only where an active
+        # approved Decision pins it as historical evidence, and even then only
+        # its bytes are omitted -- no content is recovered. Anything else is a
+        # fatal queue-integrity diagnostic, because a Review this walk cannot
+        # read may be the one that withdraws a bundle it is about to call ready.
+        try:
+            data = load_yaml(path) or {}
+        except (OSError, UnicodeError, yaml.YAMLError) as exc:
+            if admission is None:
+                raise
+            authority = admission.permits(path)
+            if authority is None:
+                admission.note_fatal(
+                    path, f"{path.name} is not parseable YAML and no active approved "
+                          f"Decision admits it as historical evidence: {exc}")
+            else:
+                admission.note_historical(path, authority)
+            continue
         review_id = str(data.get("id") or path.stem)
         documents[review_id] = data
         if data.get("supersedes"):
@@ -350,6 +448,12 @@ def ready_queue(root: Path, ruleset_id: str, book_ids: list[str]) -> dict:
     satisfied once its successor ships, so a single retired bundle with drifted
     provenance would block every future integration of the whole ruleset.
     """
+    # DEC-2026-0065: admission is resolved before any Review directory is walked,
+    # so the queue knows which unreadable bytes an active Decision pins before it
+    # meets one. With no such Decision `permitted` is empty and every parse
+    # failure below is fatal, which is the required fail-closed default.
+    admission = load_admission(root, ruleset_id)
+
     consumed = integrated_bundle_ids(root, ruleset_id)
     rejected = rejected_bundle_ids(root, ruleset_id)
     ready, done, superseded, refused, diagnostics = [], [], [], [], []
@@ -357,8 +461,20 @@ def ready_queue(root: Path, ruleset_id: str, book_ids: list[str]) -> dict:
         found, book_diagnostics = discover(root, ruleset_id, book_id)
         diagnostics.extend(book_diagnostics)
         retired = superseded_gup_ids(root, ruleset_id, book_id)
-        stale_reviews = withdrawn_review_ids(root, ruleset_id, book_id)
+        repackaged = superseded_bundle_ids(root, ruleset_id, book_id)
+        stale_reviews = withdrawn_review_ids(root, ruleset_id, book_id, admission)
         for bundle in found:
+            # DEC-2026-0070: a validated direct-predecessor record names exactly
+            # one historical bundle. It is withheld from every bucket, not just
+            # from ready: its approving Review is the unreadable file, so there
+            # is no readable approval to classify it against, and letting it fall
+            # through to "not integrated, not rejected" would offer it as ready.
+            authority = (bundle.manifest_path is not None
+                         and admission.excludes_bundle(bundle.manifest_path))
+            if authority:
+                admission.note_historical_bundle(
+                    bundle.bundle_id, bundle.manifest_path, authority)
+                continue
             if bundle.bundle_id in consumed:
                 done.append((bundle, consumed[bundle.bundle_id]))
             elif bundle.bundle_id in rejected:
@@ -367,11 +483,25 @@ def ready_queue(root: Path, ruleset_id: str, book_ids: list[str]) -> dict:
                 # remediation -- so classifying supersession first would hide the
                 # one signal the Reviewer still has to act on.
                 refused.append((bundle, rejected[bundle.bundle_id]))
+            elif bundle.bundle_id in repackaged:
+                # A repackaging successor shares its predecessor's GUP and may
+                # leave its Review lineage approved, so this is the only signal
+                # that the earlier bundle is history.
+                superseded.append(bundle)
             elif bundle.gup_id in retired:
                 superseded.append(bundle)
             elif bundle.review_id in stale_reviews:
                 superseded.append(bundle)
             else:
                 ready.append(bundle)
+
+    # A fatal queue-integrity failure means no reported bundle is trustworthy,
+    # not that this particular one is bad. DEC-2026-0065: return no ready bundles
+    # and let the caller refuse the transaction. History buckets stay visible so
+    # the failure is diagnosable without a second, unguarded run.
+    if admission.fails_closed:
+        ready = []
     return {"ready": ready, "integrated": done, "superseded": superseded,
-            "rejected": refused, "diagnostics": diagnostics}
+            "rejected": refused, "diagnostics": diagnostics,
+            "queue_integrity": admission.fatal,
+            "informational": admission.informational}

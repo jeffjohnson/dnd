@@ -67,6 +67,12 @@ def clone(target: Path) -> Path:
         f"rulesets/{RULESET_ID}/profiles",
         f"rulesets/{RULESET_ID}/governance",
         f"rulesets/{RULESET_ID}/escalations",
+        # DEC-2026-0068's repair record pins an Integration rejection report, so
+        # a clone without `reports` cannot re-derive it and admission fails
+        # closed, emptying the queue for a reason unrelated to migrations.
+        # `manifests` is deliberately still excluded: this fixture needs the
+        # migration to read as unintegrated, and a manifest records consumption.
+        f"rulesets/{RULESET_ID}/reports",
         f"books/{RULESET_ID}/phb/artifacts",
         "build/reports",
     ]:
@@ -169,7 +175,13 @@ class TestDiscovery(unittest.TestCase):
 
             found, diagnostics = discover(root, RULESET_ID, "phb")
             self.assertNotIn(BUNDLE_ID, {b.bundle_id for b in found})
-            self.assertTrue(any("no .edges.csv component" in d for d in diagnostics))
+            # WORK_QUEUES 1.25 moved the check from "is there a CSV named after
+            # this manifest" to "does this manifest declare its component". Rule
+            # 32 is unchanged in substance: a packet manifest that cannot supply
+            # an edge component is a diagnostic and produces no bundle.
+            self.assertTrue(
+                any(BUNDLE_ID in d and "kind 'edges'" in d for d in diagnostics),
+                f"expected a declared-component diagnostic, got {diagnostics}")
 
 
 class TestPlanParsing(unittest.TestCase):

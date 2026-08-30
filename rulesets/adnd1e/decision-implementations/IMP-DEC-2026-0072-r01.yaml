@@ -1,0 +1,133 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0072-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0072
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0072.yaml
+  checksum: sha256:f20f080c28f0fddaf66296887ffe86223931e01738dcbd46f881344ad2cbae69
+implementation_files:
+- path: tooling/common/validate_artifact.py
+  checksum: sha256:c13f3e8a5321ca8a0b4f32d1da5c42a714f446fe21bb94b899abe2bb784538e8
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:c5d3a034e44fcfd68265d0acde73e6d40fba8e94ff8282287e4927ff7827be38
+- path: tooling/common/tests/test_validate_artifact.py
+  checksum: sha256:fa1e230569ad3c47ff630775517f319e3ae51b14941a9abd511df6f07c709681
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:83336a6af25899780154a869deba7fff96314b9a4210b1259630a34e4aaeb069
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:76691a7f9a1fc1025ddcd28fb5e240b286a4d865a971ff79f7d5771ee4c65398
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0072.yaml
+  checksum: sha256:f20f080c28f0fddaf66296887ffe86223931e01738dcbd46f881344ad2cbae69
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-29T19.28.35.054Z.yaml
+  checksum: sha256:889396ee484efafc0a0316cf2bae2ce74c9723ce2fd25b9678b2d6b0727bd8f7
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'REV-IMP-DEC-2026-0065-r01-r01 still hashes to the pinned value and still fails at the recorded
+    fragment; r02 parses, validates against decision-implementation-review.schema.json, directly supersedes
+    r01, and pins the same reviewed implementation IMP-DEC-2026-0065-r01 under the same DEC-2026-0065.
+    Every one of those is re-derived from the files rather than taken from the record. The scanner reports
+    one informational implementation_review_unreadable_predecessor_repaired for r01 and no parse error
+    for it, and the common schema sweep no longer names it. These unit tests ran: Ran 31 tests in 20.750s
+    OK.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'Fourteen denial cases: no record; an unapproved Decision; a stale checksum on any one of
+    the four pinned artifacts, driven field-by-field; a predecessor that parses; a parse fragment the
+    parser does not produce; a broken supersedes link; a successor whose disposition is not revision_required;
+    a successor reviewing a different report; a successor under a different Decision; a schema-invalid
+    successor; a wrong record disposition; and an empty reason. In every case r01 keeps its ordinary yaml_unreadable
+    error. The last two are the ones an unreadable predecessor cannot itself contradict, which is why
+    they are checked against the record rather than against the file. Another unreadable implementation
+    Review elsewhere is untouched. These unit tests ran: Ran 31 tests in 20.750s OK.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'tooling/common/validate_artifact.py accepts a valid staged mapping against its supplied schema,
+    including the quoted and block-scalar forms of the value that keeps breaking, and refuses an unquoted
+    colon-space, continuation prose, a list or string or empty root, a schema failure, a missing staged
+    file, a missing schema, and an unresolved schema reference. It reports every schema failure rather
+    than the first. It writes nothing: the destination listing is unchanged after a refusal. And it is
+    target-only -- a test wraps Path.read_text and asserts every path it opens is the staged file or its
+    named schema, so no corpus, packet, or canonical read can creep in. Driven against the real artifacts
+    too: both files that forced DEC-2026-0068 and DEC-2026-0072 would have been refused by this command
+    before publication. These unit tests ran: Ran 22 tests in 0.215s OK.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'The command takes --schema as a required argument and exits non-zero when it is omitted,
+    so authority is never inferred from a filename: a name is a claim about what an artifact is, and the
+    caller knows what it is publishing. Role instructions are Architect-owned under this Decision''s exact_diff_ownership
+    at sequence step 1 and were updated there; Builder''s own emitter now runs this preflight against
+    the staged bytes before the create-only destination check, which is the order the ruling requires.
+    These unit tests ran: Ran 22 tests in 0.215s OK.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: contracts/WORK_QUEUES.md declares Version 1.27 and contracts/ARTIFACT_LIFECYCLE.md declares
+    Version 1.21, both read from the files. Both are Architect-owned at sequence step 1 and were not modified
+    by this implementation.
+- acceptance_test_index: 6
+  result: passed
+  evidence: 'This report pins DEC-2026-0072 by checksum, reports acceptance tests 1 through 5 as passed
+    against current evidence, and records passing focused runs of the implementation-Review repair cases
+    (31 tests) and the preflight (22 tests) alongside both full suites: tooling/common Ran 1078 tests
+    in 316.594s OK, and tooling/builder Ran 684 tests in 168.301s OK (skipped=38).'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Both halves are implemented and the applicable suite is green at 1078 tests, the first time
+    it has been since the malformed artifacts began appearing.
+
+
+    The record is the third exception across two shapes, and it is kept separate from DEC-2026-0068''s
+    rather than generalised because the predicates differ in substance. What makes a packet Review''s
+    successor trustworthy is its bundle and row partition; what makes an implementation Review''s successor
+    trustworthy is that it pins the same report and the same Decision its predecessor was published to
+    review. A rule loose enough to cover both would check neither, and the two things an unreadable predecessor
+    cannot contradict -- which report, which Decision -- are exactly the two the record has to assert.
+
+
+    The preflight is the part that matters beyond this Decision. Six malformed artifacts reached durable
+    publication in three days and each needed its own checksummed exception, because a published artifact
+    cannot be edited or withdrawn. All six failed the same way: hand-assembled text where a `: ` inside
+    a value or a line of continuation prose silently changes the document''s shape. Checking the staged
+    bytes costs milliseconds; publishing them has cost three Architect Decisions. Both files that forced
+    DEC-2026-0068 and DEC-2026-0072 are used as fixtures here and both would have been refused.
+
+
+    Two scope notes. The command is target-only by construction and by test: a case wraps Path.read_text
+    and asserts nothing outside the staged file and its named schema is opened, because a preflight that
+    reads the repository would make every publication depend on the repository being healthy -- the coupling
+    that turned one bad Review into five broken suites last week. And it refuses to guess a schema from
+    a filename; the caller names it. Role instructions and both contracts are Architect-owned at step
+    1 and I did not touch them; acceptance test 5 verifies their versions rather than setting them.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0072-r01.validation.json
+validation_report_checksum: sha256:3c74cad68f7b868a89f8d4c07de7348776df8c9ecdb8d88012feced8ddd17fc3
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 1078 tests in 316.594s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 684 tests in 168.301s OK (skipped=38)
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.ImplementationReviewRepairCase
+      test_scan_agent_queues.LiveImplementationReviewRepairCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 31 tests in 20.750s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_validate_artifact'
+    exit_code: 0
+    result: passed
+    summary: Ran 22 tests in 0.215s OK

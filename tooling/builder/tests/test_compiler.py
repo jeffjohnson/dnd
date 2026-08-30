@@ -1624,8 +1624,28 @@ class ReviewerRejectedNodeCase(CompilerCase):
 
     NODE = "rule_fixture_rejected_node"
 
-    def compile_with_review(self, node_disposition, row_disposition):
+    def compile_with_review(self, node_disposition, row_disposition, *,
+                            corrections=None, second_row_targets_node=False):
         from adnd1e_builder.review import ReviewDirectives
+
+        edges = [dict(BASE_EDGE, ref="T1", target_id=self.NODE,
+                      target_label="Fixture Rejected Node")]
+        rows = [{"ref": "T1", "disposition": row_disposition, "rationale": "fixture"}]
+        if corrections:
+            rows[0]["exact_corrections"] = dict(corrections)
+        if second_row_targets_node:
+            # Declared as depending on nothing; the correction is what makes it
+            # depend on the proposal.
+            edges.append(dict(BASE_EDGE, ref="T2", target_id="cbt_tohit",
+                              target_label="To-Hit Roll"))
+            rows.append({
+                "ref": "T2",
+                "disposition": "approved_with_revision",
+                "rationale": "fixture",
+                "exact_corrections": {
+                    "target_id": self.NODE, "target_label": "Fixture Rejected Node",
+                },
+            })
 
         document = dict(BASE_ENVELOPE)
         document.update(
@@ -1633,17 +1653,14 @@ class ReviewerRejectedNodeCase(CompilerCase):
                 "proposed_id": self.NODE, "proposed_label": "Fixture Rejected Node",
                 "why_needed": "The packet names it.", "edges_depending_on_it": ["T1"],
             }],
-            candidate_edges=[dict(BASE_EDGE, ref="T1", target_id=self.NODE,
-                                  target_label="Fixture Rejected Node")],
+            candidate_edges=edges,
         )
         review = {
             "id": "REV-GUP-PKT-TEST-r01-r01",
             "packet_id": document["packet_id"],
             "reviewed_gup": {"id": "GUP-PKT-TEST-r01"},
             "overall_disposition": "revision_required",
-            "row_decisions": [
-                {"ref": "T1", "disposition": row_disposition, "rationale": "fixture"}
-            ],
+            "row_decisions": rows,
             "node_registry_decisions": [
                 {"proposed_id": self.NODE, "disposition": node_disposition}
             ],
@@ -1691,6 +1708,48 @@ class ReviewerRejectedNodeCase(CompilerCase):
             if f.rule == "reviewer_rejected_node_still_needed"
         )
         self.assertIn("T1", detail)
+
+    def test_a_repointed_row_no_longer_depends_on_the_rejected_node(self):
+        """The Druid case: the declaration is stale, the endpoint is not.
+
+        `edges_depending_on_it` is written in the GUR before any Review runs. A
+        correction that repoints the row somewhere else leaves that list saying
+        the row still needs the proposal, and reading it kept a node alive that
+        nothing referenced -- which is what blocked
+        GUP-PKT-PHB-054-064-druid-spells-r03 after DEC-2026-0024 moved the rows
+        onto `rule_greater_mistletoe`.
+        """
+        result = self.compile_with_review(
+            "rejected", "approved_with_revision",
+            corrections={"target_id": "rule_somewhere_else",
+                         "target_label": "Somewhere Else"},
+        )
+        self.assertNotIn(self.NODE, self.proposed(result))
+        self.assertNotIn(
+            "reviewer_rejected_node_still_needed", self.by_severity(result, "error")
+        )
+        self.assertIn("reviewer_rejected_node_dropped", self.by_severity(result, "info"))
+
+    def test_a_row_repointed_onto_the_rejected_node_is_still_an_error(self):
+        """The other direction, which the declaration could not catch at all.
+
+        Nothing in the GUR says this row depends on the proposal; the correction
+        made it depend on it. Reading endpoints sees that, and reading the
+        declaration never would have.
+        """
+        result = self.compile_with_review(
+            "rejected", "approved_with_revision",
+            corrections={"target_id": "cbt_tohit", "target_label": "To-Hit Roll"},
+            second_row_targets_node=True,
+        )
+        self.assertIn(
+            "reviewer_rejected_node_still_needed", self.by_severity(result, "error")
+        )
+        detail = next(
+            f.detail for f in result.findings
+            if f.rule == "reviewer_rejected_node_still_needed"
+        )
+        self.assertIn("T2", detail)
 
     def test_an_approved_node_survives(self):
         result = self.compile_with_review("approved", "approved")
@@ -1940,14 +1999,24 @@ class LivePsionicsBlockedCase(CompilerCase):
             self.assertIn(endpoint, blocked, endpoint)
 
     def test_no_rejected_endpoint_reaches_the_integration_input(self):
-        """The guarantee the Integrator checks: additions resolve or are held."""
+        """The guarantee the Integrator checks: additions resolve or are held.
+
+        Scoped to endpoints the registry still lacks, exactly as the case above
+        is. INT-20260826-001 integrated the magic-user packets that mint eight
+        of these nine identities, and once an origin packet lands its endpoint
+        resolves and belongs in `additions` -- that is the cross-packet rule
+        working, not a leak. Judging today's compile against the registry of the
+        day INT-20260814-003 was written would fail on the dependency being
+        satisfied, which is the one outcome it must never punish.
+        """
         result = self.result()
         integrable = {
             node
             for row in result.additions
             for node in (row["source_id"], row["target_id"])
         }
-        self.assertEqual(integrable & set(self.REJECTED), set())
+        unresolved = {node for node in self.REJECTED if node not in self.registry}
+        self.assertEqual(integrable & unresolved, set())
 
     def test_the_blocked_set_is_a_small_remainder_of_the_packet(self):
         """Only a remainder blocks the batch; the bulk of the packet is safe.

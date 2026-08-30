@@ -1,6 +1,6 @@
 # Agent Work Queue Contract
 
-**Version 1.24.**
+**Version 1.27.**
 
 ## Purpose
 
@@ -118,6 +118,11 @@ paths and checksums are provenance and must remain valid.
     Neither an Integration manifest nor an Integration Rejection records a
     standalone pass. A Review handoff with `readiness: blocked` produces only a
     blocked item for its named role; it never contributes to ReadyCount.
+23. Before creating any durable YAML artifact, its publisher validates the exact
+    staged bytes with the shared target-only YAML and schema preflight. A parse
+    or schema failure prevents publication; it is never repaired by editing a
+    published path. The preflight reads the staged artifact and selected schemas,
+    not the artifact corpus or unrelated source packets.
 
 ## Versioned Contract-Content Acceptance
 
@@ -654,6 +659,40 @@ Builder and prevents a duplicate Decision job. No Approved bundle or Integrator
 handoff is created because this lineage changes no canonical graph or registry
 state.
 
+### Unreadable decision-implementation Review history
+
+An active approved Architect Decision may classify one exact unreadable
+Decision Implementation Review as historical only through a validated
+`decision_implementation_review_unreadable_predecessor_repairs` record. The
+record pins the unreadable Review's ID, path, checksum, and parser-failure
+fragment; a schema-valid direct successor Review; the reviewed implementation;
+and the governing Decision. The scanner validates the successor checksum,
+schema, direct `supersedes` link, disposition, reviewed implementation, and
+Decision provenance before reporting the unreadable file as one informational
+historical finding. It does not deserialize or recover the unreadable Review.
+
+A missing, stale, malformed, parseable, checksum-mismatched, wrong-link, or
+wrong-provenance record is invalid and leaves the ordinary fatal YAML diagnostic
+in force. This record classifies only its named immutable predecessor. It does
+not complete a Decision, consume a report, create a Reviewer job, or exempt any
+other unreadable artifact.
+
+### YAML publication preflight
+
+Every role stages a YAML artifact outside its durable destination, then runs:
+
+```text
+python tooling/common/validate_artifact.py --path <staged-yaml> --schema <applicable-schema>
+```
+
+The command parses the exact staged UTF-8 bytes as a YAML mapping and validates
+them against the named schema using the repository reference registry. It emits
+concise diagnostics and exits nonzero on a parse, mapping, schema, or reference
+failure. It does not scan the repository, source packets, canonical graph, or
+other artifacts. A successful preflight is followed by the existing create-only
+preflight and durable publication; a publisher never writes a final artifact in
+order to find out whether its YAML is valid.
+
 ## Role Queues
 
 ### Analyst
@@ -767,6 +806,49 @@ whose bundle ID is not named by any Integration manifest.
 
 An Approved bundle consists of one manifest plus its declared, checksummed
 components. Components never count as separate jobs.
+
+### Manifest component authority
+
+For a manifested Approved bundle, the manifest's `components` entries are the
+only authority for component discovery. A packet-update manifest declares
+exactly one `edges` component; the Integrator resolves that declared repository-
+relative path and validates its declared checksum. The component filename need
+not share the manifest's stem. A colocated stem-named CSV that the manifest does
+not declare is not an inferred component of that manifest.
+
+Filename-stem component discovery remains a legacy-only fallback for an
+Approved bundle that has no manifest. Direct decision-migration manifests retain
+their declared `decision_migration` and `validation` components and must not
+carry an edge CSV.
+
+An active, checksummed Architect unreadable-Review repair record may name one
+`historical_bundle` whose approving Review is the record's exact unreadable
+Review. After independently validating the complete record, the Integrator
+reports that exact manifest as historical unadmitted evidence and excludes it
+from ready-bundle discovery. This does not make the Review or bundle valid,
+does not infer a broader exclusion, and does not suppress any bundle if the
+record, manifest identity, manifest checksum, or approving-Review identity
+fails validation.
+
+### Unreadable-review repair continuation
+
+A `review_direct_predecessor_repairs` record pins the immutable direct
+successor that establishes its unreadable predecessor as historical. Its field
+name `active_successor_review` means that direct successor for record
+validation; it does not require that immutable Review to remain the current
+leaf forever. A later ordinary Review successor may supersede that direct
+successor without reopening the unreadable predecessor only when the pinned
+direct successor, its checksum, its direct `supersedes` link, and the complete
+repair record remain valid. The later Review and its Approved bundle are
+evaluated solely through ordinary same-lineage, schema, provenance, and
+handoff rules.
+
+An Architect Decision that says a named Review or Approved bundle is eligible
+for ordinary Integrator verification must require the current Review and bundle
+handoffs to be `next_role: integrator` and `readiness: ready`. A historical
+direct-predecessor record cannot require another handoff for a later ordinary
+leaf. A malformed, stale, or altered pinned direct successor invalidates the
+repair record and restores the ordinary fail-closed unreadable-Review outcome.
 
 New packet-update Approved bundles must use:
 
@@ -985,8 +1067,41 @@ Queue tooling must prove that:
     decision-migration leaf informational history; each legal disposition
     requires its exact evidence, and a missing or invalid record leaves an
     otherwise stale migration as the normal Builder reissue diagnostic.
+52. a manifested packet-update bundle resolves its one edge component from the
+    declared repository-relative manifest path and checksum rather than its
+    filename stem; manifestless legacy bundles retain their reported stem-based
+    inference, and direct decision-migration manifests retain their no-edge-CSV
+    model.
+53. a validated exact unreadable-Review repair record excludes only its pinned
+    historical bundle whose manifest still names the pinned unreadable approving
+    Review; the record's named active successor bundle remains eligible for
+    ordinary verification, and a missing or invalid record suppresses nothing.
+54. a valid direct-unreadable-predecessor repair record remains historical
+    evidence after a later same-lineage Review successor, provided the pinned
+    direct successor and complete record are unchanged; the later leaf and its
+    Approved bundle independently satisfy ordinary Integrator-ready handoffs.
+55. an unreadable Decision Implementation Review is informational history only
+    through a validated, checksummed direct-successor record; every other
+    unreadable implementation Review remains fatal.
+56. each durable YAML publication is parsed and schema-validated from exact
+    staged bytes before its create-only final write; that preflight is
+    target-only and does not require a corpus scan.
 
 ## Version History
+
+- **1.27 - 2026-08-29:** Added exact repair-record handling for an unreadable
+  Decision Implementation Review and required target-only staged YAML/schema
+  preflight for every durable YAML publication.
+
+- **1.26 - 2026-08-29:** Clarified that a checksummed direct unreadable-Review
+  repair record preserves its historical direct link after a later ordinary
+  Review successor, and prohibited Decisions from pinning a handoff that
+  contradicts the ordinary Integrator lifecycle they authorize.
+
+- **1.25 - 2026-08-28:** Made manifest-declared components authoritative for
+  manifested Approved bundles while retaining filename inference only for
+  manifestless legacy bundles; defined exact historical-bundle exclusion for a
+  validated unreadable-Review repair record.
 
 - **1.24 - 2026-08-26:** Established Review-contract 1.3: standalone
   preflights are Reviewer approval evidence, not Integrator artifacts; a

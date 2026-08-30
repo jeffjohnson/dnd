@@ -537,14 +537,31 @@ class Compiler:
             if (ruling := directives.rows.get(edge.get("ref"))) is None
             or ruling.disposition != "rejected"
         }
+        def endpoints(edge: dict) -> tuple[str, str]:
+            """This row's endpoints as they will be emitted, corrections applied."""
+            ruling = directives.rows.get(edge.get("ref"))
+            corrections = ruling.corrections if ruling is not None else {}
+            return (
+                str(corrections.get("source_id", edge.get("source_id")) or ""),
+                str(corrections.get("target_id", edge.get("target_id")) or ""),
+            )
+
         kept = []
         for addition in result.node_additions:
             proposed_id = addition["proposed_id"]
             if proposed_id not in rejected:
                 kept.append(addition)
                 continue
+            # The GUR's `edges_depending_on_it` is a claim made before any Review
+            # ran. Reading it here kept a proposal alive for rows a correction had
+            # already repointed somewhere else.
             depending = sorted(
-                ref for ref in addition.get("edges_depending_on_it") or [] if ref in surviving
+                {
+                    str(edge.get("ref"))
+                    for edge in candidate_edges
+                    if edge.get("ref") in surviving
+                    and proposed_id in endpoints(edge)
+                }
             )
             if depending:
                 kept.append(addition)
@@ -2120,6 +2137,16 @@ class Compiler:
             # DEC-2026-0062. Stated but not executable: the Reviewer asked for a
             # field value the compiler will not guess at. Reported per row so the
             # Reviewer sees which ruling to restate, not merely that one exists.
+            for entry in directives.malformed_policies:
+                result.findings.append(
+                    Finding(
+                        "review_policy_refs_not_a_list",
+                        "error",
+                        f"review {directives.review_id} states a bulk ruling whose "
+                        f"{entry}. The refs it covers cannot be read from prose, and "
+                        f"the Builder will not infer them; restate them as a list.",
+                    )
+                )
             for entry in directives.unreadable_corrections:
                 result.findings.append(
                     Finding(

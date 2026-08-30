@@ -1,0 +1,113 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-PHB-117-119-bards-r03-r04
+artifact_kind: packet_update_review
+status: revision_required
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+revision: 4
+supersedes: REV-GUP-PKT-PHB-117-119-bards-r03-r03
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Publish the successor Bards GUP using the r01-r01 source rulings plus this
+    active r04 correction set; r02 is structurally superseded and is not a
+    compiler input.
+  blocking_ids: []
+review_role: independent_reviewer
+review_date: '2026-08-26'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-PHB-117-119-bards-r03
+  path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-117-119-bards-r03.yaml
+  checksum: sha256:6d31ef63f36ba1c592eb8a78cfe25ccc35b28daef26969fb5a3240a2d35a7ea6
+  artifact_kind: packet_update
+  revision: 3
+  supersedes: GUP-PKT-PHB-117-119-bards-r02
+  validation_report:
+    path: build/reports/GUP-PKT-PHB-117-119-bards-r03.validation.json
+    checksum: sha256:a1177e5645bf41bdf86be3a3d9f96398ba87ba5ae625c7dc7e106b3138c12279
+    reported_errors: 0
+    reported_warnings: 0
+overall_disposition: revision_required
+approval_ready: false
+approved_bundle_emitted: null
+summary:
+  approved: 55
+  approved_with_revision: 2
+  rejected: 0
+  architect_escalations: 0
+  node_additions_approved: 11
+completeness_statement: >-
+  r04 preserves r01-r01's 55 approved rows and resolves the two executable
+  revisions. It replaces r03's inaccurate statement that r02 was a readable
+  compiler input. r02 contained no source judgment to preserve and must be
+  excluded from the Builder review-input list.
+builder_review_inputs:
+  - id: REV-GUP-PKT-PHB-117-119-bards-r03-r01
+    path: books/adnd1e/phb/artifacts/reviews/REV-GUP-PKT-PHB-117-119-bards-r03-r01.yaml
+    checksum: sha256:a87d7d252ddf1e1946f1314ae5f2b4993fbf519a5152e5e199c48fba3d1cf99a
+    purpose: preserve the 55 unchanged source judgments
+  - id: REV-GUP-PKT-PHB-117-119-bards-r03-r04
+    purpose: apply the two active exact correction mappings
+excluded_historical_review:
+  id: REV-GUP-PKT-PHB-117-119-bards-r03-r02
+  checksum: sha256:3dbd05a0e373ac88889bed59238a4f743ac6e87b0feeb1b1547bc722d4ebbccd
+  reason: Its inherited_edge_decisions summary has no compiler-readable preserved refs; it is superseded, and r04 restates its executable directives.
+decision_and_integration_provenance:
+  decision: {id: DEC-2026-0037, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0037.yaml, checksum: sha256:e406ae4c63445986adfc02d8d3630c80878bb6242fa33531febfa5242f383ba1}
+  integration: {id: INT-20260817-001, path: rulesets/adnd1e/manifests/INT-20260817-001.json, checksum: sha256:c390b2b176d21b0060c2f7e60c2411d83c0ee009cdcf66eb6475c0e1810c7dbf, bundle_id: APPROVED-GUP-MIG-DEC-2026-0037-r01-r01, gup_id: GUP-MIG-DEC-2026-0037-r01}
+edge_decisions:
+  - ref: M028
+    disposition: approved_with_revision
+    source_locus: PHB p118 BARDS
+    rationale: The source requires a mundane stringed instrument; the magic-item identity cannot serve as this source.
+    exact_corrections: {source_id: item_stringed_instrument, source_label: Stringed Instrument, aspect: carrying requirement}
+    correction_citations: [{book: PHB, page: '118', section: BARDS}]
+  - ref: M048
+    disposition: approved_with_revision
+    source_locus: PHB p119 BARDS
+    rationale: DEC-2026-0037 directs the integrated canonical Pipes identity while PHB p119 remains this row's source citation.
+    exact_corrections: {target_id: item_pipes_of_sewers, target_label: Pipes of the Sewers}
+    correction_citations: [{book: PHB, page: '119', section: BARDS}]
+node_registry_decisions:
+  - proposed_id: item_stringed_instrument
+    submitted_label: Stringed Instrument
+    kind: item
+    disposition: approved
+    basis: The claimed PHB Bards text names the distinct mundane prerequisite; it has no canonical duplicate.
+    edges_depending_on_it: [M028]
+  - existing_id: item_pipes_of_sewers
+    existing_label: Pipes of the Sewers
+    disposition: reuse_existing_identity
+    basis: Integrated DEC-2026-0037 identity; do not propose a Pipes node or retain the singular ID or label.
+required_gup_revisions:
+  - Compile from the two Builder review inputs above, omitting the excluded historical r02.
+  - Publish the successor Bards GUP against the current integrated canonical and registry checksums.
+  - Apply M028 and M048 exactly from the row-local exact_corrections mappings.
+  - Add item_stringed_instrument only; reuse item_pipes_of_sewers and propose no Pipes registry node.
+  - Preserve all remaining r03 rows and node rulings from r03-r01.
+  - Retain PHB p119 BARDS as M048 provenance and do not transfer DMG defining-locus provenance to the PHB assertion.
+architectural_escalations: []
+blocking_findings: []
+reviewer_checklist:
+  source_support: passed
+  citation_pages_rederived_from_packet_markers: passed
+  identity_and_neighborhood: passed_after_DEC_2026_0037
+  edge_semantics: passed_after_M028_correction
+  polarity: passed_no_heuristic_or_unset
+  general_rule_inheritance: not_applicable
+  legal_dispositions_only: passed
+  canonical_files_modified: false
+  gup_files_modified: false
+independent_validation:
+  methods:
+    - Verified reviewed-GUP, validation-report, r01-r01, Decision, and integration-manifest checksums.
+    - Confirmed INT-20260817-001 consumed the approved direct-v1 migration and current state contains only item_pipes_of_sewers.
+    - Re-read PHB pp118-119 Bards loci and confirmed the M028 mundane-instrument and M048 identity corrections.
+    - Loaded the prescribed r01-r01 plus r04 compiler inputs and confirmed no unread, unknown, or unexecutable directive.
+    - Validated this successor against schemas/common/review.schema.json.
+  result: revision_required_for_builder_bards_successor

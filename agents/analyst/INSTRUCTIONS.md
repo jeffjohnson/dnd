@@ -199,6 +199,13 @@ Each candidate edge must include:
 
 ## Quality checks before handoff
 
+Before publishing a GUR or escalation YAML, stage the exact output outside its
+durable path and run `python tooling/common/validate_artifact.py --path
+<staged-yaml> --schema <applicable-schema>` before the create-only final-path
+preflight. Use the applicable GUR schema for a GUR and
+`schemas/common/artifact-envelope.schema.json` for an escalation. This is a
+target-only check; do not scan unrelated packets or artifacts.
+
 - Every source section was considered.
 - Every candidate edge passes the impact test.
 - Every edge has a citation.

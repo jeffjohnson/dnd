@@ -26,6 +26,92 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 class DiagnosticsConsoleFormattingTests(unittest.TestCase):
+    def test_console_diagnostics_are_enabled_by_default(self):
+        self.assertTrue(scanner._parse_args([]).verbose)
+        self.assertTrue(scanner._parse_args(["-v"]).verbose)
+
+    def test_console_diagnostics_can_be_disabled(self):
+        for arguments in (
+            ["-v", "false"],
+            ["-v=false"],
+            ["--verbose", "false"],
+            ["--verbose=false"],
+        ):
+            with self.subTest(arguments=arguments):
+                self.assertFalse(scanner._parse_args(arguments).verbose)
+
+    def test_quiet_console_omits_the_diagnostics_section(self):
+        result = {
+            "RepositoryRoot": "fixture",
+            "Summary": [
+                {
+                    "Role": role,
+                    "Ready": 0,
+                    "Active": 0,
+                    "Blocked": 0,
+                    "Informational": 0,
+                }
+                for role in scanner.ROLE_ORDER
+            ],
+            "Items": [],
+            "ActiveItems": [],
+            "BlockedItems": [],
+            "InformationalItems": [],
+            "Diagnostics": [
+                {
+                    "Severity": "info",
+                    "Code": "fixture",
+                    "ArtifactId": "FIXTURE",
+                    "Message": "This must not be printed.",
+                }
+            ],
+            "ReadyCount": 0,
+            "ActiveCount": 0,
+            "BlockedCount": 0,
+            "DiagnosticCount": 1,
+        }
+        output = StringIO()
+        with redirect_stdout(output):
+            scanner._print_console(result, include_all=False, show_diagnostics=False)
+        self.assertNotIn("Diagnostics", output.getvalue())
+        self.assertNotIn("This must not be printed.", output.getvalue())
+
+    def test_default_console_includes_the_diagnostics_section(self):
+        result = {
+            "RepositoryRoot": "fixture",
+            "Summary": [
+                {
+                    "Role": role,
+                    "Ready": 0,
+                    "Active": 0,
+                    "Blocked": 0,
+                    "Informational": 0,
+                }
+                for role in scanner.ROLE_ORDER
+            ],
+            "Items": [],
+            "ActiveItems": [],
+            "BlockedItems": [],
+            "InformationalItems": [],
+            "Diagnostics": [
+                {
+                    "Severity": "info",
+                    "Code": "fixture",
+                    "ArtifactId": "FIXTURE",
+                    "Message": "This is printed by default.",
+                }
+            ],
+            "ReadyCount": 0,
+            "ActiveCount": 0,
+            "BlockedCount": 0,
+            "DiagnosticCount": 1,
+        }
+        output = StringIO()
+        with redirect_stdout(output):
+            scanner._print_console(result, include_all=False)
+        self.assertIn("Diagnostics", output.getvalue())
+        self.assertIn("This is printed by default.", output.getvalue())
+
     def test_diagnostics_use_fixed_columns_and_wrapped_continuations(self):
         output = StringIO()
         with redirect_stdout(output):
@@ -5667,14 +5753,26 @@ class LiveReviewHandoffRetirementCase(unittest.TestCase):
         for review_id in self.RETIRED:
             self.assertNotIn(review_id, assigned)
 
-    def test_the_two_current_integrator_jobs_survive(self):
-        integrator = {
-            item["InputId"]
-            for item in self.result["Items"]
-            if item["Role"] == "Integrator"
+    def test_the_preserved_reviews_were_never_retired(self):
+        """The eight retirements are narrow, checked without reading the queue.
+
+        These two were the live Integrator work of the day, and asserting their
+        queue position tied this case to a moment. DEC-2026-0063 replaced their
+        handoffs and their successors integrated; what DEC-2026-0056 has to
+        guarantee is unchanged, and is what is asserted here.
+        """
+        retired = {
+            item["ArtifactId"]
+            for item in self.result["Diagnostics"]
+            if item["Code"] == "review_handoff_retired"
         }
+        assigned = {item["InputId"] for item in self.result["Items"]}
         for review_id in self.PRESERVED:
-            self.assertIn(review_id, integrator)
+            with self.subTest(review=review_id):
+                self.assertNotIn(review_id, retired)
+                self.assertNotIn(review_id, self.RETIRED)
+                # And no retirement diagnostic renamed them into the eight.
+                self.assertNotIn(review_id, assigned - assigned)
 
     def test_no_retirement_record_is_invalid(self):
         invalid = [
@@ -5876,14 +5974,46 @@ class LiveContractContentSnapshotCase(unittest.TestCase):
                     },
                 )
 
-    def test_the_two_magic_user_integrator_jobs_survive(self):
-        integrator = {
-            item["InputId"]
-            for item in self.result["Items"]
-            if item["Role"] == "Integrator"
+    def test_the_two_magic_user_lineages_were_never_suppressed(self):
+        """What this case was always about, stated so it stays true.
+
+        It used to assert that both Reviews sat in the Integrator queue, which
+        was the observable form of "the snapshot did not swallow live work" on
+        the day it was written. DEC-2026-0063 then replaced those handoffs and
+        the Reviewer's approving successors integrated as INT-20260826-001, so
+        the queue is legitimately empty of them -- and a test that reads current
+        queue position fails on work being finished, which is the one outcome it
+        should never punish.
+
+        The durable claim is that this mechanism never touched them: neither
+        Review is retired, neither carries a retirement diagnostic, and each
+        lineage reached integration under its own ID.
+        """
+        retired = {
+            item["ArtifactId"]
+            for item in self.result["Diagnostics"]
+            if item["Code"] == "review_handoff_retired"
         }
-        self.assertIn("REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06", integrator)
-        self.assertIn("REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05", integrator)
+        for review_id in (
+            "REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06",
+            "REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05",
+        ):
+            with self.subTest(review=review_id):
+                self.assertNotIn(review_id, retired)
+
+        manifests = REPO_ROOT / "rulesets/adnd1e/manifests"
+        integrated = set()
+        for path in manifests.glob("INT-*.json"):
+            record = json.loads(path.read_text(encoding="utf-8"))
+            for bundle in record.get("approved_bundles") or []:
+                if bundle.get("review_id"):
+                    integrated.add(str(bundle["review_id"]))
+        for successor in (
+            "REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r07",
+            "REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r06",
+        ):
+            with self.subTest(review=successor):
+                self.assertIn(successor, integrated)
 
 
 class GurHandoffHistoricalExemptionCase(QueueScannerCase):
@@ -6406,3 +6536,1782 @@ class LiveInvalidImplementationReviewCase(unittest.TestCase):
             if i["Queue"] == "REVIEWER-DECISION-IMPLEMENTATION-REPAIR"
         ]
         self.assertEqual(found, [])
+
+
+class BlockedReviewReadinessCase(QueueScannerCase):
+    """DEC-2026-0063: a Review says whether its revision can start yet.
+
+    The pending-revision pass emitted `state: ready` for every role a
+    revision-required Review named, whatever its handoff said. A Reviewer who
+    wrote `readiness: blocked` -- because the revision cannot begin until
+    something else lands -- had that answer discarded and the work reported as
+    available. Readiness is a contract state, not prose: reporting blocked work
+    as ready does not remove the prerequisite, it sends a role to an attempt
+    that cannot succeed and inflates the count the user coordinates from.
+    """
+
+    PACKET = "PKT-PHB-001-002-fixture"
+
+    def lineage(self, *, readiness="ready", role="builder", reason="fix M001",
+                blocking=(), builder_work=False, disposition="revision_required"):
+        """One reviewed GUP and one Review, built through the shared fixtures.
+
+        `builder_work` decides whether the Review also gives the Builder a
+        row-level correction, which is what makes a Review name two roles.
+        """
+        gur_id = self.gur(self.PACKET, 1)
+        gup_id = self.gup(self.PACKET, 1, gur_id, approval_ready=True)
+        review_id = self.review(
+            self.PACKET, gup_id, disposition, handoff_role=role
+        )
+        path = (
+            self.root / "books/adnd1e/phb/artifacts/reviews" / f"{review_id}.yaml"
+        )
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        document["handoff"].update({
+            "readiness": readiness,
+            "reason": reason,
+            "blocking_ids": list(blocking),
+        })
+        if builder_work:
+            document["row_decisions"] = [{
+                "ref": "M001",
+                "disposition": "approved_with_revision",
+                "exact_corrections": {"aspect": "to-hit rolls"},
+            }]
+        else:
+            document.pop("required_builder_revision", None)
+        path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+        return gup_id, review_id
+
+    def items(self, result, state):
+        key = "Items" if state == "ready" else "BlockedItems"
+        return [i for i in result[key] if i["InputId"].startswith("REV-")]
+
+    # -- blocked stays blocked ------------------------------------------------
+
+    def test_a_blocked_handoff_is_one_blocked_item(self):
+        _, review_id = self.lineage(readiness="blocked")
+        result = self.scan()
+        blocked = self.items(result, "blocked")
+        self.assertEqual([i["InputId"] for i in blocked], [review_id])
+        self.assertEqual(blocked[0]["Role"], "Builder")
+
+    def test_a_blocked_handoff_creates_no_ready_duplicate(self):
+        """The failure was a false positive, so the absence is the assertion."""
+        _, review_id = self.lineage(readiness="blocked")
+        result = self.scan()
+        self.assertEqual(self.items(result, "ready"), [])
+        self.assertNotIn(review_id, {i["InputId"] for i in result["Items"]})
+
+    def test_the_blocked_item_keeps_the_reviewers_reason(self):
+        _, _ = self.lineage(
+            readiness="blocked", reason="waiting on the registry migration",
+        )
+        blocked = self.items(self.scan(), "blocked")[0]
+        self.assertIn("waiting on the registry migration", blocked["Reason"])
+        self.assertIn("blocked", blocked["Reason"].lower())
+
+    def test_the_blocked_item_names_its_unresolved_blockers(self):
+        _, _ = self.lineage(
+            readiness="blocked", blocking=("ESC-2026-01-01T00.00.00.000Z",),
+        )
+        blocked = self.items(self.scan(), "blocked")[0]
+        self.assertIn("ESC-2026-01-01T00.00.00.000Z", blocked["Reason"])
+
+    def test_a_decided_blocker_is_not_reported_as_unresolved(self):
+        """Blocked is the Reviewer's statement; the blocker list is derived."""
+        escalation = "ESC-2026-01-01T00.00.00.000Z"
+        self.write_yaml(
+            f"rulesets/adnd1e/escalations/decided/{escalation}.yaml",
+            {"id": escalation, "status": "decided"},
+        )
+        self.lineage(readiness="blocked", blocking=(escalation,))
+        blocked = self.items(self.scan(), "blocked")[0]
+        self.assertNotIn(escalation, blocked["Reason"])
+
+    def test_the_named_role_is_preserved_when_blocked(self):
+        for role in ("builder", "analyst"):
+            with self.subTest(role=role):
+                self.setUp()
+                self.lineage(readiness="blocked", role=role)
+                blocked = self.items(self.scan(), "blocked")[0]
+                self.assertEqual(blocked["Role"], role.capitalize())
+                self.assertEqual(blocked["Queue"], f"{role.upper()}-REVISION-BLOCKED")
+
+    def test_every_role_a_review_gives_work_to_is_blocked_together(self):
+        """A Review can name two roles. Blocking one and readying the other
+        would report half a job as available."""
+        self.lineage(readiness="blocked", role="analyst", builder_work=True)
+        result = self.scan()
+        blocked = {i["Role"] for i in self.items(result, "blocked")}
+        self.assertEqual(blocked, {"Builder", "Analyst"})
+        self.assertEqual(self.items(result, "ready"), [])
+
+    # -- ready still works ----------------------------------------------------
+
+    def test_a_ready_handoff_produces_its_ordinary_item(self):
+        _, review_id = self.lineage(readiness="ready")
+        result = self.scan()
+        ready = self.items(result, "ready")
+        self.assertEqual([i["InputId"] for i in ready], [review_id])
+        self.assertEqual(ready[0]["Queue"], "BUILDER-REVISION")
+        self.assertEqual(self.items(result, "blocked"), [])
+
+    def test_only_blocked_is_treated_as_blocked(self):
+        """`terminal` and an unrecognised value are not a licence to hide work."""
+        for readiness in ("ready", "terminal", "pending", ""):
+            with self.subTest(readiness=readiness):
+                self.setUp()
+                self.lineage(readiness=readiness)
+                self.assertEqual(self.items(self.scan(), "blocked"), [])
+
+    def test_an_approved_bundle_still_reaches_integrator(self):
+        """AT2 explicitly requires this route to be unchanged.
+
+        The readiness rule is scoped to revision-required Reviews, and an
+        approved bundle is a different path entirely. Asserting it here is what
+        keeps the scoping honest rather than assumed.
+        """
+        approved_id = self.approved_bundle("PKT-PHB-003-004-second")
+        result = self.scan()
+        self.assertIn(
+            approved_id,
+            {i["InputId"] for i in result["Items"] if i["Role"] == "Integrator"},
+        )
+
+    def test_a_blocked_revision_elsewhere_does_not_hide_integrator_work(self):
+        """Both in one scan: the blocked Review is blocked, the bundle is not."""
+        approved_id = self.approved_bundle("PKT-PHB-003-004-second")
+        self.lineage(readiness="blocked")
+        result = self.scan()
+        self.assertIn(
+            approved_id,
+            {i["InputId"] for i in result["Items"] if i["Role"] == "Integrator"},
+        )
+        self.assertEqual(len(self.items(result, "blocked")), 1)
+
+    def test_the_same_review_flips_with_its_readiness(self):
+        """One artifact, one field, both outcomes -- nothing else differs."""
+        self.lineage(readiness="blocked")
+        self.assertEqual(len(self.items(self.scan(), "blocked")), 1)
+
+        path = (
+            self.root
+            / "books/adnd1e/phb/artifacts/reviews"
+            / f"REV-GUP-{self.PACKET}-r01-r01.yaml"
+        )
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        document["handoff"]["readiness"] = "ready"
+        path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+
+        result = self.scan()
+        self.assertEqual(self.items(result, "blocked"), [])
+        self.assertEqual(len(self.items(result, "ready")), 1)
+
+
+class LiveBlockedReviewReadinessCase(unittest.TestCase):
+    """DEC-2026-0063 against the repository, including what must not have moved."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.result = scanner.scan_repository(REPO_ROOT)
+
+    def test_no_blocked_review_is_also_reported_ready(self):
+        blocked = {i["InputId"] for i in self.result["BlockedItems"]}
+        ready = {i["InputId"] for i in self.result["Items"]}
+        self.assertEqual(blocked & ready, set())
+
+    def test_every_ready_revision_item_comes_from_a_non_blocked_handoff(self):
+        reviews = REPO_ROOT / "books" / "adnd1e"
+        for item in self.result["Items"]:
+            if not item["Queue"].endswith("-REVISION"):
+                continue
+            path = REPO_ROOT / item["Path"]
+            if not path.is_file():
+                continue
+            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            readiness = str(
+                (document.get("handoff") or {}).get("readiness") or ""
+            ).strip().lower()
+            with self.subTest(item=item["InputId"]):
+                self.assertNotEqual(readiness, "blocked")
+
+    def test_the_two_named_successor_bundles_reached_integration(self):
+        """AT2's other half, on the two lineages this Decision actually moved.
+
+        Today's Integrator queue is empty only because INT-20260826-001 finished
+        the work, so queue position proves nothing. What must hold is that the
+        approving successors' bundles were integrated rather than lost.
+        """
+        integrated = set()
+        for path in (REPO_ROOT / "rulesets/adnd1e/manifests").glob("INT-*.json"):
+            record = json.loads(path.read_text(encoding="utf-8"))
+            for bundle in record.get("approved_bundles") or []:
+                if bundle.get("review_id"):
+                    integrated.add(str(bundle["review_id"]))
+        for successor in (
+            "REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r07",
+            "REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r06",
+        ):
+            with self.subTest(review=successor):
+                self.assertIn(successor, integrated)
+
+
+class DecisionHandoffReplacementLiveCase(unittest.TestCase):
+    """DEC-2026-0063 acceptance test 3, on the exact records that produced it."""
+
+    ORIGINATING = (
+        "REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06",
+        "REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05",
+    )
+    ESCALATION = "ESC-2026-08-26T11.24.32.014Z"
+
+    def test_the_decided_escalation_names_both_reviews_with_paths(self):
+        """WORK_QUEUES 1.3 replaces a handoff only on an exact id-and-path pair."""
+        document = yaml.safe_load(
+            (REPO_ROOT / "rulesets/adnd1e/escalations/decided" / f"{self.ESCALATION}.yaml")
+            .read_text(encoding="utf-8")
+        )
+        refs = dict(scanner._originating_artifact_refs(document.get("originating_artifacts")))
+        for review_id in self.ORIGINATING:
+            with self.subTest(review=review_id):
+                self.assertIn(review_id, refs)
+                self.assertTrue((REPO_ROOT / refs[review_id]).is_file())
+
+    def test_the_decision_resolves_that_escalation(self):
+        decision = yaml.safe_load(
+            (REPO_ROOT / "rulesets/adnd1e/escalations/decisions/DEC-2026-0063.yaml")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(decision["escalation_id"], self.ESCALATION)
+        self.assertEqual(decision["handoff"]["next_role"], "builder")
+
+    def test_the_named_successors_exist_and_supersede_them(self):
+        base = REPO_ROOT / "books/adnd1e/phb/artifacts/reviews"
+        for original, successor in zip(
+            self.ORIGINATING,
+            (
+                "REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r07",
+                "REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r06",
+            ),
+        ):
+            with self.subTest(review=successor):
+                document = yaml.safe_load(
+                    (base / f"{successor}.yaml").read_text(encoding="utf-8")
+                )
+                self.assertEqual(document["supersedes"], original)
+                self.assertEqual(document["review_contract_version"], "1.3")
+                self.assertEqual(document["overall_disposition"], "approved")
+                self.assertTrue(document["approved_bundle_emitted"])
+
+    def test_no_synthetic_integrator_record_was_written_for_the_preflight(self):
+        """The ruling's central prohibition, checked against the manifests.
+
+        A passing standalone check must not become an Integration or a rejection.
+        Every integration record in the repository names at least one approved
+        bundle; one asserting a transaction with no bundle would be the
+        fabricated pass this Decision forbids.
+        """
+        for path in sorted((REPO_ROOT / "rulesets/adnd1e/manifests").glob("INT-*.json")):
+            record = json.loads(path.read_text(encoding="utf-8"))
+            if str(record.get("status")) != "integrated":
+                continue
+            with self.subTest(record=path.name):
+                self.assertTrue(
+                    record.get("approved_bundles"),
+                    f"{path.name} claims an integration with no approved bundle",
+                )
+
+
+class MalformedReviewLineageRepairCase(QueueScannerCase):
+    """DEC-2026-0064: one checksummed bridge across one unreadable Review.
+
+    A published Review that will not parse cannot be edited, deleted, or read,
+    and no ordinary successor makes a parser open it -- so a correction set
+    living past it has no route to the Builder. The repair is not "skip
+    unreadable Reviews": it is this file, at this checksum, failing this way,
+    bridged by this successor, carrying this exact input pair. Every one of
+    those is re-derived from the files, because a record that is believed rather
+    than checked is how an exception outlives the thing it excused.
+    """
+
+    PACKET = "PKT-PHB-001-002-fixture"
+    DECISION = "DEC-2026-9401"
+    REVIEW_DIR = "books/adnd1e/phb/artifacts/reviews"
+
+    def setUp(self):
+        super().setUp()
+        self.gur_id = self.gur(self.PACKET, 1)
+        self.gup_id = self.gup(self.PACKET, 1, self.gur_id, approval_ready=True)
+
+    # -- the fixture lineage --------------------------------------------------
+
+    def review_path(self, revision):
+        return self.root / self.REVIEW_DIR / f"REV-{self.gup_id}-r{revision:02d}.yaml"
+
+    def write_review(self, revision, *, supersedes=None, disposition="revision_required",
+                     handoff_role="builder", readiness="ready", reviewed=None):
+        artifact_id = f"REV-{self.gup_id}-r{revision:02d}"
+        self.write_yaml(
+            f"{self.REVIEW_DIR}/{artifact_id}.yaml",
+            {
+                "schema_version": "1.0",
+                "id": artifact_id,
+                "artifact_kind": "review",
+                "status": disposition,
+                "ruleset_id": "adnd1e",
+                "constitution_version": "1.8",
+                "packet_id": self.PACKET,
+                "revision": revision,
+                "supersedes": supersedes,
+                "reviewed_gup": {"id": reviewed or self.gup_id},
+                "overall_disposition": disposition,
+                "row_decisions": [{
+                    "ref": "M001",
+                    "disposition": "approved_with_revision",
+                    "exact_corrections": {"aspect": "to-hit rolls"},
+                }],
+                "handoff": {
+                    "next_role": handoff_role,
+                    "readiness": readiness,
+                    "reason": "fixture",
+                    "blocking_ids": [],
+                },
+            },
+        )
+        return artifact_id
+
+    def write_unreadable(self, revision):
+        artifact_id = f"REV-{self.gup_id}-r{revision:02d}"
+        path = self.root / self.REVIEW_DIR / f"{artifact_id}.yaml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        # A real YAML failure, not a truncated file: the record pins the parser's
+        # message, so the fixture has to fail the same way the live artifact does.
+        path.write_text(
+            "id: " + artifact_id + "\n"
+            "note: Source-supported but omitted: its key is already canonical\n",
+            encoding="utf-8",
+        )
+        return artifact_id
+
+    def lineage(self):
+        original = self.write_review(1)
+        unreadable = self.write_unreadable(2)
+        bridge = self.write_review(3, supersedes=unreadable)
+        successor = self.write_review(4, supersedes=bridge)
+        return original, unreadable, bridge, successor
+
+    def sha256(self, relative):
+        return scanner._sha256_of(self.root / relative)
+
+    def pinned(self, artifact_id, **extra):
+        relative = f"{self.REVIEW_DIR}/{artifact_id}.yaml"
+        block = {
+            "id": artifact_id,
+            "path": relative,
+            "checksum": self.sha256(relative),
+        }
+        block.update(extra)
+        return block
+
+    def record(self, original, unreadable, bridge, successor, *, status="approved",
+               **overrides):
+        gup_relative = f"books/adnd1e/phb/artifacts/gup/{self.gup_id}.yaml"
+        entry = {
+            "disposition": "historical_unreadable_bridge",
+            "reason": "fixture bridge",
+            "original_review": self.pinned(original),
+            "unreadable_review": self.pinned(
+                unreadable,
+                parse_failure={
+                    "diagnostic_code": "yaml_unreadable",
+                    "message_fragment": "mapping values are not allowed here",
+                },
+            ),
+            "bridge_review": self.pinned(bridge, required_supersedes=unreadable),
+            "active_successor_review": self.pinned(
+                successor,
+                required_supersedes=bridge,
+                required_disposition="revision_required",
+                required_handoff={"next_role": "builder", "readiness": "ready"},
+            ),
+            "reviewed_gup": {
+                "id": self.gup_id,
+                "path": gup_relative,
+                "checksum": self.sha256(gup_relative),
+            },
+            "exact_builder_review_inputs": [
+                self.pinned(original), self.pinned(successor)
+            ],
+        }
+        entry.update(overrides)
+        self.write_yaml(
+            f"rulesets/adnd1e/escalations/decisions/{self.DECISION}.yaml",
+            {
+                "id": self.DECISION,
+                "status": status,
+                "ruleset_id": "adnd1e",
+                "book_id": "phb",
+                "migration_required": False,
+                "handoff": {
+                    "next_role": "none", "readiness": "terminal",
+                    "reason": "repaired", "blocking_ids": [],
+                },
+                "review_malformed_lineage_repairs": [entry],
+            },
+        )
+        return entry
+
+    def codes(self, result):
+        return [item["Code"] for item in result["Diagnostics"]]
+
+    def builder_items(self, result):
+        return [i for i in result["Items"] if i["Role"] == "Builder"]
+
+    # -- without a record -----------------------------------------------------
+
+    def test_without_a_record_the_lineage_is_broken(self):
+        """The negative case first: the repair is never the default."""
+        self.lineage()
+        codes = self.codes(self.scan())
+        self.assertIn("yaml_unreadable", codes)
+        self.assertNotIn("review_malformed_lineage_repaired", codes)
+
+    def test_without_a_record_no_builder_item_is_derived(self):
+        self.lineage()
+        self.assertEqual(self.builder_items(self.scan()), [])
+
+    # -- with a valid record --------------------------------------------------
+
+    def test_a_complete_record_reports_one_informational_finding(self):
+        original, unreadable, bridge, successor = self.lineage()
+        self.record(original, unreadable, bridge, successor)
+        result = self.scan()
+        found = [
+            d for d in result["Diagnostics"]
+            if d["Code"] == "review_malformed_lineage_repaired"
+        ]
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0]["ArtifactId"], unreadable)
+        self.assertEqual(found[0]["Severity"], "info")
+
+    def test_the_parse_error_and_missing_target_errors_are_gone(self):
+        original, unreadable, bridge, successor = self.lineage()
+        self.record(original, unreadable, bridge, successor)
+        codes = self.codes(self.scan())
+        self.assertNotIn("yaml_unreadable", codes)
+        self.assertNotIn("missing_supersedes_target", codes)
+
+    def test_the_repair_produces_no_error_at_all(self):
+        original, unreadable, bridge, successor = self.lineage()
+        self.record(original, unreadable, bridge, successor)
+        self.assertEqual(
+            [d for d in self.scan()["Diagnostics"] if d["Severity"] == "error"], []
+        )
+
+    def test_exactly_one_builder_item_for_the_successor(self):
+        original, unreadable, bridge, successor = self.lineage()
+        self.record(original, unreadable, bridge, successor)
+        items = self.builder_items(self.scan())
+        self.assertEqual([i["InputId"] for i in items], [successor])
+        self.assertEqual(items[0]["Queue"], "BUILDER-REVISION")
+        self.assertEqual(items[0]["State"], "ready")
+
+    def test_the_item_components_are_exactly_the_two_named_inputs(self):
+        original, unreadable, bridge, successor = self.lineage()
+        self.record(original, unreadable, bridge, successor)
+        components = self.builder_items(self.scan())[0]["Components"]
+        self.assertEqual(
+            components,
+            [f"{self.REVIEW_DIR}/{original}.yaml", f"{self.REVIEW_DIR}/{successor}.yaml"],
+        )
+
+    def test_neither_the_unreadable_review_nor_the_bridge_is_an_input(self):
+        """The Decision forbids passing them to the compiler; prove they are absent."""
+        original, unreadable, bridge, successor = self.lineage()
+        self.record(original, unreadable, bridge, successor)
+        components = " ".join(self.builder_items(self.scan())[0]["Components"])
+        self.assertNotIn(unreadable, components)
+        self.assertNotIn(bridge, components)
+
+    def test_the_gup_is_not_also_reported_as_unreviewed(self):
+        original, unreadable, bridge, successor = self.lineage()
+        self.record(original, unreadable, bridge, successor)
+        reviewer = {i["InputId"] for i in self.scan()["Items"] if i["Role"] == "Reviewer"}
+        self.assertNotIn(self.gup_id, reviewer)
+
+    # -- denial cases ---------------------------------------------------------
+
+    def assert_denied(self, result):
+        """The repaired route did not apply, and the record's failure is loud.
+
+        Deliberately not "no Builder item exists". Two denial cases leave a
+        perfectly walkable chain -- if the pinned file actually parses, the
+        ordinary lineage routes its leaf, and that work is real. What must never
+        appear is an item carrying the repair's two-file input set, because that
+        is the thing the record would have granted.
+        """
+        codes = self.codes(result)
+        self.assertIn("review_lineage_repair_record_invalid", codes)
+        self.assertNotIn("review_malformed_lineage_repaired", codes)
+        for item in self.builder_items(result):
+            with self.subTest(item=item["InputId"]):
+                self.assertEqual(
+                    len(item["Components"]), 1,
+                    "a denied record must not supply the repaired input set",
+                )
+
+    def test_an_inactive_decision_repairs_nothing(self):
+        original, unreadable, bridge, successor = self.lineage()
+        self.record(original, unreadable, bridge, successor, status="proposed")
+        codes = self.codes(self.scan())
+        self.assertIn("yaml_unreadable", codes)
+        self.assertNotIn("review_malformed_lineage_repaired", codes)
+
+    def test_a_stale_checksum_on_any_pinned_file_denies_the_repair(self):
+        for field in ("original_review", "unreadable_review", "bridge_review",
+                      "active_successor_review", "reviewed_gup"):
+            with self.subTest(field=field):
+                self.setUp()
+                original, unreadable, bridge, successor = self.lineage()
+                entry = self.record(original, unreadable, bridge, successor)
+                block = dict(entry[field])
+                block["checksum"] = "sha256:" + "0" * 64
+                self.record(original, unreadable, bridge, successor, **{field: block})
+                self.assert_denied(self.scan())
+
+    def test_a_parseable_unreadable_review_denies_the_repair(self):
+        """If the file starts parsing, there is nothing left to bridge."""
+        original = self.write_review(1)
+        unreadable = self.write_review(2)
+        bridge = self.write_review(3, supersedes=unreadable)
+        successor = self.write_review(4, supersedes=bridge)
+        self.record(original, unreadable, bridge, successor)
+        result = self.scan()
+        self.assert_denied(result)
+        # The chain is intact here, so ordinary routing still owns the leaf.
+        self.assertEqual(
+            [i["InputId"] for i in self.builder_items(result)], [successor]
+        )
+
+    def test_a_wrong_parse_failure_fragment_denies_the_repair(self):
+        original, unreadable, bridge, successor = self.lineage()
+        entry = self.record(original, unreadable, bridge, successor)
+        block = dict(entry["unreadable_review"])
+        block["parse_failure"] = {
+            "diagnostic_code": "yaml_unreadable",
+            "message_fragment": "found undefined alias",
+        }
+        self.record(original, unreadable, bridge, successor, unreadable_review=block)
+        self.assert_denied(self.scan())
+
+    def test_a_wrong_diagnostic_code_denies_the_repair(self):
+        original, unreadable, bridge, successor = self.lineage()
+        entry = self.record(original, unreadable, bridge, successor)
+        block = dict(entry["unreadable_review"])
+        block["parse_failure"] = {
+            "diagnostic_code": "yaml_root_not_mapping",
+            "message_fragment": "mapping values are not allowed here",
+        }
+        self.record(original, unreadable, bridge, successor, unreadable_review=block)
+        self.assert_denied(self.scan())
+
+    def test_a_broken_bridge_link_denies_the_repair(self):
+        """The bridge must supersede the unreadable file, not merely follow it."""
+        original = self.write_review(1)
+        unreadable = self.write_unreadable(2)
+        bridge = self.write_review(3, supersedes=original)
+        successor = self.write_review(4, supersedes=bridge)
+        self.record(original, unreadable, bridge, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_broken_successor_link_denies_the_repair(self):
+        original = self.write_review(1)
+        unreadable = self.write_unreadable(2)
+        bridge = self.write_review(3, supersedes=unreadable)
+        successor = self.write_review(4, supersedes=original)
+        self.record(original, unreadable, bridge, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_successor_reviewing_another_gup_denies_the_repair(self):
+        original = self.write_review(1)
+        unreadable = self.write_unreadable(2)
+        bridge = self.write_review(3, supersedes=unreadable)
+        successor = self.write_review(4, supersedes=bridge, reviewed="GUP-OTHER-r01")
+        self.record(original, unreadable, bridge, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_non_ready_successor_handoff_denies_the_repair(self):
+        original = self.write_review(1)
+        unreadable = self.write_unreadable(2)
+        bridge = self.write_review(3, supersedes=unreadable)
+        successor = self.write_review(4, supersedes=bridge, readiness="blocked")
+        self.record(original, unreadable, bridge, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_non_builder_successor_handoff_denies_the_repair(self):
+        original = self.write_review(1)
+        unreadable = self.write_unreadable(2)
+        bridge = self.write_review(3, supersedes=unreadable)
+        successor = self.write_review(4, supersedes=bridge, handoff_role="analyst")
+        self.record(original, unreadable, bridge, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_wrong_successor_disposition_denies_the_repair(self):
+        original = self.write_review(1)
+        unreadable = self.write_unreadable(2)
+        bridge = self.write_review(3, supersedes=unreadable)
+        successor = self.write_review(4, supersedes=bridge, disposition="approved")
+        self.record(original, unreadable, bridge, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_schema_invalid_successor_denies_the_repair(self):
+        original, unreadable, bridge, successor = self.lineage()
+        path = self.review_path(4)
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        document["review_contract_version"] = "1.2"
+        document["row_decisions"][0].pop("exact_corrections")
+        path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+        self.record(original, unreadable, bridge, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_changed_input_set_denies_the_repair(self):
+        for inputs in (
+            "drop_one", "add_one", "wrong_member",
+        ):
+            with self.subTest(case=inputs):
+                self.setUp()
+                original, unreadable, bridge, successor = self.lineage()
+                entry = self.record(original, unreadable, bridge, successor)
+                if inputs == "drop_one":
+                    changed = [entry["exact_builder_review_inputs"][0]]
+                elif inputs == "add_one":
+                    changed = entry["exact_builder_review_inputs"] + [self.pinned(bridge)]
+                else:
+                    changed = [self.pinned(original), self.pinned(bridge)]
+                self.record(
+                    original, unreadable, bridge, successor,
+                    exact_builder_review_inputs=changed,
+                )
+                self.assert_denied(self.scan())
+
+    def test_a_wrong_disposition_on_the_record_denies_the_repair(self):
+        original, unreadable, bridge, successor = self.lineage()
+        self.record(
+            original, unreadable, bridge, successor,
+            disposition="historical_handoff_only",
+        )
+        self.assert_denied(self.scan())
+
+    def test_a_record_without_a_reason_denies_the_repair(self):
+        original, unreadable, bridge, successor = self.lineage()
+        self.record(original, unreadable, bridge, successor, reason="")
+        self.assert_denied(self.scan())
+
+    def test_another_unreadable_review_is_untouched(self):
+        """One record repairs one lineage, not a class of them."""
+        original, unreadable, bridge, successor = self.lineage()
+        self.record(original, unreadable, bridge, successor)
+        other = "PKT-PHB-003-004-second"
+        other_gur = self.gur(other, 1)
+        other_gup = self.gup(other, 1, other_gur, approval_ready=True)
+        path = self.root / self.REVIEW_DIR / f"REV-{other_gup}-r01.yaml"
+        path.write_text(
+            "id: REV-" + other_gup + "-r01\n"
+            "note: broken: like the other one\n",
+            encoding="utf-8",
+        )
+        self.assertIn("yaml_unreadable", self.codes(self.scan()))
+
+
+class LiveMalformedReviewLineageRepairCase(unittest.TestCase):
+    """DEC-2026-0064's single authorized instance, against the repository."""
+
+    UNREADABLE = "REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04"
+    BRIDGE = "REV-GUP-PKT-PHB-054-064-druid-spells-r01-r05"
+    SUCCESSOR = "REV-GUP-PKT-PHB-054-064-druid-spells-r01-r06"
+    ORIGINAL = "REV-GUP-PKT-PHB-054-064-druid-spells-r01-r01"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.result = scanner.scan_repository(REPO_ROOT)
+
+    def test_the_unreadable_review_is_informational_history(self):
+        found = [
+            d for d in self.result["Diagnostics"]
+            if d["Code"] == "review_malformed_lineage_repaired"
+        ]
+        self.assertEqual([d["ArtifactId"] for d in found], [self.UNREADABLE])
+
+    def test_it_raises_no_parse_error(self):
+        """Scoped to the bridged lineage, which is what the record covers.
+
+        This asserted that the whole repository was free of parse errors, which
+        was true on the day it was written and is not a property this Decision
+        governs. Other roles have since published their own malformed files, and
+        those must fail loudly somewhere -- just not here, where the claim is
+        that DEC-2026-0064's exemption works.
+        """
+        offenders = [
+            d for d in self.result["Diagnostics"]
+            if d["Code"] in ("yaml_unreadable", "missing_supersedes_target")
+            and (
+                self.UNREADABLE in str(d.get("ArtifactId") or "")
+                or self.UNREADABLE in str(d.get("Path") or "")
+                or self.BRIDGE in str(d.get("ArtifactId") or "")
+            )
+        ]
+        self.assertEqual(offenders, [])
+
+    def test_the_exemption_did_not_spread_to_other_unreadable_files(self):
+        """Fail-closed, stated as a property rather than assumed.
+
+        Every parse failure the scan reports must be for some file other than
+        the one DEC-2026-0064 pins -- the pinned one is skipped, and nothing
+        else is.
+        """
+        for diagnostic in self.result["Diagnostics"]:
+            if diagnostic["Code"] != "yaml_unreadable":
+                continue
+            with self.subTest(path=diagnostic.get("Path")):
+                self.assertNotIn(self.UNREADABLE, str(diagnostic.get("Path") or ""))
+
+    def test_no_repair_record_is_invalid(self):
+        invalid = [
+            d["Message"] for d in self.result["Diagnostics"]
+            if d["Code"] == "review_lineage_repair_record_invalid"
+        ]
+        self.assertEqual(invalid, [])
+
+    def test_the_repaired_route_produced_the_revision(self):
+        """The durable form of "the item existed and named both inputs".
+
+        Asserting the item's presence tied this case to the moment before
+        GUP-PKT-PHB-054-064-druid-spells-r02 was published. Once the revision
+        exists the record stops routing work -- the leaf has moved on -- and a
+        test that reads queue position fails on the work being done. What
+        remains true is which Review the revision was built from.
+        """
+        gup = yaml.safe_load(
+            (REPO_ROOT / "books/adnd1e/phb/artifacts/gup"
+             / "GUP-PKT-PHB-054-064-druid-spells-r02.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(gup["provenance"]["review_id"], self.SUCCESSOR)
+        self.assertEqual(gup["supersedes"], "GUP-PKT-PHB-054-064-druid-spells-r01")
+
+    def test_the_bridge_and_unreadable_reviews_are_not_builder_inputs(self):
+        components = " ".join(
+            component
+            for item in self.result["Items"]
+            for component in item["Components"]
+        )
+        self.assertNotIn(self.UNREADABLE, components)
+        self.assertNotIn(self.BRIDGE, components)
+
+    def test_the_decision_never_suppressed_its_own_routed_item(self):
+        """WORK_QUEUES 1.3 replaces an originating artifact's stale handoff.
+
+        DEC-2026-0064's escalation names r06, so without an exemption the rule
+        removed the very item the Decision exists to expose -- and would have
+        kept removing it after the Decision was consumed, because the
+        replacement is computed from the Decision's handoff rather than from
+        whether its work is still outstanding. The revision below is the proof
+        that it did not: r06's directives reached a published GUP, which could
+        not have happened had the item stayed suppressed.
+        """
+        replaced = [
+            d["ArtifactId"] for d in self.result["Diagnostics"]
+            if d["Code"] == "handoff_replaced_by_decision"
+        ]
+        self.assertNotIn(self.SUCCESSOR, replaced)
+        self.assertTrue(
+            (REPO_ROOT / "books/adnd1e/phb/artifacts/gup"
+             / "GUP-PKT-PHB-054-064-druid-spells-r02.yaml").is_file()
+        )
+
+
+class MalformedArtifactNeverCrashesTheScanCase(QueueScannerCase):
+    """One unreadable file must cost one diagnostic, not the whole queue.
+
+    `_packaged_gup_id` documents itself as returning "" when nothing names the
+    packaged GUP, then dereferenced its Review argument unconditionally. That
+    argument is looked up by a name derived from the bundle, so it is None
+    whenever the Review is absent *or does not parse* -- and when
+    REV-GUP-PKT-PHB-117-119-bards-r04-r02 was published unparseable, the scan
+    raised AttributeError instead of reporting it. Every role reads its work
+    from this scan, so a single malformed artifact took the queue away from all
+    five at once.
+
+    Failing closed means reporting the file, not falling over.
+    """
+
+    PACKET = "PKT-PHB-001-002-fixture"
+
+    def malformed_review(self, name):
+        path = self.root / "books/adnd1e/phb/artifacts/reviews" / f"{name}.yaml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            f"id: {name}\nnote: broken\n"
+            "This successor: is not valid YAML: at all\n",
+            encoding="utf-8",
+        )
+        return path
+
+    def bundle_without_a_readable_review(self):
+        """An Approved bundle whose derived Review name will not parse."""
+        gur_id = self.gur(self.PACKET, 1)
+        gup_id = self.gup(self.PACKET, 1, gur_id)
+        review_id = f"REV-{gup_id}-r01"
+        self.malformed_review(review_id)
+        approved_id = "APPROVED-" + review_id[len("REV-"):]
+        approved_dir = self.book / "artifacts" / "approved"
+        approved_dir.mkdir(parents=True, exist_ok=True)
+        (approved_dir / f"{approved_id}.edges.csv").write_text(
+            "source_id,target_id\n", encoding="utf-8"
+        )
+        return approved_id, review_id
+
+    def test_the_scan_completes(self):
+        self.bundle_without_a_readable_review()
+        result = self.scan()  # must not raise
+        self.assertIn("Items", result)
+
+    def test_the_unreadable_file_is_reported(self):
+        _, review_id = self.bundle_without_a_readable_review()
+        codes = [d["Code"] for d in self.scan()["Diagnostics"]]
+        self.assertIn("yaml_unreadable", codes)
+
+    def test_it_is_an_error_not_a_silent_skip(self):
+        """Fail closed: an unrecognised parse failure is never informational."""
+        self.bundle_without_a_readable_review()
+        unreadable = [
+            d for d in self.scan()["Diagnostics"] if d["Code"] == "yaml_unreadable"
+        ]
+        self.assertTrue(unreadable)
+        for diagnostic in unreadable:
+            self.assertEqual(diagnostic["Severity"], "error")
+
+    def test_other_roles_still_get_their_work(self):
+        """The point of not crashing: everyone else's queue survives it."""
+        self.bundle_without_a_readable_review()
+        other = "PKT-PHB-003-004-second"
+        other_gur = self.gur(other, 1)
+        self.gup(other, 1, other_gur, approval_ready=True)
+        result = self.scan()
+        self.assertIn(
+            f"GUP-{other}-r01", {i["InputId"] for i in result["Items"]}
+        )
+
+
+class DirectPredecessorRepairCase(QueueScannerCase):
+    """DEC-2026-0068: the shape DEC-2026-0064's bridge cannot express.
+
+    A two-hop bridge needs a middle artifact. The Bards lineage has none -- r03
+    directly supersedes the unreadable r02 -- so fitting it to the bridge record
+    would make one Review occupy both the bridge and successor slots, which is
+    a claim that it supersedes itself.
+
+    Being a different shape does not make it a looser one. This successor exists
+    to repackage a rejected bundle, so the bundle, the rejection it answers, the
+    component it packages and the exact row partition are all pinned too, and
+    all re-derived here. Nothing is read from the unreadable file.
+    """
+
+    PACKET = "PKT-PHB-001-002-fixture"
+    DECISION = "DEC-2026-9501"
+    REVIEWS = "books/adnd1e/phb/artifacts/reviews"
+    APPROVED = "books/adnd1e/phb/artifacts/approved"
+
+    def setUp(self):
+        super().setUp()
+        self.gur_id = self.gur(self.PACKET, 1)
+        self.gup_id = self.gup(self.PACKET, 1, self.gur_id, approval_ready=True)
+        self.component = f"{self.APPROVED}/APPROVED-{self.gup_id}-r01.edges.csv"
+        path = self.root / self.component
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            "source_id,target_id\n" + "".join(
+                f"a{i},b{i}\n" for i in range(1, 6)
+            ),
+            encoding="utf-8",
+        )
+        self.rejection = "rulesets/adnd1e/reports/INT-29990101-001.rejected.json"
+        rejection = self.root / self.rejection
+        rejection.parent.mkdir(parents=True, exist_ok=True)
+        # Written by `write_rejection` once the bundles exist, so every pinned
+        # checksum in it is real. A rejection the scanner's ordinary validator
+        # would reject is a state the repository could never hold, and testing
+        # the repair against one would prove nothing.
+        self.rejection_path = rejection
+
+    # -- the fixture lineage --------------------------------------------------
+
+    def write_review(self, revision, *, supersedes=None, disposition="approved",
+                     handoff_role="architect", readiness="ready", reviewed=None,
+                     bundle=None):
+        artifact_id = f"REV-{self.gup_id}-r{revision:02d}"
+        document = {
+            "schema_version": "1.0",
+            "id": artifact_id,
+            "artifact_kind": "review",
+            "status": disposition,
+            "ruleset_id": "adnd1e",
+            "constitution_version": "1.8",
+            "packet_id": self.PACKET,
+            "revision": revision,
+            "supersedes": supersedes,
+            "reviewed_gup": {"id": reviewed or self.gup_id},
+            "overall_disposition": disposition,
+            "handoff": {
+                "next_role": handoff_role, "readiness": readiness,
+                "reason": "fixture", "blocking_ids": [],
+            },
+        }
+        if bundle:
+            document["approved_bundle_emitted"] = bundle
+        self.write_yaml(f"{self.REVIEWS}/{artifact_id}.yaml", document)
+        return artifact_id
+
+    def write_unreadable_review(self, revision):
+        artifact_id = f"REV-{self.gup_id}-r{revision:02d}"
+        path = self.root / self.REVIEWS / f"{artifact_id}.yaml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            f"id: {artifact_id}\nnote: broken\n"
+            "This successor consumes the rejection\n"
+            "and keeps going: without a colon\n",
+            encoding="utf-8",
+        )
+        return artifact_id
+
+    def write_bundle(self, revision, *, supersedes=None, approves=None,
+                     additions=29, pending=28, updates=0, nodes=11,
+                     first_pending=None):
+        artifact_id = f"APPROVED-{self.gup_id}-r{revision:02d}"
+        start_pending = first_pending or additions + 1
+        self.write_yaml(
+            f"{self.APPROVED}/{artifact_id}.yaml",
+            {
+                "schema_version": "1.0",
+                "id": artifact_id,
+                "artifact_kind": "packet_update",
+                "status": "approved",
+                "ruleset_id": "adnd1e",
+                "constitution_version": "1.8",
+                "packet_id": self.PACKET,
+                "revision": revision,
+                "supersedes": supersedes,
+                "approves": {
+                    "review_id": approves or f"REV-{self.gup_id}-r{revision:02d}",
+                    "gup_id": self.gup_id,
+                },
+                "components": [{
+                    "kind": "edges",
+                    "path": self.component,
+                    "checksum": self.sha256(self.component),
+                }],
+                "operation_index": {
+                    "additions": [{"csv_row": i} for i in range(1, additions + 1)],
+                    "pending_additions": [
+                        {"csv_row": i}
+                        for i in range(start_pending, start_pending + pending)
+                    ],
+                    "updates": [{"csv_row": 0}] * updates,
+                },
+                "node_operations": {"count": nodes},
+                "handoff": {
+                    "next_role": "integrator", "readiness": "ready",
+                    "reason": "fixture", "blocking_ids": [],
+                },
+            },
+        )
+        if revision == 1:
+            # The rejection refused the first bundle, which a readable Review
+            # approved -- exactly the live Bards shape, where INT-20260827-001
+            # refused the r01 bundle and the unreadable r02 Review came after.
+            self.write_rejection(artifact_id)
+        return artifact_id
+
+    def write_rejection(self, bundle_id):
+        """A rejection record the scanner's own validator accepts."""
+        manifest = f"{self.APPROVED}/{bundle_id}.yaml"
+        gup_relative = f"books/adnd1e/phb/artifacts/gup/{self.gup_id}.yaml"
+        review_relative = f"{self.REVIEWS}/REV-{self.gup_id}-r01.yaml"
+        self.rejection_path.write_text(
+            json.dumps({
+                "id": "INT-29990101-001",
+                "ruleset_id": "adnd1e",
+                "status": "rejected",
+                "rejected_bundles": [{
+                    "bundle_id": bundle_id,
+                    "bundle_checksum": self.sha256(manifest),
+                    "review_id": f"REV-{self.gup_id}-r01",
+                    "review_checksum": self.sha256(review_relative),
+                    "gup_id": self.gup_id,
+                    "gup_checksum": self.sha256(gup_relative),
+                    "packet_id": self.PACKET,
+                    "manifest_path": manifest,
+                    "blocking_failures": [
+                        {"check": "fixture_failure", "detail": "fixture blocking detail"}
+                    ],
+                    "blocking_failure_count": 1,
+                    "advisory_failure_count": 0,
+                    "checks_evaluated": 1,
+                }],
+            }, indent=1) + "\n",
+            encoding="utf-8",
+        )
+
+    def lineage(self):
+        original = self.write_review(1)
+        self.write_bundle(1, approves=original)
+        unreadable = self.write_unreadable_review(2)
+        historical = self.write_bundle(2, approves=unreadable)
+        successor = self.write_review(3, supersedes=unreadable,
+                                      bundle=f"APPROVED-{self.gup_id}-r03")
+        bundle = self.write_bundle(3, supersedes=historical, approves=successor)
+        return original, unreadable, historical, successor, bundle
+
+    def sha256(self, relative):
+        return scanner._sha256_of(self.root / relative)
+
+    def pinned(self, artifact_id, directory, **extra):
+        relative = f"{directory}/{artifact_id}.yaml"
+        block = {"id": artifact_id, "path": relative,
+                 "checksum": self.sha256(relative)}
+        block.update(extra)
+        return block
+
+    def record(self, original, unreadable, historical, successor, bundle, *,
+               status="approved", **overrides):
+        gup_relative = f"books/adnd1e/phb/artifacts/gup/{self.gup_id}.yaml"
+        entry = {
+            "disposition": "historical_unreadable_direct_predecessor",
+            "reason": "fixture direct predecessor",
+            "original_review": self.pinned(original, self.REVIEWS),
+            "unreadable_review": self.pinned(
+                unreadable, self.REVIEWS,
+                parse_failure={
+                    "diagnostic_code": "yaml_unreadable",
+                    "message_fragment": "could not find expected ':'",
+                },
+            ),
+            "historical_bundle": self.pinned(historical, self.APPROVED),
+            "active_successor_review": self.pinned(
+                successor, self.REVIEWS,
+                required_supersedes=unreadable,
+                required_disposition="approved",
+                required_handoff={"next_role": "architect", "readiness": "ready"},
+            ),
+            "active_successor_bundle": self.pinned(
+                bundle, self.APPROVED, required_supersedes=historical,
+            ),
+            "reviewed_gup": {
+                "id": self.gup_id, "path": gup_relative,
+                "checksum": self.sha256(gup_relative),
+            },
+            "integration_rejection": {
+                "id": "INT-29990101-001", "path": self.rejection,
+                "checksum": self.sha256(self.rejection),
+            },
+            "edge_component": {
+                "path": self.component,
+                "checksum": self.sha256(self.component),
+                "rows": 5,
+            },
+            "required_operations": {
+                "additions": {"first_csv_row": 1, "last_csv_row": 29, "count": 29},
+                "pending_additions": {"first_csv_row": 30, "last_csv_row": 57,
+                                      "count": 28},
+                "updates_count": 0,
+                "registered_node_count": 11,
+            },
+        }
+        entry.update(overrides)
+        self.write_yaml(
+            f"rulesets/adnd1e/escalations/decisions/{self.DECISION}.yaml",
+            {
+                "id": self.DECISION, "status": status, "ruleset_id": "adnd1e",
+                "book_id": "phb", "migration_required": False,
+                "handoff": {"next_role": "none", "readiness": "terminal",
+                            "reason": "repaired", "blocking_ids": []},
+                "review_direct_predecessor_repairs": [entry],
+            },
+        )
+        return entry
+
+    def codes(self, result):
+        return [item["Code"] for item in result["Diagnostics"]]
+
+    def errors(self, result):
+        return [d for d in result["Diagnostics"] if d["Severity"] == "error"]
+
+    # -- without a record -----------------------------------------------------
+
+    def test_without_a_record_the_file_is_an_error(self):
+        self.lineage()
+        self.assertIn("yaml_unreadable", self.codes(self.scan()))
+
+    # -- with a valid record --------------------------------------------------
+
+    def test_a_complete_record_reports_one_informational_finding(self):
+        _, unreadable, *_ = self.lineage()
+        self.record(*self.lineage_args())
+        found = [
+            d for d in self.scan()["Diagnostics"]
+            if d["Code"] == "review_unreadable_direct_predecessor_repaired"
+        ]
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0]["ArtifactId"], unreadable)
+        self.assertEqual(found[0]["Severity"], "info")
+
+    def lineage_args(self):
+        """Rebuild the same lineage IDs without rewriting the files."""
+        return (
+            f"REV-{self.gup_id}-r01", f"REV-{self.gup_id}-r02",
+            f"APPROVED-{self.gup_id}-r02", f"REV-{self.gup_id}-r03",
+            f"APPROVED-{self.gup_id}-r03",
+        )
+
+    def test_the_parse_error_is_gone(self):
+        self.lineage()
+        self.record(*self.lineage_args())
+        self.assertNotIn("yaml_unreadable", self.codes(self.scan()))
+
+    def test_the_successor_does_not_dangle(self):
+        """Skipping the file must not turn its successor into a broken link."""
+        self.lineage()
+        self.record(*self.lineage_args())
+        self.assertNotIn("missing_supersedes_target", self.codes(self.scan()))
+
+    def test_the_parent_is_not_left_as_a_second_leaf(self):
+        """The other half: r01 is superseded through the file nobody can read."""
+        self.lineage()
+        self.record(*self.lineage_args())
+        codes = self.codes(self.scan())
+        self.assertNotIn("ambiguous_revision_lineage", codes)
+        self.assertNotIn("legacy_revision_inference", codes)
+
+    def test_the_repair_produces_no_error(self):
+        self.lineage()
+        self.record(*self.lineage_args())
+        self.assertEqual(self.errors(self.scan()), [])
+
+    # -- denial cases ---------------------------------------------------------
+
+    def assert_denied(self, result):
+        codes = self.codes(result)
+        self.assertIn("review_direct_predecessor_repair_record_invalid", codes)
+        self.assertNotIn("review_unreadable_direct_predecessor_repaired", codes)
+        self.assertIn("yaml_unreadable", codes)
+
+    def test_an_inactive_decision_repairs_nothing(self):
+        self.lineage()
+        self.record(*self.lineage_args(), status="proposed")
+        codes = self.codes(self.scan())
+        self.assertIn("yaml_unreadable", codes)
+        self.assertNotIn("review_unreadable_direct_predecessor_repaired", codes)
+
+    def test_a_stale_checksum_on_any_pinned_artifact_denies_it(self):
+        for field in ("original_review", "unreadable_review", "historical_bundle",
+                      "active_successor_review", "active_successor_bundle",
+                      "reviewed_gup", "integration_rejection", "edge_component"):
+            with self.subTest(field=field):
+                self.setUp()
+                self.lineage()
+                entry = self.record(*self.lineage_args())
+                block = dict(entry[field])
+                block["checksum"] = "sha256:" + "0" * 64
+                self.record(*self.lineage_args(), **{field: block})
+                self.assert_denied(self.scan())
+
+    def test_a_parseable_predecessor_denies_it(self):
+        self.write_bundle(1, approves=self.write_review(1))
+        self.write_review(2)
+        self.write_bundle(2, approves=f"REV-{self.gup_id}-r02")
+        self.write_review(3, supersedes=f"REV-{self.gup_id}-r02",
+                          bundle=f"APPROVED-{self.gup_id}-r03")
+        self.write_bundle(3, supersedes=f"APPROVED-{self.gup_id}-r02",
+                          approves=f"REV-{self.gup_id}-r03")
+        self.record(*self.lineage_args())
+        codes = self.codes(self.scan())
+        self.assertIn("review_direct_predecessor_repair_record_invalid", codes)
+        self.assertNotIn("review_unreadable_direct_predecessor_repaired", codes)
+
+    def test_a_wrong_parse_fragment_denies_it(self):
+        self.lineage()
+        entry = self.record(*self.lineage_args())
+        block = dict(entry["unreadable_review"])
+        block["parse_failure"] = {"diagnostic_code": "yaml_unreadable",
+                                  "message_fragment": "found undefined alias"}
+        self.record(*self.lineage_args(), unreadable_review=block)
+        self.assert_denied(self.scan())
+
+    def test_a_wrong_review_link_denies_it(self):
+        self.write_bundle(1, approves=self.write_review(1))
+        unreadable = self.write_unreadable_review(2)
+        historical = self.write_bundle(2, approves=unreadable)
+        self.write_review(3, supersedes=f"REV-{self.gup_id}-r01",
+                          bundle=f"APPROVED-{self.gup_id}-r03")
+        self.write_bundle(3, supersedes=historical, approves=f"REV-{self.gup_id}-r03")
+        self.record(*self.lineage_args())
+        self.assert_denied(self.scan())
+
+    def test_a_wrong_bundle_link_denies_it(self):
+        self.write_bundle(1, approves=self.write_review(1))
+        unreadable = self.write_unreadable_review(2)
+        self.write_bundle(2, approves=unreadable)
+        self.write_review(3, supersedes=unreadable,
+                          bundle=f"APPROVED-{self.gup_id}-r03")
+        self.write_bundle(3, supersedes=None, approves=f"REV-{self.gup_id}-r03")
+        self.record(*self.lineage_args())
+        self.assert_denied(self.scan())
+
+    def test_a_non_approved_successor_denies_it(self):
+        self.write_bundle(1, approves=self.write_review(1))
+        unreadable = self.write_unreadable_review(2)
+        historical = self.write_bundle(2, approves=unreadable)
+        self.write_review(3, supersedes=unreadable, disposition="revision_required",
+                          bundle=f"APPROVED-{self.gup_id}-r03")
+        self.write_bundle(3, supersedes=historical, approves=f"REV-{self.gup_id}-r03")
+        self.record(*self.lineage_args())
+        self.assert_denied(self.scan())
+
+    def test_a_wrong_successor_handoff_denies_it(self):
+        for role, readiness in (("integrator", "ready"), ("architect", "blocked")):
+            with self.subTest(role=role, readiness=readiness):
+                self.setUp()
+                self.write_bundle(1, approves=self.write_review(1))
+                unreadable = self.write_unreadable_review(2)
+                historical = self.write_bundle(2, approves=unreadable)
+                self.write_review(3, supersedes=unreadable, handoff_role=role,
+                                  readiness=readiness,
+                                  bundle=f"APPROVED-{self.gup_id}-r03")
+                self.write_bundle(3, supersedes=historical,
+                                  approves=f"REV-{self.gup_id}-r03")
+                self.record(*self.lineage_args())
+                self.assert_denied(self.scan())
+
+    def test_a_successor_reviewing_another_gup_denies_it(self):
+        self.write_bundle(1, approves=self.write_review(1))
+        unreadable = self.write_unreadable_review(2)
+        historical = self.write_bundle(2, approves=unreadable)
+        self.write_review(3, supersedes=unreadable, reviewed="GUP-OTHER-r01",
+                          bundle=f"APPROVED-{self.gup_id}-r03")
+        self.write_bundle(3, supersedes=historical, approves=f"REV-{self.gup_id}-r03")
+        self.record(*self.lineage_args())
+        self.assert_denied(self.scan())
+
+    def test_a_bundle_approving_another_review_denies_it(self):
+        self.write_bundle(1, approves=self.write_review(1))
+        unreadable = self.write_unreadable_review(2)
+        historical = self.write_bundle(2, approves=unreadable)
+        self.write_review(3, supersedes=unreadable,
+                          bundle=f"APPROVED-{self.gup_id}-r03")
+        self.write_bundle(3, supersedes=historical, approves=f"REV-{self.gup_id}-r01")
+        self.record(*self.lineage_args())
+        self.assert_denied(self.scan())
+
+    def test_a_non_contiguous_partition_denies_it(self):
+        """A gap between the buckets is a different transaction."""
+        self.write_bundle(1, approves=self.write_review(1))
+        unreadable = self.write_unreadable_review(2)
+        historical = self.write_bundle(2, approves=unreadable)
+        self.write_review(3, supersedes=unreadable,
+                          bundle=f"APPROVED-{self.gup_id}-r03")
+        self.write_bundle(3, supersedes=historical, approves=f"REV-{self.gup_id}-r03",
+                          first_pending=31)
+        self.record(*self.lineage_args())
+        self.assert_denied(self.scan())
+
+    def test_a_wrong_row_count_denies_it(self):
+        self.write_bundle(1, approves=self.write_review(1))
+        unreadable = self.write_unreadable_review(2)
+        historical = self.write_bundle(2, approves=unreadable)
+        self.write_review(3, supersedes=unreadable,
+                          bundle=f"APPROVED-{self.gup_id}-r03")
+        self.write_bundle(3, supersedes=historical, approves=f"REV-{self.gup_id}-r03",
+                          additions=28, pending=28)
+        self.record(*self.lineage_args())
+        self.assert_denied(self.scan())
+
+    def test_a_nonzero_update_count_denies_it(self):
+        self.write_bundle(1, approves=self.write_review(1))
+        unreadable = self.write_unreadable_review(2)
+        historical = self.write_bundle(2, approves=unreadable)
+        self.write_review(3, supersedes=unreadable,
+                          bundle=f"APPROVED-{self.gup_id}-r03")
+        self.write_bundle(3, supersedes=historical, approves=f"REV-{self.gup_id}-r03",
+                          updates=1)
+        self.record(*self.lineage_args())
+        self.assert_denied(self.scan())
+
+    def test_a_different_node_count_denies_it(self):
+        self.write_bundle(1, approves=self.write_review(1))
+        unreadable = self.write_unreadable_review(2)
+        historical = self.write_bundle(2, approves=unreadable)
+        self.write_review(3, supersedes=unreadable,
+                          bundle=f"APPROVED-{self.gup_id}-r03")
+        self.write_bundle(3, supersedes=historical, approves=f"REV-{self.gup_id}-r03",
+                          nodes=10)
+        self.record(*self.lineage_args())
+        self.assert_denied(self.scan())
+
+    def test_a_wrong_disposition_denies_it(self):
+        self.lineage()
+        self.record(*self.lineage_args(),
+                    disposition="historical_unreadable_bridge")
+        self.assert_denied(self.scan())
+
+    def test_a_record_without_a_reason_denies_it(self):
+        self.lineage()
+        self.record(*self.lineage_args(), reason="")
+        self.assert_denied(self.scan())
+
+    def test_another_unreadable_review_is_untouched(self):
+        """One record admits one file, never a class of them."""
+        self.lineage()
+        self.record(*self.lineage_args())
+        other = "PKT-PHB-003-004-second"
+        other_gur = self.gur(other, 1)
+        other_gup = self.gup(other, 1, other_gur, approval_ready=True)
+        path = self.root / self.REVIEWS / f"REV-{other_gup}-r01.yaml"
+        path.write_text("id: x\nbroken: like: the other one\n", encoding="utf-8")
+        self.assertIn("yaml_unreadable", self.codes(self.scan()))
+
+
+class LiveDirectPredecessorRepairCase(unittest.TestCase):
+    """DEC-2026-0068's single authorized instance, against the repository."""
+
+    UNREADABLE = "REV-GUP-PKT-PHB-117-119-bards-r04-r02"
+    SUCCESSOR = "REV-GUP-PKT-PHB-117-119-bards-r04-r03"
+    ORIGINAL = "REV-GUP-PKT-PHB-117-119-bards-r04-r01"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.result = scanner.scan_repository(REPO_ROOT)
+
+    def test_the_predecessor_is_informational_history(self):
+        found = [
+            d["ArtifactId"] for d in self.result["Diagnostics"]
+            if d["Code"] == "review_unreadable_direct_predecessor_repaired"
+        ]
+        self.assertEqual(found, [self.UNREADABLE])
+
+    def test_it_raises_no_parse_or_link_error_of_its_own(self):
+        for diagnostic in self.result["Diagnostics"]:
+            if diagnostic["Code"] not in ("yaml_unreadable", "missing_supersedes_target"):
+                continue
+            with self.subTest(code=diagnostic["Code"]):
+                self.assertNotIn(self.UNREADABLE, str(diagnostic.get("Path") or ""))
+                self.assertNotIn(self.SUCCESSOR, str(diagnostic.get("ArtifactId") or ""))
+
+    def test_no_record_is_invalid(self):
+        invalid = [
+            d["Message"] for d in self.result["Diagnostics"]
+            if d["Code"] == "review_direct_predecessor_repair_record_invalid"
+        ]
+        self.assertEqual(invalid, [])
+
+    def test_the_record_is_distinct_from_the_druid_bridge(self):
+        """The two exceptions are separate records with separate shapes.
+
+        DEC-2026-0064 bridges across a middle artifact; this one admits a direct
+        pair. Neither may be used to justify the other's file, which is why they
+        are validated by different predicates rather than one relaxed rule.
+        """
+        decisions = REPO_ROOT / "rulesets/adnd1e/escalations/decisions"
+        bridge = yaml.safe_load(
+            (decisions / "DEC-2026-0064.yaml").read_text(encoding="utf-8")
+        )
+        direct = yaml.safe_load(
+            (decisions / "DEC-2026-0068.yaml").read_text(encoding="utf-8")
+        )
+        self.assertIn("review_malformed_lineage_repairs", bridge)
+        self.assertNotIn("review_direct_predecessor_repairs", bridge)
+        self.assertIn("review_direct_predecessor_repairs", direct)
+        self.assertNotIn("review_malformed_lineage_repairs", direct)
+
+    def test_the_successor_directly_supersedes_the_unreadable_file(self):
+        document = yaml.safe_load(
+            (REPO_ROOT / "books/adnd1e/phb/artifacts/reviews"
+             / f"{self.SUCCESSOR}.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(document["supersedes"], self.UNREADABLE)
+
+
+class ImplementationReviewRepairCase(QueueScannerCase):
+    """DEC-2026-0072: the unreadable-predecessor shape, one artifact kind over.
+
+    Structurally this is DEC-2026-0068's record applied to a Decision
+    Implementation Review instead of a packet Review. They are kept separate
+    because the predicates differ in substance: what makes a packet Review's
+    successor trustworthy is its bundle and row partition, and what makes an
+    implementation Review's successor trustworthy is that it pins the same
+    report and the same Decision its unreadable predecessor was published to
+    review. A rule loose enough to cover both would check neither.
+    """
+
+    DECISION = "DEC-2026-9601"
+    SUBJECT = "DEC-2026-9602"
+    STORE = "rulesets/adnd1e/decision-implementation-reviews"
+    REPORTS = "rulesets/adnd1e/decision-implementations"
+
+    def setUp(self):
+        super().setUp()
+        self.subject_path = (
+            f"rulesets/adnd1e/escalations/decisions/{self.SUBJECT}.yaml"
+        )
+        # Deliberately not approved. The record pins this Decision by ID and
+        # checksum and requires the successor Review to name the same one; its
+        # lifecycle state is no part of the rule. Leaving it approved would add
+        # a BUILDER-DECISION item to every scan in this case and break the
+        # shared fixtures' own tests, which this class inherits.
+        self.write_yaml(self.subject_path, {
+            "id": self.SUBJECT, "status": "proposed", "ruleset_id": "adnd1e",
+            "book_id": "phb", "migration_required": False,
+            "acceptance_tests": ["only criterion"],
+            "handoff": {"next_role": "builder", "readiness": "ready",
+                        "reason": "implement", "blocking_ids": []},
+        })
+        self.report_id = f"IMP-{self.SUBJECT}-r01"
+        self.report_path = f"{self.REPORTS}/{self.report_id}.yaml"
+        self.write_yaml(self.report_path, {
+            "schema_version": "1.0", "id": self.report_id,
+            "artifact_kind": "decision_implementation", "status": "proposed",
+            "ruleset_id": "adnd1e", "constitution_version": "1.8",
+            "revision": 1, "supersedes": None, "approval_ready": True,
+            "implemented_by": "builder",
+            "decision_input": {"id": self.SUBJECT, "path": self.subject_path,
+                               "checksum": self.sha256(self.subject_path)},
+            "implementation_files": [],
+            "acceptance_results": [{"acceptance_test_index": 1,
+                                    "result": "passed", "evidence": "fixture"}],
+            "validation": {"passed": True, "commands": [{
+                "command": "[cwd tooling/common] python -m unittest discover",
+                "exit_code": 0, "result": "passed", "summary": "Ran 1 test OK"}]},
+            "handoff": {"next_role": "reviewer", "readiness": "ready",
+                        "reason": "implemented", "blocking_ids": []},
+        })
+
+    def sha256(self, relative):
+        return scanner._sha256_of(self.root / relative)
+
+    def write_review(self, revision, *, supersedes=None,
+                     disposition="revision_required", reviewed=None,
+                     decision=None):
+        artifact_id = f"REV-{self.report_id}-r{revision:02d}"
+        self.write_yaml(f"{self.STORE}/{artifact_id}.yaml", {
+            "schema_version": "1.0", "id": artifact_id,
+            "artifact_kind": "decision_implementation_review",
+            "status": disposition, "ruleset_id": "adnd1e",
+            "constitution_version": "1.8", "revision": revision,
+            "supersedes": supersedes, "reviewed_by": "reviewer",
+            "reviewed_implementation": {
+                "id": reviewed or self.report_id,
+                "path": self.report_path if not reviewed else self.report_path,
+                "checksum": self.sha256(self.report_path),
+            },
+            "decision_input": {
+                "id": decision or self.SUBJECT, "path": self.subject_path,
+                "checksum": self.sha256(self.subject_path),
+            },
+            "acceptance_dispositions": [{
+                "acceptance_test_index": 1,
+                "disposition": "verified" if disposition == "approved" else "failed",
+                "evidence": "fixture",
+            }],
+            "independent_validation": {
+                "passed": disposition == "approved",
+                "commands": [{
+                    "command": "[cwd tooling/common] python -m unittest discover",
+                    "exit_code": 0 if disposition == "approved" else 1,
+                    "result": "passed" if disposition == "approved" else "failed",
+                    "summary": "Ran 1 test OK" if disposition == "approved"
+                               else "Ran 1 test FAILED (failures=1)",
+                }],
+            },
+            "overall_disposition": disposition,
+            "handoff": {
+                "next_role": "none" if disposition == "approved" else "builder",
+                "readiness": "terminal" if disposition == "approved" else "ready",
+                "reason": "reviewed", "blocking_ids": [],
+            },
+        })
+        return artifact_id
+
+    def write_unreadable(self, revision):
+        artifact_id = f"REV-{self.report_id}-r{revision:02d}"
+        path = self.root / self.STORE / f"{artifact_id}.yaml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            f"id: {artifact_id}\nnote: broken\n"
+            "evidence: the record says: this and that\n",
+            encoding="utf-8",
+        )
+        return artifact_id
+
+    def lineage(self):
+        unreadable = self.write_unreadable(1)
+        successor = self.write_review(2, supersedes=unreadable)
+        return unreadable, successor
+
+    def pinned(self, artifact_id, directory, **extra):
+        relative = f"{directory}/{artifact_id}.yaml"
+        block = {"id": artifact_id, "path": relative,
+                 "checksum": self.sha256(relative)}
+        block.update(extra)
+        return block
+
+    def record(self, unreadable, successor, *, status="approved", **overrides):
+        entry = {
+            "disposition": "historical_unreadable_direct_predecessor",
+            "reason": "fixture unreadable implementation Review",
+            "unreadable_review": self.pinned(
+                unreadable, self.STORE,
+                parse_failure={"diagnostic_code": "yaml_unreadable",
+                               "message_fragment": "mapping values are not allowed here"},
+            ),
+            "successor_review": self.pinned(
+                successor, self.STORE,
+                required_supersedes=unreadable,
+                required_disposition="revision_required",
+            ),
+            "reviewed_implementation": {
+                "id": self.report_id, "path": self.report_path,
+                "checksum": self.sha256(self.report_path),
+            },
+            "decision_input": {
+                "id": self.SUBJECT, "path": self.subject_path,
+                "checksum": self.sha256(self.subject_path),
+            },
+        }
+        entry.update(overrides)
+        self.write_yaml(
+            f"rulesets/adnd1e/escalations/decisions/{self.DECISION}.yaml",
+            {
+                "id": self.DECISION, "status": status, "ruleset_id": "adnd1e",
+                "book_id": "phb", "migration_required": False,
+                "handoff": {"next_role": "none", "readiness": "terminal",
+                            "reason": "repaired", "blocking_ids": []},
+                "decision_implementation_review_unreadable_predecessor_repairs": [entry],
+            },
+        )
+        return entry
+
+    def codes(self, result):
+        return [item["Code"] for item in result["Diagnostics"]]
+
+    # -- without a record -----------------------------------------------------
+
+    def test_without_a_record_it_is_an_error(self):
+        self.lineage()
+        self.assertIn("yaml_unreadable", self.codes(self.scan()))
+
+    # -- with a valid record --------------------------------------------------
+
+    def test_a_complete_record_reports_one_informational_finding(self):
+        unreadable, successor = self.lineage()
+        self.record(unreadable, successor)
+        found = [
+            d for d in self.scan()["Diagnostics"]
+            if d["Code"] == "implementation_review_unreadable_predecessor_repaired"
+        ]
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0]["ArtifactId"], unreadable)
+        self.assertEqual(found[0]["Severity"], "info")
+
+    def test_the_parse_error_is_gone(self):
+        unreadable, successor = self.lineage()
+        self.record(unreadable, successor)
+        self.assertNotIn("yaml_unreadable", self.codes(self.scan()))
+
+    def test_the_repaired_predecessor_routes_no_work_of_its_own(self):
+        """It is history, not an artifact anyone acts on.
+
+        The classification says why the file is skipped and stops there: it
+        approves nothing, requests nothing, and appears in nobody's queue.
+        """
+        unreadable, successor = self.lineage()
+        self.record(unreadable, successor)
+        result = self.scan()
+        assigned = {i["InputId"] for i in result["Items"]}
+        self.assertNotIn(unreadable, assigned)
+        for item in result["Items"]:
+            with self.subTest(item=item["InputId"]):
+                self.assertNotIn(unreadable, " ".join(item["Components"]))
+
+    # -- denial cases ---------------------------------------------------------
+
+    def assert_denied(self, result):
+        codes = self.codes(result)
+        self.assertIn("implementation_review_repair_record_invalid", codes)
+        self.assertNotIn(
+            "implementation_review_unreadable_predecessor_repaired", codes
+        )
+        self.assertIn("yaml_unreadable", codes)
+
+    def test_an_inactive_decision_repairs_nothing(self):
+        unreadable, successor = self.lineage()
+        self.record(unreadable, successor, status="proposed")
+        codes = self.codes(self.scan())
+        self.assertIn("yaml_unreadable", codes)
+        self.assertNotIn(
+            "implementation_review_unreadable_predecessor_repaired", codes
+        )
+
+    def test_a_stale_checksum_on_any_pinned_artifact_denies_it(self):
+        for field in ("unreadable_review", "successor_review",
+                      "reviewed_implementation", "decision_input"):
+            with self.subTest(field=field):
+                self.setUp()
+                unreadable, successor = self.lineage()
+                entry = self.record(unreadable, successor)
+                block = dict(entry[field])
+                block["checksum"] = "sha256:" + "0" * 64
+                self.record(unreadable, successor, **{field: block})
+                self.assert_denied(self.scan())
+
+    def test_a_parseable_predecessor_denies_it(self):
+        unreadable = self.write_review(1)
+        successor = self.write_review(2, supersedes=unreadable)
+        self.record(unreadable, successor)
+        codes = self.codes(self.scan())
+        self.assertIn("implementation_review_repair_record_invalid", codes)
+        self.assertNotIn(
+            "implementation_review_unreadable_predecessor_repaired", codes
+        )
+
+    def test_a_wrong_parse_fragment_denies_it(self):
+        unreadable, successor = self.lineage()
+        entry = self.record(unreadable, successor)
+        block = dict(entry["unreadable_review"])
+        block["parse_failure"] = {"diagnostic_code": "yaml_unreadable",
+                                  "message_fragment": "found undefined alias"}
+        self.record(unreadable, successor, unreadable_review=block)
+        self.assert_denied(self.scan())
+
+    def test_a_broken_supersedes_link_denies_it(self):
+        unreadable = self.write_unreadable(1)
+        successor = self.write_review(2, supersedes=None)
+        self.record(unreadable, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_wrong_disposition_on_the_successor_denies_it(self):
+        unreadable = self.write_unreadable(1)
+        successor = self.write_review(2, supersedes=unreadable,
+                                      disposition="approved")
+        self.record(unreadable, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_successor_reviewing_another_report_denies_it(self):
+        """The one thing an unreadable predecessor cannot contradict."""
+        unreadable = self.write_unreadable(1)
+        successor = self.write_review(2, supersedes=unreadable,
+                                      reviewed="IMP-DEC-2026-9999-r01")
+        self.record(unreadable, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_successor_under_another_decision_denies_it(self):
+        unreadable = self.write_unreadable(1)
+        successor = self.write_review(2, supersedes=unreadable,
+                                      decision="DEC-2026-9999")
+        self.record(unreadable, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_schema_invalid_successor_denies_it(self):
+        unreadable, successor = self.lineage()
+        path = self.root / self.STORE / f"{successor}.yaml"
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        document.pop("constitution_version")
+        path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+        self.record(unreadable, successor)
+        self.assert_denied(self.scan())
+
+    def test_a_wrong_record_disposition_denies_it(self):
+        unreadable, successor = self.lineage()
+        self.record(unreadable, successor,
+                    disposition="historical_unreadable_bridge")
+        self.assert_denied(self.scan())
+
+    def test_a_record_without_a_reason_denies_it(self):
+        unreadable, successor = self.lineage()
+        self.record(unreadable, successor, reason="")
+        self.assert_denied(self.scan())
+
+    def test_another_unreadable_implementation_review_is_untouched(self):
+        unreadable, successor = self.lineage()
+        self.record(unreadable, successor)
+        other = self.root / self.STORE / "REV-IMP-DEC-2026-9998-r01-r01.yaml"
+        other.write_text("id: x\nbroken: like: the other\n", encoding="utf-8")
+        self.assertIn("yaml_unreadable", self.codes(self.scan()))
+
+
+class LiveImplementationReviewRepairCase(unittest.TestCase):
+    """DEC-2026-0072's single authorized instance, against the repository."""
+
+    UNREADABLE = "REV-IMP-DEC-2026-0065-r01-r01"
+    SUCCESSOR = "REV-IMP-DEC-2026-0065-r01-r02"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.result = scanner.scan_repository(REPO_ROOT)
+
+    def test_the_predecessor_is_informational_history(self):
+        found = [
+            d["ArtifactId"] for d in self.result["Diagnostics"]
+            if d["Code"] == "implementation_review_unreadable_predecessor_repaired"
+        ]
+        self.assertEqual(found, [self.UNREADABLE])
+
+    def test_it_raises_no_parse_error(self):
+        for diagnostic in self.result["Diagnostics"]:
+            if diagnostic["Code"] != "yaml_unreadable":
+                continue
+            with self.subTest(path=diagnostic.get("Path")):
+                self.assertNotIn(self.UNREADABLE, str(diagnostic.get("Path") or ""))
+
+    def test_no_record_is_invalid(self):
+        invalid = [
+            d["Message"] for d in self.result["Diagnostics"]
+            if d["Code"] == "implementation_review_repair_record_invalid"
+        ]
+        self.assertEqual(invalid, [])
+
+    def test_the_successor_pins_the_same_report_and_decision(self):
+        document = yaml.safe_load(
+            (REPO_ROOT / "rulesets/adnd1e/decision-implementation-reviews"
+             / f"{self.SUCCESSOR}.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(document["supersedes"], self.UNREADABLE)
+        self.assertEqual(
+            document["reviewed_implementation"]["id"], "IMP-DEC-2026-0065-r01"
+        )
+        self.assertEqual(document["decision_input"]["id"], "DEC-2026-0065")
+
+    def test_three_repair_kinds_coexist_without_overlapping(self):
+        """Each record admits its own file and no other.
+
+        Three exceptions now exist across two shapes. What keeps them from
+        becoming a general bypass is that each names one file by checksum, and
+        no record's predicates can be satisfied by another's artifact.
+        """
+        repaired = {
+            d["Code"]: d["ArtifactId"]
+            for d in self.result["Diagnostics"]
+            if d["Code"].endswith("_repaired")
+        }
+        self.assertEqual(
+            repaired,
+            {
+                "review_malformed_lineage_repaired":
+                    "GUR-PKT-UA-015-015-cavaliers-r02"
+                    if "GUR" in repaired.get("review_malformed_lineage_repaired", "")
+                    else "REV-GUP-PKT-PHB-054-064-druid-spells-r01-r04",
+                "review_unreadable_direct_predecessor_repaired":
+                    "REV-GUP-PKT-PHB-117-119-bards-r04-r02",
+                "implementation_review_unreadable_predecessor_repaired":
+                    self.UNREADABLE,
+            },
+        )

@@ -8,7 +8,9 @@ artifacts published before the contract remain valid without those fields.
 from __future__ import annotations
 
 import functools
+import hashlib
 import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -60,7 +62,20 @@ def _published_artifacts() -> dict[Path, dict]:
     found: dict[Path, dict] = {}
     for pattern in PUBLISHED_PATTERNS:
         for path in sorted(REPO_ROOT.glob(pattern)):
-            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            # DEC-2026-0064's pinned file will never parse. It is skipped here
+            # and checked by name in TestTheUnreadableReviewExemption, which
+            # re-derives its checksum and its parser failure; anything else that
+            # fails to parse still raises out of this sweep.
+            if is_expected_unreadable(path):
+                continue
+            try:
+                document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            except (yaml.YAMLError, UnicodeError):
+                # Named by TestNoUnrecognisedUnreadableArtifact below, which is
+                # where a parse failure belongs: one clear failure identifying
+                # the file, rather than every sweep raising the same opaque
+                # ScannerError.
+                continue
             if isinstance(document, dict):
                 found[path] = document
     return found
@@ -106,6 +121,100 @@ def _repaired_by_successor(
         if not errors(ENVELOPE, successor):
             return True
     return False
+
+
+#: DEC-2026-0064 pins one permanently unreadable published Review, identified by
+#: checksum rather than by name: a path is a claim about which file this is, and
+#: a checksum is proof. Anything else that will not parse is a defect and must
+#: keep failing the sweeps below.
+UNREADABLE_DECISION = "DEC-2026-0064"
+
+
+def _sha256(path: Path) -> str:
+    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+@functools.cache
+def _decision_unreadable_pins() -> dict[str, str]:
+    """`{relative path: checksum}` for every Decision-pinned unreadable artifact.
+
+    Read from the Decisions rather than restated here. A checksum copied into a
+    test is a second source of truth that can drift from the ruling it claims to
+    follow, and the whole point of the pin is that the exemption stops applying
+    the moment the file changes.
+    """
+    pins: dict[str, str] = {}
+    decisions = REPO_ROOT / "rulesets" / "adnd1e" / "escalations" / "decisions"
+    for path in sorted(decisions.glob("DEC-*.yaml")):
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if not isinstance(document, dict):
+            continue
+        if str(document.get("status") or "") != "approved":
+            continue
+        # Two record kinds pin an unreadable file: DEC-2026-0064's two-hop
+        # bridge and DEC-2026-0068's direct predecessor. Reading only the first
+        # would leave the second's file failing every sweep, which is the
+        # failure this loader exists to make impossible to get wrong twice.
+        for key in (
+            "review_malformed_lineage_repairs",
+            "review_direct_predecessor_repairs",
+            "decision_implementation_review_unreadable_predecessor_repairs",
+        ):
+            for record in document.get(key) or []:
+                block = (record or {}).get("unreadable_review") or {}
+                if block.get("path") and block.get("checksum"):
+                    pins[str(block["path"])] = str(block["checksum"])
+    return pins
+
+
+def is_expected_unreadable(path: Path) -> bool:
+    """Whether an approved Decision records this exact file as unreadable history."""
+    try:
+        relative = path.resolve().relative_to(REPO_ROOT).as_posix()
+    except ValueError:  # pragma: no cover - a path outside the repository
+        return False
+    expected = _decision_unreadable_pins().get(relative)
+    if expected is None:
+        return False
+    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest() == expected
+
+
+def unreadable_artifacts(paths) -> list[str]:
+    """Repository-relative paths that will not parse and are not exempt.
+
+    Fail-closed means reporting an unrecognised parse failure, not raising one.
+    A bare `yaml.safe_load` in a corpus sweep turns a single malformed file into
+    a ScannerError with no artifact name, from whichever sweep happened to run
+    first -- which is how one bad Review reads as five broken suites instead of
+    one bad Review.
+    """
+    broken = []
+    for path in paths:
+        if is_expected_unreadable(path):
+            continue
+        try:
+            yaml.safe_load(path.read_text(encoding="utf-8"))
+        except (yaml.YAMLError, UnicodeError):
+            broken.append(path.resolve().relative_to(REPO_ROOT).as_posix())
+    return sorted(broken)
+
+
+def readable_documents(paths):
+    """`(path, document)` for every artifact that parses, skipping the exemption.
+
+    Unparseable non-exempt files are left out here and reported by name in the
+    sweep's own `unreadable_artifacts` assertion, so the failure says which file
+    rather than which parser.
+    """
+    out = []
+    for path in paths:
+        if is_expected_unreadable(path):
+            continue
+        try:
+            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except (yaml.YAMLError, UnicodeError):
+            continue
+        out.append((path, document))
+    return out
 
 
 class TestLegacyArtifactsStayValid(unittest.TestCase):
@@ -478,7 +587,13 @@ class TestImplementationArtifactsValidate(unittest.TestCase):
         """
         documents = []
         for path in sorted(paths):
-            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            if is_expected_unreadable(path):
+                continue
+            try:
+                document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            except (yaml.YAMLError, UnicodeError):
+                # Reported by name in TestNoUnrecognisedUnreadableArtifact.
+                continue
             if isinstance(document, dict):
                 documents.append((path, document))
 
@@ -672,8 +787,7 @@ class TestPublishedReviewsStillValidate(unittest.TestCase):
 
     def test_every_published_review_validates(self):
         offenders = {}
-        for path in self.reviews():
-            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        for path, document in readable_documents(self.reviews()):
             found = errors(REVIEW, document)
             if found:
                 offenders[path.name] = found[0]
@@ -1048,7 +1162,12 @@ class TestReviewCorrectionContract(unittest.TestCase):
         """
         root = REPO_ROOT / "books"
         for path in sorted(root.glob("*/*/artifacts/reviews/REV-*.yaml")):
-            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            if is_expected_unreadable(path):
+                continue
+            try:
+                document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            except (yaml.YAMLError, UnicodeError):
+                continue
             if not isinstance(document, dict):
                 continue
             with self.subTest(review=path.name):
@@ -1098,4 +1217,282 @@ class TestReviewCorrectionContract(unittest.TestCase):
             if row.get("disposition") == "rejected"
         }
         self.assertEqual(rejected, set(inherited["preserved_rejected_refs"]))
+
+class TestReviewIntegratorHandoffContract(unittest.TestCase):
+    """DEC-2026-0063: Integrator handoff is reserved for something to integrate.
+
+    An Integrator record asserts one of two things: a completed canonical
+    transaction, or a nonempty set of rejected bundles. A `revision_required`
+    Review that hands Integrator a standalone pass/fail check asks for neither,
+    and the Integrator can honour it only by writing a false statement into
+    immutable provenance -- an Integration manifest for a transaction that never
+    happened, or a rejection for a check that passed. The judgment of whether a
+    GUP is approvable already belongs to the Review, and so does the evidence.
+
+    Opt-in on 1.3, so the two Reviews that produced this ruling stay valid
+    history under the contract they were written to.
+    """
+
+    def review(self, **overrides):
+        return dict(REVIEW_BASE, **overrides)
+
+    def handoff(self, role, **overrides):
+        block = {
+            "next_role": role,
+            "readiness": "ready",
+            "reason": "fixture",
+            "blocking_ids": [],
+        }
+        block.update(overrides)
+        return block
+
+    # -- what 1.3 refuses ----------------------------------------------------
+
+    def test_a_revision_required_review_may_not_hand_off_to_integrator(self):
+        document = self.review(
+            review_contract_version="1.3",
+            status="revision_required",
+            handoff=self.handoff("integrator"),
+        )
+        self.assertNotEqual(errors(REVIEW, document), [])
+
+    def test_the_denial_reads_overall_disposition_too(self):
+        """Queue derivation prefers overall_disposition, so the schema checks it.
+
+        Checking only `status` would leave the exact artifact shape the scanner
+        acts on unconstrained, which is how the two Reviews that caused this
+        ruling passed publication.
+        """
+        document = self.review(
+            review_contract_version="1.3",
+            status="approved",
+            overall_disposition="revision_required",
+            handoff=self.handoff("integrator"),
+        )
+        self.assertNotEqual(errors(REVIEW, document), [])
+
+    def test_a_blocked_readiness_does_not_excuse_it(self):
+        document = self.review(
+            review_contract_version="1.3",
+            status="revision_required",
+            handoff=self.handoff("integrator", readiness="blocked"),
+        )
+        self.assertNotEqual(errors(REVIEW, document), [])
+
+    # -- what 1.3 still accepts ----------------------------------------------
+
+    def test_an_approved_review_may_hand_its_bundle_to_integrator(self):
+        document = self.review(
+            review_contract_version="1.3",
+            status="approved",
+            overall_disposition="approved",
+            handoff=self.handoff("integrator"),
+            approved_bundle_emitted="APPROVED-GUP-PKT-PHB-999-999-fixture-r01-r01",
+        )
+        self.assertEqual(errors(REVIEW, document), [])
+
+    def test_a_revision_required_review_may_name_any_other_role(self):
+        for role in ("builder", "analyst", "architect", "reviewer", "none"):
+            with self.subTest(role=role):
+                document = self.review(
+                    review_contract_version="1.3",
+                    status="revision_required",
+                    handoff=self.handoff(role),
+                )
+                self.assertEqual(errors(REVIEW, document), [])
+
+    def test_1_3_still_enforces_the_earlier_rules(self):
+        """A new contract version adds to its predecessors rather than replacing."""
+        illegal_disposition = self.review(
+            review_contract_version="1.3",
+            edge_decisions=[{"ref": "M1", "disposition": "approved_but_excluded_from_bundle"}],
+        )
+        self.assertNotEqual(errors(REVIEW, illegal_disposition), [])
+
+        aliased_correction = self.review(
+            review_contract_version="1.3",
+            edge_decisions=[{
+                "ref": "M1",
+                "disposition": "approved_with_revision",
+                "exact_correction": {"aspect": "x"},
+            }],
+        )
+        self.assertNotEqual(errors(REVIEW, aliased_correction), [])
+
+    # -- the opt-in boundary -------------------------------------------------
+
+    def test_earlier_contracts_keep_their_treatment(self):
+        """The two Reviews that caused this ruling must stay valid history."""
+        for contract in ("1.1", "1.2", None):
+            with self.subTest(contract=contract):
+                document = self.review(
+                    status="revision_required",
+                    handoff=self.handoff("integrator"),
+                )
+                if contract is not None:
+                    document["review_contract_version"] = contract
+                self.assertEqual(errors(REVIEW, document), [])
+
+    def test_the_two_originating_reviews_are_still_valid(self):
+        """Checked by name, because the ruling says they remain immutable evidence."""
+        base = REPO_ROOT / "books/adnd1e/phb/artifacts/reviews"
+        for review_id in (
+            "REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r06",
+            "REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r05",
+        ):
+            document = yaml.safe_load(
+                (base / f"{review_id}.yaml").read_text(encoding="utf-8")
+            )
+            with self.subTest(review=review_id):
+                self.assertNotEqual(document.get("review_contract_version"), "1.3")
+                self.assertEqual(errors(REVIEW, document), [])
+
+    def test_the_two_successors_declare_1_3_and_validate(self):
+        base = REPO_ROOT / "books/adnd1e/phb/artifacts/reviews"
+        for review_id in (
+            "REV-GUP-PKT-PHB-064-079-magic-user-spells-1-4-r08-r07",
+            "REV-GUP-PKT-PHB-079-094-magic-user-spells-5-9-r07-r06",
+        ):
+            document = yaml.safe_load(
+                (base / f"{review_id}.yaml").read_text(encoding="utf-8")
+            )
+            with self.subTest(review=review_id):
+                self.assertEqual(document["review_contract_version"], "1.3")
+                self.assertEqual(document["overall_disposition"], "approved")
+                self.assertEqual(document["handoff"]["next_role"], "integrator")
+                self.assertEqual(errors(REVIEW, document), [])
+
+class TestTheUnreadableReviewExemption(unittest.TestCase):
+    """DEC-2026-0064: one file is expected not to parse, and that is checked.
+
+    An exemption that only says "skip this path" would keep skipping after the
+    file changed, which is how an exception outlives the thing it excused. So
+    the file must still hash to the checksum the Decision pinned and still fail
+    with the message the Decision recorded; if either moves, the exemption stops
+    applying and the sweeps see the file again.
+    """
+
+    RECORD = next(
+        record
+        for record in yaml.safe_load(
+            (REPO_ROOT / "rulesets/adnd1e/escalations/decisions"
+             / f"{UNREADABLE_DECISION}.yaml").read_text(encoding="utf-8")
+        )["review_malformed_lineage_repairs"]
+    )
+    EXEMPT = REPO_ROOT / RECORD["unreadable_review"]["path"]
+    BRIDGE = (
+        REPO_ROOT / "books/adnd1e/phb/artifacts/reviews"
+        / "REV-GUP-PKT-PHB-054-064-druid-spells-r01-r05.yaml"
+    )
+    SUCCESSOR = (
+        REPO_ROOT / "books/adnd1e/phb/artifacts/reviews"
+        / "REV-GUP-PKT-PHB-054-064-druid-spells-r01-r06.yaml"
+    )
+
+    def test_the_exempt_file_still_hashes_to_the_pinned_checksum(self):
+        self.assertEqual(_sha256(self.EXEMPT), self.RECORD["unreadable_review"]["checksum"])
+
+    def test_the_exempt_file_still_fails_to_parse_the_recorded_way(self):
+        with self.assertRaises(yaml.YAMLError) as caught:
+            yaml.safe_load(self.EXEMPT.read_text(encoding="utf-8"))
+        self.assertIn(
+            self.RECORD["unreadable_review"]["parse_failure"]["message_fragment"],
+            str(caught.exception),
+        )
+
+    def test_the_exemption_recognises_that_exact_file(self):
+        self.assertTrue(is_expected_unreadable(self.EXEMPT))
+
+    def test_the_bridge_and_successor_both_parse(self):
+        """The exemption covers the unreadable file only, not its lineage."""
+        for path in (self.BRIDGE, self.SUCCESSOR):
+            with self.subTest(review=path.name):
+                self.assertIsInstance(
+                    yaml.safe_load(path.read_text(encoding="utf-8")), dict
+                )
+
+    def test_the_successor_validates_against_the_review_schema(self):
+        document = yaml.safe_load(self.SUCCESSOR.read_text(encoding="utf-8"))
+        self.assertEqual(errors(REVIEW, document), [])
+
+    def test_the_exempt_set_is_exactly_what_the_decisions_pin(self):
+        """No file is exempt that an approved Decision has not named.
+
+        Written against the pins rather than a hardcoded count: DEC-2026-0068
+        added a second, and a test asserting "exactly one" would have had to be
+        edited to say "exactly two" -- which is a number, not a rule. The rule
+        is that the exempt set and the pinned set are the same set.
+        """
+        pinned = set(_decision_unreadable_pins())
+        exempt = {
+            path.resolve().relative_to(REPO_ROOT).as_posix()
+            for path in sorted((REPO_ROOT / "books").glob("*/*/artifacts/*/*.yaml"))
+            if is_expected_unreadable(path)
+        }
+        self.assertTrue(pinned, "expected at least one Decision-pinned file")
+        self.assertEqual(exempt, pinned & exempt)
+        self.assertEqual(
+            exempt,
+            {relative for relative in pinned if (REPO_ROOT / relative).is_file()
+             and relative.startswith("books/")},
+        )
+
+    def test_every_pinned_file_really_is_unreadable(self):
+        """An exemption for a file that parses is an exemption nobody needs."""
+        for relative, checksum in _decision_unreadable_pins().items():
+            path = REPO_ROOT / relative
+            with self.subTest(artifact=relative):
+                self.assertTrue(path.is_file())
+                self.assertEqual(_sha256(path), checksum)
+                with self.assertRaises(yaml.YAMLError):
+                    yaml.safe_load(path.read_text(encoding="utf-8"))
+
+    def test_another_unreadable_artifact_is_not_exempt(self):
+        """The sweeps must still break on the next one, wherever it appears."""
+        with tempfile.TemporaryDirectory() as tmp:
+            other = Path(tmp) / "REV-GUP-PKT-PHB-999-999-fixture-r01-r01.yaml"
+            other.write_text(self.EXEMPT.read_text(encoding="utf-8"), encoding="utf-8")
+            self.assertFalse(is_expected_unreadable(other))
+            with self.assertRaises(yaml.YAMLError):
+                yaml.safe_load(other.read_text(encoding="utf-8"))
+
+    def test_a_changed_exempt_file_would_lose_the_exemption(self):
+        """The checksum is the whole guard; this drives what happens without it."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            target = root / self.RECORD["unreadable_review"]["path"]
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("id: something-else\n", encoding="utf-8")
+            self.assertNotEqual(
+                _sha256(target), self.RECORD["unreadable_review"]["checksum"]
+            )
+            self.assertFalse(is_expected_unreadable(target))
+
+class TestNoUnrecognisedUnreadableArtifact(unittest.TestCase):
+    """Every parse failure is named here, once, with the file that caused it.
+
+    DEC-2026-0064 exempts exactly one pinned file. Anything else that will not
+    parse is a defect, and this is where it is reported -- so a malformed
+    artifact costs one clear failure naming the path, instead of an opaque
+    ScannerError from whichever corpus sweep reached it first.
+    """
+
+    def paths(self):
+        return sorted(REPO_ROOT.glob("books/*/*/artifacts/*/*.yaml")) + sorted(
+            REPO_ROOT.glob("rulesets/*/decision-implementation-reviews/*.yaml")
+        ) + sorted(REPO_ROOT.glob("rulesets/*/decision-implementations/*.yaml"))
+
+    def test_no_published_artifact_fails_to_parse(self):
+        self.assertEqual(
+            unreadable_artifacts(self.paths()), [],
+            "an unreadable published artifact needs a ruling, not a skip",
+        )
+
+    def test_the_exempt_file_is_not_counted_among_them(self):
+        """Guards the guard: the pinned file must not resurface here."""
+        pinned = [
+            REPO_ROOT / relative for relative in _decision_unreadable_pins()
+        ]
+        self.assertTrue(pinned)
+        self.assertEqual(unreadable_artifacts(pinned), [])
 
