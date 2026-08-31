@@ -288,18 +288,30 @@ def _rewind(root: Path, only: set[str] | None = None) -> None:
 
     # Migrations first, in reverse application order, so their before-images are
     # matched against the corpus each was measured against.
+    registered_before_migrations = set(registry.ids)
     touched |= rewind_all_migrations(root, graph, registry)
+    #: Identities a migration reversal took back out of the registry. A packet
+    #: bundle integrated later may legitimately anchor on one of them -- the
+    #: Bards r04 batch reuses `item_pipes_of_sewers`, which DEC-2026-0037
+    #: registered -- and such a bundle has to come out too, whatever `only`
+    #: says, or the clone ends holding a graph node no registry row covers.
+    stranded = registered_before_migrations - set(registry.ids)
 
     for bundle in discover(root, RULESET_ID, "phb")[0]:
         if bundle.is_direct_migration:
             continue
+        rows = read_csv_rows(bundle.edges_path)
         # A test that re-applies one bundle needs only that bundle rewound. The
         # registry is shared, so rewinding a sibling as well retires identities
         # the target depends on but does not itself register, and the re-apply
         # then fails invariant 1 on a node an earlier batch legitimately landed.
+        #
+        # The exception is a bundle stranded by the migration rewind above: a
+        # partial rewind still has to be closed under registry dependency.
         if only is not None and bundle.bundle_id not in only:
-            continue
-        rows = read_csv_rows(bundle.edges_path)
+            if not any(row["source_id"] in stranded or row["target_id"] in stranded
+                       for row in rows):
+                continue
         try:
             review = bundle.review or yaml.safe_load(
                 bundle.review_path.read_text(encoding="utf-8"))
@@ -487,6 +499,147 @@ class TestPreconditions(unittest.TestCase):
         retired = {b.bundle_id for b in queue["superseded"]}
         self.assertNotEqual(retired, set(), "fixture expects at least one retired bundle")
         self.assertEqual(retired & {b.bundle_id for b in queue["ready"]}, set())
+
+
+class TestAPartialRewindClosesOverRetiredIdentities(unittest.TestCase):
+    """DEC-2026-0075: a fixture may not strand a node it has just unregistered.
+
+    Reversing a `decision_migration_v1` replacement takes the identity it
+    registered back out of the registry. That was self-contained until a later
+    packet bundle reused one -- the Bards batch anchors an edge on
+    `item_pipes_of_sewers`, which DEC-2026-0037 registered -- and then a rewind
+    that reversed the migration without also rewinding the dependent bundle left
+    canonical referencing a node no registry row covered. Nine tests failed on a
+    corpus their own fixture had broken, and the integration that exposed it was
+    correct.
+
+    So the property is closure, not a count: whatever identities the migration
+    rewind retires, every integrated row that anchors on one of them has to come
+    out too. Everything below is derived from the clone and from live canonical
+    at the time the test runs. Nothing here names a revision, an edge total or a
+    registry total, because each of those moves on the next integration and a
+    guard that moves with the corpus is the defect this test exists to catch.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        from adnd1e_integrator.canonical import CanonicalGraph, Registry
+
+        cls._tmp = tempfile.TemporaryDirectory()
+        cls.root = Path(cls._tmp.name)
+        # The migration fixture's own clone, which is the partial rewind under
+        # test: it reverses migrations and, through `_rewind`, only whatever
+        # else that reversal makes necessary.
+        from test_migration import clone as migration_clone
+        migration_clone(cls.root)
+
+        cls.paths = CanonicalPaths(root=cls.root, ruleset_id=RULESET_ID)
+        cls.graph = CanonicalGraph.load(cls.paths)
+        cls.registry = Registry.load(cls.paths.registry)
+
+        live_paths = CanonicalPaths(root=REPO_ROOT, ruleset_id=RULESET_ID)
+        cls.live_graph = CanonicalGraph.load(live_paths)
+        cls.live_registry = Registry.load(live_paths.registry)
+        #: Identities the rewind took out, read by comparing the two registries
+        #: rather than by naming one.
+        cls.retired = set(cls.live_registry.ids) - set(cls.registry.ids)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._tmp.cleanup()
+
+    def test_the_rewind_actually_retired_a_registered_identity(self):
+        """Without this the closure tests below would pass vacuously."""
+        self.assertNotEqual(
+            self.retired, set(),
+            "the fixture reversed no registration, so it proves no closure")
+
+    def test_every_integrated_row_anchored_on_a_retired_identity_came_out(self):
+        """The closure property itself, derived from the clone's own bundles.
+
+        A row only proves anything if the live repository actually integrated
+        it, so live canonical is the filter: a row that is in live canonical and
+        anchors on a retired identity must be absent from the clone.
+        """
+        from adnd1e_integrator.canonical import read_csv_rows
+        from adnd1e_integrator.invariants import assertion_key
+
+        live_keys = {assertion_key(e) for e in self.live_graph.edges}
+        clone_keys = {assertion_key(e) for e in self.graph.edges}
+
+        dependents, checked = set(), 0
+        for bundle in discover(self.root, RULESET_ID, "phb")[0]:
+            if bundle.is_direct_migration:
+                continue
+            for row in read_csv_rows(bundle.edges_path):
+                if row["source_id"] not in self.retired and row["target_id"] not in self.retired:
+                    continue
+                key = assertion_key(row)
+                if key not in live_keys:
+                    continue
+                dependents.add(bundle.bundle_id)
+                checked += 1
+                self.assertNotIn(
+                    key, clone_keys,
+                    f"{bundle.bundle_id} anchors an integrated row on a retired "
+                    f"identity, so the rewind had to take that row out too")
+
+        self.assertNotEqual(
+            dependents, set(),
+            "no integrated bundle depends on a retired identity, so this "
+            "fixture cannot demonstrate closure and the guard is not being run")
+        self.assertGreater(checked, 0)
+
+    def test_the_dependent_belongs_to_the_packet_that_reused_the_identity(self):
+        """Derived from the manifests, not from a pinned revision.
+
+        The Bards packet is what reuses `item_pipes_of_sewers`; which revision
+        of it is current is exactly the kind of fact that rots, so the packet is
+        named and the revision is read.
+        """
+        from adnd1e_integrator.canonical import read_csv_rows
+        from adnd1e_integrator.invariants import assertion_key
+
+        live_keys = {assertion_key(e) for e in self.live_graph.edges}
+        packets = set()
+        for bundle in discover(self.root, RULESET_ID, "phb")[0]:
+            if bundle.is_direct_migration:
+                continue
+            rows = read_csv_rows(bundle.edges_path)
+            if any(assertion_key(row) in live_keys
+                   and (row["source_id"] in self.retired or row["target_id"] in self.retired)
+                   for row in rows):
+                packets.add((bundle.manifest or {}).get("packet_id"))
+        self.assertIn("PKT-PHB-117-119-bards", packets)
+
+    def test_the_clone_has_no_endpoint_without_a_registry_identity(self):
+        """Invariant 1 stated against the fixture rather than the applier."""
+        endpoints = ({e["source_id"] for e in self.graph.edges}
+                     | {e["target_id"] for e in self.graph.edges})
+        self.assertEqual(
+            sorted(endpoints - set(self.registry.ids)), [],
+            "the clone carries an edge endpoint no registry row covers")
+
+    def test_the_migration_fixture_still_verifies_and_applies(self):
+        """The clone is not merely self-consistent; it is usable.
+
+        Asserted rather than skipped on purpose. A guard that steps aside when
+        the clone looks wrong would go green on exactly the corpus that broke
+        it.
+        """
+        from test_migration import bundle_in
+
+        bundle = bundle_in(self.root)
+        verification = verify_bundle(bundle, self.root)
+        self.assertEqual(
+            [c.name for c in verification.blocking_failures], [],
+            "the migration fixture's own bundle no longer verifies on its clone")
+
+        before = {p: checksum_file(p) for p in self.paths.writable()}
+        integrate(self.root, RULESET_ID, [bundle],
+                  integration_id="INT-19700101-200", dry_run=True)
+        self.assertEqual({p: checksum_file(p) for p in self.paths.writable()}, before,
+                         "a dry run wrote to the clone")
 
 
 if __name__ == "__main__":

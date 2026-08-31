@@ -1,0 +1,115 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0075-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: integrator
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: The dependency-closure regression guard is added and every acceptance test passes. No canonical
+    or registry byte was written and no file outside the Decision's exact diff was changed.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0075
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0075.yaml
+  checksum: sha256:17794eeb6d7e19fd37b3eb52930ce53d9801ee64a50d7f068b637ac46dc917f1
+implementation_files:
+- path: tooling/integrator/tests/test_transaction.py
+  checksum: sha256:79b239c0737f1371ec4ba9edeb3ae7edbdbc26e7e350ed454b35a7511aad5615
+- path: tooling/integrator/tests/test_bundles.py
+  checksum: sha256:b48712d5138934cfb52e3e027b610c77c26070b5ec88dc9941e20995ff82ba40
+validation_report: build/reports/IMP-DEC-2026-0075-r01.validation.json
+validation_report_checksum: sha256:d1d37b8909ab812f15404c521b107d843e4c48d73023962473f5f0a4ef3a26b3
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'TestAPartialRewindClosesOverRetiredIdentities in tooling/integrator/tests/test_transaction.py,
+    five unit tests in the focused run below (Ran 12 tests in 81.266s OK). It builds the migration fixture''s
+    own clone from the current integrated corpus by calling test_migration.clone, which is the partial
+    rewind under test. Against that clone: test_the_rewind_actually_retired_a_registered_identity proves
+    the reversal took a registered identity out, so nothing below passes vacuously; test_every_integrated_row_anchored_on_a_retired_identity_came_out
+    proves every row the live repository integrated that anchors on a retired identity is absent from
+    the clone; test_the_dependent_belongs_to_the_packet_that_reused_the_identity proves the dependent
+    found this way belongs to PKT-PHB-117-119-bards, the packet that reuses item_pipes_of_sewers; test_the_clone_has_no_endpoint_without_a_registry_identity
+    proves no edge endpoint lacks a registry row; and test_the_migration_fixture_still_verifies_and_applies
+    proves the clone is usable, not merely self-consistent, by running verify_bundle with no blocking
+    failure and then a dry-run integrate that leaves every writable file byte-identical.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'Everything the guard asserts is derived at run time. The retired identity set is the difference
+    between the live registry and the clone''s registry, not a named ID. The dependent bundles are found
+    by reading each discovered bundle''s own rows and testing their endpoints against that derived set,
+    filtered by whether live canonical actually contains the row, so an unintegrated bundle cannot satisfy
+    the assertion vacuously. The packet check names PKT-PHB-117-119-bards and reads the revision from
+    the manifest, so no Bards leaf revision is pinned. No edge total, node total or registry total appears
+    anywhere in the class. There is no skipTest and no conditional early return: an invalid clone fails
+    the guard rather than stepping around it, which test_the_migration_fixture_still_verifies_and_applies
+    states in its own docstring.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: test_the_current_leaf_reaches_a_live_bucket in tooling/integrator/tests/test_bundles.py,
+    run in both commands below. It derives the leaf through _bards_leaf, which reads every APPROVED-GUP-PKT-PHB-117-119-bards-*.yaml
+    manifest and returns the single ID no other manifest names in supersedes, asserting there is exactly
+    one. It then asserts the leaf is not APPROVED-GUP-PKT-PHB-117-119-bards-r04-r02, the bundle DEC-2026-0068's
+    record withholds, and that the leaf appears in the union of the ready and integrated buckets. It
+    asserts nothing about which of those two buckets holds it, so a completed bundle satisfies it exactly
+    as a queued one does. That test currently passes with the leaf in the integrated bucket, which is
+    the state that falsified its predecessor.
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Both commands are recorded below with their working directory, exit code, result and unittest
+    verdict: the focused test_transaction run (Ran 12 tests in 81.266s OK) and the full Integrator suite
+    (Ran 222 tests in 1721.770s OK). The exact checksums of both implementation files are pinned in
+    implementation_files and re-listed in the companion validation report. No canonical data was modified:
+    rulesets/adnd1e/canonical/edges_master.csv still hashes to sha256:940adbf10f9a976cd5a46ff4a028ff55cc3437978b1abcdbf0683a9305ed1429,
+    which is the value INT-20260830-001 left, and the only writes this work performed were the new test
+    class, this report and its validation artifact.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: This report pins DEC-2026-0075 at its current checksum sha256:17794eeb6d7e19fd37b3eb52930ce53d9801ee64a50d7f068b637ac46dc917f1,
+    reports all five acceptance tests as passed, records focused and full-suite evidence with a working
+    directory in every command, publishes its companion validation report at build/reports/IMP-DEC-2026-0075-r01.validation.json
+    with its declared checksum, and is approval-ready for independent Reviewer verification. It is the
+    first revision of this lineage and supersedes nothing.
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/integrator/tests] PYTHONPATH=../src python -m unittest test_transaction -v'
+    exit_code: 0
+    result: passed
+    summary: Ran 12 tests in 81.266s OK
+  - command: '[cwd tooling/integrator] PYTHONPATH=src python -m unittest discover -s tests -t tests'
+    exit_code: 0
+    result: passed
+    summary: Ran 222 tests in 1721.770s OK
+guard_falsification_check:
+  why: A regression guard that has never been seen to fail proves only that it runs. This records that
+    the guard was falsified deliberately against the defect it exists to catch, and that the file was
+    restored byte-for-byte afterwards.
+  method: The dependency-closure clause in _rewind was temporarily replaced by the unconditional `continue`
+    it had before the repair, the focused class was run, and the file was then restored from a byte-exact
+    copy taken before the edit.
+  command: '[cwd tooling/integrator/tests] PYTHONPATH=../src python -m unittest test_transaction.TestAPartialRewindClosesOverRetiredIdentities'
+  exit_code: 1
+  result: failed
+  summary: Ran 5 tests in 8.620s FAILED (failures=2)
+  reading: test_the_clone_has_no_endpoint_without_a_registry_identity failed with ['item_pipes_of_sewers']
+    != [], which is exactly the stranded node the nine original errors reported, and the closure test
+    failed alongside it. The guard therefore fails on the defect and passes on the repair.
+  file_restored: tooling/integrator/tests/test_transaction.py hashes to sha256:79b239c0737f1371ec4ba9edeb3ae7edbdbc26e7e350ed454b35a7511aad5615
+    both before the temporary edit and after the restore, so the published implementation file is the
+    one the passing runs measured.
+scope_note: DEC-2026-0075's exact_diff_ownership assigns the Integrator exactly one file, tooling/integrator/tests/test_transaction.py,
+  and that is the only file this work changed. tooling/integrator/tests/test_bundles.py is pinned in
+  implementation_files because acceptance test 3's subject lives there and a Reviewer needs its exact
+  bytes to re-derive that result; it was not modified by this report. Its current content is the fixture
+  repair DEC-2026-0075 accepts in its own ruling as already executed, and no retrospective report is
+  owed for it.
+canonical_state: Unchanged throughout. 5103 edges, 1403 nodes, 1418 registry rows and 1691 findings,
+  the state INT-20260830-001 left. The guard reads live canonical but never writes it, and its dry-run
+  assertion checks every writable file for byte-identity before and after.

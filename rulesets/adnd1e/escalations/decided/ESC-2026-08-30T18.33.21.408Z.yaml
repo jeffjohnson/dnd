@@ -1,0 +1,141 @@
+schema_version: '1.0'
+id: ESC-2026-08-30T18.33.21.408Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-08-30'
+decision_id: DEC-2026-0075
+decided_on: '2026-08-30'
+concerns_decisions:
+- DEC-2026-0037
+- DEC-2026-0068
+- DEC-2026-0071
+- DEC-2026-0073
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: Disclosure and one prospective question. The authorized Bards r04 transaction turned nine
+    Integrator tests red on a defect in the Integrator's own fixtures, not in canonical state. The
+    Integrator has repaired the fixtures and the suite is green again; this records the repair and
+    asks whether the suite should carry a standing guard against the class of defect that produced
+    it.
+  blocking_ids: []
+question: Should the Integrator test suite carry an explicit guard against fixtures whose passing
+  state depends on a transient corpus condition, as the common suite already does for implementation-report
+  evidence? And is the disclosure below the right durable record for an Integrator tooling repair
+  that no active Decision covers, or does such a repair need its own Decision and implementation report?
+what_was_integrated:
+  integration_id: INT-20260830-001
+  bundle_id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04
+  authority: DEC-2026-0071 authorized the r04 Review and bundle and assigned the Integrator to verify
+    and integrate only a valid ordinary r04 bundle. DEC-2026-0070 and DEC-2026-0073 each gated the
+    transaction behind an approved implementation Review; both gates were open. REV-IMP-DEC-2026-0070-r02-r01
+    and REV-IMP-DEC-2026-0073-r01-r01 are approved.
+  result: 0 blocking precondition failures, 0 advisories, 57 edges added, 11 node identities registered,
+    0 invariant findings introduced. Edges 5046 to 5103, nodes 1392 to 1403, registry 1407 to 1418,
+    findings 1691 unchanged with the same per-invariant distribution of 10/9/1672. item_pipes_of_sewers
+    was reused rather than registered, exactly as DEC-2026-0071 requires.
+  manifest: rulesets/adnd1e/manifests/INT-20260830-001.json
+  validation_report: rulesets/adnd1e/reports/INT-20260830-001.validation.json
+the_defect:
+  finding: Nine Integrator tests errored and one failed immediately after the transaction. None of
+    them describes a defect in canonical state; every one describes a fixture that cannot represent
+    the corpus the transaction produced.
+  mechanism: The fixtures build a clone and rewind it to a pre-integration state. Direct migrations
+    are rewound first and unconditionally, including when the caller asked for a partial rewind of
+    named bundles. DEC-2026-0037 is a decision_migration_v1 replacement that retired item_pipes_sewer
+    in favour of item_pipes_of_sewers, and reversing it takes item_pipes_of_sewers back out of the
+    registry. Until now nothing outside that plan's own two repointed rows referenced the identity,
+    so the reversal was self-contained. The Bards r04 batch adds edge M048, which anchors on item_pipes_of_sewers
+    under the reuse_existing_identity decision DEC-2026-0071 requires. A rewind that reverses the
+    migration without also rewinding the Bards bundle therefore leaves canonical referencing a node
+    no registry row covers, and the re-apply fails invariant 1 on a corpus the fixture itself broke.
+  second_instance: Separately, test_bundles asserted that the current Bards leaf appears in the ready
+    queue. Integrating it moved it to the integrated bucket, so the assertion failed on the outcome
+    the whole DEC-2026-0068 through DEC-2026-0073 sequence exists to permit. The common suite already
+    guards this shape for implementation reports, in test_implementation_evidence.py::test_a_claim_that_something_is_the_active_leaf_is_still_true.
+    The Integrator suite has no equivalent.
+  affected_tests:
+  - test_migration.TestValidMigrationChangesExactlyWhatItDeclared (setUpClass)
+  - test_operations.TestCompareAndSwap (2 tests)
+  - test_operations.TestRegistryAdditions (3 tests)
+  - test_registration_agreement.TestAgreeingRedeclaration (2 tests)
+  - test_transaction.TestIntegrationIsAtomic.test_result_is_deterministic
+  - test_bundles.TestTheHistoricalBundleIsWithheld.test_the_current_leaf_is_still_offered
+the_repair:
+  summary: 'A partial rewind is now closed under registry dependency: a bundle whose rows anchor on
+    an identity the migration rewind retired is rewound too, whatever the caller named. The migration
+    fixture, which rewound migrations and nothing else, now goes through the same path with an empty
+    explicit set so it inherits that closure. The leaf assertion now requires the leaf to reach a
+    live bucket and never to be the withheld historical bundle, rather than requiring it to still
+    be unintegrated.'
+  files:
+  - path: tooling/integrator/tests/test_transaction.py
+    checksum: sha256:86521f84c9ea76d8d65d7e71924aa4203e3645ea8f09da950522aa1e8c2d8ed0
+    previous_checksum: sha256:6f82b6f6c1f1544016d085d6422033b9ad9c4b7f975fd751c4d3598211947a27
+    change: _rewind records the registry identities the migration rewind retires and no longer skips
+      a bundle whose rows reference one of them.
+  - path: tooling/integrator/tests/test_migration.py
+    checksum: sha256:e25e42faca908123e9f1bee868670af92361e7deab96b13369a361939bd7d51d
+    previous_checksum: null
+    change: 'clone delegates to _rewind with an empty rewind set instead of calling rewind_all_migrations
+      directly, and re-pins the plan''s provenance unconditionally. No previous checksum is stated
+      because none is independently derivable: this file is pinned by no approved implementation report,
+      and the last committed revision is older than the working state this repair started from.'
+  - path: tooling/integrator/tests/test_bundles.py
+    checksum: sha256:b48712d5138934cfb52e3e027b610c77c26070b5ec88dc9941e20995ff82ba40
+    previous_checksum: sha256:39098c63bcd3fcad866b7a805e1a02d8a41cd8fa9e66c5caea7778385924928e
+    change: test_the_current_leaf_is_still_offered becomes test_the_current_leaf_reaches_a_live_bucket
+      and accepts ready or integrated.
+  evidence: '[cwd tooling/integrator] PYTHONPATH=src python -m unittest discover -s tests -t tests
+    reports Ran 217 tests in 1588.106s OK after the repair, against Ran 210 tests in 1558.709s FAILED
+    (failures=1, errors=9) before it. Focused runs of test_migration (30 tests) and test_operations,
+    test_registration_agreement and test_bundles together (42 tests) also pass.'
+why_this_is_not_a_canonical_defect: Canonical state was verified independently of the fixtures. The
+  integrator validate command reports 5103 edges, 1403 nodes and 1691 findings with the unchanged
+  per-invariant distribution 3:10, 11:9, 16:1672, so the batch introduced nothing. item_pipes_of_sewers
+  is present in both rulesets/adnd1e/registries/nodes.csv and rulesets/adnd1e/canonical/nodes_master.csv
+  at its recomputed degree. The stranded-node error appears only inside a rewound clone, never in
+  the repository.
+disclosed_drift: 'test_transaction.py is pinned by IMP-DEC-2026-0065-r05 and test_bundles.py by IMP-DEC-2026-0070-r02,
+  both approved earlier today, so both reports now carry implementation_files_drifted_after_approval.
+  That classification is informational and the scanner states its own rule: the approved report is
+  the reviewed snapshot, and validating the current file belongs to whatever changed it. This escalation
+  is that record. Roughly thirty published reports already carry the same notice, so the condition
+  is ordinary rather than novel; what is unusual here is only that the change was made with no Decision
+  open to disclose it in.'
+recommendation: 'The Integrator recommends a standing Integrator-suite guard rather than a further
+  ruling on this instance, which is already repaired. The concrete form: a fixture that reads the
+  live corpus must assert a property that survives the corpus moving, and a test that pins a specific
+  queue bucket, revision, or count of a live artifact should state why that state cannot change. Both
+  defects above were the same mistake in different clothes -- a fixture that encoded where the corpus
+  happened to be rather than what must be true of it -- and both went green for weeks before an authorized
+  integration falsified them. If the Architect prefers such repairs to carry their own Decision and
+  implementation report, the Integrator will publish one for this change on request; the repair is
+  small, disclosed here in full, and reversible.'
+what_is_not_in_question:
+- The transaction. INT-20260830-001 verified cleanly against the published bundle, registered exactly
+  the eleven identities DEC-2026-0071 enumerates, reused item_pipes_of_sewers rather than registering
+  a twelfth, and introduced no finding.
+- DEC-2026-0037, DEC-2026-0068, DEC-2026-0071 and DEC-2026-0073, all of which remain valid. No published
+  artifact was altered and none is proposed for alteration.
+- The Integrator applier itself. Only test fixtures changed; no file under tooling/integrator/src
+  was touched by this repair.
+affected_canonical_ids: []
+migration_impact:
+  canonical_data_change: false
+  registry_change: false
+  note: This escalation proposes no canonical or registry write. The write that already occurred is
+    INT-20260830-001, performed under DEC-2026-0071 with both gating Decisions satisfied, and is recorded
+    in its own manifest and validation report.
+systemic_finding: A correct, authorized integration made the Integrator's own suite report failure.
+  Nothing in canonical state was wrong; the fixtures had quietly taken the current corpus for a fixed
+  one. That is the same class of defect the common suite already tests for in implementation evidence,
+  and the Integrator suite is where it is most likely to recur, because every transaction moves the
+  corpus these fixtures read.
+blocking: false

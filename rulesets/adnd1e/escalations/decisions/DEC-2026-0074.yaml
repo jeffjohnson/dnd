@@ -1,0 +1,202 @@
+schema_version: '1.0'
+id: DEC-2026-0074
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the Decision-handoff replacement consumption gate and remove the
+    completed-Decision phantom item class.
+  blocking_ids: []
+
+decision_date: '2026-08-30'
+escalation_id: ESC-2026-08-30T15.22.41.907Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  Must Decision handoff replacement stop emitting a Decision job once an
+  Approved Decision Implementation Review has consumed that Decision, just as
+  the ordinary direct-Decision queue rule already does?
+
+ruling: >-
+  Yes. Handoff replacement continues to suppress the originating artifact's
+  stale ready handoff, but may emit the Decision's own handoff only while the
+  Decision has outstanding work under its ordinary applicable Decision queue
+  lifecycle. It must not emit a ready or blocked Decision item after an Approved
+  Decision Implementation Review has consumed the exact active implementation
+  report leaf.
+
+  The same gate applies before terminal consumption: an active approval-ready
+  implementation report produces the ordinary Reviewer job, and an active
+  revision-required implementation Review produces the ordinary owner revision
+  job, without a second replacement Decision job. This does not remove handoff
+  replacement, rewrite immutable artifacts, or change the existing
+  same-Decision lineage-repair exemptions.
+
+rationale:
+  - >-
+    DEC-2026-0068 is complete through IMP-DEC-2026-0068-r03 and its approved
+    terminal Review, yet replacement emits Builder work solely by rereading the
+    immutable Decision handoff.
+  - >-
+    The ordinary Decision rule already has the required lifecycle distinction.
+    Reusing that distinction makes both routes agree rather than accumulating
+    a checksummed exception for every completed Decision.
+  - >-
+    The replacement still has a distinct and necessary purpose: it retires the
+    superseded originating artifact's handoff while the Decision is outstanding.
+
+affected_contracts:
+  - path: contracts/WORK_QUEUES.md
+    previous_version: '1.27'
+    new_version: '1.28'
+    change: >-
+      Require Decision handoff replacement to honor ordinary Decision
+      implementation consumption while retaining originating-artifact
+      suppression and exact lineage-repair exemptions.
+affected_registries: []
+affected_artifacts:
+  completed_decision:
+    id: DEC-2026-0068
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+    checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+  active_implementation_report:
+    id: IMP-DEC-2026-0068-r03
+    path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0068-r03.yaml
+    checksum: sha256:8c1f617e1f61f918dde6110d13a8453852929acf7d895955d5033e5cdd889eb9
+  terminal_implementation_review:
+    id: REV-IMP-DEC-2026-0068-r03-r01
+    path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0068-r03-r01.yaml
+    checksum: sha256:bc32090e8b7b27245cb66a8cfed9bb587f2c3f570ae51b52b8351be447d98c0c
+  scanner:
+    path: tooling/common/scan_agent_queues.py
+    checksum: sha256:b1332cc87a9dad2b9a61c21d37d4bbd106826a061c5108c3de3efa4be731b897
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    No artifact lineage changes. Completed Decisions remain immutable completed
+    history; only their duplicate replacement-derived queue item disappears.
+  direct_implementation: >-
+    Builder changes only common queue derivation and focused tests, then
+    publishes IMP-DEC-2026-0074-r01. No GUR, GUP, Review, Approved bundle,
+    registry, or canonical transaction is an implementation output.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, update WORK_QUEUES to version 1.28, and move the
+      escalation to decided state. Preserve all cited artifact bytes.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement the shared consumption gate in handoff replacement with focused
+      regression tests, then publish IMP-DEC-2026-0074-r01.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review the implementation report, including ordinary
+      replacement, Reviewer-report, revision-required, terminal, migration, and
+      same-Decision lineage-repair behavior.
+
+acceptance_tests:
+  - >-
+    With DEC-2026-0068, IMP-DEC-2026-0068-r03, and its approved terminal Review
+    at their pinned values, scan-agent-queues emits no DEC-2026-0068 Builder
+    item while retaining the completed history as informational evidence.
+  - >-
+    A Decision that remains unconsumed still suppresses the exact originating
+    artifact handoff and emits its specified ready or blocked Decision handoff;
+    a migration-required Builder Decision retains its ordinary migration route
+    without duplication.
+  - >-
+    An active approval-ready implementation report produces only its ordinary
+    Reviewer job, and an active revision-required implementation Review produces
+    only its ordinary implementation-owner revision job. Neither state permits
+    replacement to add a Decision job.
+  - >-
+    Superseded Decisions, integrated decision migrations, and the existing
+    same-Decision lineage-repair exemptions retain their prior behavior. The
+    change never suppresses the origin artifact unless the established exact
+    replacement conditions hold.
+  - >-
+    IMP-DEC-2026-0074-r01 pins this Decision checksum, records passing focused
+    and full applicable scanner evidence, and is approval-ready for independent
+    Reviewer verification.
+  - >-
+    contracts/WORK_QUEUES.md is Version 1.28 or later and retains the Decision
+    handoff-replacement consumption gate.
+
+acceptance_test_semantics:
+  - acceptance_test_index: 6
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.28'
+        substantive_anchors:
+          - 'Replacement always suppresses the originating artifact'
+          - 'only while the Decision itself remains unconsumed'
+          - 'must not resurrect an otherwise completed Decision'
+
+post_implementation_requirements:
+  - >-
+    Queue reports use the terminal implementation Review to classify completed
+    Decisions. Passing tests or a report without an approved Review never alone
+    establish completion.
+  - >-
+    Future immutable one-off lineage records remain valid only when a separate
+    Decision expressly authorizes them; this general lifecycle fix does not
+    broaden any exception record.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This is queue lifecycle derivation, not graph semantics.
+
+governance_changelog:
+  - >-
+    WORK_QUEUES 1.28 makes Decision handoff replacement honor ordinary Decision
+    implementation consumption and prevents completed-Decision phantom work.
+
+exact_diff:
+  contracts/WORK_QUEUES.md:
+    - 'Version 1.27 -> 1.28; gate replacement emission on ordinary Decision consumption.'
+  tooling/common/scan_agent_queues.py:
+    - 'Do not emit a replacement Decision handoff after ordinary implementation lifecycle consumption.'
+  tooling/common/tests/test_scan_agent_queues.py:
+    - 'Cover completed, report-ready, revision-required, migration, and repair-exemption replacement behavior.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0074.yaml:
+    - 'Record the completed-Decision handoff-replacement ruling.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-30T15.22.41.907Z.yaml:
+    - 'Record DEC-2026-0074 as the phantom-item class resolution.'
+
+exact_diff_ownership:
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0074.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-30T15.22.41.907Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Preserve cited Decisions and implementation lineage as immutable history.
+  builder:
+    - Implement only DEC-2026-0074 and publish its Decision Implementation Report.
+  reviewer:
+    - Review the Builder report before treating the queue correction as complete.
+  analyst:
+    - No action.
+  integrator:
+    - No action.

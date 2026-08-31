@@ -2208,9 +2208,39 @@ class Compiler:
             # the patch should contain.
             newest_covers_this_gur = directives.input_gur == gur_id
 
+            # Rows the Analyst declared and deliberately did not propose. A GUR
+            # records these with the reason they were withdrawn -- usually that
+            # the assertion is already canonical from another packet -- so a
+            # Review covering one is over-inclusive rather than wrong, and
+            # saying it "does not appear" would be inaccurate as well as
+            # unhelpful.
+            withdrawn_at_source = {
+                str(entry.get("ref")): entry
+                for entry in gur.get("canonical_duplicates_not_for_emission") or []
+                if isinstance(entry, dict) and entry.get("ref")
+            }
+
             unmatched = sorted(set(directives.rows) - {e.get("ref") for e in candidate_edges})
             for ref in unmatched:
                 directive = directives.rows[ref]
+                withdrawn = withdrawn_at_source.get(ref)
+                if withdrawn is not None:
+                    result.findings.append(
+                        Finding(
+                            "review_ref_withdrawn_at_source",
+                            "info",
+                            f"{ref} is decided by {directives.review_id or 'the Review'} "
+                            f"but {gur_id} lists it under "
+                            f"canonical_duplicates_not_for_emission with "
+                            f"builder_action "
+                            f"{str(withdrawn.get('builder_action') or 'unstated')!r}: "
+                            f"{withdrawn.get('withdrawn_because') or 'no reason recorded'} "
+                            f"The ruling is inapplicable rather than unmet, and no row "
+                            f"is emitted for it.",
+                            ref=ref,
+                        )
+                    )
+                    continue
                 # Which Review is asking decides whether a missing row is a
                 # defect, and in a chain that is not always the newest one. An
                 # early Review judged a population the Analyst has since

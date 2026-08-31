@@ -1,0 +1,75 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0072-r05-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: DEC-2026-0072's exact unreadable implementation-Review repair and staged publication preflight are independently verified.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0072-r05
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0072-r05.yaml
+  checksum: sha256:b3e42d21e9c93758a95b8e7ea7e40c51fe97ba64af91d51af1187a27d963797e
+decision_input:
+  id: DEC-2026-0072
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0072.yaml
+  checksum: sha256:f20f080c28f0fddaf66296887ffe86223931e01738dcbd46f881344ad2cbae69
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: The focused implementation-Review repair suite independently confirms only the exact unreadable r01 and its schema-valid direct r02 successor receive historical treatment.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: The focused suite exercises the Decision-pinned record-denial cases and preserves fatal treatment for any other unreadable implementation Review.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: The target-only validator suite passes its staged mapping, invalid-YAML, schema, reference, no-write, and no-corpus-read cases.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: Current role instructions require explicit-schema staged preflight before durable YAML publication.
+  - acceptance_test_index: 5
+    disposition: verified_versioned_contract_content
+    evidence: The report and Reviewer independently re-derive the Decision-authorized current contract evidence.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0072
+        path: rulesets/adnd1e/escalations/decisions/DEC-2026-0072.yaml
+        checksum: sha256:f20f080c28f0fddaf66296887ffe86223931e01738dcbd46f881344ad2cbae69
+        authorized_acceptance_test_index: 5
+      authorized_acceptance_test_index: 5
+      contracts:
+        - path: contracts/WORK_QUEUES.md
+          checksum: sha256:d615ee560701830132f62b8dc73932c748bada97692ebf6a480d867634bb4ce1
+          observed_version: '1.27'
+          minimum_version: '1.27'
+          anchors_present: [decision_implementation_review_unreadable_predecessor_repairs, Every role stages a YAML artifact outside its durable destination]
+        - path: contracts/ARTIFACT_LIFECYCLE.md
+          checksum: sha256:3e0da0f6e674ec4bbf42a51c9168370b5ea555a02e07490c57ac72c457f0df78
+          observed_version: '1.21'
+          minimum_version: '1.21'
+          anchors_present: [Before creating a durable YAML artifact, its publisher stages the intended exact, It is not a repository sweep]
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: The report, validation report, Decision, escalation, and every declared implementation-file checksum match current bytes; all direct acceptance results are passed.
+scope_assessment: >-
+  The active report corrects its own prior contract-evidence inconsistency and
+  supplies the required structured report-side evidence. The implementation
+  remains bounded to the exact historical record and publication preflight.
+independent_validation:
+  passed: true
+  commands:
+    - command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest test_scan_agent_queues.ImplementationReviewRepairCase test_scan_agent_queues.LiveImplementationReviewRepairCase test_validate_artifact -q'
+      exit_code: 0
+      result: passed
+      summary: Focused repair and target-only publication-preflight suites passed.
+    - command: JSON Schema validation and SHA-256 comparison of the report, validation report, Decision, escalation, implementation files, and current versioned contracts.
+      exit_code: 0
+      result: passed
+      summary: All declared schemas, checksums, contract versions, and substantive anchors matched.
+overall_disposition: approved

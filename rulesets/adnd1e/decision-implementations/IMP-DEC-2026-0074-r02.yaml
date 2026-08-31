@@ -1,0 +1,144 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0074-r02
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: IMP-DEC-2026-0074-r01
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0074
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0074.yaml
+  checksum: sha256:960437c9c6f643b4ab1224da81d624ad444368d7a1e4bdd0213d26e61948a1d9
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:2aa0ee46db9c3a1ae83befb00fc814bd90580f3176b3489b08b3405055e8551a
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:f9ebc0ba9ba83314aadcadc05944278efeabb58d025a8dedab81610c6994eecb
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0074.yaml
+  checksum: sha256:960437c9c6f643b4ab1224da81d624ad444368d7a1e4bdd0213d26e61948a1d9
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-30T15.22.41.907Z.yaml
+  checksum: sha256:7b6dafd3f7d7d4b1abf2431d3c37e396f677446cf300f82b537714e29e969374
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'DEC-2026-0068 no longer appears in any queue. Its report IMP-DEC-2026-0068-r03 is approved
+    by REV-IMP-DEC-2026-0068-r03-r01, which is terminal, and LiveReplacementConsumptionGateCase asserts
+    both facts rather than only the absence -- a test that checked absence alone would pass if the Decision
+    merely went missing. The completed history is retained: the originating artifact is still reported
+    superseded by handoff_replaced_by_decision, and the Decision, report and Review are unchanged on disk.
+    The same case generalises the claim, deriving every Decision whose implementation an approved Review
+    consumed and asserting none of them is queued. These unit tests ran: Ran 36 tests in 20.499s OK. Re-verified
+    against current files for this revision; the claim above is unchanged.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'An unconsumed Decision still suppresses the exact originating artifact and still raises its
+    own item: the fixture asserts the Builder item is present and the origin Review is both reported replaced
+    and absent from the queue. A blocked Decision handoff still produces a blocked item rather than a
+    ready one. A migration-required Builder Decision produces exactly one item through its ordinary migration
+    route, with no duplicate from replacement -- the guard for that predates this change and is unaffected.
+    These unit tests ran: Ran 36 tests in 20.499s OK. Re-verified against current files for this revision;
+    the claim above is unchanged.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'Both pre-terminal states are driven separately. An active approval-ready report yields exactly
+    the Reviewer job on the report and no Decision item; an active revision-required implementation Review
+    yields exactly the owner revision job on the Review and no Decision item. The gate is fed from the
+    ordinary lifecycle''s own settling points rather than recomputed, so the two rules cannot disagree
+    about whether a Decision still owes work. These unit tests ran: Ran 36 tests in 20.499s OK. Re-verified
+    against current files for this revision; the claim above is unchanged.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Suppression is untouched. The gate sits with the other emission guards, after the suppression
+    loop, so an artifact whose handoff a Decision superseded stays superseded whether or not that Decision
+    is consumed. The pre-existing guards for superseded Decision leaves and integrated decision migrations
+    are unchanged and still evaluated first. A Review with no escalation link is neither suppressed nor
+    replaced, which the fixture asserts directly. The same-Decision lineage-repair exemptions added under
+    DEC-2026-0064 and extended under DEC-2026-0073 are untouched: they address the opposite direction
+    of this defect, where replacement deleted work a Decision existed to preserve, and their live cases
+    still pass in the full suite. These unit tests ran: Ran 36 tests in 20.499s OK. Re-verified against
+    current files for this revision; the claim above is unchanged.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'This report pins DEC-2026-0074 by checksum, reports acceptance tests 1 through 4 and 6 as
+    passed against current evidence, and records passing focused evidence (36 gate tests) alongside both
+    full suites: tooling/common Ran 1147 tests in 355.081s OK, and tooling/builder Ran 690 tests in 164.064s
+    OK (skipped=38). Re-verified against current files for this revision; the claim above is unchanged.'
+- acceptance_test_index: 6
+  result: passed
+  evidence: 'contracts/WORK_QUEUES.md is pinned by checksum at Version 1.28, read from the file, against
+    the 1.28 floor DEC-2026-0074 declares. All three anchors it names are quoted rather than paraphrased
+    and were verified present in the file before publication: replacement always suppressing the originating
+    artifact, emitting only while the Decision itself remains unconsumed, and never resurrecting an otherwise
+    completed Decision. Those three clauses are the rule this implementation turns on, so the report records
+    them rather than asserting a version number. DEC-2026-0074 declares these semantics for its own acceptance
+    test 6 and is therefore its own authority. The contract is Architect-owned at sequence step 1 and
+    was not modified by this implementation; this report verifies it rather than setting it.'
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0074
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0074.yaml
+      checksum: sha256:960437c9c6f643b4ab1224da81d624ad444368d7a1e4bdd0213d26e61948a1d9
+      authorized_acceptance_test_index: 6
+    authorized_acceptance_test_index: 6
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:2a46df06f3b8f26af5c7196de329451b9f26848926693a7b90a93d38d7c95365
+      observed_version: '1.28'
+      minimum_version: '1.28'
+      anchors_present:
+      - Replacement always suppresses the originating artifact
+      - only while the Decision itself remains unconsumed
+      - must not resurrect an otherwise completed Decision
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Supersedes IMP-DEC-2026-0074-r01 in response to REV-IMP-DEC-2026-0074-r01-r01. The finding
+    is correct: acceptance test 6 asserted the contract version in prose where DEC-2026-0074 declares
+    versioned_contract_content semantics for it, and a current contract cannot stand in for a report''s
+    own record of what it checked. The implementation and all thirty-six focused tests are unchanged and
+    re-verified.
+
+
+    Acceptance test 6 now carries the structured block, with the contract path, the 1.28 floor and all
+    three anchors read from DEC-2026-0074''s own declaration rather than chosen by this report. The authority
+    is DEC-2026-0074 itself, since it declares the semantics; on the DEC-2026-0072 lineage I cited DEC-2026-0048
+    here and the scanner rejected it, which is the mistake this avoids.
+
+
+    Publishing this surfaced a defect in my own emitter worth recording. It verifies each declared anchor
+    against the contract before publishing -- a check the scanner does not perform, since the scanner
+    compares the report''s claimed anchors with the authority''s list rather than with the file. That
+    check matched anchors as exact substrings, and two of these three straddle a line break in WORK_QUEUES,
+    so it reported them absent from a file that plainly contains them. It now collapses whitespace before
+    matching: a contract is prose wrapped to a column and an anchor is a phrase, so the wrapping is not
+    meaningful. Had I trusted the Reviewer''s statement that all three were present and skipped the check,
+    the report would have published with claims I had not verified.
+
+
+    This is the second report in three days returned for this same gap, and both were mine. When a Decision
+    declares acceptance_test_semantics, prose evidence for that index is never sufficient, and the declaration
+    should be read before the evidence is written rather than after a Review sends it back.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0074-r02.validation.json
+validation_report_checksum: sha256:56cb39d566f848769170c6fa506ffea0d2bf49c227124a2fda3602245205cdb9
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 1147 tests in 355.081s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 690 tests in 164.064s OK (skipped=38)
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.ReplacementConsumptionGateCase
+      test_scan_agent_queues.LiveReplacementConsumptionGateCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 36 tests in 20.499s OK

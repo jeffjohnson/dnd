@@ -30,7 +30,7 @@ from adnd1e_integrator.checksums import checksum_file
 from adnd1e_integrator.derive import load_role_profile, rebuild_nodes
 from adnd1e_integrator.integrate import IntegrationError, integrate, verify_bundle
 from adnd1e_integrator.migration import MigrationError, read_plan
-from test_transaction import resync_registry, rewind_all_migrations
+from test_transaction import _rewind, resync_registry, rewind_all_migrations
 
 BUNDLE_ID = "APPROVED-GUP-MIG-DEC-2026-0024-0025-r05-r01"
 PLAN_PATH = "books/adnd1e/phb/artifacts/gup/GUP-MIG-DEC-2026-0024-0025-r05.yaml"
@@ -80,25 +80,24 @@ def clone(target: Path) -> Path:
         if source.exists():
             shutil.copytree(source, target / relative, dirs_exist_ok=True)
 
+    # `only=set()` rewinds the migrations and nothing else -- except a packet
+    # bundle the migration rewind would strand, which `_rewind` pulls in on its
+    # own. Rewinding migrations alone was correct until the Bards r04 batch
+    # reused `item_pipes_of_sewers`, an identity DEC-2026-0037 registered:
+    # reversing that registration then left canonical referencing a node no
+    # registry row covered, and every fixture built this way failed invariant 1
+    # on a corpus the fixture itself had broken.
     paths = CanonicalPaths(root=target, ruleset_id=RULESET_ID)
+    _rewind(target, only=set())
+
     graph = CanonicalGraph.load(paths)
     registry = Registry.load(paths.registry)
-    if rewind_all_migrations(target, graph, registry):
-        thresholds = load_role_profile(
-            target / "rulesets" / RULESET_ID / "profiles" / "roles.yaml")["thresholds"]
-        labels = {n["id"]: n["label"] for n in graph.nodes}
-        kinds = {n["id"]: n["kind"] for n in graph.nodes}
-        graph.nodes = rebuild_nodes(graph.edges, labels, kinds, thresholds)
-        resync_registry(graph, registry)
-        graph.save(paths)
-        registry.save(paths.registry)
-
-        document = load(target, PLAN_PATH)
-        document["provenance"]["canonical_checksum"] = checksum_file(paths.edges)
-        document["provenance"]["canonical_rows_read"] = len(graph.edges)
-        document["provenance"]["registry_checksum"] = checksum_file(paths.registry)
-        document["provenance"]["registry_rows_read"] = len(registry.rows)
-        rewrite(target, PLAN_PATH, document)
+    document = load(target, PLAN_PATH)
+    document["provenance"]["canonical_checksum"] = checksum_file(paths.edges)
+    document["provenance"]["canonical_rows_read"] = len(graph.edges)
+    document["provenance"]["registry_checksum"] = checksum_file(paths.registry)
+    document["provenance"]["registry_rows_read"] = len(registry.rows)
+    rewrite(target, PLAN_PATH, document)
     return target
 
 

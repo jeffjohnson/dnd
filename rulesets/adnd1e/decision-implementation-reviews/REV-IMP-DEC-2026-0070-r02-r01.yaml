@@ -1,0 +1,70 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0070-r02-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: DEC-2026-0070's manifest-authoritative bundle discovery and bounded historical exclusion are independently verified.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0070-r02
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0070-r02.yaml
+  checksum: sha256:832dd34876e5b1c72ec34ddb0bb9c1bd30056c5a07d470f7e5ccf2b6d7ecf82d
+decision_input:
+  id: DEC-2026-0070
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0070.yaml
+  checksum: sha256:6001db5c9eb07d5858c34e8aa5e99c71f8e1b1508d2995ad9c3f5bcacb88a008
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: The focused Integrator admission suite verifies the exact direct-predecessor historical exception and its required checksummed evidence.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: The focused manifest-component suite confirms the manifest is authoritative for component discovery rather than a filename-derived reconstruction.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: The focused admission suite verifies the historical-bundle exclusion is exact and fails closed when its record is altered.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: The focused admission and bundle cases preserve ordinary queue, manifest, and transaction behavior outside the bounded exception.
+  - acceptance_test_index: 5
+    disposition: verified_versioned_contract_content
+    evidence: The report and Reviewer independently re-derive DEC-2026-0070's current contract-content evidence.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0070
+        path: rulesets/adnd1e/escalations/decisions/DEC-2026-0070.yaml
+        checksum: sha256:6001db5c9eb07d5858c34e8aa5e99c71f8e1b1508d2995ad9c3f5bcacb88a008
+        authorized_acceptance_test_index: 5
+      authorized_acceptance_test_index: 5
+      contracts:
+        - path: contracts/WORK_QUEUES.md
+          checksum: sha256:d615ee560701830132f62b8dc73932c748bada97692ebf6a480d867634bb4ce1
+          observed_version: '1.27'
+          minimum_version: '1.25'
+          anchors_present: [manifest's `components` entries are the only authority for component discovery, Filename-stem component discovery remains a legacy-only fallback, historical_bundle whose approving Review is the record's exact unreadable Review]
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: The report, validation report, Decision, and every declared implementation-file checksum match current bytes; all direct acceptance results are passed.
+scope_assessment: >-
+  This report verifies bounded Integrator component-discovery and historical
+  exclusion mechanics only. It neither alters the reviewed bundle nor reopens
+  source, GUP, registry, or canonical determinations.
+independent_validation:
+  passed: true
+  commands:
+    - command: '[cwd tooling/integrator/tests] PYTHONPATH=../src python -m unittest test_admission.TestTheDirectPredecessorException test_admission.TestTheExclusionIsBoundedByItsRecord test_admission.TestOrdinarySemanticsAreUnchanged test_bundles.TestManifestComponentAuthority -q'
+      exit_code: 0
+      result: passed
+      summary: Focused direct-predecessor, bounded-exclusion, ordinary-semantics, and manifest-component cases passed.
+    - command: JSON Schema validation and SHA-256 comparison of the report, validation report, Decision, implementation files, and versioned contract evidence.
+      exit_code: 0
+      result: passed
+      summary: All declared schemas, current checksums, contract version, and substantive anchors matched.
+overall_disposition: approved

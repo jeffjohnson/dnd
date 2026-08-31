@@ -329,11 +329,25 @@ class TestTheHistoricalBundleIsWithheld(unittest.TestCase):
         self.assertEqual(len(leaves), 1, f"expected one Bards leaf, got {leaves}")
         return leaves[0]
 
-    def test_the_current_leaf_is_still_offered(self):
+    def test_the_current_leaf_reaches_a_live_bucket(self):
+        """The leaf is work or it is done; it is never the withheld bundle.
+
+        Asserting `ready` specifically encoded a transient state. The leaf was
+        integrated under DEC-2026-0071 and DEC-2026-0073 -- the outcome this
+        whole exception exists to permit -- and the assertion failed on the
+        success it was written to protect. What has to hold is that the bundle
+        no manifest supersedes is not the one the record withholds, and that it
+        reaches a bucket rather than vanishing.
+        """
         leaf = self._bards_leaf()
         self.assertNotEqual(leaf, self.HISTORICAL,
                             "the withheld bundle must never be the offered leaf")
-        self.assertIn(leaf, [b.bundle_id for b in self._queue()["ready"]])
+        queue = self._queue()
+        live = set()
+        for name in ("ready", "integrated"):
+            for entry in queue[name]:
+                live.add((entry[0] if isinstance(entry, tuple) else entry).bundle_id)
+        self.assertIn(leaf, live)
 
     def test_the_repackaged_predecessor_is_history_not_work(self):
         """WORK_QUEUES 3/4: a bundle a later bundle supersedes is not a job.

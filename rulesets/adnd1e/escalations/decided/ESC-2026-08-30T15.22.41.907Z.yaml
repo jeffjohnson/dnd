@@ -1,0 +1,149 @@
+schema_version: '1.0'
+id: ESC-2026-08-30T15.22.41.907Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-30'
+decision_id: DEC-2026-0074
+decided_on: '2026-08-30'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    WORK_QUEUES 1.3 handoff replacement asserts work for a Decision whose
+    implementation report has already been approved, so DEC-2026-0068 sits in
+    the Builder queue after being completed. The replacement is computed from
+    the Decision's handoff block and never consults consumption, so this is a
+    class of phantom item rather than one stale record.
+  blocking_ids: []
+
+question: >-
+  Must a Decision's WORK_QUEUES 1.3 handoff replacement stop asserting work once
+  that Decision has been consumed by an approved implementation Review, in the
+  same way the ordinary Decision rule already does?
+
+evidence:
+  source_excerpt: >-
+    Not applicable: this is queue derivation, not an interpretation of rulebook
+    text.
+
+  the_contradiction:
+    decision:
+      id: DEC-2026-0068
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+      checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+      handoff: {next_role: builder, readiness: ready}
+    implementation_report:
+      id: IMP-DEC-2026-0068-r03
+      path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0068-r03.yaml
+      checksum: sha256:8c1f617e1f61f918dde6110d13a8453852929acf7d895955d5033e5cdd889eb9
+      approval_ready: true
+    approving_review:
+      id: REV-IMP-DEC-2026-0068-r03-r01
+      overall_disposition: approved
+      handoff: {next_role: none, readiness: terminal}
+      finding: >-
+        DEC-2026-0068's exact Bards direct-predecessor repair is independently
+        verified at the current implementation leaf.
+    observed_item:
+      role: Builder
+      queue: BUILDER-DECISION
+      input_id: DEC-2026-0068
+      reason: >-
+        Approved Decision replaces the originating artifact's handoff; a Builder
+        action is required.
+    finding: >-
+      The Decision is complete. Its report is approved and its Review is
+      terminal. No Builder action exists or is possible, and the ordinary
+      Decision rule correctly emits nothing -- it tests for an approval-ready
+      report and finds one. The item comes only from the replacement path.
+
+  why_it_is_a_class_not_an_instance:
+    mechanism:
+      path: tooling/common/scan_agent_queues.py
+      checksum: sha256:b1332cc87a9dad2b9a61c21d37d4bbd106826a061c5108c3de3efa4be731b897
+      behaviour: >-
+        `_handoff_replacements` selects on four conditions: the Decision's
+        escalation_id resolves to a decided package, that package names an
+        artifact ID and path, the Decision carries a handoff block, and the scan
+        actually derived an item for that exact ID and path. It then emits the
+        Decision's own handoff as an item. Consumption is not among the
+        conditions, and the emission guards that follow test only for a
+        migration-required Builder handoff, a reissued Decision leaf, and an
+        integrated decision-migration.
+    consequence: >-
+      Any Decision whose escalation names an artifact that would otherwise route
+      keeps asserting its handoff forever, including after its implementation is
+      approved. Nothing retires it, because the replacement reads the Decision's
+      authored handoff rather than the lifecycle state of its work.
+  prior_instances:
+    - decision: DEC-2026-0064
+      effect: >-
+        The escalation named REV-GUP-PKT-PHB-054-064-druid-spells-r01-r06, so
+        the rule deleted the Builder item the Decision existed to expose. Builder
+        added a narrow same-Decision exemption and reported it in
+        IMP-DEC-2026-0064-r01 as the part most needing review.
+    - decision: DEC-2026-0073
+      effect: >-
+        The escalation named APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04, so the
+        rule deleted the Integrator work that Decision's ruling requires
+        preserved. The same exemption was extended, and
+        IMP-DEC-2026-0073-r01 recorded that this was the second occurrence and
+        that the rule rather than each instance deserved attention.
+    - decision: DEC-2026-0068
+      effect: >-
+        The same rule now asserts work instead of deleting it. Both directions
+        have the one cause: the replacement cannot distinguish a Decision whose
+        work is outstanding from one whose work is finished.
+
+affected_artifacts:
+  unchanged: >-
+    No Decision, report, Review, bundle, registry row, or canonical row is
+    implicated. Every artifact named here is correct as published; only queue
+    derivation misreports.
+
+options_considered:
+  - >-
+    Publish an exact checksummed record admitting this one Decision, as
+    DEC-2026-0064, DEC-2026-0068, DEC-2026-0072 and DEC-2026-0073 each did.
+    Rejected as the primary remedy: those records each answer a genuine one-off
+    about an immutable artifact, whereas every completed Decision whose
+    escalation names a routable artifact reaches this state, so the record count
+    would grow without bound and each would encode the same fact.
+  - >-
+    Remove handoff replacement. Rejected: it does real work, and the cases it
+    was built for -- a published artifact carrying a ready handoff that a later
+    ruling superseded -- are unchanged by this question.
+  - >-
+    Give the replacement the consumption test the ordinary Decision rule already
+    applies, so the two paths agree about whether a Decision still owes work.
+
+recommended_resolution: >-
+  Adopt the third option. The replacement should emit the Decision's handoff
+  only while that Decision would otherwise be queued: not consumed by an
+  approved implementation Review, and not already carrying an approval-ready
+  report awaiting one. Both conditions are already computed a few lines away for
+  the ordinary Decision item, so this makes one rule consistent with another
+  rather than inventing a third.
+
+  Suppression should keep its current behaviour. The originating artifact's
+  ready handoff really was superseded, and that stays true after the Decision
+  completes; what must stop is the Decision asserting new work of its own once
+  its work is done. The narrow same-Decision exemption Builder added under
+  DEC-2026-0064 and extended under DEC-2026-0073 stays as it is -- it addresses
+  the opposite direction of the same defect, and a general fix here does not
+  cover it.
+
+expected_migration_impact:
+  canonical_data: none
+  registry: none
+  historical_artifacts: retained unchanged
+  tooling: >-
+    Builder changes `scan_agent_queues.py` and its tests under the resulting
+    Decision. The immediate effect is that DEC-2026-0068 leaves the Builder
+    queue, which is the correct state: it is complete.

@@ -1,0 +1,110 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0073-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0073
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0073.yaml
+  checksum: sha256:a32776a089b2f13e3562c4af057c0ccc4e718007a4045fa0d8c3a2b76150373b
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:b1332cc87a9dad2b9a61c21d37d4bbd106826a061c5108c3de3efa4be731b897
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:af7a5edd654f3dfd55658991cea582b1b701c637010898b608a0ae68c58ade41
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0073.yaml
+  checksum: sha256:a32776a089b2f13e3562c4af057c0ccc4e718007a4045fa0d8c3a2b76150373b
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-30T02.59.33.458Z.yaml
+  checksum: sha256:f7eb4a556a042a4aabcb62ad7f517f32c53ad72014621959309d0ad543b77d5f
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'Every pinned artifact is re-derived. The scanner confirms that REV-GUP-PKT-PHB-117-119-bards-r04-r03
+    carries integration_rejection_input as a mapping whose id, path and checksum equal the recorded INT-20260827-001
+    reference; that the rejection record on disk declares that id and names the exact rejected bundle
+    APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01 for the exact reviewed GUP GUP-PKT-PHB-117-119-bards-r04;
+    and that the r04 Review and bundle each directly supersede their recorded predecessor, carry an integrator/ready
+    handoff, and that the bundle approves the r04 Review. The scan then reports the r01 rejection as informational
+    INTEGRATOR-REJECTED history with no Reviewer item, and the r04 bundle as ready INTEGRATOR-APPROVED
+    work. These unit tests ran: Ran 33 tests in 20.250s OK.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'Fourteen denial cases: no record; an unapproved Decision; a stale checksum on any one of
+    the six pinned artifacts, driven field-by-field; a required_field naming a different key; a rejection
+    that refuses a bundle the record does not name; a rejection naming a different GUP; a successor whose
+    supersedes link or handoff differs from the record; a bundle approving a different Review; a wrong
+    disposition; and an empty reason. In every case the record is reported invalid and the rejection keeps
+    its ordinary remediation behaviour, with the Reviewer item restored. These unit tests ran: Ran 33
+    tests in 20.250s OK.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'integration_rejection_input is not an alias and is not read for any Review the Decision does
+    not name. Driven directly: a fixture whose record names a different Review than the one carrying the
+    field leaves the ordinary REVIEWER-INTEGRATION-REJECTION item in place, even though a Review with
+    that field and that rejection ID is present. The recognised keys integration_rejection, rejection_input
+    and rejected_by are each exercised separately and each still remediates on their own. The map is keyed
+    by Review ID precisely so one artifact''s word choice cannot change how every other published Review
+    is read. These unit tests ran: Ran 33 tests in 20.250s OK.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'This report pins DEC-2026-0073 by checksum, reports acceptance tests 1 through 3 as passed
+    against current evidence, and records passing focused evidence (33 remediation tests) alongside both
+    full suites: tooling/common Ran 1111 tests in 340.408s OK, and tooling/builder Ran 684 tests in 165.564s
+    OK (skipped=38).'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Both halves of the ruling hold: the false Reviewer assignment is gone and the r04 Integrator
+    path is preserved. One thing in the implementation is my judgment and it is the part to check.
+
+
+    Removing the Reviewer item was the easy half. Preserving the r04 path was not, and the reason is worth
+    stating: this Decision''s escalation names APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04 as an originating
+    artifact, so WORK_QUEUES 1.3 replaced that bundle''s handoff with the Decision''s own and deleted
+    the exact Integrator work the ruling says to keep. It would have kept deleting it after the Decision
+    was consumed, because the replacement is computed from the Decision''s handoff rather than from whether
+    its work is outstanding. I extended the narrow same-Decision exemption already in place for DEC-2026-0064
+    to cover the successors a remediation record names, keyed on the exact (decision, artifact id, path)
+    triple. Every other artifact an escalation names is replaced as before. This is the second time that
+    interaction has bitten a Decision that names the artifact it exists to protect; the Architect may
+    want to look at the rule rather than at each instance.
+
+
+    On the alias question I took the narrow reading. integration_rejection_input is admitted for the one
+    Review the Decision names and no other, because a general alias would silently change how every published
+    Review is read on the strength of one artifact''s word choice -- and there are now four spellings
+    of this field in the corpus. A fixture proves the point directly: a second Review carrying the same
+    field and the same rejection ID keeps its ordinary Reviewer item.
+
+
+    This is the fourth checksummed exception in four days, across three record shapes. Each is narrow
+    and each is verified rather than believed. But the rate is the finding: DEC-2026-0072''s staged preflight
+    now blocks the malformed-YAML class at the source, and nothing yet addresses the field-name drift
+    -- integration_rejection_input, exact_correction, corrected_fields, corrected_row -- which has now
+    produced two separate Decisions of its own.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0073-r01.validation.json
+validation_report_checksum: sha256:c6c85c819759b4b3c8a816e207bc5b86adc84f1e587aa450675bc8373dfe1185
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 1111 tests in 340.408s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 684 tests in 165.564s OK (skipped=38)
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.RejectionRemediationRecordCase
+      test_scan_agent_queues.LiveRejectionRemediationCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 33 tests in 20.250s OK

@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0",
+  "id": "INT-20260830-002",
+  "integration_id": "INT-20260830-002",
+  "status": "rejected",
+  "ruleset_id": "adnd1e",
+  "book_id": "phb",
+  "constitution_version": "1.8",
+  "revision": 1,
+  "supersedes": null,
+  "rejected_at_utc": "2026-08-31T00:12:14.830Z",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "handoff": {
+    "next_role": "reviewer",
+    "readiness": "ready",
+    "reason": "Packaging-only correction. The approving Review approves 55 proposed nodes as bare ID strings and records no approved label or kind for any of them, so the Integrator cannot register them without inventing 55 node labels. Every reviewed edge row, the source judgment behind it, and the 9/48/0 partition are accepted and not in question.",
+    "blocking_ids": []
+  },
+  "rejected_bundles": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-PHB-054-064-druid-spells-r03-r01",
+      "bundle_checksum": "sha256:47155f638f081842455c1e4d8655d00289080b397edd34efa1bb5adade40e8d7",
+      "review_id": "REV-GUP-PKT-PHB-054-064-druid-spells-r03-r01",
+      "review_checksum": "sha256:82144ead54d141c62b90714cd1fb1cfcc61642dfbaada89714c6c51fc8c49725",
+      "gup_id": "GUP-PKT-PHB-054-064-druid-spells-r03",
+      "gup_checksum": "sha256:a186e3c0b550ffb34296c15b79d45fca45a4f2cedf101ddcfb2ba4733851786a",
+      "packet_id": "PKT-PHB-054-064-druid-spells",
+      "edge_csv": {
+        "path": "books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-054-064-druid-spells-r03-r01.edges.csv",
+        "checksum": "sha256:937d8be41a23e09cf31729cd9f956d34ba57fd60275d513d357ffd6344cdec21"
+      },
+      "manifest_path": "books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-054-064-druid-spells-r03-r01.yaml",
+      "blocking_failures": [
+        {
+          "code": "approved_node_decision_carries_no_label_or_kind",
+          "check": "node registrations are readable from the approving Review",
+          "blocking": true,
+          "result": "fail",
+          "occurrences": 55,
+          "detail": "node_registry_decisions[0] carries disposition 'approved' and count 55, but its approved_proposed_nodes value is a list of 55 bare ID strings. A registration needs the ID, the approved label and the approved kind; the Integrator registers a node with the label and kind the Review approved and is prohibited from taking them from an edge row or from the GUP. Reading this entry raises KeyError 'proposed_id' inside read_operations, which the precondition surfaces as a failure of the operation-index check."
+        }
+      ],
+      "advisory_failures": [
+        {
+          "code": "precondition_detail_is_uninformative",
+          "check": "operation index classifies every CSV row exactly once",
+          "blocking": false,
+          "detail": "The blocking failure above is reported by the Integrator as the single word 'proposed_id', the caught KeyError's argument. The check that reports it is named for the operation index, which is not the defective field. This is an Integrator-side diagnostic-quality defect, disclosed here rather than repaired, because no active Decision assigns the Integrator a change to src/adnd1e_integrator/operations.py or integrate.py and DEC-2026-0075 names only tests/test_transaction.py as the Integrator's current exact diff."
+        }
+      ],
+      "blocking_failure_count": 55,
+      "advisory_failure_count": 1,
+      "checks_evaluated": 19,
+      "checks_passed_before_this_one": "Review disposition, status, approval-readiness, open escalations, polarity approval, Integrator handoff and blocking_ids, declared review and GUP checksums, both declared component checksums, artifact schema_version, edge CSV header, the declared 57-row count, and the Review's 57 approved rows all pass against current bytes."
+    }
+  ],
+  "what_the_review_approves_correctly": "The two reuse_existing_identity decisions are complete and correct: rule_greater_mistletoe and spell_call_woodland_beings are each already registered, so neither is a further registration. The manifest's node_operations.count of 55 agrees with the Review's own count. The defect is confined to the per-node content of the approved group.",
+  "defect_attribution": {
+    "role": "reviewer",
+    "basis": "Node registrations are read from the approving Review, not from the GUP, because the approved label and kind are a Reviewer decision. This Review records the decision in aggregate and drops the per-node content that decision consists of. Every other Review in this book that approves registrations states them per node with proposed_id, submitted_label, kind, basis and edges_depending_on_it; this is the only one that does not, and no Decision, contract or schema authorises the aggregate form.",
+    "not_builder": "No GUP revision is implied. GUP-PKT-PHB-054-064-druid-spells-r03 already carries all 55 proposals with proposed_id, proposed_label, kind, why_needed and edges_depending_on_it, each at disposition reviewer_may_approve. The Builder's work is complete; what is missing is the Reviewer's restatement of it as approved decisions.",
+    "not_integrator": "The Integrator has neither reinterpreted source nor proposed a label, kind or identity of its own. Doing so for 55 nodes is the interpretation the role is prohibited from performing, and DEC-2026-0071 settled the same question for the Bards packet: a Review that cannot reproduce its exact node decisions escalates rather than has a registration invented for it."
+  },
+  "remediation": [
+    "Publish a successor Review that states each of the 55 approved registrations individually, in the same shape every other approved Review in this book uses: proposed_id, submitted_label, kind, basis, and edges_depending_on_it.",
+    "The approved label and kind for all 55 are already available in the reviewed GUP at node_changes.additions_proposed, pinned by the checksum this Review approves, as proposed_label and kind. Restating them is a packaging correction, not a new source judgment.",
+    "The correspondence was re-derived rather than assumed and is exact: the Review's 55 approved_proposed_nodes and the GUP's 55 additions_proposed proposed_id values are the same 55 IDs in the same order with no difference in either direction, every GUP entry carries both proposed_label and kind, and the GUP still hashes to the checksum the Review pins. The repair is therefore a one-to-one restatement with nothing left to decide.",
+    "Keep the two reuse_existing_identity decisions unchanged and keep the emitted bundle's 57-row component, its 9/48/0 operation partition and its node_operations.count of 55 as they are. Nothing else in this bundle is disputed.",
+    "Preserve this bundle and its approving Review as immutable history. Neither is repaired in place."
+  ],
+  "canonical_state": {
+    "unchanged": true,
+    "edges": 5103,
+    "nodes": 1403,
+    "registry": 1418,
+    "edges_master_checksum": "sha256:940adbf10f9a976cd5a46ff4a028ff55cc3437978b1abcdbf0683a9305ed1429",
+    "note": "Verification failed before the transaction runner was called. No snapshot was taken, no canonical or registry file was opened for writing, and no Integration manifest, validation report or diff was produced. The counts above are the state left by INT-20260830-001 and are unchanged by this refusal."
+  },
+  "governing_decisions": [
+    {
+      "id": "DEC-2026-0047",
+      "role": "packaging-only correction ownership"
+    },
+    {
+      "id": "DEC-2026-0003",
+      "role": "Node prefix, kind and ID-form approval, the routing basis the GUP cites for all 55 proposals."
+    },
+    {
+      "id": "DEC-2026-0071",
+      "role": "Precedent that a Review which cannot supply its exact node decisions escalates rather than permits a registration to be inferred."
+    }
+  ]
+}

@@ -1,0 +1,183 @@
+schema_version: '1.0'
+id: DEC-2026-0075
+status: approved
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-117-119-bards
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Add an explicit regression guard proving partial fixture rewinds close over
+    retired registry identities and their dependent integrated bundles.
+  blocking_ids: []
+
+decision_date: '2026-08-30'
+escalation_id: ESC-2026-08-30T18.33.21.408Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  Is the disclosed Bards fixture repair a sufficient durable record for an
+  Integrator-owned test-only correction, and what standing guard must prevent a
+  fixture from passing only because it assumes a transient corpus state?
+
+ruling: >-
+  The disclosed repair is accepted as an Integrator-owned test-fixture correction
+  under the existing integration authority. It changes no production applier,
+  source assertion, Approved bundle, registry, or canonical data. This Decision
+  and its decided escalation are the durable record for that completed repair;
+  no retrospective Decision Implementation Report is required for the already
+  executed exact changes.
+
+  A new explicit regression guard is required. Integrator must prove that a
+  partial fixture rewind closes over every integrated packet bundle whose rows
+  reference an identity retired by a rewound migration. It must prove the
+  resulting clone has no endpoint lacking a registry identity and can execute
+  the migration fixture's normal verification path. The existing Bards-leaf
+  test is retained as the complementary guard: it derives the current leaf and
+  accepts a live `ready` or `integrated` bucket, never a fixed transient bucket.
+  This new guard is prospective work and therefore requires an ordinary Decision
+  Implementation Report and independent Review.
+
+rationale:
+  - >-
+    The transaction manifest and validation report show a clean authorized Bards
+    integration. The failure occurred only in clones after their own partial
+    rewind removed a registry identity still referenced by an integrated bundle.
+  - >-
+    Integrator owns test fixtures and must be able to repair them while executing
+    an authorized transaction. Requiring a retroactive Decision for that repair
+    would misstate its authorization and delay confirmation of canonical state.
+  - >-
+    A named dependency-closure test detects the causal condition directly,
+    instead of depending on a collection of unrelated tests to fail together.
+
+affected_contracts: []
+affected_registries: []
+affected_artifacts:
+  integration_manifest:
+    id: INT-20260830-001
+    path: rulesets/adnd1e/manifests/INT-20260830-001.json
+    checksum: sha256:f3091e19fb5135e071c1aed40d0156a157504c9cbd1bd36984f51bb7be74cead
+  integration_validation_report:
+    path: rulesets/adnd1e/reports/INT-20260830-001.validation.json
+    checksum: sha256:ce0d7a7d251e6c47034ad549844695531660edeb9d9136479dc4302911630948
+  active_bundle:
+    id: APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04
+    path: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04.yaml
+    checksum: sha256:b125f97b06294e15e58fafa1faa09ddc764719696d4fb25aaa7931923c338d5d
+  current_fixture_repair:
+    transaction_test:
+      path: tooling/integrator/tests/test_transaction.py
+      checksum: sha256:86521f84c9ea76d8d65d7e71924aa4203e3645ea8f09da950522aa1e8c2d8ed0
+    migration_test:
+      path: tooling/integrator/tests/test_migration.py
+      checksum: sha256:e25e42faca908123e9f1bee868670af92361e7deab96b13369a361939bd7d51d
+    bundle_test:
+      path: tooling/integrator/tests/test_bundles.py
+      checksum: sha256:b48712d5138934cfb52e3e027b610c77c26070b5ec88dc9941e20995ff82ba40
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: none
+  direct_implementation: >-
+    Integrator adds only the explicit fixture dependency-closure regression guard
+    and publishes IMP-DEC-2026-0075-r01. No transaction, GUR, GUP, Review,
+    Approved bundle, registry, or canonical artifact changes.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision and move the escalation to decided state. Preserve
+      the Bards integration and disclosed current fixture-repair bytes.
+  - step: 2
+    owner: integrator
+    action: >-
+      Add the named dependency-closure regression guard using a clone of current
+      repository state. Publish IMP-DEC-2026-0075-r01 with focused and full
+      Integrator-suite evidence.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review the report and verify the new test proves closure
+      rather than a fixed canonical count, queue bucket, or fixture-specific
+      hardcoded leaf revision.
+
+acceptance_tests:
+  - >-
+    A focused test constructs the current partial migration-fixture rewind from
+    the integrated corpus, rewinds a migration that retires
+    item_pipes_of_sewers, and proves the Bards r04 dependent bundle is rewound
+    as required for closure. The clone has no edge endpoint without a registry
+    identity and the normal migration-fixture verification succeeds.
+  - >-
+    The test derives dependency from the clone's actual bundle rows and retired
+    registry identities. It does not pass by pinning a pre-integration edge or
+    registry count, by naming a fixed Bards leaf revision, or by allowing an
+    invalid clone to skip verification.
+  - >-
+    test_the_current_leaf_reaches_a_live_bucket derives the Bards leaf from
+    manifest lineage, rejects the withheld historical bundle, and accepts only
+    `ready` or `integrated` as live outcomes. It does not assert that a completed
+    bundle remains in `ready`.
+  - >-
+    The focused fixture tests and the full Integrator suite pass. The report
+    records their commands, exit codes, results, and the exact implementation
+    file checksums without modifying canonical data.
+  - >-
+    IMP-DEC-2026-0075-r01 pins this Decision checksum, reports every acceptance
+    test as passed, and is approval-ready for independent Reviewer verification.
+
+post_implementation_requirements:
+  - >-
+    An Integrator fixture that reads live corpus state asserts an invariant that
+    survives a successful authorized integration, not a pre-integration count,
+    fixed queue bucket, or fixed active revision unless that state is itself the
+    invariant under test.
+  - >-
+    This Decision does not retroactively convert the disclosed fixture repair
+    into a canonical defect or invalidate INT-20260830-001.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This is Integrator test-fixture behavior, not graph semantics.
+
+governance_changelog:
+  - >-
+    DEC-2026-0075 records the Bards fixture repair as authorized Integrator
+    maintenance and requires a direct dependency-closure regression guard.
+
+exact_diff:
+  tooling/integrator/tests/test_transaction.py:
+    - 'Add a focused dependency-closure fixture regression guard.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0075.yaml:
+    - 'Record the fixture-repair disposition and prospective guard.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-30T18.33.21.408Z.yaml:
+    - 'Record DEC-2026-0075 as the fixture-guard resolution.'
+
+exact_diff_ownership:
+  - {path: tooling/integrator/tests/test_transaction.py, owner: integrator, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0075.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-30T18.33.21.408Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: integrator
+follow_up_owners:
+  architect:
+    - Preserve the completed Bards integration and disclosed fixture repair.
+  builder:
+    - No action.
+  reviewer:
+    - Review the Integrator report for DEC-2026-0075.
+  analyst:
+    - No action.
+  integrator:
+    - Implement only the explicit dependency-closure regression guard and publish its report.

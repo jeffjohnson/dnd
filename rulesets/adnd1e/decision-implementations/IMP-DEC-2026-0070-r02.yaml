@@ -1,0 +1,176 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0070-r02
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 2
+supersedes: IMP-DEC-2026-0070-r01
+approval_ready: true
+implemented_by: integrator
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: Manifest-authoritative component discovery and the exact validated historical-bundle exclusion
+    are implemented and every acceptance test passes. The contract evidence is re-read at WORK_QUEUES
+    Version 1.27 and the companion validation report is published. No canonical or registry byte has
+    been written.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0070
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0070.yaml
+  checksum: sha256:6001db5c9eb07d5858c34e8aa5e99c71f8e1b1508d2995ad9c3f5bcacb88a008
+implementation_files:
+- path: tooling/integrator/src/adnd1e_integrator/admission.py
+  checksum: sha256:f83d7dc15dc8c6bceeacd8f962ba60fbe9573783cc553a68aac5fee41c998da8
+- path: tooling/integrator/src/adnd1e_integrator/bundles.py
+  checksum: sha256:c04cf9b9e14e9ceb65650a69ec4de9af61c62fde824f1b8d0cd00f339d901820
+- path: tooling/integrator/src/adnd1e_integrator/cli.py
+  checksum: sha256:70b8558769144297763957f4bc7b0cc29f93cd0d64b580b47a7cde8e1813be1c
+- path: tooling/integrator/tests/test_admission.py
+  checksum: sha256:957bfd37d0ba228625f17d499b06c08c63bdf41e6a42d7ba23e32793ef1beb3c
+- path: tooling/integrator/tests/test_bundles.py
+  checksum: sha256:39098c63bcd3fcad866b7a805e1a02d8a41cd8fa9e66c5caea7778385924928e
+validation_report: build/reports/IMP-DEC-2026-0070-r02.validation.json
+validation_report_checksum: sha256:15b0cfda15c6b703ff3f7e5289ba35f638d53074a6c77a0c01d6e419fa3a1106
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'TestTheDirectPredecessorException in the test_admission run (Ran 42 tests in 1147.029s
+    OK) and TestTheHistoricalBundleIsWithheld in the test_bundles run (Ran 20 tests in 158.323s OK).
+    With DEC-2026-0068 active at its pinned checksum the r02 Review is validated as unreadable evidence
+    with no content read, exactly one historical_unreadable_review notice names it, there is no fatal
+    admission diagnostic, and the Bards bundle is offered through ordinary verification. One deviation
+    from this test''s wording, disclosed rather than glossed: the bundle offered is APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04,
+    not r03. After this Decision was written the Integrator escalated two blocking verification failures
+    against r03, and DEC-2026-0071 authorised the Reviewer to publish exactly one r04 Review and bundle
+    succeeding r03. DEC-2026-0073 has since confirmed that the r04 bundle remains ordinary Integrator
+    work. The mechanism this test specifies is what was verified; only the revision of its subject moved.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: TestManifestComponentAuthority in the test_bundles run (Ran 20 tests in 158.323s OK). The
+    r03 manifest resolves its sole edges component from the declared r01 path and checksum despite the
+    differing filename stem; adding, removing and renaming a colocated r03-stem CSV leaves the result
+    identical; and a missing, outside-root, wrong-kind or checksum-invalid declared component is diagnostic
+    and yields no ready Bards bundle. Manifestless legacy bundles still infer by stem and direct decision-migration
+    manifests still carry no edge CSV, with a colocated CSV reported as a diagnostic.
+- acceptance_test_index: 3
+  result: passed
+  evidence: TestTheExclusionIsBoundedByItsRecord in the test_admission run (Ran 42 tests in 1147.029s
+    OK), plus the live corpus. The exact r02 bundle is reported only as historical_unadmitted_bundle
+    authorised by DEC-2026-0068 and appears in no ready, rejected, integrated or superseded bucket.
+    Altering its ID or checksum in the record, giving it a readable approving Review, or making the
+    unreadable Review parse again each removes the exclusion and restores the fail-closed review_yaml_unreadable
+    diagnostic with exit code 2 and no traceback, never admitting r02. The denial assertions check the
+    ready, integrated and rejected buckets and the informational notice; the superseded bucket is deliberately
+    excluded there, because r03's own manifest names r02 in supersedes and that is a readable fact about
+    a readable file which holds whether or not the record validates. Under a valid record r02 is withheld
+    before any bucketing, so this test's no-superseded requirement holds and is asserted directly.
+- acceptance_test_index: 4
+  result: passed
+  evidence: The full Integrator suite passes (Ran 217 tests in 1586.350s OK). The Druid two-hop admission,
+    every other unreadable Review, legacy manifestless inference, decision-migration no-edge-CSV discovery,
+    ordinary rejection handling, named-bundle dry runs and rollback behaviour are unchanged. test_the_druid_form_still_works_alongside_it
+    suspends DEC-2026-0068 and asserts the Druid notice survives while the Bards exception is denied,
+    and the Druid denial suite asserts the converse, so neither exception absorbs the other. No delegation
+    may name a field of its own choosing and a self-delegating Decision is refused.
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'contracts/WORK_QUEUES.md is Version 1.27, above the required 1.25, and retains all three
+    rules, each re-read in the file at its current checksum. DEC-2026-0072 raised the contract from
+    1.26 to 1.27 after the previous revision recorded its reading; the amendment adds the staged publication
+    preflight and the unreadable implementation-Review record and leaves all three anchors this Decision
+    authorises untouched. The anchor list below reproduces those three authorized anchors, and one of
+    them differs from the contract by one detail worth recording rather than smoothing over: the third
+    anchor is written without backticks, while the contract writes the same sentence as "may name one
+    `historical_bundle` whose approving Review is the record''s exact unreadable Review". The difference
+    is markdown code formatting on a single token; the rule itself is present, complete and unchanged
+    in substance, and a Reviewer can confirm that by searching the contract for the sentence as quoted
+    here.'
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0070
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0070.yaml
+      checksum: sha256:6001db5c9eb07d5858c34e8aa5e99c71f8e1b1508d2995ad9c3f5bcacb88a008
+      authorized_acceptance_test_index: 5
+    authorized_acceptance_test_index: 5
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:d615ee560701830132f62b8dc73932c748bada97692ebf6a480d867634bb4ce1
+      observed_version: '1.27'
+      minimum_version: '1.25'
+      anchors_present:
+      - manifest's `components` entries are the only authority for component discovery
+      - Filename-stem component discovery remains a legacy-only fallback
+      - historical_bundle whose approving Review is the record's exact unreadable Review
+- acceptance_test_index: 6
+  result: passed
+  evidence: This report pins DEC-2026-0070 at its current checksum, records focused test_admission and
+    test_bundles runs and the full Integrator suite (Ran 42 tests in 1147.029s OK; Ran 20 tests in 158.323s
+    OK; Ran 217 tests in 1586.350s OK), names a working directory in every command, reports all six
+    acceptance tests as passed, publishes its companion validation report at build/reports/IMP-DEC-2026-0070-r02.validation.json
+    with its declared checksum, and is approval-ready. It claims no implementation of DEC-2026-0069;
+    that lineage was closed separately.
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/integrator/tests] PYTHONPATH=../src python -m unittest test_admission -v'
+    exit_code: 0
+    result: passed
+    summary: Ran 42 tests in 1147.029s OK
+  - command: '[cwd tooling/integrator/tests] PYTHONPATH=../src python -m unittest test_bundles -v'
+    exit_code: 0
+    result: passed
+    summary: Ran 20 tests in 158.323s OK
+  - command: '[cwd tooling/integrator] PYTHONPATH=src python -m unittest discover -s tests -t tests'
+    exit_code: 0
+    result: passed
+    summary: Ran 217 tests in 1586.350s OK
+live_queue_observation:
+  command: '[cwd tooling/integrator] PYTHONPATH=src python -m adnd1e_integrator.cli --repo-root=../..
+    --books=phb queue'
+  exit_code: 1
+  meaning_of_exit_1: Ready work exists. It is not a failure code and this is not a unittest command,
+    so it is recorded here as an observation rather than in validation.commands, where exit code, result
+    and unittest verdict must agree.
+  reading: 'ready_count 1 (APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04), queue_integrity [], diagnostics
+    [], three informational notices: two historical_unreadable_review (Druid r01-r04, Bards r04-r02)
+    and one historical_unadmitted_bundle (Bards r04-r02). Exit 1 means ready work, not failure. OK'
+why_this_revision: Two corrections, neither of them to the implementation. First, DEC-2026-0072 raised
+  contracts/WORK_QUEUES.md from Version 1.26 to 1.27 after the previous revision was published, so its
+  acceptance test 5 pinned a checksum and an observed version the file no longer carries and the common
+  queue scanner reported decision_implementation_invalid against it. The contract was re-read at sha256:d615ee560701830132f62b8dc73932c748bada97692ebf6a480d867634bb4ce1
+  and all three authorised anchors are still present, so only the file moved. Second, the previous revision
+  published no companion validation report, the same omission REV-IMP-DEC-2026-0065-r04-r01 identified
+  in the sibling lineage; this revision publishes one and declares its checksum. Every implementation
+  file still hashes to the checksum the previous revision recorded, and all six acceptance tests were
+  re-run against those bytes (Ran 42 tests in 1147.029s OK; Ran 20 tests in 158.323s OK; Ran 217 tests
+  in 1586.350s OK).
+additional_repair_disclosed: While verifying acceptance test 4 the Integrator found that ready_queue
+  computed leaf-ness for GUPs and for Review lineages but never for Approved bundles themselves, so
+  both APPROVED-GUP-PKT-PHB-117-119-bards-r04-r03 and its declared successor r04 were offered as ready
+  at once. A repackaging successor keeps its predecessor's GUP and leaves its Review lineage approved,
+  so neither existing check retires it; every earlier case was masked because a rejection record happened
+  to cover the predecessor. WORK_QUEUES core rules 3, 4 and 6 make leaf-ness a property of the artifact
+  kind, and the common queue scanner already read it that way and offered only r04. bundles.py gains
+  superseded_bundle_ids, which reads each approved manifest's own supersedes declaration. This is tooling
+  conformance with a standing contract rule rather than a new rule, it is disclosed here rather than
+  folded silently into the Decision's diff, and it is what makes DEC-2026-0071 acceptance test 4, r04
+  evaluated as the ordinary current bundle leaf, true of this tooling.
+sequencing_note: 'DEC-2026-0070 permits ordinary bundle verification and transaction handling only after
+  an approved implementation Review consumes this report, and DEC-2026-0073 further directs the Integrator
+  to retain the ordinary r04 bundle work until its own scanner implementation is approved. No canonical
+  or registry byte has been written: canonical remains at 5046 edges, 1392 nodes, 1407 registry rows
+  and 1691 findings, and edges_master.csv still hashes to the checksum recorded in this report''s validation
+  artifact. One read-only dry run was executed against r04 to obtain the verification evidence cited
+  in acceptance test 1; it wrote nothing and took no snapshot.'
+governing_decision:
+  id: DEC-2026-0068
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+  checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+  note: 'Re-derived independently from the files rather than trusted: both supersession links, the parse
+    failure and its fragment, the successor disposition and handoff, the reviewed GUP and emitted bundle,
+    the JSON rejection record, the 57-row CSV component by hash, and the declared 29/28/0 partition
+    with 11 registrations against the bundle''s own operation_index. All agree. DEC-2026-0071 confirms
+    the record stays valid while r03 remains byte-identical at its pinned path and checksum, which was
+    re-verified again for this revision.'

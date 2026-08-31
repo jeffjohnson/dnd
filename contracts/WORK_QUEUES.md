@@ -1,6 +1,6 @@
 # Agent Work Queue Contract
 
-**Version 1.27.**
+**Version 1.28.**
 
 ## Purpose
 
@@ -202,6 +202,20 @@ changes queue state because the Architect has resolved the question that caused
 the earlier handoff. Free-text references do not replace a handoff: the decided
 escalation must supply the exact originating artifact ID and path. A Decision
 that does not satisfy this section leaves the existing artifact handoff intact.
+
+Replacement always suppresses the originating artifact's earlier ready item,
+but it emits the Decision's own handoff only while the Decision itself remains
+unconsumed under its applicable Decision queue rule. An active
+approval-ready Decision Implementation Report routes the ordinary Reviewer
+job; an active revision-required implementation Review routes the ordinary
+implementation-owner revision job; and an Approved implementation Review emits
+no Decision work. A replacement must not resurrect an otherwise completed
+Decision merely because its immutable Decision handoff remains `ready`.
+
+This consumption gate does not weaken replacement suppression and does not
+change the existing same-Decision lineage-repair exemptions. It only prevents a
+completed Decision from asserting a second, impossible job after the ordinary
+Decision lifecycle has consumed it.
 
 When multiple eligible Decisions name the same active artifact ID and path, only
 the later Decision applies. Order candidates by `decision_date`, then Decision

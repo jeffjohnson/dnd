@@ -3394,6 +3394,222 @@ def _implementation_review_repairs(
     return repairs
 
 
+REJECTION_REMEDIATION_KEY = "integration_rejection_historical_remediations"
+
+
+def _rejection_remediation_errors(
+    root: Path, decision_id: str, index: int, record: Any
+) -> list[str]:
+    """Why one historical rejection-remediation record cannot be trusted, or [].
+
+    The record claims a Review already answered a rejection under a field name
+    the loader does not read. What makes that safe to believe is not the claim
+    but the chain around it: the named field must actually hold the named
+    rejection, that rejection must actually name the bundle it refused and the
+    GUP under review, and the successor Review and bundle must actually be the
+    ready Integrator work the remediation produced. All of it is re-derived.
+    """
+    label = f"{decision_id} {REJECTION_REMEDIATION_KEY}[{index}]"
+    if not isinstance(record, dict):
+        return [f"{label} is not a mapping"]
+
+    errors: list[str] = []
+    if str(record.get("disposition") or "") != "historical_rejection_remediation":
+        errors.append(
+            f"{label} declares disposition {record.get('disposition')!r} rather than "
+            f"'historical_rejection_remediation'"
+        )
+    if not str(record.get("reason") or "").strip():
+        errors.append(f"{label} records no reason")
+
+    documents: dict[str, dict[str, Any]] = {}
+    for field in (
+        "rejection_recording_review",
+        "active_successor_review",
+        "active_successor_bundle",
+        "reviewed_gup",
+        "rejected_bundle",
+        "governing_decision",
+    ):
+        found, document = _pinned_artifact_errors(
+            root, f"{label} {field}", record.get(field), must_parse=True
+        )
+        errors.extend(found)
+        if document is not None:
+            documents[field] = document
+
+    rejection_block = record.get("integration_rejection")
+    errors.extend(
+        _pinned_file_errors(root, f"{label} integration_rejection", rejection_block)
+    )
+    if len(documents) < 6 or errors:
+        return errors
+
+    # The field the record says carries the reference must carry exactly it.
+    recording = record["rejection_recording_review"]
+    field_name = str(recording.get("required_field") or "")
+    if not field_name:
+        return errors + [f"{label} rejection_recording_review names no required_field"]
+    stated = documents["rejection_recording_review"].get(field_name)
+    if not isinstance(stated, dict):
+        errors.append(
+            f"{label} expects {recording['id']} to carry {field_name!r} as a mapping; "
+            f"it holds {type(stated).__name__}"
+        )
+    else:
+        for key in ("id", "path", "checksum"):
+            if str(stated.get(key) or "") != str(rejection_block.get(key) or ""):
+                errors.append(
+                    f"{label} {recording['id']}.{field_name} records {key} "
+                    f"{stated.get(key)!r}, not the recorded {rejection_block.get(key)!r}"
+                )
+
+    # The rejection must be the one that refused this bundle, for this GUP.
+    try:
+        rejection = json.loads(
+            (root / str(rejection_block["path"])).read_text(encoding="utf-8")
+        )
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        return errors + [f"{label} integration_rejection is not readable JSON: {exc}"]
+
+    if str(rejection.get("id") or "") != str(rejection_block.get("id") or ""):
+        errors.append(
+            f"{label} integration_rejection names {rejection_block.get('id')!r}, but "
+            f"the record on disk declares {rejection.get('id')!r}"
+        )
+    entries = rejection.get("rejected_bundles")
+    entries = entries if isinstance(entries, list) else []
+    wanted_bundle = str(record["rejected_bundle"].get("id") or "")
+    wanted_gup = str(record["reviewed_gup"].get("id") or "")
+    matched = [
+        entry for entry in entries
+        if isinstance(entry, dict)
+        and str(entry.get("bundle_id") or "") == wanted_bundle
+        and str(entry.get("gup_id") or "") == wanted_gup
+    ]
+    if not matched:
+        errors.append(
+            f"{label} expects {rejection_block.get('id')} to have refused "
+            f"{wanted_bundle} for {wanted_gup}; it names "
+            f"{sorted({str(e.get('bundle_id')) for e in entries if isinstance(e, dict)})}"
+        )
+
+    # The successors the remediation produced, each read from its own file.
+    for field, predecessor_key in (
+        ("active_successor_review", "rejection_recording_review"),
+        ("active_successor_bundle", None),
+    ):
+        block = record[field]
+        required = str(block.get("required_supersedes") or "")
+        actual = str(documents[field].get("supersedes") or "")
+        if required and actual != required:
+            errors.append(
+                f"{label} {field} supersedes {actual!r} rather than the required "
+                f"{required!r}"
+            )
+        if predecessor_key and required != str(record[predecessor_key].get("id") or ""):
+            errors.append(
+                f"{label} {field} requires supersedes {required!r}, which is not the "
+                f"{predecessor_key} {record[predecessor_key].get('id')!r}"
+            )
+        required_handoff = block.get("required_handoff")
+        handoff = documents[field].get("handoff")
+        if not isinstance(required_handoff, dict) or not isinstance(handoff, dict):
+            errors.append(f"{label} {field} has no comparable handoff")
+            continue
+        for key in ("next_role", "readiness"):
+            required_value = str(required_handoff.get(key) or "")
+            actual_value = str(handoff.get(key) or "")
+            if required_value != actual_value or not required_value:
+                errors.append(
+                    f"{label} {field} requires handoff {key} {required_value!r} and "
+                    f"the file declares {actual_value!r}"
+                )
+
+    approves = documents["active_successor_bundle"].get("approves")
+    approved_review = str(
+        (approves.get("review_id") if isinstance(approves, dict) else approves) or ""
+    )
+    required_review = str(
+        record["active_successor_bundle"].get("required_review_id") or ""
+    )
+    if approved_review != required_review or not required_review:
+        errors.append(
+            f"{label} active_successor_bundle approves {approved_review!r} rather "
+            f"than the required {required_review!r}"
+        )
+    return errors
+
+
+def _rejection_remediations(
+    root: Path,
+    decisions: dict[str, tuple[Path, dict[str, Any]]],
+    active_decision_ids: set[str],
+    diagnostics: list[dict[str, Any]],
+    preserved: set[tuple[str, str, str]] | None = None,
+) -> dict[str, set[str]]:
+    """Rejection IDs each named Review is recorded as having already answered.
+
+    Keyed by Review ID so the remediation check can ask about the one Review the
+    Decision names and nothing else. A different Review writing the same field
+    name is not in this map and is unaffected.
+    """
+    remediated: dict[str, set[str]] = defaultdict(set)
+    for decision_id in sorted(active_decision_ids):
+        entry = decisions.get(decision_id)
+        if entry is None:
+            continue
+        path, document = entry
+        if str(document.get("status") or "") != "approved":
+            continue
+        records = document.get(REJECTION_REMEDIATION_KEY)
+        if not isinstance(records, list):
+            continue
+        for index, record in enumerate(records):
+            errors = _rejection_remediation_errors(root, decision_id, index, record)
+            if errors:
+                _diag(
+                    diagnostics,
+                    "error",
+                    "rejection_remediation_record_invalid",
+                    "; ".join(errors)
+                    + ". The rejection keeps its ordinary remediation behaviour.",
+                    path=_relative(root, path),
+                    artifact_id=decision_id,
+                )
+                continue
+            review_id = str(record["rejection_recording_review"]["id"])
+            rejection_id = str(record["integration_rejection"]["id"])
+            remediated[review_id].add(rejection_id)
+            # WORK_QUEUES 1.3 replaces an originating artifact's stale handoff
+            # with the resolving Decision's. This Decision's escalation names the
+            # successors it exists to keep routable, so without this the rule
+            # would delete the very Integrator work the ruling preserves -- and
+            # keep deleting it after the Decision was consumed, because the
+            # replacement is computed from the Decision's handoff rather than
+            # from whether its work is outstanding.
+            if preserved is not None:
+                for field in ("active_successor_review", "active_successor_bundle"):
+                    block = record[field]
+                    preserved.add(
+                        (decision_id, str(block["id"]), str(block["path"]))
+                    )
+            _diag(
+                diagnostics,
+                "info",
+                "integration_rejection_remediation_recognised",
+                f"{review_id} records {rejection_id} under "
+                f"{record['rejection_recording_review']['required_field']!r}, which "
+                f"queue derivation does not read, and {decision_id} verifies that "
+                f"reference against the rejection, the bundle it refused, and the "
+                f"{record['active_successor_review']['id']} successor now ready for "
+                f"the Integrator: {record['reason']}",
+                path=str(record["rejection_recording_review"]["path"]),
+                artifact_id=review_id,
+            )
+    return remediated
+
+
 def _diagnose_gur_handoffs(
     root: Path,
     gurs: list[Artifact],
@@ -3799,7 +4015,11 @@ def _rejected_bundle_ids(
     return blocked_by_bundle
 
 
-def _rejection_remediated(rejection: dict[str, Any], reviews: list[Artifact]) -> bool:
+def _rejection_remediated(
+    rejection: dict[str, Any],
+    reviews: list[Artifact],
+    remediations: dict[str, set[str]] | None = None,
+) -> bool:
     """Whether a Review successor already records this exact rejection.
 
     The successor is what turns a rejection into repairable work, so the
@@ -3807,7 +4027,13 @@ def _rejection_remediated(rejection: dict[str, Any], reviews: list[Artifact]) ->
     exact record ID: a Review that merely postdates the rejection has not
     necessarily read it.
     """
+    recorded = remediations or {}
     for artifact in reviews:
+        # DEC-2026-0073: this exact Review, for this exact rejection, verified by
+        # an active Decision against the whole chain around it. Not an alias:
+        # another Review using the same field name is not in this map.
+        if rejection["record_id"] in recorded.get(artifact.artifact_id, set()):
+            return True
         for key in ("integration_rejection", "rejection_input", "rejected_by"):
             block = artifact.data.get(key)
             if isinstance(block, dict):
@@ -3916,8 +4142,15 @@ def scan_repository(root: Path) -> dict[str, Any]:
     #: (decision id, item id, item path) triples a lineage repair routed. A
     #: Decision's own handoff replacement must not remove them.
     repair_routed: set[tuple[str, str, str]] = set()
+    #: DEC-2026-0074. Decisions whose implementation lifecycle has already said
+    #: what happens next -- consumed by an approved Review, or with the report or
+    #: Review job already assigned. Handoff replacement must not add a Decision
+    #: job on top of any of those, and must not add one at all once the Decision
+    #: is complete.
+    decision_lifecycle_settled: set[str] = set()
     direct_repairs_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     impl_review_repairs_by_ruleset: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
+    rejection_remediations_by_ruleset: dict[str, dict[str, set[str]]] = {}
     rulesets_root = root / "rulesets"
     if rulesets_root.is_dir():
         for ruleset_dir in sorted(path for path in rulesets_root.iterdir() if path.is_dir()):
@@ -3996,6 +4229,10 @@ def scan_repository(root: Path) -> dict[str, Any]:
         # DEC-2026-0072, the same shape one artifact kind over.
         impl_review_repairs_by_ruleset[ruleset] = _implementation_review_repairs(
             root, decisions, active_decision_ids, diagnostics
+        )
+        # DEC-2026-0073, keyed by the one Review the Decision names.
+        rejection_remediations_by_ruleset[ruleset] = _rejection_remediations(
+            root, decisions, active_decision_ids, diagnostics, repair_routed
         )
 
     books_root = root / "books"
@@ -4693,7 +4930,10 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         for artifact in reviews_by_gup.get(rejection["gup_id"], [])
                         if artifact.artifact_id != rejection["review_id"]
                     ]
-                    if _rejection_remediated(rejection, successors):
+                    if _rejection_remediated(
+                        rejection, successors,
+                        rejection_remediations_by_ruleset.get(ruleset),
+                    ):
                         informational.append(
                             _queue_item(
                                 state="informational",
@@ -5371,6 +5611,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         # for a Review" would have stood, so it ends the lineage
                         # the same way. A report with defects of its own falls
                         # through to its owner as it always did.
+                        decision_lifecycle_settled.add(decision_id)
                         continue
 
                 if review_leaf is not None:
@@ -5382,6 +5623,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     if disposition == "approved":
                         # The Decision is complete. No Integrator job exists for
                         # this lineage: no canonical or registry state changed.
+                        decision_lifecycle_settled.add(decision_id)
                         continue
                     ready.append(
                         _queue_item(
@@ -5402,6 +5644,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     )
                     # The revision job replaces the Decision job rather than
                     # standing alongside it.
+                    decision_lifecycle_settled.add(decision_id)
                     continue
 
                 if leaf is not None and not report_errors and leaf.data.get("approval_ready") is True:
@@ -5423,6 +5666,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                             legacy_inference=report_inferred,
                         )
                     )
+                    decision_lifecycle_settled.add(decision_id)
                     continue
 
                 # No report, an invalid one, or one still marked partial: the
@@ -5535,6 +5779,16 @@ def scan_repository(root: Path) -> dict[str, Any]:
             # Skip if this Decision has already been consumed by an integrated
             # decision-migration GUP
             if decision_id in consumed_decision_ids:
+                continue
+
+            # DEC-2026-0074. The implementation lifecycle has already said what
+            # happens next for this Decision -- it is complete, or its report or
+            # Review job is assigned -- so a Decision job here would either
+            # duplicate that or assert work nobody can do. DEC-2026-0068 spent
+            # days in the Builder queue after its report was approved and its
+            # Review went terminal, because this rule reads the Decision's
+            # authored handoff and nothing retires it.
+            if decision_id in decision_lifecycle_settled:
                 continue
 
             already_ready = any(

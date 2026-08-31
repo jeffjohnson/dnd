@@ -1,0 +1,356 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20260830-001",
+  "ruleset_id": "adnd1e",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-08-30T17:26:47.744Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:51b9774672da9a7e5abb536b2213a76aaa5f6543f451a3d0f2f1c8bda1e51c22 actual=sha256:51b9774672da9a7e5abb536b2213a76aaa5f6543f451a3d0f2f1c8bda1e51c22"
+        },
+        {
+          "check": "component checksum matches: books/adnd1e/phb/artifacts/approved/APPROVED-GUP-PKT-PHB-117-119-bards-r04-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:b8342ceb08970d1fc65cfe2bc1af2c40255e4717d08a765a221ba50c9af54f33 actual=sha256:b8342ceb08970d1fc65cfe2bc1af2c40255e4717d08a765a221ba50c9af54f33"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-PHB-117-119-bards-r04.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:de004474f731c351d06bd3eabbbc755c2ef0de8a2ad0e68b4ec83007f1064739 actual=sha256:de004474f731c351d06bd3eabbbc755c2ef0de8a2ad0e68b4ec83007f1064739"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-117-119-bards-r04.yaml: declared=sha256:b8b29061f939c1e279a3207d1a4f51a27618ad2dbb4d46fbe002dea5b8b88357 actual=sha256:b8b29061f939c1e279a3207d1a4f51a27618ad2dbb4d46fbe002dea5b8b88357"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=57 actual=57"
+        },
+        {
+          "check": "review approved-row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "review approved 57 row(s), CSV carries 57"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "reviewer did not modify GUP files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "gup_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 29, 'pending_additions': 28, 'updates': 0, 'node_registrations': 11}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 1691,
+      "by_invariant": {
+        "3": 10,
+        "11": 9,
+        "16": 1672
+      },
+      "affected_rows": 1674,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 1691,
+      "by_invariant": {
+        "3": 10,
+        "11": 9,
+        "16": 1672
+      }
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 5046,
+    "edges_after": 5103,
+    "edges_updated_in_place": 0,
+    "nodes_before": 1392,
+    "nodes_after": 1403,
+    "registry_before": 1407,
+    "registry_after": 1418,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "rule_bard_college",
+        "label": "Bardic College",
+        "kind": "rule",
+        "basis": "PHB p118 Table II and its notes define college level and association consequences.",
+        "edges_depending_on_it": [
+          "M011",
+          "M012"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "integration_id": "INT-20260830-001"
+      },
+      {
+        "id": "rule_bard_charm",
+        "label": "Bardic Charming",
+        "kind": "rule",
+        "basis": "PHB p118 defines a separate music-based charming mechanic with its own chance, range, saving throw, and frequency.",
+        "edges_depending_on_it": [
+          "M014",
+          "M015",
+          "M016",
+          "M035",
+          "M036",
+          "M037",
+          "M038",
+          "M039",
+          "M040",
+          "M041"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "integration_id": "INT-20260830-001"
+      },
+      {
+        "id": "rule_bard_legend_lore",
+        "label": "Bardic Legend Lore",
+        "kind": "rule",
+        "basis": "PHB p118 distinguishes this chance-based knowledge mechanic from the named spell.",
+        "edges_depending_on_it": [
+          "M017",
+          "M018",
+          "M019",
+          "M020",
+          "M021",
+          "M022"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "integration_id": "INT-20260830-001"
+      },
+      {
+        "id": "rule_bard_poetics",
+        "label": "Bardic Poetics",
+        "kind": "rule",
+        "basis": "PHB p118 gives poetics a distinct preparation, duration, effects, and exclusions.",
+        "edges_depending_on_it": [
+          "M029",
+          "M030",
+          "M031",
+          "M032"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "integration_id": "INT-20260830-001"
+      },
+      {
+        "id": "rule_bard_song",
+        "label": "Bardic Song and Playing",
+        "kind": "rule",
+        "basis": "PHB p118 separately names song and playing as the charm vehicle and as the harpy and shrieker countermeasure.",
+        "edges_depending_on_it": [
+          "M031",
+          "M033",
+          "M034",
+          "M035"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "integration_id": "INT-20260830-001"
+      },
+      {
+        "id": "item_drums_panic",
+        "label": "Drums of Panic",
+        "kind": "item",
+        "basis": "PHB p119 names the item and bard-specific saving-throw improvement.",
+        "edges_depending_on_it": [
+          "M045"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "integration_id": "INT-20260830-001"
+      },
+      {
+        "id": "item_horn_blasting",
+        "label": "Horn of Blasting",
+        "kind": "item",
+        "basis": "PHB p119 names the item and bard-specific damage improvement.",
+        "edges_depending_on_it": [
+          "M046"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "integration_id": "INT-20260830-001"
+      },
+      {
+        "id": "item_lyre_building",
+        "label": "Lyre of Building",
+        "kind": "item",
+        "basis": "PHB p119 names the item and bard-specific doubled effect.",
+        "edges_depending_on_it": [
+          "M047"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "integration_id": "INT-20260830-001"
+      },
+      {
+        "id": "monster_harpy",
+        "label": "Harpy",
+        "kind": "monster",
+        "basis": "PHB p118 explicitly names the harpy song effect negated by bardic playing.",
+        "edges_depending_on_it": [
+          "M033"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "integration_id": "INT-20260830-001"
+      },
+      {
+        "id": "monster_shrieker",
+        "label": "Shrieker",
+        "kind": "monster",
+        "basis": "PHB p118 explicitly names the shrieker noise stilled by bardic playing.",
+        "edges_depending_on_it": [
+          "M034"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "integration_id": "INT-20260830-001"
+      },
+      {
+        "id": "item_stringed_instrument",
+        "label": "Stringed Instrument",
+        "kind": "item",
+        "basis": "PHB p118 requires a bard always to have a mundane stringed instrument; it is distinct from magic-item identities.",
+        "edges_depending_on_it": [
+          "M028"
+        ],
+        "bundle_id": "APPROVED-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "review_id": "REV-GUP-PKT-PHB-117-119-bards-r04-r04",
+        "integration_id": "INT-20260830-001"
+      }
+    ],
+    "registry_derived_resync": 34,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

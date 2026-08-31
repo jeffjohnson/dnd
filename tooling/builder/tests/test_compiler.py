@@ -2162,3 +2162,112 @@ class TestPublicationPreflightCoversEveryOutput(CompilerCase):
             result = self.compile_gur(candidate_edges=[dict(BASE_EDGE)])
             written = write_all(result, gup_dir, reports, {"ran": False})
             self.assertEqual(len(written), 3)
+
+
+class WithdrawnAtSourceRefCase(CompilerCase):
+    """A ruling on a row the Analyst declared and deliberately did not propose.
+
+    A GUR records such rows under `canonical_duplicates_not_for_emission` with
+    the reason -- usually that the assertion is already canonical from another
+    packet, so re-emitting it would be an exact five-field key match. A Review
+    whose bulk policy covers one is over-inclusive, not wrong, and reporting
+    that the ref "does not appear in the GUR" was inaccurate as well as
+    unhelpful: it does appear, in the section that says it is never emitted.
+
+    The Druid r02-r02 policy covers L30, L47 and L48 this way, and three such
+    refs held a clean 57-row patch at status=blocked.
+    """
+
+    def gur_with_withdrawn(self, tmp, ref="T9"):
+        document = dict(BASE_ENVELOPE)
+        document.update(
+            candidate_edges=[dict(BASE_EDGE, ref="T1")],
+            canonical_duplicates_not_for_emission=[{
+                "ref": ref,
+                "proposed": "exp_level MODIFIES spell_fixture",
+                "canonical_row": 4080,
+                "withdrawn_because": "Already contributed by another packet.",
+                "builder_action": "do_not_emit",
+            }],
+        )
+        path = Path(tmp) / "gur.yaml"
+        path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+        return path
+
+    def review_deciding(self, tmp, refs):
+        from adnd1e_builder.review import ReviewDirectives
+
+        path = Path(tmp) / "REV.yaml"
+        path.write_text(yaml.safe_dump({
+            "id": "REV-GUP-PKT-TEST-r01-r01",
+            "packet_id": BASE_ENVELOPE["packet_id"],
+            "reviewed_gup": {"id": "GUP-PKT-TEST-r01"},
+            "overall_disposition": "revision_required",
+            "row_decisions": [
+                {"ref": ref, "disposition": "approved", "rationale": "fixture"}
+                for ref in refs
+            ],
+        }, sort_keys=False), encoding="utf-8")
+        return ReviewDirectives.load(path)
+
+    def run_compile(self, refs, ref="T9"):
+        with tempfile.TemporaryDirectory() as tmp:
+            gur = self.gur_with_withdrawn(tmp, ref)
+            return self.compiler.compile(
+                gur, directives=self.review_deciding(tmp, refs), revision=2,
+                supersedes="GUP-PKT-PHB-999-999-fixture-r01",
+            )
+
+    def rules(self, result, severity):
+        return [f.rule for f in result.findings if f.severity == severity]
+
+    def test_a_withdrawn_ref_is_informational(self):
+        result = self.run_compile(["T1", "T9"])
+        self.assertIn("review_ref_withdrawn_at_source", self.rules(result, "info"))
+        self.assertNotIn("review_ref_not_in_gur", self.rules(result, "error"))
+
+    def test_it_does_not_block_the_patch(self):
+        """Three of these held a clean 57-row Druid patch at status=blocked."""
+        result = self.run_compile(["T1", "T9"])
+        self.assertEqual(
+            [f.rule for f in result.findings
+             if f.severity == "error" and f.rule.startswith("review_ref")],
+            [],
+        )
+
+    def test_the_finding_gives_the_analyst_s_reason(self):
+        result = self.run_compile(["T1", "T9"])
+        detail = next(
+            f.detail for f in result.findings
+            if f.rule == "review_ref_withdrawn_at_source"
+        )
+        self.assertIn("T9", detail)
+        self.assertIn("Already contributed by another packet.", detail)
+        self.assertIn("do_not_emit", detail)
+
+    def test_no_row_is_emitted_for_it(self):
+        result = self.run_compile(["T1", "T9"])
+        emitted = {
+            row.get("ref")
+            for bucket in (result.additions, result.batch_satisfiable_additions,
+                           result.blocked_additions)
+            for row in bucket
+        }
+        self.assertNotIn("T9", emitted)
+
+    def test_a_genuinely_unknown_ref_is_still_an_error(self):
+        """The guard keeps its job: this is the typo-and-stale-ruling case."""
+        result = self.run_compile(["T1", "T404"])
+        self.assertIn("review_ref_not_in_gur", self.rules(result, "error"))
+
+    def test_a_gur_without_the_section_is_unaffected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            document = dict(BASE_ENVELOPE)
+            document.update(candidate_edges=[dict(BASE_EDGE, ref="T1")])
+            gur = Path(tmp) / "gur.yaml"
+            gur.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+            result = self.compiler.compile(
+                gur, directives=self.review_deciding(tmp, ["T1", "T9"]), revision=2,
+                supersedes="GUP-PKT-PHB-999-999-fixture-r01",
+            )
+        self.assertIn("review_ref_not_in_gur", self.rules(result, "error"))

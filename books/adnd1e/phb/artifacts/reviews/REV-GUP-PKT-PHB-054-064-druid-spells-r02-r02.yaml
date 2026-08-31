@@ -1,0 +1,178 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-PHB-054-064-druid-spells-r02-r02
+artifact_kind: packet_update_review
+status: revision_required
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: PKT-PHB-054-064-druid-spells
+constitution_version: '1.8'
+revision: 2
+supersedes: REV-GUP-PKT-PHB-054-064-druid-spells-r02-r01
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Publish one successor GUP that removes the stale rule_mistletoe node
+    proposal. Every submitted edge already uses the canonical
+    rule_greater_mistletoe identity.
+  blocking_ids: []
+review_role: independent_reviewer
+review_date: '2026-08-30'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-PHB-054-064-druid-spells-r02
+  path: books/adnd1e/phb/artifacts/gup/GUP-PKT-PHB-054-064-druid-spells-r02.yaml
+  checksum: sha256:f2d301d3c258d0d3693c7ea90199a5614cba6620f4e2271a139b0ab3cdcea979
+  artifact_kind: packet_update
+  revision: 2
+  supersedes: GUP-PKT-PHB-054-064-druid-spells-r01
+  validation_report:
+    path: build/reports/GUP-PKT-PHB-054-064-druid-spells-r02.validation.json
+    checksum: sha256:9365d776c9ec563c9fa7b3f1497f5f8095b72565830300ecc5eab2568281cc51
+    reported_errors: 0
+    reported_warnings: 1
+overall_disposition: revision_required
+approval_ready: false
+approved_bundle_emitted: null
+summary:
+  approved: 57
+  approved_with_revision: 0
+  rejected: 0
+  architect_escalations: 0
+  node_additions_rejected: 1
+completeness_statement: >-
+  This successor preserves r01's independent review of all submitted r02
+  fields and node decisions. It expands field_decision_policy.applies_to into
+  the exact explicit submitted-ref list required for mechanical compilation.
+  The sole substantive defect remains the stale rule_mistletoe proposal.
+field_decision_policy:
+  applies_to:
+    - L1
+    - L2
+    - L3
+    - L4
+    - L5
+    - L6
+    - L7
+    - L8
+    - L9
+    - L10
+    - L11
+    - L12
+    - L13
+    - L14
+    - L15
+    - L16
+    - L17
+    - L18
+    - L20
+    - L21
+    - L22
+    - L24
+    - L25
+    - L26
+    - L27
+    - L28
+    - L29
+    - L30
+    - L31
+    - L32
+    - L33
+    - L34
+    - L35
+    - L36
+    - L37
+    - L39
+    - L40
+    - L41
+    - L42
+    - L43
+    - L44
+    - L45
+    - L46
+    - L47
+    - L48
+    - L49
+    - L51
+    - L52
+    - L54
+    - L55
+    - L56
+    - L57
+    - L58
+    - L59
+    - L60
+    - M2
+    - M3
+    - M4
+    - M5
+    - M6
+  fields: [source_id, source_label, edge_type, target_id, target_label, aspect, condition, polarity, polarity_basis, book, page, section, evidence, pass, status, supersession_basis, general_rule_id, review_flag]
+  disposition: approved
+  rationale: >-
+    Each listed submitted field is source-supported and matches the complete
+    active r01+r06 directive set. The five duplicate rows and M1 are properly
+    absent; no submitted row carries heuristic or unset polarity.
+node_registry_decisions:
+  - scope: all submitted additions except rule_mistletoe
+    count: 55
+    disposition: approved
+    rationale: >-
+      The remaining proposed spell and rule identities are source-supported,
+      have valid approved prefixes and kinds, and are required by their
+      submitted pending edges or source-backed spell coverage.
+  - proposed_id: rule_mistletoe
+    proposed_label: Mistletoe
+    kind: rule
+    disposition: rejected
+    source_locus: 'PHB p54 Notes Regarding Druid (Cleric) Spells'
+    rationale: >-
+      This is stale r01 history, not a current packet operation. DEC-2026-0024
+      and DEC-2026-0025 established the canonical Greater Mistletoe identity;
+      r06 requires reuse without a node proposal, and r02's M2-M6 already do
+      so. Retaining rule_mistletoe would add a second identity unsupported by
+      the active correction set.
+    exact_corrections:
+      remove_node_proposal: rule_mistletoe
+      remove_node_proposal_fields: [proposed_id, proposed_label, kind, why_needed, edges_depending_on_it, prefix_approved, id_format_valid, already_canonical, label_collides_with, disposition, architect_required, routing_basis, reviewer_disposition, reviewer_basis]
+    correction_citations:
+      - {book: PHB, page: '54', section: 'Notes Regarding Druid (Cleric) Spells'}
+      - {decision: DEC-2026-0024, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0024.yaml}
+      - {decision: DEC-2026-0025, path: rulesets/adnd1e/escalations/decisions/DEC-2026-0025.yaml}
+  - existing_id: rule_greater_mistletoe
+    existing_label: Greater Mistletoe
+    disposition: reuse_existing_identity
+    basis: Canonical identity used by M2-M6 and required by the active r06 correction set.
+  - existing_id: spell_call_woodland_beings
+    existing_label: Call Woodland Beings
+    disposition: reuse_existing_identity
+    basis: Packet-canonical plural identity used by L11.
+required_gup_revisions:
+  - Remove only the complete rule_mistletoe entry from node_changes.additions_proposed.
+  - Do not add a replacement mistletoe node; retain canonical rule_greater_mistletoe in M2-M6.
+  - Preserve every r02 edge, every other node proposal, the r01+r06 review inputs, and the current source provenance unchanged.
+  - Regenerate validation evidence and publish the ordinary successor GUP for independent review.
+architectural_escalations: []
+blocking_findings:
+  - id: stale_rule_mistletoe_node_proposal
+    affected_refs: [M2, M3, M4, M5, M6]
+    resolution: Builder must remove the obsolete standalone node proposal before an Approved bundle can be emitted.
+reviewer_checklist:
+  source_support: passed
+  printed_page_attribution: passed_pages_54_through_64
+  identity: failed_stale_rule_mistletoe_proposal_only
+  edge_semantics_and_direction: passed
+  grain: passed
+  polarity: passed_no_heuristic_or_unset
+  provenance_and_activation: passed_except_stale_node_operation
+  general_rule_inheritance: not_applicable
+  graph_neighborhood: passed_after_DEC_2026_0024_and_DEC_2026_0025
+  canonical_files_modified: false
+  gup_files_modified: false
+independent_validation:
+  methods:
+    - Re-read the explicit r01 applies-to set and verified the successor enumerates its 60 submitted refs exactly once.
+    - Verified the reviewed GUP and validation-report checksums, the r01+r06 review lineage, canonical Greater Mistletoe reuse, and packet-canonical Call Woodland Beings identity.
+    - Validated this successor against schemas/common/review.schema.json.
+  result: revision_required_for_stale_node_proposal_only

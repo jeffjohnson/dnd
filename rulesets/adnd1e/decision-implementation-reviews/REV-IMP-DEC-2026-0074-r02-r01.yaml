@@ -1,0 +1,92 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0074-r02-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    DEC-2026-0074's corrected implementation report, including its required
+    current contract-content evidence, is independently verified.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0074-r02
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0074-r02.yaml
+  checksum: sha256:4675adbf67efe1a2ff1843c90c0b7601071fdb966cf1e81d8145f7b54b7500fa
+decision_input:
+  id: DEC-2026-0074
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0074.yaml
+  checksum: sha256:960437c9c6f643b4ab1224da81d624ad444368d7a1e4bdd0213d26e61948a1d9
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      Independently ran the focused replacement-consumption suite. It retains
+      the completed DEC-2026-0068 lineage as history while emitting no duplicate
+      replacement-derived Builder item.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      The suite verifies that unconsumed ready and blocked Decisions still
+      suppress only the exact originating handoff and that migration routing is
+      preserved without duplication.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      The suite separately verifies ordinary Reviewer-report and
+      revision-required implementation-owner routing, with no added Decision job.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      The suite retains superseded, integrated-migration, and same-Decision
+      lineage-repair behavior while preserving the established replacement guard.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      The successor report pins DEC-2026-0074 and all declared implementation
+      files by current checksum, covers each of the six acceptance indexes, and
+      records passing focused and full-suite evidence.
+  - acceptance_test_index: 6
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      The report now supplies the Decision-authorized structured evidence. I
+      independently verified its authority, current checksum, Version 1.28
+      floor, and every required substantive anchor in WORK_QUEUES.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0074
+        path: rulesets/adnd1e/escalations/decisions/DEC-2026-0074.yaml
+        checksum: sha256:960437c9c6f643b4ab1224da81d624ad444368d7a1e4bdd0213d26e61948a1d9
+        authorized_acceptance_test_index: 6
+      authorized_acceptance_test_index: 6
+      contracts:
+        - path: contracts/WORK_QUEUES.md
+          checksum: sha256:2a46df06f3b8f26af5c7196de329451b9f26848926693a7b90a93d38d7c95365
+          observed_version: '1.28'
+          minimum_version: '1.28'
+          anchors_present:
+            - Replacement always suppresses the originating artifact
+            - only while the Decision itself remains unconsumed
+            - must not resurrect an otherwise completed Decision
+scope_assessment: >-
+  r02 is the narrowly scoped successor required by REV-IMP-DEC-2026-0074-r01-r01.
+  Its only substantive report change is the explicit versioned-contract-content
+  record; the scanner implementation, Decision, escalation, and canonical data
+  remain unchanged.
+independent_validation:
+  passed: true
+  commands:
+    - command: '[cwd tooling/common] PYTHONPATH=.;tests python -m unittest test_scan_agent_queues.ReplacementConsumptionGateCase test_scan_agent_queues.LiveReplacementConsumptionGateCase -q'
+      exit_code: 0
+      result: passed
+      summary: Ran 36 tests in 28.977s; all focused replacement-consumption cases passed.
+    - command: 'Target schema validation and SHA-256 comparison of the r02 report, Decision, validation report, all declared implementation files, and current WORK_QUEUES contract evidence.'
+      exit_code: 0
+      result: passed
+      summary: Every declared checksum, Version 1.28 floor, and all three Decision-authorized anchors matched current bytes and content.
+overall_disposition: approved

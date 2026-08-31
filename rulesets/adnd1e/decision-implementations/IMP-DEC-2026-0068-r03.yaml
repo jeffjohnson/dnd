@@ -1,0 +1,104 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0068-r03
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 3
+supersedes: IMP-DEC-2026-0068-r02
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0068
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+  checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:b1332cc87a9dad2b9a61c21d37d4bbd106826a061c5108c3de3efa4be731b897
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:af7a5edd654f3dfd55658991cea582b1b701c637010898b608a0ae68c58ade41
+- path: tooling/common/tests/test_common_schemas.py
+  checksum: sha256:76691a7f9a1fc1025ddcd28fb5e240b286a4d865a971ff79f7d5771ee4c65398
+- path: tooling/builder/src/adnd1e_builder/review.py
+  checksum: sha256:2f548e82c41b40c02be93f9dbe53c37ee780c227a72a5342fc6e9efcb69e4a85
+- path: tooling/builder/src/adnd1e_builder/compiler.py
+  checksum: sha256:2fa9c703a95203aa77e82cb13ff45d5ad99c92101033710fa49c0d3a84687f58
+- path: tooling/builder/tests/test_review.py
+  checksum: sha256:fbc672f87b73642ebfb127b14ab073b13cefbcf407255adb6b4c8d156a9e0498
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0068.yaml
+  checksum: sha256:a59dd6dbcc4c14c5e2b148b8e72b86566e3c9893be95ccc2ab476f7e3a1eb461
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-27T23.46.27.645Z.yaml
+  checksum: sha256:2d07223897112f9cb98a9d8dd8ae0e6b9bd67238da65f43ab3f669f02d5c0fe4
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'Unchanged from r01 and re-verified against current files. Every pinned field is re-derived:
+    r02 still hashes to the recorded value and still fails with the recorded fragment; r03 and its bundle
+    parse; both direct supersedes links are read from the files rather than from the record; r03 is approved
+    with an architect/ready handoff and reviews GUP-PKT-PHB-117-119-bards-r04; r03 validates against review.schema.json
+    and its bundle against approved-bundle.schema.json; the bundle approves r03; and the operation partition
+    is the contiguous 1-29 / 30-57 span with zero updates and eleven nodes. The scan reports exactly one
+    informational review_unreadable_direct_predecessor_repaired for r02 and no parse error for it. These
+    unit tests ran: Ran 38 tests in 23.009s OK. Re-verified against current files for this revision; the
+    claim above is unchanged.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'Twenty denial cases, unchanged from r01 and re-run: no record; an unapproved Decision; a
+    stale checksum on any one of the eight pinned artifacts, driven field-by-field; a predecessor that
+    parses; a parse fragment or diagnostic code the parser does not produce; either link pointing elsewhere;
+    a non-approved successor; a wrong-role or blocked handoff; a successor reviewing a different GUP;
+    a bundle approving a different Review; a non-contiguous partition; a wrong row count; a nonzero update
+    count; a different node count; a wrong disposition; and an empty reason. In every case r02 keeps its
+    ordinary yaml_unreadable error, and an unrelated unreadable Review in another packet is untouched.
+    These unit tests ran: Ran 38 tests in 23.009s OK. Re-verified against current files for this revision;
+    the claim above is unchanged.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'The schema suite admits exactly the Decision-pinned files and no others, and the pins are
+    read from the approved Decisions rather than restated in the suite. Three records now exist across
+    two shapes and all three are read by the same loader, which is what stopped the third from being forgotten.
+    The exemption is re-earned on every run: each pinned file must still hash to its recorded checksum
+    and still fail to parse, and the exempt set is compared with the pinned set rather than against a
+    count. These unit tests ran: Ran 9 tests in 0.458s OK. Re-verified against current files for this
+    revision; the claim above is unchanged.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'This report pins DEC-2026-0068 by checksum, reports acceptance tests 1 through 3 as passed,
+    and records passing focused evidence (38 direct-predecessor tests, 9 exemption tests) alongside both
+    full suites: tooling/common Ran 1078 tests in 316.594s OK, and tooling/builder Ran 684 tests in 168.301s
+    OK (skipped=38). r01 reported this test failed because the applicable suite was red on three artifacts
+    owned by other roles; DEC-2026-0072 admitted the unreadable implementation Review and the Integrator''s
+    command records were repaired, so the suite is green and the claim r01 could not make is now true.
+    Re-verified against current files for this revision; the claim above is unchanged.'
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Reissued because implementing DEC-2026-0073 edited tooling/common/scan_agent_queues.py, which
+    this report pins and whose Review had not yet approved it, so the drift was strict. The direct-predecessor
+    implementation is unchanged and re-verified: the Bards r02 classification, all twenty denial cases,
+    and the exemption set are exactly as r02 recorded them.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0068-r03.validation.json
+validation_report_checksum: sha256:2ad0c290fe2b8e2150d8a42bbf1e3834ea00afe76b51a6a6ac79aeb2ce600ef8
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 1111 tests in 340.408s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 684 tests in 165.564s OK (skipped=38)
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.DirectPredecessorRepairCase
+      test_scan_agent_queues.LiveDirectPredecessorRepairCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 38 tests in 23.009s OK
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_common_schemas.TestTheUnreadableReviewExemption'
+    exit_code: 0
+    result: passed
+    summary: Ran 9 tests in 0.458s OK

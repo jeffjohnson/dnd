@@ -1,0 +1,119 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0074-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+decision_input:
+  id: DEC-2026-0074
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0074.yaml
+  checksum: sha256:960437c9c6f643b4ab1224da81d624ad444368d7a1e4bdd0213d26e61948a1d9
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:2aa0ee46db9c3a1ae83befb00fc814bd90580f3176b3489b08b3405055e8551a
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:f9ebc0ba9ba83314aadcadc05944278efeabb58d025a8dedab81610c6994eecb
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0074.yaml
+  checksum: sha256:960437c9c6f643b4ab1224da81d624ad444368d7a1e4bdd0213d26e61948a1d9
+- path: rulesets/adnd1e/escalations/decided/ESC-2026-08-30T15.22.41.907Z.yaml
+  checksum: sha256:7b6dafd3f7d7d4b1abf2431d3c37e396f677446cf300f82b537714e29e969374
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'DEC-2026-0068 no longer appears in any queue. Its report IMP-DEC-2026-0068-r03 is approved
+    by REV-IMP-DEC-2026-0068-r03-r01, which is terminal, and LiveReplacementConsumptionGateCase asserts
+    both facts rather than only the absence -- a test that checked absence alone would pass if the Decision
+    merely went missing. The completed history is retained: the originating artifact is still reported
+    superseded by handoff_replaced_by_decision, and the Decision, report and Review are unchanged on disk.
+    The same case generalises the claim, deriving every Decision whose implementation an approved Review
+    consumed and asserting none of them is queued. These unit tests ran: Ran 36 tests in 20.499s OK.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'An unconsumed Decision still suppresses the exact originating artifact and still raises its
+    own item: the fixture asserts the Builder item is present and the origin Review is both reported replaced
+    and absent from the queue. A blocked Decision handoff still produces a blocked item rather than a
+    ready one. A migration-required Builder Decision produces exactly one item through its ordinary migration
+    route, with no duplicate from replacement -- the guard for that predates this change and is unaffected.
+    These unit tests ran: Ran 36 tests in 20.499s OK.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'Both pre-terminal states are driven separately. An active approval-ready report yields exactly
+    the Reviewer job on the report and no Decision item; an active revision-required implementation Review
+    yields exactly the owner revision job on the Review and no Decision item. The gate is fed from the
+    ordinary lifecycle''s own settling points rather than recomputed, so the two rules cannot disagree
+    about whether a Decision still owes work. These unit tests ran: Ran 36 tests in 20.499s OK.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Suppression is untouched. The gate sits with the other emission guards, after the suppression
+    loop, so an artifact whose handoff a Decision superseded stays superseded whether or not that Decision
+    is consumed. The pre-existing guards for superseded Decision leaves and integrated decision migrations
+    are unchanged and still evaluated first. A Review with no escalation link is neither suppressed nor
+    replaced, which the fixture asserts directly. The same-Decision lineage-repair exemptions added under
+    DEC-2026-0064 and extended under DEC-2026-0073 are untouched: they address the opposite direction
+    of this defect, where replacement deleted work a Decision existed to preserve, and their live cases
+    still pass in the full suite. These unit tests ran: Ran 36 tests in 20.499s OK.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'This report pins DEC-2026-0074 by checksum, reports acceptance tests 1 through 4 and 6 as
+    passed against current evidence, and records passing focused evidence (36 gate tests) alongside both
+    full suites: tooling/common Ran 1147 tests in 355.081s OK, and tooling/builder Ran 690 tests in 164.064s
+    OK (skipped=38).'
+- acceptance_test_index: 6
+  result: passed
+  evidence: contracts/WORK_QUEUES.md declares Version 1.28, read from the file, against the required 1.28
+    floor, and carries the Decision handoff-replacement consumption gate. The contract is Architect-owned
+    at sequence step 1 and was not modified by this implementation; this report verifies it rather than
+    setting it.
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'This is the Decision that came from my own escalation, and the fix is the one the ruling adopted:
+    the replacement now consults the ordinary Decision lifecycle instead of contradicting it. DEC-2026-0068
+    has left the Builder queue, which is the correct state -- it was completed days ago.
+
+
+    The implementation is deliberately not a fourth rule. The lifecycle loop already stops emitting a
+    Decision item at exactly three points: an approved Review consumed it, a revision-required Review
+    handed the owner its job, or an approval-ready report handed the Reviewer theirs. There is a fourth,
+    where an invalid Review routes a repair job. Each is recorded as it happens and the replacement reads
+    the same set, so the two rules cannot drift into disagreeing about whether a Decision still owes work.
+    Recomputing the answer in the replacement pass would have been the obvious shape and would have reintroduced
+    the same class of divergence a revision later.
+
+
+    Suppression is untouched, which matters for the opposite defect. This same rule has twice deleted
+    work a Decision existed to preserve -- the Builder item under DEC-2026-0064 and the Integrator bundle
+    under DEC-2026-0073 -- and the narrow same-Decision exemptions for those remain in place and still
+    pass. Both directions came from one cause: the replacement could not tell outstanding work from finished
+    work. This closes the asserting half; the exemptions close the deleting half.
+
+
+    One scope note. Implementing this alongside the Druid revision meant the same session touched tooling/builder/src/adnd1e_builder/compiler.py,
+    which is outside this Decision''s exact_diff and is reported in its own right below. It is unrelated
+    to the gate and is listed here only because the two landed together; the queue evidence above rests
+    on the scanner change alone.'
+  blocking_ids: []
+validation_report: build/reports/IMP-DEC-2026-0074-r01.validation.json
+validation_report_checksum: sha256:faec19fe16619beae980f90951be9d621d3bd6587685adaea0400b46142af51f
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest discover
+      -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 1147 tests in 355.081s OK
+  - command: '[cwd tooling/builder] PYTHONPATH=tooling/builder/src;tooling/builder/tests python -m unittest
+      discover -s tests -p ''test_*.py'''
+    exit_code: 0
+    result: passed
+    summary: Ran 690 tests in 164.064s OK (skipped=38)
+  - command: '[cwd tooling/common] PYTHONPATH=tooling/common;tooling/common/tests python -m unittest test_scan_agent_queues.ReplacementConsumptionGateCase
+      test_scan_agent_queues.LiveReplacementConsumptionGateCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 36 tests in 20.499s OK
