@@ -1,0 +1,148 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-189-189-monster-attributes-r01-r01
+artifact_kind: packet_update_review
+status: architect_escalation
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-189-189-monster-attributes
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-30'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-189-189-monster-attributes-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-189-189-monster-attributes-r01.yaml
+  checksum: sha256:44747eb207b2098574e2e32ea17d22f114a581fdabdd12d21b09e22ac90609ec
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: architect_escalation
+approval_ready: false
+approved_bundle_emitted: null
+
+summary:
+  rows_reviewed: 3
+  approved: 2
+  approved_with_revision: 0
+  rejected: 0
+  architect_escalation: 1
+  node_proposals_reviewed: 2
+  node_proposals_approved: 2
+  neighbourhood_conflicts_confirmed_nonduplicate: 1
+
+edge_decisions:
+  M001:
+    disposition: architect_escalation
+    submitted_operation: pending_additions
+    verified_source_locus: {book: SD, page: '189', section: HIT POINTS}
+    rationale: >-
+      The source, identity, FEEDS_INTO type, direction, aspect, condition, and
+      derived neutral polarity are correct under DEC-2026-0105. Publication is
+      blocked because the current production edge schema rejects mstat_ in the
+      source_id position.
+    escalation_id: ESC-2026-09-30T13.03.10.385Z
+  M002:
+    disposition: approved
+    submitted_operation: pending_additions
+    verified_source_locus: {book: SD, page: '189', section: DARK-ADAPTED}
+    rationale: >-
+      The named Dark-Adapted ability makes total-darkness penalties inapplicable
+      to non-humanoid monsters; EXCLUDES and derived negates are correct.
+  M003:
+    disposition: approved
+    submitted_operation: additions
+    verified_source_locus: {book: SD, page: '189', section: SPELLCASTING}
+    rationale: >-
+      For a monster, the printed formula derives spell tier from DC. The page-44
+      FEEDS_INTO row describes the ordinary spell-tier-to-casting-difficulty
+      relationship; the reverse direction, different type, aspect, and condition
+      make M003 intentional rather than duplicate or contradictory.
+
+node_registry_decisions:
+  - proposed_id: mstat_monster_level
+    submitted_label: Monster Level
+    kind: mstat
+    disposition: approved
+    rationale: >-
+      DEC-2026-0105 authorizes this exact first identity under the approved
+      mstat_ prefix; source identity, format, and duplicate checks pass.
+  - proposed_id: abil_dark_adapted
+    submitted_label: Dark-Adapted
+    kind: abil
+    disposition: approved
+    rationale: >-
+      The source names an independently operative ability under an established
+      prefix and no canonical identity or label collision exists.
+
+architectural_escalations:
+  - id: ESC-2026-09-30T13.03.10.385Z
+    path: rulesets/shadowdark/escalations/pending/ESC-2026-09-30T13.03.10.385Z.yaml
+    affected_refs: [M001]
+    affected_proposed_ids: [mstat_monster_level]
+    question: Admit the DEC-2026-0105-authorized mstat_ prefix in both production edge endpoint patterns.
+    blocking: true
+
+blocking_findings:
+  - id: RF-01
+    affected_refs: [M001]
+    detail: >-
+      schemas/shadowdark/graph/edge.schema.json at checksum
+      sha256:c0d482a7e9a6be779485ea4bfe4da91b10c2a81f5ef03d2b5040a97754c6510e
+      rejects mstat_monster_level even though Constitution 1.8 and
+      DEC-2026-0105 authorize that endpoint and exact dependency.
+
+completeness_statement: >-
+  Independently reviewed printed page 189, all three rows, both proposed nodes,
+  the current registry, and the relevant canonical neighborhoods. M002 and M003
+  are approval-ready and the reported M003 neighborhood is an intentional
+  inverse formula, not a duplicate. M001 is substantively correct but cannot be
+  packaged until the Architect resolves the production-schema mismatch.
+
+reviewer_checklist:
+  source_support: passed_all_three_rows
+  printed_page_attribution: passed_page_189_from_pandoc_compatible_structure
+  node_identity: passed_both_proposals
+  edge_semantics_and_direction: passed_all_three_rows
+  grain: passed
+  polarity: passed_all_derived_no_authored_polarity
+  graph_neighborhood: passed_M003_intentional_same_pair_different_type
+  production_edge_schema: failed_M001_mstat_prefix_omitted
+  canonical_files_modified: false
+  gup_files_modified: false
+
+independent_validation:
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-189-189-monster-attributes-r01.validation.json
+    checksum: sha256:abf14c682b24737c071c12d936011870578a7c60b09772efb0a317ab0dbc98ef
+    result: builder_report_passed_zero_errors_warnings_escalations
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-189-189-monster-attributes/source.md
+    checksum: sha256:942230e01400adad5ed80838fc7e5a39e64af9ee551494cad4f82d3e20ee0f28
+    result: independently_read
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-189-189-monster-attributes-r02.yaml
+    checksum: sha256:edcf767a8e30a5ce605d2cb5ac17848f845022ccf73d38f3fe608bb9beb5c630
+    result: independently_confirmed
+  canonical_snapshot:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:d9d353895fd891314043936f3673281d3f96d1144dff27dcc155de9d7f2a2549
+    rows: 851
+  node_registry_snapshot:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:355986c8ed416450de723583a6d33c653fe242061334fcabd773aa0c4c5b57b3
+    rows: 424
+  production_edge_schema:
+    path: schemas/shadowdark/graph/edge.schema.json
+    checksum: sha256:c0d482a7e9a6be779485ea4bfe4da91b10c2a81f5ef03d2b5040a97754c6510e
+    result: M002_valid_M001_rejected_only_for_mstat_source_prefix
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Resolve ESC-2026-09-30T13.03.10.385Z before an Approved bundle can include
+    the DEC-2026-0105-authorized M001 production edge.
+  blocking_ids: []

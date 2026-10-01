@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Shadowdark Production Edge",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_id",
+    "source_label",
+    "edge_type",
+    "target_id",
+    "target_label",
+    "aspect",
+    "condition",
+    "polarity",
+    "polarity_basis",
+    "book",
+    "page",
+    "section",
+    "evidence",
+    "pass",
+    "status",
+    "supersession_basis",
+    "general_rule_id",
+    "review_flag"
+  ],
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "pattern": "^(?:abil|ancestry|alignment|class|deity|lang|rule|tbl|spell|item|monster|mstat|cbt|sys|exp|ex|weapon)_[a-z0-9]+(?:_[a-z0-9]+)*$"
+    },
+    "source_label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "edge_type": {
+      "enum": [
+        "MODIFIES",
+        "DERIVED_FROM",
+        "GATES",
+        "TRIGGERS",
+        "ALTERNATIVE_TO",
+        "CONSUMES",
+        "CONSTRAINS",
+        "OVERRIDES",
+        "FEEDS_INTO",
+        "RESOLVED_BY",
+        "CROSS_REFERENCES",
+        "EXCLUDES",
+        "EXCLUDED_FROM",
+        "CLASSIFIED_AS"
+      ]
+    },
+    "target_id": {
+      "type": "string",
+      "pattern": "^(?:abil|ancestry|alignment|class|deity|lang|rule|tbl|spell|item|monster|mstat|cbt|sys|exp|ex|weapon)_[a-z0-9]+(?:_[a-z0-9]+)*$"
+    },
+    "target_label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "aspect": {
+      "type": "string",
+      "minLength": 1
+    },
+    "condition": {
+      "type": "string"
+    },
+    "polarity": {
+      "enum": [
+        "inflicts",
+        "improves",
+        "worsens",
+        "negates",
+        "enables",
+        "governs",
+        "neutral",
+        ""
+      ]
+    },
+    "polarity_basis": {
+      "enum": [
+        "derived",
+        "read",
+        "heuristic",
+        "unset",
+        ""
+      ]
+    },
+    "book": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9-]*$"
+    },
+    "page": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:|[1-9][0-9]*)$"
+        }
+      ]
+    },
+    "section": {
+      "type": "string"
+    },
+    "evidence": {
+      "enum": [
+        "explicit_rule",
+        "explicit_reference",
+        "inferred_rule",
+        "analytic_classification",
+        "speculative"
+      ]
+    },
+    "pass": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "core",
+        "optional"
+      ]
+    },
+    "supersession_basis": {
+      "enum": [
+        "later_publication",
+        "explicit_replacement",
+        "conflicting_procedure",
+        "optional_variant",
+        ""
+      ]
+    },
+    "general_rule_id": {
+      "type": "string"
+    },
+    "review_flag": {
+      "type": "string"
+    }
+  },
+  "allOf": [
+    {
+      "anyOf": [
+        {
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "page": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        },
+        {
+          "properties": {
+            "section": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "if": {
+        "properties": {
+          "edge_type": {
+            "const": "OVERRIDES"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "supersession_basis": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "supersession_basis": {
+            "const": ""
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,522 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-078-081-dice-luck-stats-and-checks-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-078-081-dice-luck-stats-and-checks
+constitution_version: '1.6'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.2
+  - rulesets/shadowdark/governance/constitution.md 1.6
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+
+classified_as_gate_note: >-
+  DEC-2026-0103 added the bounded CLASSIFIED_AS edge type at Constitution 1.6 and prohibits any
+  CLASSIFIED_AS row until Builder's implementation has terminal Reviewer approval. No implementation
+  report exists at extraction time, so no such row appears here. The ruling's authorised use is
+  confined to spell casting class and spell tier, and nothing in this packet is either, so the gate
+  would not affect this extraction even once it opens.
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-078-081-dice-luck-stats-and-checks
+  source_file: source.md
+  packet_source_checksum: sha256:e3df1c3de1f7855c269ad3b0f8a02075203335555f7451f89647c1f6ab38e6b5
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 030-dice-luck-stats-and-checks.md
+  citation_code: SD
+  page_start: 78
+  page_end: 81
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Markers resolve through the Pandoc AST rather than positionally, each a plain marker ending a
+  heading, which placement rule 1 applies to the whole heading. Every subsection carries no marker of
+  its own and takes its page from the persistence rule, so each row below is cited to the page of the
+  subsection it is drawn from rather than to the page of the nearest heading above it in the file.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 78 through 81. Any other
+  page the parser resolves lies inside the trailing Supporting Source Context, is claimed by another
+  packet, and contributed nothing here.
+
+source_summary: >-
+  Printed page 78 is ROLLING THE DICE, defining advantage, disadvantage, their cancellation, the two natural die results and a general random-outcome procedure. Page 79 defines the luck token. Page 80 gives example tasks for each of the six stats. Page 81 is MAKING CHECKS, saying when a check is called for, giving four standard difficulty values and defining a contested check. This summary is orientation only; every assertion below cites its page.
+
+extraction_posture: >-
+  This packet closes the longest-running deferral in the intake. Seven earlier packets asserted that something improves or worsens a check or a roll while recording that the mechanism, advantage or disadvantage, was defined elsewhere and could not be named. Printed page 78 is that locus, so both are proposed here and given their effect rows. Those seven earlier assertions are not restated: each is a different source's effect on a different mechanic, correctly asserted from its own locus, and repeating them here would duplicate them at a shallower grain.
+
+graph_state_at_extraction: >-
+  The canonical graph holds 175 registry rows, read at extraction rather than recalled, and the
+  canonical edge set was read too so every proposed row could be checked against the section 4
+  assertion key before publication. Every endpoint this packet reaches is already canonical and is
+  reused rather than proposed. The domain registry is still empty and general_rules.json is still an
+  empty object.
+
+reused_nodes:
+- id: rule_check
+  label: Check
+  used_by: M001, M002, M006, M007, M008, M009, M010, M011, M012, M013
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: cbt_attack_roll
+  label: Attack Roll
+  used_by: M004, M005
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: abil_strength
+  label: Strength
+  used_by: M007
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: abil_dexterity
+  label: Dexterity
+  used_by: M008
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: abil_constitution
+  label: Constitution
+  used_by: M009
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: abil_intelligence
+  label: Intelligence
+  used_by: M010
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: abil_wisdom
+  label: Wisdom
+  used_by: M011
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: abil_charisma
+  label: Charisma
+  used_by: M012
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+
+candidate_nodes:
+- proposed_id: rule_advantage
+  proposed_label: Advantage
+  kind: procedure
+  why_needed: Source of M001 and M003. The mechanism seven earlier packets asserted the effect of without
+    being able to name; this page defines it.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 78, its own heading ADVANTAGE
+  source_evidence: page 78, the heading and its rule to roll the same die twice and use the better result
+- proposed_id: rule_disadvantage
+  proposed_label: Disadvantage
+  kind: procedure
+  why_needed: Source of M002 and endpoint of M003. The negative counterpart, defined on the same page.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 78, its own heading DISADVANTAGE
+  source_evidence: page 78, the heading and its rule to roll the same die twice and use the worse result
+- proposed_id: rule_natural_twenty
+  proposed_label: Natural 20
+  kind: procedure
+  why_needed: Source of M004. The highest die result and its automatic consequences.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 78, its own heading NATURAL 20
+  source_evidence: page 78, the heading and its rule that the action succeeds to maximum capacity and
+    an attack automatically hits. See IDQ-01 on its relationship to the canonical spellcasting critical.
+- proposed_id: rule_natural_one
+  proposed_label: Natural 1
+  kind: procedure
+  why_needed: Source of M005. The lowest die result and its automatic consequences.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 78, its own heading NATURAL 1
+  source_evidence: page 78, the heading and its rule that the action fails to maximum capacity and an
+    attack automatically misses. See IDQ-01.
+- proposed_id: rule_luck_token
+  proposed_label: Luck Token
+  kind: procedure
+  why_needed: Source of M006. The award a player may cash in to reroll; the Bless spell already grants
+    one.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 79, its own heading LUCK TOKENS
+  source_evidence: page 79, the heading, the bolded term luck token, and the rule permitting a reroll
+- proposed_id: rule_contested_check
+  proposed_label: Contested Check
+  kind: procedure
+  why_needed: Source of M013. The procedure deciding between creatures working against each other.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 81, its own heading CONTESTED CHECKS
+  source_evidence: page 81, the heading and its rule that each participant rolls and the highest result
+    wins
+- proposed_id: rule_d6_decider
+  proposed_label: The D6 Decider
+  kind: procedure
+  why_needed: Registers a named general procedure for resolving a random outcome.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 78, its own heading THE D6 DECIDER
+  source_evidence: page 78, the heading and its rule that the GM calls for a die roll when there is a
+    random chance for an outcome
+  registry_addition_only: true
+  registry_addition_basis: Proposed from its defining locus with no edge. The rule relates a random chance
+    to a die roll and names no second mechanic this graph holds; the outcome bands are magnitudes. See
+    OBS-03.
+
+candidate_edges:
+- ref: M001
+  source_id: rule_advantage
+  source_label: Advantage
+  edge_type: MODIFIES
+  target_id: rule_check
+  target_label: Check
+  aspect: better result
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 78
+  section: ADVANTAGE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'Rolling twice and taking the better result changes how the roll resolves and only
+    helps. This is the mechanism seven packets deferred to: Stout, Grit, Thievery, the thief''s initiative
+    talent, the priest''s and wizard''s casting talents and the crowbar all assert an improvement whose
+    cause is this rule. Those rows remain correct and are not restated here; see OBS-01. Read aloud as
+    Advantage improves Check; basis read.'
+- ref: M002
+  source_id: rule_disadvantage
+  source_label: Disadvantage
+  edge_type: MODIFIES
+  target_id: rule_check
+  target_label: Check
+  aspect: worse result
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: SD
+  page: 78
+  section: DISADVANTAGE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The mirror of M001. Chainmail, plate mail and the Blind/Deafen spell assert its effect
+    from their own loci. Read aloud as Disadvantage worsens Check; basis read.
+- ref: M003
+  source_id: rule_advantage
+  source_label: Advantage
+  edge_type: ALTERNATIVE_TO
+  target_id: rule_disadvantage
+  target_label: Disadvantage
+  aspect: cancellation
+  condition: ''
+  book: SD
+  page: 78
+  section: CANCELING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Having both on one roll cancels them out, so the two cannot both apply. ALTERNATIVE_TO
+    means mutually exclusive and is the only symmetric type; its endpoints are sorted before the assertion
+    key is compared, per constitution section 4. Derived polarity neutral.
+- ref: M004
+  source_id: rule_natural_twenty
+  source_label: Natural 20
+  edge_type: MODIFIES
+  target_id: cbt_attack_roll
+  target_label: Attack Roll
+  aspect: automatic hit
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 78
+  section: NATURAL 20
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: An attack roll showing the highest result automatically hits and is a critical hit,
+    which changes how the attack resolves. The die value is a magnitude and the aspect names the outcome
+    qualitatively. The critical hit it references is defined in the Combat chapter and is not yet an identity;
+    see OBS-04.
+- ref: M005
+  source_id: rule_natural_one
+  source_label: Natural 1
+  edge_type: MODIFIES
+  target_id: cbt_attack_roll
+  target_label: Attack Roll
+  aspect: automatic miss
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: SD
+  page: 78
+  section: NATURAL 1
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The mirror of M004. That the attack might strike an ally is a further consequence
+    with no second identity to target and is dispositioned in OBS-04.
+- ref: M006
+  source_id: rule_luck_token
+  source_label: Luck Token
+  edge_type: MODIFIES
+  target_id: rule_check
+  target_label: Check
+  aspect: reroll
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 79
+  section: LUCK TOKENS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Cashing in a token rerolls a roll just made, which changes how it resolves; the player
+    must use the new result, so it is not guaranteed to help on that roll, but the option only ever adds.
+    The one-at-a-time limit and the per-session award counts are magnitudes and are excluded. Read aloud
+    as Luck Token improves Check; basis read.
+- ref: M007
+  source_id: abil_strength
+  source_label: Strength
+  edge_type: FEEDS_INTO
+  target_id: rule_check
+  target_label: Check
+  aspect: task type
+  condition: ''
+  book: SD
+  page: 80
+  section: USING STATS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Certain tasks fall under specific stats, and this page is where the book says which.
+    The row records that this stat governs a class of task, distinct under the section 4 assertion key
+    from the canonical row feeding the check its modifier and from the wizard's learning-check row. The
+    example tasks themselves are illustrative and are dispositioned in OBS-02.
+- ref: M008
+  source_id: abil_dexterity
+  source_label: Dexterity
+  edge_type: FEEDS_INTO
+  target_id: rule_check
+  target_label: Check
+  aspect: task type
+  condition: ''
+  book: SD
+  page: 80
+  section: USING STATS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: abil_constitution
+  source_label: Constitution
+  edge_type: FEEDS_INTO
+  target_id: rule_check
+  target_label: Check
+  aspect: task type
+  condition: ''
+  book: SD
+  page: 80
+  section: USING STATS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: abil_intelligence
+  source_label: Intelligence
+  edge_type: FEEDS_INTO
+  target_id: rule_check
+  target_label: Check
+  aspect: task type
+  condition: ''
+  book: SD
+  page: 80
+  section: USING STATS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M011
+  source_id: abil_wisdom
+  source_label: Wisdom
+  edge_type: FEEDS_INTO
+  target_id: rule_check
+  target_label: Check
+  aspect: task type
+  condition: ''
+  book: SD
+  page: 80
+  section: USING STATS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M012
+  source_id: abil_charisma
+  source_label: Charisma
+  edge_type: FEEDS_INTO
+  target_id: rule_check
+  target_label: Check
+  aspect: task type
+  condition: ''
+  book: SD
+  page: 80
+  section: USING STATS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M013
+  source_id: rule_contested_check
+  source_label: Contested Check
+  edge_type: RESOLVED_BY
+  target_id: rule_check
+  target_label: Check
+  aspect: opposed rolls
+  condition: ''
+  book: SD
+  page: 81
+  section: CONTESTED CHECKS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: A contested check is decided by each participant making a stat check simultaneously,
+    so the ordinary check is the procedure that resolves it. The tie-breaking instruction is procedure
+    about using the rule rather than a second dependency. Derived polarity governs.
+
+authored_polarity_declaration: >-
+  5 rows carry authored polarity, all with basis read: M001, M002, M004, M005, M006. Each is
+  MODIFIES, TRIGGERS or CONSTRAINS, the three types constitution section 5 requires to carry
+  source-reviewed authored polarity, and each was read aloud as source polarity target before being
+  recorded. No row uses basis heuristic or unset. Every other row takes its derived polarity from the
+  section 5 table and the Analyst authors none of it.
+
+domains_touched: []
+candidate_domains:
+  - proposed: core_resolution
+    basis: >-
+      This material is the general machinery every other chapter draws on. Recorded as a candidate
+      only; constitution section 8 reserves domain promotion to an Architect Decision and the Analyst
+      does not decide a candidate domain is official.
+
+domain_boundary_questions:
+  - >-
+    The resolution machinery is used by creation, magic, combat and exploration alike, which is an
+    argument that it is a domain and an argument that it is none. Deferred; no domain is asserted on
+    any edge in this GUR.
+
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The repeated shapes here are one rule stated once each rather than a pattern across
+  instances, and the Analyst is prohibited from promoting a general rule in any case.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: the seven deferrals this packet closes, and why none is restated
+    detail: >-
+      Stout rolls hit points with advantage, Grit grants it on checks to overcome an opposing force, Thievery grants it on trained tasks, a thief talent grants it on initiative, a priest and a wizard talent each grant it on casting one chosen spell, and the crowbar grants it on prying. Chainmail and plate mail impose disadvantage, and the Blind/Deafen spell imposes it on tasks needing a lost sense.
+            Every one of those rows asserts the effect on the mechanic it touches and is already canonical or published. This packet asserts what advantage and disadvantage themselves do to a check. The two layers are complementary rather than duplicative: a query asking what Grit does still reaches the check directly, and a query asking what advantage means now has an answer. No row here names any of those nine sources, so no assertion-key collision arises.
+  - id: OBS-02
+    subject: the example task lists are illustrative and are not extracted
+    detail: >-
+      Page 80 lists four example tasks under each of the six stats, twenty-four in all, from smashing open locked doors to fooling onlookers with sleight of hand. None is a named mechanic with its own identity; each is a sentence describing a kind of action. The mechanical content of the page is that a stat governs a class of task, which M007 through M012 carry, and the lists are how the source illustrates it. The page's note distinguishing Intelligence from Wisdom is guidance for the GM in the same way.
+  - id: OBS-03
+    subject: the random-outcome procedure is registered without an edge
+    detail: >-
+      The d6 decider is a named procedure with its own heading, and it is proposed. It relates a random chance to a die roll and names no second mechanic this graph holds: the thing being decided is left open by the source, whose own example is whether a dropped torch goes out. The outcome bands are magnitudes. It is therefore a registry addition only, marked and given its basis.
+  - id: OBS-04
+    subject: consequences naming mechanics defined elsewhere
+    detail: >-
+      The natural 20 rule says an attack is a critical hit and points at the Combat chapter on printed page 89; the natural 1 rule says the attack might strike an ally. Neither critical hit nor striking an ally is an identity yet, and printed page 89 is not claimed. M004 and M005 assert the part that reaches an existing identity, the automatic hit and miss on the attack roll, and the rest waits for the Combat packet.
+  - id: OBS-05
+    subject: when to roll, and the four standard difficulties, are not extracted
+    detail: >-
+      Page 81 says a check is called for when failure has a negative consequence, the action requires skill, and there is time pressure, and that a character usually succeeds at what they are trained to do without rolling. These are conditions for invoking the check rather than dependencies between two mechanics; negative consequence, skill and time pressure are not identities. The four standard difficulty values are magnitudes, and that the difficulty class feeds the check is already canonical from printed page 9, so a row here would collide under the section 4 assertion key.
+  - id: OBS-06
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The pages carry the two natural die values, the d6 decider's outcome bands, the luck token limit of one at a time, the per-session award ranges, and all four standard difficulty values. All are die values, thresholds or counts, excluded by constitution section 1 and invariant 11. They remain in the immutable claimed packet. No aspect contains a digit.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: how the natural die results relate to the canonical spellcasting criticals
+    detail: >-
+      rule_critical_success and rule_critical_failure are canonical, proposed from printed page 45 where they are defined as what happens on a natural 20 or 1 on a spellcasting check. This page defines the natural results generally, for any d20 roll, and gives their effect on an attack.
+            The Analyst proposed rule_natural_twenty and rule_natural_one rather than reusing the canonical pair, because the two are not obviously the same thing: the page 45 identities are outcomes of one specific check with spell-specific consequences including mishaps and penance, while these are properties of a die result that apply to attacks as well. Merging them silently would assert that a critical hit and a critically failed spell are one mechanic.
+            Consequence if wrong: if Reviewer judges them the same, these two nodes are withdrawn and M004 and M005 repoint to the canonical pair, which is a two-row change and no re-reading of source. If they are genuinely distinct, a later Decision may want a relationship between them; the vocabulary offers none that is obviously right, which is why none is asserted.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Every proposed node uses an approved constitution section 2 prefix with an unchanged
+  kind, every edge uses one of the fourteen legal section 3 types, and no new prefix, edge type,
+  domain promotion or general-rule application is requested. ESCALATION_CONTRACT states that a
+  proposed node under an approved prefix and kind which passes identity and duplicate checks is
+  ordinary GUR, GUP and Review work rather than an escalation, and that an unsupported edge should
+  simply be rejected rather than escalated, which is what the observations above record.
+
+completeness_statement: >-
+  All printed pages in the declared span are accounted for, and every heading, subsection, list and
+  paragraph within them was read. Each produced either an edge, a marked registry-addition node, or a
+  dispositioning observation; nothing was skipped. 1 node in this packet is a registry addition
+  only, marked and given its basis so an accidental orphan remains distinguishable. Every page marker
+  was resolved through the Pandoc AST and each row is cited to the page of the subsection it is drawn
+  from. Every row was checked against the canonical edge set for an assertion-key collision before
+  publication. Content not converted to an edge is accounted for in the observations above, and the
+  question the Analyst could not settle is recorded rather than resolved silently. No assertion
+  depends on any other ruleset.

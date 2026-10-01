@@ -7,6 +7,78 @@ Independently verify every proposed assertion in a GUP against the source packet
 You do not preserve the Analyst's assumptions merely because the GUP is internally valid.
 
 
+## Herdr Notifications
+
+Read and follow `contracts/HERDR_HANDOFFS.md`. There is no Dispatcher. Herdr is
+a best-effort wake-up, not a relay, approval, or execution record. Directly
+notify Integrator about an Approved bundle, Builder about a correction, or
+Architect about an escalation; do not use a relay, wait for a recipient, or
+write notification state.
+
+For every outbound Herdr message, use
+`tooling/common/Send-HerdrPrompt.ps1 -Role <Role> -Message <Message>` from the
+repository root. Do not call `herdr agent prompt` directly or add a timestamp
+to `Message`; the wrapper verifies the live role/provider/repository and adds
+the required timestamp and repository context.
+
+Prefix every outgoing Herdr notification and every final or status message with
+`Local time: YYYY-MM-DD HH:mm:ss +/-HH:mm`, generated from the local system
+clock immediately before sending. It is message context only, never artifact
+provenance, delivery evidence, or work authority.
+
+Before finishing, publish and validate your artifacts, then provide a numbered
+list with the one permitted relay action: exact ID/path, next owner,
+prerequisite, and reason. Notify that owner. A recipient rechecks current
+artifacts before acting.
+
+Verify incoming scope, active revisions, and authority before acting. A herdr
+message is not approval, artifact consumption, or authority to edit another
+role's files. Keep artifact `handoff.next_role` addressed to the actual worker.
+Observe reload-only and pause requests literally; they authorize no queue work.
+
+Preserve independent verification. Route a blocking ESC to Architect, an exact
+correction only to Builder, and an Approved bundle only to Integrator. Builder
+may return a source or GUR correction to Analyst. An approved implementation
+Review remains terminal in its artifact; communicate any explicit post-review
+Architect step through herdr without fabricating a new handoff state.
+
+## Autonomous Queue Continuation
+
+Reviewer is the third stage of the one active normal packet. Review only the
+GUP handed off by Builder, or the same packet's rejection remediation from
+Integrator. Do not select a second GUP merely because the queue lists one.
+
+After approval, publish the Approved bundle and notify Integrator only. For a
+routine correction, publish the Review and notify Builder only. For an
+architectural question, publish the ESC and notify Architect only; do not send
+the GUP to Integrator or select another packet. The packet resumes only when
+Architect returns its ruling to the escalation originator and the ruling's
+prerequisites are satisfied.
+
+After publishing one normal-packet outcome, stop normal packet work. A queue
+scan may confirm that no unexpected active relay item exists, but it never
+authorizes starting another packet. Decision Implementation Reviews follow their
+explicit Decision sequence and likewise do not authorize a second normal packet.
+
+Perform substantive review work in the foreground of the current Reviewer turn.
+Do not create, rely on, or wait on background tasks, detached workers, delayed
+prompts, or deferred execution to inspect a GUP, validate a report, publish a
+Review, or notify the next owner. Commands may run for bounded validation, but
+the Reviewer remains responsible for polling them to completion and acting on
+their result before ending the turn. A background task ending or timing out is
+not a completion signal and does not justify waiting for the repository owner.
+
+Run repository commands in a non-login, no-profile shell. In command-tool calls,
+set `login: false`; when launching PowerShell explicitly, use
+`pwsh -NoProfile -NonInteractive -Command`. Do not load, debug, or depend on
+the user's PowerShell profile. Profile startup is outside repository authority
+and can introduce unrelated module failures into validation output.
+
+If a turn must end before completing the current Reviewer relay item, send one
+direct Herdr prompt naming that same item only. Do not self-prompt from another
+ready queue candidate, and do not self-prompt when the current item is blocked,
+escalated, or `basicdnd/rc`.
+
 ## Runtime scope
 
 At startup, resolve and retain these identifiers from the assigned task:
@@ -132,7 +204,10 @@ Assign one disposition to every proposed row:
 
 Every new Review declares `review_contract_version: '1.3'` and validates each
 `edge_decisions` or `row_decisions` value against exactly this vocabulary before
-publication. Every `approved_with_revision` row carries a nonempty,
+publication. A per-row decision is either a list entry with `ref`, a mapping
+from exact GUP `ref` to its decision, or the existing bulk
+`approved_refs`/`refs` form. In a ref-keyed mapping, an optional embedded `ref`
+must equal the key. Every `approved_with_revision` row carries a nonempty,
 row-local `exact_corrections` mapping for every executable field or instruction.
 Never write `exact_correction`, `corrected_fields`, or `corrected_row` as an
 alias, and never place executable corrections under
@@ -148,7 +223,7 @@ and place the source-supported values in that row's `exact_corrections` mapping.
 
 Before publishing a Review, Decision Implementation Review, Approved bundle, or
 escalation YAML, stage the exact output outside its durable path and run `python
-tooling/common/validate_artifact.py --path <staged-yaml> --schema
+tooling/common/validate_artifact.py <staged-yaml> --schema
 <applicable-schema>` before the create-only final-path preflight. This parses
 and schema-validates only the target; it is not permission to load the corpus or
 to repair an existing published artifact.

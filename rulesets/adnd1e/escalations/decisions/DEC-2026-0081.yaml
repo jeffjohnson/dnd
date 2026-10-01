@@ -1,0 +1,350 @@
+schema_version: '1.0'
+id: DEC-2026-0081
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: adnd1e
+book_id: cross-book
+source_id: multiple
+packet_id: cross-packet
+constitution_version: '1.8'
+decision_date: '2026-09-07'
+request_origin:
+  type: repository_owner_directive
+  recorded_on: '2026-09-07'
+  summary: >-
+    Authorize Change 1 of Dispatcher automation, resolve common-pattern
+    inheritance and unassigned scope, and assign governance and implementation
+    ownership. Builder reports no implementation edits before this ruling.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    After Architect step 1, implement Dispatcher context verification and its
+    tests under step 2. Manual Dispatcher startup remains in force until
+    independent approval and final Architect activation under step 4.
+  blocking_ids: []
+
+question: >-
+  How does Dispatcher obtain exactly its bounded routing authority context
+  without common-pattern inheritance or invented ruleset identifiers, and how
+  is its verifier activated without changing the five existing roles?
+ruling: >-
+  Adopt manifest schema version 1.1 with an explicit per-role
+  inherit_common_patterns opt-out, permitted only for Dispatcher. Preserve the
+  eleven literal Dispatcher reading paths from ROLE_CONTEXT_LOADING 1.1.
+  Dispatcher stable context is repository-wide with null ruleset_id and book_id;
+  it accepts neither --ruleset nor --book. Keep cache_format_version 1 and all
+  existing receipt fields. Manifest and schema checksum changes invalidate old
+  receipts normally. The five processing roles keep their current path sets,
+  ruleset/book scope, and CLI behavior. Builder implements and Reviewer approves
+  before Architect retires manual Dispatcher startup. No herdr automation,
+  artifact handoff enum, queue semantics, or graph changes are authorized.
+rationale:
+  - >-
+    Inheriting contracts/*.md and schemas/common/*.json would defeat the
+    explicitly bounded routing context. A boolean opt-out is narrower than a
+    general exclusion-pattern language and cannot subtract worker authority.
+  - >-
+    Dispatcher loads no ruleset-specific stable patterns. Arbitrary ruleset
+    strings would create misleading receipt scopes for identical reading sets.
+    Job scope remains fresh evidence, not cached routing authority.
+  - >-
+    Receipt identity fields and comparison semantics remain intact. A manifest
+    language change needs version 1.1, but a new receipt format would add churn
+    without providing stronger invalidation than the existing strict hashes.
+  - >-
+    A final documentation activation must not be an acceptance condition that
+    Builder needs to prove before the independent Review that authorizes it.
+
+scope:
+  applicability: repository_wide_common_tooling
+  decision_storage_namespace: adnd1e
+  reason: >-
+    Continue DEC-2026-0040's existing common-tooling governance namespace.
+    The Decision envelope is not Dispatcher receipt scope and supplies no
+    default ruleset, source, book, or packet to Dispatcher jobs.
+
+manifest_contract:
+  path: contracts/ROLE_CONTEXT_MANIFEST.yaml
+  schema_path: schemas/common/role-context-manifest.schema.json
+  schema_version: '1.1'
+  cache_format_version: 1
+  legacy_support: >-
+    Schema and verifier continue to accept a five-role version-1.0 manifest.
+    Version 1.1 requires all six roles. Dispatcher is invalid in version 1.0;
+    a Dispatcher request against that legacy manifest fails closed. Unsupported
+    schema or cache-format versions fail closed rather than being guessed.
+  inheritance: >-
+    Omitted inherit_common_patterns means true. The five existing roles may
+    omit it or declare true, never false. Dispatcher must explicitly declare
+    false. Reject null, strings, numeric substitutes, and other malformed values.
+    Effective patterns are common_patterns plus stable_patterns when true,
+    and stable_patterns only when false. Preserve duplicate-path errors,
+    containment checks, mutable-input exclusions, and deterministic sorting.
+  dispatcher_stable_authority_paths:
+    - AGENTS.md
+    - README.md
+    - REPOSITORY_STRUCTURE.md
+    - agents/dispatcher/INSTRUCTIONS.md
+    - contracts/DISPATCHER.md
+    - contracts/ROLE_CONTEXT_LOADING.md
+    - contracts/WORK_QUEUES.md
+    - contracts/ARTIFACT_LIFECYCLE.md
+    - contracts/ESCALATION_CONTRACT.md
+    - contracts/SCOPE_AND_IDENTITY.md
+    - contracts/FILE_NAMING.md
+  verification_inputs: >-
+    The manifest and its schema are mandatory separately hashed verification
+    inputs, not extra Dispatcher stable_authority entries or required prose
+    reads. Dispatcher stable_authority_paths and stable_authority contain
+    exactly the eleven paths above. Its patterns are literal, with no globs or
+    placeholders. No worker instructions, ruleset governance, graph schemas,
+    source packets, registries, artifacts, or canonical data are inherited.
+
+dispatcher_scope_contract:
+  commands:
+    - verify --root . --role dispatcher --session-id <opaque-session-id>
+    - record --root . --role dispatcher --session-id <opaque-session-id>
+  receipt_scope:
+    ruleset_id: null
+    book_id: null
+  cli: >-
+    Make argparse --ruleset optional syntactically, then enforce role-specific
+    arguments before resolving paths or reading/writing receipts. Dispatcher
+    rejects any supplied --ruleset or --book, including an empty value. Other
+    roles still require --ruleset and retain their existing optional --book
+    behavior. Invalid invocations exit 2 and write no receipt. Public verifier
+    entry points likewise reject non-null Dispatcher scope arguments rather
+    than silently discarding them. Never call str.replace with null scope.
+  scope_key: >-
+    For Dispatcher only, the existing NUL-separated hash input is resolved root,
+    dispatcher, empty ruleset component, empty book component, and exact actor
+    session ID, in that order. Retain SHA-256 truncated to 32 hex characters.
+    Its filename is dispatcher-repository-no-book-<scope-key>.json under
+    .local/role-context/. The word repository is a filename/display label only,
+    never a ruleset_id. Five-role key and filename derivation are unchanged.
+  live_inputs: >-
+    Each dispatch still resolves actual job identifiers from manifests and
+    authority records; absent identifiers remain unassigned. Neither source_id
+    nor packet_id is added to receipts. A limited ruleset/book assignment does
+    not alter Dispatcher stable receipt scope or authorize work elsewhere.
+  session_boundary: >-
+    Actor session means the actual continuing agent context, not a herdr pane,
+    live alias, provider, or another role's session. No restored pane or run
+    record alone proves that instructions remain loaded.
+
+version_impact:
+  manifest_schema_version: {previous: '1.0', current: '1.1'}
+  cache_format_version: {previous: 1, current: 1}
+  exact_protocol_versions_rationale: >-
+    These literal values identify the manifest language and receipt encoding,
+    not a mutable Markdown contract-content minimum. Keeping receipt format 1
+    is an explicit backward-compatibility requirement. Existing field layout,
+    mandatory scope keys, and strict comparisons are preserved; Dispatcher
+    adds the null/null scope value under a previously unsupported role.
+  existing_receipts: >-
+    Leave all local receipts in place. The changed manifest/schema hashes cause
+    ordinary reload_required results. Never rewrite a receipt's hashes, upgrade
+    it in place, purge other actors' caches, or borrow an existing receipt.
+  role_context_loading: >-
+    Remains version 1.1 during implementation and independent Review. Architect
+    publishes version 1.2 or later with the activation anchors in step 4 only
+    after the exact active implementation report has an Approved Review.
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: false
+  implementation_kind: dispatcher_role_context_support
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision and the manifest/schema changes specified here.
+      Preserve ROLE_CONTEXT_LOADING 1.1 and manual Dispatcher startup.
+  - step: 2
+    owner: builder
+    action: >-
+      Verify step 1 inputs, implement only role_context.py and test_role_context.py,
+      run focused and common regression tests, and publish the first available
+      IMP-DEC-2026-0081 revision. Pin this Decision, both Architect-published
+      governance files, both implementation files, and the current loading
+      contract verified as the pre-activation baseline. Do not amend governance.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently disposition every acceptance test against the exact active
+      implementation report. Publish the ordinary implementation Review, with
+      terminal handoff if approved. Identify Architect step 4 as the subsequent
+      activation task in the completion response; do not give an approved
+      implementation Review a nonterminal handoff to manufacture queue work.
+  - step: 4
+    owner: architect
+    action: >-
+      After verifying the exact Approved implementation Review and current
+      implementation, amend ROLE_CONTEXT_LOADING to version 1.2 or later.
+      Document the six-role interface, explicit inheritance semantics,
+      Dispatcher null/null scope and scope-free commands, separate manifest and
+      schema hashes, and unchanged worker behavior. Retire the manual path and
+      explicitly supersede the temporary verifier-unavailable wording in the
+      Dispatcher role instructions. Name this Decision and the actual approving
+      report/Review IDs and checksums in the activation record within that
+      contract. Run focused validation and report activation to the user.
+
+acceptance_tests:
+  - >-
+    The live version-1.1 manifest validates against its schema and declares
+    exactly six roles. Legacy five-role version 1.0 remains accepted for its
+    original roles; Dispatcher is refused there. Unsupported versions, missing
+    required roles, malformed inheritance values, and worker opt-out fail closed.
+  - >-
+    Dispatcher resolves exactly the eleven literal paths in manifest_contract,
+    sorted, duplicate-free, and inside the root. No common-pattern expansion or
+    other worker instructions, graph/source/registry data enters that set.
+    Manifest and schema remain separately checksummed verification inputs.
+  - >-
+    Dispatcher verify/record work without --ruleset or --book and retain both
+    scope keys with JSON null values. CLI and public verifier scope guards
+    refuse supplied identifiers without receipt writes. No placeholder ID,
+    source_id, or packet_id is invented. Filename/key derivation follows this
+    Decision and does not collide with any existing worker scope.
+  - >-
+    All five existing roles retain required --ruleset, optional --book,
+    common-pattern inheritance, effective path sets for equivalent manifests,
+    receipt fields, scope-key/filename derivation, and normal CLI exit codes.
+    Exercise AD&D 1e and Basic D&D registered scopes with bounded fixtures.
+  - >-
+    A cold Dispatcher verify exits 1 with reload_required and exact reading
+    paths. After those paths are read and record is called, repeated same-root,
+    same-role, same-session unchanged verification exits 0 with cache_hit and
+    emits no authority contents. Record remains an attestation, not a substitute
+    for reading; tests exercise its mechanics without creating live actor receipts.
+  - >-
+    Missing, unreadable, nonmapping, incomplete, wrong-format, stale, and
+    different-session receipts never hit. Compare every required identity field,
+    both explicit Dispatcher scope keys, and exact authority path/checksum set;
+    missing scope keys are malformed, not equivalent to null. Copied receipts
+    with another root, role, worker scope, or actor session miss.
+  - >-
+    A changed authority file, manifest, schema, or resolved path/checksum set
+    invalidates a recorded receipt. In temporary fixtures, a version-1.0 worker
+    receipt confronted with the upgraded manifest/schema misses although
+    cache_format_version stays 1. No automatic rehashing or cache deletion occurs.
+  - >-
+    Existing containment, missing-literal, unreadable-input, duplicate-path,
+    unresolved-placeholder, and mutable-data exclusion guards remain fail-closed.
+    Dispatcher rejects nonliteral patterns. Verification errors exit 2 without
+    trusting or recording a receipt; malformed stored receipts otherwise yield
+    reload_required as before.
+  - >-
+    Receipts contain only the existing format-1 fields, live only under ignored
+    .local/role-context/, and are never artifact provenance or approval evidence.
+    Cached context cannot supply current job scope, source evidence, baselines,
+    approvals, or routing state. No herdr launch, retry, skill, or event handler
+    is implemented by this change.
+  - >-
+    The focused role-context suite and applicable complete common-tooling suite
+    pass, preserving all five-role coverage while adding Dispatcher cases.
+    Builder publishes schema-valid exact-checksum implementation evidence for
+    every test; Reviewer independently verifies it. Architect activation is
+    a post-implementation requirement, not a pre-approval acceptance gate.
+
+post_implementation_requirements:
+  - owner: architect
+    sequence_step: 4
+    requirement: >-
+      Retire manual Dispatcher startup only after step 3 approval. Version 1.2
+      or later must retain these substantive anchors: eleven bounded reading
+      paths; mandatory separate manifest/schema hashes; null ruleset/book
+      Dispatcher receipt scope; no Dispatcher scope CLI flags; unchanged
+      five-role behavior; same-actor-session verification; fresh live job inputs.
+      This final step is not asserted passed by the earlier Builder report.
+  - owner: architect
+    requirement: >-
+      Explicitly report the pending activation after implementation approval
+      even if the scanner consumes the Decision and shows no Architect item.
+      Follow the exact Decision sequence; do not change scanner semantics or
+      reopen the approved implementation merely for the final contract edit.
+
+coordination_constraints:
+  - >-
+    No changes to Changes 2-6, SOURCE_MARKDOWN, worker artifacts, shared scanner,
+    canonical data, or source intake are authorized by DEC-2026-0081.
+  - >-
+    DEC-2026-0080 has an independent Builder evidence-refresh task. Its r02 pins
+    SOURCE_MARKDOWN at sha256:f9455e37cd36c8c0cc08c43edfd6f32ce794e687afb65a18aa6236a638610eab;
+    version 1.6 currently hashes to
+    sha256:20eaa590b781a00298fe27e5d932784287442446067c90801175457babd830f8.
+    Before approval, this is ordinary strict mutable implementation-file and
+    contract-evidence drift, not a consumed-artifact integrity breach. Builder
+    must publish a successor report with current checksums, versions, anchor
+    evidence, and validation; Reviewer verifies that exact successor. Preserve
+    r02 and DEC-2026-0080 unchanged. This separate task is not a dependency or
+    acceptance test of Dispatcher support, and needs no new interpretation of
+    DEC-2026-0080's existing minimum-version semantics.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: Common operational context loading changes no ontology or graph.
+architect_preimplementation_validation:
+  target_schema_preflight: passed
+  manifest_schema_preflight: passed
+  ownership_preflight: passed
+  bounded_path_count: 11
+  negative_manifest_schema_cases_passed: 21
+  unchanged_worker_scope_comparisons_passed: 30
+  existing_role_context_suite:
+    command: python -m unittest discover -s tooling/common/tests -p test_role_context.py
+    tests_run: 50
+    passed: 49
+    failures: 1
+    failing_test: test_every_role_is_declared_exactly_once
+    disposition: expected_pending_builder_implementation
+    reason: >-
+      The Architect-published manifest now contains six roles, while the
+      unchanged Builder-owned verifier ROLES tuple still contains five. This
+      transition failure belongs to step 2 and must pass before approval;
+      it is not permission to remove Dispatcher or weaken the test.
+  scope_note: >-
+    No implementation support or full common-suite success is claimed by this
+    authorizing Decision. Builder runs the full common suite after implementing
+    the sixth role. The target preflight CLI in this checkout takes the staged
+    path positionally, not via the stale --path spelling in role instructions.
+governance_changelog:
+  - Manifest 1.1 adds Dispatcher-only common-pattern opt-out and literal routing paths.
+  - Dispatcher receipts use null/null repository scope while receipt format remains 1.
+  - Manual startup retirement is explicitly deferred to Architect after independent Review.
+
+exact_diff:
+  contracts/ROLE_CONTEXT_MANIFEST.yaml:
+    - Declare schema_version 1.1 and Dispatcher with inherit_common_patterns false and eleven literal paths; retain existing worker entries and cache_format_version 1.
+  schemas/common/role-context-manifest.schema.json:
+    - Validate manifest 1.1 and Dispatcher-only opt-out while accepting legacy five-role 1.0 manifests and preserving format 1.
+  contracts/ROLE_CONTEXT_LOADING.md:
+    - After independent approval only, publish version 1.2 or later documenting the reviewed Dispatcher interface and retiring manual startup with checksummed activation evidence.
+  tooling/common/role_context.py:
+    - Implement the ruled manifest selection, role-specific scope validation, null-scope receipt identity, and fail-closed comparisons without changing worker behavior.
+  tooling/common/tests/test_role_context.py:
+    - Preserve existing-role tests and add Dispatcher bounded-set, scope, schema, receipt, invalidation, and regression coverage.
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0081.yaml:
+    - Publish the authorization, exact ownership, acceptance criteria, and post-review activation sequence.
+exact_diff_ownership:
+  - {path: contracts/ROLE_CONTEXT_MANIFEST.yaml, owner: architect, sequence_step: 1}
+  - {path: schemas/common/role-context-manifest.schema.json, owner: architect, sequence_step: 1}
+  - {path: contracts/ROLE_CONTEXT_LOADING.md, owner: architect, sequence_step: 4}
+  - {path: tooling/common/role_context.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_role_context.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0081.yaml, owner: architect, sequence_step: 1}
+follow_up_owner: builder
+follow_up_owners:
+  builder:
+    - Implement step 2 and publish exact-checksum evidence, then identify Reviewer as next.
+  reviewer:
+    - Independently review step 2 and identify Architect activation after approval.
+  architect:
+    - Complete step 4 only after exact independent approval; report activation explicitly.

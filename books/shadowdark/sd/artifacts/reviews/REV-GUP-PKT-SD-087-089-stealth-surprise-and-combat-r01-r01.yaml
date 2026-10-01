@@ -1,0 +1,201 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-087-089-stealth-surprise-and-combat-r01-r01
+artifact_kind: packet_update_review
+status: revision_required
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-087-089-stealth-surprise-and-combat
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-26'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-087-089-stealth-surprise-and-combat-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-087-089-stealth-surprise-and-combat-r01.yaml
+  checksum: sha256:e0f726a1e109ceb6eacfa7591e4ce13fc76736d166e472f8be26d1f4769f0184
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: revision_required
+approval_ready: false
+edge_decisions:
+  approved_refs: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012, M013, M014, M015, M016, M017, M018, M019, M020, M021, M022, M023, M024, M025, M026, M027, M028, M029, M030, M031, M032, M033, M034, M035, M036, M037, M038, M039, M040, M041, M042, M043]
+  disposition: approved
+node_registry_decisions:
+  - {proposed_id: rule_hiding_and_sneaking, submitted_label: Hiding and Sneaking, kind: rule, disposition: approved}
+  - {proposed_id: rule_detecting, submitted_label: Detecting, kind: rule, disposition: approved}
+  - {proposed_id: rule_combat_round, submitted_label: Combat Round, kind: rule, disposition: approved}
+  - {proposed_id: cbt_melee_attack, submitted_label: Melee Attack, kind: cbt, disposition: approved}
+  - {proposed_id: cbt_ranged_attack, submitted_label: Ranged Attack, kind: cbt, disposition: approved}
+  - {proposed_id: rule_improvise, submitted_label: Improvise, kind: rule, disposition: approved}
+  - {proposed_id: rule_multitask, submitted_label: Multitask, kind: rule, disposition: approved}
+  - {proposed_id: rule_knockout, submitted_label: Knockout, kind: rule, disposition: approved}
+  - {proposed_id: rule_terrain, submitted_label: Terrain, kind: rule, disposition: approved}
+  - {proposed_id: rule_morale, submitted_label: Morale, kind: rule, disposition: approved}
+  - {proposed_id: rule_dying, submitted_label: Dying, kind: rule, disposition: approved}
+  - {proposed_id: rule_stabilize, submitted_label: Stabilize, kind: rule, disposition: approved}
+architectural_escalations: []
+blocking_findings:
+  - id: missing_hidden_position_reveal
+    severity: blocking
+    detail: >-
+      The SURPRISE text explicitly says attacking from hiding gives away the
+      attacker's position afterward unless the GM determines otherwise. The
+      GUP records the attack advantage but no relationship for losing the
+      hiding state. cbt_attack_roll is canonical and
+      rule_hiding_and_sneaking is proposed by this packet, so the relationship
+      is representable without a new identity or architectural decision.
+    source_citation:
+      path: books/shadowdark/sd/packets/claimed/PKT-SD-087-089-stealth-surprise-and-combat/source.md
+      page: '87'
+      section: SURPRISE
+      evidence: >-
+        Attacking from hiding gives away the attacker's position afterwards
+        unless the GM determines otherwise.
+  - id: missing_dying_natural_twenty_recovery
+    severity: blocking
+    detail: >-
+      The DEATH text explicitly restores hit points when a dying character
+      rolls a Natural 20 on a subsequent turn. The GUP records ordinary
+      regained hit points ending the dying state but omits this named recovery
+      input. rule_natural_twenty and rule_hit_points are both canonical, so the
+      relationship is representable without a new identity or architectural
+      decision and without storing the numeric magnitude.
+    source_citation:
+      path: books/shadowdark/sd/packets/claimed/PKT-SD-087-089-stealth-surprise-and-combat/source.md
+      page: '89'
+      section: DEATH
+      evidence: >-
+        On a subsequent dying turn, a Natural 20 causes the character to rise
+        with hit points.
+required_builder_revision:
+  successor_gup_id: GUP-PKT-SD-087-089-stealth-surprise-and-combat-r02
+  source_gur_successor_required: true
+  required_relationships:
+    - source_id: cbt_attack_roll
+      edge_type: EXCLUDES
+      target_id: rule_hiding_and_sneaking
+      aspect: position concealment
+      condition: after attacking from hiding unless the GM determines otherwise
+      book: SD
+      page: '87'
+      section: SURPRISE
+      evidence: explicit_rule
+      polarity: negates
+      polarity_basis: derived
+    - source_id: rule_natural_twenty
+      edge_type: MODIFIES
+      target_id: rule_hit_points
+      aspect: dying recovery
+      condition: on a dying character's subsequent turn
+      book: SD
+      page: '89'
+      section: DEATH
+      evidence: explicit_rule
+      polarity: improves
+      polarity_basis: read
+  preserve_reviewed_rows: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012, M013, M014, M015, M016, M017, M018, M019, M020, M021, M022, M023, M024, M025, M026, M027, M028, M029, M030, M031, M032, M033, M034, M035, M036, M037, M038, M039, M040, M041, M042, M043]
+  preserve_approved_node_registrations: [rule_hiding_and_sneaking, rule_detecting, rule_combat_round, cbt_melee_attack, cbt_ranged_attack, rule_improvise, rule_multitask, rule_knockout, rule_terrain, rule_morale, rule_dying, rule_stabilize]
+  note: >-
+    Builder must return the two omitted source relationships to Analyst for a
+    successor GUR, then compile the named successor GUP. No submitted row or
+    proposed node requires alteration.
+reviewer_findings:
+  - id: RF-01
+    subject: action_spellcasting_opposed_direction
+    disposition: approved_distinct_relationships
+    ref: M020
+    detail: >-
+      The canonical rule_spellcasting_check CONSUMES rule_action row records
+      the action cost at Spellcasting's defining locus. M020 records page 88's
+      explicit pointer from the Actions list to Spellcasting. CROSS_REFERENCES
+      is directionally appropriate to that pointer and is semantically
+      distinct from the reverse CONSUMES relationship.
+  - id: RF-02
+    subject: critical_hit_identity
+    disposition: approved_canonical_reuse
+    refs: [M026, M027]
+    detail: >-
+      The page-89 Critical Hit rule expressly covers both attack rolls and
+      spellcasting checks and sends the spell case back to page 45's canonical
+      Critical Success procedure. Reusing rule_critical_success preserves that
+      shared event and avoids a near-duplicate cbt_critical_hit identity.
+      rule_natural_twenty remains the roll-face input, not a competing event
+      identity.
+  - id: RF-03
+    subject: stealth_terrain_domain_boundary
+    disposition: informational_nonblocking
+    detail: >-
+      Stealth, detection, and terrain apply beyond combat, but candidate-domain
+      promotion is not required to register their source-named rules or approve
+      the submitted relationships. DBQ-01 therefore does not block this packet.
+  - id: RF-04
+    subject: external_invisibility_gap
+    disposition: informational_out_of_scope
+    detail: >-
+      The confirmed missing connection between spell_invisibility and
+      rule_invisibility belongs to the already integrated PKT-SD-062-065
+      lineage. It requires a separately scoped successor and neither changes
+      nor blocks the rows reviewed here.
+  - id: RF-05
+    subject: gur_registry_snapshot
+    disposition: informational
+    detail: >-
+      The GUR says 253 registry rows; the independently measured current
+      registry contains 277. The compiler used live state, all twelve proposals
+      are fresh, and the stale prose count changes no operation.
+completeness_statement: >-
+  All 43 submitted rows and twelve proposed registrations were independently
+  checked against pages 87 through 89, Constitution 1.7, the current registry,
+  and the canonical neighborhood. Every submitted row is correct as written,
+  including M020's distinct cross-reference direction and reuse of canonical
+  rule_critical_success. Approval is withheld because two explicit mechanics
+  are absent: an attack reveals a hidden attacker, and Natural 20 restores hit
+  points during the dying sequence. A successor adding those relationships
+  while preserving all submitted material will be complete.
+reviewer_checklist:
+  source_support: passed_for_submitted_rows_but_packet_incomplete
+  node_identity: passed_including_critical_success_reuse
+  edge_semantics_and_direction: passed_with_m020_nonblocking
+  grain: passed
+  polarity: passed
+  page_attribution: passed
+  graph_neighborhood: passed_with_two_missing_relationships
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-087-089-stealth-surprise-and-combat/source.md
+    checksum: sha256:2eaa5a4a1bbfafa1bb37c8d2725988852e5277279f6ef81fb69125f37ebaa885
+    pages: ['87', '88', '89']
+    result: independently_read_and_two_omissions_found
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-087-089-stealth-surprise-and-combat-r01.yaml
+    checksum: sha256:273f456b9cf74be4ffdadead57e6bdf11fdf5247594294269544b35e6e2190e9
+    result: identity_and_domain_questions_independently_dispositioned
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-087-089-stealth-surprise-and-combat-r01.validation.json
+    checksum: sha256:0eee8d9c1fc7a82271f87a1544b768124b0c71de65ebecb22aa836ddce3f982b
+    result: compiler_clean_with_one_nonblocking_direction_warning_but_source_incomplete
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:8802fdfe4317e6f8e183700fc3fec400eaa7fc7f416d0c91afc72dd7f0126cfa
+    observed_rows: 277
+    result: twelve_proposals_fresh_and_required_canonical_inputs_present
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:9c284a1bb84197e5a4169fcca9774d881e3db02001ee381dff1d6c019400bc8b
+    observed_edges: 550
+    result: >-
+      M020's reverse-direction counterpart and the critical-success lineage
+      were verified; neither omitted relationship already exists.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Return the two missing source relationships to Analyst, then compile
+    GUP-PKT-SD-087-089-stealth-surprise-and-combat-r02 while preserving all 43
+    reviewed rows and twelve approved registrations.
+  blocking_ids: []

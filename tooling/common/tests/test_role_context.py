@@ -27,7 +27,6 @@ SPEC.loader.exec_module(role_context)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
-
 class RoleContextCase(unittest.TestCase):
     """A private repository skeleton.
 
@@ -553,10 +552,385 @@ class TestCli(RoleContextCase):
                 2,
             )
 
-    def test_an_unknown_role_is_rejected_by_the_parser(self):
-        with self.assertRaises(SystemExit):
+    def test_an_unknown_role_is_rejected(self):
+        """Exit 2, as before. DEC-2026-0082 moved the check off argparse
+        `choices` so a retired role can be told what retired it; an unknown
+        role still gets the plain unrecognized-role refusal."""
+        self.assertEqual(
             self.run_cli("verify", "--role", "steward", "--ruleset", "adnd1e",
-                         "--session-id", self.SESSION)
+                         "--session-id", self.SESSION),
+            2,
+        )
+
+
+
+# ---------------------------------------------------------------------------
+# DEC-2026-0082: five active roles.
+#
+# DEC-2026-0081 had added a sixth, and the tests that asserted it were deleted
+# rather than adjusted -- they tested a role governance has withdrawn. What
+# follows keeps the manifest language readable for history while proving the
+# role itself is unreachable, and pins the five roles' behaviour unchanged.
+# ---------------------------------------------------------------------------
+
+
+class TestManifestVersionsAndInheritance(RoleContextCase):
+    """DEC-2026-0081 acceptance test 1: which manifests this verifier accepts."""
+
+    def manifest_with(self, **changes):
+        document = json.loads(json.dumps(self.MANIFEST))
+        document.update(changes)
+        return document
+
+    def refuses(self, document, fragment):
+        self.write_manifest(document)
+        with self.assertRaises(role_context.ContextError) as caught:
+            role_context.load_manifest(self.root)
+        self.assertIn(fragment, str(caught.exception))
+
+    def test_a_legacy_five_role_manifest_is_still_accepted(self):
+        """1.0 predates the Dispatcher and stays valid for the roles it declares."""
+        self.assertEqual(self.verify()["status"], "reload_required")
+        self.assertEqual(self.warm()["status"], "cache_hit")
+
+    def test_a_legacy_manifest_may_not_declare_the_retired_role(self):
+        """1.0 predates it, so finding it there is malformed, not history."""
+        document = self.manifest_with()
+        document["roles"]["dispatcher"] = {
+            "inherit_common_patterns": False,
+            "stable_patterns": ["README.md"],
+        }
+        self.refuses(document, "retired by DEC-2026-0082")
+
+    def test_a_retired_role_request_names_the_decision_that_retired_it(self):
+        """"Unrecognized" would read like a typo and hide the ruling."""
+        with self.assertRaises(role_context.ContextError) as caught:
+            role_context.verify(self.root, "dispatcher", "adnd1e", None, self.SESSION)
+        message = str(caught.exception)
+        self.assertIn("retired by DEC-2026-0082", message)
+        self.assertNotIn("unrecognized role", message)
+
+    def test_an_unsupported_schema_version_fails_closed(self):
+        for version in ("1.2", "2.0", 1.0, None, ""):
+            with self.subTest(version=version):
+                self.refuses(
+                    self.manifest_with(schema_version=version), "this verifier implements"
+                )
+
+    def test_an_unsupported_cache_format_version_fails_closed(self):
+        for value in (2, 0, "1", None):
+            with self.subTest(value=value):
+                self.refuses(
+                    self.manifest_with(cache_format_version=value),
+                    "cache_format_version",
+                )
+
+    def test_version_1_1_still_parses_as_history(self):
+        """DEC-2026-0082 keeps the language readable; it grants nothing."""
+        document = self.manifest_with(schema_version="1.1")
+        document["roles"]["dispatcher"] = {
+            "inherit_common_patterns": False,
+            "stable_patterns": ["README.md"],
+        }
+        self.write_manifest(document)
+        manifest = role_context.load_manifest(self.root)
+        self.assertIn("dispatcher", manifest["roles"])
+        # Parsed, but not runnable: no set is resolved for it.
+        with self.assertRaises(role_context.ContextError) as caught:
+            role_context.resolve_paths(self.root, manifest, "dispatcher", "adnd1e", None)
+        self.assertIn("retired by DEC-2026-0082", str(caught.exception))
+
+    def test_version_1_1_does_not_require_the_retired_role(self):
+        """A 1.1 manifest someone already trimmed still loads."""
+        self.write_manifest(self.manifest_with(schema_version="1.1"))
+        self.assertEqual(self.verify()["status"], "reload_required")
+
+    def test_a_malformed_historical_entry_is_still_an_error(self):
+        """A manifest is well formed or it is not; one key is not exempt."""
+        document = self.manifest_with(schema_version="1.1")
+        document["roles"]["dispatcher"] = {"stable_patterns": ["README.md"]}
+        self.refuses(document, "must still declare inherit_common_patterns: false")
+
+    def test_a_missing_worker_role_fails_closed(self):
+        document = self.manifest_with()
+        del document["roles"]["reviewer"]
+        self.refuses(document, "omits role(s): reviewer")
+
+    def test_an_unknown_role_fails_closed(self):
+        document = self.manifest_with()
+        document["roles"]["steward"] = {"stable_patterns": ["README.md"]}
+        self.refuses(document, "unknown role(s): steward")
+
+    def test_a_worker_may_not_opt_out_of_the_common_set(self):
+        """The opt-out exists for the Dispatcher; it cannot subtract worker authority."""
+        document = self.manifest_with()
+        document["roles"]["builder"]["inherit_common_patterns"] = False
+        self.refuses(document, "every active role inherits the common set")
+
+    def test_a_worker_may_declare_the_default_explicitly(self):
+        document = self.manifest_with()
+        document["roles"]["builder"]["inherit_common_patterns"] = True
+        self.write_manifest(document)
+        self.assertIn("AGENTS.md", self.verify()["stable_authority_paths"])
+
+    def test_a_malformed_inheritance_value_fails_closed(self):
+        """`1` is not `True` here. A truthy near-miss must not grant the set."""
+        for value in (None, "false", "true", 0, 1, [], {}):
+            with self.subTest(value=value):
+                document = self.manifest_with()
+                document["roles"]["builder"]["inherit_common_patterns"] = value
+                self.refuses(document, "it must be a boolean")
+
+    def test_a_missing_worker_role_fails_closed_at_either_language(self):
+        for version in ("1.0", "1.1"):
+            with self.subTest(schema_version=version):
+                document = self.manifest_with(schema_version=version)
+                del document["roles"]["analyst"]
+                self.refuses(document, "omits role(s): analyst")
+
+    def test_a_malformed_role_entry_fails_closed(self):
+        document = self.manifest_with()
+        document["roles"]["builder"] = ["agents/builder/INSTRUCTIONS.md"]
+        self.refuses(document, "is not a mapping")
+
+
+class TestTheRetiredRoleIsGone(unittest.TestCase):
+    """DEC-2026-0082 acceptance test 2, against the repository as it stands.
+
+    The previous revision of this file asserted an active sixth role, and those
+    assertions are deleted rather than adjusted: they tested a role governance
+    has withdrawn. What replaces them is the opposite claim -- the role is
+    absent from the live manifest, its files are gone, and every entry point
+    refuses it without writing anything.
+    """
+
+    RETIRED = "dispatcher"
+
+    def test_the_live_manifest_declares_exactly_the_five_active_roles(self):
+        manifest = role_context.load_manifest(REPO_ROOT)
+        self.assertEqual(sorted(manifest["roles"]), sorted(role_context.ROLES))
+        self.assertEqual(sorted(role_context.ROLES), sorted(role_context.WORKER_ROLES))
+        self.assertNotIn(self.RETIRED, manifest["roles"])
+        self.assertEqual(manifest["schema_version"], "1.0")
+        self.assertEqual(manifest["cache_format_version"], 1)
+
+    def test_the_retired_role_definition_files_are_absent(self):
+        """Verified by absence, never pinned as an existing file."""
+        for relative in ("agents/dispatcher/INSTRUCTIONS.md", "contracts/DISPATCHER.md"):
+            with self.subTest(path=relative):
+                self.assertFalse((REPO_ROOT / relative).exists(), relative)
+
+    def test_every_entry_point_refuses_it_and_writes_nothing(self):
+        manifest = role_context.load_manifest(REPO_ROOT)
+        session = "unit-test-not-an-actor"
+        calls = {
+            "validate_scope": lambda: role_context.validate_scope(
+                self.RETIRED, "adnd1e", None
+            ),
+            "resolve_paths": lambda: role_context.resolve_paths(
+                REPO_ROOT, manifest, self.RETIRED, "adnd1e", None
+            ),
+            "receipt_path": lambda: role_context.receipt_path(
+                REPO_ROOT, self.RETIRED, "adnd1e", None, session
+            ),
+            "build_receipt": lambda: role_context.build_receipt(
+                REPO_ROOT, self.RETIRED, "adnd1e", None, session
+            ),
+            "verify": lambda: role_context.verify(
+                REPO_ROOT, self.RETIRED, "adnd1e", None, session
+            ),
+            "record": lambda: role_context.record(
+                REPO_ROOT, self.RETIRED, "adnd1e", None, session
+            ),
+        }
+        for name, call in calls.items():
+            with self.subTest(entry_point=name):
+                with self.assertRaises(role_context.ContextError) as caught:
+                    call()
+                self.assertIn("retired by DEC-2026-0082", str(caught.exception))
+
+    def test_the_retirement_is_read_from_a_table_not_a_literal(self):
+        """So a future retirement names its own Decision instead of this one."""
+        self.assertEqual(role_context.RETIRED_ROLES[self.RETIRED], "DEC-2026-0082")
+        self.assertFalse(set(role_context.RETIRED_ROLES) & set(role_context.ROLES))
+
+
+class TestTheRetiredRoleCliIsRefused(RoleContextCase):
+    """Acceptance test 2's command-line half: refused, with no receipt written."""
+
+    def run_cli(self, *args):
+        return role_context.main([*args, "--root", str(self.root)])
+
+    def receipts(self):
+        directory = self.root / ".local" / "role-context"
+        return sorted(p.name for p in directory.glob("*.json")) if directory.is_dir() else []
+
+    def test_a_retired_role_exits_2_and_writes_no_receipt(self):
+        for command in ("verify", "record"):
+            with self.subTest(command=command):
+                code = self.run_cli(
+                    command, "--role", "dispatcher",
+                    "--ruleset", "adnd1e", "--session-id", self.SESSION,
+                )
+                self.assertEqual(code, 2)
+                self.assertEqual(self.receipts(), [])
+
+    def test_the_refusal_distinguishes_retired_from_unknown(self):
+        import io
+        from contextlib import redirect_stderr
+
+        messages = {}
+        for role in ("dispatcher", "bogus"):
+            buffer = io.StringIO()
+            with redirect_stderr(buffer):
+                self.run_cli(
+                    "verify", "--role", role,
+                    "--ruleset", "adnd1e", "--session-id", self.SESSION,
+                )
+            messages[role] = buffer.getvalue()
+        self.assertIn("retired by DEC-2026-0082", messages["dispatcher"])
+        self.assertIn("unrecognized role", messages["bogus"])
+        self.assertNotIn("unrecognized role", messages["dispatcher"])
+
+    def test_an_active_role_still_works_from_the_same_cli(self):
+        self.assertEqual(
+            self.run_cli(
+                "verify", "--role", "builder", "--ruleset", "adnd1e",
+                "--book", "phb", "--session-id", self.SESSION,
+            ),
+            1,
+        )
+
+
+class TestManifestUpgradeInvalidatesExistingReceipts(RoleContextCase):
+    """Acceptance test 7: the 1.0 -> 1.1 upgrade, with receipt format still 1."""
+
+    def test_a_worker_receipt_written_under_1_0_misses_after_the_upgrade(self):
+        self.record()
+        path = role_context.receipt_path(self.root, "builder", "adnd1e", "phb", self.SESSION)
+        before = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(before["cache_format_version"], 1)
+
+        upgraded = json.loads(json.dumps(self.MANIFEST))
+        upgraded["schema_version"] = "1.1"
+        upgraded["roles"]["dispatcher"] = {
+            "inherit_common_patterns": False,
+            "stable_patterns": ["README.md", "agents/dispatcher/INSTRUCTIONS.md"],
+        }
+        self.write_manifest(upgraded)
+        self.write("schemas/common/role-context-manifest.schema.json", '{"upgraded": true}\n')
+
+        result = self.verify()
+        self.assertEqual(result["status"], "reload_required")
+        self.assertTrue(
+            any("manifest_checksum" in d for d in result["differences"]), result["differences"]
+        )
+        # The receipt encoding did not change, so this is ordinary hash
+        # invalidation rather than a format migration.
+        self.assertEqual(role_context.SUPPORTED_CACHE_FORMAT_VERSION, 1)
+        after = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(after, before, "the stale receipt is left exactly as it was")
+
+
+class TestWorkerBehaviourIsUnchanged(RoleContextCase):
+    """Acceptance test 4: the five roles keep everything they had."""
+
+    def run_cli(self, *args):
+        return role_context.main([*args, "--root", str(self.root)])
+
+    def test_each_worker_still_requires_a_ruleset(self):
+        """argparse rejects the absent argument; the exit code is still 2."""
+        for role in role_context.WORKER_ROLES:
+            with self.subTest(role=role):
+                with self.assertRaises(SystemExit) as caught:
+                    self.run_cli("verify", "--role", role, "--session-id", self.SESSION)
+                self.assertEqual(caught.exception.code, 2)
+
+    def test_an_empty_ruleset_is_refused_rather_than_resolved(self):
+        self.assertEqual(
+            self.run_cli(
+                "verify", "--role", "builder", "--ruleset", "", "--session-id", self.SESSION
+            ),
+            2,
+        )
+
+    def test_book_remains_optional(self):
+        self.assertEqual(
+            self.run_cli(
+                "verify", "--role", "builder", "--ruleset", "adnd1e",
+                "--session-id", self.SESSION,
+            ),
+            1,
+        )
+
+    def test_the_worker_scope_key_and_filename_formulas_are_unchanged(self):
+        import hashlib
+
+        for role in role_context.WORKER_ROLES:
+            for book in ("phb", None):
+                with self.subTest(role=role, book=book):
+                    material = "\0".join(
+                        [
+                            str(self.root.resolve()).replace("\\", "/"),
+                            role,
+                            "adnd1e",
+                            book or "",
+                            self.SESSION,
+                        ]
+                    )
+                    key = hashlib.sha256(material.encode("utf-8")).hexdigest()[:32]
+                    self.assertEqual(
+                        role_context._scope_key(
+                            self.root, role, "adnd1e", book, self.SESSION
+                        ),
+                        key,
+                    )
+                    self.assertEqual(
+                        role_context.receipt_path(
+                            self.root, role, "adnd1e", book, self.SESSION
+                        ).name,
+                        f"{role}-adnd1e-{book or 'no-book'}-{key}.json",
+                    )
+
+    def test_worker_receipt_fields_are_unchanged(self):
+        self.record()
+        stored = json.loads(
+            role_context.receipt_path(
+                self.root, "builder", "adnd1e", "phb", self.SESSION
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(stored["scope"], {"ruleset_id": "adnd1e", "book_id": "phb"})
+        self.assertEqual(stored["cache_format_version"], 1)
+        self.assertEqual(stored["role"], "builder")
+
+
+class TestBothRegisteredRulesetsResolve(unittest.TestCase):
+    """Acceptance test 4's live half: AD&D 1e and Basic D&D worker scopes."""
+
+    SCOPES = (("adnd1e", "phb"), ("basicdnd", "rc"))
+
+    def test_every_worker_resolves_a_stable_set_in_each_registered_ruleset(self):
+        manifest = role_context.load_manifest(REPO_ROOT)
+        for ruleset, book in self.SCOPES:
+            for role in role_context.WORKER_ROLES:
+                with self.subTest(ruleset=ruleset, role=role):
+                    resolved = role_context.resolve_paths(
+                        REPO_ROOT, manifest, role, ruleset, book
+                    )
+                    self.assertTrue(resolved)
+                    self.assertEqual(resolved, sorted(resolved))
+                    self.assertIn("AGENTS.md", resolved)
+                    self.assertIn(f"agents/{role}/INSTRUCTIONS.md", resolved)
+                    self.assertTrue(
+                        any(r.startswith(f"rulesets/{ruleset}/") for r in resolved),
+                        "a worker set is ruleset-scoped",
+                    )
+
+    def test_a_worker_set_is_different_per_ruleset(self):
+        manifest = role_context.load_manifest(REPO_ROOT)
+        first = role_context.resolve_paths(REPO_ROOT, manifest, "builder", "adnd1e", "phb")
+        second = role_context.resolve_paths(REPO_ROOT, manifest, "builder", "basicdnd", "rc")
+        self.assertNotEqual(first, second)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,427 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-132-133-overland-hex-maps-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-132-133-overland-hex-maps
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-132-133-overland-hex-maps
+  source_file: source.md
+  packet_source_checksum: sha256:83e68296f577790e88126664b8ae6c018da11906d57ef1ca57391dbdb12c52ef
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 054-overland-hex-maps.md
+  citation_code: SD
+  page_start: 132
+  page_end: 133
+  page_number_basis: packet_page_markers
+units_note: 'Figures name their unit. Measured by the assembling script from the claimed source: 6 named
+  tables and 48 data rows across them.'
+page_attribution_basis: 'Both markers sit on headings. p132 ends the OVERLAND HEX MAPS heading and p133
+  ends the HEX POINTS OF INTEREST TABLE heading, and placement rule 1 applies each to its whole heading
+  with the persistence rule carrying it forward. Verified against the claimed source that no marker appears
+  inside a table row.
+
+  So the four procedure paragraphs and the new hex, danger level, terrain and cataclysm tables are printed
+  page 132, and the points of interest and settlement name tables are printed page 133. Each row is cited
+  to the page of the table it concerns, so six rows cite 132 and two cite 133.'
+scope_boundary: 'The bounded scope is the Primary Source Material section, printed pages 132 and 133:
+  four paragraphs of procedure and 6 named tables. The trailing Supporting Source Context is out of scope.'
+source_summary: A hex map generator. Roll or choose a starting terrain from the terrain table, then roll
+  on the new hex table each time the characters enter an empty hex; that table gives the new terrain relative
+  to the current one, a step down, the same, a step up, or an entirely new roll. The terrain table is
+  read as a circular loop, so stepping past either end wraps around, and the source works that through
+  with an example. Each hex also gets a die roll for whether it holds a point of interest. Separate tables
+  give the hex's danger level, the cataclysm type when the terrain result calls for one, the point of
+  interest as a location and a development, and settlement names in three columns by size.
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled, and every figure here
+  is computed by the assembling script from the canonical files and the claimed source.
+
+  The canonical graph holds 361 registry rows and 730 edges, and 0 rows cite printed pages 132 or 133,
+  so nothing in this span has been extracted before. No hex map, terrain-step, cataclysm, point-of-interest
+  or settlement identity exists. The registry holds 77 tbl_ identities.
+
+  Two existing identities were read in full first. rule_danger_level carries 4 rows, of which 1 is a RESOLVED_BY,
+  the one this intake added from printed page 130 a packet ago. rule_hex carries 2 rows, both from printed
+  page 90, feeding overland travel as the distance unit and gating the navigation check.'
+two_tier_structure_note: 'The rows follow the same two-tier shape settled on printed pages 130 and 131
+  one packet ago, because the page has the same structure: a procedure that rolls some tables directly
+  and reaches others through a result.
+
+  Four tables are rolled directly by the procedure and take RESOLVED_BY rows from rule_overland_hex_maps:
+  terrain, new hex, danger level and points of interest. Two are reached only through a result and take
+  FEEDS_INTO rows from the table that reaches them. The cataclysm table is reached when the terrain result
+  is a prior hex plus cataclysm, so tbl_hex_terrain feeds it. The settlement name table''s three columns
+  are indexed by settlement size, and the sizes are results of the points of interest table, so that table
+  feeds it.
+
+  The settlement indexing satisfies the test set in PKT-SD-128-129: an indexing row is assertable only
+  where the table is independently reached by a mechanical identity, and here the chain runs rule_overland_hex_maps
+  to points of interest to settlement name, so the table is reached. It is reached from a table rather
+  than directly, which is the same position the eight map contents tables occupy.'
+cross_chapter_link_note: 'M008 is the row worth checking, because it is the only one that reaches outside
+  this page. rule_hex FEEDS_INTO rule_overland_hex_maps with aspect mapped unit.
+
+  rule_hex was proposed from printed page 90, where overland travel counts movement in hexes and the navigation
+  check fires on leaving one. It carries 2 canonical rows, both from that page. This page never explains
+  what a hex is; it assumes it and generates terrain for them, which is exactly the relationship the row
+  asserts, that the hex is the unit this map is built from.
+
+  Without it the generator would sit unconnected to the travel rules that consume its output, which would
+  be a false picture: a reader asking what an overland hex map is made of would find six tables and no
+  link to the hex the characters actually cross. The direction is input to process, the hex supplying
+  the unit the procedure populates, which matches how rule_hex already feeds overland travel as the distance
+  unit.'
+reused_nodes:
+- id: rule_danger_level
+  label: Danger Level
+  used_by: M005
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical from printed page 86, carrying 4 rows. This page's table is its second resolver,
+    after the site danger table from printed page 130; the two differ in target and aspect.
+- id: rule_hex
+  label: Hex
+  used_by: M008
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical from printed page 90 with 2 rows, feeding overland travel and gating navigation.
+    The unit this map generates terrain for.
+candidate_nodes:
+- proposed_id: rule_overland_hex_maps
+  proposed_label: Overland Hex Maps
+  kind: procedure
+  why_needed: The named procedure these pages define, generating an overland map hex by hex from a starting
+    terrain. Four paragraphs state it as a sequence, so it is a source-defined identity rather than a
+    heading, and four tables resolve it directly.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 132, OVERLAND HEX MAPS
+  source_evidence: page 132, the OVERLAND HEX MAPS heading and its four procedure paragraphs.
+- proposed_id: tbl_new_hex
+  proposed_label: New Hex Table
+  kind: table
+  why_needed: Resolves what terrain an empty hex has, relative to the current one, when the characters
+    move into it.
+  prefix_basis: tbl_ is a named source table; matches the 77 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 132, NEW HEX TABLE
+  source_evidence: page 132, the NEW HEX TABLE heading and its data rows.
+- proposed_id: tbl_hex_danger_level
+  proposed_label: Hex Danger Level Table
+  kind: table
+  why_needed: Resolves a hex's danger level. Its results are the values rule_danger_level holds, plus
+    one the canonical rule does not carry; see OBS-02.
+  prefix_basis: tbl_ is a named source table; matches the 77 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 132, HEX DANGER LEVEL TABLE
+  source_evidence: page 132, the HEX DANGER LEVEL TABLE heading and its data rows.
+- proposed_id: tbl_hex_terrain
+  proposed_label: Hex Terrain Table
+  kind: table
+  why_needed: Resolves a terrain type, read as a circular loop so a step past either end wraps. It is
+    the table the procedure starts from and the one whose cataclysm result reaches further.
+  prefix_basis: tbl_ is a named source table; matches the 77 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 132, HEX TERRAIN TABLE
+  source_evidence: page 132, the HEX TERRAIN TABLE heading and its data rows.
+- proposed_id: tbl_hex_cataclysm_type
+  proposed_label: Hex Cataclysm Type Table
+  kind: table
+  why_needed: Resolves which cataclysm has struck, reached only when the terrain result is a prior hex
+    plus cataclysm.
+  prefix_basis: tbl_ is a named source table; matches the 77 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 132, HEX CATACLYSM TYPE TABLE
+  source_evidence: page 132, the HEX CATACLYSM TYPE TABLE heading and its data rows.
+- proposed_id: tbl_hex_points_of_interest
+  proposed_label: Hex Points Of Interest Table
+  kind: table
+  why_needed: Resolves a hex's point of interest, giving a location and a development.
+  prefix_basis: tbl_ is a named source table; matches the 77 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 133, HEX POINTS OF INTEREST TABLE
+  source_evidence: page 133, the HEX POINTS OF INTEREST TABLE heading and its data rows.
+- proposed_id: tbl_hex_settlement_name
+  proposed_label: Hex Settlement Name Table
+  kind: table
+  why_needed: Resolves a settlement's name, in three columns indexed by the settlement sizes the points
+    of interest table produces.
+  prefix_basis: tbl_ is a named source table; matches the 77 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 133, HEX SETTLEMENT NAME TABLE
+  source_evidence: page 133, the HEX SETTLEMENT NAME TABLE heading and its data rows.
+candidate_edges:
+- ref: M001
+  source_id: rule_overland_hex_maps
+  source_label: Overland Hex Maps
+  edge_type: RESOLVED_BY
+  target_id: tbl_hex_terrain
+  target_label: Hex Terrain Table
+  aspect: starting terrain
+  condition: ''
+  book: SD
+  page: 132
+  section: HEX TERRAIN TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_overland_hex_maps
+  source_label: Overland Hex Maps
+  edge_type: RESOLVED_BY
+  target_id: tbl_new_hex
+  target_label: New Hex Table
+  aspect: new hex
+  condition: ''
+  book: SD
+  page: 132
+  section: NEW HEX TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_overland_hex_maps
+  source_label: Overland Hex Maps
+  edge_type: RESOLVED_BY
+  target_id: tbl_hex_danger_level
+  target_label: Hex Danger Level Table
+  aspect: hex danger
+  condition: ''
+  book: SD
+  page: 132
+  section: HEX DANGER LEVEL TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_overland_hex_maps
+  source_label: Overland Hex Maps
+  edge_type: RESOLVED_BY
+  target_id: tbl_hex_points_of_interest
+  target_label: Hex Points Of Interest Table
+  aspect: point of interest
+  condition: ''
+  book: SD
+  page: 133
+  section: HEX POINTS OF INTEREST TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: rule_danger_level
+  source_label: Danger Level
+  edge_type: RESOLVED_BY
+  target_id: tbl_hex_danger_level
+  target_label: Hex Danger Level Table
+  aspect: hex selection
+  condition: ''
+  book: SD
+  page: 132
+  section: HEX DANGER LEVEL TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: tbl_hex_terrain
+  source_label: Hex Terrain Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_hex_cataclysm_type
+  target_label: Hex Cataclysm Type Table
+  aspect: cataclysm type
+  condition: ''
+  book: SD
+  page: 132
+  section: HEX CATACLYSM TYPE TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: tbl_hex_points_of_interest
+  source_label: Hex Points Of Interest Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_hex_settlement_name
+  target_label: Hex Settlement Name Table
+  aspect: settlement name
+  condition: ''
+  book: SD
+  page: 133
+  section: HEX SETTLEMENT NAME TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: rule_hex
+  source_label: Hex
+  edge_type: FEEDS_INTO
+  target_id: rule_overland_hex_maps
+  target_label: Overland Hex Maps
+  aspect: mapped unit
+  condition: ''
+  book: SD
+  page: 132
+  section: OVERLAND HEX MAPS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: No authored polarity appears. Every row is RESOLVED_BY or FEEDS_INTO, neither
+  of which is among the three types constitution section 5 reserves for authored polarity, so assigning
+  one is prohibited to the Analyst and invariant 15 has nothing to require. Builder derives governs on
+  the five RESOLVED_BY rows and neutral on the three FEEDS_INTO rows.
+status_note: All rows are core, following the disposition settled as IDQ-01 of PKT-SD-124-125 and applied
+  in the two packets since. The roll-or-choose offer at the start applies to the starting terrain rather
+  than to the procedure, so it does not make the page optional, and nothing here declares itself optional
+  as The Gauntlet and the modes of play do.
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: The page generates the terrain overland travel crosses and connects to rule_hex. Recorded as
+    a candidate only; constitution section 8 reserves domain promotion to an Architect Decision. Consistent
+    with the exploration candidate recorded in six earlier packets.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: the circular loop rule and its worked example, p132
+  quoted_gist: treat steps on the terrain table as a circular loop, with an example showing that stepping
+    up from the last entry wraps to the first
+  why_considered: It is the most precise mechanical statement on the page, unhedged, and the source spends
+    a whole paragraph working it through, which usually marks something load-bearing.
+  rejection_reason: 'Its content is entirely about arithmetic on table positions: which row a step of
+    plus or minus one lands on, and what happens at the ends. Row positions are magnitudes and no field
+    may store them, and there is no identity for a table row or a step for the rule to relate. What survives
+    is that the new hex table resolves the next terrain, M002, and that the terrain table is what the
+    procedure starts from, M001. Recorded as OBS-01.'
+- text_locus: the point of interest die roll, p132
+  quoted_gist: for each hex roll a die, and on the lowest result the hex has one point of interest
+  why_considered: It is the trigger for the points of interest table, so a row carrying the trigger rather
+    than just the resolution looked available.
+  rejection_reason: The trigger's whole content is a die face, which is a magnitude. Stripped of it the
+    statement reduces to the fact that the procedure may produce a point of interest, which M004 already
+    carries as the procedure being resolved by that table. A separate trigger row would need an identity
+    for the roll and would assert nothing the resolution row does not.
+- text_locus: the Safe result on the HEX DANGER LEVEL TABLE, p132
+  quoted_gist: the table's four results are Safe, with an instruction to reroll if the terrain is a cataclysm,
+    then Unsafe, Risky and Deadly
+  why_considered: Three of the four are the values rule_danger_level has carried since printed page 86,
+    and the fourth is not. A row distinguishing this table's wider range looked worth considering, as
+    did proposing Safe as an identity.
+  rejection_reason: The four values are not identities and were twice declined as such, on printed pages
+    86 and 90, precisely so the aggregate could carry relations instead. Proposing Safe alone now would
+    be inconsistent and would leave the other three unproposed. The reroll instruction is conditional
+    table-reading guidance whose content is which result to discard. M005 carries what is expressible,
+    that this table resolves the danger level. The discrepancy itself is real and is recorded as OBS-02.
+- text_locus: the points of interest and settlement name results, p133
+  quoted_gist: twenty locations paired with twenty developments, and twenty-four settlement names in three
+    columns
+  why_considered: Several developments name things the graph holds or nearly does, including a sleeping
+    dragon, a religious cult, a circle of wizards, a great treasure and a door to another plane. Village,
+    Town, City and Metropolis are also a graded series, which is the shape that sometimes marks identities.
+  rejection_reason: 'All are flavour for a GM populating a map, and none states a check, a value, a duration
+    or a consequence. The settlement sizes are a series but carry nothing beyond their own ordering, which
+    is the reasoning that declined the age, wealth and renown bands over the last four packets. The names
+    are names, which PKT-SD-128-129 established are not mechanics at any scale. The treasure development
+    is the closest call and still fails: hiding a great treasure describes a location, not a relation
+    to rule_treasure.'
+non_edge_observations:
+- id: OBS-01
+  subject: the circular loop is the page's best mechanic and is unexpressible
+  detail: 'The terrain table is read as a loop, so a step up from the last entry wraps to the first, and
+    the source works a full example through to make it unambiguous. It is precise, unhedged and genuinely
+    mechanical, and none of it reaches the graph, because its entire content is arithmetic on table row
+    positions.
+
+    This is the second consecutive packet whose most distinctive mechanic is invisible for the same kind
+    of reason. On printed page 130 it was scattering dice on paper and reading their positions; here it
+    is stepping around a table. Both are procedures performed on the artefact rather than relations between
+    game concepts, and the vocabulary holds relations. Worth recording as a pair, because together they
+    show the boundary is about what a mechanic acts on rather than how precise it is.'
+- id: OBS-02
+  subject: this danger level table carries a value the canonical rule does not
+  detail: 'rule_danger_level has carried three values since printed page 86, Unsafe, Risky and Deadly,
+    and both the resting rule and the two encounter cadence rows are built on that set. This page''s table
+    gives four: Safe, with a reroll instruction if the terrain is a cataclysm, and then the other three.
+    The site danger table on printed page 130, integrated a packet ago, gives only the canonical three.
+
+    The graph cannot show the discrepancy, because the values are not identities; M005 says only that
+    this table resolves the danger level, exactly as M005 of the previous packet did for the site table.
+    So a reader will see two tables resolving one rule and will not see that one of them can produce a
+    band the rule''s own consumers never mention. Recorded because it is a real source variance rather
+    than an extraction choice, and because it is the kind of thing a future Decision on danger level values
+    would want.'
+- id: OBS-03
+  subject: the generator connects to the travel rules through one row
+  detail: 'M008 is the only row on this page that reaches outside it, joining the generator to rule_hex
+    from printed page 90. That single row is what makes the page part of the exploration machinery rather
+    than a self-contained appendix: the hexes this procedure fills with terrain are the same hexes overland
+    travel counts and navigation fires on.
+
+    Recorded because the link is easy to miss and because its absence would have been a false picture
+    rather than merely a thin one. The two pages are forty-two printed pages apart and neither cross-references
+    the other by number, so nothing but the shared identity connects them.'
+unresolved_identity_questions: []
+unresolved_identity_questions_note: 'None. The structural choices here follow dispositions already settled:
+  the two-tier shape from PKT-SD-130-131, the indexing test from PKT-SD-128-129, the core status from
+  PKT-SD-124-125, and the refusal to propose danger level values from PKT-SD-086-086 and PKT-SD-090-090.
+  The one judgement that is mine alone, the rule_hex link, is argued in cross_chapter_link_note and rests
+  on an identity whose own defining locus states the same relationship in the other direction.'
+architectural_escalations: []
+architectural_escalation_note: None raised. All 7 identities use an approved prefix, every row uses a
+  legal edge type at status core, no row carries supersession_basis and none is an OVERRIDES, and no CLASSIFIED_AS
+  row appears. OBS-02 records a source variance a future Decision might want but asks for nothing.
+completeness_statement: 'Both printed pages in scope were read in full at the recorded checksum: four
+  procedure paragraphs, 6 named tables and 48 data rows. The packet yields 7 new identities and 8 rows,
+  reusing 2 canonical identities whose labels the assembling script asserted equal to the registry. No
+  proposed identity is left carrying no edge.
+
+  The rows follow the two-tier shape settled on printed pages 130 and 131: four tables are rolled directly
+  and take RESOLVED_BY rows from the procedure, and two are reached through a result and take FEEDS_INTO
+  rows from the table that reaches them. One row, M008, reaches outside the page to rule_hex and is argued
+  in cross_chapter_link_note. Every row was checked against the 730 canonical edges for an assertion-key
+  collision, for a shared source, type and target under a different aspect, and for duplicates within
+  the patch; there are none of any, and no canonical row cited either page before.
+
+  Four candidates were rejected and each is recorded with its reason. The largest deliberate loss is the
+  circular loop rule, recorded as OBS-01, and OBS-02 records that this page''s danger level table can
+  produce a band the canonical rule''s consumers never mention. No assertion depends on any other ruleset.'

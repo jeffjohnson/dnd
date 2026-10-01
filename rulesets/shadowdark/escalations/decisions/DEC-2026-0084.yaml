@@ -1,0 +1,316 @@
+schema_version: '1.0'
+id: DEC-2026-0084
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.0'
+decision_date: '2026-09-20'
+escalation_id: ESC-2026-09-20T17.41.06.057Z
+question: >-
+  Admit page-intentionally-ignored and blank-page as closed, steward-authored
+  page classifications without making metadata into graph content or hiding
+  source coverage, and without invalidating an in-progress implementation Review.
+ruling: >-
+  Approve OPT-A. The prospective closed vocabulary consists of full-page-artwork,
+  page-intentionally-ignored, and blank-page. All three are page-local intake
+  metadata with the existing attachment, provenance, and in-span coverage rules.
+  The deliberate exclusion class does not assert that printed matter is absent;
+  blank-page does. Preserve the actual classification instead of relabeling a
+  page as artwork. Builder may implement and test this exact prospective
+  amendment against this Decision. New-class production intake remains gated
+  until independent implementation approval and the final Architect activation
+  of SOURCE_MARKDOWN 1.8 or later. Do not modify SOURCE_MARKDOWN during the
+  current Review of IMP-DEC-2026-0082-r02.
+rationale:
+  - The source steward explicitly distinguishes omitted printed matter from artwork and blank pages.
+  - A closed vocabulary preserves typo detection and auditable reasons for omitted graph content.
+  - Classification belongs to intake metadata, not to the ruleset ontology or canonical graph.
+  - >-
+    The page 322 marker is a valid empty Pandoc Div. The parser independently
+    resolves pages 322 through 325 and reports only its class as unknown;
+    no marker repair or source rewrite is needed for this ruling.
+  - >-
+    The report currently under review pins SOURCE_MARKDOWN 1.7 by checksum.
+    Deferred contract activation prevents this independent governance task
+    from changing the Reviewer's input while the user permits concurrent work.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement and test the three-class prospective vocabulary under step 2,
+    after the current Reviewer turn and any higher-priority resulting integrity
+    repair have finished. Do not edit the contract or process packet 144. The
+    later Architect activation is not a prerequisite for this implementation Report.
+  blocking_ids: []
+evidence:
+  - path: rulesets/shadowdark/escalations/decided/ESC-2026-09-20T17.41.06.057Z.yaml
+    checksum: sha256:3d156c47a048f42d6cf3dba75cfd7c78bf12851c0a4a41e48d593e92e2974a6f
+    role: steward_declaration_and_analyst_escalation
+  - path: books/shadowdark/sd/packets/incoming/144-community-credits-and-licensing.md
+    checksum: sha256:255d87eeb5d3dbdd56bc078390622bd1e52b8d596a5b4dce504b4e45f11a8efa
+    role: exact_current_marker_occurrence
+  - path: contracts/SOURCE_MARKDOWN.md
+    checksum: sha256:761a8142c0f887171397db205384585ddbaba80c137d93ff1aa9dd505eab6732
+    role: pre_activation_contract_baseline
+  - path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0082-r02.yaml
+    checksum: sha256:03f36b9065e3bc436924e698bdec5e3096f5a22357a8f055761febc4c82aa478
+    role: current_review_input_that_pins_the_contract
+definitions:
+  full-page-artwork: >-
+    The steward declares that the identified printed page contains full-page
+    artwork and no graph-constitutable content.
+  page-intentionally-ignored: >-
+    The steward deliberately excludes the identified printed page from graph
+    extraction, for example a character sheet or a reader's write-in list.
+    This records an exclusion, not a claim that the page is empty or artwork.
+  blank-page: >-
+    The steward declares that the identified printed page is blank and supplies
+    no source content for graph extraction.
+semantic_bounds:
+  - >-
+    Only the source steward declares the classification. Pipeline roles preserve
+    it; they do not invent an ignored-page marker to conceal unread, missing,
+    uncertain, or mechanically difficult source material.
+  - >-
+    Use a genuine existing heading or an empty fenced Div with a reserved pN
+    identifier. Bare class-bearing paragraph tokens remain invalid; arbitrary
+    unknown classes on a page marker remain errors. Do not fabricate headings.
+  - >-
+    Retain the exact page number and class in packet.yaml composition metadata
+    at claim under the existing manifest convention. The page stays in the
+    packet's actual declared span, page attribution, and completeness accounting.
+    Do not delete it, renumber it, or narrow the span to pages 323-325 only.
+  - >-
+    A classified page inside the declared span owes no graph-content or
+    uncovered-page remediation. This does not waive out-of-span, malformed
+    marker, or unrelated source defects. Manifest precedence remains unchanged;
+    record a discrepancy rather than silently rewriting a published manifest.
+  - >-
+    The class belongs only to its identified page; it is not inherited by later
+    pages. Marker page-state behavior and the three placement rules are unchanged.
+    No class is a node, edge, domain, general rule, citation, or evidence of a mechanic.
+  - >-
+    This ruling classifies page 322 from the steward declaration; it makes no
+    claim to have read that omitted physical page. The packet's pages 323-325
+    are not classified by the preceding page-322 marker.
+scope:
+  contract_scope: universal_across_all_registered_rulesets
+  known_affected_packet: books/shadowdark/sd/packets/incoming/144-community-credits-and-licensing.md
+  independent_work: >-
+    No other packet is blocked by this Decision. The escalation reports 143
+    other supplied packets; this count is contextual, not a frozen test or a
+    claim that every one is otherwise ready. Their normal gates still apply.
+migration_required: false
+migration_scope: >-
+  No graph, node registry, constitution, source, claimed packet, or published
+  artifact is rewritten. Existing full-page-artwork remains valid. Do not
+  relabel the live marker or fabricate a blank-page occurrence in real source.
+affected_contracts:
+  - contracts/SOURCE_MARKDOWN.md
+affected_registries: []
+constitution_version_impact: No constitution change in any ruleset.
+implementation_bounds:
+  - >-
+    Builder changes only pagemarkers.py, the relevant lint diagnostics in cli.py
+    if needed, and test_pagemarkers.py. Preserve Pandoc AST parsing and unknown
+    class detection; do not introduce raw-line parsing or change page placement.
+  - >-
+    Parser/linter reporting remains metadata-only. Do not strip whole source
+    pages, suppress graph assertions in the compiler, add inheritance rules,
+    or redesign packet composition schemas as part of this change.
+  - >-
+    The implemented prospective set is authorized for tests and review by this
+    Decision, not for new-class production intake before activation. Publication
+    of code or an IMP alone is not activation. Existing-class intake continues.
+  - >-
+    This Decision's tests depend on the immutable prospective amendment below,
+    not a future checksum/version of SOURCE_MARKDOWN. Do not make the later
+    Architect contract edit, Analyst packet claim, or any GUP a prerequisite
+    for publishing or approving this implementation Report.
+acceptance_tests:
+  - >-
+    PAGE_CLASSES is exactly full-page-artwork, page-intentionally-ignored, and
+    blank-page. No wildcard or permissive fallback accepts a fourth class.
+  - >-
+    For every class, parameterized Pandoc-backed tests accept a genuine heading
+    and an empty fenced Div, preserve its exact page/class/block metadata,
+    include the classified page in resolved pages, and expose no marker token
+    in extracted prose. Tests use synthetic input, not invented live source.
+  - >-
+    For every class, lint accepts valid heading/Div fixtures and reports the
+    exact classification and the packet.yaml composition obligation without
+    an uncovered-page error. A later plain page is not reported as classified.
+  - >-
+    Unknown class and typo fixtures fail lint. Bare paragraph class-bearing
+    markers and recognized classes without a reserved page identifier remain
+    malformed. Ordinary non-page Div classes retain their existing behavior.
+  - >-
+    A bounded synthetic fixture reproducing the exact page-322 empty Div and
+    plain page markers 323-325 resolves four pages and only page 322 as
+    page-intentionally-ignored, with no unknown-class or malformed-marker
+    finding. Do not require the entire live packet to lint clean: independent
+    wrapper or source defects are outside this ruling and must not be suppressed.
+  - >-
+    Existing page-marker tests remain green: frontmatter, trailing heading and
+    paragraph markers, last-cell whole-row attribution, inline transitions,
+    Pandoc tables and superscript/subscript, and full-page-artwork behavior.
+    Run the complete Builder suite and separately identify unrelated blockers;
+    do not weaken a gate or rewrite another role's artifacts to make it pass.
+  - >-
+    The implementation introduces no graph/registry/source writes, schema
+    changes, cross-ruleset identity reuse, class-to-node synthesis, or automatic
+    packet exclusion. Its Report states that new-class production use awaits
+    the final Architect activation, and records the exact modified code/test
+    files and independent test results under the common implementation schema.
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, move the escalation unchanged to decided, and
+      preserve SOURCE_MARKDOWN 1.7 while the current Reviewer validates 0082.
+  - step: 2
+    owner: builder
+    action: >-
+      After the current Reviewer turn yields, implement the prospective class
+      vocabulary and tests. Publish IMP-DEC-2026-0084-r01 and its validation
+      report through normal preflight, handing off to Reviewer.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently test the implementation against this Decision and publish
+      the normal implementation Review. Do not require a future contract edit
+      or Analyst artifact. On approval explicitly name step 4 as next work even
+      if the scanner consumes the Builder Decision job.
+  - step: 4
+    owner: architect
+    action: >-
+      After this implementation is approved and the current 0082 review cycle
+      has settled, apply the prospective amendment below as SOURCE_MARKDOWN
+      version 1.8 or later. Recheck the live contract and in-flight checksum
+      consumers before editing; never overwrite intervening edits or immutable
+      reports. Record this Decision in version history and verify the anchors.
+      This step remains Architect work after implementation queue consumption.
+  - step: 5
+    owner: analyst
+    action: >-
+      After step 4, rerun the named packet's ordinary intake checks and claim
+      it when conforming, preserving page 322 and its class in composition.
+      Do not manufacture assertions for a deliberately excluded page or ignore
+      independent errors. Other packets retain their ordinary priorities.
+contract_activation:
+  path: contracts/SOURCE_MARKDOWN.md
+  minimum_version: '1.8'
+  pre_edit_baseline_checksum: sha256:761a8142c0f887171397db205384585ddbaba80c137d93ff1aa9dd505eab6732
+  baseline_conflict_policy: >-
+    A changed baseline requires rereading the changed contract and a scoped
+    merge of this approved amendment, never restoring the old file wholesale.
+    Use a later version if 1.8 is already allocated. Escalate a substantive
+    conflict, but do not discard unrelated amendments or reinterpret history.
+  substantive_anchors:
+    - Closed three-class vocabulary with distinct artwork, deliberate exclusion, and blank definitions.
+    - Steward authority only; classification is page-local informational metadata, never graph content.
+    - Heading or empty fenced Div attachment; bare tokens and unknown classes still rejected.
+    - Exact page/class retained in packet composition and actual span; manifest precedence unchanged.
+    - In-span classified pages create no graph-content or uncovered-page obligation.
+    - Existing page placement, attribution, frontmatter, and source-identity rules remain unchanged.
+prospective_contract_amendment:
+  replace_page_classes_opening: |-
+    A class-bearing page marker uses the same reserved pN identifier on a Pandoc
+    attribute-bearing block. The closed vocabulary contains exactly:
+
+    - .full-page-artwork: the steward declares that the identified printed page
+      contains full-page artwork and no graph-constitutable content.
+    - .page-intentionally-ignored: the steward deliberately excludes the
+      identified printed page from graph extraction, for example a character
+      sheet or a reader's write-in list. This records exclusion, not emptiness
+      or artwork.
+    - .blank-page: the steward declares that the identified printed page is
+      blank and supplies no source content for graph extraction.
+
+    These classes are informational intake metadata, never graph nodes, edges,
+    domains, general rules, source citations, or evidence of mechanics. Only the
+    steward declares them; pipeline roles must not invent classifications to
+    avoid reading missing, uncertain, or mechanically difficult source.
+  attachment_edit: >-
+    Retain the heading and empty fenced Div examples and Pandoc AST requirement.
+    Generalize artwork-only attachment prose to all three classes. Add an empty
+    Div example for each new class and retain bare-paragraph rejection.
+  composition_edit: |-
+    At claim, retain the exact classified page and class in packet.yaml
+    composition metadata using the existing convention. Keep the page in the
+    packet's actual declared span and completeness accounting; do not renumber
+    or delete it. The manifest remains authoritative on a source-class/intake
+    discrepancy, which must be recorded rather than silently overwritten.
+    Each class applies only to its identified page, not subsequent pages.
+    A classified page inside the declared span creates no uncovered-page or
+    graph-content obligation. Classification does not waive out-of-span or
+    malformed-marker errors or unrelated source defects.
+  parser_acceptance_edit: >-
+    Extend acceptance test 8 to every member of the three-class vocabulary,
+    retaining heading/empty-Div acceptance, metadata preservation and bare-form
+    rejection; add unknown-class rejection and page-local classification checks.
+  version_history_entry: >-
+    Admit page-intentionally-ignored and blank-page under DEC-2026-0084 after
+    independent implementation approval. Preserve closed vocabulary, source
+    attribution, steward authority and exact classified-page composition.
+post_implementation_requirements:
+  - >-
+    Architect step 4 is mandatory after implementation Review and is not
+    fulfilled by approving an IMP. SOURCE_MARKDOWN 1.8 or later with the listed
+    anchors is the activation evidence; do not create an extra artifact stage.
+  - >-
+    Analyst step 5 and any later GUR/GUP/Review/Integration use their ordinary
+    lifecycle; none is evidence required from Builder in this implementation.
+  - >-
+    Existing approved reports retain their governed approval snapshots. Any
+    still-unapproved report whose pinned contract bytes change at activation
+    follows normal successor/evidence refresh rules; never rewrite it in place.
+coordination_constraints:
+  - >-
+    The user permits Architect work concurrently with the current Reviewer
+    validation for this task only. This does not permanently amend the global
+    single-agent rule or authorize starting Builder alongside Reviewer.
+  - >-
+    Preserve the current Reviewer's pinned inputs. Defer the shared contract
+    edit and all Builder-owned code edits to their scheduled owners and steps.
+  - >-
+    The herdr relay is still undergoing independent review. Do not use its
+    unapproved implementation to deliver runnable work; provide the exact
+    serial next assignment to the user under HERDR_HANDOFFS fallback.
+follow_up_owners:
+  builder: [Implement prospective vocabulary and publish implementation evidence.]
+  reviewer: [Independently verify and explicitly hand final activation back to Architect.]
+  architect: [Activate the amended common contract after approval without changing in-flight review inputs.]
+  analyst: [Preserve page 322 classification at claim after activation; continue unrelated packets.]
+changelog:
+  - Approved two additional closed page classes as steward intake metadata only.
+  - Recorded exact future SOURCE_MARKDOWN amendment and a post-review Architect activation gate.
+  - Preserved other packets, graph data, immutable artifacts, and ongoing Reviewer inputs.
+exact_diff:
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0084.yaml:
+    - Publish this staged governance ruling and owner sequence.
+  rulesets/shadowdark/escalations/pending/ESC-2026-09-20T17.41.06.057Z.yaml:
+    - Move unchanged to decided after Decision publication.
+  rulesets/shadowdark/escalations/decided/ESC-2026-09-20T17.41.06.057Z.yaml:
+    - Preserve the exact escalation bytes and checksum at the decided path.
+  tooling/builder/src/adnd1e_builder/pagemarkers.py:
+    - Extend the closed vocabulary and its metadata-only documentation under this Decision.
+  tooling/builder/src/adnd1e_builder/cli.py:
+    - Adjust class-reporting wording if needed while retaining errors and other lint behavior.
+  tooling/builder/tests/test_pagemarkers.py:
+    - Add parameterized and regression coverage for the prospective three-class contract.
+  contracts/SOURCE_MARKDOWN.md:
+    - Architect applies the exact prospective amendment only at final step 4.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0084.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-20T17.41.06.057Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decided/ESC-2026-09-20T17.41.06.057Z.yaml, owner: architect, sequence_step: 1}
+  - {path: tooling/builder/src/adnd1e_builder/pagemarkers.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/src/adnd1e_builder/cli.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_pagemarkers.py, owner: builder, sequence_step: 2}
+  - {path: contracts/SOURCE_MARKDOWN.md, owner: architect, sequence_step: 4}

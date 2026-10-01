@@ -1,0 +1,109 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0103-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.6'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0103-r01
+  path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0103-r01.yaml
+  checksum: sha256:d5a1ceb65848f43abcc73e4a2841f5692ecf52974731ac4c4de773b1c8d21752
+decision_input:
+  id: DEC-2026-0103
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+  checksum: sha256:3a9fa4cd37e0cf4172d0b716d79f420ce5f7ea25fdf7e5fffe4a1e8715e40985
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      Independently read Constitution 1.6 and verified all three authorized
+      anchors: CLASSIFIED_AS is directed and mechanically operative rather than
+      general taxonomy; casting class may be plural while spell tier is exactly
+      one discrete identity; and sys-axis, source-context, and taxonomy-only
+      membership remain excluded.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0103
+        path: rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+        checksum: sha256:3a9fa4cd37e0cf4172d0b716d79f420ce5f7ea25fdf7e5fffe4a1e8715e40985
+        authorized_acceptance_test_index: 1
+      authorized_acceptance_test_index: 1
+      contracts:
+        - path: rulesets/shadowdark/governance/constitution.md
+          checksum: sha256:431f6b204931f60b34b2d976cf101f0265c66c9200c0405f3d854bc829c423af
+          observed_version: '1.6'
+          minimum_version: '1.6'
+          anchors_present:
+            - CLASSIFIED_AS is a directed source-declared mechanically operative classification, not general taxonomy membership.
+            - Spell casting class may be plural while each spell has exactly one discrete spell tier.
+            - Taxonomy-only membership and sys-axis or source-context targets remain outside the graph.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      Independently verified that Shadowdark edge, GUR, and GUP schemas admit
+      CLASSIFIED_AS and Constitution 1.6 while the GUR and GUP schemas retain
+      versions 1.0 through 1.5. Direct searches confirmed CLASSIFIED_AS is absent
+      from both AD&D 1e and Basic D&D edge schemas.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      Independently inspected the ruleset vocabulary and polarity paths and
+      reproduced their focused tests. Shadowdark reads CLASSIFIED_AS as neutral
+      from its own Constitution; AD&D 1e and Basic D&D do not gain that edge
+      type. Rulesets without a parseable local polarity table retain the shared
+      legacy fallback, preserving prior Basic D&D and AD&D behavior.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      Independently inspected the compiler's enumerated Shadowdark shapes and
+      cardinality pass, then reproduced all 17 bounded-classification and
+      ruleset-scoping tests. Accepted forms are limited to spell-to-casting
+      class, spell-to-one tier, and tier-to-tier-category; target, direction,
+      aspect, duplicate-tier, missing-tier, and unsupported-form failures are
+      separately diagnosed.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      Independent runs passed 17 bounded/scoping tests, 22 polarity tests, all
+      105 Shadowdark ancestry/compiler tests, and the complete 927-test Builder
+      suite with 38 expected skips and no failures.
+independent_validation:
+  passed: true
+  commands:
+    - command: python -m unittest test_shadowdark_ancestry.TestBoundedClassifications test_shadowdark_ancestry.TestClassifiedAsRulesetScoping
+      exit_code: 0
+      result: passed
+      summary: 17 tests OK in 0.446s
+    - command: python -m unittest test_polarity
+      exit_code: 0
+      result: passed
+      summary: 22 tests OK in 0.015s
+    - command: python -m unittest test_shadowdark_ancestry
+      exit_code: 0
+      result: passed
+      summary: 105 tests OK in 7.600s
+    - command: python -m unittest discover -s . -p "test_*.py" -t .
+      exit_code: 0
+      result: passed
+      summary: 927 tests OK in 194.367s; 38 skipped
+overall_disposition: approved
+scope_assessment: >-
+  The five implementation files are exactly the Builder-owned paths authorized
+  by DEC-2026-0103. The ruleset-local polarity parsing, legacy fallback, and
+  compiler checks stay within the Decision's implementation bounds. No source,
+  graph artifact, registry, canonical state, or RC packet was changed by this
+  Review.
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    DEC-2026-0103 implementation is independently approved and terminal.
+    Analyst sequence step 4 may now publish the tier scaffold and ordinary
+    source-backed spell successors.
+  blocking_ids: []

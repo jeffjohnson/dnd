@@ -1,0 +1,336 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-194-194-monsters-aboleth-to-acolyte-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-194-194-monsters-aboleth-to-acolyte
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.35
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-194-194-monsters-aboleth-to-acolyte
+  source_file: source.md
+  packet_source_checksum: sha256:2c46ce75137230988706479e4b81d5e5bf09722b302a5fac5d6edbbebc00a6af
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 084-monsters-aboleth-to-acolyte.md
+  citation_code: SD
+  page_start: 194
+  page_end: 194
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit and are computed from the claimed source and the canonical files, not
+  recalled. Measured from the Pandoc AST: 3 headings, 8 paragraphs, no table, all on one printed
+  page. 41 numerals appear once page-marker text is removed, and none is stored in any field.
+  This is the first packet of the chapter to reach an actual monster stat block; every earlier
+  monster-chapter packet was introduction, shared attributes, a generation procedure or design
+  guidance.
+
+page_attribution_basis: >-
+  One marker and no ambiguity. The p194 marker ends the MONSTER STATISTICS heading, which
+  placement rule 1 applies to the whole heading, and persistence carries 194 through both
+  creature blocks. The packet is one printed page, so no row could rest on a different page.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed page 194. The Supporting
+  Source Context appends four passages: monster attributes from 189, movement and conditions
+  from 85, morale, and the complete shared magic rules from 44 through 50 including the
+  sacrifice value table and all three wizard mishap tables. All four are integrated from their
+  own primary packets. No row here cites any of their pages; the script asserts that every
+  submitted row cites 194.
+
+source_summary: >-
+  Two monster stat blocks. Aboleth is a large aquatic creature with three named abilities,
+  Curse, Enslave and Telepathic. Acolyte is a low-level human trainee with one named ability,
+  Healing Touch. Both blocks print the same eight fields the Monster Attributes page defines:
+  armour class, hit points, attacks, movement, the six stat modifiers, alignment and level.
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 432 registry
+  rows and 867 edges, and 0 rows cite printed page 194. The registry holds 0 monster_
+  identities; this packet is the first to propose any.
+  A whole-registry search for curse, enslave, telepathic, control and heal was run before any
+  disposition was written. It returns spell_control_weather and spell_heal, neither of which
+  this page's abilities name or invoke, and no identity at all for curse, enslave or telepathy.
+
+stat_block_boundary_note: >-
+  Constitution 2.5 is the operative text for this entire packet and is quoted rather than
+  paraphrased where it decides something: individual creature stat-block values, including AC,
+  HP, LV, attacks, movement, modifiers, alignment, DC, and tier, are not graph content merely
+  because they are printed for that creature, and a stat-block description never creates an
+  identity, edge, property store, or completeness obligation.
+  The word including before the eight named fields is a non-exhaustive list, and the sentence
+  that follows it reaches further: a stat-block description, not only a stat-block value, is
+  excluded. Curse, Enslave, Telepathic and Healing Touch are each a stat-block description,
+  printed once under one creature's own block, so each is excluded by that sentence directly and
+  none is escalated.
+  The distinction that matters is locus, not form. abil_dark_adapted, registered at printed page
+  189, survived the same boundary because its locus was the shared Monster Attributes page,
+  applying to all non-humanoid monsters at once; it is a shared mechanic described in a shared
+  place. Curse, Enslave, Telepathic and Healing Touch are each stated once, under one creature,
+  and nothing in the source suggests they recur; that is what makes them stat-block content
+  rather than a shared mechanic, and it is a factual distinction rather than a judgement call.
+
+creature_identity_note: >-
+  Both proposed nodes carry no edge in this GUR, so the reasoning for registering them at all is
+  set out here rather than left to a why_needed field.
+  A creature's identity is not one of its values. Constitution 2.5 excludes AC, HP, LV and the
+  rest because they are the creature's printed fields; it does not exclude the creature itself,
+  which is what those fields describe. monster_ is declared as creature or creature family, and
+  DEC-2026-0097 uses monster_dwarf as a test fixture for an unregistered creature, confirming the
+  prefix denotes the creature and not one of its attributes.
+  This chapter has declined to name a creature from an encounter table in every packet since
+  PKT-SD-142-143, and every one of those declines gave the same reason: a creature's defining
+  locus is its stat block, not a line in a table. This page is that locus for Aboleth and
+  Acolyte. Registering them here, at their defining locus, is what that repeated reasoning was
+  for; deferring it to a future encounter-table or family packet would mint the identity from a
+  locus the chapter has already ruled is not the right one.
+  A registration with no edge in the same patch is an ordinary, contemplated shape rather than an
+  exception. ARTIFACT_LIFECYCLE lists proposed registry additions isolated from edge changes as
+  a normal component of a GUP, and ESCALATION_CONTRACT names a node that passes identity and
+  duplicate checks and can be isolated as a normal GUP registry addition as a case that does not
+  escalate. Both proposals meet that description.
+  What is not claimed: that either creature participates in any stated dependency on this page.
+  None does. The identity is registered so that a later packet whose own content does state a
+  dependency, an encounter table, a family page, or a cross-reference, can reuse a stable
+  canonical id rather than re-deriving one, per the reuse discipline already applied throughout
+  this book.
+
+candidate_nodes:
+  - proposed_id: monster_aboleth
+    proposed_label: Aboleth
+    kind: monster
+    why_needed: >-
+      Its defining locus, a printed stat block on this page, registers the identity for reuse by
+      a future packet whose content states a dependency on it. See creature_identity_note; no
+      edge in this GUR uses it.
+    prefix_basis: >-
+      monster_ is a creature or creature family; joins the 0 canonical monster_ identities as the
+      first. DEC-2026-0097 confirms the prefix denotes the creature itself.
+    source_named: true
+    defining_locus: SD page 194, ABOLETH
+    source_evidence: 'page 194, the ABOLETH heading and its complete stat block.'
+  - proposed_id: monster_acolyte
+    proposed_label: Acolyte
+    kind: monster
+    why_needed: >-
+      Its defining locus, a printed stat block on this page, registers the identity for reuse by
+      a future packet whose content states a dependency on it. See creature_identity_note; no
+      edge in this GUR uses it. Also the defining locus for the acolytes named without a row at
+      PKT-SD-182-183-tomb, which this GUR does not retroactively touch; see OBS-04.
+    prefix_basis: >-
+      monster_ is a creature or creature family; joins the 0 canonical monster_ identities
+      alongside monster_aboleth in this same patch.
+    source_named: true
+    defining_locus: SD page 194, ACOLYTE
+    source_evidence: 'page 194, the ACOLYTE heading and its complete stat block.'
+
+reused_nodes: []
+candidate_edges: []
+
+authored_polarity_declaration: >-
+  No polarity is authored, because no candidate edge is published. The eight stat-block fields
+  on each creature are excluded by constitution 2.5 rather than by a polarity judgement, so the
+  question of authored versus derived does not arise for them.
+
+status_note: >-
+  Not applicable. No edge is proposed.
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: >-
+  None recorded. A stat block resolves nothing in play and touches no domain.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The Analyst is prohibited from promoting a general rule. Telepathic and Curse
+  might recur across creatures later in the chapter, which would be the moment a shared-mechanic
+  reading becomes available; nothing on this page states that they do, so none is inferred.
+
+rejected_candidates:
+  - text_locus: 'Curse, p194'
+    quoted_gist: >-
+      a save-or-suffer ability turning the target into a deep one over a stated number of days
+    why_considered: >-
+      It is the strongest candidate on the page: a named, titled ability with a real mechanical
+      effect, not mere flavour, and it is the first content in the chapter that looks like it
+      could need its own identity under the broad abil_ kind, ability or derived ability
+      mechanic, the same kind abil_dark_adapted used one packet ago.
+    rejection_reason: >-
+      It is a stat-block description under constitution 2.5, printed once under Aboleth's own
+      block rather than in a shared locus. No existing canonical identity for a curse, a
+      transformation or the named target creature deep one exists, so no dependency on a shared
+      mechanic could be stated even if an identity were minted; minting abil_curse would create
+      an identity with nothing to connect it to anything already in the graph, which is what the
+      boundary excludes. See stat_block_boundary_note.
+  - text_locus: 'Enslave, p194'
+    quoted_gist: >-
+      a save-or-be-controlled ability usable in place of the creature's attacks
+    why_considered: >-
+      In place of attacks reads like a dependency on the attack mechanic, and DC 15 WIS echoes
+      the save structure used throughout the book.
+    rejection_reason: >-
+      A stat-block description under the same boundary. In place of attacks describes when the
+      creature chooses to use the ability, not a rule the ability depends on or modifies;
+      cbt_attack_roll is unaffected whether or not this ability exists. There is no canonical
+      identity for a controlled condition, which the Analyst already noted absent at printed
+      page 189 when declining blinded and deafened for the same reason.
+  - text_locus: 'Telepathic, p194'
+    quoted_gist: 'a passive ability to read the thoughts of all creatures within far'
+    why_considered: >-
+      spell_detect_thoughts is canonical and named almost identically, so the ability looked like
+      it might be that spell in a different form.
+    rejection_reason: >-
+      The ability is not cast, has no DC, no check and no duration; it is passive and automatic,
+      which is not how spell_detect_thoughts works at its own defining locus. Equating the two
+      would assert an identity the text does not state. Declined as a stat-block description like
+      the others.
+  - text_locus: 'Healing Touch (WIS Spell), p194'
+    quoted_gist: >-
+      an ability tagged as a WIS spell, with its own DC and a stated amount of healing
+    why_considered: >-
+      The WIS Spell tag is the page's one explicit pointer to the shared spellcasting system, and
+      rule_spellcasting_check is canonical with 40 rows, so a dependency looked plausible.
+    rejection_reason: >-
+      The instruction that monster spellcasting is treated the same as character spellcasting is
+      already canonical and unconditioned from printed page 189, so it already covers this
+      ability without a new row; re-asserting it here would duplicate that canonical relation
+      from a restatement, the same reason the two spellcasting restatements were declined at 189.
+      Healing Touch itself is not one of the 87 canonical spell_ identities and has no defining
+      locus in the spells chapter; it is this creature's own named ability, a stat-block
+      description under 2.5.
+  - text_locus: 'the flavour text for both creatures, p194'
+    quoted_gist: >-
+      an italicised line describing the Aboleth as an antediluvian catfish that hates
+      intelligent beings, and the Acolyte as a religious trainee who knows basic rites
+    why_considered: 'Read for completeness, as every block on an in-scope page must be considered.'
+    rejection_reason: >-
+      Narrative description, the same disposition applied to the battle scene at printed page
+      188. No sentence states a rule.
+  - text_locus: 'the eight stat-block fields on each creature, p194'
+    quoted_gist: >-
+      AC 16, HP 39, the attack line, MV near (swim), the six stat modifiers, AL C and LV 8 for
+      Aboleth; the equivalent eight for Acolyte
+    why_considered: >-
+      Every field names a canonical shared identity directly: cbt_armor_class, rule_hit_points,
+      cbt_attack_roll, ex_movement, abil_stat_modifier, sys_alignment and mstat_monster_level.
+    rejection_reason: >-
+      This is the exact case constitution 2.5 names by example. Each field is a printed value on
+      one creature, not a dependency between two mechanics; the shared mechanics themselves are
+      already canonical from printed page 189 and reused there, not re-derived per creature.
+      Extracting these would also be unbounded: the chapter has roughly sixty more stat-block
+      packets, and if this shape earned rows here it would have to everywhere.
+  - text_locus: 'the appended shared-system context, out of scope'
+    quoted_gist: >-
+      the monster attributes, movement and conditions, morale, and complete magic rules pages
+    why_considered: >-
+      All four are in the file, unusually extensive, and directly relevant to reading a stat
+      block correctly.
+    rejection_reason: >-
+      All four are Supporting Source Context, outside the bounded scope, and each is already
+      integrated from its own primary packet. Extracting from any would duplicate canonical rows
+      and cite pages outside this packet's range.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: the first stat-block packet is a null-edge packet, and the two prior escalations are why
+    detail: >-
+      This packet yields 0 rows and 2 identities, the first time the chapter has produced nodes
+      with no accompanying edge. That shape is the direct, intended consequence of DEC-2026-0105:
+      the whole reason that Decision was sought was to settle, before the roughly sixty
+      stat-block packets ahead, that a stat block's own values are not graph content. Zero rows
+      here is the boundary working as designed, not a shortfall.
+      It is worth stating plainly because the shape will repeat. Most remaining monster packets
+      are expected to look like this one: identities registered, no rows, unless a stat block's
+      prose states an explicit dependency the way PKT-SD-189, 190-191 and 192-193 did from the
+      shared pages.
+  - id: OBS-02
+    subject: locus, not content, separates a shared ability from a stat-block description
+    detail: >-
+      abil_dark_adapted and the four abilities declined here are all the same shape of text, a
+      bolded name followed by a sentence of mechanical effect. Only one of the five earned a row.
+      The difference is where each is printed. Dark-Adapted is stated once, in the shared Monster
+      Attributes page, about a whole class of creatures at once; Curse, Enslave, Telepathic and
+      Healing Touch are each stated once, under one creature's own block.
+      Recorded because this is the test the remaining chapter will need repeatedly, and it is a
+      fact about the page rather than a reading of the ability's importance. A dramatic ability
+      printed under one creature is still stat-block content; a minor one printed on the shared
+      page would still be a shared mechanic.
+  - id: OBS-03
+    subject: a node without an edge is a considered choice, not an omission
+    detail: >-
+      Every prior tbl_ or rule_ registration in this book paired with at least one edge in the
+      same GUR, because those identities exist to be resolved by or to resolve something. A
+      creature identity is different: it exists because the source names a distinct thing, and
+      its defining locus is exactly the page that also states its individual values, which this
+      Decision excludes. The two facts collide only for creature identities, not for tables or
+      rules, which is why this is the first packet to produce the isolated-registration shape
+      that ARTIFACT_LIFECYCLE and ESCALATION_CONTRACT both already contemplate.
+      Recorded so a reader does not mistake a deliberately edgeless node for an incomplete
+      extraction; completeness_statement confirms every block on the page was dispositioned.
+  - id: OBS-04
+    subject: an acolyte was already named without a row, and this does not retroactively change it
+    detail: >-
+      PKT-SD-182-183-tomb declined 2d4 chanting acolytes, among other creature content on printed
+      page 183, for want of a monster_ identity. monster_acolyte now exists. That earlier packet's
+      GUR, GUP, Review and Integration are immutable and are not reopened or corrected by this
+      registration; a future packet that names an acolyte may now reuse the identity, but the
+      tomb packet's row was correctly declined under the rules in force when it was written,
+      since no such identity existed at that time.
+
+unresolved_identity_questions: []
+unresolved_identity_questions_note: >-
+  None. The one question this page could have raised, whether a creature's named special
+  ability is graph content, is answered directly by constitution 2.5's own general sentence
+  rather than needing a new ruling; see stat_block_boundary_note.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Both proposed identities use an approved prefix and kind and pass identity and
+  duplicate checks, which ESCALATION_CONTRACT names as ordinary Builder and Reviewer work even
+  without an edge in the same patch. No new prefix or kind is proposed, no edge type is used, and
+  the creature-statistic and stat-block boundary DEC-2026-0105 established is applied rather than
+  tested at its edge. The authority list omits the nonexistent Shadowdark DEC-2026-0003;
+  registry authority for this ruleset is constitution section 2, as recorded in
+  GUR-PKT-SD-142-143-arctic-r01.
+
+completeness_statement: >-
+  The single printed page in the declared span was read in full at the recorded checksum, which
+  the script asserts against the packet manifest before parsing: 3 headings, 8 paragraphs, no
+  table. Every block is dispositioned: two creature identities registered at their defining
+  locus, and six candidates declined with reasons, covering both flavour texts, both complete
+  stat-block field sets, and all four named special abilities individually.
+  The packet yields 2 new identities and 0 rows. Both proposed ids were asserted absent from the
+  registry before use. No canonical row cited page 194 before, which the script asserts. This is
+  not a null extraction in the sense of PKT-SD-187-188: two identities are proposed and the page
+  was dense with content, all of it correctly excluded under a specific, quoted constitutional
+  boundary rather than found to state no mechanic at all.
+  7 candidates were rejected and each is recorded with its reason. No assertion depends on any
+  other ruleset.
+
+measured_figures_note: >-
+  Figures quoted in this artifact's prose are computed from the claimed source and the canonical
+  files at extraction, not recalled. Measured here: 3 headings, 8 paragraphs, 41 numerals, all
+  on printed page 194. Canonical counts at extraction: 432 registry rows, 867 edges, 0 rows
+  citing page 194, 0 monster_ identities before this packet. A whole-registry search for curse,
+  enslave, telepathic, control and heal returns spell_control_weather and spell_heal and nothing
+  else.

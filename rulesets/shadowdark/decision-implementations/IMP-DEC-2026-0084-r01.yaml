@@ -1,0 +1,191 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0084-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+constitution_version: '1.1'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Step 2 of DEC-2026-0084. The page-class vocabulary is now exactly full-page-artwork,
+    page-intentionally-ignored and blank-page, closed, with each class carrying what it actually
+    declares rather than one generic sentence. Recognition, placement and page-state behaviour
+    are unchanged and do not branch on which class was read. All seven acceptance tests pass.
+    SOURCE_MARKDOWN is untouched at 1.7 and contains neither new class: step 4 is the Architect''s,
+    and this implementation is authorized for test and Review only, not for new-class production
+    intake.'
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0084
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0084.yaml
+  checksum: sha256:70cc2ef5c57bade92d44be88b72301f1859c1192f81b534105774378f08243cc
+implementation_files:
+- path: tooling/builder/src/adnd1e_builder/pagemarkers.py
+  checksum: sha256:733ef8bc8eabd37d25bddb6c425fbc400e6a92b143cbf55fd36135f343b41504
+- path: tooling/builder/src/adnd1e_builder/cli.py
+  checksum: sha256:bef58343098b1384c3ad15108e72c6eb0fa415856b961a9e51bcc3cc9c3cd939
+- path: tooling/builder/tests/test_pagemarkers.py
+  checksum: sha256:d2e74f8b0524243ff91fd14ddb7a4a0d3db2cf16a33c9d8e786900a771d12e82
+verified_inputs:
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0084.yaml
+  checksum: sha256:70cc2ef5c57bade92d44be88b72301f1859c1192f81b534105774378f08243cc
+- path: rulesets/shadowdark/escalations/decided/ESC-2026-09-20T17.41.06.057Z.yaml
+  checksum: sha256:3d156c47a048f42d6cf3dba75cfd7c78bf12851c0a4a41e48d593e92e2974a6f
+- path: contracts/SOURCE_MARKDOWN.md
+  checksum: sha256:761a8142c0f887171397db205384585ddbaba80c137d93ff1aa9dd505eab6732
+- path: books/shadowdark/sd/packets/incoming/144-community-credits-and-licensing.md
+  checksum: sha256:255d87eeb5d3dbdd56bc078390622bd1e52b8d596a5b4dce504b4e45f11a8efa
+validation_report: build/reports/IMP-DEC-2026-0084-r01.validation.json
+validation_report_checksum: sha256:0a79b70cb94dfd069d7e1b23d3b655a5a0adfc02099dbe7c65544ad967296c72
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'PAGE_CLASSES equals exactly {full-page-artwork, page-intentionally-ignored, blank-page},
+    asserted as set equality rather than by membership, so a fourth class would fail the test
+    instead of passing unnoticed. The set is derived from PAGE_CLASS_MEANINGS, which documents
+    each class, so the vocabulary and its documentation cannot drift apart. There is no wildcard
+    and no permissive fallback: membership in that frozenset is the only admission test anywhere
+    in the parser or the linter, and six outsider spellings (full-page-diagram, page-ignored,
+    blank, blank-pages, full-page-artwork-2, the empty string) are each confirmed absent.
+    The three meanings are also asserted distinct, and the exclusion class is asserted not
+    to claim the page is blank or artwork. Executable checks: TestClosedPageClassVocabulary,
+    6 tests, all passing.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'Parameterised over all three classes and both admitted forms, on synthetic input
+    written to a temporary file; no live source is read by these assertions. For every class,
+    a genuine heading and an empty fenced Div each resolve page 23 with the exact class tuple,
+    the correct block (''heading'' or ''div'') and an empty unknown tuple. The classified
+    page appears in resolved pages, so it is not a gap downstream; pages_with_class returns
+    it for its own class and the empty tuple for the other two. Neither admitted form is reported
+    as malformed. No marker token survives into extracted prose: neither the class name nor
+    ''{#p'' appears in any span''s text. The class belongs only to its own page and is not
+    inherited by the page that follows. Executable checks: TestEveryPageClassIsParsed, 6 tests,
+    all passing.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'Parameterised over all three classes, driving lint_source over synthetic files.
+    Each classified page lints with exit code 0, emits no PROBLEM and no ''no marker for page''
+    uncovered-page error, and reports the exact classification as a note naming the page,
+    the class and the block. The note now also states what that class declares, asserted against
+    PAGE_CLASS_MEANINGS, and still carries the packet.yaml composition obligation verbatim.
+    A later plain page is not reported as classified: ''page 1 classified'' appears and ''page
+    2 classified'' does not. The heading form lints identically to the Div form. Executable
+    checks: TestEveryPageClassLints, 5 tests, all passing.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Three unknown classes (full-page-diagram, page-skipped, blank) and five near-miss
+    typos of real classes (blank_page, blank-pages, page-intentionaly-ignored, Page-Intentionally-Ignored,
+    full-page-art) each fail lint with exit code 1 and ''unknown page class''. For every one
+    of the three recognised classes the bare paragraph form still resolves no page, carries
+    no class, produces exactly one malformed marker naming the heading-or-empty-fenced-Div
+    correction, and fails lint; and a recognised class on a block with no reserved pN identifier
+    is malformed with ''no reserved'' rather than being guessed onto the page in effect. Ordinary
+    non-page Div classes (sidebar, note, example) are untouched: their content still resolves
+    to the page in effect with no malformed marker and no page class. Executable checks: TestRejectedPageClassForms,
+    6 tests, all passing.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'A bounded synthetic fixture reproduces the reported shape -- an empty fenced
+    Div classifying page 322 as page-intentionally-ignored, followed by plain markers on 323,
+    324 and 325 -- without reading the live packet. It resolves exactly four pages (322-325);
+    only page 322 is classified, and page_classes has length 1; the following pages keep their
+    own content; nothing is reported unknown or malformed; and the span lints clean at exit
+    code 0 with ''pages resolved: 322-325 (4 marked)'' and no uncovered-page error. The excluded
+    page is also asserted not to be relabelled: neither ''full-page-artwork'' nor ''blank-page''
+    appears anywhere in that output. Separately, and as an observation rather than a gate,
+    the live packet named in the Decision''s scope was linted read-only: its page 322 now
+    classifies correctly with no unknown-class or malformed-marker finding, and the packet
+    still fails on an independent wrapper defect -- prose preceding its first marker -- which
+    is outside this ruling and was deliberately not suppressed or repaired. Executable checks:
+    TestIgnoredPageInASpan, 6 tests, all passing.'
+- acceptance_test_index: 6
+  result: passed
+  evidence: The page-marker file holds 68 tests, of which 36 predate this work and 32 are
+    new; all 68 pass, so frontmatter, trailing heading and paragraph markers, last-cell whole-row
+    attribution, inline transitions, Pandoc tables, superscript/subscript and the original
+    full-page-artwork behaviour are each still green and none was edited, weakened or removed.
+    The complete Builder suite ran 841 tests at exit code 0 with no failures or errors, against
+    a pre-change baseline of 809 tests also passing -- the difference is exactly the 32 added
+    tests. No unrelated blocker appeared, and no other role's artifact was touched to make
+    anything pass.
+- acceptance_test_index: 7
+  result: passed
+  evidence: 'The change is confined to three Builder-owned files, each pinned by checksum
+    in implementation_files. No graph, registry, canonical or source file is written; no schema
+    changed; no identity is reused across rulesets; no class is synthesised into a node, edge,
+    domain, general rule or citation; and no packet is automatically excluded. Tests assert
+    the last three directly: PageClassMarker still carries only page, classes, block and unknown,
+    so a class cannot have become graph content; a classified page remains in resolved pages
+    rather than being dropped from the packet; and linting leaves the source file byte-identical
+    and creates no new file beside it. Pandoc AST parsing is preserved, with no raw-line parsing
+    introduced and no change to page placement. New-class production intake awaits the final
+    Architect activation of SOURCE_MARKDOWN 1.8 or later: the contract is unmodified at 1.7
+    and contains neither new class, which this report''s generator asserts. Publishing this
+    report is not that activation. Executable checks: TestImplementationStaysMetadataOnly,
+    3 tests, all passing.'
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/builder/tests] python -m unittest test_pagemarkers'
+    exit_code: 0
+    result: passed
+    summary: Ran 68 tests in 2.974s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py"
+      -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 841 tests in 190.998s OK (skipped=38)
+  - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py"
+      -t .  (pre-change baseline, before the DEC-2026-0084 edits)'
+    exit_code: 0
+    result: passed
+    summary: Ran 809 tests in 206.628s OK (skipped=38)
+changes_in_this_revision:
+- 'pagemarkers.py: replaced the single-member PAGE_CLASSES frozenset with PAGE_CLASS_MEANINGS,
+  a mapping of each admitted class to what the steward is declaring, and derived PAGE_CLASSES
+  from its keys. Extended the module docstring to record the three-class vocabulary and its
+  prospective status. No parsing, placement or page-state logic changed, and nothing branches
+  on which class was read.'
+- 'cli.py: the lint note now states the exact classification''s meaning alongside the class
+  name, instead of one generic parenthetical that was true of artwork but wrong for a deliberately
+  excluded page. Error behaviour, exit codes and every other diagnostic are unchanged.'
+- 'test_pagemarkers.py: added 32 tests in six classes covering the seven acceptance tests.
+  The 36 pre-existing tests are unmodified.'
+attribution_note: The three pinned files also carry uncommitted changes from the DEC-2026-0080
+  lineage, already reported in IMP-DEC-2026-0080-r04 and not re-claimed here. The changes
+  attributable to this Decision are exactly those in changes_in_this_revision, so a whole-file
+  diff against HEAD will show more than this report claims authorship of.
+scope_note: This report declares constitution_version 1.1, the Shadowdark constitution's current
+  version, while DEC-2026-0084 was authored under 1.0. The intervening amendment was DEC-2026-0087's
+  ancestry vocabulary, which touches node identity and not page intake, so nothing this Decision
+  rules on is affected. The alternative -- declaring a superseded version -- is barred by
+  the constitution's own rule that new artifacts declare the current version.
+defects_for_the_architect:
+- 'The live packet named in this Decision''s scope, books/shadowdark/sd/packets/incoming/144-community-credits-and-licensing.md,
+  still fails lint after this change, on an independent defect: its wrapper prose precedes
+  the first page marker, so that content resolves to no page. Its page 322 classification
+  is now recognised correctly and reports no unknown-class or malformed-marker finding. The
+  Decision states such independent defects are outside this ruling, so it was reported rather
+  than repaired, and it will need the steward or Analyst before step 5.'
+canonical_state: No canonical, registry, source, manifest or contract file was written by
+  this work. rulesets/shadowdark/canonical does not exist and was not created. contracts/SOURCE_MARKDOWN.md
+  remains at 1.7 with neither new class present; the live packet is unmodified. Both are pinned
+  by checksum in verified_inputs so the Reviewer can confirm they were only read.
+not_done:
+- 'Step 4 is the Architect''s: applying the prospective amendment as SOURCE_MARKDOWN 1.8 or
+  later. It is deliberately not done here, and this implementation does not depend on it.'
+- 'Step 5 is the Analyst''s: reclaiming the named packet after step 4. Not started.'
+- New-class production intake is not authorized by this report. Existing-class intake continues
+  unchanged.
+- No basicdnd or rc work of any kind was performed, claimed, withdrawn or cleaned up. DEC-2026-0086
+  remains binding.
+concurrent_work_note: IMP-DEC-2026-0087-r01 is published and awaiting its independent Review.
+  This work touches none of the four source files that report pins, so no checksum in it goes
+  stale. The one figure it affects is its acceptance test 6 total for the complete Builder
+  suite, measured at 809 before this change and 841 after; the added tests account for the
+  difference exactly, and no test in that total changed result.

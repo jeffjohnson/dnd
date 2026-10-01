@@ -24,7 +24,7 @@ from pathlib import Path
 
 import yaml
 
-from .vocab import NODE_PREFIXES
+from .vocab import NODE_PREFIXES, constitution_prefixes
 
 RETURN_TO_WORKFLOW = "return_to_builder_and_reviewer"
 
@@ -73,6 +73,35 @@ SUBJECT_FIELDS: tuple[str, ...] = (
 )
 
 
+def _load_superseded_labels(
+    claims: dict[tuple[str, str], list[str]], decision_id: str, document: dict
+) -> None:
+    """Record the endpoint labels an approved migration retired.
+
+    The field matters. A repoint names one endpoint, and `before_assertion`
+    describes the whole row, so a `target_id` repoint still carries a
+    `source_label` for the untouched source. Reading the wrong one would let a
+    correction on one endpoint be waved through by a migration of the other.
+    """
+    migration = document.get("canonical_migration")
+    if not isinstance(migration, dict):
+        return
+    for repoint in migration.get("endpoint_repoints") or []:
+        if not isinstance(repoint, dict):
+            continue
+        field_name = str(repoint.get("field") or "").strip()
+        if field_name not in ("source_id", "target_id"):
+            continue
+        node_id = str(repoint.get("to") or "").strip()
+        before = repoint.get("before_assertion")
+        if not node_id or not isinstance(before, dict):
+            continue
+        retired = str(before.get(field_name.replace("_id", "_label")) or "").strip()
+        if not retired:
+            continue
+        claims.setdefault((node_id, retired), []).append(decision_id)
+
+
 def _load_migration_due(governance: "Governance", decision_id: str, document: dict) -> None:
     """Read DEC-2026-0050-style `migration_due_ids` from one Decision.
 
@@ -113,12 +142,29 @@ class Governance:
     #: due, not merely proposed. Value is (successor_id, decision_id). These are a
     #: closed, exactly-named set; every other pending migration keeps its warning.
     migration_due_ids: dict[str, tuple[str, str]] = field(default_factory=dict)
+    #: Labels an approved migration has already replaced on a node, keyed by
+    #: (node_id, retired_label) with the deciding Decision as the value. A
+    #: Reviewer may have asked for the retired label as a row correction before
+    #: the Architect ruled; once the migration is integrated that correction
+    #: names a label the graph no longer has, and this is what lets the compiler
+    #: say so with an authority instead of only refusing.
+    superseded_labels: dict[tuple[str, str], str] = field(default_factory=dict)
+
+    #: The approved prefixes of the ruleset this governance was loaded for.
+    #: Defaults to the AD&D 1e constants so a bare `Governance()` behaves as it
+    #: always has (DEC-2026-0087).
+    node_prefixes: frozenset[str] = field(default_factory=lambda: NODE_PREFIXES)
 
     @classmethod
     def load(cls, ruleset_root: str | Path) -> "Governance":
         root = Path(ruleset_root)
         decisions_dir = root / "escalations" / "decisions"
         governance = cls()
+        # DEC-2026-0087: identity discovery reads this ruleset's own approved
+        # prefixes. Using the AD&D constants here would have missed a held
+        # `ancestry_` identity in Shadowdark, silently unblocking work an open
+        # escalation was meant to hold.
+        governance.node_prefixes = constitution_prefixes(root)
         if not decisions_dir.is_dir():
             return governance
 
@@ -131,7 +177,7 @@ class Governance:
             escalation_id = document.get("id") or path.stem
             governance.open_escalation_ids.add(escalation_id)
             subject = {k: document.get(k) for k in SUBJECT_FIELDS if document.get(k)}
-            for node_id in _node_ids_in_values(subject):
+            for node_id in _node_ids_in_values(subject, governance.node_prefixes):
                 governance.nodes_held_by_package.setdefault(
                     node_id,
                     {
@@ -143,6 +189,8 @@ class Governance:
                     },
                 )
 
+        superseded_decision_ids: set[str] = set()
+        label_claims: dict[tuple[str, str], list[str]] = {}
         for path in sorted(decisions_dir.glob("DEC-*.yaml")):
             try:
                 document = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -155,8 +203,12 @@ class Governance:
 
             decision_id = document.get("id") or path.stem
             governance.decisions_loaded.append(decision_id)
+            replaced = str(document.get("supersedes") or "").strip()
+            if replaced:
+                superseded_decision_ids.add(replaced)
 
             _load_migration_due(governance, decision_id, document)
+            _load_superseded_labels(label_claims, decision_id, document)
 
             for old_id, new_id in (document.get("candidate_migration_map") or {}).items():
                 governance.migration_map[str(old_id)] = str(new_id)
@@ -241,7 +293,7 @@ class Governance:
                 # The package is reserved and its escalation is not decided,
                 # whether or not it has been filed yet. Any node ID named inside
                 # it is still an open architectural question.
-                for node_id in _node_ids_in_values(assignment):
+                for node_id in _node_ids_in_values(assignment, governance.node_prefixes):
                     governance.nodes_held_by_package.setdefault(
                         node_id,
                         {
@@ -252,6 +304,14 @@ class Governance:
                             "state": "package_reserved",
                         },
                     )
+
+        # A reissued migration ruling and the ruling it replaced describe the
+        # same repoint. Only the active one may be cited as authority, and a
+        # superseding Decision is not guaranteed to sort after its predecessor.
+        for key, claimants in label_claims.items():
+            live = [d for d in claimants if d not in superseded_decision_ids]
+            if live:
+                governance.superseded_labels[key] = live[-1]
 
         return governance
 
@@ -317,6 +377,10 @@ class Governance:
         """
         return self.migration_due_ids.get(node_id)
 
+    def label_superseded_by(self, node_id: str, label: str) -> str | None:
+        """The Decision that retired `label` as an endpoint label for `node_id`."""
+        return self.superseded_labels.get((node_id, label))
+
     def approved_label(self, node_id: str) -> tuple[str, str] | None:
         """The label an Architect decision assigned, ahead of the registry."""
         return self.approved_labels.get(node_id)
@@ -347,6 +411,14 @@ class Governance:
         """Authoritative per-row field values ruled by an Architect decision."""
         return self.row_dispositions.get((packet_id, ref))
 
+    def is_open(self, escalation_id: str) -> bool:
+        """Whether this ID names a published escalation still awaiting a ruling.
+
+        Distinguishes a real open question from an ID that matches nothing at
+        all, which is what a candidate or placeholder ID looks like from here.
+        """
+        return escalation_id in self.open_escalation_ids
+
     def is_decided(self, escalation_id: str) -> bool:
         return escalation_id in self.decided_escalations
 
@@ -374,7 +446,7 @@ def _values_of(node) -> Iterator[str]:
         yield node
 
 
-def _node_ids_in_values(structure) -> set[str]:
+def _node_ids_in_values(structure, prefixes=None) -> set[str]:
     """Node IDs named in the values of an escalation or assignment.
 
     A match must carry an approved prefix, so ordinary prose like
@@ -386,6 +458,7 @@ def _node_ids_in_values(structure) -> set[str]:
     for text in _values_of(structure):
         for match in _ID_TOKEN.finditer(text):
             candidate = match.group(1)
-            if any(candidate.startswith(prefix) for prefix in NODE_PREFIXES):
+            approved = prefixes if prefixes is not None else NODE_PREFIXES
+            if any(candidate.startswith(prefix) for prefix in approved):
                 found.add(candidate)
     return found

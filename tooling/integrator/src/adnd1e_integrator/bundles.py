@@ -14,6 +14,7 @@ inference made to reconstruct it is reported.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -304,6 +305,90 @@ def superseded_bundle_ids(root: Path, ruleset_id: str, book_id: str) -> set[str]
     return superseded
 
 
+#: `APPROVED-<gup-id>-rNN`. The GUP id ends in its own `-rNN`, so the *bundle*
+#: revision is the trailing pair and everything before it identifies the exact
+#: reviewed GUP revision this lineage repackages.
+_BUNDLE_REVISION = re.compile(r"^(?P<base>APPROVED-.+)-r(?P<revision>[0-9]{2})$")
+
+
+def legacy_leaf_inferences(
+    bundles: list["Bundle"],
+    explicit: set[str],
+) -> tuple[set[str], list[str]]:
+    """Place a manifested Approved lineage that declares incomplete `supersedes`.
+
+    DEC-2026-0096. WORK_QUEUES rules 3 and 4 make only the active leaf work, and
+    Legacy Queue Derivation clause 2 already says how to place a lineage with no
+    `supersedes`: infer the latest `rNN` within one artifact kind and packet.
+    Integrator bundle discovery honoured the explicit links and had no fallback,
+    so a forked lineage left an un-named predecessor permanently ready. The Stats
+    lineage is exactly that shape: nothing ever named r05-r01, because r05-r02
+    declared no `supersedes` and began the chain that reached r05-r05.
+
+    The bounds are deliberately narrow, and each exists to stop a specific wrong
+    answer:
+
+    - Only manifested bundles. A manifestless legacy bundle has no declaration to
+      be incomplete, and WORK_QUEUES 1.25 keeps stem inference for those alone.
+    - Grouped by the base above, so members share one ruleset, book, packet *and*
+      reviewed GUP revision. Comparing bundle `rNN` across GUP revisions would
+      rank `...-r04-r02` above `...-r05-r01`, which inverts the real order.
+    - Every member of a group must agree on `packet_id`, or the group is
+      ambiguous and nothing is inferred.
+    - A malformed or duplicate revision makes its group ambiguous. Two manifests
+      claiming one `rNN` give no order, and guessing one would be exactly the
+      silent invention this rule exists to prevent.
+    - The revision is read from the manifest's declared `id`, never from the
+      filename, and never from a timestamp.
+
+    Returns the ids this inference places as history, and one report line per
+    placement naming both the historical bundle and the selected leaf. The
+    caller surfaces those: an inference that decided a queue outcome silently
+    would be indistinguishable from a declaration.
+    """
+    groups: dict[str, list[tuple[int, Bundle]]] = {}
+    ambiguous: set[str] = set()
+    for bundle in bundles:
+        if bundle.manifest_path is None:
+            continue
+        match = _BUNDLE_REVISION.match(bundle.bundle_id)
+        if match is None:
+            continue
+        groups.setdefault(match.group("base"), []).append(
+            (int(match.group("revision")), bundle))
+
+    placed: set[str] = set()
+    reports: list[str] = []
+    for base, members in sorted(groups.items()):
+        if len(members) < 2:
+            continue
+        revisions = [revision for revision, _ in members]
+        packets = {b.packet_id for _, b in members}
+        if len(set(revisions)) != len(revisions) or len(packets) != 1:
+            ambiguous.add(base)
+            reports.append(
+                f"{base}: ambiguous legacy Approved lineage "
+                f"(revisions={sorted(revisions)}, packets={sorted(packets)}); "
+                "no leaf inferred")
+            continue
+        # Explicit links come first and are never overridden. The fallback only
+        # places what the lineage failed to declare.
+        if all(b.bundle_id in explicit or revision == max(revisions)
+               for revision, b in members):
+            continue
+        leaf = max(members)[1]
+        for revision, bundle in sorted(members):
+            if bundle.bundle_id == leaf.bundle_id or bundle.bundle_id in explicit:
+                continue
+            placed.add(bundle.bundle_id)
+            note = (f"legacy_revision_inference: {bundle.bundle_id} is placed as history "
+                    f"by bounded rNN sequence within packet {bundle.packet_id}; the "
+                    f"selected active leaf is {leaf.bundle_id}")
+            bundle.legacy_inferences.append(note)
+            reports.append(note)
+    return placed, reports
+
+
 def withdrawn_review_ids(root: Path, ruleset_id: str, book_id: str,
                          admission: Admission | None = None) -> set[str]:
     """Review ids whose lineage leaf is not approved.
@@ -457,11 +542,18 @@ def ready_queue(root: Path, ruleset_id: str, book_ids: list[str]) -> dict:
     consumed = integrated_bundle_ids(root, ruleset_id)
     rejected = rejected_bundle_ids(root, ruleset_id)
     ready, done, superseded, refused, diagnostics = [], [], [], [], []
+    inferences: list[str] = []
     for book_id in book_ids:
         found, book_diagnostics = discover(root, ruleset_id, book_id)
         diagnostics.extend(book_diagnostics)
         retired = superseded_gup_ids(root, ruleset_id, book_id)
         repackaged = superseded_bundle_ids(root, ruleset_id, book_id)
+        # DEC-2026-0096: explicit declarations are resolved first, then the
+        # bounded legacy fallback places whatever the lineage left un-named. A
+        # lineage that declares its links completely never reaches this.
+        inferred, book_inferences = legacy_leaf_inferences(found, repackaged)
+        repackaged = repackaged | inferred
+        inferences.extend(book_inferences)
         stale_reviews = withdrawn_review_ids(root, ruleset_id, book_id, admission)
         for bundle in found:
             # DEC-2026-0070: a validated direct-predecessor record names exactly
@@ -503,5 +595,10 @@ def ready_queue(root: Path, ruleset_id: str, book_ids: list[str]) -> dict:
         ready = []
     return {"ready": ready, "integrated": done, "superseded": superseded,
             "rejected": refused, "diagnostics": diagnostics,
+            # DEC-2026-0096 requires a legacy leaf inference to be visible in the
+            # queue result rather than folded silently into `superseded`. It is
+            # reported separately from `diagnostics` because it is a successful,
+            # contract-defined derivation, not broken lineage.
+            "legacy_leaf_inferences": inferences,
             "queue_integrity": admission.fatal,
             "informational": admission.informational}

@@ -1,0 +1,395 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0082-r03
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 3
+supersedes: IMP-DEC-2026-0082-r02
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: >-
+    Supersedes IMP-DEC-2026-0082-r02 in response to
+    REV-IMP-DEC-2026-0082-r02-r01. All five findings are fixed and all seven new
+    independent probes pass. R1 was the serious one: the relay had never been
+    able to run the real endpoint, because every call went through
+    `pwsh -File`, and a script test double hid it. It now drives the installed
+    herdr.exe, verified by a read-only agent list. One item needs the Reviewer
+    rather than the Builder: two of the thirteen original probes now fail on
+    fixture setup that predates R4, and the Review forbids editing
+    Reviewer-owned probes. The exact one-line change and proof that the
+    behaviour they protect is intact are recorded in reviewer_fixture_request.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0082
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml
+  checksum: sha256:13fd6a71489166a6adb10a44bb0dbfe8a4440f9fa89a75c5305a82bb50421f47
+review_input:
+  id: REV-IMP-DEC-2026-0082-r02-r01
+  path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0082-r02-r01.yaml
+  checksum: sha256:ca3ca9595b36d86072122cef4cee78c7fb1b95f9281171b180156b67f574aef4
+implementation_files:
+- path: tooling/common/send-agent-handoff.ps1
+  checksum: sha256:f5d0d65045aef1e9b263f5e22f513efd356454e4a6a67d66ed657685c47d4b33
+- path: tooling/common/tests/test_herdr_handoff.py
+  checksum: sha256:ac4fdd4ab24b69c684e6a4fcfe565713780570bf0e0f23ba19ffa24d0c683cf6
+- path: tooling/common/role_context.py
+  checksum: sha256:11aadce04390132a729575b421798d9c61865eaa8ceb1b65507654a60e5e216f
+- path: tooling/common/tests/test_role_context.py
+  checksum: sha256:b313f030bd89b149277b0c52eb7dac53b1b726d0d25ecbc2eef5e1281ef3af8d
+- path: AGENTS.md
+  checksum: sha256:af818867b3f865bbd362d2746bcf94fcf9e6864b0d545d710285b27c41902533
+- path: README.md
+  checksum: sha256:571f44c27b987cfb879fe24e3adf400126770445814c4902633f96f9c1feecd8
+- path: REPOSITORY_STRUCTURE.md
+  checksum: sha256:2fa21c8e177ef052141aa51ef43e5e671fa89367677c5acf6da3326a91b62df2
+- path: agents/architect/INSTRUCTIONS.md
+  checksum: sha256:8a4b1613ebf58dc01f80de95e77be35f051cb085f35c47db24f1ce0f9e026550
+- path: agents/analyst/INSTRUCTIONS.md
+  checksum: sha256:b2b98137f3f3c635fab2164ef5c931e5e271b95c7a8ec2a8b43236e9c3f7dca1
+- path: agents/builder/INSTRUCTIONS.md
+  checksum: sha256:fa447d0ead2e2bc50233c2c9a1209d2f6b2f710b79e9528dc98484c8398a9f1a
+- path: agents/reviewer/INSTRUCTIONS.md
+  checksum: sha256:bb1eb765ca69417df9f7982f7e1681364f06d8a990b8fe6e1ce33ed88f886798
+- path: agents/integrator/INSTRUCTIONS.md
+  checksum: sha256:0f76ded1e50a952db668244e8b48e1fb4f7f7b38abeb3569b5edde511a83a5aa
+- path: contracts/HERDR_HANDOFFS.md
+  checksum: sha256:efdaca2e9d52435cb8bdba3ff38e3ef8caa0d7714f9269ee62a7265a0ea73816
+- path: contracts/ROLE_CONTEXT_LOADING.md
+  checksum: sha256:95f4d7a07529a3828d75abe7cab5943db6c6544c870fe2ccbfaa0e9eed254ec9
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:f04b5b0c911223365515dd94d28d8d5358ee5ab4c70665810b9ce4188b9d2b11
+- path: contracts/SOURCE_MARKDOWN.md
+  checksum: sha256:761a8142c0f887171397db205384585ddbaba80c137d93ff1aa9dd505eab6732
+- path: contracts/ROLE_CONTEXT_MANIFEST.yaml
+  checksum: sha256:b9871da775c42c801e05569baa87f7211f640376327e3d176a2b8696351ee0d4
+- path: schemas/common/role-context-manifest.schema.json
+  checksum: sha256:53905b3b7b54f3fd118aa562e3417f74f28b7d7f79040db21d1e857cd45b2299
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml
+  checksum: sha256:13fd6a71489166a6adb10a44bb0dbfe8a4440f9fa89a75c5305a82bb50421f47
+validation_report: build/reports/IMP-DEC-2026-0082-r03.validation.json
+validation_report_checksum: sha256:75713989ee0fcac3a78f01560a15c33903d001a114fe93a7c91ef2e5648b7431
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: >-
+    Dispositioned verified_versioned_contract_content by the Reviewer against
+    r02 and unchanged here: no governance file was touched by this revision, and
+    all three contracts still hash to the values pinned below at their declared
+    versions with every declared anchor present. The five role instructions
+    retain the direct protocol; the two retired definition files remain absent
+    and unpinned. Those unit tests ran: Ran 80 tests in 1.547s OK.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0082
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml
+      checksum: sha256:13fd6a71489166a6adb10a44bb0dbfe8a4440f9fa89a75c5305a82bb50421f47
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/HERDR_HANDOFFS.md
+      checksum: sha256:efdaca2e9d52435cb8bdba3ff38e3ef8caa0d7714f9269ee62a7265a0ea73816
+      observed_version: '1.0'
+      minimum_version: '1.0'
+      anchors_present:
+      - Five roles communicate directly without Dispatcher.
+      - One repository agent processes work at a time, including reloads.
+      - Dependencies determine priority and only one next action is handed off.
+      - Deferred delivery waits for sender idle and never retries ambiguous submission.
+    - path: contracts/ROLE_CONTEXT_LOADING.md
+      checksum: sha256:95f4d7a07529a3828d75abe7cab5943db6c6544c870fe2ccbfaa0e9eed254ec9
+      observed_version: '1.2'
+      minimum_version: '1.2'
+      anchors_present:
+      - Dispatcher is retired and DEC-2026-0081 activation is cancelled.
+      - Five-role scoped receipts and fresh task evidence remain required.
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:f04b5b0c911223365515dd94d28d8d5358ee5ab4c70665810b9ce4188b9d2b11
+      observed_version: '1.30'
+      minimum_version: '1.30'
+      anchors_present:
+      - Direct herdr coordination does not change artifact consumption or approval.
+- acceptance_test_index: 2
+  result: passed
+  evidence: >-
+    Dispositioned verified by the Reviewer twice and untouched again:
+    role_context.py and test_role_context.py are byte-identical to the bytes
+    verified against r01 and r02, so the five-role verifier was not disturbed
+    while the relay was corrected. The live manifest validates and declares
+    exactly the five active roles; the retired role is refused at every entry
+    point without writes. Those unit tests ran: Ran 80 tests in 1.547s OK.
+- acceptance_test_index: 3
+  result: passed
+  evidence: >-
+    Previously failed on R1, R2 and R3. All three are fixed and the Reviewer's
+    probes for them pass unmodified.
+
+    Native endpoints (R1). Invoke-Herdr now launches a native client directly
+    and routes only a .ps1 double through a PowerShell host, passing arguments
+    through ArgumentList so spaces survive. The decisive evidence is not a mock:
+    driving the shipped helper against the installed
+    HERDR_BIN_PATH -- herdr.exe -- with a read-only `agent list` returns the
+    real envelope, top-level keys `id, result`, five agents, with genuine
+    agent_status values. No prompt was sent. TestNativeAndScriptEndpoints covers
+    the native shape, the script shape, an endpoint path containing spaces and
+    an argument containing spaces.
+
+    Fully typed evidence (R2). inputs, prerequisites and ordered_next_steps must
+    be arrays; an explicit null is refused rather than silently treated as
+    empty, which is what `@($null)` had been doing. A genuinely empty array is
+    still accepted, since a reload-only handoff has no inputs and no onward
+    work. The endpoint's socket identity is bound into the reservation and a
+    request naming a different socket than the inherited HERDR_SOCKET_PATH is
+    refused: a matching executable identifies the client, not the server.
+    TestFullyTypedEvidence covers all of this in 5 cases.
+
+    Containment through links (R3). Resolve-Path normalises lexically and does
+    not follow a junction, so a repository-local junction could point outside
+    the root while the path still looked contained. Resolve-InsideRoot now fails
+    closed on any reparse point between the root and the target. The root's own
+    ancestry is deliberately not inspected -- a repository living under a
+    junction is not the attack, and rejecting it would make the relay unusable.
+    TestContainmentSurvivesLinks proves both the refusal and that an ordinary
+    nested path still resolves. Those unit tests ran: Ran 95 tests in 120.700s
+    OK.
+- acceptance_test_index: 4
+  result: passed
+  evidence: >-
+    Previously failed on R1 and R4.
+
+    R1 is covered under acceptance test 3: the production path works against the
+    real client, verified read-only.
+
+    Scheduling reservation and continuation (R4). r02 claimed atomicity at every
+    entry point; the Reviewer correctly found that was true of Invoke-Execute
+    and not of Invoke-Schedule, which still checked then wrote. Scheduling now
+    claims the request ID with an exclusive CreateNew on its state file, so the
+    claim is its own test and exactly one of two racing schedulers wins. The
+    payload and the inherited endpoint identity are bound into that reservation.
+    Separately, Get-DeliveryBlockers distinguishes a staged continuation from an
+    outstanding delivery: a recipient finishing its turn may queue the next
+    assignment while its own parent relay still holds the lock through
+    settlement, which is what makes the contract's serial chain usable, while an
+    independent competitor and an unresolved uncertainty both still refuse.
+    TestScheduleToExecuteChain covers the whole chain in 8 cases, including a
+    scheduled request delivered end to end by its own detached relay, two
+    genuinely concurrent relays prompting exactly once, an interrupted relay,
+    the continuation, an independent competitor, an uncertain predecessor, an
+    unreserved execution and a concurrent duplicate reservation. Those unit
+    tests ran: Ran 95 tests in 120.700s OK.
+- acceptance_test_index: 5
+  result: passed
+  evidence: >-
+    Previously failed on R4 and R5.
+
+    Unscheduled execution (R4). Invoke-Execute now requires an unconsumed
+    `queued` reservation and refuses when none exists; authorization is never
+    created merely because no record is present.
+
+    Sender status (R5). Only a verified `working` sender is polled. Blocked,
+    unknown or empty status stops immediately with a durable `failed` record, so
+    a later idle observation cannot implicitly resume a request that met an
+    unresolved blocker. TestSenderStatusIsVerified covers blocked, three unknown
+    statuses, and that the ordinary working-then-idle case still delivers, so
+    the narrowing did not break the normal path. Those unit tests ran: Ran 95
+    tests in 120.700s OK.
+- acceptance_test_index: 6
+  result: passed
+  evidence: >-
+    Dispositioned verified by the Reviewer against r02 and preserved.
+    TestTheRelayTransportsWithoutDeciding still asserts the ordered list
+    survives verbatim with the blocking escalation ahead of its dependent and
+    the independent item still ready, the prompt delivered exactly as written,
+    no input byte modified, every relay file under .local/, and a reload-only
+    request carrying an empty next-step list. R2's stricter typing makes the
+    transported list more explicit, not less faithful: an empty array is still
+    a valid reload-only payload, while a null is now refused. Those unit tests
+    ran: Ran 95 tests in 120.700s OK.
+- acceptance_test_index: 7
+  result: passed
+  evidence: >-
+    Dispositioned verified by the Reviewer against r02 for pins and evidence
+    completeness; the same nineteen paths are pinned here with current
+    checksums, and the two deleted definition files remain verified by absence.
+
+    Suites. The focused role-context suite passes 80; the relay suite grows from
+    73 to 95 with regression classes for each of R1 through R5; the Reviewer's
+    seven new probes pass 7/7 unmodified; the complete common suite passes
+    (Ran 1272 tests in 495.176s OK). Eleven of the thirteen original probes pass
+    unmodified. The remaining two fail on fixture setup that predates R4 rather
+    than on behaviour, which is recorded in reviewer_fixture_request with the
+    exact one-line change and with proof that both pass once the reservation
+    exists. Approval is not claimed: DEC-2026-0082 step 3 requires independent
+    verification, and routine relay use stays unauthorized until it exists.
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common/tests] python -m unittest test_role_context'
+    exit_code: 0
+    result: passed
+    summary: Ran 80 tests in 1.547s OK
+  - command: '[cwd tooling/common/tests] python -m unittest test_herdr_handoff'
+    exit_code: 0
+    result: passed
+    summary: Ran 95 tests in 120.700s OK
+  - command: '[cwd .] python tooling/reviewer/tests/test_dec0082_r02_acceptance.py'
+    exit_code: 0
+    result: passed
+    summary: Ran 7 tests in 6.325s OK
+  - command: '[cwd tooling/common/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 1272 tests in 495.176s OK
+finding_resolutions:
+- id: R1
+  status: fixed
+  change: >-
+    Invoke-Herdr launches a native client directly and only routes a .ps1 double
+    through a PowerShell host; arguments travel as an ArgumentList so spaces are
+    preserved in both the endpoint path and the arguments.
+  proof: >-
+    A read-only `agent list` against the installed herdr.exe returns the real
+    envelope (id, result; five agents; genuine agent_status values), plus
+    TestNativeAndScriptEndpoints (4 cases) and the Reviewer's
+    test_native_executable_endpoint_is_supported.
+- id: R2
+  status: fixed
+  change: >-
+    Evidence collections are type-checked, so an explicit null is refused rather
+    than silently skipped, while a genuinely empty array stays valid for a
+    reload-only handoff. The inherited HERDR_SOCKET_PATH is bound into the
+    reservation and a mismatched declared socket is refused.
+  proof: >-
+    TestFullyTypedEvidence (5 cases) plus the Reviewer's
+    test_null_evidence_collections_are_rejected and
+    test_endpoint_socket_identity_mismatch_is_rejected.
+- id: R3
+  status: fixed
+  change: >-
+    Resolve-InsideRoot fails closed on any reparse point between the root and
+    the target, closing the junction bypass that a lexical boundary cannot see.
+  proof: >-
+    TestContainmentSurvivesLinks (2 cases, including that an ordinary nested
+    path still resolves) plus the Reviewer's
+    test_link_to_external_file_is_outside_repository.
+- id: R4
+  status: fixed
+  change: >-
+    Scheduling reserves the request ID with an exclusive CreateNew and binds the
+    payload and endpoint identity; execution requires that unconsumed queued
+    record; and a staged continuation from the parent's own recipient is
+    distinguished from an outstanding delivery, so the serial chain is usable
+    while competitors and uncertain predecessors still refuse.
+  proof: >-
+    TestScheduleToExecuteChain (8 cases) plus the Reviewer's
+    test_unscheduled_execution_is_rejected and
+    test_finishing_recipient_can_stage_deferred_continuation.
+- id: R5
+  status: fixed
+  change: >-
+    Only a verified working sender is polled; blocked, unknown or empty status
+    stops immediately with a durable failed record so a later idle observation
+    cannot resume a request that met an unresolved blocker.
+  proof: >-
+    TestSenderStatusIsVerified (3 cases) plus the Reviewer's
+    test_blocked_sender_fails_closed_instead_of_waiting_it_out.
+reviewer_fixture_request:
+  why: >-
+    This is the one item this revision cannot resolve on its own. The Review
+    states: "Do not modify Reviewer-owned probes or governance to make tests
+    pass; if a valid fixture needs changed setup, report that exact need to
+    Reviewer." This is that report. Neither Reviewer-owned probe file was
+    modified; both still hash to the values their Reviews recorded.
+  affected:
+    path: tooling/reviewer/tests/test_dec0082_relay_acceptance.py
+    checksum: sha256:8a331a11cfe9a31393bdfc3c680474ca1c23817d305e265dd203158b61039416
+    tests:
+    - test_two_competing_relays_do_not_prompt_concurrently
+    - test_process_interruption_cannot_erase_possible_send
+  cause: >-
+    Both call start_slow_prompt, which Popens the relay with -ExecuteRequest and
+    no queued reservation. R4 requires delivery to have an unconsumed scheduled
+    record and forbids creating authorization merely because none exists, so the
+    first prompt never begins and each test fails at its own
+    "first fake prompt did not begin" assertion.
+  why_it_cannot_be_resolved_in_the_relay: >-
+    The new probe test_unscheduled_execution_is_rejected asserts the opposite
+    outcome for the same situation: a request built by the same self.request()
+    helper, executed directly with no reservation, must be refused with no
+    prompt. From the relay's side the two scenarios are identical in every
+    observable respect, so no implementation can satisfy both. One of the two
+    fixtures has to change, and both belong to the Reviewer.
+  proposed_change: >-
+    Add one line at the top of start_slow_prompt:
+    `self.ensure_reserved(request)`. RelayCase.ensure_reserved is a new Builder
+    fixture helper that writes the queued reservation the scheduler would
+    normally create. It is only created when absent, so a test that sets its own
+    state keeps it.
+  evidence_that_behaviour_is_intact: >-
+    Both probes were re-run with start_slow_prompt wrapped at runtime to add
+    that single call, without editing the Reviewer's file: both pass, 2 run, 0
+    failures, 0 errors. The same two properties are additionally covered
+    independently in the Builder suite by
+    TestScheduleToExecuteChain.test_two_concurrent_relays_prompt_exactly_once
+    and test_an_interrupted_relay_leaves_possible_send_evidence, which use real
+    concurrent processes and a slow-prompt endpoint.
+bugs_found_by_the_new_tests:
+- subject: a PowerShell function patched in isolation can leave its body unclosed
+  detail: >-
+    Inserting two helper functions by replacing the tail of another left both
+    unclosed, and the relay stopped emitting JSON at all. Caught immediately by
+    the suite and by an explicit Parser::ParseFile check, which is now the first
+    thing run after any edit to the script.
+- subject: a [string[]] parameter binds only its first element from a command line
+  detail: >-
+    The endpoint harness passed `-CallArgs agent list` and the callee received
+    only `agent`, so the first version of the native-endpoint test failed for a
+    reason that had nothing to do with the relay. Arguments now travel as JSON
+    and are converted inside the harness.
+- subject: embedded double quotes do not survive a JSON round trip into a process argument
+  detail: >-
+    A Python one-liner containing escaped quotes arrived with the backslashes
+    stripped and failed to parse. The fixture now uses a one-liner with no
+    embedded double quotes; the point of the test is the process launch, not
+    fixture quoting.
+scope_note: >-
+  Only two Builder-owned paths were written by this revision:
+  tooling/common/send-agent-handoff.ps1 and
+  tooling/common/tests/test_herdr_handoff.py. role_context.py and
+  test_role_context.py are unchanged from the bytes the Reviewer verified twice.
+  The fifteen governance and Decision paths pinned above were read and verified,
+  not modified. Neither Reviewer-owned probe file was modified: both still hash
+  to the values recorded in their Reviews, and the two failing probes were
+  demonstrated to pass only by wrapping a method at runtime in a scratch script,
+  never by editing the file. IMP-DEC-2026-0082-r01 and r02, their validation
+  companions, and both Reviews are preserved unchanged, as are DEC-2026-0081 and
+  IMP-DEC-2026-0081-r01. No canonical data, registry, schema, worker artifact,
+  scanner or source file was changed. The relay was not used to deliver
+  anything; the only live endpoint call was a read-only `agent list`.
+defects_for_the_architect:
+- id: empty-retired-role-directory-remains
+  detail: >-
+    agents/dispatcher/ still exists as an empty directory after its
+    INSTRUCTIONS.md was deleted. Git does not track empty directories, so it
+    appears in no diff, and the acceptance criterion is met because the
+    definition file is absent. Architect-owned path; purely cosmetic. Unchanged
+    since r01.
+- id: source-markdown-drift-keeps-invalidating-dec-2026-0080
+  detail: >-
+    contracts/SOURCE_MARKDOWN.md is at 1.7 while IMP-DEC-2026-0080-r03 pins 1.6,
+    so that lineage has now been red for three consecutive revisions through no
+    fault of its implementation. The separate refresh remains queued as the next
+    Builder job. Worth an Architect ruling rather than a fourth round:
+    minimum_version already bounds what that report depends on, so the
+    exact-checksum pin on a contract the report does not own is the part that
+    keeps breaking.
+canonical_state: >-
+  No canonical or registry file was written by this work. This change touches
+  only common operational tooling and its tests; it reads no graph data.
+  rulesets/adnd1e/canonical/edges_master.csv is at
+  sha256:e321666ea303ab65c1303bb1c120ccc8fb80a176c6dc2f45147532495dce549b,
+  basicdnd still has no canonical directory, and shadowdark's canonical paths
+  remain reserved for Integrator creation.

@@ -1,0 +1,181 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0103-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+constitution_version: '1.6'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Bounded, ruleset-scoped CLASSIFIED_AS validation and polarity derivation are implemented:
+    the three spell classification shapes and their cardinality are enforced, derived polarity is
+    read from each ruleset''s own governance instead of one shared constant, and neither adnd1e nor
+    basicdnd gained CLASSIFIED_AS or any behavioural change. All five acceptance tests pass. No source,
+    GUR, GUP, registry, canonical data, or taxonomy-only membership was touched. No successor may
+    publish a CLASSIFIED_AS edge until this report receives terminal Reviewer approval.'
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0103
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+  checksum: sha256:3a9fa4cd37e0cf4172d0b716d79f420ce5f7ea25fdf7e5fffe4a1e8715e40985
+implementation_files:
+- path: tooling/builder/src/adnd1e_builder/vocab.py
+  checksum: sha256:14d3f64c33951aa82144cea25779e8ae27d8cf08377ad321cf6b91838072670f
+- path: tooling/builder/src/adnd1e_builder/polarity.py
+  checksum: sha256:005eee2f09c6611dbe571799b9965b17d5c90f8a7a71908adb66eb8fc9c4153b
+- path: tooling/builder/src/adnd1e_builder/compiler.py
+  checksum: sha256:7441d47adf07f321ddab7a8e5642862bdeee143f61f6e550a60d8c43feffa266
+- path: tooling/builder/tests/test_shadowdark_ancestry.py
+  checksum: sha256:6ef520d33db49a3f40962d671e0df403e2d22179ac332c5cd9194969166022dc
+- path: tooling/builder/tests/test_polarity.py
+  checksum: sha256:8df03a2ecd95f1ef4c8de8911239e0844a70fad49760a86e7d446e7eeb28abb0
+verified_inputs:
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+  checksum: sha256:3a9fa4cd37e0cf4172d0b716d79f420ce5f7ea25fdf7e5fffe4a1e8715e40985
+- path: rulesets/shadowdark/governance/constitution.md
+  checksum: sha256:431f6b204931f60b34b2d976cf101f0265c66c9200c0405f3d854bc829c423af
+- path: rulesets/shadowdark/ruleset.yaml
+  checksum: sha256:c314ab8b9d49702f805dbebbd1649b1200adcdd0fd0f7523667183bdab885de3
+- path: schemas/shadowdark/graph/edge.schema.json
+  checksum: sha256:c0d482a7e9a6be779485ea4bfe4da91b10c2a81f5ef03d2b5040a97754c6510e
+- path: schemas/shadowdark/graph/gur.schema.json
+  checksum: sha256:e53c389893c878d0aee3cf83d56b3e9bc9bc80d4b9ffe829f6bed558f6d79f06
+- path: schemas/shadowdark/graph/gup.schema.json
+  checksum: sha256:dcbebe71b623cf56a53eb4d8ea27de12b6c3e206d4da5212ee527f8e22ac3aac
+- path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-059-060-spells-detect-thoughts-to-fireball-r01.yaml
+  checksum: sha256:3514bdc9fd0b340fc00dffc655cde1b4b9260e259c8c337dc45dc644438902e7
+validation_report: build/reports/IMP-DEC-2026-0103-r01.validation.json
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: Verified as an Architect-owned input, not authored here. Constitution 1.6 section 2.4
+    defines CLASSIFIED_AS as directed, individual-to-classification, with the three bounded spell
+    forms in a table (spell to class_wizard/class_priest, aspect casting class, one or more; spell
+    to exactly one of rule_spell_tier_1 through rule_spell_tier_5, aspect spell tier; each tier value
+    to rule_spell_tier, aspect spell tier category). It explicitly excludes sys_ancestry, sys_alignment,
+    sys_deity, sys_language, sys_class, Common/Rare Languages, and the named source-context groupings.
+    Section 3's closed edge vocabulary lists CLASSIFIED_AS with direction 'individual to classification',
+    and section 5's polarity table lists CLASSIFIED_AS as neutral. All three authorized anchors were
+    read in place. Structured evidence is recorded in versioned_contract_content.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0103
+      path: rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+      checksum: sha256:3a9fa4cd37e0cf4172d0b716d79f420ce5f7ea25fdf7e5fffe4a1e8715e40985
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: rulesets/shadowdark/governance/constitution.md
+      checksum: sha256:431f6b204931f60b34b2d976cf101f0265c66c9200c0405f3d854bc829c423af
+      observed_version: '1.6'
+      minimum_version: '1.6'
+      anchors_present:
+      - CLASSIFIED_AS is a directed source-declared mechanically operative classification, not general
+        taxonomy membership.
+      - Spell casting class may be plural while each spell has exactly one discrete spell tier.
+      - Taxonomy-only membership and sys-axis or source-context targets remain outside the graph.
+- acceptance_test_index: 2
+  result: passed
+  evidence: Verified as an Architect-owned input. Both Shadowdark structural schemas enumerate constitution_version
+    1.0 through 1.6, and schemas/shadowdark/graph/edge.schema.json admits CLASSIFIED_AS in its edge_type
+    enum. Neither adnd1e's nor basicdnd's edge.schema.json contains the string CLASSIFIED_AS -- checked
+    directly, not assumed.
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'RulesetVocabulary now carries a derived_polarity field, read from a ruleset''s own constitution
+    (section 5''s two-column table for Shadowdark) rather than one shared constant. Measured live:
+    Shadowdark derives CLASSIFIED_AS as neutral and every prior type it always derived; adnd1e''s
+    derived_polarity is byte-identical to the retained DERIVED_POLARITY constant; basicdnd -- whose
+    own constitution states no derived-polarity table at all -- correctly falls back to that same
+    shared constant rather than deriving nothing, which is the exact regression a first implementation
+    pass introduced and this report''s own test suite catches (test_basicdnd_still_derives_its_ordinary_types).
+    polarity.resolve gained an optional vocabulary parameter; every pre-existing caller, including
+    all 14 original test_polarity.py tests, omits it and is unaffected. Executable checks: TestRulesetScopedDerivation
+    (8 tests) and TestClassifiedAsRulesetScoping (2 tests).'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'compiler.py enforces exactly the three bounded shapes via a small enumerated table, not
+    a general taxonomy mechanism: a legal (source, target, aspect) triple compiles with derived neutral
+    polarity; anything else is rejected with a specific finding rather than merged into one generic
+    error. Verified live: a sys_ target and a table (tbl_common_languages) target are both classified_as_target_illegal;
+    a reversed pair (class_wizard CLASSIFIED_AS spell_fireball) is classified_as_direction_illegal,
+    distinguished from a target that is merely wrong; the wrong aspect on an otherwise-legal pair
+    is classified_as_aspect_illegal; an unsupported target kind (item_wand) is classified_as_target_illegal.
+    Cardinality is checked once per GUR against every compiled row: two spell-tier classifications
+    for one spell is classified_as_duplicate_tier; a spell with a casting-class row but no tier row
+    in the same GUR is classified_as_tier_missing; a spell with both, or with neither (no classification
+    submitted for it at all), raises neither finding. A spell may carry two casting classes without
+    triggering duplicate/missing. None of this is reached for any other ruleset: CLASSIFIED_AS is
+    outside their edge vocabulary, so edge_type_illegal rejects it before the classification validator
+    runs, verified by a defensive same-ruleset guard inside that validator as well. Executable checks:
+    TestBoundedClassifications, 15 tests covering all three accepted shapes, five rejection categories,
+    three cardinality cases, and that authored polarity on CLASSIFIED_AS is still rejected the same
+    way every other derived type rejects it.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: The two new focused classes ran 17 tests, the polarity module 22 (14 original plus 8 new),
+    the complete ancestry module 105 (88 before this Decision plus 17), and the complete Builder suite
+    927 (902 plus these same 25), all exit code 0 with no failures. A read-only dry compile of GUR-PKT-SD-059-060-spells-detect-thoughts-to-fireball-r01
+    -- this Decision's own representative evidence, which carries no CLASSIFIED_AS row -- still compiles
+    all 11 rows with zero errors and its bytes are unchanged before and after, confirming ordinary
+    spell packets are unaffected by a change that shipped alongside them. Exact commands and outcomes
+    are in the validation block and in build/reports/IMP-DEC-2026-0103-r01.validation.json.
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/builder/tests] python -m unittest test_shadowdark_ancestry.TestBoundedClassifications
+      test_shadowdark_ancestry.TestClassifiedAsRulesetScoping'
+    exit_code: 0
+    result: passed
+    summary: Ran 17 tests in 0.448s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest test_polarity'
+    exit_code: 0
+    result: passed
+    summary: Ran 22 tests in 0.019s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest test_shadowdark_ancestry'
+    exit_code: 0
+    result: passed
+    summary: Ran 105 tests in 7.419s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 927 tests in 191.357s OK (skipped=38)
+changes_in_this_revision:
+- 'vocab.py: added RulesetVocabulary.derived_polarity, populated by _derived_polarity_table (a two-column
+  `| Edge type | Derived polarity |` table reader, the same discipline as the existing one-column
+  prefix/edge-vocabulary readers) when a ruleset''s own constitution has that shape, falling back
+  to the shared DERIVED_POLARITY constant otherwise -- which is what preserves AD&D 1e''s and Basic
+  D&D''s exact prior behaviour, since neither constitution uses this table shape.'
+- 'polarity.py: resolve() gained an optional vocabulary parameter. Supplied, it derives from vocabulary.derived_polarity;
+  omitted, it derives from the same shared constant as before, so no existing caller changes behaviour.'
+- 'compiler.py: the one call to polarity.resolve now passes self.vocabulary. Added SHADOWDARK_CLASSIFIED_AS_SHAPES
+  (three enumerated triples), _shadowdark_classification_shape, _validate_shadowdark_classification
+  (per-edge shape/aspect/direction check, called from _compile_edge for CLASSIFIED_AS edges) and _validate_classification_cardinality
+  (per-GUR, called once after all edges compile).'
+- 'test_polarity.py: added TestRulesetScopedDerivation, 8 tests.'
+- 'test_shadowdark_ancestry.py: added TestBoundedClassifications (15 tests) and TestClassifiedAsRulesetScoping
+  (2 tests).'
+bugs_found_by_the_new_tests:
+- The first implementation pass fell back to an empty derived-polarity mapping for any ruleset without
+  its own parseable table. Basic D&D's constitution has never had one and its existing GURs rely entirely
+  on the shared AD&D 1e-transcribed table; the empty fallback would have turned every one of its GATES/RESOLVED_BY/etc.
+  edges into 'cannot derive polarity', failing two pre-existing test_compiler.py tests immediately.
+  Fixed by falling back to the shared constant, not to nothing, and test_basicdnd_still_derives_its_ordinary_types
+  now pins that behaviour directly.
+- The polarity table's edge-type column is plain uppercase (`| GATES | enables |`), not backtick-quoted
+  like the separate edge-vocabulary table; the first parser reused the backtick pattern and silently
+  matched nothing, so Shadowdark's own derived_polarity came back empty. Caught by manually inspecting
+  the loaded table before writing any test, not by a failing assertion -- worth noting because a test
+  asserting the wrong empty expectation would not have caught it either.
+not_done:
+- No CLASSIFIED_AS edge was published in any GUR or GUP. The Analyst's tier-scaffold and spell-classification
+  successors are step 4, authorized only after this report's terminal Reviewer approval.
+- No source, GUR, GUP, Review, Approved bundle, registry, or canonical artifact was edited.
+- No taxonomy-only membership was added for the 34 existing ancestry, alignment, deity, language,
+  or class identities, as the Decision forbids.
+- No basicdnd or rc work of any kind was performed. DEC-2026-0086 remains binding.
+validation_report_checksum: sha256:ca9492dac50461faefdc9ceff9dd4db3d8a5914ad64d770d28a9f6e29f788d96

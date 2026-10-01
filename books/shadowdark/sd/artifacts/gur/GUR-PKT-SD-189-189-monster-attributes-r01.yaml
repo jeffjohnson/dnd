@@ -1,0 +1,398 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-189-189-monster-attributes-r01
+status: blocked
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-189-189-monster-attributes
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: architect
+  readiness: blocked
+  reason: >-
+    monster level has no identity and no approved prefix covers a creature statistic; one row on
+    this page depends on the ruling and the chapter scope question behind it affects 38 further
+    incoming files
+  blocking_ids:
+    - ESC-2026-09-30T06.00.29.086Z
+
+escalation_reference:
+  id: ESC-2026-09-30T06.00.29.086Z
+  path: rulesets/shadowdark/escalations/pending/ESC-2026-09-30T06.00.29.086Z.yaml
+  raised_by: analyst
+  relay_state: >-
+    Under HERDR_HANDOFFS 2.4 the normal packet relay pauses at this stage. This GUR is not
+    forwarded to Builder and no second packet is selected. The Analyst resumes this packet only
+    after the Architect returns a ruling, and rechecks its prerequisites before doing so.
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.34
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.7
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-189-189-monster-attributes
+  source_file: source.md
+  packet_source_checksum: sha256:942230e01400adad5ed80838fc7e5a39e64af9ee551494cad4f82d3e20ee0f28
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 081-monster-attributes.md
+  citation_code: SD
+  page_start: 189
+  page_end: 189
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit. Measured by the building script from the claimed source via the
+  Pandoc AST: 9 headings and 8 paragraphs on one printed page, no table and no list. The script
+  asserts the recorded packet checksum against the claimed file before reading a block.
+
+page_attribution_basis: >-
+  One marker and no ambiguity. The p189 marker ends the MONSTER ATTRIBUTES heading, which
+  placement rule 1 applies to the whole heading, and persistence carries 189 to every block
+  after it. The packet is one printed page, so every row this packet would carry cites 189 and
+  no row can rest on a different page.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed page 189. The file appends
+  no Supporting Source Context. This page has itself been the appended context in many earlier
+  packets, each of which declined to extract from it because its primary packet was unclaimed;
+  this is that packet, so page 189 is an extraction surface for the first time and nothing here
+  duplicates a row cited to it.
+
+source_summary: >-
+  One page of rules text in eight subsections, describing the attributes printed in a monster
+  stat block: armour class, hit points, attacks, movement, stat modifiers, alignment,
+  spellcasting and dark-adapted. Bold marks the defined abbreviations AC, HP, LV, ATK, MV, the
+  six stat letters, AL and tier. This is term-definition bolding, unlike the prose emphasis at
+  PKT-SD-187-188 one packet earlier, and the contrast is worth naming because the same
+  typographic mark means different things in the two packets.
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 424 registry
+  rows and 851 edges, and 0 rows cite printed page 189. The registry holds 0 monster_
+  identities.
+  Every attribute this page names already has an identity except one. AC is cbt_armor_class with
+  12 rows, HP is rule_hit_points with 30, ATK is cbt_attack_roll with 27, damage is rule_damage
+  with 25, MV is ex_movement with 22, the stat modifiers are abil_stat_modifier with 2 plus the
+  six named stats, AL is sys_alignment with 13, spellcasting is rule_spellcasting_check with 40,
+  the DC is rule_difficulty_class with 6 and the tier is rule_spell_tier with 10. Monster level
+  has none, and that is what the escalation asks about.
+
+why_this_packet_is_blocked: >-
+  Three of the eight subsections state a dependency rather than a scope. Two of them use only
+  canonical identities and are drafted below as proposed_pending_ruling. The third, the hit
+  point calculation, needs a subject identity for monster level that does not exist and that no
+  approved prefix covers.
+  The Analyst could have written that row against exp_level and moved on. That identity carries
+  30 canonical rows and every one of them is character progression, so the aliasing would be a
+  repository-wide convention chosen silently at the first of 38 incoming monster files. The
+  escalation exists because the choice should be a ruling.
+  The whole packet is blocked rather than the one row, because HERDR_HANDOFFS 2.4 pauses the
+  packet at its originating stage and because the ruling may change how the other two rows are
+  written: if the Architect establishes a monster subject identity, the dark-adapted row
+  acquires a natural eligibility source it currently lacks.
+
+proposed_pending_ruling_note: >-
+  The two rows below are drafted, not published as candidate_edges, because this GUR is blocked
+  and a blocked GUR must not present Builder with a compilable patch. They are recorded here so
+  the reading is auditable now and so the successor revision after the ruling is a small
+  edit rather than a re-extraction. Neither depends on the escalation's outcome on its own
+  terms; both are held only by the relay pause.
+
+proposed_pending_ruling:
+  - ref: D001
+    source_id: abil_dark_adapted
+    source_label: Dark-Adapted
+    edge_type: EXCLUDES
+    target_id: rule_total_darkness
+    target_label: Total Darkness
+    aspect: darkness penalties
+    condition: ''
+    book: SD
+    page: 189
+    section: DARK-ADAPTED
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    requires_new_node: abil_dark_adapted
+    basis: >-
+      The source states that dark-adapted senses allow a monster to ignore the penalties of
+      total darkness. rule_total_darkness MODIFIES rule_check on sight tasks at polarity worsens
+      is the canonical penalty, from printed page 84, and this ability negates it. Ignore is
+      unhedged, so EXCLUDES rather than CONSTRAINS under the test settled at PKT-SD-114-114.
+      Builder derives negates.
+  - ref: D002
+    source_id: rule_spell_tier
+    source_label: Spell Tier
+    edge_type: DERIVED_FROM
+    target_id: rule_difficulty_class
+    target_label: Difficulty Class
+    aspect: monster tier
+    condition: for a monster
+    book: SD
+    page: 189
+    section: SPELLCASTING
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    basis: >-
+      The source states that a monster's tier is its spellcasting DC less a fixed amount. The
+      amount is a magnitude and is not stored; the derivation is. Both endpoints are canonical.
+      This inverts rather than repeats the canonical rule_spell_tier FEEDS_INTO
+      rule_difficulty_class on casting difficulty from printed page 44, where a character's tier
+      determines the DC. The two are different assertions under the five-field key and the
+      condition distinguishes the subject; see tier_inversion_note.
+
+candidate_nodes_pending_ruling:
+  - proposed_id: abil_dark_adapted
+    proposed_label: Dark-Adapted
+    kind: abil
+    why_needed: >-
+      The page names Dark-Adapted as a heading and states what it does. It is an independently
+      named mechanical ability, which constitution section 2.1 assigns to the existing abil_
+      kind, and it is the source of D001. It is an ordinary proposal under an approved prefix
+      and is not part of the escalation.
+    prefix_basis: 'abil_ is an ability or derived ability mechanic; joins the 19 canonical abil_ identities'
+    source_named: true
+    defining_locus: SD page 189, DARK-ADAPTED
+    source_evidence: 'page 189, the DARK-ADAPTED heading and its paragraph.'
+
+reused_nodes: []
+candidate_nodes: []
+candidate_edges: []
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The Analyst is prohibited from promoting a general rule. Worth noting that the
+  dark-adapted sentence is the closest thing in the intake so far to a rule that would apply to
+  a whole class of creatures, and it is not proposed as one for that reason.
+domains_touched: []
+candidate_domains: []
+domain_boundary_questions: []
+
+authored_polarity_declaration: >-
+  No polarity is authored, because no candidate edge is published. Of the two drafted rows,
+  EXCLUDES and DERIVED_FROM are both deterministic under constitution section 5, so Builder
+  would derive negates and neutral respectively and neither would need an authored value even
+  after the ruling.
+
+rejected_candidates:
+  - text_locus: 'ARMOR CLASS, p189'
+    quoted_gist: 'just like characters, monsters have an AC that denotes how difficult it is to harm them'
+    why_considered: >-
+      cbt_armor_class is canonical with 12 rows and the sentence names it directly.
+    rejection_reason: >-
+      It states scope, not dependency. The sentence says who has AC, not what AC depends on or
+      what depends on it, and it says so by comparison with characters. Striking it would leave
+      cbt_armor_class and all 12 of its rows unchanged, which is the core test failing cleanly.
+      Six of this page's eight subsections fail in exactly this way and each is recorded
+      separately rather than as one block, because a reader should be able to see that each was
+      considered.
+  - text_locus: 'ATTACKS, p189'
+    quoted_gist: >-
+      most monsters can make one or two attacks per turn, but some can make more, and attack
+      bonuses and damage are listed for each
+    why_considered: >-
+      cbt_attack_roll has 27 rows, rule_damage 25 and rule_turn is canonical, so three identities
+      are named in one sentence.
+    rejection_reason: >-
+      Scope and a magnitude. The number of attacks is a quantity and no field may store one; the
+      hedge most and the exception some can make more confirm the sentence is describing a range
+      rather than stating a rule. Listed for each points at the stat blocks, which are later
+      packets and not this locus.
+  - text_locus: 'MOVEMENT, p189'
+    quoted_gist: >-
+      monsters can typically move near each turn, some can move other distances, and a special
+      mode such as flying or swimming is noted after the distance
+    why_considered: >-
+      ex_movement has 22 rows, rule_distance CONSTRAINS it already, and rule_swimming is
+      canonical, so a movement row looked available.
+    rejection_reason: >-
+      Typically is a hedge over a default value and near is a distance band, which
+      rule_distance CONSTRAINS ex_movement already carries from printed page 85. Nothing here
+      states a new dependency; it states what a stat block prints.
+  - text_locus: 'STAT MODIFIERS, p189'
+    quoted_gist: >-
+      monsters have modifiers listed for Strength, Dexterity, Constitution, Intelligence, Wisdom
+      and Charisma
+    why_considered: >-
+      Seven canonical identities are named in one sentence, abil_stat_modifier and the six
+      stats, which is the densest naming on the page.
+    rejection_reason: >-
+      Scope. abil_stat_modifier FEEDS_INTO rule_check is canonical from printed page 9 and is
+      unconditioned, so it already covers a monster's modifiers. The sentence adds that monsters
+      have them, which is not a dependency between mechanics.
+  - text_locus: 'ALIGNMENT, p189'
+    quoted_gist: >-
+      all monsters have a typical alignment for their species, and an individual monster might
+      have a different one
+    why_considered: >-
+      sys_alignment is canonical with 13 rows and the three alignment_ identities exist under
+      DEC-2026-0093.
+    rejection_reason: >-
+      Constitution section 2.4 keeps alignment membership out of the graph and names
+      sys_alignment explicitly as something no classification row may point at. The sentence is
+      membership and nothing else: it states no effect of a monster's alignment on any mechanic.
+      The species qualifier is also a grouping the graph has no identity for.
+  - text_locus: 'the two restated spellcasting rules, p189'
+    quoted_gist: >-
+      a natural 1 on an INT or CHA spell sends the caster to the Wizard Mishap tables at printed
+      page 46, and a natural 1 on a WIS spell incurs penance
+    why_considered: >-
+      Four canonical identities are named and one carries an explicit printed page pointer,
+      which is the shape that earned a CROSS_REFERENCES row at PKT-SD-178-179.
+    rejection_reason: >-
+      Both relations are already canonical from their own defining locus at printed page 45:
+      rule_critical_failure TRIGGERS each of the three wizard mishap tables on mishap roll, and
+      TRIGGERS rule_penance on priest spell loss. Both are unconditioned as to who is casting, so
+      they already cover monsters, and the page's opening instruction to treat monster
+      spellcasting the same as character spellcasting is exactly why. A pointer earns a row when
+      the relation it names is not already carried; here it is carried, so re-asserting from
+      page 189 would duplicate a canonical assertion from a restatement.
+  - text_locus: 'treat monster spellcasting the same as character spellcasting, p189'
+    quoted_gist: 'the opening sentence of the SPELLCASTING subsection'
+    why_considered: >-
+      It is the page's only sentence that equates two things outright, and ALTERNATIVE_TO is the
+      vocabulary's equivalence type.
+    rejection_reason: >-
+      ALTERNATIVE_TO means mutually exclusive or substitutable options, not identity of subject.
+      The sentence says monster spellcasting is the same mechanic, not an alternative to it, and
+      there is no second identity for monster spellcasting to be alternative to. It is the
+      instruction that makes the two restatements above redundant rather than an assertion of
+      its own.
+  - text_locus: 'the CON half of the hit point calculation, p189'
+    quoted_gist: 'and adding its CON modifier, with a stated minimum'
+    why_considered: >-
+      abil_constitution is canonical and the sentence states that it feeds the calculation.
+    rejection_reason: >-
+      abil_constitution FEEDS_INTO rule_hit_points on hit point value is canonical from printed
+      page 14 and carries no condition, so it already covers a monster's hit points. The stated
+      minimum is a magnitude. Only the monster level half of this sentence is a new assertion,
+      and that is the row the escalation blocks.
+  - text_locus: 'blinding or deafening still hinders a monster, p189'
+    quoted_gist: 'the closing sentence of the DARK-ADAPTED subsection'
+    why_considered: >-
+      It bounds the dark-adapted ability, so it looked like a condition on D001 or a row of its
+      own.
+    rejection_reason: >-
+      There is no identity for a blinded or deafened state and none may be minted from a
+      limiting clause; the registry holds no condition or status identity of any kind. The
+      sentence also does not limit what D001 asserts, which is only that darkness penalties are
+      ignored, so it is not a condition on that row either. Recorded because the absence of a
+      status vocabulary will recur across the monster chapter.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: six of eight subsections state scope, and that is the page's real shape
+    detail: >-
+      Six subsections say that monsters have an attribute the graph already holds, and each is
+      declined separately above. It is worth stating the pattern once as well: this page is a
+      reader's guide to a stat block, not a rules page, and its function is to tell you what the
+      abbreviations in the next eighty pages mean.
+      That matters for the escalation's second question. If a stat block's printed values are
+      not graph content, this page is almost entirely apparatus and the chapter after it is
+      mostly creature identities and named abilities. If they are, this page is the legend for
+      roughly five hundred rows. The Analyst cannot tell which from the page itself, which is
+      why it is asked rather than assumed.
+  - id: OBS-02
+    subject: the same bold mark means the opposite of what it meant one packet ago
+    detail: >-
+      PKT-SD-187-188 bolded six words in fiction and the GUR argued they were prose emphasis,
+      with the tell being that the bolded set included words that are not mechanics in any
+      reading. This page bolds nine terms and every one is a defined stat abbreviation printed
+      in the stat blocks that follow.
+      So bolding is evidence of a defined term in rules text and evidence of nothing in
+      narrative, and the two packets are adjacent. Recorded because a later reader comparing the
+      two dispositions should find the reason here rather than infer an inconsistency.
+  - id: OBS-03
+    subject: the tier inversion is the first circular pair in the graph
+    detail: >-
+      rule_spell_tier FEEDS_INTO rule_difficulty_class on casting difficulty is canonical from
+      printed page 44: a character's tier sets the DC. D002 would assert the reverse for a
+      monster, the tier derived from the DC.
+      That is not a contradiction and not a duplicate. The two rows differ in type, aspect and
+      condition, so they are distinct under the five-field key, and both are what the source
+      says for their own subject. The graph exists for impact analysis, and the honest answer to
+      what depends on the spellcasting DC is that for monsters the tier does.
+      Recorded because a reviewer meeting a cycle for the first time should see that it was
+      noticed and intended rather than overlooked.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: monster level
+    detail: >-
+      Printed as LV and used on this page to compute hit points. No identity exists and no
+      approved prefix covers a creature statistic; the whole registry was enumerated rather than
+      keyword-searched to establish that. Escalated as ESC-2026-09-30T06.00.29.086Z with four
+      options and their consequences. This is the only blocking question on the page.
+
+architectural_escalations:
+  - id: ESC-2026-09-30T06.00.29.086Z
+    path: rulesets/shadowdark/escalations/pending/ESC-2026-09-30T06.00.29.086Z.yaml
+    subject: >-
+      the identity and prefix for a monster statistic, and whether per creature stat block
+      values are graph content across the remaining 38 incoming monster files
+    blocks: IDQ-01
+
+architectural_escalation_note: >-
+  One escalation, raised on the first trigger in ESCALATION_CONTRACT: no existing node ID
+  represents the concept and a new kind or prefix may be needed. The contract's do-not-escalate
+  test was applied and does not rescue the case, because the candidate prefixes are approved but
+  their declared kinds describe something else, so choosing one decides what a prefix means.
+  The escalation asks for no new edge type, no membership relation, no creature registration and
+  no domain promotion. abil_dark_adapted is an ordinary proposal under an approved prefix and is
+  deliberately not part of it.
+
+tier_inversion_note: >-
+  D002 asserts the reverse of a canonical row, so the reasoning is set out rather than left to
+  the aspect.
+  At printed page 44 a spell's tier feeds its casting difficulty: rule_spell_tier FEEDS_INTO
+  rule_difficulty_class on casting difficulty. That is the character case, where tier is known
+  and the DC follows. Page 189 states the monster case, where the DC is printed in the stat
+  block and the tier is worked back from it.
+  DERIVED_FROM is the type, because the constitution defines it as computed or looked up from,
+  running derived to source, which is exactly the direction stated. FEEDS_INTO would duplicate
+  the existing row's direction and say the opposite of this sentence. The condition carries the
+  subject, for a monster, qualitatively and with no quantity in it; the fixed amount subtracted
+  is a magnitude and is not stored anywhere in the row.
+  The two rows are distinct under the five-field key by type, aspect and condition, and the
+  script asserts no collision against the 851 canonical rows.
+
+completeness_statement: >-
+  The single printed page in the declared span was read in full at the recorded checksum, which
+  the script asserts against the packet manifest before parsing: 9 headings and 8 paragraphs,
+  no table and no list. Every subsection is dispositioned, six as scope in rejected_candidates,
+  two as drafted rows in proposed_pending_ruling, and one as the blocking identity question.
+  This GUR publishes no candidate node and no candidate edge. That is not a null extraction:
+  the page yields three assertions and the Analyst has drafted two of them and escalated the
+  third. The distinction matters for anyone scanning the artifact store, because a reader who
+  sees empty candidate arrays here and at PKT-SD-187-188 would otherwise read two very
+  different results as the same.
+  No assertion depends on any other ruleset. The packet is not forwarded to Builder and no
+  second packet has been selected.
+
+measured_figures_note: >-
+  Figures quoted in this artifact's prose are computed from the claimed source and the canonical
+  files, not recalled. Measured here: 9 headings and 8 paragraphs on printed page 189; 424
+  registry rows, 851 edges, 0 rows citing page 189 and 0 monster_ identities; inbound and
+  outbound totals of 12 on cbt_armor_class, 30 on rule_hit_points, 27 on cbt_attack_roll, 25 on
+  rule_damage, 22 on ex_movement, 2 on abil_stat_modifier, 13 on sys_alignment, 40 on
+  rule_spellcasting_check, 6 on rule_difficulty_class, 10 on rule_spell_tier, 4 on
+  rule_total_darkness, 11 on rule_critical_failure, 7 on rule_penance and 30 on exp_level; 19
+  canonical abil_ identities; and 38 incoming files naming monsters.

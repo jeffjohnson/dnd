@@ -20,7 +20,7 @@ from .emit import preflight_create_only, write_all
 from .governance import Governance
 from .registry import NodeRegistry
 from .review import ReviewDirectives
-from .vocab import CONSTITUTION_VERSION
+from .vocab import CONSTITUTION_VERSION, RulesetVocabulary, UnknownRuleset
 
 
 def run_tests(test_dir: Path) -> dict:
@@ -291,12 +291,15 @@ def lint_source(sources: list[Path]) -> int:
     Run this before an Analyst pass. A packet with no resolvable page markers
     cannot produce a citable edge, and that is cheaper to learn now than after
     extraction.
+
+    Every judgement here comes from the Pandoc AST. Contract 1.5 admits a
+    class-bearing marker as a heading or fenced-Div attribute, and a raw-text
+    scan cannot tell that valid form from the invalid bare paragraph -- it sees
+    the same characters in both and would fail the packet the steward got right.
+    The AST separates them: a preserved attribute is a marker, and the same
+    token surviving into prose is proof Pandoc read it as text.
     """
-    import re
-
-    from .pagemarkers import MARKER_TEXT, parse_source
-
-    MALFORMED = re.compile(r"\{#\s*[pP][^}]*\}")
+    from .pagemarkers import PAGE_CLASS_MEANINGS, PAGE_CLASSES, parse_source
 
     exit_code = 0
     for source in sources:
@@ -321,11 +324,46 @@ def lint_source(sources: list[Path]) -> int:
             if gaps:
                 notes.append(f"no marker for page(s) {gaps} inside the range {pages[0]}-{pages[-1]}")
 
-        # Marker-shaped tokens that are not exactly {#pN}.
-        text = source.read_text(encoding="utf-8")
-        for candidate in set(MALFORMED.findall(text)):
-            if not MARKER_TEXT.match(candidate):
-                problems.append(f"malformed marker {candidate!r}; the form is exactly {{#pN}}")
+        # Marker-shaped tokens Pandoc read as ordinary text rather than as a
+        # marker or an attribute. The bare `{#pN .class}` paragraph lands here.
+        seen: set[str] = set()
+        for bad in parsed.malformed_markers:
+            key = f"{bad.text}|{bad.reason}"
+            if key in seen:
+                continue
+            seen.add(key)
+            problems.append(f"malformed marker {bad.text!r}: {bad.reason}")
+
+        # Page classes are intake metadata. A classified page inside the span is
+        # neither an uncovered page nor a graph-content obligation, so it is
+        # reported for the packet manifest and never as a defect.
+        for marker in parsed.page_classes:
+            if marker.unknown:
+                problems.append(
+                    f"page {marker.page}: unknown page class(es) "
+                    f"{', '.join(marker.unknown)}; the closed vocabulary is "
+                    f"{', '.join(sorted(PAGE_CLASSES))}"
+                )
+            known = [c for c in marker.classes if c in PAGE_CLASSES]
+            if known:
+                # The exact classification, not a generic one. An excluded page
+                # and a blank page are different declarations by the steward,
+                # and a note that flattened them would invite the packet to be
+                # composed as though the steward had said the other thing.
+                meaning = "; ".join(PAGE_CLASS_MEANINGS[c] for c in known)
+                notes.append(
+                    f"page {marker.page} classified {', '.join(known)} on a "
+                    f"{marker.block}: {meaning}. Carry the exact page and class "
+                    f"in packet.yaml composition metadata; the page stays in the "
+                    f"declared span and owes no graph content"
+                )
+
+        if parsed.frontmatter:
+            notes.append(
+                "steward frontmatter present ("
+                + ", ".join(sorted(parsed.frontmatter))
+                + "); informational intake metadata only, packet.yaml is authoritative"
+            )
 
         if parsed.unattributed_text:
             preview = parsed.unattributed_text[:70].replace("\n", " ")
@@ -555,8 +593,28 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 2
 
+    # DEC-2026-0080: the vocabulary is resolved before anything is read, so an
+    # unregistered `--ruleset` fails on the ruleset name rather than on an empty
+    # registry or a missing canonical file, which is a much less obvious message.
+    try:
+        vocabulary = RulesetVocabulary.load(root, args.ruleset)
+    except UnknownRuleset as unknown:
+        print(str(unknown), file=sys.stderr)
+        return 2
+
     registry = NodeRegistry.load(root / "rulesets" / args.ruleset / "registries" / "nodes.csv")
-    canonical = CanonicalEdges.load(root / "rulesets" / args.ruleset / "canonical" / "edges_master.csv")
+    # A newly initialized ruleset has no canonical file: DEC-2026-0080 leaves
+    # basicdnd with no baseline and gives the first one to the Integrator, after
+    # an approved bundle. An absent baseline is therefore an empty baseline, not
+    # an error -- the alternative is that the Decision's own next step cannot run
+    # at all. It is still absent rather than empty for every other purpose: this
+    # constructs no file and writes nothing.
+    canonical_path = root / "rulesets" / args.ruleset / "canonical" / "edges_master.csv"
+    canonical = (
+        CanonicalEdges.load(canonical_path)
+        if canonical_path.is_file()
+        else CanonicalEdges(path=canonical_path)
+    )
     general_rules = load_general_rules(root / "rulesets" / args.ruleset / "registries" / "general_rules.json")
     governance = Governance.load(root / "rulesets" / args.ruleset)
 
@@ -569,7 +627,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"builder test suite failed: {test_result}", file=sys.stderr)
         return 2
 
-    compiler = Compiler(registry, canonical, general_rules, governance)
+    compiler = Compiler(registry, canonical, general_rules, governance, vocabulary)
     exit_code = 0
 
 

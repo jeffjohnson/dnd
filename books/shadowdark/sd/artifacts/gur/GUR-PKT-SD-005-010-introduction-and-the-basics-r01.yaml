@@ -1,0 +1,699 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-005-010-introduction-and-the-basics-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-005-010-introduction-and-the-basics
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.0
+  - rulesets/shadowdark/governance/constitution.md 1.2
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-005-010-introduction-and-the-basics
+  source_file: source.md
+  packet_source_checksum: sha256:95e2602920fcc3e619c2d931128a401d872e43f50a4772b3b643a3f42292c88d
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 002-introduction-and-the-basics.md
+  citation_code: SD
+  page_start: 5
+  page_end: 10
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Six page assignments resolve through the Pandoc AST rather than positionally. Pages 5, 7, 8 and 9
+  are plain markers ending headings, which placement rule 1 applies to the whole heading. Page 6 is a
+  plain marker ending the first narrative paragraph; because no content follows it on that source
+  line, rule 1 applies it to the entire paragraph rather than splitting it. Page 10 is an empty
+  fenced Div carrying the artwork class. The persistence rule carries each assignment forward to the
+  next marker, which is what places the CHECKS, HIT POINTS and STATS material on page 9 and the
+  CHARACTERS, DESCRIBE AN ACTION, MOVEMENT and ROUNDS material on page 8. The resolved page set is 5
+  through 10 with no gap, and every cited row below falls on page 8 or page 9.
+
+page_class_treatment: >-
+  Page 10 is classified full-page-artwork by the repository source steward. Under SOURCE_MARKDOWN 1.8
+  and constitution section 6 the class is page-local intake metadata and creates no node, edge,
+  domain, general rule, citation or uncovered-page obligation, and a classified page inside a
+  declared span is not an uncovered page. It is retained in the completeness accounting below rather
+  than renumbered or dropped. The AST confirms the Div is empty, carries no unknown class, and that
+  no earlier page inherits the classification.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 5 through 10. The trailing
+  Supporting Source Context is present and empty, so this packet reproduces no other packet's pages.
+  Verified against its neighbours in operator sequence: the packet claiming pages 1 to 4 ends at page
+  4 and the packet claiming pages 11 to 14 opens at {#p11}, so this span abuts both without overlap.
+
+source_summary: >-
+  Pages 5 and 6 are the INTRODUCTION: a heading, an epigraph, and an in-fiction narrative about four
+  named crawlers descending into the Shadowdark. Page 7 is SHADOWDARK, three prose subsections
+  describing what the game is, what characterises it, and where to start. Pages 8 and 9 are THE
+  BASICS, a compressed summary of core play covering the player and GM roles, turns and actions,
+  movement, rounds, the dice and advantage, the six stats and the modifier, the check procedure
+  against a difficulty class, and hit points, damage, recovery and death. Page 10 is artwork. This
+  summary is orientation only; every assertion below cites its page.
+
+extraction_posture: >-
+  THE BASICS is a summary section whose own closing line says the next chapters expand upon it, so
+  most mechanics it names are defined more fully on a later printed page: the dice and advantage at
+  Rolling the Dice, checks at Making Checks, turns at Turn Order, stats at Stats, and damage, death
+  and recovery in Combat and Resting. SOURCE_MARKDOWN Source Identity Authority governs this
+  directly: a secondary or summary statement can support a relationship stated in its own packet, but
+  it does not name a concept whose defining mechanics belong to another source. This GUR therefore
+  asserts the relationships these two pages actually state, treats the identities it must mint as
+  provisional, and declines to convert descriptive prose, narrative, or a mechanic named without a
+  stated relationship into an edge. Several identities are provisional in the sense recorded in
+  IDQ-03: their fuller defining locus is a later packet, which should reuse these IDs rather than
+  mint rivals.
+
+graph_state_at_extraction: >-
+  The Shadowdark canonical graph is still empty; nodes.csv is header-only, the domain registry has no
+  domains, general_rules.json is an empty object, and character_races.yaml is inactive. The three
+  supplied slices named in the packet manifest as missing remain immaterial, re-assessed here rather
+  than carried over from claim: there is no canonical identity to match, no neighborhood to compare
+  for redundancy or contradiction, and no approved general rule to apply. No canonical node exists to
+  reuse, so reused_nodes is empty. Three identities below are already proposed by sibling GURs and
+  are marked as such on their candidate nodes.
+
+cross_packet_identity_note: >-
+  rule_hit_points, abil_stat_modifier and abil_constitution are proposed by sibling GURs from their
+  defining loci and are proposed again here because this patch uses them as edge endpoints. A GUR
+  must propose every endpoint its edges use: an endpoint present only in a sibling GUR is not
+  canonical, is not proposed by the patch, and fails invariant 1 as endpoint_unresolved. Proposing
+  them is not a competing naming; each carries its defining locus and the sibling GUR that also
+  proposes it, and the ID and label are reproduced exactly. Where two patches propose one identity,
+  Reviewer de-duplicates and the Integrator applies a single registry addition.
+
+reused_nodes: []
+
+candidate_nodes:
+  - proposed_id: rule_turn
+    proposed_label: Turn
+    kind: procedure
+    why_needed: >-
+      Endpoint of M001, M003 and M005. The unit of play that permits an action and a move and that
+      composes into a round; without it neither the action-timing nor the round-composition
+      dependency can be expressed.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 8, DESCRIBE AN ACTION and ROUNDS; fuller locus is Turn Order, printed page 83'
+    source_evidence: 'page 8, the bolded term turn in On your turn and in Each person takes a turn'
+  - proposed_id: rule_action
+    proposed_label: Action
+    kind: procedure
+    why_needed: >-
+      Endpoint of M001, M002 and M004. The thing a player declares on a turn; it is what may require
+      a check and what forfeits the second move, so both of those dependencies need it.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 8, DESCRIBE AN ACTION'
+    source_evidence: 'page 8, the bolded term action in describe an action you want to do'
+  - proposed_id: rule_check
+    proposed_label: Check
+    kind: procedure
+    why_needed: >-
+      Endpoint of M002, M006 and M007. The core resolution procedure; it is the target of the
+      action trigger and the process the stat modifier and difficulty class feed.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 9, CHECKS; fuller locus is Making Checks, printed page 81'
+    source_evidence: 'page 8, the bolded term check with a see Checks pointer; page 9, CHECKS, making a check'
+  - proposed_id: ex_movement
+    proposed_label: Movement
+    kind: exploration mechanic
+    why_needed: >-
+      Endpoint of M003 and M004. What a turn permits and what taking an action bounds; the
+      movement-timing and additional-move dependencies both require it.
+    prefix_basis: 'ex_ is an exploration mechanic; the constitution section 2 example for this prefix is ex_movement'
+    source_named: true
+    defining_locus: 'SD page 8, MOVEMENT'
+    source_evidence: 'page 8, heading MOVEMENT and the bolded term move in you can move up to near'
+  - proposed_id: rule_round
+    proposed_label: Round
+    kind: procedure
+    why_needed: >-
+      Endpoint of M005 and M011. The cycle that turns compose into, and the unit the death countdown
+      is measured in; both dependencies are unexpressible without it.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 8, ROUNDS'
+    source_evidence: 'page 8, heading ROUNDS and the bolded term round in that completes one round'
+  - proposed_id: rule_difficulty_class
+    proposed_label: Difficulty Class
+    kind: procedure
+    why_needed: >-
+      Endpoint of M007. The threshold a check total is compared against; without it the check has no
+      stated success condition to depend on.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 9, CHECKS'
+    source_evidence: 'page 9, a number called a difficulty class, with DC bolded as its abbreviation'
+  - proposed_id: rule_damage
+    proposed_label: Damage
+    kind: procedure
+    why_needed: >-
+      Endpoint of M008. What injuries inflict and what reduces hit points; the hit-point reduction
+      dependency has no source without it.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 9, HIT POINTS; fuller locus is Combat, printed page 88'
+    source_evidence: 'page 9, the bolded term damage in Injuries cause you to take damage'
+    note: 'See IDQ-01 on the relationship between this identity and cbt_damage_roll.'
+  - proposed_id: rule_death
+    proposed_label: Death
+    kind: procedure
+    why_needed: >-
+      Endpoint of M009, M010 and M011. The outcome reaching zero hit points triggers, and the
+      procedure the Constitution modifier and the round both feed; three dependencies need it.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 9, HIT POINTS'
+    source_evidence: >-
+      page 9, the bolded term die in Characters at zero HP die, and the following sentence retiring
+      dead characters from play. The source names the event rather than a procedure; see IDQ-03.
+  - proposed_id: rule_hit_points
+    proposed_label: Hit Points
+    kind: procedure
+    why_needed: >-
+      Endpoint of M008 and M009. What damage reduces and what reaching zero triggers death from.
+      Proposed here because this patch uses it as an endpoint; see cross_packet_identity_note.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the HP entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: >-
+      page 9, HIT POINTS, lose hit points with HP bolded as its abbreviation. Secondary statement;
+      printed page 12 defines the mechanic and the ID and label are reproduced from there exactly.
+  - proposed_id: abil_stat_modifier
+    proposed_label: Stat Modifier
+    kind: derived ability mechanic
+    why_needed: >-
+      Endpoint of M006. What a check total adds to the d20 roll; the check's only stated numeric
+      input. Proposed here because this patch uses it as an endpoint; see cross_packet_identity_note.
+    prefix_basis: 'abil_ explicitly covers a derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 15, STATS and the STAT MODIFIERS TABLE; not this packet'
+    proposed_also_by: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+    source_evidence: >-
+      page 9, STATS, a bonus or penalty called a modifier, and CHECKS, add a modifier and stat
+      modifier. Secondary statement; printed page 15 defines the mechanic and the ID and label are
+      reproduced from there exactly.
+  - proposed_id: abil_constitution
+    proposed_label: Constitution
+    kind: ability
+    why_needed: >-
+      Endpoint of M010. Its modifier lengthens the countdown before a character at zero hit points
+      dies. Proposed here because this patch uses it as an endpoint; see cross_packet_identity_note.
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 15, STATS; not this packet'
+    proposed_also_by: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+    source_evidence: >-
+      page 9, HIT POINTS, die in a number of rounds derived from the Constitution modifier; also
+      listed among the six stats on the same page. Secondary statement; printed page 15 defines it
+      and the ID and label are reproduced from there exactly.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_turn
+    source_label: Turn
+    edge_type: GATES
+    target_id: rule_action
+    target_label: Action
+    aspect: action timing
+    condition: ''
+    book: SD
+    page: 8
+    section: DESCRIBE AN ACTION
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      On your turn, describe an action. The turn is the precondition for declaring an action, which
+      is GATES read gate to gated. Derived polarity enables; not authored here.
+  - ref: M002
+    source_id: rule_action
+    source_label: Action
+    edge_type: TRIGGERS
+    target_id: rule_check
+    target_label: Check
+    aspect: risk resolution
+    condition: when the action is risky
+    polarity: neutral
+    polarity_basis: read
+    book: SD
+    page: 8
+    section: DESCRIBE AN ACTION
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The GM might ask you to do a check to determine whether your action succeeds, and page 9 states
+      that a check is made when attempting a risky action. The action causes the check, which is
+      TRIGGERS read cause to effect. The condition records that the trigger is not automatic without
+      encoding any threshold. TRIGGERS requires authored polarity under constitution section 5; the
+      vocabulary includes neutral, and neutral is the accurate reading because a check is the means
+      of resolution rather than a benefit or a harm to the action. Read aloud as Action neutral Check;
+      basis is read, not heuristic, because the source states the causation explicitly.
+  - ref: M003
+    source_id: rule_turn
+    source_label: Turn
+    edge_type: GATES
+    target_id: ex_movement
+    target_label: Movement
+    aspect: movement timing
+    condition: ''
+    book: SD
+    page: 8
+    section: MOVEMENT
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      During your turn, you can move. The turn is the precondition for moving, parallel to M001.
+      The distance allowance and its parenthesised measurement are magnitudes and are excluded.
+  - ref: M004
+    source_id: rule_action
+    source_label: Action
+    edge_type: CONSTRAINS
+    target_id: ex_movement
+    target_label: Movement
+    aspect: additional move
+    condition: when an action is taken
+    polarity: governs
+    polarity_basis: read
+    book: SD
+    page: 8
+    section: MOVEMENT
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      If you do not take an action, you can move again. Taking an action therefore bounds how much
+      movement a turn allows without changing the distance itself, which is precisely CONSTRAINS
+      rather than MODIFIES. The source states the permission positively and this row states the
+      bound, which is the same rule read in the direction the edge vocabulary requires. CONSTRAINS
+      requires authored polarity; read aloud as Action governs Movement, basis read.
+  - ref: M005
+    source_id: rule_turn
+    source_label: Turn
+    edge_type: FEEDS_INTO
+    target_id: rule_round
+    target_label: Round
+    aspect: round completion
+    condition: ''
+    book: SD
+    page: 8
+    section: ROUNDS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Once everyone has taken a turn, that completes one round. Turns are the input the round is
+      composed from, which is FEEDS_INTO read input to process. The seating order and the fact that
+      the GM begins are procedural colour that names no second mechanic; see OBS-04.
+  - ref: M006
+    source_id: abil_stat_modifier
+    source_label: Stat Modifier
+    edge_type: FEEDS_INTO
+    target_id: rule_check
+    target_label: Check
+    aspect: check total
+    condition: ''
+    book: SD
+    page: 9
+    section: CHECKS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Roll a d20 and add a modifier; the total of your d20 roll plus stat modifier is what is
+      compared. The modifier is an input to the check total, which is FEEDS_INTO. The die and the
+      arithmetic are magnitudes and a die expression and are excluded.
+  - ref: M007
+    source_id: rule_difficulty_class
+    source_label: Difficulty Class
+    edge_type: FEEDS_INTO
+    target_id: rule_check
+    target_label: Check
+    aspect: success threshold
+    condition: ''
+    book: SD
+    page: 9
+    section: CHECKS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The GM chooses a difficulty class, and the action succeeds if the total equals or beats it. The
+      difficulty class supplies the threshold the check is resolved against, which is FEEDS_INTO
+      rather than CONSTRAINS: it is a value the procedure consumes, not a bound on the procedure. The
+      example difficulty value on the same page is a magnitude and is excluded.
+  - ref: M008
+    source_id: rule_damage
+    source_label: Damage
+    edge_type: MODIFIES
+    target_id: rule_hit_points
+    target_label: Hit Points
+    aspect: current total
+    condition: ''
+    polarity: worsens
+    polarity_basis: read
+    book: SD
+    page: 9
+    section: HIT POINTS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Injuries cause you to take damage and lose hit points. Damage changes the hit point total,
+      which is MODIFIES, and it reduces it, so read aloud as Damage worsens Hit Points; basis read.
+      The typical weapon damage expression is a die expression and is excluded, and no weapon
+      identity is minted from that clause; see OBS-03.
+  - ref: M009
+    source_id: rule_hit_points
+    source_label: Hit Points
+    edge_type: TRIGGERS
+    target_id: rule_death
+    target_label: Death
+    aspect: death timer
+    condition: when hit points reach zero
+    polarity: inflicts
+    polarity_basis: read
+    book: SD
+    page: 9
+    section: HIT POINTS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Characters at zero HP die after a countdown. Reaching zero starts that countdown, which is
+      TRIGGERS read cause to effect. The condition names the state qualitatively; zero is the
+      state the rule names rather than a tunable threshold value, and the countdown length is a die
+      expression and is excluded. TRIGGERS requires authored polarity; read aloud as Hit Points
+      inflicts Death, basis read.
+  - ref: M010
+    source_id: abil_constitution
+    source_label: Constitution
+    edge_type: FEEDS_INTO
+    target_id: rule_death
+    target_label: Death
+    aspect: death timer
+    condition: ''
+    book: SD
+    page: 9
+    section: HIT POINTS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The countdown before a dying character is lost is derived in part from the Constitution
+      modifier, so Constitution supplies an input to the death procedure. Distinct from M009 by
+      source_id under the section 4 assertion key despite sharing an aspect. The die expression and
+      the minimum floor are magnitudes and are excluded.
+  - ref: M011
+    source_id: rule_round
+    source_label: Round
+    edge_type: FEEDS_INTO
+    target_id: rule_death
+    target_label: Death
+    aspect: countdown unit
+    condition: ''
+    book: SD
+    page: 9
+    section: HIT POINTS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The countdown is measured in rounds, so the round supplies the unit the death procedure is
+      timed in. It passes the core test: if the round's definition changed, the time a character has
+      at zero hit points would need review. Distinct from M005, where the round is the target rather
+      than the source.
+
+authored_polarity_declaration: >-
+  Four rows carry authored polarity, all with basis read: M002 TRIGGERS neutral, M004 CONSTRAINS
+  governs, M008 MODIFIES worsens and M009 TRIGGERS inflicts. Each is one of the three types
+  constitution section 5 requires to carry source-reviewed authored polarity, each was read aloud as
+  source polarity target before being recorded, and each reading is stated in that row's
+  analyst_rationale. M002 uses neutral deliberately rather than as a default: neutral is in the
+  section 5 vocabulary, and a check is the means by which an action is resolved rather than a benefit
+  or harm to it. No row uses basis heuristic or unset. No other row carries a polarity or
+  polarity_basis value; the three GATES rows and the five FEEDS_INTO rows take their derived polarity
+  from the section 5 table and the Analyst authors none of them.
+
+domains_touched: []
+candidate_domains:
+  - proposed: core_resolution
+    basis: >-
+      The check, the difficulty class and the stat modifier are the general resolution machinery this
+      page introduces, and the sibling stats GUR recorded the same candidate from its own page.
+      Recorded as a candidate only; the Shadowdark domain registry is empty and constitution section
+      8 reserves domain promotion to an Architect Decision. That two packets now suggest it is noted
+      and is deliberately not treated as promotion; the Analyst does not decide a candidate domain is
+      official.
+  - proposed: turn_structure
+    basis: >-
+      Turns, rounds, actions and movement form a distinct cluster on page 8 that the resolution
+      machinery on page 9 does not obviously belong to. Recorded as a candidate only, on one page of
+      evidence, and not promoted.
+
+domain_boundary_questions:
+  - >-
+    Whether the turn-and-round structure and the check machinery are one domain or two cannot be
+    settled from a summary page whose own text defers to later chapters. Deferred; no domain is
+    asserted on any edge in this GUR.
+  - >-
+    Death sits between the resolution and character domains: it is reached through damage but
+    retires a character permanently. Deferred for the same reason.
+
+candidate_general_rules:
+  - proposed: a turn is the precondition for the things a character may do in it
+    establishing_locus: 'SD page 8, DESCRIBE AN ACTION and MOVEMENT'
+    basis: >-
+      M001 and M003 repeat one shape, and later chapters are likely to add further per-turn
+      permissions that would repeat it again. If approved as a general rule those explicit edges
+      could become derived applications.
+    not_applied: >-
+      Recorded as a candidate only, on two rows from one summary page. Constitution section 5
+      requires a separate Architect ruling with an establishing locus, scope, counterexamples and
+      affected set before a general rule exists, and the counterexamples cannot be assessed until the
+      Turn Order and Combat chapters are read. No edge in this GUR sets general_rule_id, and under
+      invariant 19 the establishing edges would leave it empty in any case.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: pages 5, 6 and 7 are narrative and description, and yield nothing
+    detail: >-
+      Page 5 is a heading and an epigraph. Page 6 is an in-fiction account of four named crawlers,
+      naming spiders, a scythe trap, a hidden door, winged creatures, treasure, torches and wounds.
+      Page 7 describes what the game is and what characterises it. All of it was read and none of it
+      is a rule: the narrative names no mechanic with an identity and states no dependency, and the
+      description states design intent. Striking any of it would require no mechanic to be reviewed.
+      The crawler names are characters in an anecdote, not source-defined identities, and the
+      creatures and the trap are narrated events whose real loci are the Monsters and Traps chapters.
+  - id: OBS-02
+    subject: the torch sentence on page 7 is a real rule in descriptive clothing
+    detail: >-
+      Page 7 states that a torch holds back the darkness for one hour of real-world time. That is a
+      genuine and distinctive mechanic, not merely flavour, and it is recorded here so it is not
+      lost. It is nonetheless not extracted. The sentence names no second mechanic, so there is no
+      ordered pair to assert; the duration is a magnitude; and the sentence sits inside a prose
+      answer to What Defines This Game rather than at a defining locus. Its real locus is the
+      light and crawling material on the printed pages the contents lists near Crawling, and the
+      packet that claims those pages should assert it from there with the identities it defines.
+  - id: OBS-03
+    subject: mechanics named on page 9 without a stated relationship
+    detail: >-
+      Three are named and deliberately not extracted. Advantage and disadvantage are defined under
+      THE DICE as rolling twice and taking the better or worse result, but the page states no
+      relationship between either and any other named mechanic, so any edge would be invented; their
+      fuller locus is Rolling the Dice. The six dice are equipment the reader must own, not
+      mechanics. Weapons appear only in typical weapons deal damage, a clause whose purpose is to
+      illustrate the damage figure; minting a weapon identity from it would fix a weapon family from
+      an illustrative aside rather than from the gear and weapon chapters that define it.
+      Advantage in particular is worth tracking: the ancestries packet's Stout benefit already
+      depends on it, and that GUR recorded the same deferral. Two packets now point at a locus
+      neither of them owns, which is the ordinary signal that the defining packet should be read
+      before either asserts anything about it.
+  - id: OBS-04
+    subject: the Game Master is an adjudicating role, not a proposed node
+    detail: >-
+      The GM appears three times on page 8 and twice on page 9: determining whether actions succeed,
+      narrating results, controlling monsters and environment, beginning the round order, and
+      choosing a check's linked stat and difficulty class. No GM identity is proposed. Constitution
+      section 2 offers no prefix whose kind covers a person at the table, and section 8 states that
+      structural roles are query-time conclusions rather than stored assertions. The mechanical
+      content of those sentences is captured where it is assertable: that a check has a linked stat
+      and a difficulty class is carried by M006 and M007, which do not need a GM node to be true.
+  - id: OBS-05
+    subject: the stat-to-modifier relationship is stated here but owned by another packet
+    detail: >-
+      Page 9 restates that each stat has a modifier and lists all six stats with one-line
+      descriptions. That relationship is already asserted from its defining locus by
+      GUR-PKT-SD-015-015, where the six stats feed the stat modifiers table and the modifier is
+      derived from it. Re-asserting it here would create a second, shallower path between the same
+      concepts from a summary page, which is exactly the redundancy the local-neighborhood check
+      exists to prevent. Only the modifier's role in a check, which page 15 does not state, is
+      asserted here, as M006. The score range and the modifier range on this page are magnitudes.
+  - id: OBS-06
+    subject: hit point recovery by resting is deliberately omitted as a duplicate assertion
+    detail: >-
+      Page 9 states that you regain lost HP after a night of rest. The identical assertion is already
+      proposed by GUR-PKT-SD-011-014 from printed page 12, as resting MODIFIES hit points on the
+      aspect recovery with authored polarity improves. Under constitution section 4 the assertion key
+      is source, type, target, aspect and condition, so a row emitted here would collide with that
+      one and the two could not both enter production. The Analyst therefore omits it rather than
+      varying the aspect to make a near-duplicate pass. The overnight framing on this page adds a
+      qualification that page 12 lacks, which the packet claiming the Resting chapter should settle
+      from its own defining locus.
+  - id: OBS-07
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The pages carry the movement allowance and its measurement in feet, the six die sizes, the
+      multiples notation, the stat range, the modifier range, the die rolled for a check, the example
+      difficulty value, the typical weapon damage expression, the zero hit point state, the death
+      countdown expression and its minimum floor, and the torch duration. All are magnitudes, die
+      expressions, ranges or thresholds, excluded by constitution section 1 and invariant 11. They
+      remain in the immutable claimed packet, which is the authority for the values themselves. No
+      aspect in this GUR contains a digit, and the only condition naming a numeric state, when hit
+      points reach zero in M009, names the state the rule itself defines rather than a tunable value.
+  - id: OBS-08
+    subject: the Quickstart Set is an external product
+    detail: >-
+      Page 8 recommends starting with a premade character from the free digital Quickstart Set. That
+      product is not a registered Shadowdark book or source, is not supplied, and constitution
+      section 6 requires a book and exact source to be registered before its first packet is claimed.
+      Nothing mechanical is stated about it.
+  - id: OBS-09
+    subject: packet wrapper is intake metadata
+    detail: >-
+      The supplied file opens with an intake wrapper naming the packet and a shadowdark.md line range
+      ahead of the Primary Source Material heading, so the parser reports four blocks preceding the
+      first resolved page. The claim manifest is the independent page locator that SOURCE_MARKDOWN
+      Attribution Rules requires for such content, and it records that the wrapper contains no
+      rulebook prose, heading or marker. No source content is stranded.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: whether damage and the damage roll are one identity or two
+    detail: >-
+      This GUR proposes rule_damage for what injuries inflict and what reduces hit points. The
+      ancestries GUR separately proposes cbt_damage_roll, from Mighty granting a bonus to damage
+      rolls with melee weapons. They may be one concept seen from two sides, the roll that generates
+      an amount and the amount that is applied, or two mechanics that should stay separate.
+      Neither packet can settle it. Page 9 never mentions a roll, only that weapons deal damage; page
+      16 never mentions hit points, only the roll the bonus applies to. The Combat chapter on printed
+      page 88 is the defining locus for both and will state the sequence explicitly.
+      Consequence if wrong: if they are one identity, the graph carries two nodes where one belongs
+      and a merge migration is needed; if they are two and are merged early, a bonus to a roll becomes
+      indistinguishable from a change to applied damage, which are different assertions. The Analyst
+      kept them separate because splitting a wrongly merged identity is the harder migration and
+      because neither source page supports the merge.
+      This is not an Architect escalation: both use approved prefixes with unchanged kinds and each
+      is an ordinary registry addition. It is recorded for Builder and Reviewer to carry forward.
+  - id: IDQ-02
+    subject: rule_death names an event the source states in the passive voice
+    detail: >-
+      The source says characters at zero HP die and that dead characters are retired from play. It
+      names no procedure and gives the concept no heading of its own; the heading is HIT POINTS. The
+      ID is Analyst-named from the event. The alternative was to fold the countdown into
+      rule_hit_points and assert nothing, but that would lose three genuine dependencies, including
+      the one on Constitution, and would make the retirement of a character invisible in the graph.
+      Consequence if wrong: a later chapter may name this procedure explicitly, in which case the
+      packet that claims it takes precedence over this stem under Incoming Packet Authority and these
+      three rows are repointed. Reviewer should confirm the stem rather than accept it.
+  - id: IDQ-03
+    subject: five identities are minted here from a page that defers to later chapters
+    detail: >-
+      rule_turn, rule_action, rule_check, ex_movement, rule_round and rule_difficulty_class are all
+      named in bold on pages 8 and 9, but THE BASICS closes by saying the next chapters expand upon
+      it, and the contents list shows Turn Order, Making Checks and Rolling the Dice on later printed
+      pages. Under SOURCE_MARKDOWN Source Identity Authority these pages can support the
+      relationships they state, which is what the eleven rows do, but the defining loci are later.
+      The Analyst minted them rather than deferring because the relationships on these two pages are
+      stated plainly and completely, and deferring would mean discarding source-supported assertions
+      rather than merely postponing identity. Every such node records its fuller locus.
+      Consequence if wrong: a defining chapter may use a different source spelling or split one of
+      these into several identities, requiring a repoint. Builder and Reviewer should de-duplicate
+      against those packets as they are read, and the defining packet's name takes precedence over
+      the stem proposed here.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Every proposed node uses an approved constitution section 2 prefix with an unchanged
+  kind, every edge uses one of the thirteen legal section 3 types, and no new prefix, edge type,
+  domain promotion or general-rule application is requested. ESCALATION_CONTRACT states that a
+  proposed node under an approved prefix and kind which passes identity and duplicate checks is
+  ordinary GUR, GUP and Review work rather than an escalation, and that a weak or missing citation is
+  not grounds to escalate. IDQ-01 through IDQ-03 are recorded for Reviewer on that basis, and the
+  deferrals in OBS-02, OBS-03 and OBS-06 resolve themselves when the relevant defining packets are
+  claimed.
+
+completeness_statement: >-
+  All six printed pages in the declared span are accounted for. Page 5's heading and epigraph and
+  page 6's narrative in full were read and are dispositioned in OBS-01. Page 7's three subsections
+  were read; their descriptive content is in OBS-01 and the one embedded rule is in OBS-02. Page 8
+  was read in full: the premade-character note in OBS-08, and the CHARACTERS, DESCRIBE AN ACTION,
+  MOVEMENT and ROUNDS subsections, which supply M001 through M005, with the GM material in OBS-04.
+  Page 9 was read in full: THE DICE in OBS-03, STATS in OBS-05, CHECKS supplying M006 and M007, HIT
+  POINTS supplying M008 through M011 with its recovery sentence in OBS-06, and the closing WHAT'S
+  NEXT? paragraph, which states only that later chapters expand on this one. Page 10 is the steward's
+  full-page-artwork page. Every page marker was resolved through the Pandoc AST and the resolved page
+  set matches the declared span with no gap. The Supporting Source Context is present and empty, so
+  nothing out of scope was read as evidence. Eleven edges are proposed across eleven candidate nodes,
+  three of which are also proposed by sibling GURs from their defining loci and are marked as such.
+  No node is reused because the Shadowdark graph is empty. Content not converted to an edge is
+  accounted for in OBS-01 through OBS-09, and every identity the Analyst could not settle is recorded
+  in IDQ-01 through IDQ-03 rather than resolved by picking a plausible ID. No assertion depends on any
+  other ruleset.

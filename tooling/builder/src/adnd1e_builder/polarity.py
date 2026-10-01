@@ -3,11 +3,20 @@
 Constitution section 6.1 and invariants 13-17. Ten edge types determine
 polarity completely and the build assigns them; three carry authored polarity
 the build must preserve and validate but never invent.
+
+DEC-2026-0103: which edge types are derived, and to what value, is read from
+the active ruleset's own `RulesetVocabulary.derived_polarity` rather than a
+single shared constant, so a ruleset-scoped derived type such as Shadowdark's
+`CLASSIFIED_AS` does not have to become every ruleset's derived type. The
+`AUTHORED_POLARITY_TYPES`/vocabulary constants stay a shared transcription:
+no ruleset has yet needed its own authored-polarity set, so widening that
+axis is left for the Decision that actually needs it.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from .vocab import (
     AUTHORED_BASIS_BLOCKS_APPROVAL,
@@ -16,6 +25,9 @@ from .vocab import (
     POLARITY_BASIS_VALUES,
     POLARITY_VALUES,
 )
+
+if TYPE_CHECKING:
+    from .vocab import RulesetVocabulary
 
 
 @dataclass(frozen=True)
@@ -26,18 +38,30 @@ class PolarityResult:
     blocks_approval: bool
 
 
-def resolve(edge_type: str, authored_polarity: str | None, authored_basis: str | None) -> PolarityResult:
+def resolve(
+    edge_type: str,
+    authored_polarity: str | None,
+    authored_basis: str | None,
+    vocabulary: "RulesetVocabulary | None" = None,
+) -> PolarityResult:
     """Determine the polarity pair for one edge.
 
     Deterministic types are computed and any authored value is a worker error
     (invariant 14). Authored types are preserved and validated (invariant 15).
+
+    DEC-2026-0103: `vocabulary`, when supplied, derives from the active
+    ruleset's own `derived_polarity` table instead of the shared AD&D 1e
+    transcription, so a ruleset-scoped derived type is derived only for the
+    ruleset that declares it. Omitting it keeps every existing caller -- test
+    fixtures included -- on the exact prior AD&D 1e-transcribed behavior.
     """
     findings: list[dict[str, str]] = []
     authored_polarity = (authored_polarity or "").strip()
     authored_basis = (authored_basis or "").strip()
+    derived_table = vocabulary.derived_polarity if vocabulary is not None else DERIVED_POLARITY
 
-    if edge_type in DERIVED_POLARITY:
-        derived = DERIVED_POLARITY[edge_type]
+    if edge_type in derived_table:
+        derived = derived_table[edge_type]
         if authored_polarity:
             if authored_polarity != derived:
                 findings.append(

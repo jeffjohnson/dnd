@@ -1,0 +1,386 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-117-117-awarding-xp-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-117-117-awarding-xp
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-117-117-awarding-xp
+  source_file: source.md
+  packet_source_checksum: sha256:c4b9d264e79c31d284213b22205c157d987b9a7400c2409f55c5761a4c9af921
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 046-awarding-xp.md
+  citation_code: SD
+  page_start: 117
+  page_end: 117
+  page_number_basis: packet_page_markers
+page_attribution_basis: One marker resolves this packet. p117 ends the AWARDING XP heading, which is also
+  the section's first heading, and placement rule 1 applies it to that whole heading while the persistence
+  rule carries it across the three subsections and the table. All seven rows cite printed page 117. No
+  content precedes the marker and no page is shared.
+scope_boundary: The bounded scope is the Primary Source Material section, the single printed page 117.
+  The trailing Supporting Source Context is out of scope.
+source_summary: 'Characters gain experience from the valuable treasures and boons they earn, and awards
+  need not reflect monetary value since boons and fabled items have intangible worth. Treasure falls into
+  four named quality categories, each worth a stated amount of experience. Each character receives the
+  full value of each treasure, and experience resets on gaining a level. Five sources of experience are
+  listed: gold and gems, oaths and secrets and blessings, magic items, meaningful trophies, and clever
+  thinking, the last with its own stated award. A guideline then gives the gold value a group should find
+  per treasure, scaled by average party level and restated as three level bands. A table closes the page,
+  repeating the four quality categories with their experience values and giving examples of each.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled, and every figure below
+  is computed from the canonical files by the assembling script rather than counted by hand, which is
+  the method adopted after two prose count slips earlier in this intake.
+
+  The canonical graph holds 323 registry rows and 695 edges. No canonical row cites printed page 117,
+  so nothing in this span has been extracted before, and no treasure identity existed despite four earlier
+  packets pointing forward to this page. exp_xp carries 6 rows, of which 4 already grant an award by modifying
+  it. item_coin carries 5 rows and item_magic_item 1.
+
+  Every proposed row was checked against the canonical edge set for an assertion-key collision, for a
+  shared source, type and target under a different aspect, and for duplicates within the patch; there
+  are none of any. Every reused label was asserted equal to the registry label by the script.'
+forward_reference_closed_note: 'This page is the treasure locus that earlier packets pointed at and could
+  not reach. PKT-SD-101-109 recorded a pointer from printed page 105 to treasure on page 117 among its
+  six unassertable forward references, and PKT-SD-091-093 declined two carousing outcomes granting an
+  item from a treasure table for the same reason. rule_treasure is proposed here from its defining locus.
+
+  As with the Reaction Check in PKT-SD-112-113, the pointers themselves remain unassertable from here,
+  because the referring sentences lie in those packets'' bounded scopes and both are integrated. This
+  is the third forward reference the intake has resolved simply by reaching the target page in ordinary
+  sequence, and the third that still owes a successor at the referring page.'
+reused_nodes:
+- id: exp_xp
+  label: XP
+  used_by: M002, M007
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. What this page awards; it already receives 4 award rows from carousing, the carousing outcome
+    table and Hunter Mode.
+- id: exp_level
+  label: Level
+  used_by: M006
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Average party level scales the gold value of a treasure find.
+- id: item_coin
+  label: Coin
+  used_by: M005
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. The medium in which the page states treasure value.
+- id: item_magic_item
+  label: Magic Item
+  used_by: M004
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Named outright as a source of experience.
+candidate_nodes:
+- proposed_id: rule_awarding_xp
+  proposed_label: Awarding XP
+  kind: procedure
+  why_needed: 'The named rule this page defines: how experience is granted for what characters bring out
+    of an adventure.'
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 117, AWARDING XP
+  source_evidence: page 117, the AWARDING XP section.
+- proposed_id: rule_treasure
+  proposed_label: Treasure
+  kind: procedure
+  why_needed: 'Source-defined here: treasure has four stated quality categories and is what experience
+    is awarded for. Several earlier packets pointed forward to this page for treasure and could not assert
+    it because no identity existed.'
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 117, AWARDING XP
+  source_evidence: page 117, the AWARDING XP section.
+- proposed_id: tbl_xp_for_treasure_quality
+  proposed_label: XP for Treasure Quality Table
+  kind: table
+  why_needed: The named table rating a treasure's quality and giving the experience it is worth.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 117, XP FOR TREASURE QUALITY TABLE
+  source_evidence: page 117, the XP FOR TREASURE QUALITY TABLE section.
+candidate_edges:
+- ref: M001
+  source_id: rule_treasure
+  source_label: Treasure
+  edge_type: FEEDS_INTO
+  target_id: rule_awarding_xp
+  target_label: Awarding XP
+  aspect: xp source
+  condition: ''
+  book: SD
+  page: 117
+  section: AWARDING XP
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_awarding_xp
+  source_label: Awarding XP
+  edge_type: MODIFIES
+  target_id: exp_xp
+  target_label: XP
+  aspect: treasure award
+  condition: ''
+  book: SD
+  page: 117
+  section: AWARDING XP
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M003
+  source_id: rule_treasure
+  source_label: Treasure
+  edge_type: RESOLVED_BY
+  target_id: tbl_xp_for_treasure_quality
+  target_label: XP for Treasure Quality Table
+  aspect: quality rating
+  condition: ''
+  book: SD
+  page: 117
+  section: XP FOR TREASURE QUALITY TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: item_magic_item
+  source_label: Magic Item
+  edge_type: FEEDS_INTO
+  target_id: rule_treasure
+  target_label: Treasure
+  aspect: xp source
+  condition: ''
+  book: SD
+  page: 117
+  section: SOURCES OF XP
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: item_coin
+  source_label: Coin
+  edge_type: FEEDS_INTO
+  target_id: rule_treasure
+  target_label: Treasure
+  aspect: monetary value
+  condition: ''
+  book: SD
+  page: 117
+  section: HOW MUCH GOLD?
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: exp_level
+  source_label: Level
+  edge_type: FEEDS_INTO
+  target_id: rule_treasure
+  target_label: Treasure
+  aspect: expected value
+  condition: ''
+  book: SD
+  page: 117
+  section: HOW MUCH GOLD?
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: rule_awarding_xp
+  source_label: Awarding XP
+  edge_type: MODIFIES
+  target_id: exp_xp
+  target_label: XP
+  aspect: clever thinking
+  condition: ''
+  book: SD
+  page: 117
+  section: SOURCES OF XP
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+authored_polarity_declaration: Authored polarity appears on two rows and no others, both MODIFIES into
+  exp_xp and both improves with basis read, as constitution section 5 and invariant 15 require. The four
+  FEEDS_INTO rows and the RESOLVED_BY row carry none, since section 5 derives those. No CONSTRAINS or
+  TRIGGERS row appears in this packet.
+two_award_rows_note: 'M002 and M007 are both rule_awarding_xp MODIFIES exp_xp and they are two statements,
+  not one repeated. The page''s main rule is that experience comes from treasure, which is M002 with aspect
+  treasure award. The SOURCES OF XP list then names clever thinking, with its own stated award, and that
+  is not treasure at all: it is a character''s play at the table. M007 carries it with aspect clever thinking.
+
+  Keeping them apart matters because they differ in kind. Everything else on the page flows through treasure
+  and its quality categories; clever thinking bypasses that entirely, and collapsing the two would imply
+  that ingenuity is rated on the treasure quality table, which it is not. This applies the one-statement-per-row
+  test from PKT-SD-111-111.'
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: None proposed. Experience and treasure sit across adventuring, downtime and character
+  advancement rather than in one of the candidates recorded so far, and the page itself is a GM-side accounting
+  rule. No candidate fits well enough to be worth recording.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: the four treasure quality categories, p117
+  quoted_gist: Poor, Normal, Fabulous and Legendary, each bolded, each given a stated experience value
+    and a description, and each repeated in the table with examples
+  why_considered: Four named, bolded categories with their own descriptions, appearing twice on the page.
+    They are the most identity-shaped thing here, and the spell tiers were minted as five identities on
+    a similar footing.
+  rejection_reason: 'Each category''s entire mechanical content is an experience value, which is a magnitude
+    no field may store. Stripped of the number, Poor and Fabulous differ only in adjectives. This is the
+    same reasoning that declined the danger levels and travel methods in PKT-SD-090-090, the carousing
+    outcomes in PKT-SD-091-093 and the light mishap results in PKT-SD-110-110.
+
+    The spell tiers are not a counter-example. They were authorised by an Architect Decision and each
+    carries classification relations to individual spells, so each connects to something. A treasure category
+    connects to nothing but its own value. The table is proposed and rule_treasure is RESOLVED_BY it,
+    which carries what is expressible: quality determines the award.'
+- text_locus: the XP reset sentence, p117
+  quoted_gist: '''When PCs gain a new level, their XP resets to zero.'''
+  why_considered: A definite mechanical statement joining two canonical identities, exp_level and exp_xp.
+  rejection_reason: 'Restatement, verified rather than assumed: exp_level MODIFIES exp_xp with aspect
+    total reset is already canonical from printed page 39, which is the advancement chapter and its defining
+    locus. A row from here would repeat the fact under a worse citation, and choosing a different aspect
+    to avoid the collision would put two rows behind one rule.'
+- text_locus: three of the five SOURCES OF XP bullets, p117
+  quoted_gist: oaths, secrets and blessings; meaningful trophies and tokens; and gems alongside gold
+  why_considered: The one-row-per-bullet test from PKT-SD-111-111 says each bullet is a separate statement,
+    so declining three of five needs a reason rather than a silence.
+  rejection_reason: 'None has an identity and none can be minted from a list of examples. There is no
+    oath, secret, blessing, trophy or gem concept in the graph, and this page defines none of them; it
+    lists them as kinds of thing a GM might treat as treasure. The two bullets that are asserted, magic
+    items and gold, are asserted because their identities already exist and the page names them as sources,
+    not because they matched a string. Gems specifically are declined even though they appear in the same
+    bullet as gold, because item_coin is coin and a gem is not.
+
+    One row per bullet is the default, not a requirement to produce a row where there is no endpoint.'
+- text_locus: the per-character distribution rule, p117
+  quoted_gist: '''Each PC gets the full XP value of each treasure.'''
+  why_considered: 'An unhedged mechanical rule, and a consequential one: it means a party of four converts
+    one treasure into four times its experience.'
+  rejection_reason: There is no identity for a character or a party, so the rule has no source and no
+    target beyond exp_xp, which M002 already connects. The statement is about how an award is distributed
+    among people, and people are not in this graph. Recorded as OBS-02 because it is a genuinely important
+    rule that the vocabulary cannot hold.
+- text_locus: the gold guideline and its level bands, p117
+  quoted_gist: each group should gain about a stated amount of gold per treasure find scaled by average
+    party level, restated as three bands covering levels zero to three, four to six and seven to nine
+  why_considered: The bands look like named tiers of the kind that might be minted, and the guideline
+    is the page's only quantitative rule about gold rather than experience.
+  rejection_reason: 'Partially rejected. The relation it states, that expected treasure value scales with
+    party level, is asserted as M006, and that gold is the medium of that value is M005. The three bands
+    are not proposed: each is a pair of numbers and nothing else, which is the OBS-01 magnitude exclusion,
+    and they merely restate the same scaling the multiplier already expresses. The word about in the source
+    marks the whole guideline as approximate, which is a further reason not to carry its figures.'
+non_edge_observations:
+- id: OBS-01
+  subject: magnitudes are excluded from every row
+  detail: 'This page is almost entirely numeric: four experience values for the quality categories, repeated
+    in the table, a stated award for clever thinking, a gold multiplier per average party level, and three
+    level bands each with a gold figure. None reaches a field.
+
+    What survives is the structure: treasure feeds the award, quality determines it through the table,
+    party level scales the expected value, and gold is the medium. A reader wanting any figure reads printed
+    page 117. No row carries a condition and no aspect carries a digit.'
+- id: OBS-02
+  subject: the per-character distribution rule cannot be carried
+  detail: 'Each character receives the full experience value of each treasure rather than a share. That
+    is unhedged, mechanically consequential and invisible to the graph, because there is no identity for
+    a character or a party for the rule to relate.
+
+    Worth flagging as a distinct gap from the condition vocabulary recorded over the last two packets.
+    Conditions are things the rules do to characters; this is a rule about characters as countable participants.
+    The party has surfaced before, in the carousing cost shared between participants and in the Wizards
+    and Thieves pot, and was unrepresentable each time. It is a recurring shape rather than a one-off.'
+- id: OBS-03
+  subject: treasure now exists but its contents do not
+  detail: 'rule_treasure is proposed here and closes three earlier forward references, but it is thin
+    by design: this page defines treasure only as a thing with a quality rating that converts to experience.
+    What treasure actually consists of is not here. The table''s examples name a bag of gold, a gem, fine
+    armor, a magic scroll, a magic sword, mithral chainmail and a named artefact, several of which have
+    canonical identities, and none is asserted because they are examples of quality tiers rather than
+    statements about those items.
+
+    If a later chapter gives treasure its own contents or generation tables, that page is their locus
+    and rule_treasure will gain rows there. Recorded so the identity''s thinness is understood as scope
+    rather than omission.'
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: whether Awarding XP and Treasure should be one identity or two
+  detail: 'I proposed both and connected them with M001. The alternative is a single identity carrying
+    everything, most naturally rule_treasure, with the award rows hanging off it directly.
+
+    My reason for two: the page is titled AWARDING XP and its rule is about experience, while treasure
+    is the thing rated and is what three earlier packets pointed at. They also behave differently, since
+    clever thinking awards experience without any treasure at all, which M007 carries and which a single
+    treasure identity could not hold without misdescribing it. Keeping them apart is also what lets the
+    quality table attach to treasure rather than to the award rule.
+
+    The case against is that rule_awarding_xp carries only two rows, both into exp_xp, and a reader might
+    reasonably see it as a label for the page rather than a mechanic. Consequence if wrong: M001 disappears,
+    M002 and M007 repoint to rule_treasure, and one identity is withdrawn; no other row changes. Flagged
+    because it is a structural choice at a locus three other packets depend on, and I would rather it
+    were settled deliberately than inherited.'
+architectural_escalations: []
+architectural_escalation_note: None raised. All three identities use an approved prefix, every row uses
+  a legal edge type at status core, no row carries supersession_basis and none is an OVERRIDES, and no
+  CLASSIFIED_AS row appears. OBS-02 records a recurring gap around characters and parties as countable
+  participants, which is recorded for the Architect alongside the condition vocabulary rather than escalated
+  from inside a packet.
+completeness_statement: 'The whole of printed page 117, its opening rules, four category bullets, two
+  lists, gold guideline and closing table, was read at the recorded checksum. The packet yields 3 new
+  identities and 7 rows, all citing page 117, reusing 4 canonical identities whose labels the assembling
+  script asserted equal to the registry. Every row was checked against the 695 canonical edges for an
+  assertion-key collision, for a shared source, type and target under a different aspect, and for duplicates
+  within the patch; there are none of any, and no canonical row cited this page before.
+
+  Five candidates were rejected and each is recorded with its reason, including one verified restatement
+  of the canonical printed page 39 experience reset. What is deliberately not asserted is listed as OBS-01
+  through OBS-03, and the single open question, IDQ-01, concerns whether this page should yield one identity
+  or two. Every figure in this GUR was computed from the canonical files rather than counted by hand.
+  No assertion depends on any other ruleset.'

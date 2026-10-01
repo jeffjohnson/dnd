@@ -1,0 +1,100 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0080-r04-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: basicdnd
+constitution_version: '1.0'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+review_date: '2026-09-20'
+overall_disposition: approved
+reviewed_implementation:
+  id: IMP-DEC-2026-0080-r04
+  path: rulesets/basicdnd/decision-implementations/IMP-DEC-2026-0080-r04.yaml
+  checksum: sha256:6da1e62f79df7381b66325aea315f357ccac15817a4c23c6d8f1db38a4a75edd
+decision_input:
+  id: DEC-2026-0080
+  path: rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+  checksum: sha256:b4eb6d27766119ccceefee17a651e8923b813dbe2b8366232d74d3919f3d7108
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: 'All DEC-2026-0080 implementation acceptance tests are independently verified.'
+  blocking_ids: []
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: 'The basicdnd/rc identity and scoped verifier inputs remain present; focused tests pass.'
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: 'Basic D&D Constitution 1.0 independently defines its own vocabulary, class identities, and no AD&D inheritance.'
+  - acceptance_test_index: 3
+    disposition: verified_versioned_contract_content
+    evidence: 'Current SOURCE_MARKDOWN 1.7 exceeds the 1.5 floor and retains every Decision-authorized anchor.'
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0080
+        path: rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+        checksum: sha256:b4eb6d27766119ccceefee17a651e8923b813dbe2b8366232d74d3919f3d7108
+        authorized_acceptance_test_index: 3
+      authorized_acceptance_test_index: 3
+      contracts:
+        - path: contracts/SOURCE_MARKDOWN.md
+          checksum: sha256:761a8142c0f887171397db205384585ddbaba80c137d93ff1aa9dd505eab6732
+          observed_version: '1.7'
+          minimum_version: '1.5'
+          anchors_present:
+            - Pandoc YAML frontmatter is informational steward intake metadata only.
+            - packet.yaml governs identity and page metadata when frontmatter conflicts.
+            - full-page-artwork is the only initial page class.
+            - class-bearing page markers require a heading or fenced Div attribute block.
+  - acceptance_test_index: 4
+    disposition: verified_versioned_contract_content
+    evidence: 'Synthetic registered-ruleset and marker/linter tests pass; the absent incoming RC files are not an acceptance-test prerequisite.'
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0080
+        path: rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+        checksum: sha256:b4eb6d27766119ccceefee17a651e8923b813dbe2b8366232d74d3919f3d7108
+        authorized_acceptance_test_index: 4
+      authorized_acceptance_test_index: 4
+      contracts:
+        - path: contracts/SOURCE_MARKDOWN.md
+          checksum: sha256:761a8142c0f887171397db205384585ddbaba80c137d93ff1aa9dd505eab6732
+          observed_version: '1.7'
+          minimum_version: '1.5'
+          anchors_present:
+            - Pandoc YAML frontmatter is informational steward intake metadata only.
+            - full-page-artwork is the only initial page class.
+            - class-bearing page markers require a heading or fenced Div attribute block.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: 'Focused suite passes 233 tests and full Builder suite passes 763; the report and companion are current and checksummed.'
+independent_validation:
+  passed: true
+  commands:
+    - command: '[cwd tooling/builder/tests] python -m unittest test_pagemarkers test_compiler'
+      exit_code: 0
+      result: passed
+      summary: 'Ran 233 tests in 50.615s; OK (skipped=1).'
+    - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+      exit_code: 0
+      result: passed
+      summary: 'Ran 763 tests in 198.780s; OK (skipped=39).'
+review_evidence:
+  builder_validation:
+    path: build/reports/IMP-DEC-2026-0080-r04.validation.json
+    checksum: sha256:867f777a1c5675bf70b493d68b8e5325cfb0dfb921f88a02902174e246943732
+completion_statement: >-
+  Approved. The unclaimed RC source packets are absent and therefore block the
+  Decision's later steward/Analyst step, not this completed Builder implementation.
+ordered_next_steps:
+  - priority: 1
+    owner: architect
+    input: rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+    action: 'Resolve the absent RC source inputs with the source steward.'
+    prerequisite_ids: [DEC-2026-0080]
+    readiness: blocked
+    reason: 'Analyst step 4 requires steward reissue before claim.'
+

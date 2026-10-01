@@ -19,6 +19,13 @@ under `contracts/WORK_QUEUES.md`.
 
 ## Main layout
 
+The five graph-processing roles coordinate directly under
+`contracts/HERDR_HANDOFFS.md`; independent ready work may proceed concurrently
+across rulesets. Herdr is a best-effort notification channel. Repository
+artifacts remain authoritative for ownership, approval, and completion. No
+coordination role or additional artifact stage is inserted between workers.
+
+
 ```text
 agents/                         universal agent instructions
 contracts/                      universal workflow and ownership contracts

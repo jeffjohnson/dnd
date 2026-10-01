@@ -73,5 +73,72 @@ class TestDerivation(unittest.TestCase):
         self.assertEqual(degrees, sorted(degrees, reverse=True))
 
 
+class TestAnEmptyBootstrapProfileDerivesNoRole(unittest.TestCase):
+    """DEC-2026-0092. `thresholds: {}` is configuration, not a missing file.
+
+    Shadowdark's profile records that no corpus-based thresholds exist yet. The
+    ruling is explicit that this means no derived roles, and that inventing
+    thresholds or importing AD&D's would be an unsupported graph conclusion.
+    Before this change `roles()` indexed `thresholds[role][key]` directly and
+    raised `KeyError` on the first node.
+    """
+
+    EDGES = [
+        {"source_id": "abil_strength", "target_id": "tbl_stat_modifiers",
+         "edge_type": "FEEDS_INTO", "status": "core", "polarity": "neutral"},
+        {"source_id": "abil_strength", "target_id": "rule_stat_generation",
+         "edge_type": "DERIVED_FROM", "status": "core", "polarity": "neutral"},
+    ]
+
+    def test_an_empty_threshold_mapping_yields_no_role(self):
+        degrees = Degrees(self.EDGES, tier2_enabled=False)
+        for node in ("abil_strength", "tbl_stat_modifiers", "rule_stat_generation"):
+            self.assertEqual(degrees.roles(node, {}), set(), node)
+
+    def test_degrees_are_still_derived_when_roles_are_not(self):
+        """An empty profile silences roles only. Degrees are topology, not policy."""
+        degrees = Degrees(self.EDGES, tier2_enabled=False)
+        self.assertEqual(degrees.outbound["abil_strength"], 2)
+        self.assertEqual(degrees.inbound["rule_stat_generation"], 1)
+        self.assertEqual(degrees.degree("abil_strength"), 2)
+
+    def test_rebuilt_rows_carry_blank_roles(self):
+        rows = rebuild_nodes(self.EDGES, {}, {}, {}, tier2_enabled=False)
+        self.assertEqual({r["roles"] for r in rows}, {""})
+
+    def test_tier2_rules_are_not_applied_to_a_ruleset_that_declares_none(self):
+        """The tier-2 rules name AD&D identities directly.
+
+        A ruleset whose profile declares no tier-2 mapping must not receive them
+        because an ID happens to be spelled the same way.
+        """
+        edges = [{"source_id": "rule_x", "target_id": "xp_treasure",
+                  "edge_type": "FEEDS_INTO", "status": "core", "polarity": "neutral"}]
+        self.assertEqual(Degrees(edges, tier2_enabled=False).roles("rule_x", {}), set())
+        self.assertEqual(Degrees(edges, tier2_enabled=True).roles("rule_x", {}),
+                         {"advancement_currency"})
+
+
+class TestAPopulatedProfileIsUnchanged(unittest.TestCase):
+    """The AD&D corpus must derive exactly what it derived before."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.paths = CanonicalPaths(root=REPO_ROOT, ruleset_id=RULESET_ID)
+        cls.graph = CanonicalGraph.load(cls.paths)
+        cls.thresholds = load_role_profile(
+            REPO_ROOT / "rulesets" / RULESET_ID / "profiles" / "roles.yaml")["thresholds"]
+
+    def test_the_default_still_reproduces_the_canonical_node_table(self):
+        labels = {n["id"]: n["label"] for n in self.graph.nodes}
+        kinds = {n["id"]: n["kind"] for n in self.graph.nodes}
+        self.assertEqual(rebuild_nodes(self.graph.edges, labels, kinds, self.thresholds),
+                         self.graph.nodes)
+
+    def test_some_canonical_node_actually_carries_a_role(self):
+        """Otherwise the empty-profile tests above would pass vacuously."""
+        self.assertTrue(any(n["roles"] for n in self.graph.nodes))
+
+
 if __name__ == "__main__":
     unittest.main()

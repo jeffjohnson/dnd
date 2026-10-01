@@ -1,0 +1,453 @@
+schema_version: '1.0'
+id: GUP-PKT-SD-022-023-thief-class-r02
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-022-023-thief-class
+constitution_version: '1.5'
+artifact_kind: packet_update
+revision: 2
+supersedes: GUP-PKT-SD-022-023-thief-class-r01
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 0 edge addition(s), 0 update(s), 14 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-SD-022-023-thief-class-r01
+  gur_checksum: sha256:b59a9041f18abfe38ed68414c6ce7e52c55fa5bea3057383665079bdfb2368ca
+  gur_constitution_version: '1.2'
+  review_id: REV-GUP-PKT-SD-022-023-thief-class-r01-r01
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 902
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: class_thief
+      proposed_label: Thief
+      kind: class
+      why_needed: Source of M001 through M004. The class identity this page defines; the armor, hit point
+        and benefit dependencies on the page all originate from it.
+      edges_depending_on_it:
+        - M001
+        - M002
+        - M003
+        - M004
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: abil_backstab
+      proposed_label: Backstab
+      kind: abil
+      why_needed: Endpoint of M003, M006 and M010 and source of M005. A separately named thief benefit
+        that adds damage against an unaware target, scales with level and is itself improved by a talents
+        row.
+      edges_depending_on_it:
+        - M003
+        - M005
+        - M006
+        - M010
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: abil_thievery
+      proposed_label: Thievery
+      kind: abil
+      why_needed: Endpoint of M004 and source of M007. A separately named thief benefit that improves
+        checks associated with a listed set of trained tasks.
+      edges_depending_on_it:
+        - M004
+        - M007
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_thief_talents
+      proposed_label: Thief Talents Table
+      kind: tbl
+      why_needed: Endpoint of M008 and source of M009 through M014. The separately headed and separately
+        referenced table that resolves a thief's talent roll; its outcome rows are the source of six distinct
+        dependencies.
+      edges_depending_on_it:
+        - M008
+        - M009
+        - M010
+        - M011
+        - M012
+        - M013
+        - M014
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: cbt_initiative
+      proposed_label: Initiative
+      kind: cbt
+      why_needed: Endpoint of M009. What one talents row improves; without it that outcome row has no
+        target and the dependency is lost.
+      edges_depending_on_it:
+        - M009
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: rule_check
+      proposed_label: Check
+      kind: rule
+      why_needed: Endpoint of M007. What the Thievery benefit improves. Proposed here because this patch
+        uses it as an endpoint.
+      edges_depending_on_it:
+        - M007
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions: []
+  pending_additions:
+    - source_id: abil_backstab
+      source_label: Backstab
+      edge_type: MODIFIES
+      target_id: cbt_damage_roll
+      target_label: Damage Roll
+      aspect: extra weapon dice
+      condition: when the target is unaware of the attack
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '22'
+      section: THIEF CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M005
+    - source_id: abil_thievery
+      source_label: Thievery
+      edge_type: MODIFIES
+      target_id: rule_check
+      target_label: Check
+      aspect: trained tasks
+      condition: for an associated task
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '22'
+      section: THIEF CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M007
+    - source_id: class_thief
+      source_label: Thief
+      edge_type: CONSTRAINS
+      target_id: item_armor
+      target_label: Armor
+      aspect: permitted armor
+      condition: ''
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '22'
+      section: THIEF CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+    - source_id: class_thief
+      source_label: Thief
+      edge_type: FEEDS_INTO
+      target_id: rule_hit_points
+      target_label: Hit Points
+      aspect: hit dice
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '22'
+      section: THIEF CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: class_thief
+      source_label: Thief
+      edge_type: GATES
+      target_id: abil_backstab
+      target_label: Backstab
+      aspect: benefit access
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '22'
+      section: THIEF CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+    - source_id: class_thief
+      source_label: Thief
+      edge_type: GATES
+      target_id: abil_thievery
+      target_label: Thievery
+      aspect: benefit access
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '22'
+      section: THIEF CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+    - source_id: exp_level
+      source_label: Level
+      edge_type: FEEDS_INTO
+      target_id: abil_backstab
+      target_label: Backstab
+      aspect: damage dice
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '22'
+      section: THIEF CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M006
+    - source_id: rule_talent_roll
+      source_label: Talent Roll
+      edge_type: RESOLVED_BY
+      target_id: tbl_thief_talents
+      target_label: Thief Talents Table
+      aspect: thief talents
+      condition: for a thief
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '22'
+      section: THIEF TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M008
+    - source_id: tbl_thief_talents
+      source_label: Thief Talents Table
+      edge_type: MODIFIES
+      target_id: abil_backstab
+      target_label: Backstab
+      aspect: damage dice
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '22'
+      section: THIEF TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M010
+    - source_id: tbl_thief_talents
+      source_label: Thief Talents Table
+      edge_type: MODIFIES
+      target_id: abil_charisma
+      target_label: Charisma
+      aspect: stat increase
+      condition: when that stat is chosen
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '22'
+      section: THIEF TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M013
+    - source_id: tbl_thief_talents
+      source_label: Thief Talents Table
+      edge_type: MODIFIES
+      target_id: abil_dexterity
+      target_label: Dexterity
+      aspect: stat increase
+      condition: when that stat is chosen
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '22'
+      section: THIEF TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M012
+    - source_id: tbl_thief_talents
+      source_label: Thief Talents Table
+      edge_type: MODIFIES
+      target_id: abil_strength
+      target_label: Strength
+      aspect: stat increase
+      condition: when that stat is chosen
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '22'
+      section: THIEF TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M011
+    - source_id: tbl_thief_talents
+      source_label: Thief Talents Table
+      edge_type: MODIFIES
+      target_id: cbt_attack_roll
+      target_label: Attack Roll
+      aspect: melee and ranged
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '22'
+      section: THIEF TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M014
+    - source_id: tbl_thief_talents
+      source_label: Thief Talents Table
+      edge_type: MODIFIES
+      target_id: cbt_initiative
+      target_label: Initiative
+      aspect: initiative advantage
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '22'
+      section: THIEF TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M009
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts: {}
+duplicate_findings: []
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 14
+  edges_compiled: 14
+  edges_rejected: 0
+  edge_additions: 0
+  edge_pending_additions: 14
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 1
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 6
+  cross_packet_dependencies: 0
+  duplicate_findings: 0
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-SD-022-023-thief-class-r02.validation.json
+reviewer_directives_applied:
+  review_id: REV-GUP-PKT-SD-022-023-thief-class-r01-r01
+  corrections: []
+  corrections_superseded: []
+  rejected_rows: []
+  note: Reviewer decisions are applied as given; the Reviewer owns what an edge asserts. Corrected values
+    are then revalidated, and a correction that violates the constitution is reported like any other defect
+    rather than passed through.

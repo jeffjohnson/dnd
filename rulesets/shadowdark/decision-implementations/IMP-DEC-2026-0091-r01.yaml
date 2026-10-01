@@ -1,0 +1,199 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0091-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: Step 2 of DEC-2026-0091. A candidate node missing proposed_label or why_needed now fails
+    closed instead of emitting a blank registry proposal, and a ref-keyed Review decision mapping
+    is executable while every malformed shape still fails closed. All five acceptance tests pass.
+    Two changes outside the Decision's exact_diff are declared in scope_note rather than folded in.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0091
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+  checksum: sha256:8c3eafe3c532ba58275292c02e128b6152ac92c0f6f1e492cf27b9004206cd6c
+implementation_files:
+- path: tooling/builder/src/adnd1e_builder/compiler.py
+  checksum: sha256:722e4614c5dd94ca457f8dcf6cb4b6c99a8a7e2e2452007198f6d525372a5936
+- path: tooling/builder/src/adnd1e_builder/review.py
+  checksum: sha256:df294379e88dff4d51aa379a729d08d82a6610572cae38be0e814fe6d1032af4
+- path: tooling/builder/tests/test_compiler.py
+  checksum: sha256:7205c5f7b1b0b7e7bffe31a1b9dd37c277ba4e753fea328d40396fdf2866c56f
+- path: tooling/builder/tests/test_review.py
+  checksum: sha256:6bc404bac4c671b758e88583dca6d81cb0f73669d03fba83ccf101c7bf6e0358
+- path: tooling/builder/tests/test_shadowdark_ancestry.py
+  checksum: sha256:dd82e1b7cda36166e62278324ff7bcf09762c4fb5f362b3a0f9b7f9eb5edd26f
+- path: tooling/builder/tests/test_governance.py
+  checksum: sha256:a7a5e96910a36a13bfeaa33dcab5c98eb78158ed1677abbfad9fde17506668ae
+- path: tooling/builder/tests/test_handoff.py
+  checksum: sha256:ee50c4356e43d59463a348f9cc7e4016976b666e3e242c7d322818f4df05c58f
+verified_inputs:
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+  checksum: sha256:8c3eafe3c532ba58275292c02e128b6152ac92c0f6f1e492cf27b9004206cd6c
+- path: schemas/common/gur.schema.json
+  checksum: sha256:bddea901f3272a3b23865e8dade8558c56bc13155f57d07fa5ed589c70c45f2d
+- path: schemas/common/review.schema.json
+  checksum: sha256:9a0e5018e5d939d9199e52741c2bc653fd8738e20a8d8db81590206559df0a5b
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:9b3bdf7008913cbb310cf15e9637e077d683718aa9b91cfcb25d50b6e52184c2
+- path: agents/analyst/INSTRUCTIONS.md
+  checksum: sha256:db7932e4be09005883b342859b6c291f732921561bf70b384a49bf1a16b23853
+- path: agents/reviewer/INSTRUCTIONS.md
+  checksum: sha256:a4a570f8007d22be850a29664a56d988749be468b51c039dae58e7a61b037410
+- path: tooling/common/validate_artifact.py
+  checksum: sha256:c13f3e8a5321ca8a0b4f32d1da5c42a714f446fe21bb94b899abe2bb784538e8
+- path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-015-015-stats-and-stat-modifiers-r02.yaml
+  checksum: sha256:258c77c0ddbdaeb879dc53102a50e3eca79b0131a2a4cb2cc90b59f64ff704c0
+- path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-011-014-character-overview-and-starting-level-r03.yaml
+  checksum: sha256:746bb3b2481e649959f1cd2811d64ceb91d80a411a9a49b6307f61bc4ac58b6b
+- path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-016-017-ancestries-r02.yaml
+  checksum: sha256:cfeceea5adc38a5fa80749bc09e9f5334cf5787478e0880834fba0758603a739
+- path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r02-r01.yaml
+  checksum: sha256:b0c7a3258d8572c9e6def3b715bb6594037b7a8bd1c5c40f1b4976b95aae5140
+- path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-015-015-stats-and-stat-modifiers-r03.yaml
+  checksum: sha256:cd632f6edfaf3bd9a4a7f76e2a46da292719c4c27b0aa4aeebb8e9a41e98845e
+validation_report: build/reports/IMP-DEC-2026-0091-r01.validation.json
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'Verified as an Architect-owned input, not authored here. schemas/common/gur.schema.json
+    now defines $defs.candidateNode and points candidate_nodes at it. Its required set is exactly
+    kind, proposed_id, proposed_label and why_needed, each typed string with minLength 1, so a present-but-empty
+    value is rejected as well as an omitted one. Its `not` clause rejects any candidate node carrying
+    `label` or `evidence`, which is how the schema states that the legacy spellings are not aliases:
+    a node supplying the value under the old name fails rather than validating. Executable checks:
+    TestCandidateNodeSchemaContract in test_shadowdark_ancestry.py, 7 tests, covering the required
+    set, a complete node, each field omitted, each field blank, each legacy spelling, and agreement
+    between the schema and the compiler.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'compiler.py fails closed in _compile_node_additions before any proposal is built: a candidate
+    node missing a nonempty proposed_label or why_needed produces one blocking candidate_node_fields_missing
+    error naming the exact fields, and `continue` means no registry proposal is emitted for it at
+    all -- not a blank one. When the candidate carries a legacy `label` or `evidence` value, the diagnostic
+    names that spelling and says it is not an alias, so the Analyst is told why a populated field
+    read as absent. The dependent edge still cannot reach the CSV, because its endpoint was never
+    registered, which is invariant 1 unchanged. Existing AD&D candidate nodes remain accepted: the
+    published adnd1e DMG GURs are compiled in the test and raise no candidate_node_fields_missing,
+    because that corpus already uses the canonical spellings. Executable checks: TestCandidateNodeRegistrationFields
+    in test_compiler.py, 8 tests.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'review.py expands a ref-keyed mapping in _ref_keyed_entries: each key becomes the ref
+    of its own per-row directive, carrying that entry''s disposition and its row-local exact_corrections
+    unchanged. An embedded ref is optional and must equal its key. Every invalid shape fails closed
+    rather than being guessed at -- a value that is not a mapping, a mismatched embedded ref, and
+    an entry with no disposition each record an unread decision key and leave every row in the block
+    undecided. One bad entry discards the whole block, because applying the readable two thirds of
+    a Review is the silent partial application the refusal exists to prevent. The existing list and
+    bulk approved_refs/refs forms are asserted unchanged, including that they record no unread key.
+    The live Review that produced this Decision, REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r02-r01,
+    is loaded by name and now yields all 14 rows as approved where it previously yielded none. Executable
+    checks: TestRefKeyedDecisionMappings in test_review.py, 11 tests.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: Verified as Architect-owned inputs. contracts/WORK_QUEUES.md declares Version 1.32, at
+    or above the required 1.32, and its version history records DEC-2026-0091; it documents the ref-keyed
+    mapping with its optional embedded ref alongside the list and approved_refs/refs forms, and the
+    four executable candidate-node fields with what proposed_label and why_needed mean. agents/analyst/INSTRUCTIONS.md
+    states the same candidate-node requirement and agents/reviewer/INSTRUCTIONS.md the same decision
+    forms. All five role instructions and WORK_QUEUES now spell the staged check as `validate_artifact.py
+    <staged-yaml> --schema <applicable-schema>`; a repository-wide search for the documented `--path`
+    spelling returns nothing under contracts/ or agents/. tooling/common/validate_artifact.py is byte-unchanged
+    at the checksum DEC-2026-0091 pins, so the interface was corrected in the documentation and not
+    in the tool.
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'The three focused modules ran 205, 128 and 62 tests and the complete Builder suite 876,
+    all exit code 0 with no failures or errors; exact commands and outcomes are in the validation
+    block and in build/reports/IMP-DEC-2026-0091-r01.validation.json. The suite grew from 850 to 876
+    by exactly the 26 tests added here. The three legacy GUR leaves DEC-2026-0091 pins as evidence
+    re-hash to their pinned checksums and were read only, as do the ref-keyed Review and the blocked
+    GUP-PKT-SD-015-015-stats-and-stat-modifiers-r03; that GUP was not edited, reclassified or superseded
+    by this work. No published GUP, Review, packet, source file, registry or canonical state was written.
+    The Analyst''s step-3 successors were verified as inputs: 49 candidate nodes across the three
+    files, every one carrying a nonempty proposed_label and why_needed and none carrying a legacy
+    spelling.'
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/builder/tests] python -m unittest test_compiler'
+    exit_code: 0
+    result: passed
+    summary: Ran 205 tests in 46.652s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest test_review'
+    exit_code: 0
+    result: passed
+    summary: Ran 128 tests in 78.318s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest test_shadowdark_ancestry'
+    exit_code: 0
+    result: passed
+    summary: Ran 62 tests in 3.931s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 876 tests in 191.282s OK (skipped=38)
+changes_in_this_revision:
+- 'compiler.py: _compile_node_additions rejects a candidate node missing a nonempty proposed_label
+  or why_needed with a blocking candidate_node_fields_missing finding and emits no proposal for it.
+  The diagnostic names any legacy label/evidence value it found and says it is not an alias.'
+- 'review.py: added _ref_keyed_entries and routed the dict branch of _ruling_entries through it, so
+  a mapping keyed by ref expands into per-row directives. A non-mapping value, a mismatched embedded
+  ref, or an entry with no disposition records an unread decision key and discards the block. The
+  approved_refs/refs branch is unchanged and still takes precedence.'
+- 'test_compiler.py: added TestCandidateNodeRegistrationFields, 8 tests. Seven existing candidate-node
+  fixtures gained why_needed.'
+- 'test_review.py: added TestRefKeyedDecisionMappings, 11 tests.'
+- 'test_shadowdark_ancestry.py: added TestCandidateNodeSchemaContract, 7 tests.'
+- 'test_governance.py and test_handoff.py: nine existing candidate-node fixtures gained why_needed.
+  No assertion, behaviour or test was changed; see scope_note.'
+scope_note: Two changes fall outside the Decision's exact_diff and are declared rather than folded
+  in. First, test_governance.py and test_handoff.py are not listed in exact_diff_ownership, but nine
+  of their candidate-node fixtures omit why_needed and the new fail-closed check rejects them, which
+  failed 24 tests across those two files. The edit is one key added per fixture, no assertion touched;
+  without it acceptance test 5 could not be met, since it requires the complete suite to pass. Second,
+  compiler.py now applies every field of a node's row-local exact_corrections rather than proposed_label
+  alone. REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r02-r02 corrected both proposed_label and
+  why_needed on ten nodes; the compiler applied the labels and silently dropped the rationales, which
+  is the partial application WORK_QUEUES forbids when it says a correction is never guessed at or
+  silently dropped. A correction key the compiler cannot execute now raises a blocking reviewer_node_correction_not_applied
+  error instead of disappearing. This is an executor defect against an existing contract requirement
+  rather than a new input convention, so it was fixed rather than reported; the Reviewer should rule
+  on that judgment.
+bugs_found_by_the_new_tests:
+- A node's exact_corrections applied only proposed_label. Every other corrected field, including the
+  why_needed that a Review supplied for ten nodes, was parsed and then dropped with no finding. See
+  scope_note.
+concurrent_work_note: 'DEC-2026-0091 step 3 completed while this step 2 was in progress: the Analyst
+  published GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03, GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+  and GUR-PKT-SD-016-017-ancestries-r03, which are now the active leaves. They are verified as inputs
+  here and were not compiled; under post_implementation_requirements a successor GUP follows this
+  report''s Review. GUP-PKT-SD-015-015-r04, GUP-PKT-SD-011-014-r02 and GUP-PKT-SD-016-017-r01 consumed
+  the superseded leaves and are now stale input; they remain immutable and are not rebuilt by this
+  report.'
+canonical_state: 'No schema, contract, role instruction, packet, source Markdown, GUR, GUP, Review,
+  registry, queue tooling or Herdr file was edited. rulesets/shadowdark/canonical still does not exist.
+  tooling/common/validate_artifact.py is unchanged, as the Decision requires: the documentation was
+  corrected to the tool, not the tool to the documentation.'
+attribution_note: compiler.py and review.py also carry uncommitted changes from the DEC-2026-0080,
+  DEC-2026-0087 and DEC-2026-0090 lineages, reported in their own implementation reports and not re-claimed
+  here. The changes attributable to this Decision are exactly those in changes_in_this_revision, so
+  a whole-file diff against HEAD will show more than this report claims authorship of.
+not_done:
+- No GUP was compiled from the three corrected GUR leaves. post_implementation_requirements sequences
+  that after this report's independent Review.
+- GUP-PKT-SD-015-015-stats-and-stat-modifiers-r03 was not edited, withdrawn or reclassified, and neither
+  were its predecessors.
+- Node-level decision collections still read only the list form. The Decision's ref-keyed ruling names
+  edge_decisions and row_decisions, and widening it to node_decisions would be a Builder inference.
+- No basicdnd or rc work of any kind was performed, claimed, withdrawn or cleaned up. DEC-2026-0086
+  remains binding.
+validation_report_checksum: sha256:300b19ebcde29361540c4370468c3967702251f9861964a6012f557feaf27175

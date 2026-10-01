@@ -3674,11 +3674,13 @@ def _route_leaf_gur(
     leaf_gur: Artifact,
     gur_inferred: bool,
     ready: list[dict[str, Any]],
+    blocked: list[dict[str, Any]],
     diagnostics: list[dict[str, Any]],
 ) -> None:
-    """WORK_QUEUES 1.11: where an unconsumed active-leaf GUR's work belongs.
+    """WORK_QUEUES 1.11 / DEC-2026-0105: where an unconsumed active-leaf GUR's
+    work belongs.
 
-    Three shapes, three destinations:
+    Four shapes, four destinations:
 
     * a **malformed** handoff is a broken workflow the Analyst owns. It routes to
       `ANALYST-GUR-REPAIR` and never to Builder -- the role that cannot legally
@@ -3688,6 +3690,11 @@ def _route_leaf_gur(
       suite red and, through it, seven Decision implementation reports.
     * a conforming **terminal** handoff is finished work. A withdrawn GUR needs
       no empty GUP to consume it.
+    * a conforming **blocked** handoff is blocked work for its declared role, not
+      ready work for anyone. Before DEC-2026-0105 a blocked GUR fell through to
+      the ordinary Builder route below merely because "blocked" was not
+      "terminal", handing Builder a patch it was explicitly told it could not
+      yet build and silently dropping the artifact's own blocking_ids.
     * an **absent** handoff is a legacy artifact: ordinary Builder routing, with
       the inference reported rather than silent.
     """
@@ -3716,7 +3723,37 @@ def _route_leaf_gur(
         return
 
     if isinstance(handoff, dict):
-        if str(handoff.get("readiness") or "").strip() == "terminal":
+        readiness = str(handoff.get("readiness") or "").strip()
+        if readiness == "terminal":
+            return
+        if readiness == "blocked":
+            owner = _handoff_role(leaf_gur.data)
+            role = owner.capitalize() if owner in ROLE_BY_NAME else "Analyst"
+            blockers = _blocking_ids(leaf_gur.data)
+            # WORK_QUEUES 1.35 rule 6a: "blocking_ids and reason preserved". The
+            # handoff's own authored reason is the record of *why* -- an
+            # Analyst's account of the specific blocker -- and a generated
+            # "waiting on: <ids>" string discards it even though the IDs
+            # themselves were kept. Both belong in the routed item.
+            authored_reason = str(handoff.get("reason") or "").strip()
+            blocking_note = (
+                "Blocked on: " + ", ".join(sorted(blockers)) if blockers else ""
+            )
+            reason = " ".join(part for part in (authored_reason, blocking_note) if part)
+            blocked.append(
+                _queue_item(
+                    state="blocked",
+                    queue=f"{role.upper()}-BLOCKED-GUR",
+                    role=role,
+                    ruleset=ruleset,
+                    book=book,
+                    packet_id=packet_id,
+                    input_id=leaf_gur.artifact_id,
+                    reason=reason,
+                    path=path,
+                    components=[path],
+                )
+            )
             return
     else:
         _diag(
@@ -3782,16 +3819,167 @@ def _approved_base(name: str) -> str:
     return Path(name).stem
 
 
-def _collect_approved_ids(value: Any, found: set[str]) -> None:
-    if isinstance(value, dict):
-        for child in value.values():
-            _collect_approved_ids(child, found)
-    elif isinstance(value, (list, tuple)):
-        for child in value:
-            _collect_approved_ids(child, found)
-    elif isinstance(value, str):
-        for match in APPROVED_ID_PATTERN.findall(value):
-            found.add(_approved_base(Path(match).name))
+#: An Approved bundle ID ends in the approving Review's revision, `-rNN`. The
+#: part before it is the lineage: one artifact kind packaging one GUP.
+_APPROVED_REVISION = re.compile(r"^(?P<lineage>.+)-r(?P<number>[0-9]{2})$")
+
+
+def _approved_lineage(approved_id: str) -> tuple[str, int] | None:
+    match = _APPROVED_REVISION.match(approved_id)
+    if not match:
+        return None
+    return match.group("lineage"), int(match.group("number"))
+
+
+def _approved_review_link(
+    manifest: dict[str, Any] | None, approved_id: str
+) -> tuple[str, str, str]:
+    """The approving Review this bundle declares, and where that came from.
+
+    Returns `(review_id, source, declared_checksum)`. DEC-2026-0095: for a
+    manifested bundle `approves.review_id` is the sole identity. Reading a
+    filename stem instead let an unrelated publication change a byte-identical
+    bundle's queue state -- APPROVED-...-r05-r03 declares REV-...-r05-r01, and
+    the moment a REV-...-r05-r03 was published for another purpose that bundle
+    silently began validating against it. The top-level and provenance
+    spellings stay readable for a manifest that predates `approves`, but never
+    override it.
+    """
+    if isinstance(manifest, dict):
+        approves = manifest.get("approves")
+        if isinstance(approves, dict) and str(approves.get("review_id") or "").strip():
+            return (
+                str(approves["review_id"]).strip(),
+                "approves.review_id",
+                str(approves.get("review_checksum") or "").strip(),
+            )
+        for field in ("review_id",):
+            if str(manifest.get(field) or "").strip():
+                return str(manifest[field]).strip(), field, ""
+        provenance = manifest.get("provenance")
+        if isinstance(provenance, dict) and str(provenance.get("review_id") or "").strip():
+            return str(provenance["review_id"]).strip(), "provenance.review_id", ""
+        # A manifest that carries no Review link at all is not a manifestless
+        # bundle; guessing one would be the defect this rule removes.
+        return "", "manifest_declares_none", ""
+    if approved_id.startswith("APPROVED-"):
+        return "REV-" + approved_id[len("APPROVED-"):], "filename_stem", ""
+    return "", "filename_stem", ""
+
+
+def _superseded_approved_ids(
+    root: Path,
+    approved_groups: dict[str, list[Path]],
+    manifests: dict[str, dict[str, Any] | None],
+    diagnostics: list[dict[str, Any]],
+) -> tuple[set[str], set[str]]:
+    """Approved-bundle IDs a later manifest in the same lineage replaces.
+
+    WORK_QUEUES rules 3, 4 and 6 say only the active leaf creates work, and
+    Approved-bundle discovery never applied them to the manifests themselves:
+    it only asked whether the packaged GUP was superseded, so five manifests
+    packaging one current GUP were all offered. Explicit `supersedes` decides
+    first. Where a legacy member of the lineage omits its revision metadata,
+    Legacy Queue Derivation clause 2 places it by its `rNN` within the one
+    kind and packet, which is reported rather than applied silently.
+
+    Returns `(superseded_ids, inferred_ids)`.
+    """
+    superseded: set[str] = set()
+    inferred: set[str] = set()
+    lineages: dict[str, list[tuple[int, str]]] = defaultdict(list)
+    for approved_id in approved_groups:
+        parsed = _approved_lineage(approved_id)
+        if parsed:
+            lineages[parsed[0]].append((parsed[1], approved_id))
+
+    for lineage, members in sorted(lineages.items()):
+        if len(members) < 2:
+            continue
+        members.sort()
+        ids = [approved_id for _, approved_id in members]
+        explicit = {
+            str((manifests.get(approved_id) or {}).get("supersedes") or "").strip()
+            for approved_id in ids
+        }
+        explicit.discard("")
+        superseded |= explicit & set(ids)
+        leaves = [approved_id for approved_id in ids if approved_id not in superseded]
+        if len(leaves) < 2:
+            continue
+        incomplete = [
+            approved_id
+            for approved_id in leaves
+            if not str((manifests.get(approved_id) or {}).get("supersedes") or "").strip()
+            and (manifests.get(approved_id) or {}).get("revision") is None
+        ]
+        if not incomplete:
+            # Every remaining leaf declares its own revision metadata, so the
+            # fork is not a legacy omission and clause 2 does not reach it.
+            # DEC-2026-0095 authorizes the bounded legacy rule and nothing
+            # wider, so these are left exactly as they were: inferring a leaf
+            # here would retire a bundle on the strength of its filename, and
+            # raising a new error class would be a queue-semantics change this
+            # Decision did not ask for.
+            continue
+        leaf = leaves[-1]
+        placed = [approved_id for approved_id in leaves[:-1]]
+        superseded |= set(placed)
+        inferred |= set(placed) | {leaf}
+        _diag(
+            diagnostics,
+            "info",
+            "legacy_revision_inference",
+            f"{lineage} has {len(incomplete)} manifest(s) declaring no revision or "
+            f"supersedes. WORK_QUEUES Legacy Queue Derivation places the complete "
+            f"rNN sequence within this one kind and packet: {leaf} is the active "
+            f"leaf and {', '.join(placed)} are earlier revisions. No file is "
+            f"changed and no order is taken from modification time.",
+            path=_relative(root, approved_groups[leaf][0]),
+            artifact_id=leaf,
+        )
+    return superseded, inferred
+
+
+def _declared_integrated_bundle_ids(document: Any, found: set[str]) -> None:
+    """Bundle IDs an Integration artifact *declares* it consumed.
+
+    DEC-2026-0095: consumption comes from a provenance field and nothing else.
+    This used to regex-harvest any `APPROVED-` substring anywhere in the
+    document, which read a component path as a consumption claim: every Stats
+    manifest declares the same shared edges CSV, stem-named after r05-r01, so
+    integrating r05-r05 recorded r05-r01 as integrated too.
+
+    Read here: `bundle_id` on the record, `approved_bundles[].bundle_id` on a
+    manifest, and the `approved_bundle_id` spelling older manifests use. A
+    record only counts when its status says the integration happened.
+    """
+    if isinstance(document, (list, tuple)):
+        for child in document:
+            _declared_integrated_bundle_ids(child, found)
+        return
+    if not isinstance(document, dict):
+        return
+
+    status = str(document.get("status") or "").strip().lower()
+    if status and status not in {"integrated", "applied", "complete", "completed"}:
+        # A rejection or an in-progress record declares a bundle it did not
+        # consume. Reading its bundle_id would retire live work.
+        return
+
+    for field in ("bundle_id", "approved_bundle_id", "approved_id"):
+        value = document.get(field)
+        if isinstance(value, str) and value.strip():
+            found.add(_approved_base(Path(value.strip()).name))
+
+    for field in ("approved_bundles", "bundles", "integrated_bundles"):
+        entries = document.get(field)
+        if isinstance(entries, (list, tuple)):
+            for entry in entries:
+                if isinstance(entry, dict):
+                    _declared_integrated_bundle_ids(entry, found)
+                elif isinstance(entry, str) and entry.strip():
+                    found.add(_approved_base(Path(entry.strip()).name))
 
 
 
@@ -4063,7 +4251,7 @@ def _integrated_approved_ids(
                     document = yaml.safe_load(text)
                 else:
                     document = text
-                _collect_approved_ids(document, found)
+                _declared_integrated_bundle_ids(document, found)
             except (OSError, UnicodeError, json.JSONDecodeError, yaml.YAMLError) as exc:
                 _diag(
                     diagnostics,
@@ -4074,10 +4262,36 @@ def _integrated_approved_ids(
                 )
     integrated_dir = book_root / "artifacts" / "integrated"
     if integrated_dir.is_dir():
-        for path in integrated_dir.iterdir():
-            if path.name.startswith("."):
+        for path in sorted(integrated_dir.iterdir()):
+            if path.name.startswith(".") or not path.is_file():
                 continue
-            if path.name.startswith("APPROVED-"):
+            # DEC-2026-0095: parse eligible records by content, not by a
+            # filename prefix. The Integrator writes
+            # INT-<id>-APPROVED-<bundle>.json, which the old APPROVED- prefix
+            # test never matched, so an integration was visible only through a
+            # separate manifests entry. A copied bundle file keeps working
+            # because its own declared id is read the same way.
+            if path.suffix.lower() in {".json", ".yaml", ".yml"}:
+                try:
+                    text = path.read_text(encoding="utf-8")
+                    document = (
+                        json.loads(text)
+                        if path.suffix.lower() == ".json"
+                        else yaml.safe_load(text)
+                    )
+                except (OSError, UnicodeError, json.JSONDecodeError, yaml.YAMLError) as exc:
+                    _diag(
+                        diagnostics,
+                        "error",
+                        "integration_record_unreadable",
+                        str(exc),
+                        path=_relative(root, path),
+                    )
+                    continue
+                _declared_integrated_bundle_ids(document, found)
+            elif path.name.startswith("APPROVED-"):
+                # A legacy integrated copy of the bundle itself, which declares
+                # nothing and is identified by its own name.
                 found.add(_approved_base(path.name))
     return found
 
@@ -4426,6 +4640,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         leaf_gur,
                         gur_inferred,
                         ready,
+                        blocked,
                         diagnostics,
                     )
 
@@ -4797,23 +5012,28 @@ def scan_repository(root: Path) -> dict[str, Any]:
             # or integrated, and reporting each pre-contract record as defective
             # produced 56 errors that buried the 5 live ones. A rejection of a
             # bundle nobody is queuing suppresses nothing either way.
+            # DEC-2026-0095: the manifest's own lineage is resolved before any
+            # Review, rejection or integration effect is derived from it.
+            approved_manifests: dict[str, dict[str, Any] | None] = {}
+            for base, paths in approved_groups.items():
+                candidate = next(
+                    (c for c in paths if c.suffix.lower() in {".yaml", ".yml"}), None
+                )
+                approved_manifests[base] = (
+                    _load_yaml(root, candidate, diagnostics) if candidate else None
+                )
+            superseded_approved_ids, legacy_inferred_ids = _superseded_approved_ids(
+                root, approved_groups, approved_manifests, diagnostics
+            )
+
             live_bundle_ids: set[str] = set()
             for base, paths in approved_groups.items():
                 if base in integrated_ids:
                     continue
-                manifest_candidate = next(
-                    (c for c in paths if c.suffix.lower() in {".yaml", ".yml"}), None
-                )
-                bundle_manifest = (
-                    _load_yaml(root, manifest_candidate, diagnostics)
-                    if manifest_candidate
-                    else None
-                )
-                legacy_review_id = (
-                    "REV-" + base[len("APPROVED-"):] if base.startswith("APPROVED-") else ""
-                )
+                bundle_manifest = approved_manifests.get(base)
+                declared_review_id, _, _ = _approved_review_link(bundle_manifest, base)
                 packaged = _packaged_gup_id(
-                    bundle_manifest, review_by_id.get(legacy_review_id)
+                    bundle_manifest, review_by_id.get(declared_review_id)
                 )
                 if packaged and packaged in superseded_gup_ids:
                     continue
@@ -4830,20 +5050,11 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     ),
                     None,
                 )
-                manifest = (
-                    _load_yaml(root, manifest_path, diagnostics)
-                    if manifest_path
-                    else None
+                manifest = approved_manifests.get(approved_id)
+                packet_id = manifest.get("packet_id") if manifest else None
+                review_id, review_source, declared_review_checksum = (
+                    _approved_review_link(manifest, approved_id)
                 )
-                review_id = None
-                packet_id = None
-                if manifest:
-                    review_id = manifest.get("review_id")
-                    packet_id = manifest.get("packet_id")
-                    if not review_id and isinstance(manifest.get("provenance"), dict):
-                        review_id = manifest["provenance"].get("review_id")
-                if not review_id and approved_id.startswith("APPROVED-"):
-                    review_id = "REV-" + approved_id[len("APPROVED-") :]
 
                 review = review_by_id.get(str(review_id)) if review_id else None
                 if review is None:
@@ -4851,8 +5062,8 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         diagnostics,
                         "warning",
                         "approved_review_inferred_or_missing",
-                        f"{approved_id} has no manifest-linked Review. "
-                        f"Tried legacy Review ID {review_id or '(none)'}.",
+                        f"{approved_id} has no resolvable approving Review. "
+                        f"Read {review_id or '(none)'} from {review_source}.",
                         path=_relative(root, component_paths[0]),
                         artifact_id=approved_id,
                     )
@@ -4978,6 +5189,57 @@ def scan_repository(root: Path) -> dict[str, Any]:
                         )
                     )
                     continue
+
+                if approved_id in superseded_approved_ids:
+                    informational.append(
+                        _queue_item(
+                            state="informational",
+                            queue="INTEGRATOR-SUPERSEDED",
+                            role="Integrator",
+                            ruleset=ruleset,
+                            book=book,
+                            packet_id=str(packet_id or review.packet_id or "") or None,
+                            input_id=approved_id,
+                            reason=(
+                                "A later Approved manifest in this bundle's own "
+                                "lineage replaces it. Only the active leaf creates "
+                                "work (WORK_QUEUES 3, 4, 6). The manifest is "
+                                "unchanged and remains available as history."
+                            ),
+                            path=_relative(root, component_paths[0]),
+                            components=[_relative(root, path) for path in component_paths],
+                            legacy_inference=approved_id in legacy_inferred_ids,
+                        )
+                    )
+                    continue
+
+                if declared_review_checksum:
+                    # DEC-2026-0095: where the manifest pins the Review it
+                    # approves by checksum, that pin is a precondition on
+                    # *offering* the bundle -- checked here, as the last gate
+                    # before a bundle is actually offered, rather than at
+                    # first Review resolution. A manifest already retired as
+                    # integrated, GUP-superseded, rejected-and-remediated, or
+                    # manifest-superseded is history regardless of whether its
+                    # checksum pin has gone stale; flagging it as a fatal
+                    # lineage error would make an ordinary corrective
+                    # successor (a later manifest with the right checksum,
+                    # like the one that provoked this rule) taint the whole
+                    # scan even though nothing live depends on the stale one.
+                    actual = _sha256_of(review.path)
+                    if actual != declared_review_checksum:
+                        _diag(
+                            diagnostics,
+                            "error",
+                            "approved_review_checksum_mismatch",
+                            f"{approved_id} declares approves.review_checksum "
+                            f"{declared_review_checksum} for {review.artifact_id}, "
+                            f"which now hashes to {actual}. The bundle is not "
+                            f"offered for integration on unverified provenance.",
+                            path=_relative(root, component_paths[0]),
+                            artifact_id=approved_id,
+                        )
+                        continue
 
                 ready.append(
                     _queue_item(

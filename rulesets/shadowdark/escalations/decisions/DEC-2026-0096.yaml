@@ -1,0 +1,163 @@
+schema_version: '1.0'
+id: DEC-2026-0096
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.3'
+decision_date: '2026-09-22'
+escalation_id: ESC-2026-09-22T23.23.17.245Z
+question: >-
+  Must Integrator bundle discovery apply the existing bounded legacy rNN
+  leaf-resolution rule to manifested Approved bundles that lack complete
+  revision metadata, and who owns that implementation?
+ruling: >-
+  Yes. Integrator bundle discovery must apply the same active-leaf semantics
+  already confirmed in DEC-2026-0095: resolve explicit `supersedes` first, then
+  apply WORK_QUEUES Legacy Queue Derivation clause 2 only within one artifact
+  kind, ruleset, book, and packet when a manifested Approved lineage lacks
+  complete revision metadata. The inferred result must be reported as a legacy
+  revision inference; it must never be silently converted into a ready bundle.
+
+  For the immutable Stats lineage, the rNN sequence places r05-r01 through
+  r05-r05 and r05-r05 remains the sole active leaf. INT-20260922-002 already
+  consumes r05-r05. r05-r01 through r05-r04 remain informational history, not
+  eligible integration, rejection remediation, manifest repair, or canonical
+  work.
+
+  Integrator owns the bounded implementation in its bundle-discovery surface;
+  Reviewer independently verifies it. This does not alter DEC-2026-0095, whose
+  Builder-owned scanner scope remains intact.
+rationale:
+  - >-
+    Core Rules 3, 4, and 6 apply to every queue derivation. Leaving the
+    Integrator without the existing legacy fallback creates a permanent phantom
+    job that a stateless successor cannot safely distinguish from real work.
+  - >-
+    The bounded rule is deterministic and does not infer source facts or modify
+    published lineage. Existing post-operation duplicate checks remain a
+    defense in depth, not the normal way to reject an item that should be
+    classified as history before integration.
+  - >-
+    A separate Decision preserves DEC-2026-0095's exact Builder scope and
+    assigns the Integrator-owned surface to its actual owner.
+evidence:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-22T23.23.17.245Z.yaml, checksum: sha256:f2e0e87d1e95af07ebf87d4fca5cc925594c10d53cc9135ac8a71e68c1eb76ff, role: complete_escalation}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0095.yaml, checksum: sha256:68e302182640762f4f1704e9f40523419052561f03d8ab5d18c9aced42e2f20a, role: matching_scanner_ruling}
+  - {path: contracts/WORK_QUEUES.md, checksum: sha256:9b3bdf7008913cbb310cf15e9637e077d683718aa9b91cfcb25d50b6e52184c2, role: active_leaf_and_legacy_queue_contract}
+  - {path: tooling/integrator/src/adnd1e_integrator/bundles.py, checksum: sha256:c04cf9b9e14e9ceb65650a69ec4de9af61c62fde824f1b8d0cd00f339d901820, role: bounded_integrator_implementation_surface}
+  - {path: rulesets/shadowdark/manifests/INT-20260922-002.json, checksum: sha256:e844ecd72e43812d940b010fbab2b820764b4f09b971f0af9d9cbfae41f442e3, role: exact_terminal_stats_integration}
+migration_required: false
+migration_scope: >-
+  No source, packet, GUR, GUP, Review, Approved manifest, rejection,
+  Integration manifest, Integration record, registry, or canonical row changes.
+  The implementation changes only derived Integrator queue classification.
+constitution_version_impact: None. This aligns queue derivation with existing workflow rules.
+affected_contracts: []
+affected_registries: []
+implementation_bounds:
+  - >-
+    Integrator changes only tooling/integrator/src/adnd1e_integrator/bundles.py
+    and tooling/integrator/tests/test_bundles.py.
+  - >-
+    Apply explicit manifest `supersedes` before bounded legacy rNN resolution.
+    The fallback is limited to matching Approved kind, ruleset, book, and
+    packet; it never uses timestamps, filenames alone, source resemblance, or
+    a cross-book comparison.
+  - >-
+    Expose the inference in the normal Integrator queue result, including the
+    affected historical bundle and the selected leaf. A legacy inference cannot
+    be silent.
+  - >-
+    Preserve manifestless legacy component discovery, existing AD&D bundle
+    classifications, declared Review linkage, and declared Integration
+    consumption behavior.
+  - >-
+    Do not modify the scanner, Stats artifacts, canonical files, schemas,
+    contracts, Reviewer tooling, Builder tooling, Herdr, or basicdnd/rc.
+acceptance_tests:
+  - >-
+    `contracts/WORK_QUEUES.md` Version 1.32 or later retains Core Rules 3, 4,
+    and 6 plus Legacy Queue Derivation clauses 1 through 3. Integrator applies
+    those anchors before reporting a manifested Approved bundle as ready.
+  - >-
+    The Stats r05-r01 through r05-r05 fixture resolves exactly one active
+    manifest leaf, r05-r05. r05-r01 and r05-r02 are placed using a reported
+    legacy rNN inference; r05-r03 and r05-r04 are placed by explicit
+    `supersedes`; no historical member reaches the ready queue.
+  - >-
+    INT-20260922-002 continues to classify r05-r05 as integrated. Its shared
+    r05-r01 component path does not make r05-r01 integrated, and no Stats
+    artifact is re-applied, repaired, moved, or rewritten.
+  - >-
+    A matching same-kind, ruleset, book, and packet legacy sequence may infer
+    a leaf, while differing book, packet, kind, malformed revision, ambiguous
+    lineage, and timestamp-only cases do not create a fallback. Existing AD&D
+    ready, superseded, rejected, integrated, and manifestless-legacy fixtures
+    retain their classifications.
+  - >-
+    Focused Integrator bundle tests and the complete Integrator suite pass.
+    IMP-DEC-2026-0096-r01 records exact commands and outcomes; Reviewer
+    independently reproduces the relevant tests.
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.32'
+        substantive_anchors:
+          - Only the active leaf revision of an artifact can create work.
+          - A revision is a leaf when no later artifact of the same kind names its ID in `supersedes`.
+          - Superseded, consumed, reviewed, integrated, failed, and blocked artifacts are not ready work for the ordinary downstream role.
+          - When `supersedes` is absent, infer the latest `rNN` only within one artifact kind and packet.
+          - Never infer order from creation or modification time.
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Integrator implements its bounded bundle-discovery correction and publishes
+    IMP-DEC-2026-0096-r01. Reviewer then independently validates that report.
+  blocking_ids: []
+sequence:
+  - step: 1
+    owner: architect
+    action: Publish this Decision and relocate the resolved escalation to decided history.
+  - step: 2
+    owner: integrator
+    action: >-
+      Implement the bounded Integrator bundle-discovery correction and focused
+      regressions; publish IMP-DEC-2026-0096-r01 without touching Stats
+      workflow or canonical artifacts.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently validate the implementation report and publish its Decision
+      Implementation Review. Return only implementation defects to Integrator.
+post_implementation_requirements:
+  - >-
+    INT-20260922-002 remains the terminal Stats integration. r05-r01 through
+    r05-r04 and INT-20260922-001 remain immutable informational history.
+  - >-
+    Future legacy bundle lineages use the same bounded, reported inference and
+    continue through ordinary Review and Integration controls.
+exact_diff:
+  rulesets/shadowdark/escalations/pending/ESC-2026-09-22T23.23.17.245Z.yaml: Relocate the resolved immutable escalation to decided history.
+  rulesets/shadowdark/escalations/decided/ESC-2026-09-22T23.23.17.245Z.yaml: Preserve the resolved immutable escalation under decided history.
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0096.yaml: Publish the bounded Integrator queue-derivation ruling.
+  tooling/integrator/src/adnd1e_integrator/bundles.py: Apply reported bounded legacy manifest-leaf inference before queue eligibility.
+  tooling/integrator/tests/test_bundles.py: Cover bounded legacy leaf inference and preservation of existing classifications.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-22T23.23.17.245Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decided/ESC-2026-09-22T23.23.17.245Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0096.yaml, owner: architect, sequence_step: 1}
+  - {path: tooling/integrator/src/adnd1e_integrator/bundles.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/tests/test_bundles.py, owner: integrator, sequence_step: 2}
+follow_up_owners:
+  integrator:
+    - Implement DEC-2026-0096 only; do not alter published Stats or canonical artifacts.
+  reviewer:
+    - Independently review IMP-DEC-2026-0096-r01 after Integrator publication.

@@ -1,0 +1,668 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-040-042-random-characters-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-040-042-random-characters
+constitution_version: '1.5'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.1
+  - rulesets/shadowdark/governance/constitution.md 1.5
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0093.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0098.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-040-042-random-characters
+  source_file: source.md
+  packet_source_checksum: sha256:3bb9a192788eee103a76393f6f052b6bbd0d2638c7a60cdab39bf427b3b758ce
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 017-random-characters.md
+  citation_code: SD
+  page_start: 40
+  page_end: 42
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Two markers resolve in the Primary Source Material, both through the Pandoc AST rather than
+  positionally. The page-40 marker ends the RANDOM CHARACTERS heading and the page-41 marker ends the
+  RANDOM CHARACTER LANGUAGE (COMMON) TABLE heading; placement rule 1 applies each to its whole
+  heading. Under the persistence rule the ancestry, class, priest spells, deity and rare language
+  tables fall on page 40, and the wizard spells table, the alignment table, the GEAR subsection and
+  the final gear table fall on page 41, none of which carries a marker of its own. That inheritance
+  is the attribution a positional reading would get wrong, and it is why the rows below split between
+  the two pages as they do. Page 42 is an empty fenced Div carrying the artwork class. A fourth page
+  the parser resolves, 15, lies entirely inside the out-of-scope Supporting Source Context.
+
+page_class_treatment: >-
+  Page 42 is classified full-page-artwork by the repository source steward. Under SOURCE_MARKDOWN 1.8
+  and constitution section 6 the class is page-local intake metadata and creates no node, edge,
+  domain, general rule, citation or uncovered-page obligation, and a classified page inside a
+  declared span is not an uncovered page. It is retained in the completeness accounting below. The
+  AST confirms the Div is empty and that neither earlier page inherits the classification.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 40 through 42. The trailing
+  Supporting Source Context reproduces printed page 15, whose primary packet is
+  PKT-SD-015-015-stats-and-stat-modifiers, outside this packet's declared span. No assertion here is
+  drawn from it and no row cites page 15.
+
+source_summary: >-
+  Printed pages 40 and 41 are an optional character generator. Three framing sentences say the tables
+  may be used to generate a 0-level or 1st-level character, direct the reader to roll stats,
+  background and class talents by the ordinary rules, and say to make selections where no table is
+  provided. Nine rollable tables follow, covering ancestry, class, priest spells, deity, rare and
+  common language, wizard spells, alignment and starting gear, and a GEAR subsection fixes what
+  random characters of each starting tier carry. Page 42 is artwork. This summary is orientation
+  only; every assertion below cites its page.
+
+extraction_posture: >-
+  This packet defines no mechanic. Every concept its tables enumerate is defined elsewhere and most
+  are already canonical, so the question here is not which identities to mint but whether a random
+  selection table creates a mechanical dependency at all. The Analyst's reading is that it does, and
+  of one specific kind: each table is an alternative resolution procedure for a choice the ordinary
+  rules leave to the player, which is exactly what RESOLVED_BY expresses and the same shape the
+  backgrounds and titles tables were given. What the tables produce is deliberately not enumerated
+  as edges; see OBS-01.
+  Every row carries status optional, because the section opens by saying the tables can be used
+  rather than must be. That is the first use of the optional status in this intake and it is the
+  packet's most characteristic property.
+
+graph_state_at_extraction: >-
+  The Shadowdark canonical graph holds 45 registry rows after INT-20260922-002 and INT-20260922-003.
+  The registry was read at extraction rather than recalled. Five identities this packet needs are
+  canonical and are listed under reused_nodes with no proposal: sys_ancestry, sys_class,
+  sys_alignment, sys_language and item_gear. Nine more identities it names are also canonical but are
+  not used by any row here, for the reason in OBS-01, so they are neither reused nor proposed.
+  Five identities it needs are not canonical and are proposed below: sys_deity, spell_priest_spells,
+  spell_wizard_spells, class_priest and lang_draconic. Each is proposed by a sibling GUR or
+  authorized by constitution section 2.2 or 2.3, and each records that. The domain registry is still
+  empty and general_rules.json is still an empty object.
+
+cross_packet_identity_note: >-
+  sys_deity, spell_priest_spells, spell_wizard_spells and class_priest are proposed by sibling GURs
+  that have not yet been integrated, and are proposed again here because rows in this patch use them
+  as endpoints. A GUR must propose every endpoint its edges use unless the endpoint is canonical.
+  Each ID and label is reproduced exactly from the packet that defines it, and its defining locus is
+  recorded, so Reviewer can de-duplicate to a single registry addition.
+  lang_draconic is not proposed by any sibling GUR. It is authorized by constitution section 2.3,
+  which DEC-2026-0098 added, and its defining locus on printed page 32 is claimed but not yet
+  extracted. It is proposed here because M010 needs it; see IDQ-02.
+
+reused_nodes:
+  - id: sys_ancestry
+    label: Ancestry
+    used_by: M001
+    basis: 'present in rulesets/shadowdark/registries/nodes.csv with kind sys; resolves against the registry, so no proposal is made'
+  - id: sys_class
+    label: Class
+    used_by: M002
+    basis: 'present in the canonical registry with kind sys; reused rather than proposed'
+  - id: sys_alignment
+    label: Alignment
+    used_by: M003
+    basis: 'present in the canonical registry with kind sys; reused rather than proposed'
+  - id: sys_language
+    label: Language
+    used_by: M005, M006
+    basis: 'present in the canonical registry with kind sys; reused rather than proposed'
+  - id: item_gear
+    label: Gear
+    used_by: M007
+    basis: 'present in the canonical registry with kind item; reused rather than proposed'
+
+candidate_nodes:
+  - proposed_id: tbl_random_ancestry
+    proposed_label: Random Character Ancestry Table
+    kind: table
+    why_needed: 'Endpoint of M001; the separately headed table that resolves an ancestry at random.'
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 40, its own heading RANDOM CHARACTER ANCESTRY TABLE'
+    source_evidence: 'page 40, the heading over a two-column rollable table of six ancestries, satisfying invariant 5'
+  - proposed_id: tbl_random_class
+    proposed_label: Random Character Class Table
+    kind: table
+    why_needed: 'Endpoint of M002; the separately headed table that resolves a class at random.'
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 40, its own heading RANDOM CHARACTER CLASS TABLE'
+    source_evidence: 'page 40, the heading over a two-column rollable table of four classes, satisfying invariant 5'
+  - proposed_id: tbl_random_alignment
+    proposed_label: Random Character Alignment Table
+    kind: table
+    why_needed: 'Endpoint of M003; the separately headed table that resolves an alignment at random.'
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 41, its own heading RANDOM CHARACTER ALIGNMENT TABLE'
+    source_evidence: 'page 41, the heading over a two-column rollable table of three alignments, satisfying invariant 5'
+  - proposed_id: tbl_random_deity
+    proposed_label: Random Character Deity Table
+    kind: table
+    why_needed: 'Endpoint of M004; the separately headed table that resolves a deity at random.'
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 40, its own heading RANDOM CHARACTER DEITY TABLE'
+    source_evidence: >-
+      page 40, the heading over a two-column rollable table of seven deities. Those seven are exactly
+      the seven constitution section 2.2 authorizes, and The Lost is absent, which is consistent with
+      section 2.2 treating it as unnamed rather than as an eighth deity.
+  - proposed_id: tbl_random_common_language
+    proposed_label: Random Character Language (Common) Table
+    kind: table
+    why_needed: 'Endpoint of M005; the separately headed table that resolves a common language at random.'
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 41, its own heading RANDOM CHARACTER LANGUAGE (COMMON) TABLE'
+    source_evidence: >-
+      page 41, the heading over a two-column rollable table of nine languages and a reroll outcome.
+      Distinct from the rare table by heading, and the Common and Rare split it uses is the one
+      constitution section 2.3 records as source context.
+  - proposed_id: tbl_random_rare_language
+    proposed_label: Random Character Language (Rare) Table
+    kind: table
+    why_needed: 'Endpoint of M006 and locus of M010; the separately headed table that resolves a rare language at random.'
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 40, its own heading RANDOM CHARACTER LANGUAGE (RARE) TABLE'
+    source_evidence: 'page 40, the heading over a two-column rollable table of the four rare languages, one carrying a priest reroll note'
+  - proposed_id: tbl_random_priest_spells
+    proposed_label: Random Character Priest Spells Table
+    kind: table
+    why_needed: 'Endpoint of M008; the separately headed table that resolves a starting priest spell at random.'
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 40, its own heading RANDOM CHARACTER PRIEST SPELLS TABLE'
+    source_evidence: 'page 40, the heading over a two-column rollable table of five named spells and a reroll outcome'
+  - proposed_id: tbl_random_wizard_spells
+    proposed_label: Random Character Wizard Spells Table
+    kind: table
+    why_needed: 'Endpoint of M009; the separately headed table that resolves a starting wizard spell at random.'
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 41, its own heading RANDOM CHARACTER WIZARD SPELLS TABLE'
+    source_evidence: 'page 41, the heading over a two-column rollable table of twelve named spells'
+  - proposed_id: tbl_random_gear
+    proposed_label: Random Character Gear Table
+    kind: table
+    why_needed: 'Endpoint of M007; the separately headed table that resolves starting gear at random for a 0-level character.'
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: false
+    defining_locus: 'SD page 41, under the GEAR subsection'
+    source_evidence: >-
+      page 41, a two-column rollable table of twelve gear items. Its printed heading is RANDOM
+      CHARACTER TABLE, which does not distinguish it from the other eight; the Analyst has given it a
+      disambiguating label and marked it not source-named. See IDQ-01.
+  - proposed_id: sys_deity
+    proposed_label: Deity
+    kind: subsystem
+    why_needed: 'Source of M004. The subsystem whose choice this table resolves at random.'
+    prefix_basis: 'sys_ is a whole subsystem'
+    source_named: true
+    defining_locus: 'SD page 28, heading DEITIES; not this packet'
+    proposed_also_by: GUR-PKT-SD-027-029-alignment-and-deities-r01
+    source_evidence: 'page 40, the RANDOM CHARACTER DEITY TABLE heading and its seven entries. The ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: spell_priest_spells
+    proposed_label: Priest Spells
+    kind: spell family
+    why_needed: 'Source of M008. The family whose starting selection this table resolves at random.'
+    prefix_basis: 'spell_ explicitly covers a source-named spell family'
+    source_named: true
+    defining_locus: 'SD page 51, the priest spell list; not this packet'
+    proposed_also_by: GUR-PKT-SD-020-021-priest-class-r01
+    source_evidence: 'page 40, the RANDOM CHARACTER PRIEST SPELLS TABLE heading. The ID and label are reproduced from the sibling proposal exactly.'
+  - proposed_id: spell_wizard_spells
+    proposed_label: Wizard Spells
+    kind: spell family
+    why_needed: 'Source of M009. The family whose starting selection this table resolves at random.'
+    prefix_basis: 'spell_ explicitly covers a source-named spell family'
+    source_named: true
+    defining_locus: 'SD page 52, the wizard spell list; not this packet'
+    proposed_also_by: GUR-PKT-SD-024-025-wizard-class-r01
+    source_evidence: 'page 41, the RANDOM CHARACTER WIZARD SPELLS TABLE heading. The ID and label are reproduced from the sibling proposal exactly.'
+  - proposed_id: class_priest
+    proposed_label: Priest
+    kind: class
+    why_needed: 'Source of M010. The class the rare language table singles out for a reroll.'
+    prefix_basis: 'class_ is a character class'
+    source_named: true
+    defining_locus: 'SD page 20, heading PRIEST CLASS; not this packet'
+    proposed_also_by: GUR-PKT-SD-020-021-priest-class-r01
+    source_evidence: >-
+      page 40, the rare language table row reading Draconic (priest reroll). This is a secondary
+      mention; the ID and label are reproduced from the defining locus exactly.
+  - proposed_id: lang_draconic
+    proposed_label: Draconic
+    kind: language
+    why_needed: 'Endpoint of M010. The one rare language a priest may not take from this table.'
+    prefix_basis: 'lang_ is an individually source-named language, authorised by constitution section 2.3'
+    source_named: true
+    defining_locus: 'SD page 32, RARE LANGUAGES TABLE; not this packet'
+    source_evidence: >-
+      page 40, the rare language table row reading Draconic (priest reroll). Constitution section 2.3
+      names this exact ID and label. Its defining locus is claimed but not yet extracted; see IDQ-02.
+
+candidate_edges:
+  - ref: M001
+    source_id: sys_ancestry
+    source_label: Ancestry
+    edge_type: RESOLVED_BY
+    target_id: tbl_random_ancestry
+    target_label: Random Character Ancestry Table
+    aspect: random selection
+    condition: ''
+    book: SD
+    page: 40
+    section: RANDOM CHARACTER ANCESTRY TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table turns a die roll into an ancestry, which is a resolution procedure for a choice the
+      ordinary rules leave to the player, and RESOLVED_BY runs thing to procedure. Status is optional
+      because the section opens by saying the tables can be used, not that they must be; every row in
+      this GUR carries that status for the same reason. The die and the row bands are magnitudes and
+      are excluded. The source is the ancestry axis rather than the six individual ancestries; see
+      OBS-01. Derived polarity governs.
+  - ref: M002
+    source_id: sys_class
+    source_label: Class
+    edge_type: RESOLVED_BY
+    target_id: tbl_random_class
+    target_label: Random Character Class Table
+    aspect: random selection
+    condition: ''
+    book: SD
+    page: 40
+    section: RANDOM CHARACTER CLASS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M003
+    source_id: sys_alignment
+    source_label: Alignment
+    edge_type: RESOLVED_BY
+    target_id: tbl_random_alignment
+    target_label: Random Character Alignment Table
+    aspect: random selection
+    condition: ''
+    book: SD
+    page: 41
+    section: RANDOM CHARACTER ALIGNMENT TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Cited to page 41 because the alignment table follows the page-41 marker and inherits that page
+      under the persistence rule, even though the first five tables are on page 40.
+  - ref: M004
+    source_id: sys_deity
+    source_label: Deity
+    edge_type: RESOLVED_BY
+    target_id: tbl_random_deity
+    target_label: Random Character Deity Table
+    aspect: random selection
+    condition: ''
+    book: SD
+    page: 40
+    section: RANDOM CHARACTER DEITY TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M005
+    source_id: sys_language
+    source_label: Language
+    edge_type: RESOLVED_BY
+    target_id: tbl_random_common_language
+    target_label: Random Character Language (Common) Table
+    aspect: common selection
+    condition: ''
+    book: SD
+    page: 41
+    section: RANDOM CHARACTER LANGUAGE (COMMON) TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The language axis has two random tables rather than one, so M005 and M006 are distinguished by
+      aspect under the constitution section 4 assertion key. The aspects name which of the two the
+      row resolves without asserting that Common and Rare are a stored property of a language, which
+      constitution section 2.3 explicitly says they are not.
+  - ref: M006
+    source_id: sys_language
+    source_label: Language
+    edge_type: RESOLVED_BY
+    target_id: tbl_random_rare_language
+    target_label: Random Character Language (Rare) Table
+    aspect: rare selection
+    condition: ''
+    book: SD
+    page: 40
+    section: RANDOM CHARACTER LANGUAGE (RARE) TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M007
+    source_id: item_gear
+    source_label: Gear
+    edge_type: RESOLVED_BY
+    target_id: tbl_random_gear
+    target_label: Random Character Gear Table
+    aspect: starting selection
+    condition: for a random zero level character
+    book: SD
+    page: 41
+    section: GEAR
+    evidence: explicit_rule
+    pass: 1
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table resolves what a randomly generated 0-level character carries. The starting tier is
+      carried in the condition rather than as a separate endpoint, because the dependency is on the
+      gear being determined randomly, not on the tier determining the table. The item count is a die
+      expression and is excluded. The 1st-level loadout in the same subsection is not asserted; see
+      OBS-03.
+  - ref: M008
+    source_id: spell_priest_spells
+    source_label: Priest Spells
+    edge_type: RESOLVED_BY
+    target_id: tbl_random_priest_spells
+    target_label: Random Character Priest Spells Table
+    aspect: random selection
+    condition: ''
+    book: SD
+    page: 40
+    section: RANDOM CHARACTER PRIEST SPELLS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table selects from the priest spell family rather than resolving how a spell is cast. The
+      five named spells in its rows are not proposed as identities; see OBS-02.
+  - ref: M009
+    source_id: spell_wizard_spells
+    source_label: Wizard Spells
+    edge_type: RESOLVED_BY
+    target_id: tbl_random_wizard_spells
+    target_label: Random Character Wizard Spells Table
+    aspect: random selection
+    condition: ''
+    book: SD
+    page: 41
+    section: RANDOM CHARACTER WIZARD SPELLS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M010
+    source_id: class_priest
+    source_label: Priest
+    edge_type: EXCLUDES
+    target_id: lang_draconic
+    target_label: Draconic
+    aspect: random rare language
+    condition: ''
+    book: SD
+    page: 40
+    section: RANDOM CHARACTER LANGUAGE (RARE) TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The Draconic row reads Draconic (priest reroll), so a priest who rolls it does not take it.
+      This is a negative dependency the source states directly, which responsibility 16 admits, and
+      EXCLUDES actively prevents a relation and runs excluder to excluded. The aspect confines the
+      exclusion to this random table: the source says nothing about whether a priest may learn
+      Draconic by another route, and asserting a general prohibition would say more than the page
+      does. This is the only rule on these two pages that is not a plain selection procedure, and it
+      is the reason class_priest and lang_draconic are proposed at all. Derived polarity negates.
+
+authored_polarity_declaration: >-
+  No row carries authored polarity. Constitution section 5 restricts authored polarity to MODIFIES,
+  TRIGGERS and CONSTRAINS, and this packet proposes none of those: nine rows are RESOLVED_BY and one
+  is EXCLUDES, which Builder derives as governs and negates respectively. No polarity or
+  polarity_basis value is set by the Analyst on any row.
+
+domains_touched: []
+candidate_domains:
+  - proposed: character_creation
+    basis: >-
+      Every table here resolves a creation-time choice. Recorded as a candidate only; now suggested
+      by a ninth packet, which is noted and deliberately not treated as promotion. Constitution
+      section 8 reserves promotion to an Architect Decision and the Analyst does not decide a
+      candidate domain is official.
+
+domain_boundary_questions:
+  - >-
+    An optional generator sits oddly in any domain: it touches ancestry, class, alignment, deity,
+    language, spells and gear without belonging to any of them. Whether optional procedures form
+    their own domain cannot be settled here. Deferred; no domain is asserted on any edge.
+
+candidate_general_rules:
+  - proposed: a character choice with a random table may be resolved by rolling on it
+    establishing_locus: 'SD pages 40 and 41, the nine random character tables'
+    basis: >-
+      Nine rows repeat one shape exactly, and the framing sentence generalises it in the source's own
+      words by saying to make selections where no table is provided. If approved, the nine explicit
+      rows could become derived applications and any later optional table would be covered.
+    not_applied: >-
+      Recorded as a candidate only. Constitution section 5 requires a separate Architect ruling with
+      an establishing locus, scope, counterexamples and affected set before a general rule exists,
+      and the Analyst is prohibited from promoting one. A counterexample is visible on the page
+      itself and is why the Analyst is not confident: stats, background and class talents also have
+      tables, and the framing sentence sends the reader to roll those by their ordinary rules rather
+      than on a table here, so the rule would need to distinguish a generator table from an ordinary
+      one. No edge in this GUR sets general_rule_id.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: what the tables produce is deliberately not enumerated as edges
+    detail: >-
+      The ancestry table's six rows are the six canonical ancestries, the class table's four rows are
+      the four classes, the alignment table's three rows are the three alignments and the deity
+      table's seven rows are the seven authorized deities. Every one of those identities exists, and
+      twenty rows could be written from table to outcome.
+      None is. The closed section 3 vocabulary has no produces or selects type, and no legal type
+      means it: RESOLVED_BY reversed would say an ancestry is resolved by a table that merely lists
+      it among six, GATES would say the table is a precondition for the ancestry existing, and
+      FEEDS_INTO would say the table supplies an input to it. Each asserts something false.
+      What the page mechanically adds is that the choice may be made by rolling, and the nine
+      axis-level rows carry exactly that. The consequence is recorded plainly: a query for which
+      ancestries the random table can produce returns nothing, and the enumeration lives only in the
+      immutable packet. Nine canonical identities named on these pages are therefore neither reused
+      nor proposed, because no row uses them and an unused node is an orphan.
+  - id: OBS-02
+    subject: seventeen named spells are not proposed
+    detail: >-
+      The priest table names five spells and the wizard table twelve, all in italics. They are
+      source-named and bounded, which is ordinarily what makes an identity proposable, and the
+      spell_ prefix is approved.
+      None is proposed. This packet is not their defining locus: the contents list places the priest
+      and wizard spell lists on printed pages 51 and 52 and the Spells chapter beyond, and
+      SOURCE_MARKDOWN Source Identity Authority names a selection table as exactly the kind of
+      secondary listing that cannot name a concept defined elsewhere. Proposing seventeen spells from
+      a generator table would also fix seventeen spellings from the wrong place. M008 and M009 assert
+      the relationship at the family level, which is what this page supports.
+  - id: OBS-03
+    subject: the fixed 1st-level loadout is not asserted
+    detail: >-
+      The GEAR subsection says a random 1st-level character has a crawling kit, one weapon, leather
+      armor if they can wear it, and a stated sum of gold. This is a genuine rule and a real
+      alternative to the ordinary starting gear on printed page 33, which gives a 1st-level character
+      rolled gold to buy equipment instead of a fixed kit.
+      It is not asserted, for two reasons that both point the same way. Its components,
+      tbl_crawling_kit, item_leather_armor and item_coin, are identities proposed by
+      GUR-PKT-SD-033-037 that are not yet canonical, and the ordinary starting gear rows they would
+      have to relate to are asserted in that same GUR; expressing the substitution here would state
+      a relationship between two rules whose own assertions live in another packet and have not been
+      through Review. The one weapon is also unspecified, so no weapon identity applies.
+      The substitution is worth capturing and the Analyst expects to return to it. Once the gear
+      packet is integrated, either a successor revision here or a revision there can assert it with
+      the identities settled. Recorded so the omission is visibly deferred rather than missed.
+  - id: OBS-04
+    subject: two reroll outcomes are not extractable
+    detail: >-
+      The priest spells table's highest row and the common language table's highest row both read
+      Reroll. A reroll outcome names no mechanic and produces no result; it is an instruction about
+      using the table, and an edge would have to point at the table itself. Not extracted.
+      This is deliberately treated differently from the Draconic reroll in M010, which is not a bare
+      reroll outcome but a conditional exclusion attached to a named language for a named class, and
+      which therefore does relate two identities.
+  - id: OBS-05
+    subject: the framing sentences point at three mechanics resolved elsewhere
+    detail: >-
+      The opening directs the reader to roll stats, background and class talents as normal, citing
+      printed pages 15, 26 and 20 to 24. All three already have resolution rows asserted from their
+      own defining loci: stat generation in GUR-PKT-SD-015-015, the backgrounds table in
+      GUR-PKT-SD-026-026, and the four class talents tables in the four class GURs. Repeating any of
+      them here would duplicate an existing assertion, and in the background case would collide under
+      the constitution section 4 assertion key. The third sentence, to make selections where no table
+      is provided, states a default rather than a dependency.
+  - id: OBS-06
+    subject: The Lost is absent from the deity table, consistently with the ruling
+    detail: >-
+      The random deity table has seven rows and names exactly the seven deities constitution section
+      2.2 authorizes. The Lost, which has its own heading on printed page 29, is not among them.
+      Recorded because it is independent source evidence for the ruling's reasoning: section 2.2
+      holds that The Lost denotes two unnamed deities rather than one identity, and a generator table
+      that must yield a usable result omits it. Nothing is asserted from this; it is corroboration of
+      a decision already made, not a new reading.
+  - id: OBS-07
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The pages carry a die expression and row bands for each of the nine tables, the count of
+      starting items for a 0-level character, and the gold sum for a 1st-level one. All are die
+      expressions, index values, counts or currency amounts, excluded by constitution section 1 and
+      invariant 11. They remain in the immutable claimed packet, which is the authority for the values
+      themselves. No aspect in this GUR contains a digit, and the one condition naming a level spells
+      it in words rather than encoding a threshold.
+  - id: OBS-08
+    subject: the packet manifest declares an earlier constitution version
+    detail: >-
+      packet.yaml for this packet records constitution_version 1.4, which was current when the packet
+      was claimed a few minutes before DEC-2026-0100 advanced the Constitution to 1.5. This GUR
+      declares 1.5 and was validated against it.
+      The manifest is left exactly as published. Constitution section 9 says not to rewrite immutable
+      packet manifests merely for an additive bump, and DEC-2026-0100 says the same of GURs. The
+      discrepancy affects no assertion: the manifest's authority is over page attribution, source
+      identity and composition, none of which changed between 1.4 and 1.5, whose only effect was to
+      move the historical version list into the ruleset manifest.
+  - id: OBS-09
+    subject: packet wrapper and supporting context
+    detail: >-
+      The supplied file opens with an intake wrapper ahead of the Primary Source Material heading,
+      for which the claim manifest is the independent page locator SOURCE_MARKDOWN Attribution Rules
+      requires; it contains no rulebook prose, heading or marker. The trailing Supporting Source
+      Context reproduces printed page 15 and is orientation only, contributing nothing here.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: the gear table's printed heading does not distinguish it
+    detail: >-
+      Eight tables on these pages carry headings beginning RANDOM CHARACTER and naming their subject.
+      The ninth, the gear table, is headed simply RANDOM CHARACTER TABLE. Taken literally that
+      heading would be the source name for a table of gear, which is misleading, and it collides in
+      spirit with the eight siblings.
+      The Analyst proposed tbl_random_gear with the label Random Character Gear Table and marked the
+      node source_named false, recording that the label is Analyst-supplied. Reusing the printed
+      heading verbatim would produce an identity whose name does not say what it resolves, and
+      SOURCE_MARKDOWN gives the packet authority over spelling for mechanics it explicitly names,
+      which this heading arguably fails to do for its own content.
+      Consequence if wrong: if Reviewer prefers the printed heading, the label changes and the ID may
+      follow; one row repoints and nothing else changes. Recorded rather than decided quietly,
+      because it is the one place in this packet where the Analyst did not take the source's own
+      wording.
+  - id: IDQ-02
+    subject: lang_draconic is proposed from a secondary mention
+    detail: >-
+      lang_draconic is authorized by constitution section 2.3 and its defining locus is the rare
+      languages table on printed page 32, which this Analyst has claimed but not yet extracted. It is
+      proposed here from a generator table row, which is a secondary mention.
+      The Analyst proposed it because M010 needs an endpoint and a GUR must propose every endpoint it
+      uses that is not canonical, and because the exclusion it carries is the only non-routine rule
+      on these pages and would otherwise be lost. The ID and label are taken from section 2.2's
+      enumeration rather than derived from this mention, so no spelling is being fixed from the wrong
+      locus.
+      Consequence if wrong: when printed page 32 is extracted it will propose the same identity from
+      its defining locus, and Reviewer de-duplicates to one registry addition, which is the ordinary
+      path. If that packet is extracted first, this proposal becomes redundant and harmless.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Every proposed node uses an approved constitution section 2 prefix with an unchanged
+  kind, including lang_ under section 2.3 and sys_ for the deity axis, every edge uses one of the
+  thirteen legal section 3 types, and no new prefix, edge type, domain promotion or general-rule
+  application is requested. ESCALATION_CONTRACT states that a proposed node under an approved prefix
+  and kind which passes identity and duplicate checks is ordinary GUR, GUP and Review work rather
+  than an escalation. IDQ-01 and IDQ-02 are recorded for Reviewer on that basis.
+  Unrelated to this packet's content: the Analyst raised ESC-2026-09-23T11.55.59.428Z earlier today
+  on which constitution versions an incoming GUR may declare, after finding every active GUR leaf
+  uncompilable. It was decided as DEC-2026-0100, which moved the historical list into
+  rulesets/shadowdark/ruleset.yaml and advanced the Constitution to 1.5. This GUR was staged
+  declaring 1.4 and was updated to 1.5 before publication, which is not a reissue: it had not been
+  published, and DEC-2026-0100 prohibits reissuing a published GUR solely to advance its version.
+
+completeness_statement: >-
+  All three printed pages in the declared span are accounted for. Page 40 was read in full: the
+  RANDOM CHARACTERS heading, all three framing sentences dispositioned in OBS-05, and the ancestry,
+  class, priest spells, deity and rare language tables with their headings, column headings and every
+  row, supplying M001, M002, M004, M006, M008 and M010. Page 41 was read in full: the common
+  language, wizard spells and alignment tables supplying M003, M005 and M009, the GEAR subsection
+  with both starting-tier statements of which the 0-level one supplies M007 and the 1st-level one is
+  dispositioned in OBS-03, and the final gear table with all twelve rows. Page 42 is the steward's
+  full-page-artwork page.
+  Every page marker was resolved through the Pandoc AST and the in-scope resolved page set matches
+  the declared span with no gap; the four blocks that inherit page 41 under the persistence rule are
+  named in page_attribution_basis. The Supporting Source Context reproducing printed page 15 is out
+  of scope and contributed nothing. Ten edges are proposed across fourteen candidate nodes, with five
+  canonical nodes reused rather than proposed; this is the first extraction in the intake to reuse
+  canonical identities. Content not converted to an edge is accounted for in OBS-01 through OBS-09,
+  in particular the twenty table outcomes and seventeen named spells that are deliberately not
+  enumerated, and the two questions the Analyst could not settle are recorded in IDQ-01 and IDQ-02
+  rather than resolved silently. No assertion depends on any other ruleset.

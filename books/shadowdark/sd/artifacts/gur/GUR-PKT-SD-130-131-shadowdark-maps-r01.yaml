@@ -1,0 +1,564 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-130-131-shadowdark-maps-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-130-131-shadowdark-maps
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-130-131-shadowdark-maps
+  source_file: source.md
+  packet_source_checksum: sha256:46a5afdb3cb3d19d764964f536350ca47fa113ec610a2076c101fe90a22ce492
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 053-shadowdark-maps.md
+  citation_code: SD
+  page_start: 130
+  page_end: 131
+  page_number_basis: packet_page_markers
+units_note: 'Figures name their unit. Measured by the assembling script from the claimed source: 12 named
+  tables and 55 data rows across them, on two printed pages.'
+page_attribution_basis: 'Both markers sit on headings. p130 ends the SHADOWDARK MAPS heading and p131
+  ends the MAP TRAP TABLE heading, and placement rule 1 applies each to its whole heading with the persistence
+  rule carrying it forward. Verified against the claimed source that no marker appears inside a table
+  row.
+
+  So the procedure''s prose and the four top-level tables, danger level, site size, site type and room
+  type, are printed page 130, and the eight contents tables are printed page 131. Five rows cite page
+  130 and eight cite page 131.'
+scope_boundary: 'The bounded scope is the Primary Source Material section, printed pages 130 and 131:
+  five paragraphs of procedure and 12 named tables. The trailing Supporting Source Context is out of scope.'
+source_summary: 'A physical dungeon generator. Roll or choose a site size and type, take the number of
+  dice the size gives, and roll them together on blank paper. Note where each die fell, draw an outline
+  around them to form the site''s shape, and separate rooms with walls and passages matching the site
+  type. The number showing on each die gives that room''s type, and the reader then rolls on the corresponding
+  contents table. The site''s objective or boss monster sits in the room with the highest room type roll.
+  Finally roll the site''s overall danger level. Twelve tables support this: four rolled directly and
+  eight reached through the room type.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled, and every figure here
+  is computed by the assembling script from the canonical files and the claimed source.
+
+  The canonical graph holds 348 registry rows and 717 edges, and 0 rows cite printed pages 130 or 131,
+  so nothing in this span has been extracted before. No map, site or room identity exists. The registry
+  holds 65 tbl_ identities and 34 identities overall carry no edge.
+
+  rule_danger_level was read in full before anything here was written: it carries 3 rows, all from printed
+  pages 86 and 90, and 0 of them is a RESOLVED_BY row from it. That matters because this page''s danger
+  level table is the first thing in the intake to resolve it.'
+two_tier_structure_note: 'The rows deliberately mirror the procedure''s two tiers rather than flattening
+  every table onto the parent, and that choice is the main thing to check in this packet.
+
+  Four tables are rolled directly by the procedure: danger level, site size, site type and room type.
+  Each takes a RESOLVED_BY row from rule_shadowdark_maps. The other eight are not rolled directly at all.
+  The prose says the number on each die gives the room''s type and then to roll on the corresponding table
+  for its contents, so the room type is what selects among those eight. Each therefore takes a FEEDS_INTO
+  row from tbl_map_room_type rather than a second RESOLVED_BY row from the parent.
+
+  The alternative was twelve uniform parent rows, which would have been simpler and wrong: it would say
+  a reader rolls the boss monster table as a step of the procedure, when in fact they roll it only if
+  a room came up as a boss room. Carrying the hinge preserves the shape a reader needs, and it makes tbl_map_room_type
+  visibly the centre of the page with nine incident rows.
+
+  This is the first packet in the intake where a table''s own result selects another table, so the shape
+  is new. It is also why the eight contents tables are not registry additions despite their results being
+  purely descriptive: they are reached, just not from the top.'
+reused_nodes:
+- id: rule_danger_level
+  label: Danger Level
+  used_by: M005
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical from printed page 86 with 3 rows, none of them a RESOLVED_BY; this page's table
+    is the first to resolve it, and its three results are exactly the three values that identity holds.
+candidate_nodes:
+- proposed_id: rule_shadowdark_maps
+  proposed_label: Shadowdark Maps
+  kind: procedure
+  why_needed: The named procedure these pages define, generating a dungeon by scattering dice on paper
+    and reading position and value. Five paragraphs state it as a sequence of steps, so it is a source-defined
+    identity rather than a heading, and the four top-level tables resolve it.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 130, SHADOWDARK MAPS
+  source_evidence: page 130, the SHADOWDARK MAPS heading and its five procedure paragraphs.
+- proposed_id: tbl_map_danger_level
+  proposed_label: Map Danger Level Table
+  kind: table
+  why_needed: Resolves the site's overall danger level. Its three results are the three values rule_danger_level
+    holds, so it also earns a row from that identity.
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 130, MAP DANGER LEVEL TABLE
+  source_evidence: page 130, the MAP DANGER LEVEL TABLE heading and its data rows.
+- proposed_id: tbl_map_site_size
+  proposed_label: Map Site Size Table
+  kind: table
+  why_needed: Resolves the site's size and the number of dice to scatter for it.
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 130, MAP SITE SIZE TABLE
+  source_evidence: page 130, the MAP SITE SIZE TABLE heading and its data rows.
+- proposed_id: tbl_map_site_type
+  proposed_label: Map Site Type Table
+  kind: table
+  why_needed: Resolves the site's type, which shapes how rooms are connected.
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 130, MAP SITE TYPE TABLE
+  source_evidence: page 130, the MAP SITE TYPE TABLE heading and its data rows.
+- proposed_id: tbl_map_room_type
+  proposed_label: Map Room Type Table
+  kind: table
+  why_needed: 'Resolves what each room is, read from the number showing on the die that fell there. It
+    is the hinge of the procedure: its result selects which contents table to roll.'
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 130, MAP ROOM TYPE TABLE
+  source_evidence: page 130, the MAP ROOM TYPE TABLE heading and its data rows.
+- proposed_id: tbl_map_trap
+  proposed_label: Map Trap Table
+  kind: table
+  why_needed: Registers the named contents table the room type selects when a room comes up as trap. Its
+    results are descriptive, but it is reached from tbl_map_room_type rather than being unattached.
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 131, MAP TRAP TABLE
+  source_evidence: page 131, the MAP TRAP TABLE heading and its data rows.
+- proposed_id: tbl_map_monster_mob
+  proposed_label: Map Monster Mob Table
+  kind: table
+  why_needed: Registers the named contents table the room type selects when a room comes up as monster
+    mob. Its results are descriptive, but it is reached from tbl_map_room_type rather than being unattached.
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 131, MAP MONSTER MOB TABLE
+  source_evidence: page 131, the MAP MONSTER MOB TABLE heading and its data rows.
+- proposed_id: tbl_map_minor_hazard
+  proposed_label: Map Minor Hazard Table
+  kind: table
+  why_needed: Registers the named contents table the room type selects when a room comes up as minor hazard.
+    Its results are descriptive, but it is reached from tbl_map_room_type rather than being unattached.
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 131, MAP MINOR HAZARD TABLE
+  source_evidence: page 131, the MAP MINOR HAZARD TABLE heading and its data rows.
+- proposed_id: tbl_map_major_hazard
+  proposed_label: Map Major Hazard Table
+  kind: table
+  why_needed: Registers the named contents table the room type selects when a room comes up as major hazard.
+    Its results are descriptive, but it is reached from tbl_map_room_type rather than being unattached.
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 131, MAP MAJOR HAZARD TABLE
+  source_evidence: page 131, the MAP MAJOR HAZARD TABLE heading and its data rows.
+- proposed_id: tbl_map_solo_monster
+  proposed_label: Map Solo Monster Table
+  kind: table
+  why_needed: Registers the named contents table the room type selects when a room comes up as solo monster.
+    Its results are descriptive, but it is reached from tbl_map_room_type rather than being unattached.
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 131, MAP SOLO MONSTER TABLE
+  source_evidence: page 131, the MAP SOLO MONSTER TABLE heading and its data rows.
+- proposed_id: tbl_map_treasure
+  proposed_label: Map Treasure Table
+  kind: table
+  why_needed: Registers the named contents table the room type selects when a room comes up as treasure.
+    Its results are descriptive, but it is reached from tbl_map_room_type rather than being unattached.
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 131, MAP TREASURE TABLE
+  source_evidence: page 131, the MAP TREASURE TABLE heading and its data rows.
+- proposed_id: tbl_map_npc
+  proposed_label: Map NPC Table
+  kind: table
+  why_needed: Registers the named contents table the room type selects when a room comes up as npc. Its
+    results are descriptive, but it is reached from tbl_map_room_type rather than being unattached.
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 131, MAP NPC TABLE
+  source_evidence: page 131, the MAP NPC TABLE heading and its data rows.
+- proposed_id: tbl_map_boss_monster
+  proposed_label: Map Boss Monster Table
+  kind: table
+  why_needed: Registers the named contents table the room type selects when a room comes up as boss monster.
+    Its results are descriptive, but it is reached from tbl_map_room_type rather than being unattached.
+  prefix_basis: tbl_ is a named source table; matches the 65 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 131, MAP BOSS MONSTER TABLE
+  source_evidence: page 131, the MAP BOSS MONSTER TABLE heading and its data rows.
+candidate_edges:
+- ref: M001
+  source_id: rule_shadowdark_maps
+  source_label: Shadowdark Maps
+  edge_type: RESOLVED_BY
+  target_id: tbl_map_danger_level
+  target_label: Map Danger Level Table
+  aspect: danger level
+  condition: ''
+  book: SD
+  page: 130
+  section: MAP DANGER LEVEL TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_shadowdark_maps
+  source_label: Shadowdark Maps
+  edge_type: RESOLVED_BY
+  target_id: tbl_map_site_size
+  target_label: Map Site Size Table
+  aspect: site size
+  condition: ''
+  book: SD
+  page: 130
+  section: MAP SITE SIZE TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_shadowdark_maps
+  source_label: Shadowdark Maps
+  edge_type: RESOLVED_BY
+  target_id: tbl_map_site_type
+  target_label: Map Site Type Table
+  aspect: site type
+  condition: ''
+  book: SD
+  page: 130
+  section: MAP SITE TYPE TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_shadowdark_maps
+  source_label: Shadowdark Maps
+  edge_type: RESOLVED_BY
+  target_id: tbl_map_room_type
+  target_label: Map Room Type Table
+  aspect: room type
+  condition: ''
+  book: SD
+  page: 130
+  section: MAP ROOM TYPE TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: rule_danger_level
+  source_label: Danger Level
+  edge_type: RESOLVED_BY
+  target_id: tbl_map_danger_level
+  target_label: Map Danger Level Table
+  aspect: map selection
+  condition: ''
+  book: SD
+  page: 130
+  section: MAP DANGER LEVEL TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: tbl_map_room_type
+  source_label: Map Room Type Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_map_trap
+  target_label: Map Trap Table
+  aspect: contents table
+  condition: ''
+  book: SD
+  page: 131
+  section: MAP TRAP TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: tbl_map_room_type
+  source_label: Map Room Type Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_map_monster_mob
+  target_label: Map Monster Mob Table
+  aspect: contents table
+  condition: ''
+  book: SD
+  page: 131
+  section: MAP MONSTER MOB TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: tbl_map_room_type
+  source_label: Map Room Type Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_map_minor_hazard
+  target_label: Map Minor Hazard Table
+  aspect: contents table
+  condition: ''
+  book: SD
+  page: 131
+  section: MAP MINOR HAZARD TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: tbl_map_room_type
+  source_label: Map Room Type Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_map_major_hazard
+  target_label: Map Major Hazard Table
+  aspect: contents table
+  condition: ''
+  book: SD
+  page: 131
+  section: MAP MAJOR HAZARD TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: tbl_map_room_type
+  source_label: Map Room Type Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_map_solo_monster
+  target_label: Map Solo Monster Table
+  aspect: contents table
+  condition: ''
+  book: SD
+  page: 131
+  section: MAP SOLO MONSTER TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M011
+  source_id: tbl_map_room_type
+  source_label: Map Room Type Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_map_treasure
+  target_label: Map Treasure Table
+  aspect: contents table
+  condition: ''
+  book: SD
+  page: 131
+  section: MAP TREASURE TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M012
+  source_id: tbl_map_room_type
+  source_label: Map Room Type Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_map_npc
+  target_label: Map NPC Table
+  aspect: contents table
+  condition: ''
+  book: SD
+  page: 131
+  section: MAP NPC TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M013
+  source_id: tbl_map_room_type
+  source_label: Map Room Type Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_map_boss_monster
+  target_label: Map Boss Monster Table
+  aspect: contents table
+  condition: ''
+  book: SD
+  page: 131
+  section: MAP BOSS MONSTER TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: No authored polarity appears. Every row is RESOLVED_BY or FEEDS_INTO, neither
+  of which is among the three types constitution section 5 reserves for authored polarity, so assigning
+  one is prohibited to the Analyst and invariant 15 has nothing to require. Builder derives governs on
+  the five RESOLVED_BY rows and neutral on the eight FEEDS_INTO rows.
+status_note: All rows are core, following the disposition settled as IDQ-01 of PKT-SD-124-125 and applied
+  again in PKT-SD-126-127. This page presents its procedure directly, with roll or choose offered only
+  for the site size and type rather than as an alternative to the procedure itself, and nothing here declares
+  the page optional in the way The Gauntlet on printed page 116 and the modes of play on 111 do.
+domains_touched: []
+candidate_domains: []
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The eight contents rows share a shape, but they enumerate
+  eight named source tables rather than instancing a rule, and the Analyst is prohibited from promoting
+  a general rule.
+rejected_candidates:
+- text_locus: the physical dice-scattering procedure, p130
+  quoted_gist: take the number of dice the size gives and roll them together on blank paper, note where
+    each fell, draw an outline around them, separate rooms with walls and passages matching the type
+  why_considered: It is the most distinctive thing on the page and the actual heart of the generator,
+    stated imperatively across three paragraphs.
+  rejection_reason: It is a procedure performed on paper with no game-mechanical endpoints. There is no
+    identity for a die's position, a room's outline, a wall or a passage, and minting them would create
+    a cluster describing a drawing technique rather than a rule any other mechanic reads. The dice counts
+    are magnitudes. What survives is that the size table supplies the dice count and the type table shapes
+    the connections, both carried as RESOLVED_BY rows from the procedure. Recorded as OBS-01 because the
+    loss is large and deliberate.
+- text_locus: the room type results naming canonical rules, p130
+  quoted_gist: the ten room types include Trap, Minor hazard, Major hazard and Treasure
+  why_considered: Four of the ten results name identities the graph already holds, rule_traps, rule_hazards
+    and rule_treasure, all canonical and all extracted within the last twelve packets. Under the results-are-identities
+    test from PKT-SD-124-125 this looked like it should yield rows.
+  rejection_reason: 'That test does not transfer, and working out why is IDQ-01. It applied where a table
+    selects among the members of an axis, so the axis is what the table resolves: sys_ancestry holds six
+    ancestries and the table picks one. rule_traps is not an axis and has no members; a room being a trap
+    room is not the traps rule taking a value. Neither RESOLVED_BY direction reads correctly, and the
+    honest relation, that a generated site contains traps, has no type in the closed vocabulary that fits
+    without inventing a containment semantic. Recorded as IDQ-01 rather than forced.'
+- text_locus: the highest-roll placement rule, p130
+  quoted_gist: the site's objective or boss monster is located in the room with the highest room type
+    roll
+  why_considered: An unhedged placement rule, and it interlocks with the room type table, whose highest
+    result is Boss monster.
+  rejection_reason: 'Its content is an ordering over die results, which is a magnitude relation no field
+    may store, and there is no identity for a room or a position for the rule to relate. It is also partly
+    redundant: the room type table already makes the boss its top result, so the sentence mainly tells
+    a reader which room to pick when two rooms tie or when an objective replaces the boss. Neither half
+    is expressible.'
+- text_locus: the contents tables' own results, p131
+  quoted_gist: descriptor pairs such as Crude and Ensnaring for traps or Sneaky and Ambusher for a solo
+    monster, and single descriptors such as Short fall, Antimagic zone, Hidden, Captive and Supreme sorcerer
+  why_considered: 'Some brush canonical concepts: an antimagic zone echoes the hazard examples on printed
+    page 115, a drowning hazard echoes swimming, and Rival adventurers echoes rule_rival_crawlers, canonical
+    from printed page 126.'
+  rejection_reason: 'All are flavour descriptors for a GM filling in a room, and none states a check,
+    a value, a duration or a consequence. The Rival adventurers result is the closest call and still fails:
+    it names a kind of NPC to put in a room, not a relation to the rival crawler generator, and asserting
+    one would claim map generation invokes that generator, which the page does not say. The eight tables
+    are proposed and each is reached from the room type, which is what is expressible.'
+non_edge_observations:
+- id: OBS-01
+  subject: the page's most distinctive content is its least expressible
+  detail: 'The physical procedure is what makes this generator unusual: dice are scattered on paper and
+    their positions become the map. None of it reaches the graph, because a die''s position, a room outline,
+    a wall and a passage have no identities and minting them would describe a drawing technique rather
+    than a rule.
+
+    Recorded because the gap is the opposite shape from the ones logged over the last few packets. Those
+    were tables of flavour with no mechanics to find. Here there is a genuine, precise, physical mechanic
+    and the vocabulary has nothing to hold it with. What the graph keeps is the table structure around
+    it, which is real but is the scaffolding rather than the method.'
+- id: OBS-02
+  subject: the first table in the intake whose result selects another table
+  detail: 'tbl_map_room_type is the hinge of this page: its result determines which of eight contents
+    tables a reader rolls. No earlier packet has had a table select another table, and the shape is carried
+    as eight FEEDS_INTO rows from the room type into each contents table.
+
+    Set out in two_tier_structure_note. Worth flagging separately because it also settles how the eight
+    contents tables avoid being registry additions: their results are purely descriptive, which by the
+    PKT-SD-124-125 test would leave them unattached, but they are reached from the room type rather than
+    from nothing. Reached, just not from the top.'
+- id: OBS-03
+  subject: the danger level gains its first resolver
+  detail: 'rule_danger_level has been canonical since printed page 86 and carries 3 rows, all of them
+    outbound: it constrains resting and feeds the encounter cadence twice. None of them says how a danger
+    level is arrived at. This page''s table is the first thing in the intake to resolve it, so M005 completes
+    a rule that has been consumed three times without ever being determined.
+
+    Worth recording because it is the kind of link the intake exists to find, and because it is a reminder
+    that the three danger level values were twice declined as identities, on printed pages 86 and 90,
+    precisely so that the aggregate could carry relations like this one.'
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: whether a room type naming a canonical rule should yield a row
+  detail: 'Four of the ten room types name canonical identities: Trap, Minor hazard, Major hazard and
+    Treasure point at rule_traps, rule_hazards and rule_treasure. I asserted nothing and want that tested,
+    because it is the largest thing I declined on this page and the reasoning is finer than the earlier
+    table tests.
+
+    Why the results-are-identities test does not transfer: that test applied where a table selects among
+    the members of an axis, and the axis is then what the table resolves. sys_ancestry holds six ancestries
+    and the NPC table picks one, so sys_ancestry RESOLVED_BY that table reads correctly. rule_traps is
+    not an axis and has no members. A room being a trap room is not the traps rule taking a value, so
+    RESOLVED_BY is wrong in both directions.
+
+    What the source actually states is containment: a generated site contains rooms, and some of those
+    rooms contain traps, hazards or treasure. No type in the closed vocabulary carries containment. FEEDS_INTO
+    would say traps supply an input to map generation, which inverts the relation; GATES would say traps
+    are a precondition, which is false; CROSS_REFERENCES has no page pointer to rest on.
+
+    Consequence of my choice: a reader asking what a generated dungeon contains finds eight contents tables
+    and not the three rules those contents are instances of, so the map generator sits beside the traps
+    and hazards rules without touching them. If Reviewer sees a type that fits, four rows follow and no
+    existing row changes. If not, this is a genuine expressiveness limit worth the Architect''s attention
+    alongside the condition vocabulary and the missing participant identities.'
+architectural_escalations: []
+architectural_escalation_note: None raised. All 13 identities use an approved prefix, every row uses a
+  legal edge type at status core, no row carries supersession_basis and none is an OVERRIDES, and no CLASSIFIED_AS
+  row appears. IDQ-01 may be an expressiveness limit rather than a judgement call, but it is put to the
+  Reviewer first rather than escalated from inside a packet, since a fitting type may exist that I have
+  not seen.
+completeness_statement: 'Both printed pages in scope were read in full at the recorded checksum: five
+  procedure paragraphs, 12 named tables and 55 data rows. The packet yields 13 new identities and 13 rows,
+  reusing 1 canonical identity whose label the assembling script asserted equal to the registry. No proposed
+  identity is left carrying no edge.
+
+  The rows mirror the procedure''s two tiers rather than flattening it, which is argued in two_tier_structure_note:
+  four tables are rolled directly and take RESOLVED_BY rows from the procedure, and eight are reached
+  through the room type and take FEEDS_INTO rows from it. Every row was checked against the 717 canonical
+  edges for an assertion-key collision, for a shared source, type and target under a different aspect,
+  and for duplicates within the patch; there are none of any, and no canonical row cited either page before.
+
+  Four candidates were rejected and each is recorded with its reason. The largest deliberate loss is the
+  physical dice-scattering procedure, recorded as OBS-01. The single open question, IDQ-01, is whether
+  a room type naming a canonical rule should yield a row; I judged not, and set out why the earlier table
+  tests do not transfer. No assertion depends on any other ruleset.'

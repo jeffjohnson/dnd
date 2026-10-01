@@ -1,0 +1,133 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01
+artifact_kind: packet_update_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-070-072-spells-shield-of-faith-to-turn-undead
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-26'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01.yaml
+  checksum: sha256:637d35ee419a78fb05937e52390c73dce0deacecbe82457d379dd57ab14e8726
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: approved
+approval_ready: true
+edge_decisions:
+  approved_refs: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012, M013, M014, M015, M016, M017, M018, M019, M020, M021, M022, M023, M024, M025, M026, M027, M028, M029, M030, M031, M032, M033, M034, M035, M036, M037, M038, M039]
+  disposition: approved
+node_registry_decisions:
+  - {proposed_id: spell_shield_of_faith, submitted_label: Shield of Faith, kind: spell, disposition: approved}
+  - {proposed_id: spell_silence, submitted_label: Silence, kind: spell, disposition: approved}
+  - {proposed_id: spell_sleep, submitted_label: Sleep, kind: spell, disposition: approved}
+  - {proposed_id: spell_smite, submitted_label: Smite, kind: spell, disposition: approved}
+  - {proposed_id: spell_speak_with_dead, submitted_label: Speak with Dead, kind: spell, disposition: approved}
+  - {proposed_id: spell_stoneskin, submitted_label: Stoneskin, kind: spell, disposition: approved}
+  - {proposed_id: spell_summon_extraplanar, submitted_label: Summon Extraplanar, kind: spell, disposition: approved}
+  - {proposed_id: spell_telekinesis, submitted_label: Telekinesis, kind: spell, disposition: approved}
+  - {proposed_id: spell_teleport, submitted_label: Teleport, kind: spell, disposition: approved}
+architectural_escalations: []
+blocking_findings: []
+reviewer_findings:
+  - id: RF-01
+    subject: turn_undead_opposed_direction
+    disposition: approved_distinct_relationships
+    ref: M039
+    detail: >-
+      The canonical class_priest GATES spell_turn_undead row records access to
+      the spell as a Priest class feature. M039 records the spell entry's
+      printed casting-class classification in the constitutionally mandated
+      spell-to-class direction. The two rows differ in relationship, aspect,
+      provenance, and purpose; their opposite directions are correct and do
+      not contradict one another.
+  - id: RF-02
+    subject: turn_undead_canonical_reuse
+    disposition: approved
+    refs: [M034, M035, M036, M037, M038, M039]
+    detail: >-
+      spell_turn_undead is correctly reused rather than re-proposed. Its six
+      page-72 rows do not collide with the page-20 access gate or spells-known
+      exclusion. M037 correctly applies the established Rebuke Unholy lethal
+      outcome model with qualitative condition grain.
+  - id: RF-03
+    subject: shield_of_faith_casting_class
+    disposition: approved_as_printed
+    ref: M003
+    detail: >-
+      The primary SHIELD OF FAITH entry explicitly prints "Tier 3, wizard".
+      Under incoming-packet authority, M003 must preserve that printed class
+      even though the repeated spell-list context and devotional wording point
+      toward Priest. The discrepancy is source-facing and is not repaired by
+      graph inference.
+  - id: RF-04
+    subject: unrepresented_compelled_flight
+    disposition: informational_nonblocking
+    detail: >-
+      Turn Undead's ordinary failed-check flight outcome has no canonical
+      flight, fear, morale, or compelled-movement identity. It is correctly not
+      forced onto ex_movement. The same ontology gap affects Rebuke Unholy and
+      does not make any submitted row false.
+  - id: RF-05
+    subject: gur_registry_snapshot
+    disposition: informational
+    detail: >-
+      The GUR says 239 registry rows; the independently measured current
+      registry contains 263. The compiler used live state, spell_turn_undead
+      resolved canonically, and none of the nine proposed spells is registered,
+      so the stale prose count changes no operation.
+completeness_statement: >-
+  All 39 rows were independently checked against pages 70 through 72, the
+  active Constitution 1.7 vocabulary, the current registry, and the canonical
+  neighborhood. The six Turn Undead rows are valid direct additions against an
+  existing identity; the remaining 33 rows depend on nine approved spell
+  registrations. The opposite-direction class relationship is semantically
+  distinct, every submitted classification follows the printed entry, and no
+  representable source relationship is omitted. The packet is approval-ready.
+reviewer_checklist:
+  source_support: passed
+  node_identity: passed_including_turn_undead_reuse
+  edge_semantics_and_direction: passed_including_m039
+  grain: passed
+  polarity: passed
+  page_attribution: passed
+  graph_neighborhood: passed
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-070-072-spells-shield-of-faith-to-turn-undead/source.md
+    checksum: sha256:02c73c268365e2aec687a90d9b4119093c3dbcd8ea96ed7600d2158aae0dc8b8
+    pages: ['70', '71', '72']
+    result: independently_read
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01.yaml
+    checksum: sha256:c717d7953e108d8bc8d12b54d452d976cb33ad758f63ee88fe446f48bd5d7b4e
+    result: observations_and_reuse_independently_dispositioned
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01.validation.json
+    checksum: sha256:274510bc2d371d68d927baa9b21db57407ed2392a61e399ce6793d6eb957fd72
+    result: zero_errors_one_nonblocking_opposed_direction_warning
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:8350b95d46d97450bf1376927b6dbb6624b741d448f089d1aa1fa77db246a904
+    observed_rows: 263
+    result: turn_undead_reused_and_nine_proposals_fresh
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:893c2f59eb6bc7719dc83c94545698d2f412b67f0be62349454e04d4c700584a
+    observed_edges: 492
+    result: turn_undead_two_existing_rows_verified_and_no_assertion_key_collision
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Apply the exact Approved bundle with six direct additions, thirty-three
+    pending additions, and nine ordinary spell_ registrations.
+  blocking_ids: []

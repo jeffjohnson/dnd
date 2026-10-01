@@ -1,0 +1,247 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0096-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.3'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: integrator
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: >-
+    Step 2 of DEC-2026-0096. Integrator bundle discovery now resolves explicit
+    manifest `supersedes` first and then applies the bounded, reported legacy rNN
+    rule to a manifested Approved lineage that left a member un-named. The Stats
+    lineage resolves to r05-r05 alone and no historical member reaches the ready
+    queue. All five acceptance tests pass. No scanner, Stats artifact, canonical
+    file, schema, or contract was touched and no Stats bundle was reintegrated.
+    Three items are disclosed in scope_note and observations rather than folded
+    in: a wording difference in acceptance test 2, a grouping bound tighter than
+    the Decision's prose, and a separately authorized test-only repair.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0096
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0096.yaml
+  checksum: sha256:30c134d595d721442e844972657589b927edc28da6ea0e965cda49e9298551ce
+implementation_files:
+- path: tooling/integrator/src/adnd1e_integrator/bundles.py
+  checksum: sha256:6d8d30a1d9a86239e35e5bdebb9c8c6335bcd7107f33061c343c276f92063e58
+- path: tooling/integrator/tests/test_bundles.py
+  checksum: sha256:fb2d546c6b08bc107de9b1bc8a5dd815bbf8387be8e274364e9b425848761f8d
+verified_inputs:
+- path: rulesets/shadowdark/escalations/decided/ESC-2026-09-22T23.23.17.245Z.yaml
+  checksum: sha256:f2e0e87d1e95af07ebf87d4fca5cc925594c10d53cc9135ac8a71e68c1eb76ff
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0095.yaml
+  checksum: sha256:68e302182640762f4f1704e9f40523419052561f03d8ab5d18c9aced42e2f20a
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:9b3bdf7008913cbb310cf15e9637e077d683718aa9b91cfcb25d50b6e52184c2
+- path: rulesets/shadowdark/manifests/INT-20260922-002.json
+  checksum: sha256:e844ecd72e43812d940b010fbab2b820764b4f09b971f0af9d9cbfae41f442e3
+- path: tooling/integrator/tests/test_vocabulary.py
+  checksum: sha256:05d35c7bf71dc648799bb4df24796214351d1ffc7c8dcd52d0d8f4e5dd21916d
+validation_report: build/reports/IMP-DEC-2026-0096-r01.validation.json
+validation_report_checksum: sha256:7ed23b44a33cbe6abfa2fde92e7d9a6b6bfbe9e46a23321173128b256d8b83b7
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: >-
+    contracts/WORK_QUEUES.md is at version 1.32, meeting the declared minimum of
+    1.32, with checksum sha256:9b3bdf7008913cbb310cf15e9637e077d683718aa9b91cfcb25d50b6e52184c2,
+    which is the same value DEC-2026-0096 pins in its own evidence block. All five
+    declared substantive anchors are present, verified by normalized-whitespace
+    containment rather than by eye: Core Rule 3 on the active leaf, Core Rule 4 on
+    what makes a revision a leaf, Core Rule 6 on superseded and consumed artifacts
+    not being ready work, Legacy Queue Derivation clause 2 on inferring the latest
+    rNN within one artifact kind and packet, and clause 3 forbidding order inferred
+    from creation or modification time. The anchors are applied before readiness:
+    ready_queue resolves explicit supersession, then the bounded legacy fallback,
+    and only then classifies a bundle as ready.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0096
+      path: rulesets/shadowdark/escalations/decisions/DEC-2026-0096.yaml
+      checksum: sha256:30c134d595d721442e844972657589b927edc28da6ea0e965cda49e9298551ce
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:9b3bdf7008913cbb310cf15e9637e077d683718aa9b91cfcb25d50b6e52184c2
+      observed_version: '1.32'
+      minimum_version: '1.32'
+      anchors_present:
+      - Only the active leaf revision of an artifact can create work.
+      - A revision is a leaf when no later artifact of the same kind names its ID in `supersedes`.
+      - Superseded, consumed, reviewed, integrated, failed, and blocked artifacts are not ready work for the ordinary downstream role.
+      - When `supersedes` is absent, infer the latest `rNN` only within one artifact kind and packet.
+      - Never infer order from creation or modification time.
+- acceptance_test_index: 2
+  result: passed
+  evidence: >-
+    Measured against the live artifacts, the Stats lineage resolves to exactly one
+    active manifest leaf, APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05,
+    and no historical member reaches the ready queue: the Shadowdark ready set is
+    exactly APPROVED-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r01,
+    which is pending an unrelated Reviewer repair. r05-r01 is placed by a reported
+    legacy rNN inference naming both itself and the selected leaf; r05-r02 and
+    r05-r03 are placed by explicit supersedes; r05-r04 is held by its rejection
+    record INT-20260922-001, which outranks supersession so the Reviewer still sees
+    the remediation signal. See observation OBS-1 for a wording difference between
+    this measured placement and the Decision's prose for r05-r02. Covered by
+    test_bundles.TestTheStatsLineageIsSettledHistory and, in isolated synthetic
+    form, by TestBoundedLegacyApprovedLeafInference.
+- acceptance_test_index: 3
+  result: passed
+  evidence: >-
+    integrated_bundle_ids for shadowdark returns exactly
+    {APPROVED-...-r05-r05: INT-20260922-002, APPROVED-GUP-PKT-SD-016-017-ancestries-r02-r02:
+    INT-20260922-003}. APPROVED-...-r05-r01 does not appear, although INT-20260922-002
+    declares the r05-r01 edge CSV as its shared component path: consumption is derived
+    from declared bundle identities only, which was already true of this implementation
+    and remains unchanged. No Stats artifact was re-applied, repaired, moved, or
+    rewritten; canonical is byte-identical to the state INT-20260922-003 left. Covered
+    by test_bundles.TestTheStatsLineageIsSettledHistory.test_a_shared_component_path_does_not_consume_its_namesake.
+- acceptance_test_index: 4
+  result: passed
+  evidence: >-
+    Bounded by construction and by test. A group is formed only from manifested
+    bundles sharing one base, which carries ruleset, book, packet and reviewed GUP
+    revision; a differing packet_id within a group makes it ambiguous and infers
+    nothing; a duplicate or malformed rNN makes it ambiguous and infers nothing; a
+    manifestless legacy stem is never grouped, preserving WORK_QUEUES 1.25; the
+    revision is read from the manifest's declared id, never a filename or timestamp.
+    A completely declared lineage and a lone manifest both infer nothing.
+    test_bundles.TestBoundedLegacyApprovedLeafInference covers each of those eight
+    cases against synthetic fixtures. For the existing corpus,
+    TestExistingClassificationsAreUnchanged measures that no AD&D bundle is placed by
+    the fallback at all, because AD&D lineages declare supersedes completely, and that
+    its ready, superseded, integrated and rejected buckets remain populated and
+    pairwise disjoint.
+- acceptance_test_index: 5
+  result: passed
+  evidence: >-
+    Focused Integrator bundle tests: 34 tests OK. Complete Integrator suite: 292 tests
+    OK in 1646.168s, exit 0, up from 277 before this Decision. Exact commands, exit
+    codes and outcomes are recorded in the validation report. One earlier full-suite
+    run reported 291 tests with 1 failure; that failure was in test_vocabulary.py and
+    was caused by Constitution 1.3 adding alignment_ and deity_, not by this
+    implementation. It is disclosed in scope_note and OBS-2 and was repaired under
+    separate standing authorization before this report was published.
+validation:
+  passed: true
+  commands:
+  - command: PYTHONPATH=src python -m unittest discover -s tests -t tests
+    exit_code: 0
+    result: passed
+    summary: complete Integrator suite, 292 tests OK in 1646.168s; 277 before this Decision
+  - command: PYTHONPATH=../src:. python -m unittest test_bundles
+    exit_code: 0
+    result: passed
+    summary: focused Integrator bundle tests, 34 tests OK
+  - command: PYTHONPATH=src python -m adnd1e_integrator --repo-root=../.. --ruleset-id=shadowdark --books=sd queue
+    exit_code: 1
+    result: passed
+    summary: >-
+      one ready bundle, SD-011-014, pending an unrelated Reviewer repair; no Stats
+      manifest is ready and exactly one legacy leaf inference is reported
+scope_note: >-
+  One file was changed outside this Decision's implementation bounds and is declared
+  here rather than folded in: tooling/integrator/tests/test_vocabulary.py.
+
+  DEC-2026-0096 limits the Integrator to bundles.py and test_bundles.py, so this
+  repair is not made under its authority. It is made under DEC-2026-0078, which
+  grants the Integrator standing authorization to repair a test-only regression guard
+  when the changed paths are confined to tooling/integrator/tests/, no production
+  applier, schema, contract, registry, canonical data, plan, GUR, GUP, Review,
+  Approved bundle, manifest or report changes, the guard derives from current state
+  and asserts an invariant that survives successful integration, and the guard is
+  shown falsifiable by the defect it prevents. Every condition holds here; details
+  and the falsification evidence are in OBS-2.
+
+  That file is named in IMP-DEC-2026-0092-r01's implementation_files and pinned by the
+  approved REV-IMP-DEC-2026-0092-r01-r01. Under WORK_QUEUES rule 15 its checksum there
+  is historical evidence of the reviewed state and this later change is informational;
+  it does not reopen DEC-2026-0092. Its current checksum is recorded in verified_inputs
+  above so the Reviewer can see exactly which bytes this report was validated against.
+
+  No other file was changed. The queue scanner, every Stats workflow artifact,
+  canonical data, registries, schemas, contracts, Reviewer and Builder tooling and
+  Herdr are untouched, and no basicdnd/rc work was performed.
+observations:
+- id: OBS-1
+  severity: wording difference, no effect on the required outcome
+  subject: acceptance test 2's description of r05-r02
+  detail: >-
+    The Decision states that r05-r01 and r05-r02 are placed using a reported legacy
+    rNN inference and that r05-r03 and r05-r04 are placed by explicit supersedes.
+    Measured from the artifacts, APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+    names r05-r02 in its supersedes field, so this implementation places r05-r02 by the
+    explicit link and reports no inference for it. Only r05-r01 is un-named by any
+    manifest and therefore placed by the fallback.
+  reading: >-
+    The most likely intent is that r05-r02 declares no supersedes of its own, so its
+    own position in the lineage is not self-declared. Under either reading the required
+    outcome is identical and is what the implementation produces: exactly one active
+    leaf, r05-r05, and no historical member in the ready queue.
+  why_it_is_reported: >-
+    The Integrator will not relabel a link that an immutable artifact actually declares
+    in order to match prose. If the Architect intends r05-r02 to be reported as inferred
+    as well, that is a change to the rule rather than to this evidence, and the
+    Integrator will implement it on instruction.
+- id: OBS-2
+  severity: informational, separately authorized, already repaired
+  subject: tooling/integrator/tests/test_vocabulary.py
+  detail: >-
+    The full suite run before this report returned 291 tests with one failure:
+    test_shadowdark_yields_exactly_its_thirteen_declared_prefixes asserted a hardcoded
+    set of thirteen Shadowdark prefixes. DEC-2026-0093 lawfully added alignment_ and
+    deity_ at Constitution 1.3, so a correct amendment failed a test about the loader.
+    The loader itself was correct throughout and needed no change: it reads the Prefix
+    table live and returned all fifteen.
+  repair: >-
+    The test now compares the loader against a second, deliberately independent reader
+    implemented in the fixture, which finds the Prefix header and walks the table by
+    hand. Comparing the loader against itself would pass whatever it returned. A
+    companion test names the Decision-established identities individually, ancestry_
+    from DEC-2026-0087 and alignment_ and deity_ from DEC-2026-0093, so a regression
+    stays attributable to the Decision it would break without pinning the table's size.
+  falsifiability: >-
+    Measured, not asserted: patching the loader to drop one declared prefix, deity_,
+    makes three tests fail, including the repaired one. The guard is therefore not
+    tautological.
+  integrator_position: >-
+    This is the third time the Integrator has written a corpus snapshot where an
+    invariant belonged, after the DEC-2026-0075 rewind fixture and the genesis registry
+    fixture repaired earlier today. The implementation was correct in each case and the
+    assertion was not. It is recorded here so the pattern is visible to the Reviewer
+    rather than only to the Integrator.
+- id: OBS-3
+  severity: implementation detail, bound is tighter than the prose
+  subject: how a legacy group is formed
+  detail: >-
+    DEC-2026-0096 bounds the fallback to matching Approved kind, ruleset, book and
+    packet. This implementation groups by the full base of the bundle id, which is
+    everything before the trailing -rNN and therefore carries the reviewed GUP revision
+    as well. That is strictly narrower than the Decision requires.
+  why: >-
+    Grouping by packet alone would compare bundle revisions across different reviewed
+    GUP revisions, ranking APPROVED-...-r04-r02 above APPROVED-...-r05-r01 and inverting
+    the real order. test_bundles.TestBoundedLegacyApprovedLeafInference.test_a_different_gup_revision_is_never_ranked_against_this_one
+    pins that case: both lineages keep their own leaves and no inference is reported.
+- id: OBS-4
+  severity: informational
+  subject: where the inference is exposed
+  detail: >-
+    The Decision requires the inference to be visible in the normal Integrator queue
+    result and never silent. It is reported in two places: on the affected bundle's
+    legacy_inferences list, and in a new legacy_leaf_inferences key on the ready_queue
+    result naming both the historical bundle and the selected leaf. It is deliberately
+    not added to diagnostics, because diagnostics signal broken lineage and drive a
+    nonzero CLI exit, while this is a successful contract-defined derivation. cli.py was
+    not modified, so the CLI's printed payload is unchanged; the queue result itself is
+    the API the Decision names.

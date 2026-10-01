@@ -118,12 +118,24 @@ def _rewind_migration(bundle, root: Path, graph, registry) -> bool:
     # replaces two identities, and once DEC-2026-0037 superseded one of them the
     # plan matched on the other and got reversed a second time -- re-inserting
     # its removed row twice and shifting every row below it by one.
-    #
-    # A plan with no replacements is left alone: there is no identity to test
-    # idempotence against, and reversing it twice would be silent corruption.
-    if not plan.replacements:
-        return False
-    if not all(r.canonical_id in registry.ids for r in plan.replacements):
+    if plan.replacements:
+        if not all(r.canonical_id in registry.ids for r in plan.replacements):
+            return False
+    elif plan.additions:
+        # A plan that registers rather than replaces has no replacement identity
+        # to test idempotence against, but its additions answer the same
+        # question: it is applied exactly while every ID it registered is in the
+        # registry, and once those rows are dropped below a second pass matches
+        # nothing. Treating such a plan as unreversible is not conservative --
+        # DEC-2026-0077 adds `monster_giant` and repoints one row, and leaving
+        # that repoint in place put a later value under the DEC-2026-0032 v2
+        # plan's pinned before-image for the same row, so four v2 tests failed
+        # on a corpus no fixture could rewind.
+        if not all(addition.node_id in registry.ids for addition in plan.additions):
+            return False
+    else:
+        # Nothing to test applied-ness against, and reversing twice would be
+        # silent corruption.
         return False
 
     for removal in sorted(plan.removals, key=lambda r: r.canonical_row):
@@ -261,7 +273,24 @@ def rewind_migrations_in(root: Path, books=("phb",), only=None) -> bool:
     return True
 
 
-def _rewind(root: Path, only: set[str] | None = None) -> None:
+def _books_in(root: Path) -> tuple[str, ...]:
+    """Which books this clone actually carries artifacts for.
+
+    Derived rather than defaulted. Hard-coding `phb` was invisible while every
+    packet lived there, and then DEC-2026-0077 registered `monster_giant` in a
+    dmg migration and the dmg packet that anchors on it was never a candidate
+    for rewinding, so the clone stranded the node. A fixture that reads whatever
+    the clone contains cannot fall behind the corpus that way.
+    """
+    directory = root / "books" / RULESET_ID
+    if not directory.is_dir():
+        return ()
+    return tuple(sorted(child.name for child in directory.iterdir()
+                        if (child / "artifacts").is_dir()))
+
+
+def _rewind(root: Path, only: set[str] | None = None,
+            books: tuple[str, ...] | None = None) -> None:
     """Undo every operation a queued bundle would perform, then rederive.
 
     Each operation class is reversed the way it was applied. Updates are undone
@@ -279,6 +308,9 @@ def _rewind(root: Path, only: set[str] | None = None) -> None:
     from adnd1e_integrator.invariants import assertion_key
     from adnd1e_integrator.operations import read_operations
 
+    if books is None:
+        books = _books_in(root)
+
     paths = CanonicalPaths(root=root, ruleset_id=RULESET_ID)
     graph = CanonicalGraph.load(paths)
     registry = Registry.load(paths.registry)
@@ -289,7 +321,7 @@ def _rewind(root: Path, only: set[str] | None = None) -> None:
     # Migrations first, in reverse application order, so their before-images are
     # matched against the corpus each was measured against.
     registered_before_migrations = set(registry.ids)
-    touched |= rewind_all_migrations(root, graph, registry)
+    touched |= rewind_all_migrations(root, graph, registry, books)
     #: Identities a migration reversal took back out of the registry. A packet
     #: bundle integrated later may legitimately anchor on one of them -- the
     #: Bards r04 batch reuses `item_pipes_of_sewers`, which DEC-2026-0037
@@ -297,7 +329,8 @@ def _rewind(root: Path, only: set[str] | None = None) -> None:
     #: says, or the clone ends holding a graph node no registry row covers.
     stranded = registered_before_migrations - set(registry.ids)
 
-    for bundle in discover(root, RULESET_ID, "phb")[0]:
+    discovered = [bundle for book in books for bundle in discover(root, RULESET_ID, book)[0]]
+    for bundle in discovered:
         if bundle.is_direct_migration:
             continue
         rows = read_csv_rows(bundle.edges_path)
@@ -640,6 +673,231 @@ class TestAPartialRewindClosesOverRetiredIdentities(unittest.TestCase):
                   integration_id="INT-19700101-200", dry_run=True)
         self.assertEqual({p: checksum_file(p) for p in self.paths.writable()}, before,
                          "a dry run wrote to the clone")
+
+
+class TestEveryIntegratedMigrationStaysRewindable(unittest.TestCase):
+    """DEC-2026-0075's standing rule, applied to the migration rewind itself.
+
+    A direct migration's plan pins an exact before-image for every row it
+    touches, and the fixtures reproduce that corpus by reversing the migrations
+    the repository has since applied. That only works while every applied
+    migration is reversible. DEC-2026-0077 was not: its plan registers a node
+    and repoints a row but replaces no identity, and the v1 rewind tested
+    applied-ness solely by looking for a replacement identity, so it declined to
+    reverse the plan at all. Its repoint then sat on canonical row 1747
+    underneath the DEC-2026-0032 v2 plan's pinned before-image for that same
+    row, and four v2 tests failed on a corpus no fixture could rewind.
+
+    The invariant is stated over whatever the repository has integrated rather
+    than over a list, so the next migration in any book is covered the day it
+    lands.
+    """
+
+    #: Every book the repository actually carries artifacts for. Naming two of
+    #: them was the same mistake one level up: the clone then held a UA row
+    #: anchored on a DEC-2026-0032 merge survivor whose bundle it had not copied
+    #: and could not rewind.
+    BOOKS = tuple(sorted(
+        child.name for child in (REPO_ROOT / "books" / RULESET_ID).iterdir()
+        if (child / "artifacts").is_dir()))
+
+    @classmethod
+    def setUpClass(cls):
+        cls._tmp = tempfile.TemporaryDirectory()
+        cls.root = Path(cls._tmp.name)
+        for relative in [
+            f"rulesets/{RULESET_ID}/canonical",
+            f"rulesets/{RULESET_ID}/registries",
+            f"rulesets/{RULESET_ID}/profiles",
+            f"rulesets/{RULESET_ID}/governance",
+            f"rulesets/{RULESET_ID}/escalations",
+            f"rulesets/{RULESET_ID}/reports",
+            "build/reports",
+        ] + [f"books/{RULESET_ID}/{book}/artifacts" for book in cls.BOOKS]:
+            source = REPO_ROOT / relative
+            if source.exists():
+                shutil.copytree(source, cls.root / relative, dirs_exist_ok=True)
+        # `_rewind` with an empty set, so the clone spans both books and closes
+        # over whatever the migration reversal strands. `rewind_migrations_in`
+        # alone does not: it reverses migrations and stops, which is how the DMG
+        # 64 packet came to anchor M014 on a `monster_giant` the rewind had just
+        # unregistered.
+        _rewind(cls.root, only=set(), books=cls.BOOKS)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._tmp.cleanup()
+
+    def _integrated_migrations(self):
+        """Every direct-migration bundle the live repository has consumed."""
+        found = []
+        for book in self.BOOKS:
+            for bundle in ready_queue(REPO_ROOT, RULESET_ID, [book])["integrated"]:
+                bundle = bundle[0] if isinstance(bundle, tuple) else bundle
+                if bundle.is_direct_migration:
+                    found.append(bundle)
+        return found
+
+    def test_the_rewind_actually_moved_the_registry(self):
+        """Non-vacuity: the checks below mean nothing on an unchanged clone."""
+        from adnd1e_integrator.canonical import CanonicalPaths, Registry
+
+        live = Registry.load(CanonicalPaths(root=REPO_ROOT, ruleset_id=RULESET_ID).registry)
+        clone = Registry.load(CanonicalPaths(root=self.root, ruleset_id=RULESET_ID).registry)
+        self.assertNotEqual(
+            set(live.ids) - set(clone.ids), set(),
+            "no migration was reversed, so this class compares the live corpus "
+            "with itself")
+
+    def test_the_rewound_clone_strands_no_endpoint_in_any_book(self):
+        """Closure across every book the clone carries, not a named subset.
+
+        `_rewind` looked for dependent bundles in `phb` alone. That was
+        invisible while every packet lived there, and then a dmg migration
+        registered `monster_giant` and the dmg packet that anchors M014 on it
+        was never a candidate for rewinding, so the clone kept a graph node no
+        registry row covered and the v2 merge fixture died in setUpClass.
+        """
+        from adnd1e_integrator.canonical import CanonicalGraph, CanonicalPaths, Registry
+
+        paths = CanonicalPaths(root=self.root, ruleset_id=RULESET_ID)
+        graph = CanonicalGraph.load(paths)
+        registry = Registry.load(paths.registry)
+        endpoints = ({e["source_id"] for e in graph.edges}
+                     | {e["target_id"] for e in graph.edges})
+        self.assertEqual(
+            sorted(endpoints - set(registry.ids)), [],
+            "the rewound clone carries an edge endpoint no registry row covers")
+
+    def test_no_identity_an_integrated_migration_registered_survives_the_rewind(self):
+        """Reversibility stated where composition cannot confuse it.
+
+        Row locators deliberately do not survive a full rewind: a plan is
+        measured against a corpus in which earlier migrations are applied, and
+        undoing one that removed a row shifts every locator below it, which is
+        why `rewind_migrations_in` takes an `only` argument at all. The registry
+        carries no such ordering. Every identity a migration registers must be
+        gone once the rewind reaches its fixed point, and every identity one
+        retired must be back -- and that is exactly what DEC-2026-0077 broke,
+        because a plan the rewind refused to reverse left `monster_giant`
+        registered and its repoint standing.
+        """
+        from adnd1e_integrator.canonical import CanonicalPaths, Registry
+        from adnd1e_integrator.migration import MigrationError, read_plan
+
+        registry = Registry.load(CanonicalPaths(root=self.root, ruleset_id=RULESET_ID).registry)
+        checked = 0
+        for bundle in self._integrated_migrations():
+            component = next((c for c in (bundle.manifest or {}).get("components") or []
+                              if c.get("kind") == "decision_migration"), None)
+            self.assertIsNotNone(
+                component, f"{bundle.bundle_id} declares no decision_migration component")
+            try:
+                plan = read_plan(yaml.safe_load(
+                    (self.root / component["path"]).read_text(encoding="utf-8")))
+            except MigrationError as exc:  # pragma: no cover - a malformed plan
+                self.fail(f"{bundle.bundle_id}: {exc}")
+
+            for addition in plan.additions:
+                with self.subTest(bundle=bundle.bundle_id, added=addition.node_id):
+                    self.assertNotIn(
+                        addition.node_id, registry.ids,
+                        f"{bundle.bundle_id} registered {addition.node_id} and the rewind "
+                        f"left it there, so this migration was never reversed")
+                    checked += 1
+            for replacement in plan.replacements:
+                # Only the forward direction is asserted. Migrations chain:
+                # DEC-2026-0024-0025 renamed `item_pipes_sewers` to
+                # `item_pipes_sewer` and DEC-2026-0037 then renamed that to
+                # `item_pipes_of_sewers`, so at the fixed point the ID restored
+                # is the *first* plan's retired one, not each plan's own.
+                # Requiring every retired_id back would assert a history that
+                # never existed.
+                with self.subTest(bundle=bundle.bundle_id, replaced=replacement.canonical_id):
+                    self.assertNotIn(
+                        replacement.canonical_id, registry.ids,
+                        f"{bundle.bundle_id} registered {replacement.canonical_id} and the "
+                        f"rewind left it there, so this migration was never reversed")
+                    checked += 1
+        self.assertGreater(
+            checked, 0, "no integrated migration changed the registry, so nothing was proved")
+
+
+class TestASnapshotRestoresAbsenceNotJustContent(unittest.TestCase):
+    """DEC-2026-0092, at the unit that had the hole.
+
+    `Snapshot.take` skipped any path that did not exist. That is harmless when
+    every canonical file is already there and silently fatal when none of them
+    is: a genesis rollback had nothing recorded, so it restored nothing and left
+    behind every file the transaction had written. "Restore the pre-state" has
+    to mean absence when the pre-state was absence.
+
+    `test_genesis.py` proves this through a whole transaction; these prove the
+    mechanism directly, so a regression here is attributable without reading a
+    transaction log.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        self.existing = self.root / "already-here.csv"
+        self.existing.write_bytes(b"id,label\r\n")
+        self.created_dir = self.root / "canonical"
+        self.new_file = self.created_dir / "edges_master.csv"
+        self.snapshot_dir = self.root / "build" / "snapshots" / "INT-TEST-001"
+
+    def test_a_file_that_did_not_exist_is_removed_on_restore(self):
+        snapshot = Snapshot.take([self.existing, self.new_file], self.snapshot_dir,
+                                 genesis_dirs=(self.created_dir,))
+        self.created_dir.mkdir(parents=True)
+        self.new_file.write_bytes(b"written by the transaction")
+        snapshot.restore()
+        self.assertFalse(self.new_file.exists(), "a created file survived rollback")
+        self.assertFalse(self.created_dir.exists(), "a created directory survived rollback")
+
+    def test_a_file_that_did_exist_is_restored_byte_for_byte(self):
+        before = checksum_file(self.existing)
+        snapshot = Snapshot.take([self.existing, self.new_file], self.snapshot_dir,
+                                 genesis_dirs=(self.created_dir,))
+        self.existing.write_bytes(b"id,label\r\nclobbered,x\r\n")
+        snapshot.restore()
+        self.assertEqual(checksum_file(self.existing), before)
+
+    def test_a_directory_holding_anything_else_is_left_alone(self):
+        """Only an empty directory is removed.
+
+        A non-empty one holds something this transaction did not put there, and
+        deleting it would destroy state the transaction never owned.
+        """
+        snapshot = Snapshot.take([self.new_file], self.snapshot_dir,
+                                 genesis_dirs=(self.created_dir,))
+        self.created_dir.mkdir(parents=True)
+        (self.created_dir / "someone-elses-file").write_bytes(b"not ours")
+        snapshot.restore()
+        self.assertTrue(self.created_dir.exists())
+
+    def test_the_transaction_rolls_a_genesis_back_and_discards_its_snapshot(self):
+        with self.assertRaises(RuntimeError):
+            with Transaction([self.existing, self.new_file], self.snapshot_dir,
+                             genesis_dirs=(self.created_dir,),
+                             discard_snapshot_on_rollback=True):
+                self.created_dir.mkdir(parents=True)
+                self.new_file.write_bytes(b"partial write")
+                raise RuntimeError("a late failure")
+        self.assertFalse(self.new_file.exists())
+        self.assertFalse(self.created_dir.exists())
+        self.assertFalse(self.snapshot_dir.exists(),
+                         "a rolled-back genesis left a snapshot behind")
+
+    def test_an_ordinary_rollback_keeps_its_snapshot(self):
+        """An established ruleset has a real pre-state worth retaining."""
+        with self.assertRaises(RuntimeError):
+            with Transaction([self.existing], self.snapshot_dir):
+                self.existing.write_bytes(b"clobbered")
+                raise RuntimeError("a late failure")
+        self.assertTrue(self.snapshot_dir.exists())
+        self.assertEqual(self.existing.read_bytes(), b"id,label\r\n")
 
 
 if __name__ == "__main__":

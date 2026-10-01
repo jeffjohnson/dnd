@@ -1,0 +1,163 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0105-r02
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+constitution_version: '1.8'
+revision: 2
+supersedes: IMP-DEC-2026-0105-r01
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Corrects REV-IMP-DEC-2026-0105-r01-r01''s sole required_correction:
+    the conforming blocked-GUR branch now preserves the handoff''s exact
+    nonempty authored reason alongside its blocking_ids, instead of replacing
+    the authored reason with a generated "waiting on" string. One new focused
+    regression proves both survive together. Dynamic next-role routing and the
+    early return are unchanged, as the Review required. All four acceptance
+    tests pass. No source, GUR, GUP, Review, registry, canonical, compiler, or
+    basicdnd/rc artifact was touched.'
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0105
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+  checksum: sha256:8c62a5c9e4d0975bd23d88a70ea78b98fecc12d4813fa718ec3b382c69024777
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:a907d65948eb70ab4cda4995f54728a4c2afe27fc8ddeb6107e71ebc48efdd60
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:d62950b98049ff15f5242fb315c3b56c3d40f1dea721a6552be22ed08da45dab
+verified_inputs:
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+  checksum: sha256:8c62a5c9e4d0975bd23d88a70ea78b98fecc12d4813fa718ec3b382c69024777
+- path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0105-r01.yaml
+  checksum: sha256:b007399fe2ed5888c66e12cea7d4d5bc2ed9b55289e7eccae9f3aeb2120ae712
+- path: rulesets/shadowdark/decision-implementation-reviews/REV-IMP-DEC-2026-0105-r01-r01.yaml
+  checksum: sha256:b727e9f7507aedf94845a619def9a3542cca9e2ee4d361ae8cdca4201b122ff8
+- path: rulesets/shadowdark/governance/constitution.md
+  checksum: sha256:629e72cde3206228e1d1e569957dfff6aa275728c18ff4890c81cfcdc6e0c93d
+- path: rulesets/shadowdark/ruleset.yaml
+  checksum: sha256:e112efbbdd93f20e3b4147b69cf7b4a28897699abcf5812c5c88d40ee22a39a0
+- path: schemas/shadowdark/graph/gur.schema.json
+  checksum: sha256:ebddc07b6815716d484846617657ba4afac01b449e46072c0ece153b4d11170d
+- path: schemas/shadowdark/graph/gup.schema.json
+  checksum: sha256:0d78392ca12cacfac4ffcc8f2dfbf3a3856425867d8b1ae4457fa237c502d5f8
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:63248729b9ce5e206ba27f9231473f4f5d8a9b08373d99d252b67ba94be1c391
+validation_report: build/reports/IMP-DEC-2026-0105-r02.validation.json
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: Unchanged from r01 and re-verified live. Constitution 1.8 section 2.5
+    and the section 2 prefix table still carry all three authorized anchors
+    verbatim or as an unambiguous paraphrase; the file is byte-identical to the
+    one r01 read (same checksum). Structured evidence is recorded in
+    versioned_contract_content, re-stated here rather than merely referenced so
+    this revision stands on its own.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0105
+      path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+      checksum: sha256:8c62a5c9e4d0975bd23d88a70ea78b98fecc12d4813fa718ec3b382c69024777
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: rulesets/shadowdark/governance/constitution.md
+      checksum: sha256:629e72cde3206228e1d1e569957dfff6aa275728c18ff4890c81cfcdc6e0c93d
+      observed_version: '1.8'
+      minimum_version: '1.8'
+      anchors_present:
+      - mstat_ names a shared creature statistic or rating used by an explicit mechanic.
+      - mstat_monster_level may feed monster hit-point calculation without storing numeric values.
+      - Individual creature stat-block values remain outside graph content and property storage.
+- acceptance_test_index: 2
+  result: passed
+  evidence: Unchanged from r01. ruleset.yaml and both Shadowdark GUR/GUP schemas
+    are byte-identical to what r01 verified (same checksums); this revision
+    changed only tooling/common code and its tests, never ruleset metadata,
+    schemas, or another ruleset's vocabulary.
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'REV-IMP-DEC-2026-0105-r01-r01 disposed this test `failed`: the
+    blocked-GUR branch correctly produced one blocked item, the declared role,
+    and preserved blocking_ids, but replaced the handoff''s authored `reason`
+    with a generated "waiting on: <ids>" string instead of preserving it
+    alongside the IDs, per WORK_QUEUES 1.35 rule 6a''s literal "blocking_ids
+    and reason preserved".
+
+
+    Corrected: `_route_leaf_gur`''s blocked branch now reads
+    `handoff.get("reason")` into `authored_reason`, builds a separate `"Blocked
+    on: <sorted ids>"` note from the existing `_blocking_ids` call, and joins
+    the two with a space (dropping either half only if it is empty, which the
+    reason half cannot be on a conforming handoff since the envelope schema
+    requires `reason` non-empty). The dynamic role/queue routing and the early
+    `return` before the unconditional `BUILDER-GUR` append are byte-for-byte
+    unchanged from r01, as the Review required.
+
+
+    `test_a_blocked_leaf_preserves_its_authored_reason` (new) asserts both
+    `self.BLOCKED_HANDOFF["reason"]` -- the exact fixture string, "monster
+    level has no identity and no approved prefix covers a creature statistic"
+    -- and the blocking ID `ESC-2026-09-30T06.00.29.086Z` appear in the same
+    routed item''s `Reason`, verified live by running the test. The other ten
+    r01 tests, including `test_a_blocked_leaf_preserves_its_blocking_ids` and
+    the ready/terminal/malformed/legacy regression, pass unmodified, so the
+    blocking-ID half of the requirement and every other branch are provably
+    unaffected by this change.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: The focused class (`GurHandoffRoutingCase`, now 37 tests including
+    the one new authored-reason regression) ran 37 tests, 0 failures. The
+    relevant module (`tooling.common.tests.test_scan_agent_queues`) ran 990
+    tests, 0 failures. The complete `tooling/common/tests` discovery ran 1330
+    tests, 0 failures. All three commands exited 0. Exact commands and outcomes
+    are in the validation block and in
+    build/reports/IMP-DEC-2026-0105-r02.validation.json. Reviewer independently
+    reproduces at minimum the focused class command.
+validation:
+  passed: true
+  commands:
+  - command: python -m unittest tooling.common.tests.test_scan_agent_queues.GurHandoffRoutingCase -v
+    exit_code: 0
+    result: passed
+    summary: Ran 37 tests in 0.523s OK
+  - command: python -m unittest tooling.common.tests.test_scan_agent_queues
+    exit_code: 0
+    result: passed
+    summary: Ran 990 tests in 383.749s OK
+  - command: python -m unittest discover -s tooling/common/tests -t tooling/common/tests
+    exit_code: 0
+    result: passed
+    summary: Ran 1330 tests in 583.702s OK
+changes_in_this_revision:
+- 'scan_agent_queues.py: in `_route_leaf_gur`''s blocked branch only, replaced
+  the single generated `reason` assignment with two parts -- `authored_reason =
+  str(handoff.get("reason") or "").strip()` and a `blocking_note` built from the
+  existing `_blocking_ids(leaf_gur.data)` call exactly as r01 built it -- joined
+  with `" ".join(part for part in (authored_reason, blocking_note) if part)`.
+  No other line in the function changed; the malformed, terminal, and absent
+  branches and the unconditional `BUILDER-GUR` append are untouched.'
+- 'test_scan_agent_queues.py: added one test,
+  `test_a_blocked_leaf_preserves_its_authored_reason`, directly after the
+  existing `test_a_blocked_leaf_preserves_its_blocking_ids`. It asserts the
+  `BLOCKED_HANDOFF` fixture''s authored `reason` string and its blocking ID both
+  appear in the routed item''s `Reason`. No other test in the file was changed.'
+bugs_found_by_the_new_tests: []
+not_done:
+- 'No source, GUR, GUP, Review, registry, canonical, or compiler artifact was
+  touched. No basicdnd or rc work of any kind was performed; DEC-2026-0086
+  remains binding.'
+- 'The GUP-blocked branch (`_route_leaf_gup`, the pre-existing
+  `"Blocked GUP is waiting on: ..."` reason near the `BUILDER-BLOCKED`/
+  `{ROLE}-BLOCKED-GUP` queue items) was not touched. It generates its reason
+  the same way the GUR branch did before this correction, and Review''s
+  required_corrections named only the GUR branch and its tests. Whether rule
+  6a''s "reason preserved" wording also reaches that pre-existing GUP branch is
+  a separate question this report does not decide or scope-creep into.'
+- 'The Shadowdark-edge-schema mstat_ gap noted in r01''s not_done is unchanged
+  and still out of this step''s scope; it is not repeated in full here to avoid
+  duplicating an already-recorded, already-acknowledged observation.'
+validation_report_checksum: sha256:30c266a339d0ad3b4825d4a5f4d988ce425ebe8b653052138e04685722720e68

@@ -1,0 +1,615 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-134-135-settlement-maps-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-134-135-settlement-maps
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-134-135-settlement-maps
+  source_file: source.md
+  packet_source_checksum: sha256:eefa9bfc27eee2b0cbc5c4952187232d7ca8dc4f861ac4f205a0fe03146a3e2c
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 055-settlement-maps.md
+  citation_code: SD
+  page_start: 134
+  page_end: 135
+  page_number_basis: packet_page_markers
+units_note: 'Figures name their unit. Measured by the assembling script from the claimed source: 7 procedure
+  paragraphs, 11 named tables and 51 data rows across them, of which 8 are the district results on the
+  settlement districts table.'
+page_attribution_basis: 'Both markers sit on headings. p134 ends the SETTLEMENT MAPS heading and p135
+  ends the SETTLEMENT SLUMS TABLE heading, and placement rule 1 applies each to its whole heading with
+  the persistence rule carrying it forward. Verified against the claimed source that no marker appears
+  inside a table row.
+
+  So the 7 procedure paragraphs and the settlement type, districts and alignment tables are printed page
+  134, and the 8 district point-of-interest tables are printed page 135. Each row is cited to the page
+  of the table it concerns, so 6 rows cite 134 and 8 cite 135.'
+scope_boundary: 'The bounded scope is the Primary Source Material section, printed pages 134 and 135:
+  7 paragraphs of procedure and 11 named tables. The trailing Supporting Source Context repeats the random
+  encounter procedure from printed pages 112 and 113, whose primary packet is already integrated; it is
+  out of scope and no row cites it.'
+source_summary: A settlement generator. Roll or choose a settlement type, then roll the number and size
+  of dice that type lists onto a blank sheet of paper. The outline of where they fell is the settlement's
+  shape, and each die's number, read against the districts table, is the district at that position, with
+  the highest roll holding the seat of government. Each district has a rolled number of points of interest,
+  drawn from whichever of the eight district tables on the facing page matches it. An alignment is rolled
+  for the settlement as a whole or per district, and a chaotic result makes the place risky for random
+  encounter purposes. The page closes by directing the reader to the tavern and shop generators later
+  in the chapter.
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled, and every figure here
+  is computed by the assembling script from the canonical files and the claimed source.
+
+  The packet metadata records 361 registry rows, 730 edges and 327 nodes, measured at claim. The previous
+  packet integrated between the claim and this extraction, so the figures below are larger; they are re-measured
+  here rather than carried forward, and the difference is that integration and nothing else.
+
+  The canonical graph holds 368 registry rows and 738 edges, and 0 rows cite printed pages 134 or 135,
+  so nothing in this span has been extracted before. No settlement, district, point-of-interest, tavern
+  or shop identity exists. The registry holds 83 tbl_ identities.
+
+  Four existing identities were read in full first. sys_alignment carries 12 rows, of which 3 are RESOLVED_BY,
+  so this page''s table is the next one and the keys were checked against all of them. alignment_chaotic
+  carries 7 rows and none of them touches danger level or encounters. rule_danger_level carries 5 rows
+  and rule_encounter 10, and the path from the first to the second already exists in canonical, which
+  is why this page adds only the row that reaches rule_danger_level.'
+two_tier_structure_note: 'The rows follow the two-tier shape settled on printed pages 130 and 131 and
+  applied again on 132 and 133, because the page has the same structure: a procedure that rolls some tables
+  directly and reaches others through a result.
+
+  Three tables are rolled directly by the procedure and take RESOLVED_BY rows from rule_settlement_maps:
+  type, districts and alignment. The 8 district tables on printed page 135 are reached only when the districts
+  table produces their district, so each takes a FEEDS_INTO row from tbl_settlement_districts. That is
+  the same relation and the same fan-out the eight map contents tables carry from tbl_map_room_type, and
+  it uses a single shared aspect for the same reason: the 8 rows differ only in which district was rolled.
+
+  The assembling script asserts the correspondence rather than trusting the reading. For each of the 8
+  district results it checks that the name appears as a result row on the districts table and that a table
+  of that name exists on printed page 135, so no district is left without a table and no table is invented.'
+settlement_type_feeds_districts_note: 'M005 is the row most likely to be read as redundant, so it is argued
+  here. tbl_settlement_type FEEDS_INTO tbl_settlement_districts with aspect district dice.
+
+  The type table''s second column is not decoration. It gives both how many dice are thrown and how many
+  sides they have, and those same dice are then read against the districts table, one district per die.
+  So the type determines how many districts a settlement has and, because the districts table runs from
+  1 to 8 while the smallest type''s dice cannot reach the upper entries, which districts are reachable
+  at all. A small settlement can never roll a castle district.
+
+  That is one relation, not two: the count and the range are the same fact about the same dice, and splitting
+  them would need an identity for a die. The specific die counts and sizes are magnitudes and no field
+  may store them, so the row carries only the direction, type into districts.'
+chaotic_alignment_note: 'M006 is the only row here that reaches outside the generator, so it is argued
+  too. alignment_chaotic FEEDS_INTO rule_danger_level with aspect settlement danger.
+
+  The source says to treat chaotic settlements and districts as risky when checking for random encounters.
+  Risky is one of the three values rule_danger_level has carried since printed page 86, and those values
+  were twice declined as identities, on printed pages 86 and 90, so the row cannot name it. What survives
+  is the direction: a rolled alignment supplies the danger level for the place, which is exactly what
+  FEEDS_INTO carries.
+
+  The row stops there deliberately. rule_danger_level already feeds rule_encounter in canonical, with
+  aspect check cadence, so a second row from alignment_chaotic to rule_encounter would restate a path
+  the graph already has and would assert a direct relation the source does not state. The mention of random
+  encounters names the consumer, not a second edge.'
+reused_nodes:
+- id: sys_alignment
+  label: Alignment
+  used_by: M004
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical since the alignment and deities pages, carrying 12 rows of which 3 are RESOLVED_BY.
+    This page's table is another random selector for it, in the same position as the random character,
+    NPC and rival crawler alignment tables, and differs from all of them in target and aspect.
+- id: alignment_chaotic
+  label: Chaotic
+  used_by: M006
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical with 7 rows, none of which touches danger level or encounters, so M006 collides
+    with nothing.
+- id: rule_danger_level
+  label: Danger Level
+  used_by: M006
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical from printed page 86 with 5 rows, already feeding rule_encounter and constraining
+    resting. This page supplies it an input rather than a resolver, which is a position it did not previously
+    hold.
+candidate_nodes:
+- proposed_id: rule_settlement_maps
+  proposed_label: Settlement Maps
+  kind: procedure
+  why_needed: The named procedure these pages define, generating a settlement from thrown dice. The 7
+    paragraphs state it as a sequence, so it is a source-defined identity rather than a heading, and three
+    tables resolve it directly. It is the source-named parent that lets the district tables attach at
+    all.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 134, SETTLEMENT MAPS
+  source_evidence: page 134, the SETTLEMENT MAPS heading and its 7 procedure paragraphs.
+- proposed_id: tbl_settlement_type
+  proposed_label: Settlement Type Table
+  kind: table
+  why_needed: Resolves the settlement's type and, with it, the number and size of the dice that are rolled
+    and then read against the districts table.
+  prefix_basis: tbl_ is a named source table; matches the 83 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 134, SETTLEMENT TYPE TABLE
+  source_evidence: page 134, the SETTLEMENT TYPE TABLE heading and its data rows.
+- proposed_id: tbl_settlement_districts
+  proposed_label: Settlement Districts Table
+  kind: table
+  why_needed: Resolves what district sits at each die's position. It is the table every point-of-interest
+    table on the facing page is reached through.
+  prefix_basis: tbl_ is a named source table; matches the 83 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 134, SETTLEMENT DISTRICTS TABLE
+  source_evidence: page 134, the SETTLEMENT DISTRICTS TABLE heading and its data rows.
+- proposed_id: tbl_settlement_alignment
+  proposed_label: Settlement Alignment Table
+  kind: table
+  why_needed: Resolves an alignment for the settlement as a whole or for a single district. Its three
+    results are the canonical alignment identities.
+  prefix_basis: tbl_ is a named source table; matches the 83 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 134, SETTLEMENT ALIGNMENT TABLE
+  source_evidence: page 134, the SETTLEMENT ALIGNMENT TABLE heading and its data rows.
+- proposed_id: tbl_settlement_slums
+  proposed_label: Settlement Slums Table
+  kind: table
+  why_needed: Resolves a point of interest for a slums district, reached when that district is the result
+    on the settlement districts table.
+  prefix_basis: tbl_ is a named source table; matches the 83 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 135, SETTLEMENT SLUMS TABLE
+  source_evidence: page 135, the SETTLEMENT SLUMS TABLE heading and its data rows.
+- proposed_id: tbl_settlement_low_district
+  proposed_label: Settlement Low District Table
+  kind: table
+  why_needed: Resolves a point of interest for a low district, reached when that district is the result
+    on the settlement districts table.
+  prefix_basis: tbl_ is a named source table; matches the 83 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 135, SETTLEMENT LOW DISTRICT TABLE
+  source_evidence: page 135, the SETTLEMENT LOW DISTRICT TABLE heading and its data rows.
+- proposed_id: tbl_settlement_artisan_district
+  proposed_label: Settlement Artisan District Table
+  kind: table
+  why_needed: Resolves a point of interest for a artisan district, reached when that district is the result
+    on the settlement districts table.
+  prefix_basis: tbl_ is a named source table; matches the 83 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 135, SETTLEMENT ARTISAN DISTRICT TABLE
+  source_evidence: page 135, the SETTLEMENT ARTISAN DISTRICT TABLE heading and its data rows.
+- proposed_id: tbl_settlement_market
+  proposed_label: Settlement Market Table
+  kind: table
+  why_needed: Resolves a point of interest for a market district, reached when that district is the result
+    on the settlement districts table.
+  prefix_basis: tbl_ is a named source table; matches the 83 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 135, SETTLEMENT MARKET TABLE
+  source_evidence: page 135, the SETTLEMENT MARKET TABLE heading and its data rows.
+- proposed_id: tbl_settlement_high_district
+  proposed_label: Settlement High District Table
+  kind: table
+  why_needed: Resolves a point of interest for a high district, reached when that district is the result
+    on the settlement districts table.
+  prefix_basis: tbl_ is a named source table; matches the 83 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 135, SETTLEMENT HIGH DISTRICT TABLE
+  source_evidence: page 135, the SETTLEMENT HIGH DISTRICT TABLE heading and its data rows.
+- proposed_id: tbl_settlement_temple_district
+  proposed_label: Settlement Temple District Table
+  kind: table
+  why_needed: Resolves a point of interest for a temple district, reached when that district is the result
+    on the settlement districts table.
+  prefix_basis: tbl_ is a named source table; matches the 83 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 135, SETTLEMENT TEMPLE DISTRICT TABLE
+  source_evidence: page 135, the SETTLEMENT TEMPLE DISTRICT TABLE heading and its data rows.
+- proposed_id: tbl_settlement_university_district
+  proposed_label: Settlement University District Table
+  kind: table
+  why_needed: Resolves a point of interest for a university district, reached when that district is the
+    result on the settlement districts table.
+  prefix_basis: tbl_ is a named source table; matches the 83 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 135, SETTLEMENT UNIVERSITY DISTRICT TABLE
+  source_evidence: page 135, the SETTLEMENT UNIVERSITY DISTRICT TABLE heading and its data rows.
+- proposed_id: tbl_settlement_castle_district
+  proposed_label: Settlement Castle District Table
+  kind: table
+  why_needed: Resolves a point of interest for a castle district, reached when that district is the result
+    on the settlement districts table.
+  prefix_basis: tbl_ is a named source table; matches the 83 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 135, SETTLEMENT CASTLE DISTRICT TABLE
+  source_evidence: page 135, the SETTLEMENT CASTLE DISTRICT TABLE heading and its data rows.
+candidate_edges:
+- ref: M001
+  source_id: rule_settlement_maps
+  source_label: Settlement Maps
+  edge_type: RESOLVED_BY
+  target_id: tbl_settlement_type
+  target_label: Settlement Type Table
+  aspect: settlement type
+  condition: ''
+  book: SD
+  page: 134
+  section: SETTLEMENT TYPE TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_settlement_maps
+  source_label: Settlement Maps
+  edge_type: RESOLVED_BY
+  target_id: tbl_settlement_districts
+  target_label: Settlement Districts Table
+  aspect: district placement
+  condition: ''
+  book: SD
+  page: 134
+  section: SETTLEMENT DISTRICTS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_settlement_maps
+  source_label: Settlement Maps
+  edge_type: RESOLVED_BY
+  target_id: tbl_settlement_alignment
+  target_label: Settlement Alignment Table
+  aspect: settlement alignment
+  condition: ''
+  book: SD
+  page: 134
+  section: SETTLEMENT ALIGNMENT TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: sys_alignment
+  source_label: Alignment
+  edge_type: RESOLVED_BY
+  target_id: tbl_settlement_alignment
+  target_label: Settlement Alignment Table
+  aspect: settlement selection
+  condition: ''
+  book: SD
+  page: 134
+  section: SETTLEMENT ALIGNMENT TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: tbl_settlement_type
+  source_label: Settlement Type Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_settlement_districts
+  target_label: Settlement Districts Table
+  aspect: district dice
+  condition: ''
+  book: SD
+  page: 134
+  section: SETTLEMENT MAPS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: alignment_chaotic
+  source_label: Chaotic
+  edge_type: FEEDS_INTO
+  target_id: rule_danger_level
+  target_label: Danger Level
+  aspect: settlement danger
+  condition: ''
+  book: SD
+  page: 134
+  section: SETTLEMENT MAPS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: tbl_settlement_districts
+  source_label: Settlement Districts Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_settlement_slums
+  target_label: Settlement Slums Table
+  aspect: point of interest table
+  condition: ''
+  book: SD
+  page: 135
+  section: SETTLEMENT SLUMS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: tbl_settlement_districts
+  source_label: Settlement Districts Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_settlement_low_district
+  target_label: Settlement Low District Table
+  aspect: point of interest table
+  condition: ''
+  book: SD
+  page: 135
+  section: SETTLEMENT LOW DISTRICT TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: tbl_settlement_districts
+  source_label: Settlement Districts Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_settlement_artisan_district
+  target_label: Settlement Artisan District Table
+  aspect: point of interest table
+  condition: ''
+  book: SD
+  page: 135
+  section: SETTLEMENT ARTISAN DISTRICT TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: tbl_settlement_districts
+  source_label: Settlement Districts Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_settlement_market
+  target_label: Settlement Market Table
+  aspect: point of interest table
+  condition: ''
+  book: SD
+  page: 135
+  section: SETTLEMENT MARKET TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M011
+  source_id: tbl_settlement_districts
+  source_label: Settlement Districts Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_settlement_high_district
+  target_label: Settlement High District Table
+  aspect: point of interest table
+  condition: ''
+  book: SD
+  page: 135
+  section: SETTLEMENT HIGH DISTRICT TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M012
+  source_id: tbl_settlement_districts
+  source_label: Settlement Districts Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_settlement_temple_district
+  target_label: Settlement Temple District Table
+  aspect: point of interest table
+  condition: ''
+  book: SD
+  page: 135
+  section: SETTLEMENT TEMPLE DISTRICT TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M013
+  source_id: tbl_settlement_districts
+  source_label: Settlement Districts Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_settlement_university_district
+  target_label: Settlement University District Table
+  aspect: point of interest table
+  condition: ''
+  book: SD
+  page: 135
+  section: SETTLEMENT UNIVERSITY DISTRICT TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M014
+  source_id: tbl_settlement_districts
+  source_label: Settlement Districts Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_settlement_castle_district
+  target_label: Settlement Castle District Table
+  aspect: point of interest table
+  condition: ''
+  book: SD
+  page: 135
+  section: SETTLEMENT CASTLE DISTRICT TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: No authored polarity appears. Every row is RESOLVED_BY or FEEDS_INTO, neither
+  of which is among the three types constitution section 5 reserves for authored polarity, so assigning
+  one is prohibited to the Analyst and invariant 15 has nothing to require. Builder derives governs on
+  the 4 RESOLVED_BY rows and neutral on the 10 FEEDS_INTO rows.
+status_note: All 14 rows are core, following the disposition settled as IDQ-01 of PKT-SD-124-125 and applied
+  in the three packets since. The roll-or-choose offer applies to the settlement type rather than to the
+  procedure, and the alignment paragraph's offer is between two scopes of the same roll, not between using
+  the rule and not; neither makes the page optional, and nothing here declares itself optional as The
+  Gauntlet and the modes of play do.
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: The page generates the places overland travel arrives at and writes into rule_danger_level, which
+    the encounter cadence reads. Recorded as a candidate only; constitution section 8 reserves domain
+    promotion to an Architect Decision. Consistent with the exploration candidate recorded in seven earlier
+    packets.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: the tavern and shop pointers, p134
+  quoted_gist: roll taverns on pg. 136 and shops on pg. 138
+  why_considered: It is an explicit numbered cross-reference, which is the strongest form of pointer the
+    book uses, and the district tables produce poor, standard and wealthy taverns and shops as results,
+    so the generator plainly reaches those two pages.
+  rejection_reason: Neither endpoint exists. No tavern or shop identity is canonical, and printed pages
+    136 and 138 are the subject of packets nobody has claimed. A GUR must propose every endpoint it uses,
+    and proposing them here would mint identities for content outside this packet's bounded scope and
+    pre-empt the Analyst who extracts those pages. Recorded as OBS-01 and owed as a successor once both
+    are canonical.
+- text_locus: the dice-throwing, outline and street directions, p134
+  quoted_gist: roll the dice together on a blank sheet of paper, draw a broad outline around where they
+    fell to get the settlement's shape, and separate the districts by rough lines to create main streets
+  why_considered: It is the most concrete instruction on the page and is what actually produces the map,
+    so leaving it out feels like leaving out the procedure itself.
+  rejection_reason: 'Its content is entirely about the physical artefact: where dice land on paper and
+    what the reader draws around them. There is no identity for a sheet, an outline or a street, and the
+    relation asserted would be between the procedure and a drawing rather than between game concepts.
+    This is the third consecutive packet whose signature instruction fails this way; recorded as OBS-02.'
+- text_locus: the seat of government direction, p134
+  quoted_gist: the settlement's seat of government is located in the district with the highest roll
+  why_considered: It is unhedged and deterministic, and it singles out one district from the rest, which
+    is the shape a GATES or a CONSTRAINS row sometimes takes.
+  rejection_reason: 'Its whole content is a comparison of die results, which is arithmetic on magnitudes
+    and no field may store it. Stripped of the comparison the statement says a settlement has a seat of
+    government, which is setting rather than mechanics: nothing checks against it, nothing is gated by
+    it, and no other rule in the graph mentions one. Proposing an identity for it would produce a node
+    with no relation to assert.'
+- text_locus: the points of interest quantity, p134
+  quoted_gist: each district has a rolled number of main points of interest
+  why_considered: It is what makes the 8 district tables get rolled at all, so a row carrying the quantity
+    looked available alongside the ones carrying the reach.
+  rejection_reason: The statement's only content beyond the reach is how many, which is a magnitude, and
+    a condition may never spell a quantity. What survives is that a district produces points of interest
+    from its table, which the 8 FEEDS_INTO rows already carry. A separate row would need an identity for
+    a point of interest and would assert nothing those rows do not.
+- text_locus: the district point-of-interest results, p135
+  quoted_gist: 36 data rows across the 8 district tables, naming flophouses, graveyards, guildhouses,
+    a City Watch outpost and garrison, apothecaries, libraries, temples, shrines and a wizard's tower
+  why_considered: Several results name things the graph holds or nearly does. The temple district alone
+    gives a minor deity's chapel, a forbidden shrine, a major god's temple and a revered holy site, and
+    sys_deity is canonical; the university district gives a wizard's tower and class_wizard is canonical.
+  rejection_reason: All are locations a GM places on a map, and none states a check, a value, a duration
+    or a consequence. A chapel to a minor deity is a building, not a relation to sys_deity, and a wizard's
+    tower is not a relation to class_wizard; asserting either would make the graph claim a mechanical
+    link the source never states. This is the same reading that declined the map contents descriptions
+    on printed page 131 and the hex developments on 133. The tavern and shop results are the exception
+    in kind and are handled above.
+non_edge_observations:
+- id: OBS-01
+  subject: the tavern and shop pointers are owed and cannot be paid yet
+  detail: 'This page ends by directing the reader to roll taverns on printed page 136 and shops on printed
+    page 138, and its district tables produce poor, standard and wealthy taverns and shops among their
+    results. Both are real mechanical reaches and both are unassertable in this revision because neither
+    endpoint exists: no tavern or shop identity is canonical, and the packets covering those pages are
+    unclaimed.
+
+    Recorded so the debt is visible rather than lost. Once those pages are extracted and integrated, this
+    packet owes a successor carrying the reach from the district tables to whatever tavern and shop identities
+    they mint. The shape is the one PKT-SD-091-093 and PKT-SD-101-109 already owe for carousing and treasure
+    pointers, and it is the ordinary cost of extracting a chapter in page order: a generator can name
+    the thing that comes after it before the graph holds it.'
+- id: OBS-02
+  subject: a third consecutive signature mechanic acts on the artefact
+  detail: 'The instruction that gives this page its character is throwing dice onto paper, drawing an
+    outline around where they land and reading each die''s position as a district. It is precise and fully
+    determinate, and almost none of it reaches the graph, because its subject is a sheet of paper.
+
+    That is now three packets running. On printed page 130 it was scattering dice to place rooms; on 132
+    it was stepping around the terrain table as a circular loop; here it is the same dice-on-paper technique
+    applied to a town. Recorded as a set because the pattern is stable enough to be worth a name: the
+    generators in this chapter are procedures performed on the artefact, and the vocabulary holds relations
+    between game concepts, so the more distinctive the generator the less of it survives. What does survive
+    in all three cases is which table resolves what, and that is not nothing, but a reader of the graph
+    alone would not know these pages are about drawing.'
+- id: OBS-03
+  subject: the eight districts are the same eight the encounter chapter uses
+  detail: 'The 8 district results here are slums, low, artisan, market, high, temple, university and castle.
+    The encounter chapter that follows carries a separate page-length table for each of those districts,
+    plus taverns, and those pages are among the unclaimed packets.
+
+    Recorded because it is a structural correspondence a later Analyst will need and because it is not
+    yet assertable. Nothing on this page points at the encounter tables and nothing there is canonical,
+    so any row joining them would be inferred rather than read. When that chapter is extracted the question
+    will be whether a district result reaches its encounter table the way it reaches its point-of-interest
+    table here; the answer belongs to whoever holds both loci, not to this packet.'
+unresolved_identity_questions: []
+unresolved_identity_questions_note: 'None. The structural choices here follow dispositions already settled:
+  the two-tier shape and the shared-aspect fan-out from PKT-SD-130-131, the core status from PKT-SD-124-125,
+  and the refusal to propose danger level values from PKT-SD-086-086 and PKT-SD-090-090. The two judgements
+  that are mine alone, M005 and M006, are argued in settlement_type_feeds_districts_note and chaotic_alignment_note.'
+architectural_escalations: []
+architectural_escalation_note: None raised. All 12 identities use an approved prefix, every row uses a
+  legal edge type at status core, no row carries supersession_basis and none is an OVERRIDES, and no CLASSIFIED_AS
+  row appears. OBS-01 records a debt that time will clear and asks for nothing.
+completeness_statement: 'Both printed pages in scope were read in full at the recorded checksum: 7 procedure
+  paragraphs, 11 named tables and 51 data rows. The packet yields 12 new identities and 14 rows, reusing
+  3 canonical identities whose labels the assembling script asserted equal to the registry. No proposed
+  identity is left carrying no edge.
+
+  The rows follow the two-tier shape settled on printed pages 130 and 131: three tables are rolled directly
+  and take RESOLVED_BY rows from the procedure, and the 8 district tables are reached through a districts
+  result and take FEEDS_INTO rows from it under one shared aspect, as the map contents tables do. Two
+  rows reach further and are argued separately, M005 for the dice the type table supplies and M006 for
+  the danger level a chaotic alignment sets. Every row was checked against the 738 canonical edges for
+  an assertion-key collision, for a shared source, type and target under a different aspect, and for duplicates
+  within the patch; there are none of any, and no canonical row cited either page before.
+
+  Five candidates were rejected and each is recorded with its reason. The largest deliberate loss is the
+  tavern and shop pointers, recorded as OBS-01 and owed as a successor, followed by the dice-on-paper
+  technique recorded as OBS-02. No assertion depends on any other ruleset.'

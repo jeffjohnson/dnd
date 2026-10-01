@@ -1,0 +1,231 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0105-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'The scanner''s _route_leaf_gur gained a fourth, conforming-blocked
+    branch alongside the existing malformed/terminal/absent ones: a blocked
+    active-leaf GUR now produces exactly one BlockedItems entry for its own
+    declared handoff.next_role, preserving blocking_ids in the reason, and
+    never falls into the BUILDER-GUR ready route or the legacy-inference
+    diagnostic. Ready, terminal, malformed, and legacy GUR behavior is
+    provably unchanged: the pre-existing tests in the same class still pass
+    unmodified. All four acceptance tests pass. No source, GUR, GUP, Review,
+    registry, canonical, compiler, or basicdnd/rc artifact was touched.'
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0105
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+  checksum: sha256:8c62a5c9e4d0975bd23d88a70ea78b98fecc12d4813fa718ec3b382c69024777
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:1f87ffe94756aa70cdfc009e97027540a4ffe376f0c475e1e9b901eb58339269
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:f571c2cd815c5efd7f19744e34f5287e20872822b104d864863d98f97a1803e3
+verified_inputs:
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+  checksum: sha256:8c62a5c9e4d0975bd23d88a70ea78b98fecc12d4813fa718ec3b382c69024777
+- path: rulesets/shadowdark/governance/constitution.md
+  checksum: sha256:629e72cde3206228e1d1e569957dfff6aa275728c18ff4890c81cfcdc6e0c93d
+- path: rulesets/shadowdark/ruleset.yaml
+  checksum: sha256:e112efbbdd93f20e3b4147b69cf7b4a28897699abcf5812c5c88d40ee22a39a0
+- path: schemas/shadowdark/graph/gur.schema.json
+  checksum: sha256:ebddc07b6815716d484846617657ba4afac01b449e46072c0ece153b4d11170d
+- path: schemas/shadowdark/graph/gup.schema.json
+  checksum: sha256:0d78392ca12cacfac4ffcc8f2dfbf3a3856425867d8b1ae4457fa237c502d5f8
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:63248729b9ce5e206ba27f9231473f4f5d8a9b08373d99d252b67ba94be1c391
+- path: rulesets/shadowdark/escalations/decided/ESC-2026-09-30T06.00.29.086Z.yaml
+  checksum: sha256:e8e64f2b05cfe7ab86cd459a89b5b15043d6f79eeb3283a33ea6ff408dbf69ed
+- path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-189-189-monster-attributes-r01.yaml
+  checksum: sha256:606fc728b624154af4ea0189931f33575a627cfac01d373ec5ea8318f06d9c56
+- path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-189-189-monster-attributes-r02.yaml
+  checksum: sha256:edcf767a8e30a5ce605d2cb5ac17848f845022ccf73d38f3fe608bb9beb5c630
+validation_report: build/reports/IMP-DEC-2026-0105-r01.validation.json
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: Verified as an Architect-owned input, not authored here (step 1). Constitution
+    advanced from 1.7 to 1.8 and gained section 2.5, Creature Statistic Boundary,
+    plus an `mstat_` row in the section 2 prefix table. Read live in place, all
+    three authorized anchors are present verbatim or as an unambiguous paraphrase
+    -- the table row and 2.5's opening sentence both name `mstat_` as a shared
+    creature statistic or rating used by a mechanic; 2.5's second sentence states
+    that `mstat_monster_level` may participate in the hit-point-calculation
+    relationship while no row stores how many levels a creature has; and 2.5's
+    third paragraph excludes AC, HP, LV, attacks, movement, modifiers, alignment,
+    DC, and tier from graph content, property store, or completeness obligation
+    by name. Structured evidence is recorded in versioned_contract_content.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0105
+      path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+      checksum: sha256:8c62a5c9e4d0975bd23d88a70ea78b98fecc12d4813fa718ec3b382c69024777
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: rulesets/shadowdark/governance/constitution.md
+      checksum: sha256:629e72cde3206228e1d1e569957dfff6aa275728c18ff4890c81cfcdc6e0c93d
+      observed_version: '1.8'
+      minimum_version: '1.8'
+      anchors_present:
+      - mstat_ names a shared creature statistic or rating used by an explicit mechanic.
+      - mstat_monster_level may feed monster hit-point calculation without storing numeric values.
+      - Individual creature stat-block values remain outside graph content and property storage.
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'Verified as an Architect-owned input. rulesets/shadowdark/ruleset.yaml
+    declares constitution_version 1.8 and historical_gur_constitution_versions
+    1.0 through 1.7 (checked live: was 1.0-1.6 plus current 1.7 as of the prior
+    Decision). Both schemas/shadowdark/graph/gur.schema.json and gup.schema.json
+    enumerate constitution_version 1.0 through 1.8 inclusive -- checked live by
+    reading each file''s enum array directly. No other ruleset schema or
+    metadata changed: `git status --short` over schemas/ and rulesets/adnd1e and
+    rulesets/basicdnd shows no path touched by this Decision, and the only
+    modified files under schemas/ predate this session''s work on DEC-2026-0105.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'WORK_QUEUES.md rule 6a, added at 1.35, states the uniform rule
+    literally: a conforming blocked active-leaf artifact of any handoff-bearing
+    kind, GURs included, is one blocked item for its declared next_role,
+    contributes nothing to ReadyCount, and never falls through to ordinary or
+    legacy routing. Structured contract-content evidence is recorded in
+    versioned_contract_content below.
+
+
+    The runtime half -- the scanner actually doing this -- is implemented and
+    proven by the tests: `_route_leaf_gur` in tooling/common/scan_agent_queues.py
+    gained a `readiness == "blocked"` branch, checked after the existing
+    `terminal` branch and before the unconditional `BUILDER-GUR` append, so a
+    conforming blocked handoff returns early into a new `blocked.append(...)`
+    call instead of falling through. The blocked item''s `Role`/`Queue` are read
+    from the handoff''s own `next_role` via the existing `_handoff_role` helper
+    (not a hardcoded role), its `Reason` lists the handoff''s own `blocking_ids`
+    via the existing `_blocking_ids` helper, and it is appended to a `blocked`
+    list newly threaded through the function''s signature and its one call site
+    -- the same list `scan_repository` already sorts, counts into `BlockedCount`,
+    and serializes as `BlockedItems`, separate from `ReadyCount`/`Items`.
+    `TestGurHandoffRoutingCase` (11 new tests) exercises: exactly one blocked
+    item and no ready item for a conforming blocked GUR; the item lands in
+    `BlockedItems` with `State: blocked`; `Role`/`Queue` follow the handoff''s
+    declared role dynamically (proven with both `architect` and `builder` as
+    `next_role`, not just the live monster-attributes shape); the blocking ID
+    appears in `Reason`; no `BUILDER-GUR` item is produced; no
+    `legacy_handoff_inference` or `gur_invalid_handoff` diagnostic fires;
+    `ReadyCount` is 0 and `BlockedCount` is 1; a malformed `blocked` shape with
+    empty `blocking_ids` still routes to `ANALYST-GUR-REPAIR` as before, not
+    through the new branch; and one combined test publishes a ready, a terminal,
+    a malformed, and a legacy-absent GUR side by side with a blocked one,
+    asserting each still lands exactly where the pre-existing tests already
+    proved it does.
+
+
+    Live reproduction against the actual GUR-PKT-SD-189-189-monster-attributes-r01
+    that raised the escalation is recorded for the record rather than replayed
+    live: before this fix, `scan_agent_queues.py --json` emitted a `BUILDER-GUR`
+    ready item for that exact blocked r01 leaf (Reason: "Active-leaf GUR has no
+    consuming GUP"), reproducing the defect the Decision names. Analyst published
+    the r02 successor (step 2) while this report was being written, which
+    supersedes r01 and removes it from active-leaf routing before this fix could
+    be demonstrated against it live; the synthetic focused fixtures above are
+    the durable regression coverage and do not depend on that packet''s state.'
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0105
+      path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+      checksum: sha256:8c62a5c9e4d0975bd23d88a70ea78b98fecc12d4813fa718ec3b382c69024777
+      authorized_acceptance_test_index: 3
+    authorized_acceptance_test_index: 3
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:63248729b9ce5e206ba27f9231473f4f5d8a9b08373d99d252b67ba94be1c391
+      observed_version: '1.35'
+      minimum_version: '1.35'
+      anchors_present:
+      - A conforming blocked handoff creates only blocked work for its declared next role.
+      - A blocked active leaf contributes nothing to ReadyCount and never falls through to ordinary or legacy routing.
+- acceptance_test_index: 4
+  result: passed
+  evidence: The focused class (`GurHandoffRoutingCase`, all GUR-handoff-routing
+    tests including the 11 new blocked-GUR ones) ran 36 tests, 0 failures. The
+    relevant module (`tooling.common.tests.test_scan_agent_queues`, every
+    scanner test) ran 989 tests, 0 failures -- confirming the new branch and the
+    threaded `blocked` parameter broke nothing elsewhere in the scanner suite.
+    The complete `tooling/common/tests` discovery, covering every common-tooling
+    test module including role-context and herdr-handoff tests, ran 1329 tests,
+    0 failures. All three commands exited 0. Exact commands and outcomes are in
+    the validation block and in build/reports/IMP-DEC-2026-0105-r01.validation.json.
+    Reviewer independently reproduces at minimum the focused class command.
+validation:
+  passed: true
+  commands:
+  - command: python -m unittest tooling.common.tests.test_scan_agent_queues.GurHandoffRoutingCase -v
+    exit_code: 0
+    result: passed
+    summary: Ran 36 tests in 0.489s OK
+  - command: python -m unittest tooling.common.tests.test_scan_agent_queues
+    exit_code: 0
+    result: passed
+    summary: Ran 989 tests in 379.959s OK
+  - command: python -m unittest discover -s tooling/common/tests -t tooling/common/tests
+    exit_code: 0
+    result: passed
+    summary: Ran 1329 tests in 569.576s OK
+changes_in_this_revision:
+- 'scan_agent_queues.py: `_route_leaf_gur` takes a new `blocked` parameter (its
+  one call site in `scan_repository` now passes the function''s existing local
+  `blocked` list, already declared and already wired into `_build_result`).
+  Inside the function, the handoff-shape check for a conforming handoff now
+  reads `readiness` once and adds a `readiness == "blocked"` branch before the
+  unconditional ready append: it resolves the declared role via `_handoff_role`
+  (falling back to `"Analyst"` only if the conforming handoff somehow names
+  `next_role: none`, which the docstring notes cannot occur for a role that
+  reached this branch under the schema''s blocked-requires-blockers rule in
+  ordinary use), builds the reason string from `_blocking_ids` the same way the
+  existing blocked-GUP branch does, appends one `state="blocked"` item with
+  `Queue: f"{role.upper()}-BLOCKED-GUR"`, and returns -- never reaching the
+  `BUILDER-GUR` append below it. The malformed and absent-handoff branches, and
+  the unconditional `BUILDER-GUR` append itself, are byte-for-byte unchanged
+  except for the added `blocked` parameter threading past them.'
+- 'test_scan_agent_queues.py: `GurHandoffRoutingCase` gained a `BLOCKED_HANDOFF`
+  class fixture modelled on the real GUR-PKT-SD-189-189-monster-attributes-r01
+  blocker, a `blocked_routed` helper mirroring the existing `routed` helper but
+  reading `BlockedItems`, and 11 new tests under a new "acceptance test 5" section:
+  exactly one item and it is in BlockedItems; never among ready Items; routes to
+  the declared Role/Queue; preserves blocking_ids in Reason; never produces
+  BUILDER-GUR; no legacy-inference or invalid-handoff diagnostic; ReadyCount 0 /
+  BlockedCount 1; role routing is dynamic (builder as well as architect); a
+  malformed blocked shape (empty blocking_ids) still repairs through the
+  existing ANALYST-GUR-REPAIR path, not this one; and one combined regression
+  test running ready/terminal/malformed/legacy/blocked GURs side by side.'
+bugs_found_by_the_new_tests: []
+not_done:
+- 'No source, GUR, GUP, Review, registry, canonical, or compiler artifact was
+  touched. No basicdnd or rc work of any kind was performed; DEC-2026-0086
+  remains binding.'
+- 'Step 4 (compiling the Analyst''s published GUR-PKT-SD-189-189-monster-attributes-r02
+  through the normal packet lifecycle) is a separate, later Builder action under
+  this same Decision and is not part of this report.'
+- 'schemas/shadowdark/graph/edge.schema.json''s source_id/target_id pattern does
+  not yet list `mstat` among its admitted prefixes, even though the constitution''s
+  own prefix table and DEC-2026-0105''s ruling both authorize it. That schema
+  file is outside this report''s scope (step 3 is scan_agent_queues.py and its
+  tests only; the schema is an Architect-owned governance file per
+  implementation_bounds) and outside every other current step''s exact_diff, so
+  it was not edited. It was not found to block anything the Decision requires:
+  the Builder compiler resolves node prefixes dynamically from the constitution''s
+  own prefix table (tooling/builder/src/adnd1e_builder/vocab.py) rather than from
+  this JSON schema, and the only tests that read this file''s pattern
+  (tooling/builder/tests/test_edge_schema.py, tooling/builder/tests/test_shadowdark_ancestry.py)
+  scope to adnd1e and to ancestry IDs respectively, not to `mstat_` or the full
+  shadowdark corpus. Recorded here so it is not lost before step 4 exercises an
+  `mstat_` edge for the first time.'
+validation_report_checksum: sha256:471261b716988bb52fbae8b2d5200f6f92efaa25f9c121479af877e3f9dc5288

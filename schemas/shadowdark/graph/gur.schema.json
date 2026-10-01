@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Shadowdark GUR",
+  "$comment": "Apply together with schemas/common/gur.schema.json and the registered book's extraction constraints.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "status",
+    "ruleset_id",
+    "book_id",
+    "source_id",
+    "packet_id",
+    "constitution_version"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "id": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "minLength": 1},
+    "ruleset_id": {
+      "const": "shadowdark"
+    },
+    "book_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "packet_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "constitution_version": {
+      "enum": ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8"],
+      "description": "DEC-2026-0105 preserves historical 1.0 through 1.7 artifacts; new GURs declare current 1.8 and undergo current validation."
+    }
+  }
+}

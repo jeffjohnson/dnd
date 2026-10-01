@@ -1,0 +1,444 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-112-113-random-encounters-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-112-113-random-encounters
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-112-113-random-encounters
+  source_file: source.md
+  packet_source_checksum: sha256:177a1d7a87a4953f989bc310b76b090015f6318febe4f855981a21f9c513aec0
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 042-random-encounters.md
+  citation_code: SD
+  page_start: 112
+  page_end: 113
+  page_number_basis: packet_page_markers
+page_attribution_basis: 'Two markers resolve this packet and both sit on headings, which is a return to
+  the ordinary case after two packets whose boundaries rested on trailing paragraph markers. p112 ends
+  the RANDOM ENCOUNTERS heading and p113 ends the REACTION CHECK heading, and placement rule 1 applies
+  each to its whole heading while the persistence rule carries it forward.
+
+  One detail worth naming: p113 sits on a third-level heading nested inside the page 112 section, so REACTION
+  CHECK, its table and the TREASURE note that follows are all printed page 113 even though their parent
+  heading is page 112. Heading level does not affect placement or persistence. Four rows cite page 112
+  and four cite page 113.'
+scope_boundary: The bounded scope is the Primary Source Material section, printed pages 112 and 113. The
+  trailing Supporting Source Context is out of scope.
+source_summary: 'The full treatment of random encounters. They exist to keep time pressure up. The GM
+  checks during crawling rounds, not combat, on a cadence set by the environment''s danger level, rolling
+  a die with an encounter on the lowest result, and may also check after a loud disturbance; for overland
+  travel the cadence is counted in hours instead and the page points to printed page 90. Three tables
+  follow: a roll for the creatures'' starting distance in the close, near and far bands, a roll for what
+  they are currently doing, which may affect how likely they are to notice the characters, and a reaction
+  check for their attitude, to which an interacting character may add their Charisma modifier at the cost
+  of revealing their presence and position. Some creatures are always hostile. A randomly encountered
+  creature has a stated chance of carrying no treasure.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled: the canonical graph
+  holds 314 registry rows and 675 edges. The registry was read in full and every reused label verified
+  character for character against it. No canonical row cites printed page 112 or 113, confirmed by query,
+  so nothing in this span has been extracted before.
+
+  rule_encounter already carries six rows from printed pages 82, 83, 84, 86 and 90, and those were read
+  before anything here was written, because three of them are the cadence relations this page restates.
+  No monster, creature, treasure or noise identity exists. Every proposed row was checked against the
+  canonical edge set for an assertion-key collision, for a shared source, type and target under a different
+  aspect, and for duplicates within the patch; there are none of any.'
+restatement_note: 'This page has the highest restatement density of any packet so far, and three exact
+  collisions were avoided by checking rather than by noticing.
+
+  HOW OFTEN? gathers the encounter cadence in one place, but each per-context relation is already canonical
+  from the page that established it: rule_crawling_round FEEDS_INTO rule_encounter with aspect check cadence
+  from printed page 84, rule_danger_level FEEDS_INTO rule_encounter with the same aspect from page 86,
+  and rule_overland_travel FEEDS_INTO rule_encounter with aspect overland cadence from page 90. Asserting
+  any of them here would repeat an identical five-field key, since the intervals that differ between contexts
+  are magnitudes no field stores.
+
+  What this page adds and the others do not is the explicit pointer to the overland rules by page number,
+  which is carried as M001, a CROSS_REFERENCES row rather than a second cadence row. That is the same
+  treatment given to the Time Passes pointers in PKT-SD-090-090 and PKT-SD-091-093.'
+forward_reference_closed_note: 'PKT-SD-101-109 recorded, as part of OBS-02 and a rejected candidate, that
+  the NEUTRAL ARBITER section on printed page 108 points to a Reaction Check on printed page 113 and that
+  the reference could not be asserted because no such identity existed. This packet is that page and proposes
+  rule_reaction_check from its defining locus.
+
+  The pointer itself is still not asserted here, and deliberately. The sentence making it is on page 108,
+  inside PKT-SD-101-109''s bounded scope, and that packet is integrated. Connecting them needs a successor
+  GUR for that packet, exactly as with the carousing pointer to Wizards and Thieves in PKT-SD-091-093.
+  This is the second forward reference the intake has resolved by reaching the target page, and the second
+  that still owes a successor at the referring page.'
+reused_nodes:
+- id: abil_charisma
+  label: Charisma
+  used_by: M007
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label, verified
+    character for character. Added to the reaction check when a character interacts.
+- id: rule_distance
+  label: Distance
+  used_by: M003
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label, verified
+    character for character. Supplies the close, near and far bands the distance table returns.
+- id: rule_encounter
+  label: Encounter
+  used_by: M001, M002, M004, M005
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label, verified
+    character for character. Canonical with six rows from printed pages 82, 83, 84, 86 and 90. This page
+    is its fullest treatment and adds the three tables and the reaction check without restating its cadence.
+- id: rule_hiding_and_sneaking
+  label: Hiding and Sneaking
+  used_by: M008
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label, verified
+    character for character. Ended for the interacting characters, who reveal their presence and position.
+- id: rule_overland_travel
+  label: Overland Travel
+  used_by: M001
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label, verified
+    character for character. Explicitly cross-referenced by page number for the overland cadence.
+candidate_nodes:
+- proposed_id: rule_reaction_check
+  proposed_label: Reaction Check
+  kind: procedure
+  why_needed: The named procedure for determining an encountered creature's attitude. This page is its
+    defining locus and PKT-SD-101-109 recorded a pointer to it that could not be asserted because the
+    identity did not exist.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 113, REACTION CHECK
+  source_evidence: page 113, the REACTION CHECK heading.
+- proposed_id: tbl_random_encounter_distance
+  proposed_label: Random Encounter Distance Table
+  kind: table
+  why_needed: The named table giving the starting distance of a wandering creature.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 112, RANDOM ENCOUNTER DISTANCE TABLE
+  source_evidence: page 112, the RANDOM ENCOUNTER DISTANCE TABLE heading.
+- proposed_id: tbl_random_encounter_activity
+  proposed_label: Random Encounter Activity Table
+  kind: table
+  why_needed: The named table giving what an encountered creature is currently doing.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 112, RANDOM ENCOUNTER ACTIVITY TABLE
+  source_evidence: page 112, the RANDOM ENCOUNTER ACTIVITY TABLE heading.
+- proposed_id: tbl_random_encounter_reaction
+  proposed_label: Random Encounter Reaction Table
+  kind: table
+  why_needed: The named table resolving the reaction check into an attitude.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 113, RANDOM ENCOUNTER REACTION TABLE
+  source_evidence: page 113, the RANDOM ENCOUNTER REACTION TABLE heading.
+candidate_edges:
+- ref: M001
+  source_id: rule_encounter
+  source_label: Encounter
+  edge_type: CROSS_REFERENCES
+  target_id: rule_overland_travel
+  target_label: Overland Travel
+  aspect: overland cadence
+  condition: ''
+  book: SD
+  page: 112
+  section: HOW OFTEN?
+  evidence: explicit_reference
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_encounter
+  source_label: Encounter
+  edge_type: RESOLVED_BY
+  target_id: tbl_random_encounter_distance
+  target_label: Random Encounter Distance Table
+  aspect: starting distance
+  condition: ''
+  book: SD
+  page: 112
+  section: STARTING DISTANCE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_distance
+  source_label: Distance
+  edge_type: FEEDS_INTO
+  target_id: tbl_random_encounter_distance
+  target_label: Random Encounter Distance Table
+  aspect: distance bands
+  condition: ''
+  book: SD
+  page: 112
+  section: RANDOM ENCOUNTER DISTANCE TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_encounter
+  source_label: Encounter
+  edge_type: RESOLVED_BY
+  target_id: tbl_random_encounter_activity
+  target_label: Random Encounter Activity Table
+  aspect: creature activity
+  condition: ''
+  book: SD
+  page: 112
+  section: WHAT IS IT DOING?
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: rule_encounter
+  source_label: Encounter
+  edge_type: TRIGGERS
+  target_id: rule_reaction_check
+  target_label: Reaction Check
+  aspect: creature attitude
+  condition: ''
+  book: SD
+  page: 113
+  section: REACTION CHECK
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: neutral
+  polarity_basis: read
+- ref: M006
+  source_id: rule_reaction_check
+  source_label: Reaction Check
+  edge_type: RESOLVED_BY
+  target_id: tbl_random_encounter_reaction
+  target_label: Random Encounter Reaction Table
+  aspect: attitude roll
+  condition: ''
+  book: SD
+  page: 113
+  section: RANDOM ENCOUNTER REACTION TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: abil_charisma
+  source_label: Charisma
+  edge_type: FEEDS_INTO
+  target_id: rule_reaction_check
+  target_label: Reaction Check
+  aspect: interaction modifier
+  condition: ''
+  book: SD
+  page: 113
+  section: REACTION CHECK
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: rule_reaction_check
+  source_label: Reaction Check
+  edge_type: EXCLUDES
+  target_id: rule_hiding_and_sneaking
+  target_label: Hiding and Sneaking
+  aspect: revealed position
+  condition: ''
+  book: SD
+  page: 113
+  section: REACTION CHECK
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: 'Authored polarity appears on one row and no other. rule_encounter TRIGGERS
+  rule_reaction_check takes neutral with basis read, as constitution section 5 and invariant 15 require
+  for a TRIGGERS row. neutral rather than inflicts because an encounter''s reaction check is as likely
+  to produce a friendly creature as a hostile one; the table''s range runs from hostile to friendly and
+  the source does not weight it. Four canonical TRIGGERS rows already carry neutral, so the value is established.
+
+  The three RESOLVED_BY rows, two FEEDS_INTO rows, one CROSS_REFERENCES row and one EXCLUDES row carry
+  none, since section 5 derives those. No MODIFIES or CONSTRAINS row appears in this packet.'
+excludes_choice_note: 'One EXCLUDES row appears, rule_reaction_check over rule_hiding_and_sneaking with
+  aspect revealed position, and it was tested against the hedging rule before being written. The source
+  says the interacting characters reveal their presence and position to the creatures, with no hedging
+  adverb: not usually, not typically, not may. It is an absolute consequence of choosing to interact,
+  so EXCLUDES is correct rather than CONSTRAINS.
+
+  This is the test that two downstream corrections established, where rule_overland_travel over rule_total_darkness
+  on rarely and rule_talents over rule_learning on typically were both moved from EXCLUDES to CONSTRAINS.
+  Applying it here in the other direction is the point: the test distinguishes, it does not simply discourage
+  EXCLUDES.'
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: Random encounters are exploration machinery, checked during crawling rounds and on overland travel.
+    Recorded as a candidate only; constitution section 8 reserves domain promotion to an Architect Decision.
+    Consistent with the exploration candidate recorded in PKT-SD-087-089, PKT-SD-090-090 and PKT-SD-110-110.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The three RESOLVED_BY rows share a shape but enumerate three
+  named source tables, and the Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: HOW OFTEN?, p112
+  quoted_gist: the GM checks during crawling rounds and not combat, on a cadence set by the danger level
+    with a stated interval for each of Unsafe, Risky and Deadly, and counts hours instead of rounds for
+    overland travel
+  why_considered: It is the fullest statement of the encounter cadence in the book and reads like the
+    rule's home.
+  rejection_reason: 'Every relation it states is already canonical from the page that established it,
+    and asserting any would repeat an identical five-field key; see restatement_note, which names the
+    three rows and their pages. The three danger levels are not proposed for the same reason they were
+    declined in PKT-SD-090-090: each differs from the others only by an interval, which is a magnitude
+    no field stores. The one genuinely new thing, the explicit pointer to printed page 90, is asserted
+    as M001.'
+- text_locus: the encounter roll, p112
+  quoted_gist: '''the GM rolls 1d6. An encounter occurs on a result of 1'''
+  why_considered: rule_d6_decider is canonical as The D6 Decider and this is a d6 roll deciding an outcome,
+    so a RESOLVED_BY row looked available on the same reasoning that carried the torch extinguish roll
+    in PKT-SD-096-100.
+  rejection_reason: It is a different procedure that happens to use the same die. The D6 Decider, at its
+    defining locus on printed page 78, splits the range in half, with the lower half the worse outcome
+    and the upper half the better. This roll turns on a single face. Pointing rule_encounter at rule_d6_decider
+    would assert that the encounter check runs the decider's procedure, which it does not, and the difference
+    between them is entirely in thresholds that no field may store. Checked against page 78 directly rather
+    than inferred from the identity's name.
+- text_locus: the loud disturbance clause, p112
+  quoted_gist: '''The GM might also check for an encounter if the characters create a loud disturbance.'''
+  why_considered: A second trigger for a canonical rule, and one that also appeared in the example of
+    play, where PKT-SD-096-100 rejected it as narration. Here it is in a rules section, so the earlier
+    rejection does not settle it.
+  rejection_reason: There is no identity for noise or disturbance and minting one is not an Analyst act;
+    nothing in the graph could be its source. The clause is also hedged with might, which under the test
+    established by two downstream corrections marks a bound rather than a rule, and there is nothing to
+    bound. Recorded as OBS-02 because the same sentence has now been met twice from different pages and
+    still cannot be carried.
+- text_locus: the activity table's effect on notice, p112
+  quoted_gist: '''This might impact how likely they are to notice the characters.'''
+  why_considered: rule_detecting is canonical from printed page 87 and this points at it in substance.
+  rejection_reason: 'Doubly hedged, might impact how likely, and it states no mechanic: no modifier, no
+    check, no condition. A row from it would assert a dependency the source only gestures at. The table
+    itself is carried, as M004, so a reader reaches the activity; what the activity does to detection
+    is left where the source leaves it, with the GM.'
+- text_locus: the always-hostile clause, p113
+  quoted_gist: '''Some vicious creatures, such as undead, are always hostile.'''
+  why_considered: An absolute statement, unhedged, that would exclude the reaction check entirely for
+    a class of creature. Under the hedging test this is exactly the shape that earns EXCLUDES.
+  rejection_reason: The type is right and the endpoint does not exist. There is no undead identity, no
+    creature-category identity and no monster identity, the Monsters chapter being unextracted, and section
+    2.4 keeps creature-family taxonomy outside the graph in any case. Some vicious creatures is not a
+    category the source defines. This is the clearest case in the packet of a real mechanical fact that
+    the graph has no way to hold; recorded as OBS-03.
+- text_locus: TREASURE, p113
+  quoted_gist: a stated percentage chance that a randomly encountered creature or group has no treasure
+  why_considered: It is a definite mechanical statement with a number, in a rules section.
+  rejection_reason: Its entire content is a magnitude and its endpoint does not exist. There is no treasure
+    identity and the treasure chapter, which printed page 105 pointed to as page 117, is unextracted.
+    A row asserting that encounters relate to treasure, stripped of the percentage, would carry nothing
+    a reader could use and would pre-empt that chapter's defining locus.
+- text_locus: PURPOSE, p112
+  quoted_gist: random encounters keep time pressure up, and lingering risks more of them
+  why_considered: Completeness; it is the section that explains why the rule exists.
+  rejection_reason: 'Time pressure is a design property with no identity, and the lingering claim is already
+    carried mechanically by the cadence rows from pages 84, 86 and 90: checking more often over more rounds
+    is what lingering costs. This is the same rejection made for the TIME core principle in PKT-SD-101-109.'
+non_edge_observations:
+- id: OBS-01
+  subject: magnitudes are excluded from every row
+  detail: The three cadence intervals, the die and the single face that produces an encounter, the three
+    distance bands' die ranges, the six activity ranges on two dice, the five attitude thresholds, and
+    the treasure percentage are all magnitudes and none reaches a field. The three tables are carried
+    as identities and the rows say what each resolves, which is everything expressible; the numbers stay
+    in the immutable packet. No row carries a condition and no aspect carries a digit.
+- id: OBS-02
+  subject: a loud disturbance has now been met twice and still cannot be carried
+  detail: 'PKT-SD-096-100 rejected the secret encounter check made for noise as narration in an example
+    of play. This page states the same thing in a rules section, hedged with might, and it is rejected
+    again for a different reason: there is no identity for noise or disturbance to be the source of a
+    row.
+
+    Recorded because two independent pages now gesture at the same relation and the graph holds neither.
+    If a later chapter names disturbance as a mechanic, that page is its defining locus and this relation
+    becomes assertable there. Until then a reader querying what triggers an encounter will find the five
+    canonical cadence and environment rows and not this one.'
+- id: OBS-03
+  subject: always-hostile creatures are the clearest unrepresentable fact in the packet
+  detail: 'The source says some vicious creatures, such as undead, are always hostile. That is an absolute,
+    unhedged exclusion of the reaction check for a class of creature, and it would be a genuinely useful
+    row: a reader asking when the reaction check does not apply should find it.
+
+    It cannot be carried. There is no undead, creature-category or monster identity, the Monsters chapter
+    is unextracted, and constitution section 2.4 keeps creature-family taxonomy outside the graph regardless.
+    Some vicious creatures is not a defined category. So the graph will show that an encounter triggers
+    a reaction check with no stated exception, which is narrower than the source. Flagged for the Architect
+    as a concrete instance of the taxonomy boundary costing a real mechanical fact, rather than as a request
+    for a ruling.'
+- id: OBS-04
+  subject: the reaction check is the second forward reference the intake has reached
+  detail: 'PKT-SD-101-109 pointed at this page and could not assert the pointer. The identity now exists,
+    and connecting the two still needs a successor for that packet, since the referring sentence is on
+    printed page 108 inside its bounded scope. The same shape occurred with the carousing pointer to Wizards
+    and Thieves.
+
+    Worth noting that both resolved the same way: the target page, reached in ordinary sequence, supplied
+    the identity without any special handling. The forward references the GM chapter makes to treasure,
+    adventures, NPCs, rival crawlers and monsters should resolve the same way as those chapters are reached.'
+unresolved_identity_questions: []
+unresolved_identity_questions_note: None. Every judgement in this packet had either a settled precedent
+  or a missing endpoint that decides it. The EXCLUDES choice is argued in excludes_choice_note against
+  the hedging test, the restatements are argued against the canonical rows in restatement_note, and the
+  four rejections that turn on a missing identity are not judgement calls at all.
+architectural_escalations: []
+architectural_escalation_note: None raised. Every identity uses an approved prefix, every row uses a legal
+  edge type at status core, and no CLASSIFIED_AS row appears. OBS-03 records a real mechanical fact the
+  vocabulary cannot hold, but it is the taxonomy boundary the constitution sets deliberately, so it is
+  recorded as a consequence rather than raised as a request.
+completeness_statement: 'All ten sections across both pages in scope were read in full at the recorded
+  checksum. The packet yields 4 new identities and 8 rows, four citing printed page 112 and four citing
+  page 113, reusing 5 canonical identities whose labels were verified character for character. Every row
+  was checked against the 675 canonical edges for an assertion-key collision, for a shared source, type
+  and target under a different aspect, and for duplicates within the patch; there are none of any, and
+  no canonical row cited either page before this.
+
+  Seven candidates were rejected and each is recorded with its reason: one a set of restatements that
+  would have collided exactly, one a procedure that shares a die with a canonical rule but not its method,
+  four turning on an endpoint that does not exist, and one a design property. What is deliberately not
+  asserted is listed as OBS-01 through OBS-04 and there are no open identity questions. No assertion depends
+  on any other ruleset.'

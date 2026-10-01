@@ -17,6 +17,53 @@ writer of `rulesets/<ruleset-id>/canonical/` (invariant 30).
   is rejected and the defect is attributed to a role.
 - **Derived-only rebuild.** `graph.json`, node degrees and node roles are
   recomputed from `edges_master.csv` on every run and never edited in place.
+- **Ruleset-neutral.** Node prefixes, edge types, derived polarity and citation
+  codes are read from the ruleset being integrated, never from AD&D.
+
+## New-ruleset genesis
+
+A ruleset reaches its first Approved bundle with no `rulesets/<id>/canonical/`
+directory at all. DEC-2026-0092 defines what happens then, and most of the rule
+is about what must *not* happen.
+
+**The canonical files are created by the transaction, never before it.** They
+appear only after a specific current Approved bundle has passed every ordinary
+precondition — approval, checksums, schema version, component integrity,
+operation index — and only inside the transaction boundary. There is no command
+that prepares an empty canonical baseline, and adding one is prohibited:
+Shadowdark Constitution 1.2 section 8 names a fabricated header-only baseline as
+the specific thing not to do, because a graph's first rows must be the
+consequence of a reviewed bundle rather than of an Integrator deciding to start.
+
+`queue`, `validate` and `integrate --dry-run` never create a canonical file or
+directory. `validate` reports `"genesis": true` and an empty result instead of
+failing, because a ruleset with no graph yet is a state, not an error.
+
+**A failed genesis rolls back to absence.** For an established ruleset, rollback
+restores bytes. For a genesis there are no bytes to restore, so rollback means
+the canonical directory and every file in it are *gone*, along with the
+transaction's snapshot directory — a rolled-back genesis leaves the repository
+in the state where the ruleset has never been integrated. Before DEC-2026-0092,
+`Snapshot.take` skipped any path that did not exist, so a genesis recorded
+nothing, restored nothing, and left behind every file it had just written. That
+was a partially mutated canonical state, which the failure-handling rule
+forbids. `Snapshot` now records absent paths explicitly and removes them, and
+removes a directory it created only while that directory is empty.
+
+**Bootstrap configuration is respected, not filled in.** A role profile
+declaring `thresholds: {}` and `tier2: {}` records that no corpus-based
+thresholds exist yet. A genesis therefore derives blank roles for every node and
+registry row. Inventing thresholds would be an unsupported graph conclusion and
+borrowing AD&D's would be worse; degrees are still derived, because those are
+topology rather than policy.
+
+**In a genesis every row is a `pending_addition`.** Nothing was registered
+before the batch, so every edge depends on an identity the batch itself
+registers. A genesis manifest legitimately carries an empty `additions` list.
+
+`tests/test_genesis.py` holds isolated fixtures built from real Shadowdark
+governance with a synthesized bundle, so the evidence does not change meaning
+when an unrelated packet is re-approved.
 
 ## Usage
 
@@ -41,6 +88,24 @@ scanner convention: `0` clean, `1` ready work remains or a batch was rejected,
     rulesets/<ruleset>/reports/INT-YYYYMMDD-NNN.diff.md
     books/<ruleset>/<book>/artifacts/integrated/INT-...-<bundle-id>.json
     build/snapshots/INT-YYYYMMDD-NNN/          (rollback copies)
+
+## Ruleset vocabulary
+
+`vocabulary.py` reads the active ruleset's Constitution and returns its node
+prefixes, edge types, derived-polarity table, authored types, and — from the
+ruleset's book registry — its legal citation codes.
+
+Every table is located by **its header cells**, never by a section number or
+heading string. The previous parser split on the literal `### 3.1 Format` and
+then rejected any parse of fewer than twenty prefixes; both are AD&D facts, and
+Shadowdark's thirteen prefixes under a different heading failed on each in turn.
+A ruleset that does not declare a required table fails closed before a
+transaction starts, rather than silently inheriting another ruleset's ontology.
+
+The AD&D tables transcribed in `derive.py` and `invariants.py` remain as a
+fallback for callers that name no ruleset, which is what keeps every existing
+caller behaving exactly as before. `integrate()` and `validate` always pass the
+loaded vocabulary, so they never use it.
 
 ## Modules
 

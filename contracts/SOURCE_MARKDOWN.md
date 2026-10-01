@@ -1,6 +1,6 @@
 # Pandoc Source Markdown Contract
 
-**Version 1.4.**
+**Version 1.8.**
 
 ## Scope
 
@@ -21,18 +21,34 @@ visual layout unless a separate packet artifact explicitly requires it.
 
 ## External Source Intake
 
-The five pipeline roles consume source packets; none acquires a book, recreates
+The five graph-processing roles consume source packets; none acquires a book, recreates
 missing rulebook text, or authors a packet's source prose from recollection. The
 **repository source steward** is the repository owner, or an explicitly delegated
 external operator, responsible for lawful source acquisition and intake. This is
-an external repository responsibility, not a sixth pipeline role or a scanner
-queue.
+an external repository responsibility, not a pipeline role or a scanner queue.
+Each role routes missing-source requests directly to the steward/user under
+`contracts/HERDR_HANDOFFS.md`; no pipeline role acquires or reconstructs source.
 
 The source steward supplies a bounded incoming packet with its source text and
 required packet metadata. A claimed packet remains immutable after an Analyst
 uses it. The steward may transcribe or package supplied source material, but may
 not reconstruct unavailable text from memory or inference and present it as
 source-read evidence.
+
+### Steward frontmatter
+
+An incoming Markdown file may begin with a Pandoc YAML metadata block. It is
+informational steward intake metadata only: it is not rulebook prose,
+source-read evidence, graph content, a packet identity, or authority over
+ruleset, book, source, packet, page, or citation fields. Pandoc consumes the
+block as document metadata before its block stream; parsers must not report it
+as unattributed leading content.
+
+The metadata may describe the supplied source, series, product line, chapter,
+chapter title, or printed-page range. `packet.yaml` remains the authoritative
+claimed-packet record. If frontmatter conflicts with that manifest, use the
+manifest and record the intake discrepancy; do not resolve it by changing graph
+data or by treating the frontmatter as a source-reading claim.
 
 When a required source locus is absent, every downstream task that needs its
 reading remains blocked. An Analyst may resume only after the source steward has
@@ -52,7 +68,7 @@ Exact page-marker recognition may be implemented after the parser has preserved:
 - original source-line position;
 - block, list-item, table-row, and table-cell boundaries;
 - inline ordering and soft breaks;
-- Pandoc attributes, including a heading identifier such as `p1`.
+- Pandoc attributes, including a heading or fenced-Div identifier such as `p1`.
 
 Do not flatten tables or normalize whitespace before resolving page markers.
 Pandoc may represent a marker at the end of a heading as the heading identifier
@@ -61,7 +77,7 @@ in packet source.
 
 ## Page Marker
 
-A page marker has the exact form `{#pN}`, where `N` is one or more decimal digits:
+A plain page marker has the exact form `{#pN}`, where `N` is one or more decimal digits:
 
 ```text
 {#p1}
@@ -78,6 +94,63 @@ must not be treated as ordinary document anchors.
 
 The most recent page assignment remains in effect until the next marker. The
 marker placement determines where that assignment begins.
+
+### Page classes
+
+A class-bearing page marker uses the same reserved `pN` identifier on a Pandoc
+attribute-bearing block. The closed vocabulary contains exactly:
+
+- `.full-page-artwork`: the source steward declares that the identified printed
+  page contains full-page artwork and no graph-constitutable content.
+- `.page-intentionally-ignored`: the source steward deliberately excludes the
+  identified printed page from graph extraction, for example a character sheet
+  or a reader's write-in list. This records exclusion, not emptiness or artwork.
+- `.blank-page`: the source steward declares that the identified printed page
+  is blank and supplies no source content for graph extraction.
+
+These classes are page-local intake metadata, never graph nodes, edges, domains,
+general rules, source citations, or evidence of mechanics. Only the source
+steward declares them; pipeline roles must not invent classifications to avoid
+reading missing, uncertain, or mechanically difficult source material.
+
+Use an existing source heading when it genuinely carries the marker:
+
+```markdown
+# CHAPTER TITLE {#p23 .full-page-artwork}
+# CHARACTER SHEET {#p24 .page-intentionally-ignored}
+# BACK MATTER {#p25 .blank-page}
+```
+
+For a classified page without a source heading, use an empty fenced Div. Do not
+invent a heading merely to carry metadata:
+
+```markdown
+::: {#p23 .full-page-artwork}
+:::
+
+::: {#p24 .page-intentionally-ignored}
+:::
+
+::: {#p25 .blank-page}
+:::
+```
+
+A bare paragraph such as `{#p23 .page-intentionally-ignored}` is invalid.
+Pandoc treats it as ordinary text and does not preserve an attribute. Parsers
+and linters must inspect the Pandoc AST for a heading or Div attribute;
+raw-text matching must not reject a valid attributed marker as malformed.
+Unknown classes and recognized classes without a reserved `pN` identifier remain
+errors.
+
+At claim, retain the exact classified page and class in `packet.yaml`
+composition metadata. Keep the page in the packet's actual declared span and
+completeness accounting; do not renumber or delete it. The manifest remains
+authoritative if the source class and intake description conflict; record the
+discrepancy rather than silently overwriting the manifest. Each class applies
+only to its identified page, never to later pages. A classified page inside a
+packet's declared span is not an uncovered-page or graph-content obligation.
+Classification does not waive out-of-span, malformed-marker, or unrelated
+source defects.
 
 ## Placement Semantics
 
@@ -225,8 +298,29 @@ Any programmatic packet parser must demonstrate that it:
 4. splits inline paragraph attribution immediately after the marker;
 5. preserves Pandoc table and subscript/superscript structure;
 6. excludes marker text from semantic content while retaining page provenance.
+7. consumes YAML frontmatter without treating it as leading unattributed text;
+8. resolves every member of the closed page-class vocabulary from a heading or
+   fenced Div attribute, preserves its exact page-local class as intake metadata,
+   rejects bare paragraph forms and unknown classes, and does not classify a
+   later plain page by inheritance.
 
 ## Version History
+
+- **1.8 - 2026-09-21:** DEC-2026-0084 admitted
+  `page-intentionally-ignored` and `blank-page` after independent implementation
+  approval. The vocabulary remains closed; classifications are steward-authored,
+  page-local intake metadata with exact composition retention and no graph or
+  inheritance semantics.
+
+- **1.7 - 2026-09-19:** Routed missing-source requests directly to the steward
+  after Dispatcher retirement; source and page-marker semantics are unchanged.
+
+- **1.6 - 2026-09-07:** Distinguished Dispatcher coordination from the external
+  source steward; source metadata and page-marker semantics are unchanged.
+
+- **1.5 - 2026-09-06:** Admitted informational Pandoc YAML frontmatter with
+  claimed-manifest precedence, and defined the closed `full-page-artwork`
+  class-bearing page-marker form on headings and fenced Divs.
 
 - **1.4 - 2026-08-15:** Distinguished a defining source locus from a secondary
   mention for existing-identity migrations, and bounded owner-directed naming

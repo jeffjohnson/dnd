@@ -1,0 +1,140 @@
+schema_version: '1.0'
+id: ESC-2026-08-31T14.07.52.336Z
+status: decided
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-steward-intake
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-31'
+decision_id: DEC-2026-0076
+decided_on: '2026-08-31'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The Reviewer and the Analyst disagree about how DMG 64 should identify
+    giants, and neither position can be implemented without a ruling. The
+    Analyst recorded the question as IDQ-01 in the GUR, where nothing routes it;
+    the Reviewer met it as a row correction the data model cannot express. One
+    decision settles both.
+  blocking_ids: []
+
+question: >-
+  DMG 64 makes assertions about giant humanoids. The registry has no node for
+  them, canonical attaches the page's one existing giant assertion to
+  `monster_special` ('Special Creatures'), and the eight `monster_*_giant` nodes
+  are all giant vermin. Should this packet reuse `monster_special`, accepting
+  that the graph cannot say what giants specifically do, or does giant-humanoid
+  identity warrant its own node and therefore a migration?
+
+evidence:
+  source_excerpt: >-
+    DMG 64, GRENADE-LIKE MISSILES. The page states that giant-hurled boulders
+    have a stated size, that giants' thrown missiles have a stated size, and
+    that such attacks negate the target's dexterity armour class bonus.
+
+  the_analyst_position:
+    artifact: GUR-PKT-DMG-064-064-missile-discharge-r04
+    record: IDQ-01, unresolved_identity_questions
+    position: >-
+      M014 reuses monster_special, because putting a new monster_giant beside an
+      existing monster_special row about the same creatures on the same page is
+      the drift section 3.2 warns against, and choosing between them is a
+      migration rather than a packet decision.
+    disclosed_cost: >-
+      "'Special Creatures' is a catch-all, so the graph cannot presently answer
+      what giants specifically do." The Analyst recorded the loss rather than
+      hiding it.
+
+  the_reviewer_position:
+    artifact: REV-GUP-PKT-DMG-064-064-missile-discharge-r02-r01
+    ruling: M014 approved_with_revision, source_label -> 'Giant-Hurled Boulders'
+    rationale: >-
+      The source states that boulders are one foot in diameter for giants, and
+      the generic monster_special identity may be reused because its prior p64
+      giant-boulder row establishes the usage.
+    reading: >-
+      The Reviewer accepts the reuse and is trying to recover the specificity the
+      Analyst recorded as lost. The disagreement is not about the source; both
+      roles read it the same way.
+
+  why_neither_can_implement_it:
+    mechanism: >-
+      A label is a property of a node, not of a row. `_endpoint_label` normalises
+      every row on a registered node to the registered label, which is what keeps
+      one node from appearing under several spellings. `monster_special` is
+      registered as 'Special Creatures' with degree 36.
+    consequence: >-
+      Applying the correction would emit a row whose label disagrees with the
+      registry and with every other row on that node. The build previously
+      recorded the correction as applied and then overwrote it silently; that is
+      now `reviewer_label_correction_not_applicable`, an error, so the patch
+      stops instead of shipping a row the Review did not ask for.
+    builder_position: >-
+      Builder does not resolve identity (invariant 27) and will not merge or
+      split a concept to make a correction fit. Both roles are behaving
+      correctly; the model simply has no row-level answer.
+
+  current_state:
+    canonical_giant_rows_at_dmg_64:
+      count: 1
+      row: monster_special EXCLUDES abil_dex_defensive_adjustment
+      aspect: target loses the dexterity component
+    registry_giant_nodes: >-
+      Eight, all giant vermin: Ant, Beetle, Frog, Portuguese Man-O-War,
+      Scorpion, Snake, Toad and Wasp. None denotes a giant humanoid.
+    affected_rows_in_this_packet: 1
+    packet_otherwise_ready: >-
+      GUP-PKT-DMG-064-064-missile-discharge-r02 compiled with zero errors and
+      zero escalations: 12 additions, 7 pending. Only M014 is in question.
+
+affected_canonical_ids:
+  reused: monster_special
+  absent: no giant-humanoid identity exists
+
+options_considered:
+  - >-
+    Reviewer withdraws the label correction and the distinction is carried in
+    `aspect` or `condition` on M014, which are row-level by design. Cheapest, no
+    migration, and the graph still cannot answer what giants do -- the cost the
+    Analyst already disclosed.
+  - >-
+    Analyst proposes a distinct giant-humanoid node and this packet uses it for
+    M014. Leaves the one canonical monster_special row at p64 saying something
+    different about the same creatures on the same page, which is the drift the
+    Analyst objected to.
+  - >-
+    Architect relabels monster_special. Rejected on its face: the label would
+    change for all 36 rows on the node, and 'Giant-Hurled Boulders' is narrower
+    than the node's contents, not broader.
+  - >-
+    Architect rules the identity and, if a giant-humanoid node is warranted,
+    authorizes a migration that moves the existing canonical p64 row with it so
+    the page speaks with one identity.
+
+recommended_resolution: >-
+  Rule the identity question rather than the row. If giant humanoids do not
+  warrant a node, adopt the first option and the Reviewer restates the
+  distinction in aspect or condition; the packet then compiles unchanged apart
+  from M014 and the recorded cost stands as the answer. If they do warrant one,
+  adopt the fourth: a node plus a migration that carries the existing canonical
+  row, so the packet and canonical agree.
+
+  Either way the ruling should say so explicitly, because IDQ-01 has been in the
+  GUR since r02 without routing anywhere. An identity question recorded only in
+  `unresolved_identity_questions` blocks nothing and reaches no queue, so it
+  waits until someone downstream trips over it -- which is what happened here,
+  two roles and four revisions later. Whether that section should route is a
+  separate question worth its own answer.
+
+expected_migration_impact:
+  canonical_data: >-
+    None under the first option. Under the fourth, one existing DMG 64 row moves
+    from monster_special to the new identity, by ordinary migration lineage.
+  registry: >-
+    None under the first option; one node addition under the fourth.
+  historical_artifacts: retained unchanged
+  tooling: none

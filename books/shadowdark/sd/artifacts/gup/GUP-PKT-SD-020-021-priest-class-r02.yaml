@@ -1,0 +1,542 @@
+schema_version: '1.0'
+id: GUP-PKT-SD-020-021-priest-class-r02
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-020-021-priest-class
+constitution_version: '1.5'
+artifact_kind: packet_update
+revision: 2
+supersedes: GUP-PKT-SD-020-021-priest-class-r01
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 0 edge addition(s), 0 update(s), 18 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-SD-020-021-priest-class-r01
+  gur_checksum: sha256:582416c45ea3e0cc08462b458bf54471e9f2a296f66a589c5cc4c844de1a22fa
+  gur_constitution_version: '1.2'
+  review_id: REV-GUP-PKT-SD-020-021-priest-class-r01-r01
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 902
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: class_priest
+      proposed_label: Priest
+      kind: class
+      why_needed: Source of M001 through M004, M006, M008 and M009. The class identity this page defines;
+        every permission, hit point, language, spell and benefit dependency on the page originates from
+        it.
+      edges_depending_on_it:
+        - M001
+        - M002
+        - M003
+        - M004
+        - M006
+        - M008
+        - M009
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: spell_turn_undead
+      proposed_label: Turn Undead
+      kind: spell
+      why_needed: Endpoint of M004 and source of M005. A specific spell the class grants and which is
+        explicitly excluded from the spells-known count; both dependencies need it as an identity.
+      edges_depending_on_it:
+        - M004
+        - M005
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: spell_priest_spells
+      proposed_label: Priest Spells
+      kind: spell
+      why_needed: Endpoint of M008 and M011 and source of M018. The source-named family of spells this
+        class can learn and cast; the casting, count and resolution dependencies all need it.
+      edges_depending_on_it:
+        - M008
+        - M011
+        - M018
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_priest_talents
+      proposed_label: Priest Talents Table
+      kind: tbl
+      why_needed: Endpoint of M012 and source of M013 through M017. The separately headed and separately
+        referenced table that resolves a priest's talent roll; its outcome rows are the source of five
+        distinct dependencies.
+      edges_depending_on_it:
+        - M012
+        - M013
+        - M014
+        - M015
+        - M016
+        - M017
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_priest_spells_known
+      proposed_label: Priest Spells Known By Spell Tier Table
+      kind: tbl
+      why_needed: Endpoint of M005, M009 and M010 and source of M011. The table that fixes how many spells
+        of each tier a priest knows at a given level, and the mechanic the granted turn undead spell is
+        excluded from.
+      edges_depending_on_it:
+        - M005
+        - M009
+        - M010
+        - M011
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: sys_deity
+      proposed_label: Deity
+      kind: sys
+      why_needed: Endpoint of M006 and M007. The thing this class must choose and which its alignment
+        bounds; without it neither the class requirement nor the alignment constraint can be expressed.
+      edges_depending_on_it:
+        - M006
+        - M007
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions: []
+  pending_additions:
+    - source_id: class_priest
+      source_label: Priest
+      edge_type: CONSTRAINS
+      target_id: item_armor
+      target_label: Armor
+      aspect: permitted armor
+      condition: ''
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '20'
+      section: PRIEST CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+    - source_id: class_priest
+      source_label: Priest
+      edge_type: FEEDS_INTO
+      target_id: rule_hit_points
+      target_label: Hit Points
+      aspect: hit dice
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '20'
+      section: PRIEST CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: class_priest
+      source_label: Priest
+      edge_type: FEEDS_INTO
+      target_id: sys_language
+      target_label: Language
+      aspect: starting languages
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '20'
+      section: PRIEST CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+    - source_id: class_priest
+      source_label: Priest
+      edge_type: GATES
+      target_id: spell_priest_spells
+      target_label: Priest Spells
+      aspect: casting access
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '20'
+      section: PRIEST CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M008
+    - source_id: class_priest
+      source_label: Priest
+      edge_type: GATES
+      target_id: spell_turn_undead
+      target_label: Turn Undead
+      aspect: spell access
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '20'
+      section: PRIEST CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+    - source_id: class_priest
+      source_label: Priest
+      edge_type: GATES
+      target_id: sys_deity
+      target_label: Deity
+      aspect: deity selection
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '20'
+      section: PRIEST CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M006
+    - source_id: class_priest
+      source_label: Priest
+      edge_type: GATES
+      target_id: tbl_priest_spells_known
+      target_label: Priest Spells Known By Spell Tier Table
+      aspect: table applicability
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '20'
+      section: PRIEST CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M009
+    - source_id: exp_level
+      source_label: Level
+      edge_type: FEEDS_INTO
+      target_id: tbl_priest_spells_known
+      target_label: Priest Spells Known By Spell Tier Table
+      aspect: spells known
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '21'
+      section: PRIEST SPELLS KNOWN BY SPELL TIER TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M010
+    - source_id: rule_talent_roll
+      source_label: Talent Roll
+      edge_type: RESOLVED_BY
+      target_id: tbl_priest_talents
+      target_label: Priest Talents Table
+      aspect: priest talents
+      condition: for a priest
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '20'
+      section: PRIEST TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M012
+    - source_id: spell_priest_spells
+      source_label: Priest Spells
+      edge_type: RESOLVED_BY
+      target_id: rule_spellcasting_check
+      target_label: Spellcasting Check
+      aspect: casting resolution
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '20'
+      section: PRIEST CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M018
+    - source_id: spell_turn_undead
+      source_label: Turn Undead
+      edge_type: EXCLUDED_FROM
+      target_id: tbl_priest_spells_known
+      target_label: Priest Spells Known By Spell Tier Table
+      aspect: spell count
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: SD
+      page: '20'
+      section: PRIEST CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M005
+    - source_id: sys_alignment
+      source_label: Alignment
+      edge_type: CONSTRAINS
+      target_id: sys_deity
+      target_label: Deity
+      aspect: matching alignment
+      condition: ''
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '20'
+      section: PRIEST CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M007
+    - source_id: tbl_priest_spells_known
+      source_label: Priest Spells Known By Spell Tier Table
+      edge_type: CONSTRAINS
+      target_id: spell_priest_spells
+      target_label: Priest Spells
+      aspect: known count
+      condition: ''
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '21'
+      section: PRIEST SPELLS KNOWN BY SPELL TIER TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M011
+    - source_id: tbl_priest_talents
+      source_label: Priest Talents Table
+      edge_type: MODIFIES
+      target_id: abil_strength
+      target_label: Strength
+      aspect: stat increase
+      condition: when that stat is chosen
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '20'
+      section: PRIEST TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M016
+    - source_id: tbl_priest_talents
+      source_label: Priest Talents Table
+      edge_type: MODIFIES
+      target_id: abil_wisdom
+      target_label: Wisdom
+      aspect: stat increase
+      condition: when that stat is chosen
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '20'
+      section: PRIEST TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M017
+    - source_id: tbl_priest_talents
+      source_label: Priest Talents Table
+      edge_type: MODIFIES
+      target_id: cbt_attack_roll
+      target_label: Attack Roll
+      aspect: melee or ranged
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '20'
+      section: PRIEST TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M014
+    - source_id: tbl_priest_talents
+      source_label: Priest Talents Table
+      edge_type: MODIFIES
+      target_id: rule_spellcasting_check
+      target_label: Spellcasting Check
+      aspect: chosen spell
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '20'
+      section: PRIEST TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M013
+    - source_id: tbl_priest_talents
+      source_label: Priest Talents Table
+      edge_type: MODIFIES
+      target_id: rule_spellcasting_check
+      target_label: Spellcasting Check
+      aspect: priest checks
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '20'
+      section: PRIEST TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M015
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts: {}
+duplicate_findings:
+  - grade: near
+    ref: M013
+    conflicts_with:
+      - M015
+    detail: 2 edges share endpoints and type (tbl_priest_talents MODIFIES rule_spellcasting_check) but
+      differ in aspect or condition; Reviewer must confirm they are distinct assertions rather than one
+      restated
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 18
+  edges_compiled: 18
+  edges_rejected: 0
+  edge_additions: 0
+  edge_pending_additions: 18
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 1
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 6
+  cross_packet_dependencies: 0
+  duplicate_findings: 1
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-SD-020-021-priest-class-r02.validation.json
+reviewer_directives_applied:
+  review_id: REV-GUP-PKT-SD-020-021-priest-class-r01-r01
+  corrections: []
+  corrections_superseded: []
+  rejected_rows: []
+  note: Reviewer decisions are applied as given; the Reviewer owns what an edge asserts. Corrected values
+    are then revalidated, and a correction that violates the constitution is reported like any other defect
+    rather than passed through.

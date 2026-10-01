@@ -23,6 +23,7 @@ from .canonical import EDGE_COLUMNS, CanonicalGraph, CanonicalPaths, Registry, r
 from .checksums import checksum_file
 from .derive import apply_derived_polarity, load_role_profile, rebuild_nodes
 from .invariants import assertion_key, approved_prefixes, check, check_derived_state
+from .vocabulary import load_vocabulary
 from .migration import (
     MODEL_V2, MODEL_V3, MigrationError, MigrationPlan, check_baselines,
     check_before_images, check_declared_counts, check_normalization_labels,
@@ -809,10 +810,17 @@ def integrate(
 ) -> Batch:
     """Apply a batch. Raises IntegrationError -- and rolls back -- on any failure."""
     paths = CanonicalPaths(root=root, ruleset_id=ruleset_id)
-    constitution = root / "rulesets" / ruleset_id / "governance" / "constitution.md"
-    prefixes = approved_prefixes(constitution)
+    # DEC-2026-0092: every vocabulary comes from the ruleset actually being
+    # integrated, read before anything else so a constitution that does not
+    # declare one fails here rather than part-way through a transaction.
+    vocabulary = load_vocabulary(root, ruleset_id)
+    prefixes = vocabulary.prefixes
     profile = load_role_profile(root / "rulesets" / ruleset_id / "profiles" / "roles.yaml")
-    thresholds = profile["thresholds"]
+    # An explicitly empty mapping is valid bootstrap configuration: it records
+    # that no corpus-based thresholds exist, so a genesis derives no roles.
+    thresholds = profile.get("thresholds") or {}
+    tier2_enabled = bool(profile.get("tier2"))
+    genesis = paths.is_genesis
     general_rules = set(json.loads(
         (root / "rulesets" / ruleset_id / "registries" / "general_rules.json")
         .read_text(encoding="utf-8")).keys())
@@ -838,21 +846,30 @@ def integrate(
     integration_id = integration_id or next_integration_id(
         paths.manifests_dir, day, paths.manifests_dir.parent / "reports")
 
-    graph = CanonicalGraph.load(paths)
+    graph = CanonicalGraph.load(paths, allow_genesis=True)
+
+    def pre_checksum(path: Path) -> str | None:
+        # A genesis has no prior bytes to pin. `None` states that honestly;
+        # a placeholder digest would claim a baseline that never existed.
+        return checksum_file(path) if path.exists() else None
+
     pre_counts = {
         "edges": len(graph.edges),
         "nodes": len(graph.nodes),
         "registry": len(Registry.load(paths.registry).rows),
-        "edges_checksum": checksum_file(paths.edges),
-        "nodes_checksum": checksum_file(paths.nodes),
-        "graph_json_checksum": checksum_file(paths.graph_json),
-        "registry_checksum": checksum_file(paths.registry),
+        "edges_checksum": pre_checksum(paths.edges),
+        "nodes_checksum": pre_checksum(paths.nodes),
+        "graph_json_checksum": pre_checksum(paths.graph_json),
+        "registry_checksum": pre_checksum(paths.registry),
+        "genesis": genesis,
     }
     batch = Batch(integration_id=integration_id, verifications=verifications, pre_counts=pre_counts)
 
     # -- baseline invariant state, measured before the batch -----------------
-    baseline_result = check(graph.edges, graph.nodes, prefixes, general_rules, EDGE_COLUMNS)
-    check_derived_state(graph.edges, graph.nodes, thresholds, baseline_result)
+    baseline_result = check(graph.edges, graph.nodes, prefixes, general_rules, EDGE_COLUMNS,
+                            vocabulary=vocabulary)
+    check_derived_state(graph.edges, graph.nodes, thresholds, baseline_result,
+                        tier2_enabled=tier2_enabled)
     batch.baseline = {
         "findings": len(baseline_result.findings),
         "by_invariant": baseline_result.by_invariant(),
@@ -879,7 +896,15 @@ def integrate(
         and (row.values["degree"] != node["degree"] or row.values["roles"] != node["roles"])
     ]
 
-    with Transaction(paths.writable(), snapshot_dir) as transaction:
+    # The genesis directory is named to the transaction so a rollback can remove
+    # it. Everything above this line -- bundle verification, checksum and
+    # approval checks, the blocking-failure raise -- has already run, which is
+    # what DEC-2026-0092 means by creating canonical state only after a current
+    # Approved bundle has passed its preconditions and only inside the
+    # transaction boundary.
+    with Transaction(paths.writable(), snapshot_dir,
+                     genesis_dirs=(paths.canonical_dir,) if genesis else (),
+                     discard_snapshot_on_rollback=genesis) as transaction:
         # -- step 4: node changes first --------------------------------------
         # Every registration is applied before any edge may reference the new ID,
         # which is what the manifests' `node_operations.sequencing` requires.
@@ -1039,7 +1064,8 @@ def integrate(
             if node_id not in endpoints]
 
         # -- step 8: recompute deterministic polarity ------------------------
-        batch.polarity_corrections = apply_derived_polarity(graph.edges)
+        batch.polarity_corrections = apply_derived_polarity(
+            graph.edges, vocabulary.derived_polarity)
 
         # -- step 9: recompute degrees and roles -----------------------------
         before_nodes = {n["id"]: dict(n) for n in graph.nodes}
@@ -1054,7 +1080,8 @@ def integrate(
         for merge in batch.node_merges:
             labels[merge["canonical_id"]] = merge["canonical_label"]
             kinds[merge["canonical_id"]] = merge["kind"]
-        graph.nodes = rebuild_nodes(graph.edges, labels, kinds, thresholds)
+        graph.nodes = rebuild_nodes(graph.edges, labels, kinds, thresholds,
+                                    tier2_enabled=tier2_enabled)
 
         for node in graph.nodes:
             was = before_nodes.get(node["id"])
@@ -1069,8 +1096,10 @@ def integrate(
                 })
 
         # -- step 11: invariant suite over the whole post-batch graph --------
-        after_result = check(graph.edges, graph.nodes, prefixes, general_rules, EDGE_COLUMNS)
-        check_derived_state(graph.edges, graph.nodes, thresholds, after_result)
+        after_result = check(graph.edges, graph.nodes, prefixes, general_rules, EDGE_COLUMNS,
+                             vocabulary=vocabulary)
+        check_derived_state(graph.edges, graph.nodes, thresholds, after_result,
+                            tier2_enabled=tier2_enabled)
         batch.after = {
             "findings": len(after_result.findings),
             "by_invariant": after_result.by_invariant(),
@@ -1181,10 +1210,10 @@ def integrate(
             "edges": len(graph.edges),
             "nodes": len(graph.nodes),
             "registry": len(registry.rows),
-            "edges_checksum": checksum_file(paths.edges) if not dry_run else None,
-            "nodes_checksum": checksum_file(paths.nodes) if not dry_run else None,
-            "graph_json_checksum": checksum_file(paths.graph_json) if not dry_run else None,
-            "registry_checksum": checksum_file(paths.registry) if not dry_run else None,
+            "edges_checksum": pre_checksum(paths.edges) if not dry_run else None,
+            "nodes_checksum": pre_checksum(paths.nodes) if not dry_run else None,
+            "graph_json_checksum": pre_checksum(paths.graph_json) if not dry_run else None,
+            "registry_checksum": pre_checksum(paths.registry) if not dry_run else None,
         }
         batch.snapshot = transaction.snapshot.as_dict(root)
 

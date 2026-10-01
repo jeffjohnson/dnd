@@ -1871,6 +1871,17 @@ class GurHandoffRoutingCase(QueueScannerCase):
         "reason": "analysis complete",
         "blocking_ids": [],
     }
+    #: DEC-2026-0105's own shape: a conforming blocked GUR routed to Architect,
+    #: modelled on the real GUR-PKT-SD-189-189-monster-attributes-r01 blocker.
+    BLOCKED_HANDOFF = {
+        "next_role": "architect",
+        "readiness": "blocked",
+        "reason": (
+            "monster level has no identity and no approved prefix covers a "
+            "creature statistic"
+        ),
+        "blocking_ids": ["ESC-2026-09-30T06.00.29.086Z"],
+    }
 
     def gur_with_handoff(self, revision, handoff, *, supersedes=None, packet=None):
         packet = packet or self.PACKET
@@ -1995,6 +2006,109 @@ class GurHandoffRoutingCase(QueueScannerCase):
         result = self.scan()
         self.assertEqual(
             [d["ArtifactId"] for d in self.coded(result, "gur_invalid_handoff")], [leaf]
+        )
+
+    # -- acceptance test 5 (DEC-2026-0105): a conforming blocked handoff ----
+
+    def blocked_routed(self, result, queue):
+        return [item["InputId"] for item in result["BlockedItems"] if item["Queue"] == queue]
+
+    def test_a_blocked_leaf_produces_exactly_one_blocked_item(self):
+        leaf = self.gur_with_handoff(1, self.BLOCKED_HANDOFF)
+        result = self.scan()
+        items = [i for i in result["BlockedItems"] if i["InputId"] == leaf]
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["State"], "blocked")
+
+    def test_a_blocked_leaf_never_appears_among_ready_items(self):
+        leaf = self.gur_with_handoff(1, self.BLOCKED_HANDOFF)
+        result = self.scan()
+        self.assertNotIn(leaf, [i["InputId"] for i in result["Items"]])
+
+    def test_a_blocked_leaf_routes_to_its_declared_next_role(self):
+        leaf = self.gur_with_handoff(1, self.BLOCKED_HANDOFF)
+        result = self.scan()
+        item = next(i for i in result["BlockedItems"] if i["InputId"] == leaf)
+        self.assertEqual(item["Role"], "Architect")
+        self.assertEqual(item["Queue"], "ARCHITECT-BLOCKED-GUR")
+
+    def test_a_blocked_leaf_preserves_its_blocking_ids(self):
+        leaf = self.gur_with_handoff(1, self.BLOCKED_HANDOFF)
+        result = self.scan()
+        item = next(i for i in result["BlockedItems"] if i["InputId"] == leaf)
+        self.assertIn("ESC-2026-09-30T06.00.29.086Z", item["Reason"])
+
+    def test_a_blocked_leaf_preserves_its_authored_reason(self):
+        """WORK_QUEUES 1.35 rule 6a: blocking_ids *and* reason are preserved.
+
+        A generated "waiting on: <ids>" string keeps the IDs but discards the
+        Analyst's own account of the blocker; both must survive routing.
+        """
+        leaf = self.gur_with_handoff(1, self.BLOCKED_HANDOFF)
+        result = self.scan()
+        item = next(i for i in result["BlockedItems"] if i["InputId"] == leaf)
+        self.assertIn(self.BLOCKED_HANDOFF["reason"], item["Reason"])
+        self.assertIn("ESC-2026-09-30T06.00.29.086Z", item["Reason"])
+
+    def test_a_blocked_leaf_never_produces_a_builder_gur_item(self):
+        self.gur_with_handoff(1, self.BLOCKED_HANDOFF)
+        result = self.scan()
+        self.assertEqual(self.routed(result, "BUILDER-GUR"), [])
+
+    def test_a_blocked_leaf_gets_no_legacy_inference(self):
+        self.gur_with_handoff(1, self.BLOCKED_HANDOFF)
+        result = self.scan()
+        self.assertEqual(self.coded(result, "legacy_handoff_inference"), [])
+
+    def test_a_blocked_leaf_raises_no_invalid_handoff_error(self):
+        self.gur_with_handoff(1, self.BLOCKED_HANDOFF)
+        result = self.scan()
+        self.assertEqual(self.coded(result, "gur_invalid_handoff"), [])
+
+    def test_a_blocked_leaf_does_not_contribute_to_ready_count(self):
+        self.gur_with_handoff(1, self.BLOCKED_HANDOFF)
+        result = self.scan()
+        self.assertEqual(result["ReadyCount"], 0)
+        self.assertEqual(result["BlockedCount"], 1)
+
+    def test_a_blocked_leaf_routes_dynamically_by_its_own_role_not_a_constant(self):
+        """The routed role follows the handoff; Architect above is not hardcoded."""
+        builder_blocked = dict(self.BLOCKED_HANDOFF, next_role="builder")
+        leaf = self.gur_with_handoff(1, builder_blocked)
+        result = self.scan()
+        item = next(i for i in result["BlockedItems"] if i["InputId"] == leaf)
+        self.assertEqual(item["Role"], "Builder")
+        self.assertEqual(item["Queue"], "BUILDER-BLOCKED-GUR")
+
+    def test_blocked_with_no_blockers_is_malformed_not_a_conforming_route(self):
+        """readiness=blocked with empty blocking_ids fails schema, not this route."""
+        leaf = self.gur_with_handoff(1, dict(self.BLOCKED_HANDOFF, blocking_ids=[]))
+        result = self.scan()
+        self.assertEqual(self.routed(result, "ANALYST-GUR-REPAIR"), [leaf])
+        self.assertEqual(self.routed(result, "BUILDER-GUR"), [])
+        self.assertEqual(
+            [i for i in result["BlockedItems"] if i["InputId"] == leaf], []
+        )
+
+    def test_ready_terminal_malformed_and_legacy_behavior_is_unchanged(self):
+        """The blocked branch is additive: every other GUR shape scans the same."""
+        # Ready:
+        leaf_ready = self.gur_with_handoff(1, self.READY_HANDOFF, packet="PKT-PHB-005-006-fixture")
+        # Terminal:
+        leaf_terminal = self.gur_with_handoff(1, self.TERMINAL_HANDOFF, packet="PKT-PHB-007-008-fixture")
+        # Malformed:
+        leaf_malformed = self.gur_with_handoff(1, self.CAVALIERS_HANDOFF, packet="PKT-PHB-009-010-fixture")
+        # Legacy (absent handoff):
+        leaf_legacy = self.gur_with_handoff(1, None, packet="PKT-PHB-011-012-fixture")
+        result = self.scan()
+        self.assertEqual(self.routed(result, "BUILDER-GUR"), sorted([leaf_ready, leaf_legacy]))
+        self.assertEqual(self.routed(result, "ANALYST-GUR-REPAIR"), [leaf_malformed])
+        self.assertEqual(
+            [i for i in result["Items"] if i["InputId"] == leaf_terminal], []
+        )
+        self.assertEqual(
+            [d["ArtifactId"] for d in self.coded(result, "legacy_handoff_inference")],
+            [leaf_legacy],
         )
 
     # -- the malformed shapes, one per envelope invariant -------------------
@@ -8962,3 +9076,324 @@ class LiveReplacementConsumptionGateCase(unittest.TestCase):
             for i in self.result["Items"] + (self.result.get("BlockedItems") or [])
         }
         self.assertEqual(sorted(consumed & assigned), [])
+
+
+class ApprovedBundleDerivationCase(QueueScannerCase):
+    """DEC-2026-0095: declared Review, own active leaf, declared consumption.
+
+    Three defects met on the Stats lineage. The scanner guessed the approving
+    Review from the APPROVED- filename stem, so publishing an unrelated
+    REV-...-r03 silently changed which Review a byte-identical bundle was
+    validated against. It asked only whether the packaged GUP was superseded,
+    never whether a later manifest replaced this one, so five manifests for one
+    GUP were all offered. And it regex-harvested any APPROVED- substring from an
+    Integration manifest, so a shared component path recorded a bundle nobody
+    integrated as integrated.
+    """
+
+    PACKET = "PKT-PHB-001-002-fixture"
+    APPROVED = "books/adnd1e/phb/artifacts/approved"
+
+    def setUp(self):
+        super().setUp()
+        self.gur_id = self.gur(self.PACKET, 1)
+        self.gup_id = self.gup(self.PACKET, 1, self.gur_id, approval_ready=True)
+
+    def write_review(self, revision):
+        return self.review(self.PACKET, self.gup_id, revision=revision)
+
+    def write_bundle(self, revision, *, approves, supersedes=None,
+                     declare_revision=True, review_checksum=None,
+                     component=None, top_level_review_id=None):
+        artifact_id = f"APPROVED-{self.gup_id}-r{revision:02d}"
+        component = component or f"{self.APPROVED}/{artifact_id}.edges.csv"
+        path = self.root / component
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if not path.exists():
+            path.write_text("source_id,target_id\na,b\n", encoding="utf-8")
+        approves_block = {"review_id": approves, "gup_id": self.gup_id}
+        if review_checksum:
+            approves_block["review_checksum"] = review_checksum
+        document = {
+            "schema_version": "1.0", "id": artifact_id,
+            "artifact_kind": "packet_update", "status": "approved",
+            "ruleset_id": "adnd1e", "packet_id": self.PACKET,
+            "supersedes": supersedes,
+            "approves": approves_block,
+            "components": [{"kind": "edges", "path": component}],
+        }
+        if declare_revision:
+            document["revision"] = revision
+        if top_level_review_id:
+            document["review_id"] = top_level_review_id
+        self.write_yaml(f"{self.APPROVED}/{artifact_id}.yaml", document)
+        return artifact_id
+
+    def integrate(self, bundle_id, *, as_record=True, extra_strings=()):
+        body = {
+            "schema_version": "1.0",
+            "id": f"INT-29990303-001-{bundle_id}",
+            "integration_id": "INT-29990303-001",
+            "status": "integrated",
+            "ruleset_id": "adnd1e",
+            "bundle_id": bundle_id,
+            "components": list(extra_strings),
+        }
+        directory = (
+            self.book / "artifacts" / "integrated" if as_record
+            else self.root / "rulesets" / "adnd1e" / "manifests"
+        )
+        directory.mkdir(parents=True, exist_ok=True)
+        name = (f"INT-29990303-001-{bundle_id}.json" if as_record
+                else "INT-29990303-001.json")
+        (directory / name).write_text(json.dumps(body), encoding="utf-8")
+
+    def rows(self, result=None):
+        result = result or self.scan()
+        rows = {}
+        for key in ("Items", "InformationalItems"):
+            for item in result.get(key) or []:
+                if item["InputId"].startswith("APPROVED-"):
+                    rows[item["InputId"]] = (item["Queue"], item.get("LegacyInference"))
+        return rows
+
+    def codes(self, result=None):
+        result = result or self.scan()
+        return [d["Code"] for d in result["Diagnostics"]]
+
+    # -- the declared Review is the only Review ------------------------------
+
+    def test_a_declared_review_resolves_without_a_filename_match(self):
+        review = self.write_review(1)
+        bundle = self.write_bundle(7, approves=review)
+        self.assertEqual(self.rows()[bundle][0], "INTEGRATOR-APPROVED")
+        self.assertNotIn("approved_review_inferred_or_missing", self.codes())
+
+    def test_a_conflicting_stem_cannot_select_another_review(self):
+        """The Stats case exactly: the bundle declares r01, its stem says r03."""
+        declared = self.write_review(1)
+        self.write_review(3)
+        bundle = self.write_bundle(3, approves=declared)
+        self.assertEqual(self.rows()[bundle][0], "INTEGRATOR-APPROVED")
+        self.assertNotIn("approved_review_inferred_or_missing", self.codes())
+
+    def test_publishing_an_unrelated_review_does_not_move_a_bundle(self):
+        """A byte-identical bundle must not change state because of another file."""
+        declared = self.write_review(1)
+        self.write_bundle(3, approves=declared)
+        before = self.rows()
+        self.write_review(3)
+        self.assertEqual(self.rows(), before)
+
+    def test_a_top_level_field_cannot_override_the_declared_review(self):
+        declared = self.write_review(1)
+        self.write_review(2)
+        bundle = self.write_bundle(
+            9, approves=declared,
+            top_level_review_id=f"REV-{self.gup_id}-r02")
+        self.assertEqual(self.rows()[bundle][0], "INTEGRATOR-APPROVED")
+
+    def test_a_manifest_declaring_no_review_is_not_guessed_for(self):
+        self.write_review(1)
+        artifact_id = f"APPROVED-{self.gup_id}-r01"
+        self.write_yaml(f"{self.APPROVED}/{artifact_id}.yaml", {
+            "id": artifact_id, "packet_id": self.PACKET, "components": [],
+        })
+        self.assertNotIn(artifact_id, self.rows())
+        self.assertIn("approved_review_inferred_or_missing", self.codes())
+
+    def test_a_manifestless_bundle_keeps_its_filename_fallback(self):
+        self.write_review(1)
+        path = self.root / self.APPROVED / f"APPROVED-{self.gup_id}-r01.edges.csv"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("source_id,target_id\na,b\n", encoding="utf-8")
+        self.assertEqual(
+            self.rows()[f"APPROVED-{self.gup_id}-r01"][0], "INTEGRATOR-APPROVED")
+
+    def test_a_declared_review_checksum_must_match(self):
+        review = self.write_review(1)
+        bundle = self.write_bundle(
+            1, approves=review, review_checksum="sha256:" + "0" * 64)
+        self.assertNotIn(bundle, self.rows())
+        self.assertIn("approved_review_checksum_mismatch", self.codes())
+
+    def test_a_correct_declared_review_checksum_is_accepted(self):
+        review = self.write_review(1)
+        checksum = scanner._sha256_of(
+            self.root / f"books/adnd1e/phb/artifacts/reviews/{review}.yaml")
+        bundle = self.write_bundle(1, approves=review, review_checksum=checksum)
+        self.assertEqual(self.rows()[bundle][0], "INTEGRATOR-APPROVED")
+
+    def test_a_superseded_manifests_stale_checksum_is_not_a_lineage_error(self):
+        """The exact live case: a corrective successor makes a predecessor's
+        pinned checksum stale, and the predecessor is already retired history.
+
+        This first implementation validated the checksum before resolving
+        manifest supersession, so publishing APPROVED-...-r03 with the correct
+        checksum -- to fix APPROVED-...-r02's own stale pin -- made the
+        superseded r02 a fatal repo-wide lineage error, exit code 2, on an
+        artifact nothing live depends on.
+        """
+        review = self.write_review(1)
+        first = self.write_bundle(
+            1, approves=review, review_checksum="sha256:" + "0" * 64)
+        second = self.write_bundle(2, approves=review, supersedes=first)
+        result = self.scan()
+        rows = self.rows(result)
+        self.assertEqual(rows[first][0], "INTEGRATOR-SUPERSEDED")
+        self.assertEqual(rows[second][0], "INTEGRATOR-APPROVED")
+        errors = [d for d in result["Diagnostics"] if d["Severity"] == "error"]
+        self.assertEqual(errors, [])
+
+    def test_a_live_leafs_bad_checksum_is_still_an_error(self):
+        """The narrowing must not swallow a real defect on live work."""
+        review = self.write_review(1)
+        bundle = self.write_bundle(
+            1, approves=review, review_checksum="sha256:" + "0" * 64)
+        result = self.scan()
+        self.assertNotIn(bundle, self.rows(result))
+        errors = [d for d in result["Diagnostics"] if d["Severity"] == "error"]
+        self.assertTrue(
+            any(d["Code"] == "approved_review_checksum_mismatch" for d in errors))
+
+    # -- the manifest's own active leaf ---------------------------------------
+
+    def test_an_explicit_chain_leaves_one_active_manifest(self):
+        review = self.write_review(1)
+        first = self.write_bundle(1, approves=review)
+        second = self.write_bundle(2, approves=review, supersedes=first)
+        rows = self.rows()
+        self.assertEqual(rows[first][0], "INTEGRATOR-SUPERSEDED")
+        self.assertEqual(rows[second][0], "INTEGRATOR-APPROVED")
+
+    def test_a_legacy_member_without_revision_metadata_is_placed_by_rnn(self):
+        """The Stats shape: r01 declares neither revision nor supersedes."""
+        review = self.write_review(1)
+        first = self.write_bundle(1, approves=review, declare_revision=False)
+        second = self.write_bundle(2, approves=review, declare_revision=False)
+        third = self.write_bundle(3, approves=review, supersedes=second)
+        rows = self.rows()
+        self.assertEqual(rows[first][0], "INTEGRATOR-SUPERSEDED")
+        self.assertEqual(rows[second][0], "INTEGRATOR-SUPERSEDED")
+        self.assertEqual(rows[third][0], "INTEGRATOR-APPROVED")
+        self.assertTrue(rows[first][1], "the inferred placement is reported")
+        self.assertIn("legacy_revision_inference", self.codes())
+
+    def test_a_single_manifest_lineage_is_untouched(self):
+        review = self.write_review(1)
+        only = self.write_bundle(1, approves=review)
+        self.assertEqual(self.rows()[only][0], "INTEGRATOR-APPROVED")
+        self.assertNotIn("legacy_revision_inference", self.codes())
+
+    def test_a_fork_whose_members_all_declare_revisions_is_left_alone(self):
+        """Clause 2 covers a legacy omission, not a declared fork. Inferring a
+        leaf here would retire a bundle on the strength of its filename."""
+        review = self.write_review(1)
+        first = self.write_bundle(1, approves=review)
+        second = self.write_bundle(2, approves=review)
+        rows = self.rows()
+        self.assertEqual(rows[first][0], "INTEGRATOR-APPROVED")
+        self.assertEqual(rows[second][0], "INTEGRATOR-APPROVED")
+        self.assertNotIn("legacy_revision_inference", self.codes())
+
+    def test_modification_time_never_places_a_manifest(self):
+        review = self.write_review(1)
+        first = self.write_bundle(1, approves=review, declare_revision=False)
+        second = self.write_bundle(2, approves=review, declare_revision=False)
+        third = self.write_bundle(3, approves=review, supersedes=second)
+        os.utime(self.root / self.APPROVED / f"{first}.yaml",
+                 (2 ** 31 - 1, 2 ** 31 - 1))
+        rows = self.rows()
+        self.assertEqual(rows[first][0], "INTEGRATOR-SUPERSEDED")
+        self.assertEqual(rows[third][0], "INTEGRATOR-APPROVED")
+
+    # -- integration consumption is declared, never inferred -------------------
+
+    def test_a_component_path_does_not_consume_another_bundle(self):
+        """The Stats case: every manifest declares the same shared edges CSV,
+        stem-named after r05-r01, and integrating r05-r05 marked r01 consumed."""
+        review = self.write_review(1)
+        shared = f"{self.APPROVED}/APPROVED-{self.gup_id}-r01.edges.csv"
+        first = self.write_bundle(1, approves=review, component=shared)
+        second = self.write_bundle(2, approves=review, supersedes=first,
+                                   component=shared)
+        self.integrate(second, extra_strings=[shared])
+        rows = self.rows()
+        self.assertEqual(rows[second][0], "INTEGRATOR-CONSUMED")
+        self.assertEqual(rows[first][0], "INTEGRATOR-SUPERSEDED")
+
+    def test_an_int_prefixed_record_is_recognised(self):
+        review = self.write_review(1)
+        bundle = self.write_bundle(1, approves=review)
+        self.integrate(bundle, as_record=True)
+        self.assertEqual(self.rows()[bundle][0], "INTEGRATOR-CONSUMED")
+
+    def test_an_integration_manifest_is_recognised(self):
+        review = self.write_review(1)
+        bundle = self.write_bundle(1, approves=review)
+        self.integrate(bundle, as_record=False)
+        self.assertEqual(self.rows()[bundle][0], "INTEGRATOR-CONSUMED")
+
+    def test_a_non_integrated_record_consumes_nothing(self):
+        review = self.write_review(1)
+        bundle = self.write_bundle(1, approves=review)
+        directory = self.book / "artifacts" / "integrated"
+        directory.mkdir(parents=True, exist_ok=True)
+        (directory / "INT-29990303-002-rejected.json").write_text(
+            json.dumps({"id": "INT-29990303-002", "status": "rejected",
+                        "ruleset_id": "adnd1e", "bundle_id": bundle}),
+            encoding="utf-8")
+        self.assertEqual(self.rows()[bundle][0], "INTEGRATOR-APPROVED")
+
+
+class LiveStatsApprovedLineageCase(unittest.TestCase):
+    """DEC-2026-0095 acceptance tests 3 and 4, on the exact named artifacts."""
+
+    LINEAGE = "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r0"
+
+    @classmethod
+    def setUpClass(cls):
+        directory = (REPO_ROOT / "books" / "shadowdark" / "sd" / "artifacts"
+                     / "approved")
+        if not (directory / f"{cls.LINEAGE}5.yaml").is_file():  # pragma: no cover
+            raise unittest.SkipTest("the Stats r05 lineage is no longer present")
+        cls.result = scanner.scan_repository(REPO_ROOT)
+        cls.rows = {}
+        for key in ("Items", "InformationalItems", "BlockedItems"):
+            for item in cls.result.get(key) or []:
+                cls.rows[item["InputId"]] = item
+
+    def test_only_r05_is_consumed(self):
+        self.assertEqual(
+            self.rows[f"{self.LINEAGE}5"]["Queue"], "INTEGRATOR-CONSUMED")
+
+    def test_the_shared_r01_component_did_not_consume_r01(self):
+        self.assertNotEqual(
+            self.rows[f"{self.LINEAGE}1"]["Queue"], "INTEGRATOR-CONSUMED")
+
+    def test_no_stats_manifest_is_a_ready_integrator_item(self):
+        ready = [i["InputId"] for i in self.result["Items"]
+                 if i["InputId"].startswith(self.LINEAGE)]
+        self.assertEqual(ready, [])
+
+    def test_r01_through_r04_are_informational_history(self):
+        for suffix in ("1", "2", "3", "4"):
+            with self.subTest(manifest=f"{self.LINEAGE}{suffix}"):
+                self.assertEqual(
+                    self.rows[f"{self.LINEAGE}{suffix}"]["State"], "informational")
+
+    def test_the_legacy_placement_of_r01_is_reported(self):
+        self.assertTrue(self.rows[f"{self.LINEAGE}1"]["LegacyInference"])
+        codes = [(d["Code"], d.get("ArtifactId")) for d in self.result["Diagnostics"]]
+        self.assertIn(("legacy_revision_inference", f"{self.LINEAGE}5"), codes)
+
+    def test_the_r04_rejection_creates_no_reviewer_work(self):
+        remediation = [i for i in self.result["Items"]
+                       if i["Queue"] == "REVIEWER-INTEGRATION-REJECTION"]
+        self.assertEqual(remediation, [])
+
+    def test_no_stats_manifest_raises_a_review_linkage_warning(self):
+        for diagnostic in self.result["Diagnostics"]:
+            if str(diagnostic.get("ArtifactId") or "").startswith(self.LINEAGE):
+                self.assertNotEqual(
+                    diagnostic["Code"], "approved_review_inferred_or_missing")

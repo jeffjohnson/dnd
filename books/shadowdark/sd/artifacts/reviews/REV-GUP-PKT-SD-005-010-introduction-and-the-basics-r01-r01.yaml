@@ -1,0 +1,87 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-005-010-introduction-and-the-basics-r01-r01
+artifact_kind: packet_update_review
+status: revision_required
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-005-010-introduction-and-the-basics
+constitution_version: '1.5'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-23'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-005-010-introduction-and-the-basics-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-005-010-introduction-and-the-basics-r01.yaml
+  checksum: sha256:b998e30d06758b8c85cccb0e97a4c1cb9658a8b84a69aebfdbabccc05112ef2a
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: revision_required
+approval_ready: false
+edge_decisions:
+  - {ref: M001, disposition: approved}
+  - {ref: M002, disposition: approved}
+  - {ref: M003, disposition: approved}
+  - {ref: M004, disposition: approved}
+  - {ref: M005, disposition: approved}
+  - {ref: M006, disposition: approved}
+  - {ref: M007, disposition: approved}
+  - {ref: M008, disposition: approved}
+  - ref: M009
+    disposition: approved_with_revision
+    exact_corrections:
+      condition: ''
+    source_citation:
+      path: books/shadowdark/sd/packets/claimed/PKT-SD-005-010-introduction-and-the-basics/source.md
+      page: '9'
+      section: HIT POINTS
+      evidence: 'Characters at zero HP die; zero is a threshold and cannot occupy graph grain.'
+  - {ref: M010, disposition: approved}
+  - {ref: M011, disposition: approved}
+architectural_escalations: []
+blocking_findings:
+  - id: current_registry_drift
+    detail: >-
+      The reviewed immutable GUP claims abil_constitution, abil_stat_modifier, and
+      rule_hit_points are not canonical and proposes all three, but the current
+      Shadowdark node registry already contains those exact IDs and labels. Its
+      node operations are stale and must be recomputed before approval.
+    current_registry:
+      path: rulesets/shadowdark/registries/nodes.csv
+      checksum: sha256:244dfe6e18139ec36eac54da6fff422d9668a8b97fcf084d795ec20a7fee6e3
+required_builder_revision:
+  successor_gup_id: GUP-PKT-SD-005-010-introduction-and-the-basics-r02
+  preserve_reviewed_rows: [M001, M002, M003, M004, M005, M006, M007, M008, M010, M011]
+  apply_row_correction: {ref: M009, condition: ''}
+  recompute_against_current_registry: true
+  reuse_existing_node_ids: [abil_constitution, abil_stat_modifier, rule_hit_points]
+  do_not_change_source_judgments: true
+completeness_statement: >-
+  All eleven rows were independently checked against pages 8 and 9. Ten are
+  source-supported with valid identities, direction, edge type, and polarity.
+  M009 is source-supported after removing its numeric threshold from graph grain.
+  The GUP cannot be approved until its stale registry proposals are recomputed.
+reviewer_checklist:
+  source_support: passed_with_m009_grain_correction
+  node_identity: revision_required_current_registry_reuse
+  edge_semantics_and_direction: passed
+  polarity: passed
+  graph_neighborhood: passed_after_current_registry_recheck
+  canonical_files_modified: false
+independent_validation:
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-005-010-introduction-and-the-basics-r01.validation.json
+    checksum: sha256:b152539de90573c91a922667da1159bde80e3c5b388c039c9d7769cac5e993c9
+    result: compiler_clean_but_historically_stale
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-005-010-introduction-and-the-basics/source.md
+    pages: ['8', '9']
+    result: independently_read
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: 'Publish r02 with M009 condition blank and current-registry node reuse.'
+  blocking_ids: []

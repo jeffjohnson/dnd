@@ -1,0 +1,154 @@
+schema_version: '1.0'
+id: DEC-2026-0097
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.3'
+decision_date: '2026-09-22'
+escalation_id: null
+request_origin:
+  type: decision_implementation_result
+  implementation_report:
+    id: IMP-DEC-2026-0095-r01
+    path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0095-r01.yaml
+    checksum: sha256:38a43a8a09fd562797aa31c58567e664a596c483ad368a9fb3f1384113ac4484
+question: >-
+  How must Shadowdark compiler tests retain coverage of both an approved fresh
+  ancestry proposal and a subsequently registered canonical ancestry without
+  making the Builder suite depend on the mutable live registry baseline?
+ruling: >-
+  Authorize Builder to correct only
+  `tooling/builder/tests/test_shadowdark_ancestry.py`. Tests that exercise the
+  current Shadowdark registry must assert canonical reuse for an already
+  registered identity: no fresh `node_additions` proposal is expected, and the
+  compiler's `node_proposal_resolved_to_canonical` result is correct.
+
+  Tests that prove `ancestry_` permits an ordinary fresh proposal must construct
+  an isolated pre-integration fixture with no matching canonical node. They may
+  not rely on the live ruleset registry being header-only. A distinct
+  same-label `monster_dwarf` still tests non-merger against `ancestry_dwarf`;
+  its expected outcome is evaluated separately from the canonical ancestry.
+
+  This is test-fixture maintenance after valid integrations, not a change to
+  node identity, registry contents, compiler behavior, or DEC-2026-0087. The
+  failed IMP-DEC-2026-0095-r01 remains immutable history. After this fixture
+  repair passes the complete Builder suite, Builder publishes
+  IMP-DEC-2026-0095-r02 as its successor; it may become approval-ready only if
+  every DEC-2026-0095 acceptance test then passes.
+rationale:
+  - >-
+    A live canonical registry necessarily changes as integrations succeed.
+    Tests that assert a production identity is always unregistered become
+    invalid precisely when the normal lifecycle is working.
+  - >-
+    Isolated fixtures preserve the original prefix and fresh-proposal coverage;
+    current-state fixtures preserve canonical-reuse coverage. Neither state can
+    stand in for the other.
+  - >-
+    DEC-2026-0095 correctly kept scanner work bounded. A separate Decision
+    authorizes the unrelated test repair without waiving its complete-suite
+    acceptance gate.
+evidence:
+  - {path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0095-r01.yaml, checksum: sha256:38a43a8a09fd562797aa31c58567e664a596c483ad368a9fb3f1384113ac4484, role: failed_only_on_stale_fixture_assumption}
+  - {path: tooling/builder/tests/test_shadowdark_ancestry.py, checksum: sha256:dd82e1b7cda36166e62278324ff7bcf09762c4fb5f362b3a0f9b7f9eb5edd26f, role: mutable_live_registry_fixture}
+  - {path: rulesets/shadowdark/registries/nodes.csv, checksum: sha256:60ff9ca3b57dc1fd9ee2c9bad4e130818b3ebcfb5af0178e25f08770bc7bd3da, role: current_canonical_ancestry_registrations}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml, checksum: sha256:ac292466989d18e446778145464f7d8bb1dd4fd82a5379606bb1cdf02536595b, role: original_ancestry_authorization}
+  - {path: rulesets/shadowdark/manifests/INT-20260922-002.json, checksum: sha256:e844ecd72e43812d940b010fbab2b820764b4f09b971f0af9d9cbfae41f442e3, role: terminal_integration_that_made_live_fixture_stateful}
+migration_required: false
+migration_scope: >-
+  No graph, registry, packet, GUR, GUP, Review, Approved bundle, Integration,
+  schema, contract, or production tool changes. Only one Builder test module
+  and successor implementation reports change.
+constitution_version_impact: None. The existing ancestry identity ruling is unchanged.
+affected_contracts: []
+affected_registries: []
+implementation_bounds:
+  - >-
+    Builder changes only tooling/builder/tests/test_shadowdark_ancestry.py and
+    publishes the two named Decision Implementation Reports.
+  - >-
+    Cover fresh-proposal semantics with an isolated, pre-integration fixture and
+    current-state semantics with the actual registered Shadowdark identities.
+  - >-
+    Do not alter compiler code, test bootstrap shared by other modules,
+    canonical data, registries, source artifacts, schemas, contracts, scanner,
+    Integrator code, Herdr, or basicdnd/rc.
+  - >-
+    Do not loosen a test merely to make it pass. The updated tests must verify
+    both canonical reuse and the permitted fresh-proposal path, including the
+    ancestry-versus-monster non-merger case.
+acceptance_tests:
+  - >-
+    In a self-contained fixture with no matching canonical identity, every
+    DEC-2026-0087 ancestry ID is an ordinary `ancestry_` proposal with an
+    approved prefix and no Architect escalation. The fixture setup does not
+    read a mutable live nodes registry to establish this result.
+  - >-
+    Against the current Shadowdark registry, each of the six registered
+    ancestry IDs is recognized as canonical reuse and reports
+    `node_proposal_resolved_to_canonical`; no test asserts it is a fresh node
+    addition or Reviewer registration candidate.
+  - >-
+    The same-label ancestry and monster test proves the canonical ancestry is
+    not merged with `monster_dwarf`, while an unregistered monster remains an
+    ordinary proposal.
+  - >-
+    The focused ancestry module and the complete Builder suite pass. The
+    implementation report records exact commands and outcomes.
+  - >-
+    IMP-DEC-2026-0095-r02 supersedes r01, preserves all passed scanner evidence
+    from r01 by exact reference, records a passing complete Builder suite, and
+    is approval-ready only with all six DEC-2026-0095 acceptance tests passed.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Builder corrects the isolated and live-state test fixtures, then publishes
+    the DEC-2026-0097 implementation report and the successor DEC-2026-0095
+    report for independent Reviewer validation.
+  blocking_ids: []
+sequence:
+  - step: 1
+    owner: architect
+    action: Publish this direct fixture-maintenance Decision.
+  - step: 2
+    owner: builder
+    action: >-
+      Update only the authorized test module, run the focused and complete
+      Builder suites, and publish IMP-DEC-2026-0097-r01 plus
+      IMP-DEC-2026-0095-r02.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Review IMP-DEC-2026-0097-r01 first, then independently validate the
+      successor DEC-2026-0095 report and its scanner evidence.
+post_implementation_requirements:
+  - >-
+    IMP-DEC-2026-0095-r01 remains immutable failed evidence and must not be
+    edited or approved. Its successor, rather than a waiver, establishes the
+    restored complete-suite gate.
+  - >-
+    Future Shadowdark tests must not assume a live registry is empty merely
+    because a ruleset began empty. Proposal tests use isolated baselines;
+    current-state tests derive their expected canonical reuse from registered
+    identities.
+exact_diff:
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml: Publish the direct bounded fixture-maintenance Decision.
+  tooling/builder/tests/test_shadowdark_ancestry.py: Separate isolated fresh-proposal assertions from live canonical-reuse assertions.
+  rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0097-r01.yaml: Record fixture implementation and complete Builder-suite evidence.
+  rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0095-r02.yaml: Supersede the failed report with restored full-suite evidence.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml, owner: architect, sequence_step: 1}
+  - {path: tooling/builder/tests/test_shadowdark_ancestry.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0097-r01.yaml, owner: builder, sequence_step: 2}
+  - {path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0095-r02.yaml, owner: builder, sequence_step: 2}
+follow_up_owners:
+  builder:
+    - Implement the exact fixture correction and publish both named reports.
+  reviewer:
+    - Review the fixture correction before relying on the successor DEC-2026-0095 report.

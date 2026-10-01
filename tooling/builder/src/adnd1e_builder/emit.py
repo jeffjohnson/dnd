@@ -193,11 +193,20 @@ def gup_document(result: CompileResult, test_result: dict) -> dict:
         document["reviewer_directives_applied"] = {
             "review_id": result.review_id,
             "corrections": result.corrections_applied,
+            "corrections_superseded": result.corrections_superseded,
             "rejected_rows": result.rejected_rows,
             "note": (
                 "Reviewer decisions are applied as given; the Reviewer owns what an edge asserts. "
                 "Corrected values are then revalidated, and a correction that violates the "
                 "constitution is reported like any other defect rather than passed through."
+                + (
+                    " One or more corrections listed under corrections_superseded were "
+                    "overtaken by an approved Architect migration before this revision "
+                    "was compiled: they are recorded with the deciding Decision and were "
+                    "neither applied nor discarded silently."
+                    if result.corrections_superseded
+                    else ""
+                )
             ),
         }
 

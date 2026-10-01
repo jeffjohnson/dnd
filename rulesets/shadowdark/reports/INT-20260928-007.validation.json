@@ -1,0 +1,343 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20260928-007",
+  "ruleset_id": "shadowdark",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-09-28T23:38:47.998Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:1b622b899b8bd96c54f3ef6a9c231be7d5935503d2d82574d262ca0186e468b7 actual=sha256:1b622b899b8bd96c54f3ef6a9c231be7d5935503d2d82574d262ca0186e468b7"
+        },
+        {
+          "check": "component checksum matches: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:2b8df50780dade26a94bcb47eae027589ebed06e5cca9cea1a0c8cfa8118c1a0 actual=sha256:2b8df50780dade26a94bcb47eae027589ebed06e5cca9cea1a0c8cfa8118c1a0"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-SD-136-137-taverns-r02.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:4bafcb8304b74eea8b63509487b31d58f4d30a22335de25fd94b2f1755d3ecd7 actual=sha256:4bafcb8304b74eea8b63509487b31d58f4d30a22335de25fd94b2f1755d3ecd7"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-136-137-taverns-r02.yaml: declared=sha256:2db4c6b13957202a1396d02ac2f9083093457488f100c754c5fb1cdc9be6f59f actual=sha256:2db4c6b13957202a1396d02ac2f9083093457488f100c754c5fb1cdc9be6f59f"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=12 actual=12"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 0, 'pending_additions': 12, 'updates': 0, 'node_registrations': 16}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 752,
+    "edges_after": 764,
+    "edges_updated_in_place": 0,
+    "nodes_before": 346,
+    "nodes_after": 359,
+    "registry_before": 380,
+    "registry_after": 396,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "rule_taverns",
+        "label": "Taverns",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "tbl_tavern_generator",
+        "label": "Tavern Generator Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "tbl_tavern_menu",
+        "label": "Tavern Menu Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "tbl_tavern_drinks",
+        "label": "Tavern Drinks Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_barnacle_grog",
+        "label": "Barnacle Grog",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_watered_down_swill",
+        "label": "Watered-Down Swill",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_vinegary_wine",
+        "label": "Vinegary Wine",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_stale_ale",
+        "label": "Stale Ale",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_clear_spirits",
+        "label": "Clear Spirits",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_house_ale",
+        "label": "House Ale",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_autumn_mead",
+        "label": "Autumn Mead",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_halfling_summer_wine",
+        "label": "Halfling Summer Wine",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_elvish_brandy",
+        "label": "Elvish Brandy",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_dwarvish_gold_ale",
+        "label": "Dwarvish Gold Ale",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_aged_royal_wine",
+        "label": "Aged Royal Wine",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      },
+      {
+        "id": "item_van_dinkle_whiskey",
+        "label": "Van Dinkle Whiskey",
+        "kind": "item",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "review_id": "REV-GUP-PKT-SD-136-137-taverns-r02-r01",
+        "integration_id": "INT-20260928-007"
+      }
+    ],
+    "registry_derived_resync": 7,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "report_id": "IMP-DEC-2026-0096-r01",
+  "decision_id": "DEC-2026-0096",
+  "decision_checksum": "sha256:30c134d595d721442e844972657589b927edc28da6ea0e965cda49e9298551ce",
+  "generated": "2026-09-23T00:37:03Z",
+  "passed": true,
+  "commands": [
+    {
+      "command": "PYTHONPATH=src python -m unittest discover -s tests -t tests",
+      "exit_code": 0,
+      "result": "passed",
+      "summary": "complete Integrator suite: 292 tests OK in 1646.168s"
+    },
+    {
+      "command": "PYTHONPATH=../src:. python -m unittest test_bundles",
+      "exit_code": 0,
+      "result": "passed",
+      "summary": "focused Integrator bundle tests: 34 tests OK"
+    },
+    {
+      "command": "PYTHONPATH=src python -m adnd1e_integrator --repo-root=../.. --ruleset-id=shadowdark --books=sd queue",
+      "exit_code": 1,
+      "result": "passed",
+      "summary": "one ready bundle, SD-011-014, which is pending an unrelated Reviewer repair; no Stats manifest is ready and one legacy leaf inference is reported"
+    }
+  ],
+  "acceptance_tests": [
+    {
+      "acceptance_test_index": 1,
+      "result": "passed"
+    },
+    {
+      "acceptance_test_index": 2,
+      "result": "passed"
+    },
+    {
+      "acceptance_test_index": 3,
+      "result": "passed"
+    },
+    {
+      "acceptance_test_index": 4,
+      "result": "passed"
+    },
+    {
+      "acceptance_test_index": 5,
+      "result": "passed"
+    }
+  ],
+  "implementation_files": [
+    {
+      "path": "tooling/integrator/src/adnd1e_integrator/bundles.py",
+      "checksum": "sha256:6d8d30a1d9a86239e35e5bdebb9c8c6335bcd7107f33061c343c276f92063e58"
+    },
+    {
+      "path": "tooling/integrator/tests/test_bundles.py",
+      "checksum": "sha256:fb2d546c6b08bc107de9b1bc8a5dd815bbf8387be8e274364e9b425848761f8d"
+    }
+  ],
+  "verified_inputs": [
+    {
+      "path": "rulesets/shadowdark/escalations/decisions/DEC-2026-0096.yaml",
+      "checksum": "sha256:30c134d595d721442e844972657589b927edc28da6ea0e965cda49e9298551ce"
+    },
+    {
+      "path": "rulesets/shadowdark/escalations/decided/ESC-2026-09-22T23.23.17.245Z.yaml",
+      "checksum": "sha256:f2e0e87d1e95af07ebf87d4fca5cc925594c10d53cc9135ac8a71e68c1eb76ff"
+    },
+    {
+      "path": "rulesets/shadowdark/escalations/decisions/DEC-2026-0095.yaml",
+      "checksum": "sha256:68e302182640762f4f1704e9f40523419052561f03d8ab5d18c9aced42e2f20a"
+    },
+    {
+      "path": "contracts/WORK_QUEUES.md",
+      "checksum": "sha256:9b3bdf7008913cbb310cf15e9637e077d683718aa9b91cfcb25d50b6e52184c2"
+    },
+    {
+      "path": "rulesets/shadowdark/manifests/INT-20260922-002.json",
+      "checksum": "sha256:e844ecd72e43812d940b010fbab2b820764b4f09b971f0af9d9cbfae41f442e3"
+    }
+  ],
+  "measured": {
+    "versioned_contract_content": {
+      "path": "contracts/WORK_QUEUES.md",
+      "checksum": "sha256:9b3bdf7008913cbb310cf15e9637e077d683718aa9b91cfcb25d50b6e52184c2",
+      "observed_version": "1.32",
+      "minimum_version": "1.32",
+      "anchors_present": [
+        "Only the active leaf revision of an artifact can create work.",
+        "A revision is a leaf when no later artifact of the same kind names its ID in `supersedes`.",
+        "Superseded, consumed, reviewed, integrated, failed, and blocked artifacts are not ready work for the ordinary downstream role.",
+        "When `supersedes` is absent, infer the latest `rNN` only within one artifact kind and packet.",
+        "Never infer order from creation or modification time."
+      ]
+    },
+    "suite_tests": 292,
+    "bundle_tests": 34,
+    "shadowdark_queue": {
+      "ready": [
+        "APPROVED-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r01"
+      ],
+      "superseded": [
+        "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01",
+        "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02",
+        "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03",
+        "APPROVED-GUP-PKT-SD-016-017-ancestries-r02-r01"
+      ],
+      "integrated": [
+        "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05->INT-20260922-002",
+        "APPROVED-GUP-PKT-SD-016-017-ancestries-r02-r02->INT-20260922-003"
+      ],
+      "rejected": [
+        "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04->INT-20260922-001"
+      ],
+      "legacy_leaf_inferences": [
+        "legacy_revision_inference: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01 is placed as history by bounded rNN sequence within packet PKT-SD-015-015-stats-and-stat-modifiers; the selected active leaf is APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05"
+      ],
+      "diagnostics": [
+        "APPROVED-GUP-PKT-SD-322-325-community-credits-and-licensing-r01-r01: manifest declares 0 components of kind 'edges'; a packet update declares exactly one"
+      ]
+    },
+    "adnd1e_legacy_leaf_inferences": [],
+    "adnd1e_bucket_sizes": {
+      "ready": 0,
+      "superseded": 10,
+      "integrated": 30,
+      "rejected": 9
+    },
+    "shadowdark_consumed": {
+      "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05": "INT-20260922-002",
+      "APPROVED-GUP-PKT-SD-016-017-ancestries-r02-r02": "INT-20260922-003"
+    },
+    "canonical_untouched": {
+      "shadowdark_edges_checksum": "sha256:5471a40cc7c0cb9d5540760ed5ac4e0295394d278f38f14ddf7f952b618e7c8e",
+      "shadowdark_nodes_checksum": "sha256:cc69b5309f7c133135d132ba6b590d26751927092340eb50dcbc65084045cde5",
+      "shadowdark_registry_checksum": "sha256:60ff9ca3b57dc1fd9ee2c9bad4e130818b3ebcfb5af0178e25f08770bc7bd3da",
+      "statement": "No canonical or registry file was read for mutation or written by this implementation. Only derived queue classification changed."
+    }
+  }
+}

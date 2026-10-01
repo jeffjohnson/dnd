@@ -1,0 +1,283 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20260922-002",
+  "ruleset_id": "shadowdark",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-09-22T19:41:08.354Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:1c28afc09bfb0f2c5a0939bf3411676b76f7c513d76f73f94861b01df276c913 actual=sha256:1c28afc09bfb0f2c5a0939bf3411676b76f7c513d76f73f94861b01df276c913"
+        },
+        {
+          "check": "component checksum matches: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:8fb598534b73748454186cc3a7975daf8f68fddfcbae5a5576b8ecb24ce2c84d actual=sha256:8fb598534b73748454186cc3a7975daf8f68fddfcbae5a5576b8ecb24ce2c84d"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:0b3d57154f48c0953618bc11b61f7f6b9bea654463a438cea66e56939b27af67 actual=sha256:0b3d57154f48c0953618bc11b61f7f6b9bea654463a438cea66e56939b27af67"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05.yaml: declared=sha256:2dec645d58b9428e5199dc7a25534a8917639f0d88569cfec48333760cc75996 actual=sha256:2dec645d58b9428e5199dc7a25534a8917639f0d88569cfec48333760cc75996"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=14 actual=14"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 0, 'pending_additions': 14, 'updates': 0, 'node_registrations': 10}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 0,
+    "edges_after": 14,
+    "edges_updated_in_place": 0,
+    "nodes_before": 0,
+    "nodes_after": 10,
+    "registry_before": 0,
+    "registry_after": 10,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "abil_strength",
+        "label": "Strength",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05",
+        "review_id": "REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03",
+        "integration_id": "INT-20260922-002"
+      },
+      {
+        "id": "abil_dexterity",
+        "label": "Dexterity",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05",
+        "review_id": "REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03",
+        "integration_id": "INT-20260922-002"
+      },
+      {
+        "id": "abil_constitution",
+        "label": "Constitution",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05",
+        "review_id": "REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03",
+        "integration_id": "INT-20260922-002"
+      },
+      {
+        "id": "abil_intelligence",
+        "label": "Intelligence",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05",
+        "review_id": "REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03",
+        "integration_id": "INT-20260922-002"
+      },
+      {
+        "id": "abil_wisdom",
+        "label": "Wisdom",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05",
+        "review_id": "REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03",
+        "integration_id": "INT-20260922-002"
+      },
+      {
+        "id": "abil_charisma",
+        "label": "Charisma",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05",
+        "review_id": "REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03",
+        "integration_id": "INT-20260922-002"
+      },
+      {
+        "id": "abil_stat_modifier",
+        "label": "Stat Modifier",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05",
+        "review_id": "REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03",
+        "integration_id": "INT-20260922-002"
+      },
+      {
+        "id": "tbl_stat_modifiers",
+        "label": "Stat Modifiers Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05",
+        "review_id": "REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03",
+        "integration_id": "INT-20260922-002"
+      },
+      {
+        "id": "rule_stat_generation",
+        "label": "Stat Generation",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05",
+        "review_id": "REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03",
+        "integration_id": "INT-20260922-002"
+      },
+      {
+        "id": "rule_stat_reroll",
+        "label": "Stat Reroll",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05",
+        "review_id": "REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03",
+        "integration_id": "INT-20260922-002"
+      }
+    ],
+    "registry_derived_resync": 0,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

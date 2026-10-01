@@ -1,0 +1,165 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-152-153-desert-r01-r01
+artifact_kind: packet_update_review
+status: revision_required
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-152-153-desert
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-29'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-152-153-desert-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-152-153-desert-r01.yaml
+  checksum: sha256:bb75094df6f1bff5659319238ea35e03428c0aa301f9786fc58a81f5f5234f40
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: revision_required
+approval_ready: false
+edge_decisions:
+  approved_refs: [M001, M002]
+  disposition: approved
+node_registry_decisions:
+  - {proposed_id: tbl_desert_encounters, submitted_label: Desert Encounters Table, kind: tbl, disposition: approved}
+architectural_escalations: []
+blocking_findings:
+  - id: missing_bone_barbed_nets_trap_reach
+    severity: blocking
+    detail: >-
+      The bone-barbed nets are concealed beneath the sand and snap upward as
+      an encounter result. That is an explicit trap mechanism even though the
+      noun trap is absent. The table therefore needs a FEEDS_INTO relationship
+      to canonical Traps. Requiring the exact registry label in source text
+      would make graph extraction lexical rather than mechanical.
+    source_citation:
+      path: books/shadowdark/sd/packets/claimed/PKT-SD-152-153-desert/source.md
+      page: '152'
+      section: DESERT ENCOUNTERS TABLE
+      evidence: >-
+        A stated number of bone-barbed nets snap up from beneath the sand.
+required_builder_revision:
+  successor_gup_id: GUP-PKT-SD-152-153-desert-r02
+  source_gur_successor_required: true
+  required_relationship:
+    expected_ref: M003
+    source_id: tbl_desert_encounters
+    source_label: Desert Encounters Table
+    edge_type: FEEDS_INTO
+    target_id: rule_traps
+    target_label: Traps
+    aspect: encounter trap
+    condition: ''
+    book: SD
+    page: '152'
+    section: DESERT ENCOUNTERS TABLE
+    evidence: explicit_rule
+    polarity: neutral
+    polarity_basis: derived
+  preserve_reviewed_rows: [M001, M002]
+  preserve_approved_node_registrations: [tbl_desert_encounters]
+  note: >-
+    Return the omitted source relationship to Analyst for a successor GUR,
+    then compile the named successor GUP. Preserve both reviewed rows and the
+    approved table registration unchanged.
+reviewer_findings:
+  - id: RF-01
+    subject: desert_encounter_resolver
+    disposition: approved
+    refs: [M001]
+    detail: >-
+      The source-named Desert Encounters Table is a further resolver of
+      canonical Encounter on the distinct desert-selection aspect.
+  - id: RF-02
+    subject: luck_token_award
+    disposition: approved
+    refs: [M002]
+    detail: >-
+      The phoenix result explicitly grants a Luck Token. FEEDS_INTO matches the
+      canonical Carousing Outcome table precedent for a one-time table benefit;
+      it does not claim the encounter changes token capacity or supply rules.
+  - id: RF-03
+    subject: wording_vs_substance_boundary
+    disposition: differentiated_precedent
+    detail: >-
+      The page-147 crawlers cell, page-151 sinkhole and page-152 nets do not
+      move as one bloc. Generic crawlers does not identify the Rival Crawlers
+      procedure, and the sinkhole states no participant fall, check or damage.
+      By contrast, a concealed device that snaps upward is itself an explicit
+      trap mechanism. Mechanical identity may be established by the stated
+      operation; the exact registry label need not appear verbatim.
+  - id: RF-04
+    subject: desert_weather_comparison
+    disposition: rejected_candidates_confirmed
+    detail: >-
+      Sandstorm duration, a collapsing dune and threatening floods state no
+      damage, check or other representable mechanic. Their omission correctly
+      contrasts with the Arctic cells that expressly inflict damage.
+  - id: RF-05
+    subject: table_registration_and_remaining_omissions
+    disposition: approved
+    detail: >-
+      Desert Encounters Table is source-named, fresh, correctly prefixed and
+      supports the reviewed and required rows. Creature identities,
+      magnitude-only chance and duration content, the underspecified riddle,
+      the self-referential reroll instruction and supporting context were
+      correctly withheld.
+  - id: RF-06
+    subject: authority_metadata
+    disposition: informational_nonblocking
+    detail: >-
+      Builder-generated routing text still names the stale DEC-2026-0003
+      identifier. This Review applies current Shadowdark Constitution section
+      2 and common Reviewer authority directly; no submitted row depends on
+      that stray citation.
+completeness_statement: >-
+  Printed pages 152 and 153, the full fifty-row table, the mid-table marker,
+  both submitted assertions, the one node proposal, all rejected candidates
+  and OBS-01 through OBS-03 were independently checked. Both submitted rows
+  and the registration are correct, but approval is withheld until a successor
+  adds the source-backed bone-barbed-nets reach to canonical Traps.
+reviewer_checklist:
+  source_support: passed_submitted_rows_but_one_relationship_missing
+  node_identity: passed_one_registration
+  edge_semantics_and_direction: revision_required_missing_trap_reach
+  grain: passed
+  polarity: passed_existing_and_required_rows
+  page_attribution: passed_mid_table_marker_23_27_split
+  graph_neighborhood: passed_encounter_luck_token_and_traps
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-152-153-desert/source.md
+    checksum: sha256:6c8656518dbcdc38ea05670c77e7d6bdbae02e34dde14a8824860fd6ebe9a1b2
+    pages: ['152', '153']
+    result: independently_read_50_rows_verified_23_27_split_and_missing_trap_reach
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-152-153-desert-r01.yaml
+    checksum: sha256:2d69a29db7a75a989a7a98bd774fbda290f25375e42c6d654b9b0ee98cb854eb
+    result: two_rows_confirmed_and_obs_02_partially_overturned
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-152-153-desert-r01.validation.json
+    checksum: sha256:633c2ace6bc7a76a0d68cc58fb723ddec7fa6eb685476da57aa99582923338e6
+    result: compiler_clean_but_source_incomplete
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:1c8726bbfc38c69de53767cf6c458b313b32900d930976892468916992236ba8
+    observed_rows: 407
+    result: table_proposal_fresh_and_required_canonical_inputs_present
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:d047593f3515293914b56c490c048dc026df9df330130338b93e7723e1790f90
+    observed_edges: 788
+    result: no_pages_152_or_153_rows_and_three_prior_encounter_table_trap_reaches_verified
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Return the missing bone-barbed-nets relationship to Analyst, then compile
+    GUP-PKT-SD-152-153-desert-r02 while preserving M001, M002 and the approved
+    Desert Encounters Table registration.
+  blocking_ids: []

@@ -1,0 +1,180 @@
+schema_version: '1.0'
+id: DEC-2026-0095
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-015-015-stats-and-stat-modifiers
+constitution_version: '1.3'
+decision_date: '2026-09-22'
+escalation_id: ESC-2026-09-22T19.45.16.421Z
+question: >-
+  What must queue derivation treat as authoritative for an Approved bundle's
+  Review, active leaf, and integration consumption, including the legacy
+  Stats lineage with incomplete manifest revision metadata?
+ruling: >-
+  Approve the bounded three-part scanner correction. For a manifested Approved
+  bundle, `approves.review_id` is its sole approving-Review identity. When an
+  optional `approves.review_checksum` is present, it must match that exact
+  Review. Top-level or provenance Review fields and filename stems cannot
+  replace a manifest-declared Review. Filename-derived Review linkage remains
+  only a reported fallback for a manifestless legacy bundle.
+
+  Resolve an Approved manifest's own active leaf before Review, rejection, or
+  integration queue derivation. Apply explicit `supersedes` links first. For
+  this historical same-kind, same-packet lineage, WORK_QUEUES Legacy Queue
+  Derivation clause 2 places r05-r01 through r05-r05 by their rNN sequence,
+  reports `legacy_revision_inference`, and selects r05-r05 as the sole active
+  leaf. r05-r01 through r05-r04 are immutable informational history, not
+  repair or integration work.
+
+  Integration consumption derives only from declared bundle identities:
+  `approved_bundles[].bundle_id` in an Integration manifest and `bundle_id` in
+  an Integration record with integrated status. Parse eligible records by
+  content, not a filename prefix. Do not regex-harvest an `APPROVED-` substring
+  from arbitrary strings, including component paths. Thus INT-20260922-002
+  consumes only APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05;
+  its shared r05-r01 edges component does not consume r05-r01.
+
+  This Decision replaces DEC-2026-0094 step 2 as the controlling Builder
+  authorization for the same Stats queue-scanner work. DEC-2026-0094 and all
+  published Stats workflow artifacts remain immutable; no reissue, repair,
+  re-integration, canonical mutation, schema change, or contract amendment is
+  authorized.
+rationale:
+  - >-
+    The Approved-bundle schema requires `approves.review_id`; filename guesses
+    can select a Review that the manifest never named and let unrelated
+    publication change a byte-identical bundle's queue state.
+  - >-
+    WORK_QUEUES requires only an active leaf to create work and already defines
+    rNN inference for legacy artifacts lacking complete revision metadata.
+  - >-
+    An integration records its consumed bundle explicitly. Component paths and
+    record filenames are not provenance fields and cannot safely establish
+    consumption.
+evidence:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-22T19.45.16.421Z.yaml, checksum: sha256:513ac0facd5dc9e0ca58a255648d6ad3eff24aa627f41a6caea5bdf56698d2b9, role: complete_escalation}
+  - {path: schemas/common/approved-bundle.schema.json, checksum: sha256:aadf53d64f98bad0db556fb189be3aa9ae1f15d6967a6e7ef264b1a1271c4455, role: authoritative_approved_review_contract}
+  - {path: contracts/WORK_QUEUES.md, checksum: sha256:9b3bdf7008913cbb310cf15e9637e077d683718aa9b91cfcb25d50b6e52184c2, role: active_leaf_and_legacy_queue_contract}
+  - {path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05.yaml, checksum: sha256:0a5e98aabb691ccc9975350c0a9296fc09182d4592a91b8859d1ff50eb1e28a7, role: integrated_active_stats_leaf}
+  - {path: rulesets/shadowdark/manifests/INT-20260922-002.json, checksum: sha256:e844ecd72e43812d940b010fbab2b820764b4f09b971f0af9d9cbfae41f442e3, role: exact_consuming_integration_manifest}
+  - {path: books/shadowdark/sd/artifacts/integrated/INT-20260922-002-APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05.json, checksum: sha256:fe3e3b984454e92b117af83d1acaedf6813b22dfb2ada03868d621c8969890a2, role: exact_consuming_integration_record}
+migration_required: false
+migration_scope: >-
+  No graph, registry, source, packet, GUR, GUP, Review, Approved manifest,
+  rejection, Integration manifest, Integration record, or canonical row is
+  changed. Queue output is derived state only.
+constitution_version_impact: None. Queue derivation changes no ontology or constitution text.
+affected_contracts: []
+affected_registries: []
+implementation_bounds:
+  - >-
+    Builder changes only tooling/common/scan_agent_queues.py and
+    tooling/common/tests/test_scan_agent_queues.py.
+  - >-
+    Read `approves.review_id` and validate its optional declared checksum;
+    retain filename linkage only for manifestless legacy bundles. Do not add a
+    second authoring convention or treat compatibility fields as authoritative.
+  - >-
+    Resolve manifested Approved leaves from explicit lineage and the existing
+    bounded legacy rNN rule before all downstream queue effects.
+  - >-
+    Derive integrated IDs from declared `bundle_id` fields in parsed Integration
+    manifests and integrated records. Do not infer from arbitrary strings,
+    component names, modification time, or an `APPROVED-` filename prefix.
+  - >-
+    Do not touch Stats, canonical, schemas, contracts, compiler, reviewer,
+    integrator, Herdr, or basicdnd/rc files.
+acceptance_tests:
+  - >-
+    `contracts/WORK_QUEUES.md` Version 1.32 or later retains Core Rules 3, 4,
+    and 6 plus Legacy Queue Derivation clauses 1 through 3. The scanner honors
+    those anchors for manifested Approved bundles.
+  - >-
+    A manifest declaring only `approves.review_id` resolves that exact Review;
+    a conflicting filename stem, top-level field, or provenance field cannot
+    select another Review. A declared review checksum mismatch is diagnostic
+    and yields no ready downstream work. Manifestless legacy bundles retain
+    their reported filename fallback.
+  - >-
+    The five Stats manifests resolve to exactly one active leaf, r05-r05. The
+    explicit r05-r03 through r05-r05 links and legacy rNN placement of r05-r01
+    and r05-r02 yield `legacy_revision_inference`; r05-r01 through r05-r04 are
+    informational and create no Integrator or Reviewer work.
+  - >-
+    INT-20260922-002 consumes only r05-r05 whether read from its Integration
+    manifest or INT-prefixed integration record. Its r05-r01 component path
+    does not mark r05-r01 integrated. No Stats lineage member is a ready
+    Integrator item.
+  - >-
+    A valid exact active Integration Rejection yields one Reviewer remediation
+    item; a successor Review that pins that exact rejection consumes it. The
+    r05-r04 rejection and its recorded r05-r03 Review successor are
+    informational history. Missing, stale, mismatched, wrong-ruleset, or
+    ambiguous rejection evidence suppresses nothing.
+  - >-
+    Focused queue-scanner regressions and the complete common and Builder test
+    suites pass. The Decision Implementation Report records exact commands and
+    outcomes; Reviewer independently reproduces the relevant tests.
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.32'
+        substantive_anchors:
+          - Only the active leaf revision of an artifact can create work.
+          - A revision is a leaf when no later artifact of the same kind names its ID in `supersedes`.
+          - Superseded, consumed, reviewed, integrated, failed, and blocked artifacts are not ready work for the ordinary downstream role.
+          - When `supersedes` is absent, infer the latest `rNN` only within one artifact kind and packet.
+          - Never infer order from creation or modification time.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Builder implements the bounded scanner correction and reports the exact
+    tests. Reviewer independently validates that report. No Stats workflow
+    artifact repair is permitted or needed.
+  blocking_ids: []
+sequence:
+  - step: 1
+    owner: architect
+    action: Publish this Decision and relocate the resolved escalation to decided history.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement the bounded queue-scanner correction and focused regressions;
+      publish IMP-DEC-2026-0095-r01 without changing Stats artifacts.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently validate the implementation report and publish its Decision
+      Implementation Review. Return only implementation defects to Builder.
+post_implementation_requirements:
+  - >-
+    The Stats r05-r05 integration stays terminal. r05-r01 through r05-r04 and
+    INT-20260922-001 remain immutable history only.
+  - >-
+    Future Approved bundles continue through normal schema, active-leaf,
+    Review, rejection, and Integration lifecycle checks.
+exact_diff:
+  rulesets/shadowdark/escalations/pending/ESC-2026-09-22T19.45.16.421Z.yaml: Relocate the resolved immutable escalation to decided history.
+  rulesets/shadowdark/escalations/decided/ESC-2026-09-22T19.45.16.421Z.yaml: Preserve the resolved immutable escalation under decided history.
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0095.yaml: Publish the authoritative queue-derivation ruling.
+  tooling/common/scan_agent_queues.py: Use declared Review, active-manifest lineage, and declared Integration bundle IDs.
+  tooling/common/tests/test_scan_agent_queues.py: Cover bounded Review, lineage, Integration, and rejection derivation.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-22T19.45.16.421Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decided/ESC-2026-09-22T19.45.16.421Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0095.yaml, owner: architect, sequence_step: 1}
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 2}
+follow_up_owners:
+  builder:
+    - Implement DEC-2026-0095 only; DEC-2026-0094 step 2 is replaced.
+  reviewer:
+    - Independently review IMP-DEC-2026-0095-r01 after Builder publication.

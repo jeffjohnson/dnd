@@ -1,6 +1,6 @@
 # Role Context Loading
 
-**Version 1.0.**
+**Version 1.3.**
 
 This contract limits repeated role-context loading without weakening the
 repository as the source of authority. It distinguishes stable governance
@@ -43,6 +43,25 @@ authority to edit data. A receipt contains only cache format version, repository
 root, role, scope, manifest and schema checksums, and the exact resolved
 path/checksum set.
 
+## Five-Role Operation
+
+DEC-2026-0082 retires Dispatcher and cancels DEC-2026-0081's activation step.
+There is no manual Dispatcher startup and no authorized Dispatcher work.
+The live manifest deliberately selects the existing supported five-role
+schema language `1.0`; this is not a rollback of published Decisions or an
+in-place receipt upgrade. Schema language `1.1` may remain readable as historical
+compatibility, but it cannot reactivate the retired role. Receipt format stays 1.
+
+All five roles inherit `contracts/HERDR_HANDOFFS.md` through common_patterns.
+They retain ruleset/book-scoped receipts and bounded current task inputs.
+Herdr names and panes identify notification targets, not cached actor context.
+Notifications may arrive while other roles work; each receiver independently
+checks its queue and current inputs before acting. Never borrow another role's
+receipt or invent source/scope IDs for a reload. An instruction-only notification
+reads the named changed instructions and common handoff contract; it does not
+authorize a corpus scan, graph task, or scope claim.
+Before the next actual task, perform the ordinary scoped verifier startup.
+
 ## Session Boundary
 
 A cache hit is permitted only for the same persistent actor session identified by
@@ -73,6 +92,8 @@ particular:
   evidence, and named governed records.
 - Integrator reads the Approved bundle, Review, current canonical and registry
   state, authority Decisions, and transaction inputs.
+- Every role reads the exact incoming herdr assignment and live routing evidence
+  under `contracts/HERDR_HANDOFFS.md`; message text never replaces source evidence.
 
 No role may recursively enumerate a book, an artifact store, the full graph, or
 the whole codebase merely to establish context. The queue scanner, manifest, or
@@ -87,6 +108,15 @@ The role may continue only after reading the emitted stable set and recording a
 new receipt.
 
 ## Version History
+
+- **1.3 - 2026-09-22:** DEC-2026-0089 made Herdr notifications best effort and
+  permitted concurrent independent role work without changing receipt scope.
+
+- **1.2 - 2026-09-19:** Retired Dispatcher under DEC-2026-0082 without activating
+  DEC-2026-0081; restored the supported five-role manifest and direct handoffs.
+
+- **1.1 - 2026-09-07:** Defined bounded Dispatcher startup before verifier
+  support, without borrowing receipts or changing existing-role startup.
 
 - **1.0 - 2026-08-17:** Introduced checksum-verified, same-session role context
   receipts and bounded always-read task inputs.

@@ -1,0 +1,306 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0080-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: basicdnd
+constitution_version: '1.0'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: >-
+    DEC-2026-0080 step 2 is complete. Compiler admission is validated against the
+    registered ruleset rather than a literal adnd1e, the vocabulary a compile runs
+    under is read from that ruleset's own governance, and class-bearing page
+    markers are resolved from the Pandoc AST on headings and fenced Divs with the
+    raw-text scan that produced the false positive removed. The full Builder suite
+    passes at 763 tests, up from 726. No canonical or registry byte was written.
+    Two changes fall outside a literal reading of the Decision's exact diff and
+    are named in scope_note for independent review.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0080
+  path: rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+  checksum: sha256:b4eb6d27766119ccceefee17a651e8923b813dbe2b8366232d74d3919f3d7108
+implementation_files:
+- path: tooling/builder/src/adnd1e_builder/compiler.py
+  checksum: sha256:b99e7bb15a065c225bb21c84e65a4a677b61eb880d8b6289d219b2776947f8bf
+- path: tooling/builder/src/adnd1e_builder/vocab.py
+  checksum: sha256:4280cb5b88fe1e324b56d9b9b1253631bc516b7286552bbebc5206426d1c0263
+- path: tooling/builder/src/adnd1e_builder/pagemarkers.py
+  checksum: sha256:763ddee072230b4d2e5c6daf54d33bc582985ed671c89380bf5a3424dc53fba8
+- path: tooling/builder/src/adnd1e_builder/cli.py
+  checksum: sha256:2eb73f7b637964d5907a1767ac6e0456395abb88c9de2e067e45b7436f0194b9
+- path: tooling/builder/tests/test_compiler.py
+  checksum: sha256:20b1491d37fbc2cbd114bdc5eb5f3c918d88270618a0717231b4dc4c2e1080f3
+- path: tooling/builder/tests/test_pagemarkers.py
+  checksum: sha256:f15618644cddc58142e2c83d54b262d8c3791dedc1cd5d2fa062c87ab38b495b
+- path: rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+  checksum: sha256:b4eb6d27766119ccceefee17a651e8923b813dbe2b8366232d74d3919f3d7108
+- path: contracts/SOURCE_MARKDOWN.md
+  checksum: sha256:f9455e37cd36c8c0cc08c43edfd6f32ce794e687afb65a18aa6236a638610eab
+validation_report: build/reports/IMP-DEC-2026-0080-r01.validation.json
+validation_report_checksum: sha256:54daec9845f44735b55d70febb04d21eeaf90ab0d5c65d42c94665733805e4a1
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: >-
+    Architect step-1 deliverable, verified rather than produced by this report.
+    `python tooling/common/role_context.py verify --root . --role <role>
+    --ruleset basicdnd --book rc --session-id imp-0080-check` exits 0 for
+    architect, analyst and builder. Each run prints `reload_required:
+    role=<role> scope=basicdnd/rc session=imp-0080-check` followed by the 43
+    stable authority files for that role, which is the verifier resolving the
+    basicdnd/rc scope; `reload_required` is its ordinary state for a session id
+    with no receipt yet, not a scope failure, and an unregistered ruleset would
+    not reach that output at all. books/basicdnd/rc/book.yaml declares
+    `ruleset_id: basicdnd`, `book_id: rc` and `default_source_id:
+    rc-steward-intake`, which is the corrected manifest the Decision's
+    affected_artifacts records as malformed before step 1.
+- acceptance_test_index: 2
+  result: passed
+  evidence: >-
+    Architect step-1 deliverable, verified rather than produced by this report,
+    and load-bearing for the Builder change because the compiler now reads these
+    tables instead of a transcription. rulesets/basicdnd/governance/constitution.md
+    declares `**Version 1.0.**`, carries its own `| Prefix | Kind | Example |`
+    table (26 prefixes) and `| Type | Meaning | Direction |` table (13 types),
+    and section 3.1 states that `class_dwarf`, `class_elf` and `class_halfling`
+    are Basic D&D character-class identities, not `race_` identities, with the
+    `race_` prefix reserved until a source establishes a race axis. It declares
+    no inherited input: the preamble states no AD&D 1e registry, canonical row,
+    node identity or artifact lineage is inherited by reference; section 3.2
+    states "Do not search AD&D 1e canonical data as an identity authority"; and
+    section 15 states the ruleset "begins with an empty node registry, no
+    canonical baseline". These readings are asserted mechanically, not by eye:
+    RulesetVocabularyCase.test_basicdnd_vocabulary_comes_from_its_own_governance
+    reads the two tables out of that file and
+    test_the_two_rulesets_share_no_citation_code asserts the adnd1e and basicdnd
+    book sets do not intersect. Those unit tests ran in the focused command
+    below: Ran 233 tests in 45.880s OK.
+- acceptance_test_index: 3
+  result: passed
+  evidence: >-
+    DEC-2026-0080 declares acceptance_test_semantics kind
+    versioned_contract_content for this index, so the structured block below is
+    the record of what was read and the anchors are the Decision's own, not this
+    report's choice. contracts/SOURCE_MARKDOWN.md is at version 1.5 and all four
+    declared anchors are present in its text: frontmatter is "informational
+    steward intake metadata only" and "parsers must not report it as
+    unattributed leading content"; "`packet.yaml` remains the authoritative
+    claimed-packet record. If frontmatter conflicts with that manifest, use the
+    manifest"; "The initial closed vocabulary contains only
+    `.full-page-artwork`"; and "A bare paragraph such as `{#p23
+    .full-page-artwork}` is invalid ... Parsers and linters must inspect the
+    Pandoc AST for a heading or Div attribute; raw-text matching must not reject
+    a valid attributed marker as malformed." The contract's own parser
+    acceptance list is extended to items 7 and 8, which are the two behaviours
+    proved under index 4. Amending the contract is the Architect's step 1; this
+    report records the version and checksum it compiled against.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0080
+      path: rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+      checksum: sha256:b4eb6d27766119ccceefee17a651e8923b813dbe2b8366232d74d3919f3d7108
+      authorized_acceptance_test_index: 3
+    authorized_acceptance_test_index: 3
+    contracts:
+    - path: contracts/SOURCE_MARKDOWN.md
+      checksum: sha256:f9455e37cd36c8c0cc08c43edfd6f32ce794e687afb65a18aa6236a638610eab
+      observed_version: '1.5'
+      minimum_version: '1.5'
+      anchors_present:
+      - Pandoc YAML frontmatter is informational steward intake metadata only.
+      - packet.yaml governs identity and page metadata when frontmatter conflicts.
+      - full-page-artwork is the only initial page class.
+      - class-bearing page markers require a heading or fenced Div attribute block.
+- acceptance_test_index: 4
+  result: passed
+  evidence: >-
+    Four separate proofs, all in the focused command below (Ran 233 tests in
+    45.880s OK), which contains every test named here.
+
+    Registered admission. RegisteredRulesetCase builds a Compiler from the
+    basicdnd vocabulary, the empty basicdnd registry and an empty canonical
+    store, and compiles a synthetic basicdnd / rc GUR:
+    test_a_basicdnd_gur_is_admitted_by_its_registered_configuration asserts no
+    ruleset finding, no constitution mismatch and no error at all;
+    test_its_row_is_pending_because_the_registry_is_empty asserts the row
+    travels as a pending addition with both endpoints proposed, which is what an
+    empty registry must produce rather than a refusal; and
+    test_the_gup_is_stamped_with_the_basicdnd_constitution asserts the emitted
+    envelope carries 1.0 and basicdnd.
+
+    Unknown-ruleset rejection, in two forms the change deliberately separates.
+    test_an_unregistered_ruleset_is_rejected (RegisteredRulesetCase) asserts
+    `gur_unknown_ruleset` for a name no ruleset.yaml claims, and that the
+    detail names what is registered; TestEnvelope.test_an_unregistered_ruleset_is_rejected
+    asserts the same for the pre-existing `adnd2e` fixture and that it blocks the
+    patch; RulesetVocabularyCase.test_loading_an_unregistered_ruleset_raises
+    asserts RulesetVocabulary.load raises UnknownRuleset; and
+    UnknownRulesetCliCase.test_an_unregistered_ruleset_fails_before_anything_is_read
+    asserts `main(["compile", ..., "--ruleset", "notaruleset"])` returns 2 with
+    "not a registered ruleset" on stderr, before the suite runs or a GUR is
+    opened. test_a_registered_ruleset_this_run_did_not_load_is_rejected asserts
+    the other refusal: an adnd1e GUR handed to a basicdnd compiler gets
+    `gur_wrong_ruleset` and a detail naming `--ruleset adnd1e`.
+
+    Frontmatter is not unattributed content. TestStewardFrontmatter asserts a
+    file opening with a Pandoc YAML block has empty unattributed_text and no
+    warnings; that its values are carried as informational metadata; that
+    declaring `pages: 6-12` attributes no prose; that real leading content is
+    still reported alongside frontmatter, so admitting the block did not
+    suppress the check it sits in front of; and, against the two live
+    Rules Cyclopedia incoming files, that each carries frontmatter none of which
+    is read as prose.
+
+    Marker forms. TestPageClasses asserts a fenced Div resolves page 23 and
+    class full-page-artwork, that the artwork page counts as a marked page so a
+    classified page is not a gap, that a heading form resolves the same,
+    that neither admitted form is reported malformed -- the regression the
+    contract names by hand -- and that the bare paragraph form resolves no page,
+    carries no class, is recorded malformed with a reason naming the heading and
+    fenced-Div fix, and is not carried into prose. An unknown class is recorded
+    as unknown rather than admitted, a class with no `pN` identifier resolves to
+    no page, and an ordinary Div still passes its content through.
+    TestPageClassLint asserts the same distinction through `lint-source`: the Div
+    form exits 0 with no PROBLEM and a note naming the page for packet.yaml
+    composition metadata, the bare form exits 1 naming the fenced-Div
+    correction, an unknown class exits 1, frontmatter is reported as
+    informational only, and a plain-marker packet produces the pre-1.5 output
+    unchanged.
+
+    Against the real inputs rather than fixtures: `lint-source
+    books/basicdnd/rc/packets/incoming/RC_pages_6-12.md` exits 0, resolving
+    pages 6-12 with a frontmatter note and no problem, and RC_pages_1-5.md exits
+    1 with exactly one problem naming the bare `{#p1 .full-page-artwork}`
+    paragraph and the fenced-Div correction. Before this change the same file
+    produced three problems, two of which were consequences of the first. The
+    reissue that clears it is the source steward's, under the Decision's
+    post-implementation requirements; no pipeline role authors that text and
+    this report did not.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0080
+      path: rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+      checksum: sha256:b4eb6d27766119ccceefee17a651e8923b813dbe2b8366232d74d3919f3d7108
+      authorized_acceptance_test_index: 4
+    authorized_acceptance_test_index: 4
+    contracts:
+    - path: contracts/SOURCE_MARKDOWN.md
+      checksum: sha256:f9455e37cd36c8c0cc08c43edfd6f32ce794e687afb65a18aa6236a638610eab
+      observed_version: '1.5'
+      minimum_version: '1.5'
+      anchors_present:
+      - Pandoc YAML frontmatter is informational steward intake metadata only.
+      - full-page-artwork is the only initial page class.
+      - class-bearing page markers require a heading or fenced Div attribute block.
+- acceptance_test_index: 5
+  result: passed
+  evidence: >-
+    Both commands are recorded below with a working directory, exit code, result
+    and unittest verdict: the focused run over the two changed test modules (Ran
+    233 tests in 45.880s OK) and the complete Builder suite (Ran 763 tests in
+    185.074s OK (skipped=38)). The suite was 726 tests before this work and
+    passes at 763, so the 37 new tests are additions and no existing test was
+    removed to make room. This report pins DEC-2026-0080 at its current checksum
+    sha256:b4eb6d27766119ccceefee17a651e8923b813dbe2b8366232d74d3919f3d7108,
+    records versioned_contract_content evidence for contracts/SOURCE_MARKDOWN.md
+    at version 1.5 under both indexes the Decision declares semantics for, pins
+    every implementation file by checksum, and publishes its companion
+    validation report at build/reports/IMP-DEC-2026-0080-r01.validation.json.
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/builder/tests] python -m unittest test_pagemarkers test_compiler'
+    exit_code: 0
+    result: passed
+    summary: Ran 233 tests in 45.880s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 763 tests in 185.074s OK (skipped=38)
+adnd1e_regression_note:
+  why: >-
+    Generalizing a compiler that already compiles a live ruleset can change what
+    that ruleset accepts without anyone noticing. The module constants in
+    vocab.py stay the AD&D 1e transcription and keep their Decision history; the
+    new RulesetVocabulary reads a ruleset's governing tables instead. If the two
+    ever disagreed, adnd1e would silently start accepting or refusing different
+    rows.
+  guard: >-
+    RulesetVocabularyCase.test_the_loaded_adnd1e_vocabulary_matches_the_transcription
+    asserts field-by-field that RulesetVocabulary.load(REPO_ROOT, "adnd1e")
+    equals RulesetVocabulary.for_adnd1e() on constitution_version, accepted GUR
+    versions, books, node prefixes and edge types. It passes, so reading
+    governance reproduces the transcription exactly.
+    test_a_compiler_given_no_vocabulary_is_still_adnd1e asserts a Compiler built
+    without a vocabulary is the AD&D 1e one, which is why every pre-existing
+    caller and fixture is unaffected.
+  observed: >-
+    The whole Builder suite passes with one changed assertion, described in
+    scope_note. Every other adnd1e test passes unmodified.
+scope_note: >-
+  Two changes fall outside a literal reading of DEC-2026-0080's exact_diff and
+  are named here rather than left for a Reviewer to find.
+
+  First, cli.py treats an absent canonical file as an empty baseline instead of
+  raising FileNotFoundError. The Decision's exact_diff line for cli.py is about
+  marker validation, so this is outside it. It is here because the Decision
+  gives the first Basic D&D canonical state to the Integrator after the first
+  approved bundle, and then has the Analyst publish GURs and the Builder compile
+  them before that exists -- so without it the Decision's own step 4 could not
+  run, and the failure would read as a broken repository rather than as a
+  ruleset with no baseline yet. BasicdndCliCompileCase compiles a basicdnd
+  packet end to end against a temporary copy and asserts no canonical file is
+  created. The alternative fix would have been in duplicates.py, which the
+  Decision assigns to nobody; this stays inside a Builder file.
+
+  Second, TestEnvelope.test_wrong_ruleset_is_rejected is renamed to
+  test_an_unregistered_ruleset_is_rejected and now asserts
+  `gur_unknown_ruleset`. Its fixture ruleset `adnd2e` was always unregistered,
+  so the refusal is unchanged; only the rule name is more specific now that
+  "wrong ruleset" and "no such ruleset" are distinguishable. The test also gains
+  an assertion that the finding blocks the patch, which the original did not
+  check. This is inside test_compiler.py's exact_diff line but changes an
+  existing test, so it is called out.
+
+  Two message texts changed as a consequence of the vocabulary being supplied
+  rather than imported. `book_illegal` no longer names PHB, DMG, UA, MM
+  literally; it names the offending ruleset's own registered citation codes.
+  And the revalidation warning for an older GUR constitution now states the
+  general claim for any ruleset, appending the DEC-2026-0008 and DEC-2026-0011
+  specifics only when the ruleset is adnd1e -- those are AD&D 1e Decisions and
+  would have been a false statement about any other ruleset's version history.
+  No finding changed severity and no rule name changed except the one above.
+defects_for_the_architect:
+  - id: impl-evidence-guard-is-adnd1e-only
+    detail: >-
+      tooling/common/tests/test_implementation_evidence.py resolves its store as
+      REPO_ROOT / "rulesets" / "adnd1e" / "decision-implementations". This report
+      is published under rulesets/basicdnd/decision-implementations/, which the
+      queue scanner reads correctly (it derives the path per ruleset), so the
+      report is routed -- but the guard that checks a report's evidence is
+      self-consistent does not see it. This report complies with every rule that
+      guard enforces regardless. Widening it is common tooling and outside this
+      Decision's exact_diff, so it is reported rather than done.
+  - id: basicdnd-has-no-artifact-schemas-for-reports
+    detail: >-
+      schemas/basicdnd/ carries graph and registry schemas but no implementation
+      report schema; this artifact validates against
+      schemas/common/decision-implementation.schema.json, which is the shared
+      envelope every ruleset's reports use. Recorded only so the Reviewer knows
+      the choice was deliberate and not a fallback after a missing file.
+canonical_state: >-
+  No canonical or registry file was written by this work. basicdnd has no
+  canonical directory at all and this work created none: BasicdndCliCompileCase
+  compiles against a temporary copy and asserts the absence afterwards. The
+  adnd1e canonical files carry uncommitted working-tree changes from earlier
+  integration work that predate this task and are untouched by it;
+  rulesets/adnd1e/canonical/edges_master.csv is at
+  sha256:e321666ea303ab65c1303bb1c120ccc8fb80a176c6dc2f45147532495dce549b. The
+  only files this work changed are the six Builder files pinned above, plus this
+  report and its validation artifact.

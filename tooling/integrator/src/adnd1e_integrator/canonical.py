@@ -171,6 +171,19 @@ class CanonicalPaths:
         return self.root / "rulesets" / self.ruleset_id / "registries" / "nodes.csv"
 
     @property
+    def is_genesis(self) -> bool:
+        """True when this ruleset has no canonical state yet.
+
+        DEC-2026-0092. Measured from the files themselves rather than from a
+        flag a caller passes, so nothing can declare a populated ruleset to be a
+        genesis and overwrite it. A ruleset is a genesis only while all three
+        canonical files are absent; a partially present set is not a genesis and
+        is left to fail the ordinary readers, because that state means something
+        else went wrong.
+        """
+        return not any(p.exists() for p in (self.edges, self.nodes, self.graph_json))
+
+    @property
     def manifests_dir(self) -> Path:
         return self.root / "rulesets" / self.ruleset_id / "manifests"
 
@@ -196,7 +209,17 @@ class CanonicalGraph:
         self.nodes = nodes
 
     @classmethod
-    def load(cls, paths: CanonicalPaths) -> "CanonicalGraph":
+    def load(cls, paths: CanonicalPaths, allow_genesis: bool = False) -> "CanonicalGraph":
+        """Read canonical state, or start an empty one for a genesis ruleset.
+
+        DEC-2026-0092: `allow_genesis` produces an empty **in-memory** graph and
+        writes nothing. It is the caller's job to keep creation inside an
+        authorized transaction; this method cannot create a file even when asked
+        to. A caller that omits the flag still gets the original
+        `FileNotFoundError`, so no existing path silently starts from empty.
+        """
+        if allow_genesis and paths.is_genesis:
+            return cls([], [])
         return cls(read_csv_rows(paths.edges), read_csv_rows(paths.nodes))
 
     @property
@@ -207,6 +230,11 @@ class CanonicalGraph:
         return {n["id"]: n["label"] for n in self.nodes}
 
     def save(self, paths: CanonicalPaths) -> None:
+        # A genesis ruleset has no canonical directory. Creating it here, at the
+        # only point where canonical bytes are actually written, is what keeps
+        # DEC-2026-0092's rule that the directory appears as a consequence of an
+        # applied bundle and never as a prepared baseline.
+        paths.canonical_dir.mkdir(parents=True, exist_ok=True)
         write_csv_rows(paths.edges, EDGE_COLUMNS, self.edges)
         write_csv_rows(paths.nodes, NODE_COLUMNS, self.nodes)
         write_graph_json(paths.graph_json, self.to_graph_json())

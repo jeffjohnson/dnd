@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import hashlib
 import io
 import json
 import shutil
@@ -361,6 +362,203 @@ class TestTheHistoricalBundleIsWithheld(unittest.TestCase):
         superseded = {b.bundle_id for b in queue["superseded"]}
         self.assertNotIn(self.SUCCESSOR, ready)
         self.assertIn(self.SUCCESSOR, superseded)
+
+
+class TestBoundedLegacyApprovedLeafInference(unittest.TestCase):
+    """DEC-2026-0096: place a manifested lineage that declares incomplete links.
+
+    Integrator discovery honoured explicit `supersedes` and had no fallback, so a
+    forked lineage left an un-named predecessor permanently ready. The Stats
+    lineage is that shape: nothing ever named r05-r01, because r05-r02 declared
+    no `supersedes` and began the chain that reached r05-r05.
+
+    These fixtures are synthetic so the evidence keeps its meaning when the live
+    corpus moves -- the failure mode DEC-2026-0075 named, and one I reintroduced
+    once already in `test_genesis.py` by copying a live registry.
+    """
+
+    BASE = "APPROVED-GUP-PKT-SD-900-901-fixture-r05"
+    PACKET = "PKT-SD-900-901-fixture"
+
+    def _root(self, manifests: dict[str, dict | None]) -> Path:
+        """A book of Approved manifests. `None` means a manifestless legacy stem."""
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        approved = root / "books" / "shadowdark" / "sd" / "artifacts" / "approved"
+        reviews = root / "books" / "shadowdark" / "sd" / "artifacts" / "reviews"
+        approved.mkdir(parents=True)
+        reviews.mkdir(parents=True)
+        for bundle_id, declared in manifests.items():
+            review_id = f"REV-{bundle_id}"
+            (reviews / f"{review_id}.yaml").write_text(yaml.safe_dump({
+                "schema_version": "1.0", "id": review_id, "status": "approved",
+                "ruleset_id": "shadowdark", "constitution_version": "1.3",
+                "overall_disposition": "approved", "approval_ready": True,
+                "handoff": {"next_role": "integrator", "readiness": "ready",
+                            "reason": "approved", "blocking_ids": []},
+            }, sort_keys=False), encoding="utf-8")
+            edges = approved / f"{bundle_id}.edges.csv"
+            edges.write_bytes(b"source_id\r\n")
+            if declared is None:
+                continue
+            # Discovery validates the declared component checksum, so the fixture
+            # has to declare the real one rather than a placeholder.
+            digest = "sha256:" + hashlib.sha256(edges.read_bytes()).hexdigest()
+            manifest = {
+                "schema_version": "1.0", "id": bundle_id, "status": "approved",
+                "artifact_kind": "packet_update", "ruleset_id": "shadowdark",
+                "book_id": "sd", "constitution_version": "1.3",
+                "packet_id": declared.get("packet_id", self.PACKET),
+                "approves": {"review_id": review_id,
+                             "gup_id": declared.get("gup_id", "GUP-PKT-SD-900-901-fixture-r05")},
+                "components": [{"kind": "edges", "checksum": digest,
+                                "path": (f"books/shadowdark/sd/artifacts/approved/"
+                                         f"{bundle_id}.edges.csv")}],
+            }
+            if declared.get("supersedes"):
+                manifest["supersedes"] = declared["supersedes"]
+            (approved / f"{bundle_id}.yaml").write_text(
+                yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+        return root
+
+    def _queue(self, manifests):
+        return ready_queue(self._root(manifests), "shadowdark", ["sd"])
+
+    def _forked(self):
+        """The Stats shape: r01 un-named, r02 starts a chain that reaches r04."""
+        return {
+            f"{self.BASE}-r01": {},
+            f"{self.BASE}-r02": {},
+            f"{self.BASE}-r03": {"supersedes": f"{self.BASE}-r02"},
+            f"{self.BASE}-r04": {"supersedes": f"{self.BASE}-r03"},
+        }
+
+    def test_a_forked_lineage_resolves_to_exactly_one_leaf(self):
+        queue = self._queue(self._forked())
+        self.assertEqual([b.bundle_id for b in queue["ready"]], [f"{self.BASE}-r04"])
+        self.assertEqual({b.bundle_id for b in queue["superseded"]},
+                         {f"{self.BASE}-r0{n}" for n in (1, 2, 3)})
+
+    def test_the_un_named_predecessor_is_placed_by_a_reported_inference(self):
+        """It must never be silently converted into, or out of, ready work."""
+        queue = self._queue(self._forked())
+        reports = queue["legacy_leaf_inferences"]
+        self.assertEqual(len(reports), 1, reports)
+        self.assertIn(f"{self.BASE}-r01", reports[0])
+        self.assertIn(f"{self.BASE}-r04", reports[0], "the selected leaf must be named")
+        placed = {b.bundle_id: b for b in queue["superseded"]}
+        self.assertTrue(placed[f"{self.BASE}-r01"].legacy_inferences)
+        self.assertFalse(placed[f"{self.BASE}-r03"].legacy_inferences,
+                         "an explicitly superseded bundle needs no inference")
+
+    def test_a_completely_declared_lineage_infers_nothing(self):
+        queue = self._queue({
+            f"{self.BASE}-r01": {},
+            f"{self.BASE}-r02": {"supersedes": f"{self.BASE}-r01"},
+        })
+        self.assertEqual(queue["legacy_leaf_inferences"], [])
+        self.assertEqual([b.bundle_id for b in queue["ready"]], [f"{self.BASE}-r02"])
+
+    def test_a_lone_manifest_is_not_a_lineage(self):
+        queue = self._queue({f"{self.BASE}-r01": {}})
+        self.assertEqual(queue["legacy_leaf_inferences"], [])
+        self.assertEqual([b.bundle_id for b in queue["ready"]], [f"{self.BASE}-r01"])
+
+    def test_a_different_packet_makes_the_group_ambiguous(self):
+        queue = self._queue({
+            f"{self.BASE}-r01": {"packet_id": "PKT-SD-900-901-fixture"},
+            f"{self.BASE}-r02": {"packet_id": "PKT-SD-902-903-other"},
+        })
+        self.assertTrue(any("ambiguous" in r for r in queue["legacy_leaf_inferences"]))
+        self.assertEqual({b.bundle_id for b in queue["ready"]},
+                         {f"{self.BASE}-r01", f"{self.BASE}-r02"},
+                         "an ambiguous group must not be placed by guesswork")
+
+    def test_a_different_gup_revision_is_never_ranked_against_this_one(self):
+        """`-r04-r02` must not outrank `-r05-r01`; they are different lineages."""
+        other = "APPROVED-GUP-PKT-SD-900-901-fixture-r04"
+        queue = self._queue({
+            f"{other}-r01": {"gup_id": "GUP-PKT-SD-900-901-fixture-r04"},
+            f"{other}-r02": {"gup_id": "GUP-PKT-SD-900-901-fixture-r04",
+                             "supersedes": f"{other}-r01"},
+            f"{self.BASE}-r01": {},
+        })
+        ready = {b.bundle_id for b in queue["ready"]}
+        self.assertIn(f"{self.BASE}-r01", ready)
+        self.assertIn(f"{other}-r02", ready)
+        self.assertEqual(queue["legacy_leaf_inferences"], [])
+
+    def test_a_malformed_revision_suffix_infers_nothing(self):
+        queue = self._queue({
+            "APPROVED-GUP-PKT-SD-900-901-fixture-r05-rXX": {},
+            f"{self.BASE}-r02": {},
+        })
+        self.assertEqual(queue["legacy_leaf_inferences"], [])
+
+    def test_a_manifestless_legacy_bundle_is_left_to_its_own_rule(self):
+        """WORK_QUEUES 1.25 keeps stem inference for those alone."""
+        queue = self._queue({f"{self.BASE}-r01": None, f"{self.BASE}-r02": None})
+        self.assertEqual(queue["legacy_leaf_inferences"], [])
+
+
+class TestTheStatsLineageIsSettledHistory(unittest.TestCase):
+    """DEC-2026-0095 and DEC-2026-0096 against the real artifacts.
+
+    Asserted as an invariant that survives integration rather than as a count:
+    r05-r05 is consumed and stays consumed, and no earlier member may ever be
+    offered again.
+    """
+
+    BASE = "APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.queue = ready_queue(REPO_ROOT, "shadowdark", ["sd"])
+
+    def test_only_the_fifth_manifest_is_the_active_leaf(self):
+        consumed = {b.bundle_id for b, _ in self.queue["integrated"]}
+        self.assertIn(f"{self.BASE}-r05", consumed)
+
+    def test_no_historical_member_reaches_the_ready_queue(self):
+        ready = {b.bundle_id for b in self.queue["ready"]}
+        for n in ("r01", "r02", "r03", "r04", "r05"):
+            self.assertNotIn(f"{self.BASE}-{n}", ready, n)
+
+    def test_the_first_manifest_is_placed_by_a_reported_inference(self):
+        self.assertTrue(any(f"{self.BASE}-r01" in r and f"{self.BASE}-r05" in r
+                            for r in self.queue["legacy_leaf_inferences"]),
+                        self.queue["legacy_leaf_inferences"])
+
+    def test_a_shared_component_path_does_not_consume_its_namesake(self):
+        """INT-20260922-002 declares r05-r05 and reuses the r05-r01 edge CSV."""
+        consumed = integrated_bundle_ids(REPO_ROOT, "shadowdark")
+        self.assertEqual(consumed.get(f"{self.BASE}-r05"), "INT-20260922-002")
+        self.assertNotIn(f"{self.BASE}-r01", consumed)
+
+
+class TestExistingClassificationsAreUnchanged(unittest.TestCase):
+    """The AD&D corpus declares its lineages completely, so nothing is inferred."""
+
+    def test_no_adnd_bundle_is_placed_by_the_legacy_fallback(self):
+        queue = ready_queue(REPO_ROOT, RULESET_ID, ["phb", "dmg", "mm", "ua"])
+        self.assertEqual(queue["legacy_leaf_inferences"], [])
+
+    def test_the_adnd_buckets_remain_populated_and_disjoint(self):
+        queue = ready_queue(REPO_ROOT, RULESET_ID, ["phb", "dmg", "mm", "ua"])
+        buckets = {
+            "ready": {b.bundle_id for b in queue["ready"]},
+            "superseded": {b.bundle_id for b in queue["superseded"]},
+            "integrated": {b.bundle_id for b, _ in queue["integrated"]},
+            "rejected": {b.bundle_id for b, _ in queue["rejected"]},
+        }
+        self.assertTrue(buckets["integrated"], "the AD&D corpus has integrated bundles")
+        self.assertTrue(buckets["superseded"], "and superseded ones")
+        for left in buckets:
+            for right in buckets:
+                if left < right:
+                    self.assertEqual(buckets[left] & buckets[right], set(),
+                                     f"{left} and {right} overlap")
 
 
 if __name__ == "__main__":

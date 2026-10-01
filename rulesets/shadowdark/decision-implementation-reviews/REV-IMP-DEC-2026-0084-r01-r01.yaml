@@ -1,0 +1,40 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0084-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: shadowdark
+constitution_version: '1.1'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+review_date: '2026-09-21'
+overall_disposition: approved
+reviewed_implementation: {id: IMP-DEC-2026-0084-r01, path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0084-r01.yaml, checksum: sha256:58a7c07b4c6ffe01e6e64ca587a051dd8f264df2af4e94284a4a50f8dbcd30b6}
+decision_input: {id: DEC-2026-0084, path: rulesets/shadowdark/escalations/decisions/DEC-2026-0084.yaml, checksum: sha256:70cc2ef5c57bade92d44be88b72301f1859c1192f81b534105774378f08243cc}
+handoff: {next_role: none, readiness: terminal, reason: 'Step 3 implementation review is approved; Architect owns explicit step 4.', blocking_ids: []}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: 'Closed three-class vocabulary exactly matches the Decision.'}
+  - {acceptance_test_index: 2, disposition: verified, evidence: 'Synthetic heading and fenced-Div parsing preserves page-local metadata and prose exclusion.'}
+  - {acceptance_test_index: 3, disposition: verified, evidence: 'Lint accepts each valid class/form and retains page-local reporting.'}
+  - {acceptance_test_index: 4, disposition: verified, evidence: 'Unknown, typo, bare and no-identifier forms reject; ordinary Div behavior remains.'}
+  - {acceptance_test_index: 5, disposition: verified, evidence: 'Synthetic page-322 span classifies only page 322; live wrapper defect remains visible.'}
+  - {acceptance_test_index: 6, disposition: verified, evidence: 'Focused 68/68 and full 841/841 suites pass.'}
+  - {acceptance_test_index: 7, disposition: verified, evidence: 'Only three Builder-owned files changed; no graph, source, registry, schema, canonical or contract write occurred, and activation remains pending.'}
+independent_validation:
+  passed: true
+  commands:
+    - {command: '[cwd tooling/builder/tests] python -m unittest test_pagemarkers', exit_code: 0, result: passed, summary: 'Ran 68 tests in 2.801s; OK.'}
+    - {command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py" -t .', exit_code: 0, result: passed, summary: 'Ran 841 tests in 186.835s; OK (skipped=38).'}
+review_evidence:
+  validation_report: {path: build/reports/IMP-DEC-2026-0084-r01.validation.json, checksum: sha256:0a79b70cb94dfd069d7e1b23d3b655a5a0adfc02099dbe7c65544ad967296c72}
+  activation_bound: 'SOURCE_MARKDOWN remains 1.7; only Architect step 4 may activate the prospective classes.'
+completion_statement: 'Approved. No GUP or canonical state was created; RC remains paused.'
+ordered_next_steps:
+  - priority: 1
+    owner: architect
+    input: rulesets/shadowdark/escalations/decisions/DEC-2026-0084.yaml
+    action: 'Perform mandatory step 4: activate SOURCE_MARKDOWN 1.8 or later with the Decision anchors.'
+    prerequisite_ids: [REV-IMP-DEC-2026-0084-r01-r01]
+    readiness: ready
+    reason: 'The Decision expressly assigns post-approval activation to Architect.'
+

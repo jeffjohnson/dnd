@@ -1,0 +1,184 @@
+schema_version: '1.0'
+id: GUP-PKT-SD-189-189-monster-attributes-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-189-189-monster-attributes
+constitution_version: '1.8'
+artifact_kind: packet_update
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 1 edge addition(s), 0 update(s), 2 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-SD-189-189-monster-attributes-r02
+  gur_checksum: sha256:edcf767a8e30a5ce605d2cb5ac17848f845022ccf73d38f3fe608bb9beb5c630
+  gur_constitution_version: '1.8'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 938
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: mstat_monster_level
+      proposed_label: Monster Level
+      kind: mstat
+      why_needed: The source states that a monster's hit points are calculated per monster level, printed
+        LV. It is the shared creature statistic that the one explicit dependency on this page uses, and
+        it is the source of M001.
+      edges_depending_on_it:
+        - M001
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: abil_dark_adapted
+      proposed_label: Dark-Adapted
+      kind: abil
+      why_needed: The page names Dark-Adapted as a heading and states what it does. It is an independently
+        named mechanical ability, which constitution section 2.1 assigns to the existing abil_ kind, and
+        it is the source of M002.
+      edges_depending_on_it:
+        - M002
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions:
+    - source_id: rule_spell_tier
+      source_label: Spell Tier
+      edge_type: DERIVED_FROM
+      target_id: rule_difficulty_class
+      target_label: Difficulty Class
+      aspect: monster tier
+      condition: for a monster
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '189'
+      section: SPELLCASTING
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+  pending_additions:
+    - source_id: abil_dark_adapted
+      source_label: Dark-Adapted
+      edge_type: EXCLUDES
+      target_id: rule_total_darkness
+      target_label: Total Darkness
+      aspect: darkness penalties
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: SD
+      page: '189'
+      section: DARK-ADAPTED
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: mstat_monster_level
+      source_label: Monster Level
+      edge_type: FEEDS_INTO
+      target_id: rule_hit_points
+      target_label: Hit Points
+      aspect: hit point value
+      condition: for a monster
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '189'
+      section: HIT POINTS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts:
+    derived: 1
+duplicate_findings: []
+neighbourhood_conflicts:
+  - ref: M003
+    endpoints:
+      - rule_spell_tier
+      - rule_difficulty_class
+    existing_edges:
+      - canonical_row: 253
+        canonical_index: 251
+        source_id: rule_spell_tier
+        edge_type: FEEDS_INTO
+        target_id: rule_difficulty_class
+        aspect: casting difficulty
+        condition: ''
+        book: SD
+        page: '44'
+        section: CASTING
+    detail: the same node pair is already related by other edge types
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 3
+  edges_compiled: 3
+  edges_rejected: 0
+  edge_additions: 1
+  edge_pending_additions: 2
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 0
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 2
+  cross_packet_dependencies: 0
+  duplicate_findings: 0
+  neighbourhood_conflicts: 1
+validation_report: build/reports/GUP-PKT-SD-189-189-monster-attributes-r01.validation.json

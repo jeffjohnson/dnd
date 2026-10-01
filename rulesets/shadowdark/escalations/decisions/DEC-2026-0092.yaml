@@ -1,0 +1,220 @@
+schema_version: '1.0'
+id: DEC-2026-0092
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.2'
+decision_date: '2026-09-22'
+escalation_id: ESC-2026-09-22T17.16.24.550Z
+request_origin:
+  type: integrator_escalation
+  summary: >-
+    The first Shadowdark Approved bundle is Integrator-ready, but the
+    AD&D-specific transaction tool cannot initialize an independent ruleset
+    without fabricating a baseline or losing rollback guarantees.
+question: >-
+  Who implements and independently verifies new-ruleset canonical
+  initialization support, and what must a first Shadowdark transaction prove
+  before it may create canonical state?
+ruling: >-
+  Adopt the escalation's Option A. Integrator owns the bounded new-ruleset
+  initialization implementation because it owns the transaction, canonical
+  storage, rollback, derived-state, and invariant tooling. Reviewer must
+  independently approve the resulting Decision Implementation Report before
+  any first Shadowdark integration. This Decision does not itself authorize a
+  canonical write.
+
+  A genesis transaction has no canonical baseline. It may create
+  `rulesets/<ruleset-id>/canonical/` and its canonical files only after a
+  specific current Approved bundle has passed all ordinary preconditions and
+  only inside that transaction. A late failure restores the exact pre-state:
+  the newly created canonical directory and files are absent, and no generated
+  manifest, report, or integrated-artifact record remains. An empty,
+  header-only baseline may not be created before the transaction or as a
+  substitute for an Approved bundle. A successful transaction writes only the
+  passed bundle's approved registrations and declared rows, plus required
+  derived outputs.
+
+  Ruleset vocabulary must be read from the active ruleset Constitution by
+  table structure, not a literal AD&D section heading or a hardcoded minimum
+  prefix count. The Integrator must validate the active prefix table and use
+  its actual prefix set. It must likewise obtain the active edge-type and
+  derived-polarity vocabulary from the active Constitution, so a future
+  ruleset cannot silently inherit an AD&D transcription.
+
+  Shadowdark's current `roles.yaml` is valid bootstrap configuration. An empty
+  `thresholds` and `tier2` mapping means genesis emits no derived roles; it is
+  not a prerequisite to invent thresholds or import AD&D role rules. The
+  Integrator must treat an explicit empty profile as no role derivations while
+  retaining existing AD&D derivation behavior from its populated profile.
+rationale:
+  - >-
+    Constitution 1.2 and DEC-2026-0083 reserve canonical creation to the
+    Integrator and forbid a fabricated baseline, so the first files must be a
+    consequence of a verified transaction rather than a governance seed.
+  - >-
+    The measured heading and prefix-count failures show that the existing tool
+    is not a ruleset-neutral transaction implementation. Parsing the active
+    vocabulary removes the inherited AD&D assumptions without changing graph
+    ontology.
+  - >-
+    The empty Shadowdark role profile deliberately records that no corpus-based
+    thresholds exist. Empty derived roles preserve that fact; invented values
+    would be unsupported graph conclusions.
+  - >-
+    The Integrator implements its owned surface, while an immutable Reviewer
+    implementation Review provides the independent verification required by
+    Constitution 1.2.
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Integrator implements and evidences the bounded genesis capability without
+    touching Shadowdark canonical state. Reviewer then independently verifies
+    the implementation report.
+  blocking_ids: []
+evidence:
+  - path: rulesets/shadowdark/escalations/pending/ESC-2026-09-22T17.16.24.550Z.yaml
+    checksum: sha256:59c787fda853aec232de07224293fd7b3dc6b43f7f60b1219e85330e19908055
+    role: complete_integrator_escalation_and_reproducible_failure
+  - path: rulesets/shadowdark/governance/constitution.md
+    checksum: sha256:b25c22e688eeeac5e41d76646714620b0d85a8a5ab90e60b363fa0fd95b86a1a
+    role: first_integration_gate_and_active_ruleset_vocabulary
+  - path: rulesets/shadowdark/profiles/roles.yaml
+    checksum: sha256:a7ba1d4b21859b925f6b5d3244fc3c1da22e13cd4802135b631ac6ff56881f6e
+    role: explicit_empty_bootstrap_role_profile
+  - path: tooling/integrator/src/adnd1e_integrator/invariants.py
+    checksum: sha256:fb3b7401845a9c45d43cdfc95693cf737679cb6630f05cbcab25b40a2df09768
+    role: measured_adnd_heading_and_minimum_prefix_assumption
+  - path: tooling/integrator/src/adnd1e_integrator/integrate.py
+    checksum: sha256:59c7147638f2d4497d2d57a12e9eab457a02c5bb71c0794023f9dd84d21f1cf8
+    role: measured_existing_state_load_before_transaction
+migration_required: false
+migration_scope: >-
+  No canonical graph, registry, source, GUR, GUP, Review, Approved bundle, or
+  artifact lineage is migrated by this Decision or its implementation. The
+  first ordinary integration remains a later transaction using whichever
+  current Approved bundle passes its normal checks.
+constitution_version_impact: >-
+  None. Constitution 1.2 already defines the first-integration gate and the
+  active vocabulary; this Decision implements that existing requirement.
+affected_contracts: []
+affected_registries: []
+implementation_bounds:
+  - >-
+    Integrator may change only the listed Integrator tooling, tests, and
+    tooling README. Do not amend the Shadowdark Constitution, role profile,
+    schemas, source packets, GURs, GUPs, Reviews, Approved bundles,
+    registries, or canonical data during implementation.
+  - >-
+    Do not create a reusable empty canonical baseline, seed rows, placeholder
+    registrations, sample graph data, inferred roles, or a shared-ruleset
+    fallback. Do not rename the existing package solely because it now supports
+    more than AD&D.
+  - >-
+    Preserve current AD&D transaction behavior and its complete test suite.
+    No basicdnd/rc processing, cleanup, compilation, review, or integration is
+    authorized.
+acceptance_tests:
+  - >-
+    A ruleset-neutral vocabulary loader reads the Prefix table from each active
+    Constitution by table structure. It yields all thirteen declared
+    Shadowdark prefixes and the existing AD&D prefix set, without a hardcoded
+    minimum count or section heading; a malformed or missing Prefix table
+    fails closed.
+  - >-
+    The Integrator obtains edge types, authored-versus-derived status, and
+    derived polarity from the active Constitution. Focused tests prove that
+    Shadowdark and AD&D each retain their declared vocabulary and that a
+    malformed polarity table fails before a transaction starts.
+  - >-
+    An explicit empty role profile is valid bootstrap input. A Shadowdark
+    genesis fixture derives blank role fields for every canonical node and
+    registry row, while the existing populated AD&D profile retains its
+    current role-derivation results.
+  - >-
+    Queue, validate, and dry-run paths never create a missing canonical
+    directory or canonical file. A real genesis write begins only after a
+    current Approved-bundle precondition set has passed and inside the
+    transaction boundary.
+  - >-
+    A forced late failure in a genesis transaction restores the exact
+    pre-transaction absence of its canonical directory and files and leaves no
+    generated manifest, report, integrated-artifact record, or transaction
+    snapshot. The existing registry remains byte-identical.
+  - >-
+    A successful genesis fixture writes exactly its Approved bundle's declared
+    edge rows and approved node registrations, with no seed, placeholder,
+    sample, inferred, or unapproved row. Derived canonical files are
+    reproducible from those rows.
+  - >-
+    Focused genesis regressions and the complete Integrator suite pass. The
+    implementation report records exact commands and outcomes, including the
+    escalation's pre-change dry-run failure and a post-change successful
+    dry-run that creates no state.
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish and validate this Decision, then move the complete escalation to
+      the decided store without changing its contents.
+  - step: 2
+    owner: integrator
+    action: >-
+      Implement the bounded ruleset-neutral vocabulary, bootstrap-role, and
+      transactional-genesis support with the listed tests and README update.
+      Publish a Decision Implementation Report and its validation evidence;
+      do not create Shadowdark canonical state.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently execute and inspect the implementation evidence. Publish
+      an immutable implementation Review approving only if every acceptance
+      test holds and no canonical state was created.
+post_implementation_requirements:
+  - >-
+    After an approved terminal implementation Review, Integrator rechecks the
+    current Shadowdark queue and independently selects only a current,
+    checksum-valid Approved bundle. It may then perform the ordinary first
+    integration under the implemented genesis transaction. This later graph
+    transaction is not acceptance evidence for the tooling Decision.
+  - >-
+    If the first ordinary transaction fails, Integrator records the normal
+    rejection only when an Approved bundle was actually rejected; it must not
+    repair upstream interpretation or leave a canonical baseline behind.
+exact_diff:
+  tooling/integrator/src/adnd1e_integrator/vocabulary.py: Add a ruleset-neutral Constitution vocabulary reader for prefixes, edge types, and derived polarity.
+  tooling/integrator/src/adnd1e_integrator/invariants.py: Replace AD&D-heading and literal-prefix-count parsing with the active vocabulary reader.
+  tooling/integrator/src/adnd1e_integrator/derive.py: Parameterize polarity and bootstrap role derivation from active ruleset inputs.
+  tooling/integrator/src/adnd1e_integrator/canonical.py: Support an in-memory empty graph only within an authorized genesis transaction.
+  tooling/integrator/src/adnd1e_integrator/snapshot.py: Restore genesis failures to absence and remove transaction-created outputs.
+  tooling/integrator/src/adnd1e_integrator/integrate.py: Gate and execute non-fabricating genesis initialization after normal Approved-bundle verification.
+  tooling/integrator/tests/test_vocabulary.py: Cover active Constitution vocabulary parsing and malformed-table rejection.
+  tooling/integrator/tests/test_invariants.py: Cover ruleset-specific prefix and invariant behavior.
+  tooling/integrator/tests/test_derive.py: Cover empty bootstrap profiles and unchanged populated-profile derivation.
+  tooling/integrator/tests/test_transaction.py: Cover genesis success, dry-run non-writing, and late-failure rollback to absence.
+  tooling/integrator/tests/test_genesis.py: Add isolated Shadowdark genesis fixtures and non-fabrication assertions.
+  tooling/integrator/README.md: Document supported new-ruleset genesis behavior and rollback guarantees.
+exact_diff_ownership:
+  - {path: tooling/integrator/src/adnd1e_integrator/vocabulary.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/src/adnd1e_integrator/invariants.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/src/adnd1e_integrator/derive.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/src/adnd1e_integrator/canonical.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/src/adnd1e_integrator/snapshot.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/src/adnd1e_integrator/integrate.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/tests/test_vocabulary.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/tests/test_invariants.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/tests/test_derive.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/tests/test_transaction.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/tests/test_genesis.py, owner: integrator, sequence_step: 2}
+  - {path: tooling/integrator/README.md, owner: integrator, sequence_step: 2}
+follow_up_owners:
+  integrator:
+    - Implement and evidence DEC-2026-0092 without creating Shadowdark canonical state.
+  reviewer:
+    - Independently verify the Integrator implementation report before any genesis integration.

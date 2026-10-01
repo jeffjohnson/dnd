@@ -1,0 +1,264 @@
+schema_version: '1.0'
+id: DEC-2026-0082
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 2
+supersedes: DEC-2026-0081
+ruleset_id: adnd1e
+book_id: cross-book
+source_id: multiple
+packet_id: cross-packet
+constitution_version: '1.8'
+decision_date: '2026-09-19'
+request_origin:
+  type: repository_owner_directive
+  summary: >-
+    Remove Dispatcher. Have all five roles communicate next steps directly via
+    herdr in dependency/priority order, with only one repository agent processing
+    at a time, and notify each live worker to reload these instructions.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    After Architect's instruction-only reload sequence, align role-context code
+    and tests with five-role operation and implement the serialized direct
+    handoff helper specified here. Do not continue Dispatcher activation.
+  blocking_ids: []
+question: >-
+  How is the unactivated Dispatcher implementation retired without rewriting
+  history, while five workers take responsibility for direct, serial handoffs?
+ruling: >-
+  Replace DEC-2026-0081's executable instructions with this complete successor.
+  Cancel its pending Review/activation work, preserve all published artifacts,
+  remove the Dispatcher role definition and active manifest entry, and adopt
+  HERDR_HANDOFFS 1.0. Only one repository role may process work at a time,
+  including reloads, across all scopes. Each finisher ranks actions by real
+  dependencies and priority, sends one deferred direct handoff after becoming
+  idle, and carries the remaining ordered work forward. No Dispatcher or new
+  artifact stage is introduced. Builder owns the reusable serialization helper;
+  Architect is authorized to issue one bounded operational reload batch only.
+rationale:
+  - A separate AI coordinator adds a reading and routing hop without changing authority.
+  - >-
+    Herdr can prompt a working agent and does not correlate waits to turn IDs.
+    Deferred delivery, a single outstanding request, and exact live identity
+    checks are required; sending a prompt as the sender's last tool is not enough.
+  - >-
+    An ESC precedes work it blocks, not every independent job merely because
+    it is an ESC. Analyst owns GURs and Builder owns GUPs.
+  - >-
+    Supersession preserves the unapproved IMP-DEC-2026-0081-r01 as history,
+    cancels the no-longer-desired activation, and avoids editing its checksums.
+
+context_transition:
+  live_manifest_schema_version: '1.0'
+  cache_format_version: 1
+  reason: >-
+    Deliberately select the existing supported five-role language so ordinary
+    worker verification works immediately without awaiting a code change.
+    This is language selection, not a claim that governance reverted. Historical
+    1.1 parsing may remain, but dispatcher CLI/operational requests must be refused
+    after Builder alignment. Do not change receipt layout, purge caches, or
+    restore the deleted Dispatcher files to satisfy obsolete live tests.
+  publication_history: >-
+    DEC-2026-0081 and IMP-DEC-2026-0081-r01 remain immutable. They are no longer
+    authority to activate a sixth role; an ordinary valid Decision reissue
+    supersedes their work without a fabricated approving Review.
+
+relay_requirements:
+  path: tooling/common/send-agent-handoff.ps1
+  runtime: PowerShell 7
+  interface: >-
+    Accept -RequestPath <local-json> and an explicit bounded timeout; validate
+    the complete request before scheduling a hidden background relay. Provide
+    -ValidateOnly for offline schema/guard checks. The scheduling command returns
+    promptly with a request ID and queued state; the sender then ends its turn.
+  request: >-
+    A unique request ID, resolved repository root, inherited endpoint identity,
+    sender and recipient role/pane/native-session identity, authority, exact
+    input artifact IDs/paths/checksums, applicable scope, bounded action,
+    ordered next steps, and the exact prompt. Reject paths outside the root,
+    missing recipients, ambiguous names, provider/session mismatch, invalid
+    roles, missing prerequisites, and attempts to address Dispatcher.
+  serialization: >-
+    One exclusive repository-wide operational lock and one outstanding request
+    across all five roles. Wait until sender idle/done, then verify all bound
+    repository agents idle/done before submission. Hold the lock through
+    recipient settlement. Recheck target identity immediately before delivery.
+    Unknown, blocked, disappeared, or changed agents fail closed. The recipient
+    may stage its next request but that request cannot submit until the earlier
+    turn settles and its relay releases the lock. Do not claim protection from
+    manual/external launches; workers and the user must obey the same serial rule.
+  recovery: >-
+    Persist queued/submitting/acknowledged/settled/uncertain states under ignored
+    .local/herdr/. Mark submitting before sending. Duplicate IDs or equivalent
+    outstanding jobs cannot resubmit. On timeout, stalled prompt, crash, unknown
+    state, or lost acknowledgment, preserve an uncertain marker and stop for
+    reconciliation, never automatically retry or steal a stale lock by age.
+    A blocked dialog is not completion and no tool may answer it automatically.
+  exclusions: >-
+    No scheduling AI, business-priority inference, artifact consumption changes,
+    scanner changes, herdr installation, skills, credentials, new agent creation,
+    or source/canonical writes. The relay transports one exact worker-selected
+    assignment; repository validation remains the worker's duty.
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  artifact_lineage_change: false
+  implementation_kind: direct_serial_herdr_handoffs
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this successor, update all five role instructions and named common
+      documents, remove the retired role files, and select the five-role manifest.
+      Arrange one-time reload-only notifications through a hidden local shell
+      batch that waits for this Architect turn to end and prompts the other
+      four roles sequentially. It must log identities, acknowledgments and any
+      uncertainty; never launch ordinary jobs or retry an ambiguous send.
+  - step: 2
+    owner: builder
+    action: >-
+      After the reload batch finishes, update only the assigned verifier/tests
+      and implement/test the relay. Preserve useful five-role coverage and
+      replace obsolete live six-role expectations, retaining legacy parsing
+      tests only as history compatibility. Publish IMP-DEC-2026-0082-r01 or the
+      next valid revision with exact evidence. No activation of DEC-2026-0081.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently test all acceptance criteria with mocked herdr endpoints
+      and temporary roots, including a deterministic sender-working case and
+      duplicate/ambiguous-send cases. Approve or return the exact implementation
+      through the ordinary lifecycle. Do not reopen the superseded 0081 report.
+
+acceptance_tests:
+  - >-
+    HERDR_HANDOFFS Version 1.0 or later, ROLE_CONTEXT_LOADING Version 1.2 or
+    later, and WORK_QUEUES Version 1.30 or later preserve the declared anchors;
+    all five instructions link the direct protocol and state role-specific
+    routing. Dispatcher definition files and active manifest entry are absent.
+  - >-
+    The five-role manifest validates against its schema. All five existing
+    roles retain scoped verification, bounded current inputs, exact checksum
+    invalidation, session isolation, cache-hit behavior, and format-1 receipts.
+    Dispatcher requests fail without writes; obsolete live six-role tests no
+    longer gate work. No published Decision/report is rewritten.
+  - >-
+    The relay validates a complete bounded request, exact role/provider/root/
+    native-session bindings and allowed paths; -ValidateOnly launches nothing.
+    Wrong scope, role, identity, missing prerequisite or endpoint uncertainty
+    fails closed. No credential, approval dialog, or agent creation is touched.
+  - >-
+    With a working sender, no recipient is prompted. After sender settlement,
+    the relay submits only one idle/done recipient and only while every other
+    bound repository agent is idle/done. A global exclusive lock serializes
+    competing requests through settlement. Test these races with fake herdr,
+    including two competing relays and an unexpected manual working agent.
+  - >-
+    Duplicate requests, lost acknowledgment, agent_prompt_stalled, timeout,
+    process interruption, blocked/unknown states, and changed recipient identity
+    cannot resubmit work. Persist and report uncertainty for reconciliation;
+    an old timestamp never authorizes takeover. Finite waits cannot hang forever.
+  - >-
+    Priority fixtures show a blocking ESC before its dependent GURs/GUPs and
+    distinguish independent ready work; the relay transports the worker's
+    ordered list without inventing priority or consuming any artifact.
+    Reload-only fixtures authorize no task processing or onward prompt.
+  - >-
+    Focused role-context and relay tests plus the applicable complete common
+    suite pass. Publish current checksummed implementation evidence and exact
+    validation commands; independent Reviewer approval, not a sender's final
+    message or herdr done status, completes the implementation.
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/HERDR_HANDOFFS.md
+        minimum_version: '1.0'
+        substantive_anchors:
+          - Five roles communicate directly without Dispatcher.
+          - One repository agent processes work at a time, including reloads.
+          - Dependencies determine priority and only one next action is handed off.
+          - Deferred delivery waits for sender idle and never retries ambiguous submission.
+      - path: contracts/ROLE_CONTEXT_LOADING.md
+        minimum_version: '1.2'
+        substantive_anchors:
+          - Dispatcher is retired and DEC-2026-0081 activation is cancelled.
+          - Five-role scoped receipts and fresh task evidence remain required.
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.30'
+        substantive_anchors:
+          - Direct herdr coordination does not change artifact consumption or approval.
+post_implementation_requirements:
+  - >-
+    Enable routine use of the reusable relay only after the exact implementation
+    is independently approved. Until then, use a user-mediated serial handoff;
+    the one-time reload relay is not a general processing scheduler.
+coordination_constraints:
+  - >-
+    Preserve unrelated dirty files. SOURCE_MARKDOWN 1.7 changes only routing to
+    the steward. Builder separately refreshes pending DEC-2026-0080 report
+    evidence after all relevant governance edits; do not edit published reports,
+    weaken checksums, or make 0080 source intake an acceptance gate for this work.
+  - >-
+    Deleted role/contract files are verified by absence in acceptance evidence,
+    never listed as existing implementation_files with fabricated checksums.
+    Pin all surviving changed/verified implementation and governance files.
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: Operational coordination changes no graph semantics.
+governance_changelog:
+  - Retired Dispatcher and its unactivated Decision through an immutable successor.
+  - Added direct herdr instructions to all five roles and dependency-first next steps.
+  - Required serialized execution and deferred notification, including reload-only turns.
+exact_diff:
+  AGENTS.md: [Replace Dispatcher startup with direct serial coordination.]
+  README.md: [Document the five-role direct communication model.]
+  REPOSITORY_STRUCTURE.md: [Remove the coordination role from the active hierarchy.]
+  agents/architect/INSTRUCTIONS.md: [Add direct prioritized Decision handoffs.]
+  agents/analyst/INSTRUCTIONS.md: [Add GUR and ESC dependency-priority handoffs.]
+  agents/builder/INSTRUCTIONS.md: [Add direct Reviewer and blocking-ESC handoffs.]
+  agents/reviewer/INSTRUCTIONS.md: [Add direct approval and correction routing.]
+  agents/integrator/INSTRUCTIONS.md: [Add serialized transaction-completion handoffs.]
+  agents/dispatcher/INSTRUCTIONS.md: [Delete the retired role definition.]
+  contracts/DISPATCHER.md: [Delete the retired coordination contract.]
+  contracts/HERDR_HANDOFFS.md: [Define direct serial delivery and priority protocol.]
+  contracts/ROLE_CONTEXT_LOADING.md: [Retire Dispatcher startup without activating 0081.]
+  contracts/ROLE_CONTEXT_MANIFEST.yaml: [Select supported five-role language 1.0.]
+  contracts/WORK_QUEUES.md: [Replace coordination text without changing consumption.]
+  contracts/SOURCE_MARKDOWN.md: [Route missing-source requests directly to the steward.]
+  tooling/common/role_context.py: [Align live verifier operation with five active roles.]
+  tooling/common/tests/test_role_context.py: [Replace obsolete live Dispatcher expectations.]
+  tooling/common/send-agent-handoff.ps1: [Implement the bounded serialized deferred relay.]
+  tooling/common/tests/test_herdr_handoff.py: [Test the relay with fake herdr and temporary roots.]
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml: [Publish this superseding authorization.]
+exact_diff_ownership:
+  - {path: AGENTS.md, owner: architect, sequence_step: 1}
+  - {path: README.md, owner: architect, sequence_step: 1}
+  - {path: REPOSITORY_STRUCTURE.md, owner: architect, sequence_step: 1}
+  - {path: agents/architect/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/analyst/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/builder/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/reviewer/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/integrator/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/dispatcher/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: contracts/DISPATCHER.md, owner: architect, sequence_step: 1}
+  - {path: contracts/HERDR_HANDOFFS.md, owner: architect, sequence_step: 1}
+  - {path: contracts/ROLE_CONTEXT_LOADING.md, owner: architect, sequence_step: 1}
+  - {path: contracts/ROLE_CONTEXT_MANIFEST.yaml, owner: architect, sequence_step: 1}
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: contracts/SOURCE_MARKDOWN.md, owner: architect, sequence_step: 1}
+  - {path: tooling/common/role_context.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_role_context.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/send-agent-handoff.ps1, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_herdr_handoff.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml, owner: architect, sequence_step: 1}
+follow_up_owner: builder
+follow_up_owners:
+  architect: [Publish governance and schedule the one-time serial reload batch.]
+  builder: [Implement step 2 then identify Reviewer as next.]
+  reviewer: [Independently verify step 2 without processing superseded 0081.]

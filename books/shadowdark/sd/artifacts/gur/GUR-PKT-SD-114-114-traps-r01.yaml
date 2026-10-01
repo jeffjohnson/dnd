@@ -1,0 +1,360 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-114-114-traps-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-114-114-traps
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-114-114-traps
+  source_file: source.md
+  packet_source_checksum: sha256:4fcd431d83e8f1c0501bd9830994d1f240e8c180c0d9d75f48c6b9b0525f15c9
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 043-traps.md
+  citation_code: SD
+  page_start: 114
+  page_end: 114
+  page_number_basis: packet_page_markers
+page_attribution_basis: One marker resolves this packet. p114 ends the TRAPS heading, which is also the
+  section's first heading, and placement rule 1 applies it to that whole heading while the persistence
+  rule carries it across the table. All six rows cite printed page 114. No content precedes the marker
+  and no page is shared.
+scope_boundary: The bounded scope is the Primary Source Material section, the single printed page 114
+  and its table. The trailing Supporting Source Context is out of scope.
+source_summary: 'Traps add peril to crawling, and a character typically gets a relevant stat check to
+  avoid a trap''s effects. Three bolded rules follow. Most traps should have a tell, and the GM is warned
+  against making them too frequent. Characters who search a specific area or object for a trap find it
+  automatically. Thieves and characters trained in tinkering can describe how they disable or circumvent
+  a trap: given enough time and a reasonable method they simply succeed, and the GM might call for a stat
+  check only under time pressure or where great skill is needed. A d12 table then gives twelve traps,
+  each with a trigger and a damage figure, most also naming a status effect.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled: the canonical graph
+  holds 318 registry rows and 683 edges. The registry was read in full and every reused label verified
+  character for character. No canonical row cites printed page 114, so nothing in this span has been extracted
+  before.
+
+  Two measured facts shaped the extraction. No trap identity existed, so this page is the defining locus.
+  And no identity exists for any status effect the table names; searching for sleep, paralyse, blind,
+  confuse, petrify and unconscious returns only spell_sleep, spell_blind_deafen and spell_confusion, which
+  are spells rather than conditions, discussed in OBS-02. Every proposed row was checked against the canonical
+  edge set for an assertion-key collision, for a shared source, type and target under a different aspect,
+  and for duplicates within the patch; there are none of any.'
+three_check_rows_note: 'Three rows run between rule_check and rule_traps and they are three distinct source
+  statements, not one fact repeated. Recording the split explicitly because three rows on one pair invites
+  the duplication objection, and because the one-row-per-statement lesson from PKT-SD-111-111 is what
+  produced them.
+
+  The page says three different things about checks and traps. A character typically gets a check to avoid
+  a trap''s effects, which is M001, a bound on the trap. A character who searches a specific area finds
+  the trap automatically, which is M002: the check is not an input to discovery at all. And a disabling
+  attempt succeeds outright given time and method, with a check called for only under pressure, which
+  is M004, a bound that applies conditionally.
+
+  Each carries its own aspect, effect avoidance, trap discovery and disabling attempt, so the five-field
+  keys differ and none collides. Collapsing them would lose the most interesting thing this page says,
+  which is that a check is required, excluded and conditional at three different moments of dealing with
+  the same trap.'
+hedging_note: 'Two rows turn on the hedging test and they resolve in opposite directions, which is worth
+  showing since the test has previously only been used to move rows away from EXCLUDES.
+
+  M001 is hedged: characters typically get a check to avoid a trap''s effects. Typically marks a bound
+  rather than an absolute, so CONSTRAINS with governs. M002 is not hedged: characters who search a specific
+  area or object automatically find it, with no usually, typically or may. That is absolute, so the check
+  is genuinely not an input to discovery and EXCLUDED_FROM is correct. EXCLUDED_FROM rather than EXCLUDES
+  because the direction runs from the thing excluded to the mechanic it is excluded from, and it is the
+  check that drops out of trap discovery rather than traps preventing checks generally.
+
+  M004 is hedged again, the GM might call for a check, and takes CONSTRAINS with a condition naming the
+  circumstance rather than restating it as certainty.'
+reused_nodes:
+- id: class_thief
+  label: Thief
+  used_by: M003
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label, verified
+    character for character. Named as able to describe how a trap is disabled.
+- id: rule_check
+  label: Check
+  used_by: M001, M002, M004
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label, verified
+    character for character. Bounds avoidance and the harder disabling attempt, and is excluded from discovery.
+- id: rule_damage
+  label: Damage
+  used_by: M006
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label, verified
+    character for character. Inflicted by the table's damage column.
+candidate_nodes:
+- proposed_id: rule_traps
+  proposed_label: Traps
+  kind: procedure
+  why_needed: 'The named rule this page defines: how a trap is avoided, found and disabled. Every other
+    relation on the page hangs off it.'
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 114, TRAPS
+  source_evidence: page 114, the TRAPS heading.
+- proposed_id: tbl_traps
+  proposed_label: Traps Table
+  kind: table
+  why_needed: The named d12 table supplying a trap, its trigger and its damage or effect.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 114, TRAPS TABLE
+  source_evidence: page 114, the TRAPS TABLE heading.
+candidate_edges:
+- ref: M001
+  source_id: rule_check
+  source_label: Check
+  edge_type: CONSTRAINS
+  target_id: rule_traps
+  target_label: Traps
+  aspect: effect avoidance
+  condition: ''
+  book: SD
+  page: 114
+  section: TRAPS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M002
+  source_id: rule_check
+  source_label: Check
+  edge_type: EXCLUDED_FROM
+  target_id: rule_traps
+  target_label: Traps
+  aspect: trap discovery
+  condition: ''
+  book: SD
+  page: 114
+  section: TRAPS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: class_thief
+  source_label: Thief
+  edge_type: GATES
+  target_id: rule_traps
+  target_label: Traps
+  aspect: disabling access
+  condition: ''
+  book: SD
+  page: 114
+  section: TRAPS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_check
+  source_label: Check
+  edge_type: CONSTRAINS
+  target_id: rule_traps
+  target_label: Traps
+  aspect: disabling attempt
+  condition: when under time pressure or the trap demands great skill
+  book: SD
+  page: 114
+  section: TRAPS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M005
+  source_id: rule_traps
+  source_label: Traps
+  edge_type: RESOLVED_BY
+  target_id: tbl_traps
+  target_label: Traps Table
+  aspect: trap selection
+  condition: ''
+  book: SD
+  page: 114
+  section: TRAPS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: tbl_traps
+  source_label: Traps Table
+  edge_type: TRIGGERS
+  target_id: rule_damage
+  target_label: Damage
+  aspect: trap damage
+  condition: ''
+  book: SD
+  page: 114
+  section: TRAPS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: inflicts
+  polarity_basis: read
+authored_polarity_declaration: Authored polarity appears on three rows and no others, each with basis
+  read as invariant 15 requires, and each is a CONSTRAINS or TRIGGERS row as constitution section 5 allows.
+  The two CONSTRAINS rows take governs. The table's damage row takes inflicts. The EXCLUDED_FROM, GATES
+  and RESOLVED_BY rows carry none, since section 5 derives those. No MODIFIES row appears in this packet.
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: The page opens by placing traps in crawling. Recorded as a candidate only; constitution section
+    8 reserves domain promotion to an Architect Decision. Consistent with the exploration candidate recorded
+    in four earlier packets.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: the Damage or Effect column, p114
+  quoted_gist: 'six status effects across the table''s twelve rows: sleep, paralyze, blind, confuse, unconscious
+    and petrify'
+  why_considered: These are the most substantial mechanical content in the table after the damage figures,
+    and three of the six have same-named canonical identities, spell_sleep, spell_blind_deafen and spell_confusion.
+    A row from the table to each looked available.
+  rejection_reason: 'The same-named identities are the wrong things and using them would be a real error,
+    not merely a thin row. spell_sleep is the wizard spell defined on printed page 71 with a tier, a casting
+    class, a range and a duration. A trap that puts a character to sleep does not cast that spell, and
+    asserting tbl_traps TRIGGERS spell_sleep would claim the trap casts it. The other two are the same
+    shape.
+
+    What the table actually needs is a condition identity, and none exists anywhere in the graph: no sleep,
+    paralysis, blindness, confusion, unconsciousness or petrification concept, and none of the six is
+    defined as a mechanic on this page either. The one near neighbour, rule_dying, covers unconsciousness
+    only as part of the death sequence on printed page 89, which is a different state from a trap knocking
+    someone out. Recorded as OBS-02; nothing is asserted.'
+- text_locus: the Trigger column, p114
+  quoted_gist: twelve triggers, among them a tripwire, a pressure plate, opening a door, breaking a light
+    beam, speaking a word and casting a spell
+  why_considered: 'Two of the twelve name things the graph holds: a light beam is adjacent to rule_light_source,
+    and casting a spell is rule_spellcasting_check, which is canonical and heavily connected.'
+  rejection_reason: 'These are flavour entries describing what sets a trap off in fiction, not mechanics.
+    The page states no rule about any of them: nothing says a spellcasting check must be checked against
+    nearby cursed statues. Asserting rule_spellcasting_check TRIGGERS tbl_traps from a single table cell
+    would create a general rule the book does not make. The light beam is not rule_light_source either;
+    it is scenery. This follows the reasoning applied to the light mishap results in PKT-SD-110-110 and
+    the carousing outcomes in PKT-SD-091-093.'
+- text_locus: A Tell, p114
+  quoted_gist: most traps should have a hint or tell, and the GM is cautioned against making traps too
+    frequent or the pace will suffer
+  why_considered: It is one of three bolded rules in the section and the other two both yielded rows,
+    so treating it differently needs a reason.
+  rejection_reason: It is advice to the GM about designing traps, not a rule about how a trap works. Should
+    have a tell states no mechanic, there is no identity for a tell, and the pacing caution is about the
+    game rather than the fiction. This is the CORE ETHOS class of statement rejected throughout PKT-SD-101-109.
+    The bolding marks a heading for the paragraph, not a defined term; the other two bolded paragraphs
+    yielded rows because they state mechanics, not because they are bold.
+- text_locus: trained in tinkering, p114
+  quoted_gist: '''Thieves and characters who are trained in tinkering can describe how they disable or
+    circumvent a trap'''
+  why_considered: The thief half is asserted as M003. The tinkering half names a trained skill, and rule_learning
+    is canonical from printed page 91, where learning a new skill enables new actions and grants advantage
+    on certain checks. A row from rule_learning to rule_traps would connect the two.
+  rejection_reason: 'Tinkering is not a named identity anywhere in the graph and this page does not define
+    it. Connecting rule_learning to traps would assert that the learning rule specifically grants trap
+    disabling, which the source does not say; learning grants whatever the GM agrees, and tinkering appears
+    here only as an example of the kind of training that would qualify. abil_thievery was also considered
+    and declined: it is the thief benefit from printed page 22 and already carries its own row modifying
+    checks on trained tasks, and traps are not named there. The thief row is asserted because the class
+    is named outright; the rest is left where the source leaves it.'
+- text_locus: the opening sentence, p114
+  quoted_gist: '''Traps add peril and surprise to crawling.'''
+  why_considered: It names two canonical identities, rule_crawling_round and rule_surprise, and places
+    traps in relation to both.
+  rejection_reason: It is a thematic framing sentence rather than a mechanic. Surprise here is the ordinary
+    word, not rule_surprise, which is the combat and stealth rule defined on printed page 87 about beginning
+    a turn undetected; a trap springing is not that. Peril is not a mechanic at all. Asserting either
+    would put a resemblance into the graph, which constitution section 8 excludes in favour of source-supported
+    dependency.
+non_edge_observations:
+- id: OBS-01
+  subject: magnitudes are excluded from every row
+  detail: The table's twelve damage expressions across three tiers of severity and the d12 roll itself
+    are all magnitudes and none reaches a field. The table is carried as an identity and the rows say
+    that traps are resolved by it and that it inflicts damage, which is everything expressible. The one
+    condition in this packet names a circumstance, time pressure or a demand for great skill, and spells
+    no quantity; verified that no aspect or condition carries a digit.
+- id: OBS-02
+  subject: the graph has no condition identities, and the same-named spells are not substitutes
+  detail: 'Half of what the traps table delivers is a status effect and the graph can carry none of it.
+    Six effects appear across the twelve rows and no sleep, paralysis, blindness, confusion, unconsciousness
+    or petrification identity exists.
+
+    The trap worth flagging is that three of the six have same-named canonical identities, spell_sleep,
+    spell_blind_deafen and spell_confusion, which are spells and not conditions. Pointing the table at
+    them would assert that a pressure plate casts a wizard spell. The near miss is real: a keyword search
+    for sleep in the registry returns spell_sleep and nothing else, so an extractor matching on names
+    rather than on what the page is doing would land on it.
+
+    This is a larger gap than the individual ones recorded in earlier packets, because conditions recur
+    across traps, hazards, monsters and spells, and the next two packets in the queue are hazards and
+    the gauntlet. Recorded for the Architect as a standing shape rather than escalated from inside a packet.'
+- id: OBS-03
+  subject: the automatic-discovery rule contradicts nothing but is easy to mis-read
+  detail: 'M002 says a check is not an input to trap discovery, because a character who searches the right
+    area finds the trap automatically. That sits alongside M001 and M004, which both say a check does
+    bound trap handling. The three are consistent, and the distinction is which moment of the trap they
+    describe: finding, avoiding and disabling.
+
+    Recorded because a reader seeing one EXCLUDED_FROM and two CONSTRAINS rows between the same pair might
+    read them as contradictory. They are not; they are three sentences of the source, and three_check_rows_note
+    sets out which is which. The GM chapter''s INFORMATION principle on printed page 104 states the same
+    discovery rule as advice, and it was rejected there in PKT-SD-101-109 as advice; this page is its
+    defining locus and it is asserted here.'
+unresolved_identity_questions: []
+unresolved_identity_questions_note: 'None. The three judgements that could have gone otherwise are each
+  argued against a settled test: the hedging test decides M001 and M002 in opposite directions, the one-statement-per-row
+  test produces the three check rows rather than one, and the same-named-spell trap is a matter of fact
+  rather than judgement once the registry is read.'
+architectural_escalations: []
+architectural_escalation_note: None raised. Both identities use an approved prefix, every row uses a legal
+  edge type at status core, no row carries supersession_basis and none is an OVERRIDES, and no CLASSIFIED_AS
+  row appears. OBS-02 records a gap that will recur across several remaining chapters, but creating a
+  condition vocabulary is an Architect matter and is recorded rather than requested from inside a packet.
+completeness_statement: 'The whole of printed page 114, its four prose paragraphs and its twelve-row table,
+  was read at the recorded checksum. The packet yields 2 new identities and 6 rows, all citing page 114,
+  reusing 3 canonical identities whose labels were verified character for character. Every row was checked
+  against the 683 canonical edges for an assertion-key collision, for a shared source, type and target
+  under a different aspect, and for duplicates within the patch; there are none of any, and no canonical
+  row cited this page before.
+
+  Five candidates were rejected and each is recorded with its reason, the most consequential being the
+  table''s status effects, which have no identity and must not be pointed at the same-named spells. What
+  is deliberately not asserted is listed as OBS-01 through OBS-03 and there are no open identity questions.
+  No assertion depends on any other ruleset.'

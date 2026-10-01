@@ -1,0 +1,385 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-162-163-low-district-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-162-163-low-district
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-162-163-low-district
+  source_file: source.md
+  packet_source_checksum: sha256:f67cf2ba230d329d8c0b3e733f59f3cc24bb97c68df04047ef60c040f04eee24
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 068-encounters-low-district.md
+  citation_code: SD
+  page_start: 162
+  page_end: 163
+  page_number_basis: packet_page_markers
+units_note: 'Figures name their unit. Measured by the building script from the claimed source: 1 named
+  table, 50 data rows keyed to a hundred-sided roll, 0 sentences of prose, 23 rows on printed page 162
+  and 27 on 163.'
+page_attribution_basis: 'The page break falls inside the table, as it has in every packet of this chapter
+  so far. The p162 marker sits on the LOW DISTRICT heading under placement rule 1. The p163 marker sits
+  in the last cell of one table row, and acceptance test 3 applies a table-row marker to the whole row,
+  so that row is page 163 and persistence carries 163 to every row after it.
+
+  The script locates the marker by row index rather than by eye and derives each row''s page from it:
+  23 rows are page 162 and 27 are 163. Each submitted row is cited to the page of the cell it rests on,
+  and the script asserts that placement from the located cell index rather than from my reading.'
+scope_boundary: 'The bounded scope is the Primary Source Material section, printed pages 162 and 163:
+  one named table of 50 rows and no prose. The Supporting Source Context appends the random encounter
+  procedure from printed pages 112 and 113 and the monster attributes page from 189. Both are out of scope
+  and no row cites either.
+
+  That exclusion matters here because the appended encounter procedure is the very rule this table resolves.
+  Its content belongs to PKT-SD-112-113, which is already integrated, and re-asserting it would duplicate
+  canonical rows from a repeated passage.'
+source_summary: 'A single hundred-sided encounter table for a settlement''s poor low district, 50 rows,
+  with no procedure, no heading prose and no instructions. Almost every result is a street scene among
+  dockers, thugs, beggars and the Thieves Guild: a brawl out of a tavern, a sewer grate geysering waste,
+  a coffin that thumps, a beggar who turns out to be kobolds in a sack. Two cells state mechanics outright,
+  one naming an amount healed and one a magic item found. One names rival crawlers, and one instructs
+  the reader to roll twice and combine.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled, and every figure here
+  is computed by the building script from the canonical files and the claimed source.
+
+  The canonical graph holds 412 registry rows and 803 edges, and 0 rows cite printed page 162 or 163,
+  so nothing in this span has been extracted before. The registry holds 112 tbl_ identities and 0 monster_
+  identities, the latter being the figure that governs how much of this table is extractable at all.
+
+  rule_encounter carries 20 rows, of which 12 are RESOLVED_BY. The script asserts that the proposed table
+  id is absent from the registry before using it.'
+chapter_disposition_note: 'The disposition for this chapter was argued in full at PKT-SD-142-143 and is
+  applied here rather than re-argued. In short: no procedure identity, because the table''s own title
+  names rule_encounter and that rule has been canonical since printed page 112, so this table is a further
+  resolver of an existing rule rather than evidence of a new one. No terrain or district identity, because
+  values were declined at their own defining loci for danger level, treasure quality and settlement size.
+  No creatures and no named characters, because the registry holds 0 monster_ identities and a creature''s
+  defining locus is its stat block, not a line in an encounter table.
+
+  What remains is the small set of cells that state a mechanic or name a canonical procedure, and those
+  are found by measurement rather than by reading.'
+name_match_measurement_note: 'The cells were matched against the whole registry by script, not scanned
+  by eye, because a table of 50 prose cells is where a reference gets missed and where a false one gets
+  asserted. Both happened in earlier packets: rule_natural_twenty was missed at PKT-SD-101-109 by keyword-searching
+  instead of reading the registry, and a false absence claim about rule_invisibility reached production
+  from PKT-SD-062-065.
+
+  Two scans are run, because at PKT-SD-148-149 the whole-label scan was shown to fail in both directions:
+  it reports ordinary English that collides with a label, and it misses an inflected mention, since a
+  cell saying bear trap does not recover canonical Traps and a rival crawler does not recover Rival Crawlers.
+  The second scan compares stems, which closes that gap at the cost of widening the first, so both are
+  reported rather than one replacing the other. It was proved against PKT-SD-148-149 and recovers exactly
+  the two cells the label scan missed there.
+
+  Whole-label scan: 9 of the 50 cells match. Stem scan: 15 cells match, adding 6 identities the label
+  scan did not reach (class_fighter, rule_encounter, rule_taverns, rule_turn, spell_heal, weapon_dagger).
+  3 of all matched identities are real references: rule_hit_points, rule_rival_crawlers, rule_treasure.
+  item_magic_item, rule_encounter, rule_shop, rule_taverns are real mentions deliberately not given a
+  row of their own, for the reasons in rejected_candidates. The rest are ordinary English colliding with
+  an identity label: ancestry_half_orc, class_fighter, item_coin, lang_giant, rule_thrown, rule_turn,
+  spell_heal, weapon_dagger.
+
+  Identities this intake minted are now the largest single source of collisions on a city page: rule_shop
+  matches four cells, a butcher''s shop, a shop owner, a shop deed and nothing about the generator, and
+  rule_taverns matches two, a half-orc thrown through a tavern window and a brawl out of a tavern. rule_shop
+  has now collided in three separate packets. The rest are ordinary English: rule_thrown and ancestry_half_orc
+  on the thrown half-orc, item_coin on a beggar asking for coin, lang_giant on giant centipedes and a
+  giant rat, weapon_dagger on jugglers flipping daggers, rule_turn on a beggar who turns out to be kobolds,
+  class_fighter on rival dog fighters, and spell_heal on the word heals in the mulled wine cell, which
+  does carry a row but to rule_hit_points and not as a spell.'
+reused_nodes:
+- id: rule_encounter
+  label: Encounter
+  used_by: M001
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed page 112 with 20 rows and 12 RESOLVED_BY. This table is a further resolver
+    on a distinct aspect.
+- id: rule_rival_crawlers
+  label: Rival Crawlers
+  used_by: M002
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed pages 126 and 127 with 9 inbound rows. This row is the next and differs from
+    all of them in source.
+- id: rule_hit_points
+  label: Hit Points
+  used_by: M003
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical with 23 inbound rows. The cell has Old Esmerelda hand out cups of mulled wine with a stated
+    amount healed in parentheses, which is a restoration with a stated direction, so the row is authored
+    at improves and basis read. The amount is a magnitude and is not stored. This is the second such row
+    in the chapter, after the deep tunnels motes on printed page 151, and it carries no condition because
+    nothing here is conditional; the motes row needed one because the source made the healing depend on
+    catching them.
+- id: rule_treasure
+  label: Treasure
+  used_by: M004
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed page 117 with 6 rows, 4 of them inbound. The cell states that a dropped magic
+    item glitters inside a gutter. See treasure_reach_note and IDQ-01, because the basis differs from
+    the deep tunnels row in a way the Reviewer should rule on.
+candidate_nodes:
+- proposed_id: tbl_low_district_encounters
+  proposed_label: Low District Encounters Table
+  kind: table
+  why_needed: The one named table on the page, 50 rows keyed to a hundred-sided roll. It resolves rule_encounter
+    for low district and is the source of every other row this packet carries.
+  prefix_basis: tbl_ is a named source table; joins the 112 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 162, LOW DISTRICT ENCOUNTERS TABLE
+  source_evidence: page 162, the LOW DISTRICT ENCOUNTERS TABLE heading and its 50 data rows, which continue
+    onto page 163.
+candidate_edges:
+- ref: M001
+  source_id: rule_encounter
+  source_label: Encounter
+  edge_type: RESOLVED_BY
+  target_id: tbl_low_district_encounters
+  target_label: Low District Encounters Table
+  aspect: low selection
+  condition: ''
+  book: SD
+  page: 162
+  section: LOW DISTRICT ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: tbl_low_district_encounters
+  source_label: Low District Encounters Table
+  edge_type: FEEDS_INTO
+  target_id: rule_rival_crawlers
+  target_label: Rival Crawlers
+  aspect: encounter result
+  condition: ''
+  book: SD
+  page: 163
+  section: LOW DISTRICT ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: tbl_low_district_encounters
+  source_label: Low District Encounters Table
+  edge_type: MODIFIES
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: encounter healing
+  condition: ''
+  book: SD
+  page: 163
+  section: LOW DISTRICT ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M004
+  source_id: tbl_low_district_encounters
+  source_label: Low District Encounters Table
+  edge_type: FEEDS_INTO
+  target_id: rule_treasure
+  target_label: Treasure
+  aspect: encounter treasure
+  condition: ''
+  book: SD
+  page: 163
+  section: LOW DISTRICT ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: 1 of the 4 rows carry authored polarity, each on a type constitution section
+  5 reserves and each at basis read because the source states the direction in the cell itself. The magnitudes
+  in those cells are not storable and are not stored; the direction is. The remaining 3 rows are RESOLVED_BY
+  or FEEDS_INTO, neither reserved, so Builder derives governs and neutral respectively.
+status_note: All 4 rows are core, following the disposition settled as IDQ-01 of PKT-SD-124-125 and applied
+  throughout this chapter.
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: The table resolves encounters during travel and crawling. Recorded as a candidate only; constitution
+    section 8 reserves domain promotion to an Architect Decision.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: the hidden thieves and their ropes, p162
+  quoted_gist: hidden thieves pull ropes up in a side alley to trip marks
+  why_considered: Concealment, a rope and a stated effect on anyone walking past is close to the tripwire
+    that earned the forest trap row, and closer still to the desert nets.
+  rejection_reason: 'The device here has no independent operation: the thieves pull the rope when they
+    choose. Every cell that has earned a rule_traps reach describes something that works on its own once
+    set, nets that snap up, a wire that triggers a net, javelins that shoot from a statue, named net traps.
+    A rope held by a person is an ambush, and the canonical traps rows are about finding, disabling and
+    avoiding a placed device, which is not what a person yanking a rope presents. Recorded as OBS-02,
+    because agency is a distinction the chapter has not had to draw before.'
+- text_locus: the barrel of blubber and its oil vials, p163
+  quoted_gist: a refinery discards a barrel of rancid blubber, given in parentheses as a stated number
+    of oil vials
+  why_considered: item_oil_flask is canonical, and the parenthetical is the book converting a piece of
+    scenery into gear the party can carry, which is the same move the magic item cell makes two rows later.
+  rejection_reason: The parenthetical is a quantity, which is a magnitude, and the noun is vials where
+    the canonical label is Oil Flask. More importantly a table does not supply an input to an item, so
+    there is no correctly typed row available even if the identity were matched; the same reasoning routed
+    the deep tunnels magic item through rule_treasure rather than pointing at item_magic_item directly.
+    Unlike that cell this one names no category the treasure rule holds, so nothing survives.
+- text_locus: the hazards and violence that state no mechanic, pp162 and 163
+  quoted_gist: a dyehouse dumping boiling toxic slurry into the street, a sewer grate geysering waste,
+    a burned warehouse collapsing into a tenement, clay shingles falling from a roof, a smith flinging
+    still-hot horseshoes, kobolds raining stones from the eaves
+  why_considered: Six separate cells would injure a bystander, which is more than any city page so far.
+  rejection_reason: Not one states a check, a die, a value or a consequence, and the word damage does
+    not appear on the page. This is the ninth locus to lose rows to the absence of stated mechanics for
+    dangerous scenery, and the count is worth keeping because it is the single largest category of deliberate
+    loss in this chapter.
+- text_locus: the Thieves Guild, the Bywater Barons and the named people, pp162 and 163
+  quoted_gist: Thieves Guild footpads and toughs, the Bywater Barons, Lady Unwin, Old Esmerelda, a Duke
+    in disguise and the Wandering Merchant
+  why_considered: class_thief is canonical and the Thieves Guild appears twice, and Old Esmerelda's cell
+    does carry a row.
+  rejection_reason: A guild of thieves is an organisation, not the player class, which is the name-collision
+    reading settled at printed page 125. None of the named people has a defining locus. Old Esmerelda
+    earns nothing herself; her cell earns a row because it states an amount healed, and the row is sourced
+    from the table rather than from her.
+- text_locus: the two-encounter instruction, p163
+  quoted_gist: one result instructs the reader to roll twice more and combine the results, rerolling that
+    result if it comes up again
+  why_considered: It is the only instruction on the page, and the stem scan flags it as matching rule_encounter.
+  rejection_reason: The match is on the plain word encounters in the instruction's own text; M001 already
+    carries the table's relation to rule_encounter. The rest is arithmetic on the table's own roll. Declined
+    in the same form in each of the ten preceding chapter packets.
+- text_locus: the appended random encounter procedure and monster attributes, out of scope
+  quoted_gist: the printed page 112 and 113 encounter procedure and the printed page 189 monster attributes
+    page
+  why_considered: Both are in the file and the first is the rule this table resolves.
+  rejection_reason: Both are Supporting Source Context, outside the bounded scope. PKT-SD-112-113 is already
+    integrated, so extracting from it would duplicate canonical rows and cite pages outside this packet's
+    range.
+non_edge_observations:
+- id: OBS-01
+  subject: the rival stem matches three cells and only one is the generator
+  detail: 'The rival stem matches %d cells on this page, at indices %s. Two are ordinary English: rival
+    gangs of dirt-streaked children, and two rival dog fighters losing control of their mastiffs, the
+    second of which also collides with class_fighter. Only index %d, rival crawlers accusing the characters
+    of looting in their territory, is the generator.
+
+    Recorded because I adopted searching the rival stem two packets ago precisely because the label scan
+    kept missing this reach, and this is the first page where that search is itself noisy. The stem narrows
+    the field; it does not decide. Both discarded cells were read and rejected on the same ground as every
+    other collision, that the word appears and the thing does not.'
+- id: OBS-02
+  subject: agency is a new distinction on the trap boundary
+  detail: 'One cell has hidden thieves pull ropes up in a side alley to trip marks. Concealment and an
+    effect on passers-by are both stated, which is more than the grassland boulders managed, and it still
+    earns nothing.
+
+    The reason is new and worth naming, because the chapter will meet it again. Every cell that has earned
+    a rule_traps reach describes a device that works on its own once set: nets that snap up, a wire that
+    triggers a net, javelins that shoot from a statue, net traps left for game. A rope held by a person
+    is an ambush, and the canonical traps rows are about finding a placed device, disabling it and avoiding
+    its effect, none of which applies to a thief choosing when to pull. So the scale the jungle packet
+    recorded, named then operation then concealment only, now has a second axis: whether the mechanism
+    operates independently of a creature deciding to work it.'
+- id: OBS-03
+  subject: this city page states more mechanics than any other in the chapter
+  detail: 'Eleven packets in, the district tables have been the thinnest: artisan yielded two rows, castle
+    one, high district three. This one yields four, and two of them state mechanics outright, an amount
+    healed and a magic item found. The terrain tables have generally done better, and the assumption forming
+    across the chapter was that city pages are social and terrain pages are mechanical.
+
+    Recorded because that assumption is now wrong and it would have been a reasonable shortcut to take.
+    It is the argument for reading all fifty cells of every remaining packet rather than sampling on the
+    basis of what the page is about.'
+unresolved_identity_questions:
+- id: IDQ-01
+  question: Does an encounter cell naming a magic item, without the word treasure, meet the explicit basis
+    the deep tunnels treasure row was approved on?
+  analyst_reading: Yes, and M004 is written on that basis. Both cells state that the encounter yields
+    a magic item, which is a category the graph holds and which already feeds rule_treasure; the word
+    treasure in the earlier cell described the container rather than adding the mechanical content.
+  why_it_is_a_question: The Integrator affirmed the earlier approval with the condition that future cells
+    earn it only on the same explicit basis, and named the treasure chest in describing that basis, so
+    whether the magic item alone suffices is exactly the question left open. It also sits close to a decline
+    I made at PKT-SD-146-147, where a magic sword appears in the hand of a gladiator statue and earned
+    nothing. I distinguish them because that cell describes an object appearing in a scene and this one
+    names the category and puts it in a gutter to be picked up, but that is a distinction I am drawing.
+  impact_if_overturned: M004 is withdrawn and nothing else depends on it. If instead the Reviewer holds
+    that the page-147 magic sword should also have carried a row, that is a successor for PKT-SD-146-147
+    rather than a correction here. Either ruling is worth having now rather than in the eleven chapter
+    packets still to come, several of which will have a treasure or item result in the hundredth slot
+    as this one does.
+unresolved_identity_questions_note: One raised, on the treasure reach. Every other structural choice follows
+  the chapter disposition settled at PKT-SD-142-143 and the mechanism test settled at PKT-SD-152-153.
+architectural_escalations: []
+architectural_escalation_note: None raised. The one proposed identity uses an approved prefix, every row
+  uses a legal edge type at status core, no row carries supersession_basis and none is an OVERRIDES, and
+  no CLASSIFIED_AS row appears. The authority list omits the nonexistent Shadowdark DEC-2026-0003; registry
+  authority for this ruleset is constitution section 2, as recorded in GUR-PKT-SD-142-143-arctic-r01.
+completeness_statement: 'Both printed pages in scope were read in full at the recorded checksum: 1 named
+  table, 50 data rows, 0 sentences of prose. The packet yields 1 new identity and 4 rows, reusing 4 canonical
+  identities whose labels the building script asserted equal to the registry. The proposed table carries
+  edges, so nothing is left unattached.
+
+  Every row was checked against the 803 canonical edges for an assertion-key collision, for a shared source,
+  type and target under a different aspect, and for duplicates within the patch; there are none of any,
+  and no canonical row cited either page before. The script locates the supporting cell for each row and
+  asserts its page, which matters because the page break falls inside the table.
+
+  6 candidates were rejected and each is recorded with its reason. The largest deliberate loss is the
+  creature and scene content, which belongs to the unextracted monster chapter or states no mechanic at
+  all. 8 of the 15 apparent registry references in the cells are spurious collisions with ordinary English,
+  measured rather than filtered by eye. No assertion depends on any other ruleset.'
+treasure_reach_note: 'M004 applies the disposition the Reviewer approved at PKT-SD-150-151 and affirmed
+  as binding rather than advisory, and the basis differs in one respect that the Reviewer should rule
+  on. It is raised as IDQ-01.
+
+  The deep tunnels cell read that an ancient treasure chest holds a random magic item. The approval turned
+  on the cell classifying what is found in the book''s own categories rather than describing an object,
+  and the Integrator''s affirmation named treasure chest holding a random magic item as the explicit basis.
+  This cell, at row index 49 of 50, reads that a dropped magic item glitters inside a filthy gutter. It
+  names the magic item category and does not use the word treasure.
+
+  My reading is that the magic item is the explicit basis in both cells and the word treasure was incidental
+  to the first. What both state is that the encounter yields a magic item, and a found magic item is treasure
+  in this graph''s own terms, since item_magic_item already feeds rule_treasure as an experience source
+  from printed page 117.
+
+  As before only one row is written and it is routed through rule_treasure rather than pointing at item_magic_item,
+  because a table does not supply an input to an item. The cells this does not license are unchanged and
+  were all declined again on this page: a barrel of blubber given as oil vials, a beggar asking for coin,
+  a shop deed. Those describe objects or state quantities; this one names a category the graph holds.'
+measured_figures_note: Figures quoted in this artifact's prose are computed by the building script from
+  the claimed source. For this packet that includes the rival stem matching cells [14, 35, 36] of which
+  36 is the generator, the crawler stem matching cell [36], the healing cell at index 45, the magic item
+  cell at index 49, the oil vials cell at index 44 and the rope cell at index 22.

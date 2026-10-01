@@ -1,0 +1,273 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20260926-006",
+  "ruleset_id": "shadowdark",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-09-26T13:12:51.373Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:7c575085b4ee7609195520d9b9a649ad58a95811a19041afc756b3fb0dc73de4 actual=sha256:7c575085b4ee7609195520d9b9a649ad58a95811a19041afc756b3fb0dc73de4"
+        },
+        {
+          "check": "component checksum matches: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:0504d8e7bbe9dd6b1b57ad3f9fb3496497b393bfe5ca42c27ae9e1103a924e28 actual=sha256:0504d8e7bbe9dd6b1b57ad3f9fb3496497b393bfe5ca42c27ae9e1103a924e28"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:274510bc2d371d68d927baa9b21db57407ed2392a61e399ce6793d6eb957fd72 actual=sha256:274510bc2d371d68d927baa9b21db57407ed2392a61e399ce6793d6eb957fd72"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01.yaml: declared=sha256:637d35ee419a78fb05937e52390c73dce0deacecbe82457d379dd57ab14e8726 actual=sha256:637d35ee419a78fb05937e52390c73dce0deacecbe82457d379dd57ab14e8726"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=39 actual=39"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 6, 'pending_additions': 33, 'updates': 0, 'node_registrations': 9}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 492,
+    "edges_after": 531,
+    "edges_updated_in_place": 0,
+    "nodes_before": 239,
+    "nodes_after": 248,
+    "registry_before": 263,
+    "registry_after": 272,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "spell_shield_of_faith",
+        "label": "Shield of Faith",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "integration_id": "INT-20260926-006"
+      },
+      {
+        "id": "spell_silence",
+        "label": "Silence",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "integration_id": "INT-20260926-006"
+      },
+      {
+        "id": "spell_sleep",
+        "label": "Sleep",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "integration_id": "INT-20260926-006"
+      },
+      {
+        "id": "spell_smite",
+        "label": "Smite",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "integration_id": "INT-20260926-006"
+      },
+      {
+        "id": "spell_speak_with_dead",
+        "label": "Speak with Dead",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "integration_id": "INT-20260926-006"
+      },
+      {
+        "id": "spell_stoneskin",
+        "label": "Stoneskin",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "integration_id": "INT-20260926-006"
+      },
+      {
+        "id": "spell_summon_extraplanar",
+        "label": "Summon Extraplanar",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "integration_id": "INT-20260926-006"
+      },
+      {
+        "id": "spell_telekinesis",
+        "label": "Telekinesis",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "integration_id": "INT-20260926-006"
+      },
+      {
+        "id": "spell_teleport",
+        "label": "Teleport",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01-r01",
+        "integration_id": "INT-20260926-006"
+      }
+    ],
+    "registry_derived_resync": 17,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

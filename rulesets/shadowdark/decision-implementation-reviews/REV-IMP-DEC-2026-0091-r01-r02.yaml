@@ -1,0 +1,25 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0091-r01-r02
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: shadowdark
+constitution_version: '1.2'
+revision: 2
+supersedes: REV-IMP-DEC-2026-0091-r01-r01
+reviewed_by: reviewer
+review_date: '2026-09-22'
+overall_disposition: approved
+reviewed_implementation: {id: IMP-DEC-2026-0091-r01, path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0091-r01.yaml, checksum: sha256:e244e0933e0b15670af3ee33d4b71cc74ce350ae8fda39e7a88b2ac5b85b4d14}
+decision_input: {id: DEC-2026-0091, path: rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml, checksum: sha256:8c3eafe3c532ba58275292c02e128b6152ac92c0f6f1e492cf27b9004206cd6c}
+handoff: {next_role: none, readiness: terminal, reason: 'Independent review completes DEC-2026-0091 step 4.', blocking_ids: []}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: 'Schema requires nonempty proposed_id, proposed_label, kind and why_needed; legacy label/evidence are prohibited.'}
+  - {acceptance_test_index: 2, disposition: verified, evidence: 'Compiler fails closed before emitting a blank proposal.'}
+  - {acceptance_test_index: 3, disposition: verified, evidence: 'Ref-keyed per-row mappings are executable; malformed blocks fail closed.'}
+  - {acceptance_test_index: 4, disposition: verified, evidence: 'WORK_QUEUES 1.32 and role instructions document canonical forms.'}
+  - {acceptance_test_index: 5, disposition: verified, evidence: 'Focused ancestry tests passed 62/62; report pins 876-suite success and unchanged inputs.'}
+independent_validation: {passed: true, commands: [{command: '[cwd tooling/builder/tests] python -m unittest test_shadowdark_ancestry', exit_code: 0, result: passed, summary: 'Ran 62 tests in 3.947s; OK.'}]}
+review_evidence:
+  validation_report: {path: build/reports/IMP-DEC-2026-0091-r01.validation.json, checksum: sha256:300b19ebcde29361540c4370468c3967702251f9861964a6012f557feaf27175}
+  scope_ruling: 'Fixture why_needed completion preserves existing assertions and is required by the mandated fail-closed input contract. Applying every explicitly supplied node exact_corrections field prevents silent partial application without inferring values or widening input forms.'
+completion_statement: 'r02 directly corrects r01 only by pinning the actual report checksum; all independent findings and approval remain unchanged.'

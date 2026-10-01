@@ -1,0 +1,209 @@
+schema_version: '1.0'
+id: ESC-2026-09-21T02.32.54.741Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-016-017-ancestries
+constitution_version: '1.0'
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-09-21'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Shadowdark Constitution 1.0 section 2 provides no prefix under which an individual ancestry can
+    be given a node identity. Every assertion on printed pages 16 and 17 takes an ancestry as its
+    source node, so the packet cannot produce a single candidate edge until an identity scheme
+    exists. The Analyst is prohibited from minting a prefix. This is the ESCALATION_CONTRACT trigger
+    that no existing node ID represents the concept and a new kind or prefix may be needed.
+  blocking_ids: []
+
+question: >-
+  Under what node identity are the six Shadowdark ancestries recorded, given that Constitution 1.0
+  section 2 offers no prefix for an individual ancestry and explicitly warns against conflating
+  ancestry with class, and given that at least one ancestry name also names a creature family
+  elsewhere in the same book?
+
+scope_limits: >-
+  This escalation asks an identity question for one packet. It proposes no edge semantics, no domain,
+  no general rule, and no change to the edge vocabulary. It does not ask for the character race
+  registry to be activated, and it does not ask any role to read a page outside pages 16 and 17.
+
+evidence:
+  packet:
+    id: PKT-SD-016-017-ancestries
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-016-017-ancestries
+    checksum: sha256:fc3e191df64000bc5ebc8b7b30cbd0b2f94765f6a7bee7f39b9d7491aebad86c
+    pages: 16 to 17
+    status: claimed and read in full; no GUR published
+  source_excerpt_summary: >-
+    Six third-level headings, each an ancestry: DWARF, ELF, GOBLIN and HALF-ORC on page 16, HALFLING
+    and HUMAN on page 17. Each entry has the same three-part shape: a sentence of flavour, a sentence
+    naming the languages the character knows, and one bolded named benefit. The benefits are Stout
+    for the dwarf, Farsight for the elf, Keen Senses for the goblin, Mighty for the half-orc,
+    Stealthy for the halfling and Ambitious for the human. The exact mechanical content is in the
+    claimed packet at the checksum above and is not restated here beyond what the question needs.
+  why_every_assertion_is_blocked: >-
+    Each of the six entries asserts relationships whose source is the ancestry itself: the ancestry
+    grants known languages, and the ancestry grants a named benefit that in turn touches hit points,
+    attack rolls, spellcasting checks, surprise, invisibility or talent rolls. There is no assertion
+    on these pages whose source is anything other than an ancestry. Unlike printed pages 11 to 14,
+    where the ancestry axis alone was sufficient and was recorded as sys_ancestry, this packet is
+    about the members. The axis node cannot carry six different language sets and six different
+    benefits.
+  prefixes_considered_and_rejected:
+    - prefix: class_
+      verdict: rejected
+      reason: >-
+        Constitution 1.0 section 2 states that no ancestry, race or class conflation is assumed
+        before source review. Shadowdark keeps the two axes separate in the source: printed page 12
+        lists ANCESTRY and CLASS as distinct character-sheet entries, and printed page 14 gives a
+        1st-level character both a choice of ancestry and a choice of class. A Shadowdark character
+        has an ancestry and a class simultaneously, so class_ would assert an identity the source
+        contradicts.
+    - prefix: monster_
+      verdict: rejected
+      reason: >-
+        monster_ is a creature or creature family. A playable ancestry is a character option, not a
+        monster entry, and using monster_ would make a player character an instance of a bestiary
+        family. See the collision note below, which is a further reason rather than a lesser one.
+    - prefix: sys_
+      verdict: rejected for members, already used for the axis
+      reason: >-
+        sys_ancestry is proposed in GUR-PKT-SD-011-014-character-overview-and-starting-level-r01 as
+        the ancestry axis, which is a whole subsystem and a correct use. An individual ancestry is a
+        member of that axis, not a subsystem, and minting sys_dwarf would flatten the distinction
+        the axis node exists to express.
+    - prefix: rule_
+      verdict: rejected
+      reason: >-
+        rule_ is a named rule or procedure. An ancestry is neither; it is a character-option
+        identity that owns procedures rather than being one. Using rule_ would also make the six
+        ancestries indistinguishable in kind from the dozens of ordinary procedures the book defines.
+    - prefix: abil_ tbl_ spell_ item_ cbt_ exp_ ex_ weapon_
+      verdict: rejected
+      reason: None describes a character-option identity. No further argument is needed.
+  name_collision_note: >-
+    Goblin is a playable ancestry on printed page 16. The same intake contains a file named
+    101-monster-family-goblins.md, and Half-Orc's entry describes orcs. Those packets have not been
+    read and nothing is asserted about their contents; the filenames are cited only to show that the
+    book plausibly defines goblins as a creature family as well. If ancestries were recorded under
+    monster_, a later monsters packet would either reuse a playable-ancestry identity for a bestiary
+    entry or mint a rival, and neither is acceptable. Whatever scheme is chosen should let the
+    playable goblin and any creature goblin be distinct identities without either stem looking like
+    a typo of the other.
+  registry_state: >-
+    rulesets/shadowdark/registries/character_races.yaml exists with status inactive and scope
+    pending_source_evidence, an empty member list, and a note that no source-supported ancestry or
+    race membership has been registered. Constitution 1.0 section 2 ties its reactivation to source
+    review. This packet is that source review for the six ancestries, which is why the escalation is
+    raised from here rather than from the earlier overview packet. The Analyst may not amend a
+    registry and takes no position on whether the registry is activated; only the node identity
+    question must be settled for extraction to proceed.
+
+options_considered:
+  - id: OPT-A
+    summary: add an ancestry prefix to Constitution 1.0 section 2
+    detail: >-
+      Amend the section 2 table with a new prefix, for example ancestry_, kind character ancestry,
+      giving ancestry_dwarf, ancestry_elf, ancestry_goblin, ancestry_half_orc, ancestry_halfling and
+      ancestry_human. The existing sys_ancestry axis node stays as the subsystem.
+    cost: >-
+      A constitution amendment and a version bump for shadowdark. Any tooling that enumerates
+      approved prefixes must accept the new one.
+    benefit: >-
+      Says exactly what the thing is, keeps ancestry and class on separate axes as the source does,
+      leaves monster_ free for the bestiary, and gives every later class, talent and monster packet
+      an unambiguous target. The Analyst considers this the most direct reading of the source.
+  - id: OPT-B
+    summary: reuse race_ from another ruleset's vocabulary
+    detail: >-
+      Adopt a race_ prefix in Shadowdark as adnd1e and basicdnd have, giving race_dwarf and so on.
+    cost: >-
+      Shadowdark's own term is ancestry, not race; the word race does not appear in the source pages.
+      Constitution section 2 preserves source-defined names and SOURCE_MARKDOWN makes the packet
+      authoritative for source spelling, so importing another game's word would be the drift those
+      rules exist to prevent. It would also invite the assumption that Shadowdark ancestries behave
+      like AD&D races, which section 2 of this ruleset's constitution explicitly refuses.
+    benefit: Cross-ruleset symmetry of prefix names, which has no mechanical value here.
+  - id: OPT-C
+    summary: record ancestries as classes
+    detail: Mint class_dwarf and the rest, as basicdnd Constitution 1.0 does for its demihumans.
+    cost: >-
+      Wrong for this ruleset. The basicdnd ruling is correct there because Rules Cyclopedia
+      demihumans genuinely are character classes and a character has one or the other. Shadowdark
+      gives a character both an ancestry and a class, so this would merge two live axes and make
+      every class packet on printed pages 18 to 25 collide with an ancestry. Recorded because the
+      neighbouring ruleset chose it and the difference should be on the record, not because it is
+      viable here.
+    benefit: No constitution change.
+  - id: OPT-D
+    summary: defer by modelling only the axis
+    detail: >-
+      Assert nothing per ancestry and let printed pages 16 and 17 contribute only to sys_ancestry.
+    cost: >-
+      Discards the entire packet. Six language grants and six named benefits would never enter the
+      graph, and later packets that reference an ancestry benefit would have no target. This is
+      recorded as the null option so the cost of deferring is explicit.
+    benefit: No governance change and no risk of a wrong prefix.
+
+recommended_resolution: >-
+  OPT-A. The Analyst recommends a dedicated ancestry prefix using the source's own word, with the
+  six members named from their source headings and half-orc carrying an underscore for the hyphen in
+  the printed name. The Analyst asks that the Decision state the prefix and its kind, confirm the
+  stem for HALF-ORC since it is the only name needing a spelling choice, and say whether the six
+  named benefits are separate identities in their own right or properties asserted from the ancestry
+  node; that second point changes the edge shape and the Analyst has deliberately not assumed it.
+  The Analyst takes no position on activating the character race registry, which is registry work
+  the role may not perform or request.
+
+expected_migration_impact:
+  canonical_data_change: false
+  registry_change: >-
+    None required by this question. The Shadowdark node registry is empty, so no existing row is
+    renamed or repointed and no migration is implied. Whether character_races.yaml is activated is
+    an Architect matter outside this question.
+  existing_artifact_invalidation: >-
+    None. The two published Shadowdark GURs propose no individual ancestry identity.
+    GUR-PKT-SD-011-014-character-overview-and-starting-level-r01 proposes only the sys_ancestry axis
+    and its IDQ-01 already records this gap as forward work, so a ruling here confirms that GUR
+    rather than disturbing it. No GUP, Review, Approved bundle or Integration record exists in this
+    ruleset.
+  affected_future_work: >-
+    Printed pages 16 and 17 directly. Later packets that attach a benefit or a language to an
+    ancestry will reuse whatever identity is approved; none has been analysed and none is predicted
+    here.
+
+governance_change_surface:
+  constitution_change: >-
+    Yes under OPT-A and OPT-B: rulesets/shadowdark/governance/constitution.md section 2 gains a
+    prefix row and the version moves from 1.0. This is ruleset-scoped and reaches no other ruleset.
+  contract_change: No. No universal contract is affected.
+  registry_change: Not required by this question.
+  schema_change: No.
+
+blocked_work:
+  - id: PKT-SD-016-017-ancestries
+    reason: >-
+      Every assertion on the page takes an ancestry as its source node. The packet is claimed and
+      read; the GUR follows the Decision.
+unblocked_work: >-
+  No other packet is blocked by this escalation. The two published GURs are Builder-ready and
+  unaffected, and the remaining unclaimed packets keep their ordinary priorities. Under
+  contracts/HERDR_HANDOFFS.md the existence of this escalation does not hold unrelated ready work,
+  and the Analyst continues extracting elsewhere rather than pausing the book.
+
+analyst_position: >-
+  This escalation is raised from printed pages 16 and 17 rather than from the earlier overview
+  packet on purpose. IDQ-01 of GUR-PKT-SD-011-014-character-overview-and-starting-level-r01 foresaw
+  the gap but declined to escalate it, because ESCALATION_CONTRACT requires the smallest relevant
+  source excerpt and the affected set, and neither existed until this packet was read. The overview
+  needed only the axis, which an approved prefix already covered, so escalating then would have been
+  speculation about an unread page.
+  The Analyst has not minted a provisional identity to keep working, and has not published a GUR
+  carrying placeholder node IDs. Either would put an identity into the first Shadowdark packets that
+  the Architect had not approved, in a graph whose registry is still empty and where the first
+  identities set the pattern every later packet follows.

@@ -1,0 +1,305 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-115-115-hazards-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-115-115-hazards
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-115-115-hazards
+  source_file: source.md
+  packet_source_checksum: sha256:76f0d32e653112f6335a594e3e0a6bf5783c20a8e760487e2b146e1e825ca624
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 044-hazards.md
+  citation_code: SD
+  page_start: 115
+  page_end: 115
+  page_number_basis: packet_page_markers
+page_attribution_basis: One marker resolves this packet. p115 ends the HAZARDS heading, which is also
+  the section's first heading, and placement rule 1 applies it to that whole heading while the persistence
+  rule carries it across the table. All three rows cite printed page 115. No content precedes the marker
+  and no page is shared.
+scope_boundary: The bounded scope is the Primary Source Material section, the single printed page 115
+  and its table. The trailing Supporting Source Context is out of scope.
+source_summary: 'Hazards are passive danger in the environment, usually impossible to defeat or permanently
+  disable, and unlike traps most are obvious from the start. Four bolded paragraphs follow. Movement Restriction:
+  some hazards inhibit or prevent movement and can fully entrap characters, with quicksand and slippery
+  ice as examples. Damage: some deal ongoing damage, such as toxic spores or acid rain. Weakening: certain
+  hazards weaken or hamper characters, such as antimagic zones or vapours that sap physical strength.
+  Combining: the most insidious hazards combine more than one type. A d12 table then gives twelve examples
+  in each of the three columns.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled: the canonical graph
+  holds 320 registry rows and 689 edges. The registry was read in full and every reused label verified
+  character for character. No canonical row cites printed page 115, so nothing in this span has been extracted
+  before, and no hazard identity existed.
+
+  rule_traps and tbl_traps became canonical in the immediately preceding integration and their five rows
+  were read before anything here was written, because this page defines hazards partly by contrast with
+  traps. Every proposed row was checked against the canonical edge set for an assertion-key collision,
+  for a shared source, type and target under a different aspect, and for duplicates within the patch;
+  there are none of any. The new movement row does not collide with the nine canonical rows already constraining
+  or excluding ex_movement, which differ in source.'
+low_yield_note: 'Three rows from a page that closely parallels the traps page, which yielded six. The
+  difference is not effort and it is worth setting out, because the two pages look alike and a reader
+  comparing them will notice.
+
+  The traps prose states how a check interacts with a trap at three separate moments, finding, avoiding
+  and disabling, and each of those is a relation between two canonical identities. The hazards prose states
+  no check interaction at all. What it states instead is what hazards do, in three kinds: restrict movement,
+  deal damage, and weaken. Two of those have a canonical target and are asserted. The third does not,
+  and that is the whole of the difference; see OBS-01.
+
+  The page also says hazards usually cannot be defeated or disabled, which is the exact converse of the
+  trap disabling rule now in production, and that could not be carried either. See OBS-02.'
+reused_nodes:
+- id: ex_movement
+  label: Movement
+  used_by: M001
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label, verified
+    character for character. Restricted by hazards of the first stated kind.
+- id: rule_damage
+  label: Damage
+  used_by: M002
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label, verified
+    character for character. Inflicted by hazards of the second stated kind.
+candidate_nodes:
+- proposed_id: rule_hazards
+  proposed_label: Hazards
+  kind: procedure
+  why_needed: 'The named rule this page defines: passive environmental danger, usually obvious and usually
+    undefeatable, of three stated kinds.'
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 115, HAZARDS
+  source_evidence: page 115, the HAZARDS heading.
+- proposed_id: tbl_hazards
+  proposed_label: Hazards Table
+  kind: table
+  why_needed: The named d12 table supplying example hazards in three columns, one per stated kind.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 115, HAZARDS TABLE
+  source_evidence: page 115, the HAZARDS TABLE heading.
+candidate_edges:
+- ref: M001
+  source_id: rule_hazards
+  source_label: Hazards
+  edge_type: CONSTRAINS
+  target_id: ex_movement
+  target_label: Movement
+  aspect: movement restriction
+  condition: ''
+  book: SD
+  page: 115
+  section: HAZARDS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M002
+  source_id: rule_hazards
+  source_label: Hazards
+  edge_type: TRIGGERS
+  target_id: rule_damage
+  target_label: Damage
+  aspect: ongoing damage
+  condition: ''
+  book: SD
+  page: 115
+  section: HAZARDS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: inflicts
+  polarity_basis: read
+- ref: M003
+  source_id: rule_hazards
+  source_label: Hazards
+  edge_type: RESOLVED_BY
+  target_id: tbl_hazards
+  target_label: Hazards Table
+  aspect: hazard selection
+  condition: ''
+  book: SD
+  page: 115
+  section: HAZARDS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: Authored polarity appears on two rows and no other, each with basis read
+  as invariant 15 requires. The CONSTRAINS row takes governs and the TRIGGERS row takes inflicts. The
+  RESOLVED_BY row carries none, since constitution section 5 derives it. No MODIFIES row appears in this
+  packet.
+hedging_note: 'Every mechanical sentence on this page is hedged, and that decided the one type choice
+  worth explaining. Some hazards inhibit or prevent movement; some deal ongoing damage; certain hazards
+  weaken. None is absolute.
+
+  M001 therefore takes CONSTRAINS rather than EXCLUDES even though the sentence contains the word prevent,
+  because the hedge governs the sentence: some hazards prevent movement, not hazards prevent movement.
+  The same sentence''s tail, that hazards can even fully entrap characters, is an intensification of the
+  same fact rather than a second fact, and is hedged again with can, so it does not earn a separate EXCLUDES
+  row. Three canonical spells do hold EXCLUDES rows against ex_movement, from Resilient Sphere, Wall of
+  Force and Web, and each of those states its prevention absolutely; the contrast is the test working.'
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: Hazards are environmental danger encountered while adventuring. Recorded as a candidate only;
+    constitution section 8 reserves domain promotion to an Architect Decision. Consistent with the exploration
+    candidate recorded in five earlier packets.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: Weakening, p115
+  quoted_gist: '''Certain hazards weaken or hamper the characters. These could include antimagic zones
+    or vapors that sap physical strength.'''
+  why_considered: 'It is one of the three stated kinds of hazard and the other two both yielded rows,
+    so declining it needs a reason. Its two examples also point at canonical identities: an antimagic
+    zone at rule_spellcasting_check and sapped physical strength at abil_strength, with abil_stat_modifier
+    a further candidate.'
+  rejection_reason: The general statement has no target. Weakening or hampering a character is not a named
+    mechanic and there is no identity for a weakened state, which is the same condition-vocabulary gap
+    recorded as OBS-02 of PKT-SD-114-114. The two examples are introduced with could include, which marks
+    them as illustrations of the kind rather than as rules; asserting rule_hazards MODIFIES abil_strength
+    from them would claim that hazards as a class reduce Strength, which the page does not say. Recorded
+    as OBS-01 because this is the second consecutive packet where the missing condition vocabulary costs
+    the larger part of a page's content.
+- text_locus: the opening statement, p115
+  quoted_gist: '''There is often no way to defeat or permanently disable them.'' and ''Unlike traps, most
+    hazards are obvious from the start.'''
+  why_considered: 'This is the closest call in the packet. Both sentences define hazards by contrast with
+    traps, rule_traps is canonical as of the immediately preceding integration, and its five rows include
+    exactly the two things being contrasted: class_thief GATES rule_traps on disabling access, and rule_check
+    EXCLUDED_FROM rule_traps on trap discovery. A reader who has both pages in view should be able to
+    see the contrast.'
+  rejection_reason: 'Neither sentence states a relation between two identities. The first says hazards
+    usually cannot be disabled, which is the absence of a relation, and the graph has no way to assert
+    that something does not connect to anything; there is no disabling identity for hazards to be excluded
+    from, since disabling exists in the graph only as an aspect on a thief row. The second says hazards
+    are obvious, and obviousness has no identity either.
+
+    An ALTERNATIVE_TO row between hazards and traps was considered and rejected on the vocabulary: that
+    type means mutually exclusive or substitutable, and hazards and traps are neither, they are two kinds
+    of danger that can appear in the same room. Recorded as OBS-02.'
+- text_locus: the Movement column entry for Caltrops, p115
+  quoted_gist: Caltrops listed as one of twelve example movement hazards
+  why_considered: item_caltrops is canonical, a gear entry from the equipment chapter, and this cell names
+    it exactly. Under the incidental-locus test both endpoints exist and the page appears to state a relationship,
+    which is the shape that carried the torch extinguish row in PKT-SD-096-100.
+  rejection_reason: 'It fails the test that the previous packet''s condition effects failed, in mirror
+    image, and declining it is the same discipline. Thirty-six flavour entries fill this table and exactly
+    one happens to share a name with a canonical identity; asserting that one would be selecting a row
+    because a string matched, not because the page states a rule. The page states no mechanic about caltrops
+    at all, only that they are an example of a movement hazard, and the same cell could as easily have
+    read loose gravel.
+
+    The incidental-locus test requires the source to state a relationship, not merely to mention two things
+    that both have identities. Here the relationship asserted would be that the purchasable gear item
+    is a hazard rule, which conflates an object a character buys and deploys with passive environmental
+    danger. Recorded as OBS-03.'
+- text_locus: the rest of the Hazards Table, p115
+  quoted_gist: thirty-five further example hazards across three columns, including antimagic zones, magical
+    silence, snuffed light sources, sleep-inducing spores and confusing reflections
+  why_considered: 'Several name concepts adjacent to canonical identities: snuffing light sources is close
+    to rule_light_source, magical silence to spell_silence, antimagic to rule_spellcasting_check, and
+    sleep-inducing and confusing to the same spells that tempted the previous packet.'
+  rejection_reason: 'They are flavour prompts for a GM choosing a hazard, in the same class as the trap
+    triggers rejected in PKT-SD-114-114 and the carousing outcomes in PKT-SD-091-093. The page states
+    no mechanic for any individual entry: no check, no value, no duration. The sleep and confusion entries
+    are the same near miss as last packet, where the same-named canonical identities are spells rather
+    than conditions, and pointing at them would assert that a patch of spores casts a spell.'
+- text_locus: Combining, p115
+  quoted_gist: '''The most insidious hazards combine one or more of these types into a single threat.'''
+  why_considered: It is the fourth bolded paragraph and says something about the relation between the
+    three kinds.
+  rejection_reason: 'It is a statement about the three categories rather than about the game: it tells
+    the GM that a hazard may do more than one of the three things, which the three asserted and unasserted
+    kinds already allow. No mechanic turns on whether a hazard is combined, and there is no identity for
+    a combination. This is design advice in the CORE ETHOS class rejected throughout PKT-SD-101-109.'
+non_edge_observations:
+- id: OBS-01
+  subject: the missing condition vocabulary now costs a full third of a page
+  detail: 'Weakening is one of the three kinds of hazard the page defines and none of it reaches the graph.
+    There is no identity for a weakened, hampered, sickened, disoriented, exhausted or blinded state,
+    and the page''s own examples are hedged illustrations rather than rules.
+
+    This is the second consecutive packet where that gap takes the larger part of the content, after the
+    traps table''s six status effects. The two pages together suggest the shape of what is missing: a
+    small vocabulary of conditions that traps, hazards and probably monsters all inflict. I am not proposing
+    it, because minting a vocabulary is not an Analyst act and doing it from a hazards page would put
+    it at the wrong locus. Recorded for the Architect as accumulating evidence rather than as a request.'
+- id: OBS-02
+  subject: the graph cannot express that hazards are undefeatable
+  detail: 'The page''s most distinctive claim is that hazards usually cannot be defeated or permanently
+    disabled, stated by explicit contrast with traps. Traps now carry class_thief GATES rule_traps on
+    disabling access; hazards carry no corresponding row and cannot, because asserting an absence is not
+    something the vocabulary does. There is no disabling identity to exclude hazards from, disabling existing
+    in the graph only as an aspect on the thief row.
+
+    The consequence is that a reader querying how to deal with a hazard finds only that it restricts movement
+    and deals damage, with nothing to say that dealing with it is largely not possible. The same applies
+    to obviousness: traps carry an explicit discovery row and hazards carry nothing, so the contrast the
+    source draws is invisible. Recorded rather than forced.'
+- id: OBS-03
+  subject: Caltrops is a name collision and declining it is the same discipline as last packet
+  detail: 'item_caltrops is canonical and Caltrops appears in the Movement column. Asserting a row would
+    have been name matching: thirty-six entries fill this table and one happens to collide with a registry
+    string.
+
+    Worth recording alongside the previous packet''s near miss, because the two run in opposite directions
+    and the same test settles both. There the tempting identities were spells with condition names, and
+    pointing at them would have said a trap casts a spell. Here the tempting identity is a real gear item,
+    and pointing at it would say a purchasable object is a hazard rule. In both cases the source mentions
+    two things that have identities without stating a relationship between them, which is exactly what
+    the incidental-locus test excludes.'
+unresolved_identity_questions: []
+unresolved_identity_questions_note: 'None. The three judgements that could have gone otherwise are each
+  argued against a settled test: the hedging test decides M001''s type, the incidental-locus test decides
+  the Caltrops cell, and the missing-endpoint rule decides Weakening and the undefeatability claim. What
+  remains open is not a question for this packet but the condition vocabulary recorded as OBS-01, which
+  is an Architect matter.'
+architectural_escalations: []
+architectural_escalation_note: None raised. Both identities use an approved prefix, every row uses a legal
+  edge type at status core, no row carries supersession_basis and none is an OVERRIDES, and no CLASSIFIED_AS
+  row appears. OBS-01 records accumulating evidence for a condition vocabulary and OBS-02 records an expressiveness
+  limit, and neither is escalated from inside a packet.
+completeness_statement: 'The whole of printed page 115, its opening statement, four bolded paragraphs
+  and thirty-six-cell table, was read at the recorded checksum. The packet yields 2 new identities and
+  3 rows, all citing page 115, reusing 2 canonical identities whose labels were verified character for
+  character. Every row was checked against the 689 canonical edges for an assertion-key collision, for
+  a shared source, type and target under a different aspect, and for duplicates within the patch; there
+  are none of any, and no canonical row cited this page before.
+
+  Five candidates were rejected and each is recorded with its reason. The yield is low relative to the
+  parallel traps page and low_yield_note explains why in terms of what the two pages state rather than
+  how they were read. What is deliberately not asserted is listed as OBS-01 through OBS-03 and there are
+  no open identity questions. No assertion depends on any other ruleset.'

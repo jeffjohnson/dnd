@@ -1,0 +1,478 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-110-110-let-there-be-darkness-r02
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-110-110-let-there-be-darkness
+constitution_version: '1.7'
+revision: 2
+supersedes: GUR-PKT-SD-110-110-let-there-be-darkness-r01
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: successor rows published; compile GUP-PKT-SD-110-110-let-there-be-darkness-r02
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0104.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-110-110-let-there-be-darkness
+  source_file: source.md
+  packet_source_checksum: sha256:adbab48db377c518b2fef01629b642a3ef402110e8302662e87c228cc3f79ff6
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 040-let-there-be-darkness.md
+  citation_code: SD
+  page_start: 110
+  page_end: 110
+  page_number_basis: packet_page_markers
+page_attribution_basis: One marker resolves this packet. p110 ends the LET THERE BE DARKNESS heading,
+  which is also the section's first heading, and placement rule 1 applies it to that whole heading while
+  the persistence rule carries it across both subsections. All six rows cite printed page 110. No content
+  precedes the marker and no page is shared.
+scope_boundary: The bounded scope is the Primary Source Material section, the single printed page 110
+  and its two subsections. The trailing Supporting Source Context is out of scope.
+source_summary: 'One page in two halves. ATTACK THE LIGHT tells the GM that limited light duration is
+  a main source of time pressure, that light sources should not be set-and-forget, and gives five bulleted
+  ideas for imperilling them: put torches and lanterns at risk on random encounter tables, have enemies
+  extinguish them, have opposing spellcasters dispel light spells, have the environment threaten them,
+  and remember that dropping one may extinguish or break it. The LIGHT MISHAPS TABLE then gives six d6
+  results, each naming a hazard and most calling for a Dexterity check at a stated difficulty: the source
+  simply goes out, it flares and burns the holder for damage, wind or thin air blows it out, water hits
+  it, falling debris covers it, or it sparks and sets flammable objects alight.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled: the canonical graph
+  holds 304 registry rows and 642 edges. The registry was read in full and matched against what the page
+  is doing. Measured facts that shaped this extraction: zero CLASSIFIED_AS rows currently point at rule_light_source;
+  rule_light_source carries three rows, all from printed pages 84 and 90; item_torch carries two and item_lantern
+  one, none of which is a classification; and spell_dispel_magic CONSTRAINS rule_spell_duration with aspect
+  premature end is already canonical from printed page 59.
+
+  Every proposed row was checked against the canonical edge set for an assertion-key collision and for
+  the weaker case of a shared source, type and target under a different aspect; there are none of either.'
+two_halves_note: 'The page''s two halves are treated differently on purpose. ATTACK THE LIGHT is advice,
+  in the same class as the CORE ETHOS principles rejected in PKT-SD-101-109: it tells the GM what to do
+  rather than stating what the rules are, and its five bullets are introduced as ''ideas''. It yields
+  nothing, and each bullet is dispositioned in rejected_candidates.
+
+  The LIGHT MISHAPS TABLE is not advice. It is a named d6 table whose entries state checks, difficulties,
+  a damage figure and definite outcomes, and it is the first genuinely mechanical content in the Game
+  Master half of the book. It yields all six rows.'
+reused_nodes:
+- id: abil_dexterity
+  label: Dexterity
+  used_by: M002
+  basis: Present in the registry at extraction with this exact label. The stat every mishap check in the
+    table calls for.
+- id: rule_check
+  label: Check
+  used_by: M003
+  basis: Present in the registry at extraction with this exact label. Resolves whether a mishap is avoided.
+- id: rule_damage
+  label: Damage
+  used_by: M006
+  basis: Present in the registry at extraction with this exact label. Inflicted by the Fire result.
+- id: rule_difficulty_class
+  label: Difficulty Class
+  used_by: M004
+  basis: Present in the registry at extraction with this exact label. The table states a difficulty for
+    each check rather than leaving it to the GM.
+- id: rule_light_source
+  label: Light Source
+  used_by: M001, M005
+  basis: Present in the registry at extraction with this exact label. Canonical from printed page 84;
+    the thing the table acts on, and the thing it is resolved by.
+candidate_nodes:
+- proposed_id: tbl_light_mishaps
+  proposed_label: Light Mishaps Table
+  kind: table
+  why_needed: The named d6 table this page defines, giving six hazards to a light source with their checks,
+    difficulties and outcomes. It is the mechanical content of the page and every row here runs to or
+    from it.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities including the three
+    wizard mishap tables
+  source_named: true
+  defining_locus: SD page 110, LIGHT MISHAPS TABLE
+  source_evidence: page 110, the LIGHT MISHAPS TABLE heading and its six rows.
+candidate_edges:
+- ref: M001
+  source_id: rule_light_source
+  source_label: Light Source
+  edge_type: RESOLVED_BY
+  target_id: tbl_light_mishaps
+  target_label: Light Mishaps Table
+  aspect: mishap outcome
+  condition: ''
+  book: SD
+  page: 110
+  section: LIGHT MISHAPS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: abil_dexterity
+  source_label: Dexterity
+  edge_type: FEEDS_INTO
+  target_id: tbl_light_mishaps
+  target_label: Light Mishaps Table
+  aspect: protection check
+  condition: ''
+  book: SD
+  page: 110
+  section: LIGHT MISHAPS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_check
+  source_label: Check
+  edge_type: CONSTRAINS
+  target_id: tbl_light_mishaps
+  target_label: Light Mishaps Table
+  aspect: mishap avoidance
+  condition: ''
+  book: SD
+  page: 110
+  section: LIGHT MISHAPS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M004
+  source_id: rule_difficulty_class
+  source_label: Difficulty Class
+  edge_type: FEEDS_INTO
+  target_id: tbl_light_mishaps
+  target_label: Light Mishaps Table
+  aspect: mishap difficulty
+  condition: ''
+  book: SD
+  page: 110
+  section: LIGHT MISHAPS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: tbl_light_mishaps
+  source_label: Light Mishaps Table
+  edge_type: MODIFIES
+  target_id: rule_light_source
+  target_label: Light Source
+  aspect: extinguishing
+  condition: ''
+  book: SD
+  page: 110
+  section: LIGHT MISHAPS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: worsens
+  polarity_basis: read
+- ref: M006
+  source_id: tbl_light_mishaps
+  source_label: Light Mishaps Table
+  edge_type: TRIGGERS
+  target_id: rule_damage
+  target_label: Damage
+  aspect: flare burn
+  condition: ''
+  book: SD
+  page: 110
+  section: LIGHT MISHAPS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: inflicts
+  polarity_basis: read
+- ref: M007
+  source_id: item_torch
+  source_label: Torch
+  edge_type: CLASSIFIED_AS
+  target_id: rule_light_source
+  target_label: Light Source
+  aspect: light source
+  condition: ''
+  book: SD
+  page: 110
+  section: ATTACK THE LIGHT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Required by REV-GUP-PKT-SD-110-110-let-there-be-darkness-r01-r01, which settled IDQ-01
+    of revision 1 against the rejection I made. The ATTACK THE LIGHT bullet names torch as one of the
+    things to imperil in a sentence whose subject is the light source, and the Reviewer holds that apposition
+    clears the source-explicit bar DEC-2026-0104 sets. The form is the fourth authorized by constitution
+    section 2.4, item_ to rule_light_source with aspect light source and a cardinality of at most one
+    per item; this is item_torch's only classification row and the first of its kind in production.
+- ref: M008
+  source_id: item_lantern
+  source_label: Lantern
+  edge_type: CLASSIFIED_AS
+  target_id: rule_light_source
+  target_label: Light Source
+  aspect: light source
+  condition: ''
+  book: SD
+  page: 110
+  section: ATTACK THE LIGHT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Required by REV-GUP-PKT-SD-110-110-let-there-be-darkness-r01-r01, which settled IDQ-01
+    of revision 1 against the rejection I made. The ATTACK THE LIGHT bullet names lantern as one of the
+    things to imperil in a sentence whose subject is the light source, and the Reviewer holds that apposition
+    clears the source-explicit bar DEC-2026-0104 sets. The form is the fourth authorized by constitution
+    section 2.4, item_ to rule_light_source with aspect light source and a cardinality of at most one
+    per item; this is item_lantern's only classification row and the first of its kind in production.
+authored_polarity_declaration: Authored polarity appears on three rows and no others, each with basis
+  read as invariant 15 requires, and each is a MODIFIES, TRIGGERS or CONSTRAINS row as constitution section
+  5 allows. The single CONSTRAINS row takes governs. The extinguishing row takes worsens, because the
+  table degrades the light source's state. The Fire result takes inflicts. The two FEEDS_INTO rows and
+  the RESOLVED_BY row carry none, since section 5 derives those.
+naming_note: 'tbl_light_mishaps follows the naming of the three canonical wizard mishap tables, tbl_wizard_mishaps_tier_1_2
+  and its siblings, which are the closest precedent in the registry. Those are named for the caster and
+  tier they apply to; this one is named for what suffers the mishap, because the source titles it LIGHT
+  MISHAPS TABLE and it applies to any light source rather than to a class of character.
+
+  The shape of its rows also follows those tables: they are TRIGGERS targets of rule_critical_failure
+  and receive a selection input, where this one is a RESOLVED_BY target of the thing it acts on. The difference
+  is that a wizard mishap is triggered by a specific failure, while a light mishap is a procedure the
+  GM turns to.'
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: Light and its failure are exploration machinery, and the page frames the limited duration of
+    light as the game's main time pressure. Recorded as a candidate only; constitution section 8 reserves
+    domain promotion to an Architect Decision. Consistent with the exploration candidate recorded in PKT-SD-087-089
+    and PKT-SD-090-090.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: ATTACK THE LIGHT bullet on torches and lanterns, p110
+  quoted_gist: '''Imperil torches and lanterns on random encounter tables'', given as an idea for how
+    to attack the light source'
+  why_considered: This is the classification question and it is the most consequential judgement in the
+    packet, so it is recorded here and argued in full as IDQ-01. The bullet sits under a sentence reading
+    'Here are some ideas for how to attack the light source', so torches and lanterns appear as the grammatical
+    objects of a sentence about light sources, which is closer to apposition than to mere proximity. DEC-2026-0104
+    is no longer gated, item_torch, item_lantern and rule_light_source are all canonical, and zero classification
+    rows currently exist, so the rows are technically available.
+  rejection_reason: 'Not asserted here, on the Decision''s own caution. DEC-2026-0104 requires a locus
+    that explicitly identifies the individual item as a light source and states that an item''s nearby
+    mention does not establish membership. This sentence is advice about tactics and its subject is what
+    the GM should do, not what a torch is; it would also be a strange place for the book to define the
+    category, since the gear entries on printed page 34 are where torches and lanterns are actually specified.
+
+    Asserting a governance-bounded edge type from a borderline locus is the more expensive error, because
+    it puts a row into production under a Decision that warns against exactly this reading, whereas declining
+    leaves a gap that a successor at the proper locus closes cleanly. The three light-source classifications
+    are already a standing item owed to the gear, crawling and resting packets. See IDQ-01.'
+  overturned_at_revision_2: OVERTURNED by REV-GUP-PKT-SD-110-110-let-there-be-darkness-r01-r01 and now
+    carried as M007 and M008. The Reviewer holds that the apposition this entry identified does clear
+    DEC-2026-0104's source-explicit bar. The entry is left in place rather than deleted so the reasoning
+    that declined it stays legible, and because it sets out the case for asserting as fully as the case
+    against.
+- text_locus: ATTACK THE LIGHT bullet on dispel magic, p110
+  quoted_gist: '''Have opposing spellcasters hit the target of light spells with dispel magic or other
+    magic-neutralizing effects'''
+  why_considered: Two canonical spells in one sentence, spell_light and spell_dispel_magic, with a stated
+    interaction between them. Under the incidental-locus test this is exactly the shape that can be carried
+    from a page that defines neither.
+  rejection_reason: 'Restatement, verified rather than assumed: spell_dispel_magic CONSTRAINS rule_spell_duration
+    with aspect premature end is already canonical from printed page 59, which is dispel magic''s own
+    defining locus and states the general rule. A row from here would either duplicate that fact or assert
+    a narrower special case, spell_dispel_magic against spell_light specifically, that the source does
+    not make; the sentence names light as an example of what an opposing caster might target, not as a
+    rule about the two spells. The incidental-locus test admits relationships the source states, and the
+    relationship here is already in the graph from a better page.'
+- text_locus: the remaining three ATTACK THE LIGHT bullets, p110
+  quoted_gist: have enemies try to extinguish light sources, have the environment threaten them with wind,
+    dead-magic zones, thin air, dripping ceilings, explosive gas or falling debris, and remember that
+    dropping a torch or lantern might extinguish or break it
+  why_considered: The environment bullet enumerates the same hazards the mishap table formalises, and
+    the dropping bullet is close to the canonical item_torch RESOLVED_BY rule_d6_decider row, whose own
+    defining locus on printed page 78 uses a dropped torch as its example.
+  rejection_reason: All three are advice, introduced as ideas and phrased as instructions to the GM. The
+    environment bullet states no mechanic; the table beneath it does, and that is where the rows come
+    from. The dropping bullet is hedged with 'might' and adds nothing to the canonical d6 decider row,
+    which already carries the mechanical fact from two loci. There is no canonical identity for an enemy,
+    so the second bullet has nothing to connect.
+- text_locus: the Spark result, p110
+  quoted_gist: an open flame sparks and catches on a number of flammable objects within close range, each
+    requiring a check to extinguish
+  why_considered: The only table result that acts on something other than the light source itself, and
+    it names a distance band, rule_distance being canonical.
+  rejection_reason: There is no canonical identity for a flammable object or for fire spreading, and minting
+    one is not an Analyst act. The check and its difficulty are already carried generally by M002, M003
+    and M004, which apply to every result in the table. The distance band is stated as where the objects
+    are, not as a mechanic turning on the band, so a rule_distance row would assert more than the source
+    does.
+- text_locus: the opening statement of ATTACK THE LIGHT, p110
+  quoted_gist: '''A main source of time pressure in Shadowdark RPG is the limited duration of light sources'',
+    and that characters must protect them'
+  why_considered: It states a relationship between light duration and time pressure, and both light and
+    time have canonical identities.
+  rejection_reason: 'Time pressure is a design property rather than a mechanic: no rule reads it and there
+    is no identity for it. rule_time_passes is a GM procedure for advancing the clock, not a pressure.
+    The sentence is the same kind of statement as the TIME core principle on printed page 104, which was
+    rejected for the same reason in PKT-SD-101-109.'
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: whether this page explicitly identifies torches and lanterns as light sources
+  detail: 'I declined two CLASSIFIED_AS rows here and want the decision made deliberately rather than
+    by my default, because it is the first time the DEC-2026-0104 form has been available and the precedent
+    set now will govern the rest of the intake.
+
+    The case for asserting: the bullet reads ''Imperil torches and lanterns on random encounter tables''
+    and is introduced by ''Here are some ideas for how to attack the light source''. The two items are
+    the objects of a sentence whose subject is the light source, which is apposition rather than proximity,
+    and apposition is ordinarily good enough to identify a member of a category. Both items and the target
+    are canonical, the gate is open, and zero classification rows exist, so the graph currently cannot
+    answer what provides light, which was the original observation that produced DEC-2026-0104 in the
+    first place.
+
+    The case against, which I followed: DEC-2026-0104 states that a source locus must explicitly identify
+    the individual item as a light source and that an item''s nearby mention does not establish membership.
+    This sentence''s actual assertion is about what a GM should do to make play tense; the items appear
+    as examples of things to imperil. The book specifies torches and lanterns on printed page 34, and
+    that is where a classification belongs. Asserting from here would also set the precedent that advice
+    prose can establish a governance-bounded classification, which is the widening the Decision was written
+    to prevent.
+
+    Consequence either way: if I am wrong, two rows are missing and a successor at page 34 adds them,
+    which is already a standing item owed to the gear packet. If I had asserted and were wrong, two rows
+    would sit in production under a Decision that warns against the reading, and removing an integrated
+    row is far more expensive than adding one. I chose the recoverable error. Reviewer should settle whether
+    apposition in advice prose clears the Decision''s bar, because the same question will recur at the
+    crawling and resting pages.'
+  resolution_at_revision_2: 'SETTLED against my reading. The Reviewer holds that apposition in advice
+    prose clears the bar, so the two rows are asserted as M007 and M008.
+
+    The part of my reasoning that was sound was setting out both cases and refusing to answer by default.
+    The part that was wrong was the conclusion: I weighed which error would be cheaper to undo rather
+    than which reading of the Decision was better, and treated the Decision''s caution about nearby mention
+    as if it also covered apposition, which it does not. Nearby mention is an item appearing close to
+    light-source text; apposition is the sentence naming the item as an instance of the thing it is about.
+    The Decision distinguishes those and I collapsed them.
+
+    The bar is now known and this question should not be reopened as though still open, subject to the
+    scope limits recorded in classification_precedent_note.'
+non_edge_observations:
+- id: OBS-01
+  subject: magnitudes are excluded from every row
+  detail: 'The table is dense with numbers and none reaches a field: six die results, four stated difficulty
+    values, a damage figure and a count of objects caught alight. The difficulty is carried as a relation
+    to rule_difficulty_class rather than as a value, which is what that identity exists for. No row in
+    this packet carries a condition, so there is no opportunity for a spelled quantity to enter one; no
+    aspect carries a digit.'
+- id: OBS-02
+  subject: the table's six results are not proposed as identities
+  detail: 'Dud, Fire, Air, Water, Earth and Spark are each bolded and named, which in this book usually
+    marks a defined term. They are not proposed. Each names a hazard rather than a mechanic, and what
+    is mechanically true of them is already carried by the rows against the table as a whole: a check,
+    a difficulty, a worsened light source and, for Fire, damage. Proposing six identities whose content
+    is a flavour label and an excluded number would add nodes that answer no query.
+
+    This follows the reasoning applied to the fourteen carousing outcomes in PKT-SD-091-093 and to the
+    danger levels in PKT-SD-090-090.'
+- id: OBS-03
+  subject: the mishap table has no stated trigger
+  detail: 'Worth flagging because it is a gap in the source rather than in the extraction. The three wizard
+    mishap tables are reached by a stated trigger, rule_critical_failure TRIGGERS each of them from printed
+    page 45, and selected by tier. This table has no such trigger: the page says light sources should
+    be attacked and then supplies a table, without saying when it is rolled. The bullets suggest occasions
+    but state no rule.
+
+    So the row asserted is rule_light_source RESOLVED_BY tbl_light_mishaps, which says the table is the
+    procedure for resolving a mishap, and nothing asserts what causes one. A reader querying what triggers
+    a light mishap will find nothing, correctly, because the book does not say. If a later chapter supplies
+    a trigger, that page is its locus.'
+architectural_escalations: []
+architectural_escalation_note: None raised. The one proposed identity uses an approved prefix and every
+  row uses a legal edge type. IDQ-01 is a question about applying an existing Decision to a borderline
+  locus, which is a Reviewer matter rather than a request for a new ruling; if Reviewer judges the bar
+  cleared, the rows follow under DEC-2026-0104 as it stands and no amendment is needed.
+completeness_statement: 'This revision is scoped to the single correction REV-GUP-PKT-SD-110-110-let-there-be-darkness-r01-r01
+  requires. It carries revision 1''s 6 rows and 1 candidate node forward unchanged and adds two rows,
+  item_torch and item_lantern each CLASSIFIED_AS rule_light_source with aspect light source on printed
+  page 110, for 8 rows and 1 node in total.
+
+  Both new rows were checked against the canonical edge set before publication: zero item-to-rule_light_source
+  classification rows exist, neither item carries any classification row at all, so the at-most-one cardinality
+  DEC-2026-0104 sets is satisfied and these are the first of their kind in production. All three endpoints
+  are canonical with the exact labels cited, so no registration is needed. Revision 1''s observations
+  stand; its IDQ-01 is settled and its corresponding rejection is amended in place rather than deleted.
+  No assertion depends on any other ruleset.'
+revision_reason: 'Revision 1''s six rows and its one proposed identity were independently confirmed as
+  source-supported and require no change. Approval was withheld on a single point, and it is the point
+  I asked to have settled: IDQ-01, whether the ATTACK THE LIGHT bullet explicitly identifies torches and
+  lanterns as light sources for the purposes of DEC-2026-0104.
+
+  The Reviewer settled it against my reading. Apposition in advice prose clears the bar: the two items
+  are the direct objects of a sentence whose subject is the light source, and that is explicit identification
+  rather than nearby mention. This revision adds the two rows that finding requires and nothing else.
+
+  I record without reservation that the Reviewer is the better reading of the Decision. My own analysis
+  in IDQ-01 set out this case and then declined it on risk asymmetry rather than on the merits, which
+  is a different thing from judging it wrong. Deciding a governance question on which error is cheaper
+  to undo is the right instinct when the question is genuinely open, and the right response to being overturned
+  is to record that the bar is now known and to stop treating it as open.'
+preservation_statement: All six of revision 1's candidate edges are carried forward unchanged, in order,
+  with their original refs, and the tbl_light_mishaps candidate node is carried forward unchanged. The
+  new rows take the refs the Review names, M007 and M008. This revision was built by loading the published
+  revision 1 from disk and appending, not by regenerating the packet, and the build asserts that. No node
+  registration is added, because item_torch, item_lantern and rule_light_source are all already canonical.
+polarity_fields_note: The Review specifies polarity neutral with basis derived and then directs that both
+  fields be omitted so Builder derives them. They are omitted. CLASSIFIED_AS is not one of the three types
+  constitution section 5 reserves for authored polarity, and every one of the ninety-nine classification
+  rows already in production carries neutral with basis derived without any having been authored that
+  way in a GUR.
+classification_precedent_note: 'This is the first use of the DEC-2026-0104 item-to-light-source form and
+  the first classification row in the intake that is not a spell, so the scope of what was decided is
+  worth stating precisely rather than generalised by whoever reads it next.
+
+  What the Review settled: that apposition in advice prose can satisfy the source-explicit bar, and that
+  these two named items are light sources. What it did not settle, per its own RF-01: it does not classify
+  Campfire, and it does not create a generic item taxonomy. item_campfire remains canonical and unclassified,
+  and DEC-2026-0104 continues to assert nothing about it.
+
+  It also does not automatically resolve the same question elsewhere. The crawling page and the resting
+  page raise the identical question for the same two items, and each will need its own Reviewer judgement
+  when those successors are written; this ruling is direct precedent for how apposition is read, not a
+  blanket authorisation. Both items now carry their one permitted light-source row from this packet, so
+  a successor at another locus must not add a second: the cardinality is at most one per item and it is
+  now spent.'

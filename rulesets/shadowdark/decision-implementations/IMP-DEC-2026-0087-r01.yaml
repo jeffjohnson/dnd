@@ -1,0 +1,240 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0087-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+constitution_version: '1.1'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'Step 2 of DEC-2026-0087 only. Shadowdark''s `ancestry_` prefix is now recognised
+    by the compiler''s node-proposal paths and by governance identity discovery, scoped to
+    that ruleset: adnd1e, basicdnd and the global vocabulary are unchanged, and a held `ancestry_`
+    identity still blocks its dependent registration. Both immutable Shadowdark 1.0 GURs dry-compile
+    under the current vocabulary with no version mismatch and no edits. All six acceptance
+    tests pass. One compiler robustness fix outside the Decision''s literal diff was required
+    to reach test 5 and is declared in scope_note. No GUP is published and no canonical state
+    exists.'
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0087
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml
+  checksum: sha256:ac292466989d18e446778145464f7d8bb1dd4fd82a5379606bb1cdf02536595b
+implementation_files:
+- path: tooling/builder/src/adnd1e_builder/vocab.py
+  checksum: sha256:1a66854c7c53497973d0bf222532bec33e58407c55555fd2012cab72173c7e70
+- path: tooling/builder/src/adnd1e_builder/registry.py
+  checksum: sha256:443aa28ccd25bc51583e3d45787306c8047572c5d9e80ae109651d31b4aa1f7f
+- path: tooling/builder/src/adnd1e_builder/compiler.py
+  checksum: sha256:dc92d2b86958b8fbb9650f15bf745229c4c6c158a60016ec6e792cb4d0f46247
+- path: tooling/builder/src/adnd1e_builder/governance.py
+  checksum: sha256:99eaa0fa760aed00299ee5f64f29ffbef713117fda9bbf856122ba7656905320
+- path: tooling/builder/tests/test_shadowdark_ancestry.py
+  checksum: sha256:d1a67fd2c6d408875159aaf2318d8f56a0d34c6000823f61d9c2222145c5374d
+verified_inputs:
+- path: rulesets/shadowdark/governance/constitution.md
+  checksum: sha256:f8a67673132da3cecb6cf0dd1948b11731dabfdf172c83149d6917576d9a2b7c
+- path: rulesets/shadowdark/ruleset.yaml
+  checksum: sha256:0709fdd57b67415f70367ceafc2fdc5cd32cf284b562ac703a674254bb98c7e5
+- path: rulesets/shadowdark/registries/character_races.yaml
+  checksum: sha256:ff05c003b2b11217a691259c704d8a3192c74b847ad6dfcdd2b813e49bd77f6a
+- path: rulesets/shadowdark/registries/nodes.csv
+  checksum: sha256:e92d95d9e61276be70dd6cacedae39dbf684614554516c97d89797c0b3878e8c
+- path: schemas/shadowdark/graph/edge.schema.json
+  checksum: sha256:9463c8a68edb4671e4ef0b12193a4f6c9b3574cdb0c0855c016f89ef9deddf08
+- path: schemas/shadowdark/graph/gur.schema.json
+  checksum: sha256:98a6b3617ecf8c2f466392c2f532a6735e3b7bb50fe0f58ce05571a21acdf54d
+- path: schemas/shadowdark/graph/gup.schema.json
+  checksum: sha256:3a00fc4b3d3bb85071d6f5eed56d8d16916066aff0f78ebc3a002d684272b8f3
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml
+  checksum: sha256:ac292466989d18e446778145464f7d8bb1dd4fd82a5379606bb1cdf02536595b
+- path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-011-014-character-overview-and-starting-level-r01.yaml
+  checksum: sha256:914f94da5cc99eae4adbe44cfaa0f252b21ce1be62f0250cc38b810d38749726
+- path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-015-015-stats-and-stat-modifiers-r01.yaml
+  checksum: sha256:57444a28574d1f810e673ebe7d9bbaac78b40997bfebf223f1157340cde9fabe
+validation_report: build/reports/IMP-DEC-2026-0087-r01.validation.json
+validation_report_checksum: sha256:419c0f2761239bdebc1dd2061ec39bf5baf025b9b4ee5fbedf2b340dfbdd7bb9
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'Verified as an Architect-owned input, not authored here. The constitution reads
+    Version 1.1 at line 3 under authorities DEC-2026-0083 and DEC-2026-0087; ruleset.yaml
+    declares constitution_version ''1.1'', the same current version. Section 2 lists `ancestry_`
+    in the prefix table as character ancestry and keeps ancestry, class and creature identity
+    distinct; section 2.1 names all six IDs with separately named `abil_` benefits (ancestry_dwarf,
+    ancestry_elf, ancestry_goblin, ancestry_half_orc, ancestry_halfling, ancestry_human),
+    states the machine kind `ancestry`, rules the Half-Orc hyphen becomes an underscore, distinguishes
+    `sys_ancestry` as the subsystem, and forbids inheritance or import of another ruleset''s
+    identities. The character-race registry is status inactive with an empty membership set
+    that is explicitly not a gate. Section 9 admits historical 1.0 GURs only with full revalidation,
+    requires new artifacts to declare the current version, fails unknown or future versions,
+    and forbids rewriting immutable GURs for the additive bump. The four declared anchors
+    were each read in place, not string-matched. Executable checks: TestGovernanceInputs,
+    8 tests, all passing. The contract''s measured checksum and version are recorded in versioned_contract_content.'
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0087
+      path: rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml
+      checksum: sha256:ac292466989d18e446778145464f7d8bb1dd4fd82a5379606bb1cdf02536595b
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: rulesets/shadowdark/governance/constitution.md
+      checksum: sha256:f8a67673132da3cecb6cf0dd1948b11731dabfdf172c83149d6917576d9a2b7c
+      observed_version: '1.1'
+      minimum_version: '1.1'
+      anchors_present:
+      - ancestry_ identifies a character ancestry, separate from classes, creatures and the
+        ancestry subsystem.
+      - Six source-defined ancestry IDs include ancestry_half_orc and separately named abil_
+        benefits.
+      - No automatic inheritance or activation of the inactive character-race registry.
+      - Historical 1.0 GURs require current validation; new artifacts declare the current
+        version.
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'Verified as an Architect-owned input. The Shadowdark edge schema''s closed endpoint
+    patterns admit all six ancestry IDs in both source_id and target_id, and reject `ancestry_half-orc`,
+    `race_dwarf`, `ancestor_dwarf` and `Ancestry_dwarf`. The open `ancestry_<stem>` grammar
+    is retained rather than replaced by six constants, so `ancestry_halforc` is admitted by
+    grammar and remains an identity-review error rather than a schema rejection, exactly as
+    the Decision requires. The GUR and GUP schemas enum constitution_version to [''1.0'',
+    ''1.1''] and carry neither 1.2 nor 2.0; schema_version remains a separate unenumerated
+    property, so widening one version axis did not widen the other. schemas/adnd1e and schemas/basicdnd
+    contain no occurrence of ''ancestry''. Executable checks: TestSchemaInputs, 7 tests, all
+    passing.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'Parameterised over the six identities read from the Decision rather than transcribed,
+    on synthetic GUR fixtures written to temporary files. Each identity compiles to a node
+    proposal with kind ''ancestry'', prefix_approved true and disposition ''reviewer_may_approve'',
+    with no node_identity escalation; before this change the same proposal reported an unapproved
+    prefix. Each named benefit proposes as kind ''abil'' with prefix_approved true. The fresh,
+    carried-forward and both-endpoint paths are each exercised, and source page and label
+    spelling survive compilation (row page equals the Decision''s page, source_label equals
+    its label). No real packet, GUR or registry row was read or written for these assertions,
+    and this Decision is not treated as a Review. Executable checks: TestAncestryNodeProposals,
+    6 tests, all passing.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Scoping is demonstrated in both directions. RulesetVocabulary loads `ancestry_`
+    for shadowdark and not for adnd1e or basicdnd; the global NODE_PREFIXES constant does
+    not contain it; prefix_of with no scope still returns None for ''ancestry_dwarf'' and
+    ''class_'' for ''class_fighter'', so existing AD&D helper behaviour is unchanged. constitution_prefixes
+    resolves per ruleset root and falls back to the AD&D constants for a root with no constitution,
+    and a bare Governance() keeps those constants. For holding: a synthetic pending ESC naming
+    ''ancestry_dwarf'', loaded from a temporary tree, is recognised as holding that identity
+    under Shadowdark''s table and holds nothing under adnd1e''s -- which is the proof the
+    recognition comes from the ruleset''s own governance. Compiling a dependent GUR against
+    that held identity yields architect_required true, disposition ''requires_architect_decision''
+    and a node_registration_held_by_package escalation, while the unheld benefit beside it
+    stays reviewer-approvable. An unsupported prefix still fails, and an ancestry and a creature
+    sharing the label ''Dwarf'' compile to two separate proposals of kinds ''ancestry'' and
+    ''monster'' with no merge. No real escalation was filed, altered or resolved. Executable
+    checks: TestPrefixScopeIsPerRuleset (9), TestAHeldAncestryIdentityStillBlocks (3), TestUnsupportedIdentitiesStillFail
+    (2), all passing.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'Both named GURs -- GUR-PKT-SD-011-014-character-overview-and-starting-level-r01
+    and GUR-PKT-SD-015-015-stats-and-stat-modifiers-r01, which are exactly the Decision''s
+    unaffected_inputs -- declare constitution_version ''1.0'' and dry-compile under the current
+    1.1 vocabulary with no constitution_version_mismatch finding. The older input version
+    is reported, not silently accepted: both raise constitution_version_older_than_compiler,
+    and the compiled envelope records constitution_version ''1.1'' with gur_constitution_version
+    ''1.0''. A synthetic GUR declaring ''9.9'' still fails with constitution_version_mismatch.
+    Unrelated findings remain visible and were not suppressed: every edge in both GURs omits
+    `evidence`, so the stats GUR reports 28 errors (14 edge_fields_missing and 14 evidence_illegal
+    over 14 edges) and the overview GUR 44 (21 and 21 over 21 edges, plus 2 endpoint_unresolved).
+    Those are Analyst defects in immutable artifacts and are reported, not repaired, here.
+    The compile is read-only: both GUR files hash identically before and after, no source
+    or manifest was touched, no GUP was published, and rulesets/shadowdark/canonical does
+    not exist after compilation. Executable checks: TestHistoricalGursRevalidate (9) and TestOpenScalarFieldsDoNotCrashTheCompiler
+    (2), all passing.'
+- acceptance_test_index: 6
+  result: passed
+  evidence: Exact commands, exit codes and measured outcomes are recorded in the validation
+    block and in build/reports/IMP-DEC-2026-0087-r01.validation.json. The focused file ran
+    46 tests and the complete Builder suite 809 tests, both exit code 0 with no failures or
+    errors; the pre-change baseline of the same suite was 763 tests, also passing, so nothing
+    was weakened to make this pass. No unrelated failure occurred to report. The Architect-owned
+    governance and schema changes were verified as inputs under tests 1 and 2 and are pinned
+    by checksum in verified_inputs; none was edited. Source files, the packet manifest, the
+    node registry and all existing artifacts are unchanged, and no canonical state was created
+    -- see canonical_state.
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/builder/tests] python -m unittest test_shadowdark_ancestry'
+    exit_code: 0
+    result: passed
+    summary: Ran 46 tests in 3.251s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py"
+      -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 809 tests in 206.628s OK (skipped=38)
+  - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py"
+      -t .  (pre-change baseline, before test_shadowdark_ancestry.py existed)'
+    exit_code: 0
+    result: passed
+    summary: Ran 763 tests in 201.432s OK (skipped=38)
+changes_in_this_revision:
+- 'vocab.py: added a shadowdark entry to HISTORICAL_ACCEPTED_GUR_CONSTITUTION_VERSIONS admitting
+  ''1.0'' for revalidation, and a constitution_prefixes(ruleset_root) reader so a caller holding
+  only a ruleset root can scope itself.'
+- 'registry.py: prefix_of gained an optional prefixes argument and now orders candidates longest-first
+  then lexically. Omitting the argument keeps the AD&D 1e constants, so every existing caller
+  is unchanged.'
+- 'compiler.py: added Compiler._prefix_of and routed all 10 in-class prefix checks through
+  it, so they read this compile''s ruleset rather than the global AD&D constants; added the
+  _field_text coercion declared in scope_note and applied it to 12 edge field reads.'
+- 'governance.py: Governance carries a node_prefixes field defaulting to the AD&D constants,
+  Governance.load populates it from the ruleset''s own constitution, and _node_ids_in_values
+  takes the scope from its caller.'
+- 'tooling/builder/tests/test_shadowdark_ancestry.py: new, 46 tests across the six acceptance
+  tests.'
+attribution_note: The four source files pinned in implementation_files also carry uncommitted
+  changes from the DEC-2026-0080 lineage, already reported in IMP-DEC-2026-0080-r04 and not
+  re-claimed here; the repository working tree holds further unrelated in-flight edits by
+  other roles, all preserved untouched. The changes attributable to this Decision are exactly
+  those in changes_in_this_revision, so a whole-file diff against HEAD will show more than
+  this report claims authorship of.
+scope_note: 'One change falls outside the Decision''s literal exact_diff and is declared rather
+  than folded in. compiler.py now reads every edge field through a `_field_text` helper that
+  coerces a scalar to text before validating it. Both immutable Shadowdark GURs write `pass:
+  1` as an integer, which the constitution permits because `pass` is open-ended, and the compiler
+  assumed a string: the dry compilation acceptance test 5 requires raised AttributeError on
+  an input the same Decision forbids editing. The fix was therefore necessary to satisfy the
+  Decision, and it is confined to a Builder-owned file. It weakens no gate -- coercion happens
+  before validation, never instead of it, and a test asserts that an integer in the closed
+  `evidence` field is still reported as evidence_illegal rather than quietly accepted. The
+  Reviewer should treat this as a scope question in its own right.'
+bugs_found_by_the_new_tests:
+- The compiler crashed on a schema-valid integer `pass` value, which made the Decision's required
+  read-only dry compilation impossible. Fixed by _field_text; see scope_note.
+- prefix_of scanned a frozenset first-match-wins, so if two approved prefixes ever nested
+  the same ID could resolve differently between runs. Candidates are now ordered longest-first
+  and then lexically, and a test asserts the result is stable across repeated calls.
+defects_for_the_architect:
+- Both immutable Shadowdark 1.0 GURs omit `evidence` on every edge (14 edges in the stats
+  GUR, 21 in the overview GUR), so each edge reports both edge_fields_missing and evidence_illegal.
+  The overview GUR additionally leaves 2 endpoints unresolved. This is an Analyst defect in
+  the artifacts' own lifecycle, is out of scope for DEC-2026-0087, and was deliberately left
+  visible rather than repaired or suppressed. It will block those packets' progression until
+  the Analyst reissues or the Architect rules otherwise.
+canonical_state: 'No canonical, registry, source or manifest file was written by this work.
+  rulesets/shadowdark/canonical does not exist and was not created; a test asserts its absence
+  after compiling both historical GURs. rulesets/shadowdark/registries/nodes.csv is unchanged
+  at its pinned checksum in verified_inputs. No GUP was published: ancestry GUP publication
+  awaits the independent implementation approval this report requests.'
+not_done:
+- DEC-2026-0087 step 1 (governance and schema authorship) is the Architect's and was verified
+  as input only.
+- DEC-2026-0084 is untouched; implementing it before this report's Review could stale the
+  evidence above.
+- No basicdnd or rc work of any kind was performed, claimed, withdrawn or cleaned up. DEC-2026-0086
+  remains binding and nothing here resumes it.

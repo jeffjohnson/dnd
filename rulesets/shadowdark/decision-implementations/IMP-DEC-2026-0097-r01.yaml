@@ -1,0 +1,124 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0097-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+constitution_version: '1.4'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: Fresh-proposal coverage now runs against a constructed pre-integration baseline and canonical-reuse
+    coverage against the real registry, with the ancestry-versus-monster non-merger asserted in both
+    states. The focused module and the complete Builder suite pass. Only the authorized test module
+    changed.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0097
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  checksum: sha256:84bb0394b4c700fbf3570ff60d21b9e1e8262f6fb9df8df1bb0dc4ad084f5c36
+implementation_files:
+- path: tooling/builder/tests/test_shadowdark_ancestry.py
+  checksum: sha256:5cae1058e050ad1e62d1c32261776b2be5462e5eed3295bf733830080ff05a64
+verified_inputs:
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  checksum: sha256:84bb0394b4c700fbf3570ff60d21b9e1e8262f6fb9df8df1bb0dc4ad084f5c36
+- path: rulesets/shadowdark/registries/nodes.csv
+  checksum: sha256:244dfe6e18139ec36eac54dae6fff422d9668a8b97fcf084d795ec20a7fee6e3
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml
+  checksum: sha256:ac292466989d18e446778145464f7d8bb1dd4fd82a5379606bb1cdf02536595b
+- path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0095-r01.yaml
+  checksum: sha256:38a43a8a09fd562797aa31c58567e664a596c483ad368a9fb3f1384113ac4484
+- path: rulesets/shadowdark/manifests/INT-20260922-002.json
+  checksum: sha256:e844ecd72e43812d940b010fbab2b820764b4f09b971f0af9d9cbfae41f442e3
+validation_report: build/reports/IMP-DEC-2026-0097-r01.validation.json
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'IsolatedShadowdarkCase constructs its registry rather than loading one: NodeRegistry(path=...isolated-fixture-nodes.csv)
+    with no file behind it, so no integration can change what the tests mean. Its own test_the_isolated_baseline_really_is_empty
+    asserts the registry is empty and that none of the six identities resolves in it, which makes
+    the fresh-proposal assertions non-vacuous by construction rather than by assumption. TestAncestryNodeProposals,
+    TestAHeldAncestryIdentityStillBlocks, TestUnsupportedIdentitiesStillFail and TestCandidateNodeSchemaContract
+    now inherit it, and against that baseline every DEC-2026-0087 ancestry ID still compiles to an
+    ordinary proposal with kind ancestry, prefix_approved true, disposition reviewer_may_approve and
+    no node_identity escalation, on the fresh, carried-forward and both-endpoint paths. No assertion
+    was weakened to reach this: the expectations are exactly the ones r01 of DEC-2026-0087 recorded.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'TestRegisteredAncestriesAreReusedNotProposed reads the live registry on purpose. It first
+    asserts its own premise -- that all six approved identities are registered -- so that an unregistered
+    one would fail here rather than silently assert nothing, and it derives its expectations from
+    the registered identities rather than from a transcribed list. For each, compiling a candidate
+    that names it produces no entry in node_additions and reports node_proposal_resolved_to_canonical,
+    raises no node_identity escalation and no identity_ambiguous finding, and leaves its dependent
+    edge free of endpoint_unresolved. The registry''s stored label and kind are checked against the
+    Decision''s own authorized values. Measured: all six of ancestry_dwarf, ancestry_elf, ancestry_goblin,
+    ancestry_half_orc, ancestry_halfling, ancestry_human are canonical among 30 registered Shadowdark
+    nodes.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: TestSameLabelIdentitiesStayDistinctAgainstTheRegistry exercises the harder direction,
+    where ancestry_dwarf is canonical and monster_dwarf is not, which is exactly when a label-based
+    resolver would collapse them. The registered ancestry is not proposed again, the unregistered
+    creature remains an ordinary monster-kind proposal with prefix_approved true and disposition reviewer_may_approve,
+    no identity_ambiguous finding or identity_resolution escalation is raised, and the compiled row
+    keeps both endpoints exactly as written. The original two-fresh-proposal version of this case
+    is retained on the isolated baseline in TestUnsupportedIdentitiesStillFail, so both states are
+    covered rather than one standing in for the other.
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'The focused module runs 78 tests, up from the 62 it carried before, and the complete
+    Builder suite runs 892 tests, up from 876; both exit 0 with no failures or errors. The 24 failures
+    IMP-DEC-2026-0095-r01 recorded are gone, and no test was deleted to achieve that: the count rose
+    by the 16 cases added here. Exact commands and outcomes are in the validation block and in build/reports/IMP-DEC-2026-0097-r01.validation.json.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: IMP-DEC-2026-0095-r02 is published alongside this report. It names r01 in supersedes,
+    carries r01's scanner evidence by exact ID, path and checksum reference rather than by restatement,
+    records the now-passing complete Builder suite, and is approval_ready true because all six DEC-2026-0095
+    acceptance tests pass. r01 is untouched immutable history and is not edited, withdrawn or approved.
+    The reference is safe to make because both files r01 pinned, scan_agent_queues.py and its test
+    module, are byte-identical to the checksums r01 recorded; this report verified that before publishing
+    rather than assuming it.
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/builder/tests] python -m unittest test_shadowdark_ancestry'
+    exit_code: 0
+    result: passed
+    summary: Ran 78 tests in 6.205s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 892 tests in 202.110s OK (skipped=38)
+changes_in_this_revision:
+- Added IsolatedShadowdarkCase, a baseline whose NodeRegistry is constructed rather than loaded, plus
+  a guard test asserting it is empty and holds none of the six identities.
+- Repointed TestAncestryNodeProposals, TestAHeldAncestryIdentityStillBlocks, TestUnsupportedIdentitiesStillFail
+  and TestCandidateNodeSchemaContract at that baseline. Their assertions are unchanged.
+- Added TestRegisteredAncestriesAreReusedNotProposed, 7 tests asserting canonical reuse against the
+  live registry.
+- Added TestSameLabelIdentitiesStayDistinctAgainstTheRegistry, 4 tests for the mixed registered/unregistered
+  same-label case.
+- Replaced test_no_canonical_state_is_created with test_no_canonical_state_is_written, which hashes
+  the canonical directory before and after a dry compile instead of asserting the directory is absent.
+  The old assertion was true only before the first integration; the property DEC-2026-0087 requires
+  is that a read-only compile creates and changes nothing, which holds in both states.
+deliberately_not_changed:
+- 'No production code. compiler.py, registry.py, vocab.py, governance.py and the scanner are untouched:
+  the compiler''s behaviour was correct throughout and only the fixtures were stale.'
+- _bootstrap.py and every other Builder test module, so no shared fixture shifts under another module.
+- No registry, canonical file, graph artifact, schema, contract or Integration record. INT-20260922-002
+  stands exactly as written.
+not_done:
+- IMP-DEC-2026-0095-r01 was not edited, withdrawn or approved; its successor establishes the restored
+  gate.
+- No other Builder test module was audited for the same assumption. The risk is real and recorded
+  in post_implementation_requirements of DEC-2026-0097, but auditing them is outside this Decision's
+  bounds.
+- No basicdnd or rc work of any kind was performed. DEC-2026-0086 remains binding.
+validation_report_checksum: sha256:7c3902e405c562fd880aee5f486bb3536a5a33539a6dcbfc1845b81f76140a53

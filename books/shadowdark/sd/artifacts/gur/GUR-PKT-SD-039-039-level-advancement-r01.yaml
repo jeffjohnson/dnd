@@ -1,0 +1,434 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-039-039-level-advancement-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-039-039-level-advancement
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.0
+  - rulesets/shadowdark/governance/constitution.md 1.2
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-039-039-level-advancement
+  source_file: source.md
+  packet_source_checksum: sha256:6adb42f1b3e3b69a97c22b43183af339395160311e8f1bfd0a9115707b26a17b
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 016-level-advancement.md
+  citation_code: SD
+  page_start: 39
+  page_end: 39
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  One marker resolves in the Primary Source Material, through the Pandoc AST rather than
+  positionally. The page-39 marker ends the LEVEL ADVANCEMENT heading, which placement rule 1 applies
+  to the whole heading, and the persistence rule carries page 39 through all five subsections, the
+  advancement table and the closing epigraph. Every row below cites page 39. A second page the parser
+  resolves, 15, lies entirely inside the out-of-scope Supporting Source Context.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed page 39. The trailing Supporting
+  Source Context reproduces printed page 15, whose primary packet is
+  PKT-SD-015-015-stats-and-stat-modifiers, outside this packet's declared span. No assertion here is
+  drawn from it and no row cites page 15.
+
+source_summary: >-
+  Printed page 39 is the advancement chapter. EXPERIENCE POINTS says what experience represents, that
+  awards are based on treasure and boons gained in a session, and that the GM may award them at any
+  time. LEVELING UP gives the threshold for gaining a level in terms of the character's current
+  level, states that the total resets on reaching a new level, and lists what a new level brings.
+  ADVANCEMENT TABLE gives ten level rows against a talent column and a threshold column. TALENT ROLL
+  says a roll is taken on the class's own talent table at the indicated levels and that duplicates
+  stack unless noted. INCREASED HP says to roll the class's hit point die and add it to maximum hit
+  points. An attributed epigraph closes the page. This summary is orientation only.
+
+graph_state_at_extraction: >-
+  The Shadowdark canonical graph is still empty; nodes.csv is header-only, the domain registry has no
+  domains, general_rules.json is an empty object, and character_races.yaml is inactive. The three
+  supplied slices named in the packet manifest as missing remain immaterial, re-assessed here rather
+  than carried over from claim. reused_nodes is empty. Four of the five identities below are already
+  proposed by sibling GURs from their defining loci and are marked as such.
+
+cross_packet_identity_note: >-
+  exp_xp, exp_level, rule_talent_roll and rule_hit_points are proposed by sibling GURs from their
+  defining loci and are proposed again here because this patch uses them as edge endpoints. A GUR
+  must propose every endpoint its edges use: an endpoint present only in a sibling GUR is not
+  canonical, is not proposed by the patch, and fails invariant 1 as endpoint_unresolved. Proposing
+  them is not a competing naming; each records its defining locus and the sibling GUR that also
+  proposes it, and each ID and label is reproduced exactly.
+  This packet is an unusual case of that rule. Printed page 39 is arguably the fuller locus for
+  experience and levelling than printed page 12, which names them in a one-line overview entry. The
+  Analyst nonetheless treats page 12 as the defining locus and reproduces its spellings, because
+  SOURCE_MARKDOWN Source Identity Authority keys identity to where a concept is defined and both
+  pages use the same names, so nothing turns on it. No rename is proposed; see IDQ-01.
+
+reused_nodes: []
+
+candidate_nodes:
+  - proposed_id: tbl_advancement
+    proposed_label: Advancement Table
+    kind: table
+    why_needed: >-
+      Endpoint of M001 and M002 and source of M003 and M004. The separately headed table that fixes
+      the experience threshold and the talent entitlement for each level; four of the six
+      dependencies on this page run through it.
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 39, its own heading ADVANCEMENT TABLE'
+    source_evidence: >-
+      page 39, the heading ADVANCEMENT TABLE over a three-column table whose columns are Level,
+      Talent and Level Up At. Separately referenced by the TALENT ROLL subsection, which speaks of
+      the indicated levels, satisfying GRAPH_INVARIANTS invariant 5.
+  - proposed_id: exp_xp
+    proposed_label: XP
+    kind: advancement mechanic
+    why_needed: >-
+      Source of M001 and endpoint of M005. What accumulates toward a level and what resets on
+      reaching one. Proposed here because this patch uses it as an endpoint.
+    prefix_basis: 'exp_ is a character advancement mechanic'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the XP entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: >-
+      page 39, the EXPERIENCE POINTS subsection and the threshold and reset sentences, with XP used
+      throughout. The ID and label are reproduced from the defining locus exactly; see IDQ-01.
+  - proposed_id: exp_level
+    proposed_label: Level
+    kind: advancement mechanic
+    why_needed: >-
+      Source of M002, M005 and M006 and endpoint of M003. What the threshold scales with, what the
+      reset and the hit point increase follow from, and what the table bounds. Proposed here because
+      this patch uses it as an endpoint.
+    prefix_basis: 'exp_ is a character advancement mechanic'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the LEVEL entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: >-
+      page 39, the LEVELING UP subsection and the table's Level column. The ID and label are
+      reproduced from the defining locus exactly.
+  - proposed_id: rule_talent_roll
+    proposed_label: Talent Roll
+    kind: procedure
+    why_needed: >-
+      Endpoint of M004. What the advancement table entitles a character to at certain levels.
+      Proposed here because this patch uses it as an endpoint.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD pages 13 and 14; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: >-
+      page 39, the TALENT ROLL subsection and the table's Talent column. The ID and label are
+      reproduced from the defining locus exactly.
+  - proposed_id: rule_hit_points
+    proposed_label: Hit Points
+    kind: procedure
+    why_needed: >-
+      Endpoint of M006. What increases on gaining a level. Proposed here because this patch uses it
+      as an endpoint.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the HP entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: >-
+      page 39, the INCREASED HP subsection and the maximum HP increase in LEVELING UP. The ID and
+      label are reproduced from the defining locus exactly.
+
+candidate_edges:
+  - ref: M001
+    source_id: exp_xp
+    source_label: XP
+    edge_type: FEEDS_INTO
+    target_id: tbl_advancement
+    target_label: Advancement Table
+    aspect: level threshold
+    condition: ''
+    book: SD
+    page: 39
+    section: ADVANCEMENT TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table's third column gives the experience total at which each level is reached, so
+      accumulated experience is the input compared against it. All ten threshold values are
+      magnitudes and are excluded; what is stored is that the lookup consumes experience. Distinct
+      from the overview packet's row asserting that experience feeds level, which targets the
+      mechanic rather than the table; see OBS-01.
+  - ref: M002
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: tbl_advancement
+    target_label: Advancement Table
+    aspect: threshold scaling
+    condition: ''
+    book: SD
+    page: 39
+    section: LEVELING UP
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      LEVELING UP states the threshold in terms of the character's current level, and the table's
+      rows are indexed by level, so level is the second input to the lookup. The multiplier and the
+      per-row values are magnitudes and are excluded; what is stored is that the threshold depends on
+      the level already held, which is a genuine feedback the overview packet could not state.
+  - ref: M003
+    source_id: tbl_advancement
+    source_label: Advancement Table
+    edge_type: CONSTRAINS
+    target_id: exp_level
+    target_label: Level
+    aspect: level gain
+    condition: ''
+    polarity: governs
+    polarity_basis: read
+    book: SD
+    page: 39
+    section: LEVELING UP
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table bounds when a level may be gained without changing what a level is, which is
+      CONSTRAINS rather than MODIFIES. The table also stops at a highest row, which bounds
+      advancement overall; that ceiling is a magnitude and is not stored, but the constraint
+      relationship is. Read aloud as Advancement Table governs Level; basis read.
+  - ref: M004
+    source_id: tbl_advancement
+    source_label: Advancement Table
+    edge_type: GATES
+    target_id: rule_talent_roll
+    target_label: Talent Roll
+    aspect: talent entitlement
+    condition: at the indicated levels
+    book: SD
+    page: 39
+    section: TALENT ROLL
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table's Talent column marks which levels grant a roll, and the TALENT ROLL subsection says
+      a roll is taken when those levels are reached, so reaching a marked level is the precondition
+      for the roll. GATES read gate to gated. The condition carries the source's own phrase without
+      enumerating which levels, since those are threshold values. Derived polarity enables. The
+      class-specific table the roll is then made on is asserted by the four class GURs, not here; see
+      OBS-02.
+  - ref: M005
+    source_id: exp_level
+    source_label: Level
+    edge_type: MODIFIES
+    target_id: exp_xp
+    target_label: XP
+    aspect: total reset
+    condition: on reaching a new level
+    polarity: neutral
+    polarity_basis: read
+    book: SD
+    page: 39
+    section: LEVELING UP
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Once you reach a new level, your total XP resets back to zero. Gaining a level changes the
+      experience total, which is MODIFIES, and the condition records when. Polarity is neutral, with
+      basis read and deliberately not worsens: the reset removes accumulated experience, but it is
+      the design of the advancement cycle rather than a penalty, and the character is not worse off
+      for having levelled. The reset value is a magnitude and is excluded. Read aloud as Level
+      neutral XP.
+  - ref: M006
+    source_id: exp_level
+    source_label: Level
+    edge_type: MODIFIES
+    target_id: rule_hit_points
+    target_label: Hit Points
+    aspect: maximum total
+    condition: on reaching a new level
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 39
+    section: INCREASED HP
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      LEVELING UP says maximum HP increases and INCREASED HP says to roll the class's hit point die
+      and add it to the maximum. Gaining a level changes the hit point maximum, which is MODIFIES,
+      and it only ever raises it, so read aloud as Level improves Hit Points; basis read. The die is
+      the class's, which the four class GURs already assert as a class-to-hit-points dependency; this
+      row carries the level dependency those could not state. The die expression is a magnitude.
+
+authored_polarity_declaration: >-
+  Three rows carry authored polarity, all with basis read: M003 CONSTRAINS governs, M005 MODIFIES
+  neutral and M006 MODIFIES improves. Each is among the three types constitution section 5 requires
+  to carry source-reviewed authored polarity, and each was read aloud as source polarity target
+  before being recorded. M005 uses neutral deliberately rather than as a default; the reasoning is
+  set out in that row. No row uses basis heuristic or unset. No other row carries a polarity or
+  polarity_basis value: the two FEEDS_INTO rows and the one GATES row take their derived polarity
+  from the section 5 table and the Analyst authors none of them.
+
+domains_touched: []
+candidate_domains:
+  - proposed: character_advancement
+    basis: >-
+      This page is the advancement mechanic in full: experience, thresholds, levels, talent
+      entitlement and hit point growth. It is the strongest single-page evidence for this candidate
+      so far; the titles packet suggested it from a page that only consumes level. Recorded as a
+      candidate only; the domain registry is empty and constitution section 8 reserves promotion to
+      an Architect Decision, and the Analyst does not decide a candidate domain is official.
+
+domain_boundary_questions:
+  - >-
+    Advancement reaches hit points, talents and titles, each of which also belongs elsewhere.
+    Whether advancement is a domain or a process that crosses several cannot be settled here.
+    Deferred; no domain is asserted on any edge in this GUR.
+
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. This page states one advancement procedure once and repeats no shape within itself.
+  The four class GURs' candidate that every class resolves its talent roll on its own table is
+  relevant to M004 but belongs to those packets, and this page supplies the level condition rather
+  than the per-class resolution, so nothing here strengthens or weakens it.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: this page does not duplicate the overview packet's experience and level rows
+    detail: >-
+      GUR-PKT-SD-011-014 asserts from printed page 12 that experience feeds level on the aspect level
+      gain, and that level feeds title on the aspect title determination. Neither is repeated here.
+      M001 and M002 target the advancement table rather than the mechanics, which makes them distinct
+      under the constitution section 4 assertion key and, more importantly, records something the
+      overview could not: that the threshold is a lookup and that it scales with the level already
+      held.
+      The title consequence is deliberately omitted entirely. LEVELING UP says a character gets any
+      new title listed for their level, but that assertion is already carried twice, by the overview
+      packet at the mechanic level and by the titles packet at the table level, and a third row from
+      a page that only mentions it in passing would add a shallower path between concepts already
+      connected. The same reasoning covers the new spells this subsection mentions, which the priest
+      and wizard GURs assert from their own spells-known tables.
+  - id: OBS-02
+    subject: the class-specific talent table is not targeted from here
+    detail: >-
+      TALENT ROLL says the roll is made on your class's talent table. Four such tables exist as
+      candidate identities, one per class, each asserted by its own class GUR as resolving the talent
+      roll. M004 therefore asserts only what this page adds, which is when the entitlement arises.
+      Drawing an edge from this page to four class tables would restate four published rows from a
+      page that names none of them individually.
+  - id: OBS-03
+    subject: the duplicate-talents rule is stated but not extractable as an edge
+    detail: >-
+      TALENT ROLL adds that duplicate talents stack unless noted. This is a real rule about how talent
+      results combine, and it is not extracted: it relates a talent result to another instance of
+      itself rather than to a second named mechanic, and the graph has no self-relation that would
+      express stacking without asserting a loop. The character overview on printed page 13 makes the
+      same statement about talents combining, and the Analyst did not extract it there either.
+      Recorded so the omission is visibly consistent rather than accidental.
+  - id: OBS-04
+    subject: how experience is awarded is deferred to its own chapter
+    detail: >-
+      EXPERIENCE POINTS says awards are based on the quality of treasure and boons gained during a
+      session, that the GM may award them immediately or at the end of a session, and points at
+      Awarding XP on printed page 117. Treasure and boons are real concepts with their own chapters,
+      and an award-source dependency is genuine, but neither is defined here and this page gives
+      neither an identity. The packet that claims printed page 117 is the defining locus and should
+      assert it from there. The timing sentence is GM procedure rather than a mechanical dependency,
+      consistent with OBS-04 of the introduction GUR.
+  - id: OBS-05
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The page carries the level multiplier in the threshold rule, the reset value, all ten rows of
+      the advancement table with their talent marks and experience thresholds, the highest level the
+      table reaches, and the class hit point die. All are multipliers, threshold values, index values
+      or die expressions, excluded by constitution section 1 and invariant 11. They remain in the
+      immutable claimed packet, which is the authority for the values themselves. No aspect in this
+      GUR contains a digit and no condition encodes a numeric value; the two conditions that refer to
+      levels name the circumstance the source names rather than a tunable threshold.
+  - id: OBS-06
+    subject: flavour and packet mechanics
+    detail: >-
+      The page closes with an attributed epigraph about certain doom being a challenge, which
+      establishes tone and states no dependency. The supplied file opens with an intake wrapper ahead
+      of the Primary Source Material heading, for which the claim manifest is the independent page
+      locator SOURCE_MARKDOWN Attribution Rules requires. The trailing Supporting Source Context
+      reproduces printed page 15 and is orientation only, contributing nothing here.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: whether printed page 39 or printed page 12 is the defining locus for XP and Level
+    detail: >-
+      This GUR records printed page 12 as the defining locus for both and reproduces its spellings,
+      but page 12 is a one-line overview entry and this page is the full mechanic. A reasonable
+      reader could call page 39 the defining locus.
+      Nothing turns on it here, which is why it is recorded rather than escalated: both pages use XP
+      and Level with the same spelling and the same grammatical number, so no identity conflict
+      arises under SOURCE_MARKDOWN Source Identity Authority and no rename is proposed. The question
+      matters only if a later packet uses a third spelling, in which case the defining locus decides.
+      Consequence if wrong: none to the rows, which would be unchanged. The defining_locus field on
+      two candidate nodes would name a different page. Reviewer may correct it without affecting any
+      assertion.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Every proposed node uses an approved constitution section 2 prefix with an unchanged
+  kind, every edge uses one of the thirteen legal section 3 types, and no new prefix, edge type,
+  domain promotion or general-rule application is requested. ESCALATION_CONTRACT states that a
+  proposed node under an approved prefix and kind which passes identity and duplicate checks is
+  ordinary GUR, GUP and Review work rather than an escalation. IDQ-01 is recorded for Reviewer on
+  that basis, and the deferrals in OBS-03 and OBS-04 resolve when the relevant defining packets are
+  claimed.
+
+completeness_statement: >-
+  The single printed page in the declared span is accounted for. Page 39 was read in full: the LEVEL
+  ADVANCEMENT heading; the EXPERIENCE POINTS subsection, whose award and timing content is
+  dispositioned in OBS-04; the LEVELING UP subsection, supplying M002, M003 and M005, with its new
+  title and new spells clause in OBS-01 and its maximum HP clause supplying M006; the ADVANCEMENT
+  TABLE heading, its three column headings and all ten rows, supplying M001 and M004 with their
+  values in OBS-05; the TALENT ROLL subsection, supplying M004's condition, with its class-table
+  clause in OBS-02 and its duplicate-stacking clause in OBS-03; the INCREASED HP subsection,
+  supplying M006; and the closing epigraph in OBS-06. Every page marker was resolved through the
+  Pandoc AST and the in-scope resolved page set matches the declared span with no gap. The Supporting
+  Source Context reproducing printed page 15 is out of scope and contributed nothing. Six edges are
+  proposed across five candidate nodes, four of which are also proposed by sibling GURs from their
+  defining loci and are marked as such. No node is reused because the Shadowdark graph is empty.
+  Content not converted to an edge is accounted for in OBS-01 through OBS-06, and the one question
+  the Analyst could not settle is recorded in IDQ-01 rather than resolved silently. No assertion
+  depends on any other ruleset.

@@ -1,0 +1,492 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-190-191-monster-generator-and-mutations-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-190-191-monster-generator-and-mutations
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.35
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-190-191-monster-generator-and-mutations
+  source_file: source.md
+  packet_source_checksum: sha256:084e39a3b4df029ec0a9f8a4a59df9b6f9b0fdd0b356a218cfa056f9c38cca02
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 082-monster-generator-and-mutations.md
+  citation_code: SD
+  page_start: 190
+  page_end: 191
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit and are computed from the claimed source and the canonical files, not
+  recalled. Measured from the Pandoc AST: 4 headings, 6 prose paragraphs, 2 named tables and 1
+  epigraph. The generator table has 20 data rows across five columns and the mutations table 12
+  across four, giving 123 scannable units once the die columns are excluded. The script asserts
+  the recorded packet checksum against the claimed file before reading a block.
+
+page_attribution_basis: >-
+  Two markers and no ambiguity, which is the first time in many packets. The p190 marker ends
+  the MONSTER GENERATOR heading and the p191 marker ends the MAKE IT WEIRD heading, and
+  placement rule 1 applies each to its whole heading; persistence carries each page through the
+  blocks that follow it.
+  The script asserts that neither table contains a page marker, so no page break falls inside a
+  table and every block sits wholly on one page. Four rows cite 190 and one cites 191, each
+  taken from the page of the block that supports it rather than from my reading.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 190 and 191. The
+  Supporting Source Context appends the monster attributes page from 189, whose own packet
+  PKT-SD-189-189-monster-attributes is integrated and whose three rows are canonical. No row
+  here cites 189, and the script asserts that every submitted row cites 190 or 191.
+  That exclusion matters more than usual: page 189 is the most recently integrated source in
+  the book and its subject is adjacent, so re-asserting from the repeated copy would be easy.
+
+source_summary: >-
+  Two procedures. MONSTER GENERATOR on printed page 190 tells the GM how to build a monster from
+  the party's level: it defines PL as the average character level, sets the monster's armour
+  class from it, and rolls a Combat result on a twenty-row table that supplies the attack bonus
+  and the level, alongside a quality, a strength and a weakness. MAKE IT WEIRD on 191 adds up to
+  three mutations from a twelve-row table and treats a mutated monster as higher level for
+  treasure. The tables' cells are the generated creature's own qualities and abilities.
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 426 registry
+  rows and 854 edges, and 0 rows cite printed page 190 or 191. The registry holds 124 tbl_
+  identities, 98 rule_ identities and 1 mstat_ identity.
+  The endpoints this packet reuses carry 12 rows on cbt_armor_class, 27 on cbt_attack_roll, 30
+  on exp_level and 1 on mstat_monster_level, that last being the row integrated from the
+  preceding packet. The script asserts that all three proposed ids are absent from the registry
+  before using them.
+
+mstat_boundary_observed: >-
+  Constitution 2.5 is the governing boundary for this chapter and it cuts cleanly here, so the
+  cut is stated rather than left implicit.
+  This page is a procedure, not a stat block. Its prose states dependencies between shared
+  mechanics: what a generated monster's armour class is computed from, what the generator table
+  supplies, and what mutations do to the level used for treasure. Those are exactly the explicit
+  dependencies section 2.5 preserves, and four of the five rows below are of that kind.
+  The two tables' cells are the opposite. A quality, a strength and a weakness are the generated
+  creature's own values and abilities, which section 2.5 excludes from graph content whether the
+  creature is printed in a stat block or rolled up at the table. 120 of the 123 scannable units
+  are such cells and none yields a row.
+  mstat_monster_level is reused twice and no new mstat_ identity is proposed. In particular PL
+  is not proposed as one; see pl_identity_note.
+
+candidate_nodes:
+  - proposed_id: rule_monster_generator
+    proposed_label: Monster Generator
+    kind: rule
+    why_needed: >-
+      The source names MONSTER GENERATOR as a section and states the procedure under it: define
+      PL, compute the armour class, roll the Combat result. It is the named procedure the
+      generator table resolves, and it is the source of M001.
+    prefix_basis: >-
+      rule_ is a named rule or procedure; joins the 98 canonical rule_ identities and follows the
+      shape of rule_shop, rule_taverns and rule_shadowdark_maps, each a source-named procedure
+      resolved by its generator tables.
+    source_named: true
+    defining_locus: SD page 190, MONSTER GENERATOR
+    source_evidence: >-
+      page 190, the MONSTER GENERATOR heading and the two paragraphs beneath it that state how a
+      monster is generated.
+  - proposed_id: tbl_monster_generator
+    proposed_label: Monster Generator Table
+    kind: table
+    why_needed: >-
+      The named table on printed page 190, 20 rows keyed to a twenty-sided roll across five
+      columns. It resolves rule_monster_generator and supplies the Combat result the prose
+      defines, so it is the source of M003 and M004.
+    prefix_basis: 'tbl_ is a named source table; joins the 124 canonical tbl_ identities'
+    source_named: true
+    defining_locus: SD page 190, MONSTER GENERATOR TABLE
+    source_evidence: 'page 190, the MONSTER GENERATOR TABLE heading and its 20 data rows.'
+  - proposed_id: tbl_monster_mutations
+    proposed_label: Monster Mutations Table
+    kind: table
+    why_needed: >-
+      The named table on printed page 191, 12 rows keyed to a twelve-sided roll across three
+      mutation columns. It is the source of M005, which is the one mechanical consequence the
+      mutation procedure states.
+    prefix_basis: 'tbl_ is a named source table; joins the 124 canonical tbl_ identities'
+    source_named: true
+    defining_locus: SD page 191, MONSTER MUTATIONS TABLE
+    source_evidence: 'page 191, the MONSTER MUTATIONS TABLE heading and its 12 data rows.'
+
+reused_nodes:
+  - id: cbt_armor_class
+    label: Armor Class
+    used_by: M002
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 13 with 12 rows. DEC-2026-0105 keeps armour class on its
+      existing shared identity when an explicit dependency is present, and this page states one.
+  - id: exp_level
+    label: Level
+    used_by: M002
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical with 30 rows, all character side. This is the identity the monster-attributes
+      escalation refused to alias monster LV onto, and it is the correct endpoint here for the
+      opposite reason: PL is defined as the average character level. See pl_identity_note.
+  - id: cbt_attack_roll
+    label: Attack Roll
+    used_by: M003
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical with 27 rows. The prose states that the Combat result is the monster's attack
+      bonus, so the table supplies an input to the attack roll.
+  - id: mstat_monster_level
+    label: Monster Level
+    used_by: M004, M005
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Registered one packet ago under DEC-2026-0105 and carrying 1 row, its FEEDS_INTO into
+      rule_hit_points. This packet is the first to reuse it and adds two rows, which is the
+      shared-statistic use the ruling authorises rather than a widening of it.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_monster_generator
+    source_label: Monster Generator
+    edge_type: RESOLVED_BY
+    target_id: tbl_monster_generator
+    target_label: Monster Generator Table
+    aspect: monster identity
+    condition: ''
+    book: SD
+    page: 190
+    section: MONSTER GENERATOR TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M002
+    source_id: cbt_armor_class
+    source_label: Armor Class
+    edge_type: DERIVED_FROM
+    target_id: exp_level
+    target_label: Level
+    aspect: generated armor class
+    condition: for a generated monster
+    book: SD
+    page: 190
+    section: MONSTER GENERATOR
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M003
+    source_id: tbl_monster_generator
+    source_label: Monster Generator Table
+    edge_type: FEEDS_INTO
+    target_id: cbt_attack_roll
+    target_label: Attack Roll
+    aspect: generated attack bonus
+    condition: ''
+    book: SD
+    page: 190
+    section: MONSTER GENERATOR
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M004
+    source_id: tbl_monster_generator
+    source_label: Monster Generator Table
+    edge_type: FEEDS_INTO
+    target_id: mstat_monster_level
+    target_label: Monster Level
+    aspect: generated level
+    condition: ''
+    book: SD
+    page: 190
+    section: MONSTER GENERATOR
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M005
+    source_id: tbl_monster_mutations
+    source_label: Monster Mutations Table
+    edge_type: MODIFIES
+    target_id: mstat_monster_level
+    target_label: Monster Level
+    aspect: treasure level
+    condition: for rolling treasure
+    book: SD
+    page: 191
+    section: MAKE IT WEIRD
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    polarity: improves
+    polarity_basis: read
+
+authored_polarity_declaration: >-
+  1 of the 5 rows carries authored polarity: M005, a MODIFIES, which constitution section 5
+  reserves. Its value is improves at basis read, because the source states the direction: a
+  mutated monster is treated as higher level than normal. The number of levels is a magnitude
+  and is not stored; the direction is.
+  The remaining 4 rows are RESOLVED_BY, DERIVED_FROM or FEEDS_INTO, none reserved, so Builder
+  derives governs, neutral and neutral respectively.
+
+status_note: >-
+  All 5 rows are core. Both procedures are main-rules text in the steward-designated main rules
+  work and neither is presented as an optional or variant mode.
+
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: >-
+  None recorded. The page is a GM construction procedure and resolves nothing in play; the
+  exploration candidate recorded throughout the encounters chapter does not apply.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The Analyst is prohibited from promoting a general rule. The mutation
+  procedure applies to any monster and would be the natural candidate, which is why M005 is
+  written as a single row from the table rather than proposed as an inherited rule.
+
+rejected_candidates:
+  - text_locus: 'the generator table cells, p190'
+    quoted_gist: >-
+      sixty cells across the Quality, Strength and Weakness columns, naming things like beastlike
+      and draconic qualities, absorbing magic, a poison sting, a petrifying gaze, ranged attacks
+      and turning invisible, and weaknesses to cold, fire, silver, iron, garlic and music
+    why_considered: >-
+      Several cells match a canonical identity on a scan: spell_light on a light weakness,
+      lang_draconic on a draconic quality, abil_stealthy on a stealthy strength, lang_reptilian
+      on a reptilian quality, cbt_ranged_attack on ranged attacks and rule_turn on turning
+      invisible.
+    rejection_reason: >-
+      These are the generated creature's own qualities, strengths and weaknesses, which
+      constitution 2.5 excludes from graph content: an individual value or ability never creates
+      an identity, edge or property store. That the creature is rolled up rather than printed
+      changes nothing. Every matched identity is also an unmarked ordinary-English collision
+      rather than a reference: a draconic quality is not the Draconic language, a stealthy
+      monster is not the halfling ability Stealthy, and a reptilian quality is not the Reptilian
+      language. The damage figures are magnitudes.
+  - text_locus: 'the mutations table cells, p191'
+    quoted_gist: >-
+      thirty-six cells naming mutations such as wings, tentacles, extra limbs, breathing fire,
+      fast healing, speaking Common, knowing spells, teleporting in bursts, an antimagic field
+      and being blessed by a god
+    why_considered: >-
+      lang_common matches speaking Common, spell_teleport matches teleporting, spell_heal
+      matches fast healing and rule_damage matches three damage cells, so six cells carry a scan
+      hit and two name a spell-shaped effect.
+    rejection_reason: >-
+      Same disposition as the generator cells, and for the same reason: these are abilities of
+      one generated creature. Speaking Common states no check and no consequence, which is the
+      reading that declined the mummies moaning in ancient Common at printed page 182. Teleport,
+      antimagic and reflecting spells are unmarked, so the reference limb fails as it did for the
+      augury at 181 and the teleporting lich at 182. The damage and AC figures are magnitudes.
+  - text_locus: 'the monster generator damage and attack defaults, p190'
+    quoted_gist: 'it deals a stated damage die and has a stated number of attacks'
+    why_considered: >-
+      rule_damage and cbt_attack_roll are canonical and the sentence names both, immediately
+      after the sentence that does earn M003.
+    rejection_reason: >-
+      Both figures are magnitudes and the sentence states nothing else about them. It gives the
+      generated creature's default values rather than a dependency: no rule changes if the die
+      changes. M003 exists because the preceding clause states that the Combat result is the
+      attack bonus, which is a dependency between the table and the attack roll; this clause has
+      no such structure.
+  - text_locus: 'the mutation count and the flying spider example, p191'
+    quoted_gist: >-
+      roll up to three mutations per monster, and an example that a spider with wings can fly a
+      near distance, and another that a monster with tentacles can restrain creatures
+    why_considered: >-
+      The count is the one number governing the procedure, and the examples name spell_fly and
+      rule_distance on a scan.
+    rejection_reason: >-
+      Three is a magnitude. The examples are explicitly offered as examples, in the source's own
+      words you might decide and you might determine, so they state what a GM may invent rather
+      than what the rules provide. Flying a near distance matches spell_fly and rule_distance as
+      ordinary English; no spell is cast and no distance rule is engaged.
+  - text_locus: 'the presupposed link from monster level to treasure, p191'
+    quoted_gist: >-
+      treat a mutated monster as two levels higher than normal for rolling treasure
+    why_considered: >-
+      The clause takes for granted that a monster's level governs the treasure it yields, which
+      would be a dependency from mstat_monster_level to rule_treasure. rule_treasure is canonical
+      with 15 rows and exp_level already feeds it on expected value from printed page 117.
+    rejection_reason: >-
+      The sentence presupposes that link rather than stating it, and its defining locus is the
+      treasure chapter, which is unclaimed. Asserting it from a parenthetical about mutations
+      would put a load-bearing relationship in the graph on the weakest possible evidence, and
+      the packet that does define it would then find it already present with the wrong citation.
+      M005 records what this sentence does state, which is that mutations raise the level used
+      for that roll.
+  - text_locus: 'PL as its own identity, p190'
+    quoted_gist: 'PL is the average character level of the adventuring party'
+    why_considered: >-
+      PL is a defined, bolded term that the whole generator turns on, and a reader may expect an
+      identity for it. It was considered carefully because the preceding packet escalated an
+      almost identical question about monster level.
+    rejection_reason: >-
+      PL is a party statistic, not a creature statistic, so constitution 2.5 does not cover it
+      and minting an mstat_ identity for it would be the broader use that section reserves to an
+      Architect Decision. No escalation is raised because none is needed: the source defines PL
+      in terms of character level in the same sentence that uses it, so the dependency is
+      expressible between two canonical identities and M002 expresses it. See pl_identity_note.
+  - text_locus: 'the MAKE IT WEIRD framing, p191'
+    quoted_gist: 'adventurers fear the unknown, so keep monsters unfamiliar by adding mutations'
+    why_considered: 'Read for completeness, as every block on an in-scope page must be considered.'
+    rejection_reason: >-
+      Advice to the GM about why to use the procedure. It states no dependency and striking it
+      would leave the mutations table and every mechanic it touches unchanged.
+  - text_locus: 'the closing epigraph, p191'
+    quoted_gist: 'a dwarf fighter describing a goblin with nine rows of teeth that flew like a bat'
+    why_considered: >-
+      The attribution names an ancestry and a class and the text names a goblin, so four
+      canonical identities match on a scan.
+    rejection_reason: >-
+      An epigraph, and the same disposition as the epigraph at printed page 187. Constitution
+      section 2 states that labels do not determine identity; a dwarf fighter in a byline is a
+      person, and the goblin is a creature in an anecdote.
+  - text_locus: 'the appended monster attributes page, out of scope'
+    quoted_gist: 'the printed page 189 monster attributes page'
+    why_considered: >-
+      It is in the file, its subject is adjacent, and it was integrated one packet ago so its
+      identities are fresh in the registry.
+    rejection_reason: >-
+      It is Supporting Source Context, outside the bounded scope, and
+      PKT-SD-189-189-monster-attributes already carries its three rows. Extracting from it would
+      duplicate canonical assertions and cite a page outside this packet's range.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: the boundary cuts this page in half, and both halves are the ruling working
+    detail: >-
+      123 scannable units, 3 of them prose sentences that earn rows and 120 of them table cells
+      that earn nothing. That ratio is not a thin reading; it is constitution 2.5 applied to a
+      page that contains both kinds of content at once.
+      The prose states dependencies between shared mechanics: what the armour class is computed
+      from, what the table supplies, what mutations do to the level used for treasure. The cells
+      state one generated creature's qualities and abilities. DEC-2026-0105 preserves the first
+      and excludes the second, and this is the first page where both appear side by side, which
+      makes it a better test of the boundary than either the stat-block page before it or the
+      encounter tables before that.
+  - id: OBS-02
+    subject: character level and monster level are both here, and they are not the same identity
+    detail: >-
+      The escalation one packet ago turned on refusing to alias monster LV onto exp_level, and
+      DEC-2026-0105 created mstat_monster_level to keep them apart. This page uses both, which is
+      the first time the distinction has had to hold in one artifact.
+      M002 reaches exp_level because PL is defined as the average character level of the party:
+      the party's level really does determine the generated monster's armour class. M004 reaches
+      mstat_monster_level because the Combat result supplies the monster's own level. Had the two
+      been merged, this page would assert that a monster's level determines its own armour class,
+      which is not what the source says.
+      Recorded because it is the first evidence that the ruling was worth the pause.
+  - id: OBS-03
+    subject: no page break falls inside a table, for the first time in twenty packets
+    detail: >-
+      Every packet of the encounters chapter and both monster packets before this one had either
+      a mid-table page break or a single page. Here both markers sit on headings and the script
+      asserts that neither table contains one, so page attribution is settled before any row is
+      written rather than derived per row.
+      Recorded because the mid-table break has been the standing citation hazard in this book and
+      its absence is worth noting rather than assuming it will continue.
+  - id: OBS-04
+    subject: what the generator does not commit the monster chapter to
+    detail: >-
+      rule_monster_generator and its table describe how to build a creature that has no stat
+      block. It would be easy to read that as licence to represent the attributes of creatures
+      that do have one, since the generator sets exactly the fields a stat block prints.
+      It is not. The generator's rows exist because the prose states dependencies between shared
+      mechanics; a stat block states values. The roughly sixty stat-block packets ahead still
+      yield creature identities and named abilities under constitution 2.5 and the
+      post-implementation requirements of DEC-2026-0105, and nothing here widens that.
+
+unresolved_identity_questions: []
+unresolved_identity_questions_note: >-
+  None. The one identity question this page raises, whether PL earns an identity, is answered
+  within the existing governance rather than escalated; see pl_identity_note and the
+  corresponding rejected candidate. Raising a second escalation one packet after the first would
+  have been the wrong call when the source itself supplies the bridge.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. All three proposed identities use an approved prefix and kind and pass identity
+  and duplicate checks, which ESCALATION_CONTRACT names as ordinary Builder and Reviewer work.
+  Every row uses a legal edge type at status core, no row carries supersession_basis and none is
+  an OVERRIDES, and no CLASSIFIED_AS row appears. No new mstat_ identity is proposed, so the
+  boundary constitution 2.5 reserves to an Architect Decision is not approached.
+
+pl_identity_note: >-
+  PL is the one place this page could have produced a second escalation, so the reasoning is set
+  out in full.
+  The source says PL is the average character level of the adventuring party, and then that the
+  monster's armour class is PL plus a fixed amount. PL is therefore a defined term with a
+  mechanical role, and it has no identity.
+  It is not an mstat_. DEC-2026-0105 and constitution 2.5 bound that prefix to a shared creature
+  statistic or rating, and PL describes the party rather than a creature; section 2.5 requires an
+  Architect Decision for any use outside that boundary. Proposing mstat_party_level would have
+  been precisely the widening the ruling anticipated and forbade.
+  No escalation is needed because the source closes the gap itself. PL is not an independent
+  quantity but a restatement of character level, defined in the same breath as it is used, so
+  the dependency the page asserts is between the generated monster's armour class and the
+  characters' level. M002 states exactly that, with DERIVED_FROM because the source says the
+  armour class is computed from it, and with the fixed amount left out as the magnitude it is.
+  The condition carries the subject qualitatively, for a generated monster, so the row cannot be
+  read as a claim about every armour class in the game.
+  What is lost is the word PL itself, which is a label rather than a mechanic, and constitution
+  section 2 states that labels do not determine identity. What is kept is the dependency, which
+  is what the graph is for: if character level changed, this procedure would need review.
+
+completeness_statement: >-
+  Both printed pages in the declared span were read in full at the recorded checksum, which the
+  script asserts against the packet manifest before parsing: 4 headings, 6 prose paragraphs, 2
+  named tables totalling 32 data rows, and 1 epigraph. Every block is dispositioned.
+  The packet yields 3 new identities and 5 rows, reusing 4 canonical identities whose labels the
+  script asserted equal to the registry, and all three proposed ids were asserted absent before
+  use. Every proposed identity carries at least one edge, so nothing is left unattached.
+  Every row was checked against the 854 canonical edges for an assertion-key collision, for a
+  shared source, type and target under a different aspect, and for duplicates within the patch;
+  there are none of any, and no canonical row cited either page before. The script asserts that
+  every submitted row cites 190 or 191 and that neither table carries a page marker.
+  9 candidates were rejected and each is recorded with its reason. The largest deliberate loss
+  is the 120 table cells, which constitution 2.5 excludes as one generated creature's own values
+  and abilities. No assertion depends on any other ruleset.
+
+measured_figures_note: >-
+  Figures quoted in this artifact's prose are computed from the claimed source and the canonical
+  files at extraction, not recalled, and the document is checked before it is written. Measured
+  here: 4 headings, 6 paragraphs, 2 tables of 20 and 12 data rows, 1 epigraph and 123 scannable
+  units; 5 blocks on printed page 190 and 8 on 191. Canonical counts at extraction: 426 registry
+  rows, 854 edges, 0 rows citing page 190 or 191, 124 tbl_ identities, 98 rule_ identities and 1
+  mstat_ identity; 12 rows on cbt_armor_class, 27 on cbt_attack_roll, 30 on exp_level, 1 on
+  mstat_monster_level and 15 on rule_treasure.

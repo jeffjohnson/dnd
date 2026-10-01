@@ -7,5 +7,58 @@
     }
   ],
   "type": "object",
-  "additionalProperties": true
+  "additionalProperties": true,
+  "properties": {
+    "candidate_nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/candidateNode"
+      }
+    }
+  },
+  "$defs": {
+    "candidateNode": {
+      "$comment": "DEC-2026-0091: candidate-node label and rationale use the same executable fields as compiler output. Legacy `label` and `evidence` are not aliases, so a new artifact cannot silently produce a blank registry proposal.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "proposed_id",
+        "proposed_label",
+        "kind",
+        "why_needed"
+      ],
+      "properties": {
+        "proposed_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "proposed_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why_needed": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "label"
+            ]
+          },
+          {
+            "required": [
+              "evidence"
+            ]
+          }
+        ]
+      }
+    }
+  }
 }

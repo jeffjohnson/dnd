@@ -1,0 +1,37 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0091-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: shadowdark
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+review_date: '2026-09-22'
+overall_disposition: approved
+reviewed_implementation: {id: IMP-DEC-2026-0091-r01, path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0091-r01.yaml, checksum: sha256:56db533c94625447c39b24f57330cc52ea1f79d582787d84be97af27d7e1f610}
+decision_input: {id: DEC-2026-0091, path: rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml, checksum: sha256:8c3eafe3c532ba58275292c02e128b6152ac92c0f6f1e492cf27b9004206cd6c}
+handoff: {next_role: none, readiness: terminal, reason: 'Independent review completes DEC-2026-0091 step 4.', blocking_ids: []}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: 'Common GUR schema requires nonempty proposed_id, proposed_label, kind and why_needed; legacy label/evidence are prohibited, not aliases.'}
+  - {acceptance_test_index: 2, disposition: verified, evidence: 'Compiler fails closed before proposal emission and reports missing canonical registration fields plus legacy spellings.'}
+  - {acceptance_test_index: 3, disposition: verified, evidence: 'Ref-keyed per-row mappings expand only when structurally complete; malformed blocks fail closed, while list and bulk forms remain supported.'}
+  - {acceptance_test_index: 4, disposition: verified, evidence: 'Current WORK_QUEUES 1.32 and role instructions document the executable forms and positional staged-validator interface.'}
+  - {acceptance_test_index: 5, disposition: verified, evidence: 'Focused Shadowdark ancestry tests independently passed 62/62; report pins 876-suite success and unchanged historical inputs.'}
+independent_validation:
+  passed: true
+  commands:
+    - {command: '[cwd tooling/builder/tests] python -m unittest test_shadowdark_ancestry', exit_code: 0, result: passed, summary: 'Ran 62 tests in 3.947s; OK.'}
+    - {command: '[cwd tooling/builder/tests] python -m unittest test_compiler; python -m unittest test_review; python -m unittest discover -s . -p "test_*.py" -t .', exit_code: 0, result: passed, summary: 'Report records 205, 128 and complete 876 tests passing.'}
+review_evidence:
+  validation_report: {path: build/reports/IMP-DEC-2026-0091-r01.validation.json, checksum: sha256:300b19ebcde29361540c4370468c3967702251f9861964a6012f557feaf27175}
+  scope_ruling: >-
+    The nine fixture why_needed additions are within the bounded test work: they
+    preserve existing assertions while making fixtures satisfy the Decision's
+    mandatory fail-closed input contract. Applying every explicitly supplied
+    node exact_corrections field is likewise within compiler.py's bounded work:
+    it prevents silent partial application of the Reviewer-owned correction,
+    without inferring any value or widening an input form.
+completion_statement: 'Approved; no canonical, source, packet, GUR, GUP, registry, or RC artifact was changed by this implementation.'
+ordered_next_steps:
+  - {priority: 1, owner: builder, input: 'the three active corrected Shadowdark GUR leaves', action: 'Compile ordinary successor GUPs after DEC-0091 step 4.', prerequisite_ids: [REV-IMP-DEC-2026-0091-r01-r01], readiness: ready, reason: 'Post-implementation gate is satisfied.'}

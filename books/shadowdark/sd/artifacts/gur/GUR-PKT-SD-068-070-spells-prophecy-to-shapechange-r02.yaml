@@ -1,0 +1,1269 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-068-070-spells-prophecy-to-shapechange-r02
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-068-070-spells-prophecy-to-shapechange
+constitution_version: '1.7'
+revision: 2
+supersedes: GUR-PKT-SD-068-070-spells-prophecy-to-shapechange-r01
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: successor row published; compile GUP-PKT-SD-068-070-spells-prophecy-to-shapechange-r02
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0104.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-068-070-spells-prophecy-to-shapechange
+  source_file: source.md
+  packet_source_checksum: sha256:c63fc99541f539a01388d2c84c489d22e04729c77e611644a69460db942dcb13
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 026-spells-prophecy-to-shapechange.md
+  citation_code: SD
+  page_start: 68
+  page_end: 70
+  page_number_basis: packet_page_markers
+page_attribution_basis: 'Every entry in this packet sits under an explicit marker, so unlike the two preceding
+  packets no page is inherited from a neighbour. Three markers resolve it: p68 ends the PROPHECY heading,
+  which is also the section''s first heading, p69 ends REBUKE UNHOLY and p70 ends SCRYING. Placement rule
+  1 applies each to its whole heading and the persistence rule carries it forward, giving p68 to PROPHECY,
+  PROTECTION FROM ENERGY and PROTECTION FROM EVIL, p69 to REBUKE UNHOLY, REGENERATE, RESILIENT SPHERE
+  and RESTORATION, and p70 to SCRYING, SENDING and SHAPECHANGE. No page is shared with another packet.'
+scope_boundary: The bounded scope is the Primary Source Material section, the ten alphabetically sequenced
+  entries from PROPHECY to SHAPECHANGE. The trailing Supporting Source Context is out of scope and contributed
+  nothing.
+source_summary: Ten spell entries in alphabetical order, each a heading, a tier and class line, a duration
+  line, a range line and effect prose. Prophecy asks the caster's god a question and cannot be recast
+  until penance is completed. Protection from Energy makes a creature immune to a chosen energy type.
+  Protection from Evil penalises chaotic attackers and casters against the target and can expel a possessing
+  entity on a failed check. Rebuke Unholy makes creatures opposed to the caster's alignment flee or be
+  destroyed. Regenerate heals over time and regrows body parts. Resilient Sphere conjures an impassable
+  sphere. Restoration ends a curse, illness or affliction. Scrying views a distant creature or place,
+  harder if unfamiliar, and can be detected. Sending delivers a mental message. Shapechange transforms
+  the caster into a creature bounded by level, reverting at reduced hit points.
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled: the canonical graph
+  holds 253 registry rows and 444 edges, with 63 spell_ identities canonical and 47 CLASSIFIED_AS rows
+  in production from INT-20260926-002, -003 and -004. None of the ten entries in this packet exists yet.
+  The canonical edge set was loaded so every proposed row could be checked against the section 4 assertion
+  key.'
+classification_basis: 'Tier and casting class are extracted for every entry from its own header line and
+  nothing else, using the two forms constitution section 2.4 authorizes for spells. Ten tier rows and
+  eleven class rows result; Protection from Evil is the only entry naming both classes. Tiers 1, 3, 4
+  and 5 are used; no entry here is tier 2.
+
+  Two entries turn on alignment and neither produces a CLASSIFIED_AS row. Section 2.4 keeps alignment
+  membership outside the graph, and the alignment facts here are not memberships anyway: they are mechanical
+  inputs, so they are carried as ordinary CONSTRAINS and FEEDS_INTO rows against the canonical alignment
+  identities. No CLASSIFIED_AS row in this packet targets sys_alignment or any alignment identity.'
+reused_nodes:
+- id: alignment_chaotic
+  label: Chaotic
+  used_by: M012, M020
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Bounds
+    who Protection from Evil wards against, and is one of the three caster alignments selecting Rebuke
+    Unholy's targets.
+- id: alignment_lawful
+  label: Lawful
+  used_by: M018
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. One
+    of the three caster alignments selecting Rebuke Unholy's targets.
+- id: alignment_neutral
+  label: Neutral
+  used_by: M019
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. One
+    of the three caster alignments selecting Rebuke Unholy's targets.
+- id: cbt_attack_roll
+  label: Attack Roll
+  used_by: M009
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Worsened
+    against a target warded by Protection from Evil.
+- id: class_priest
+  label: Priest
+  used_by: M003, M016, M025, M029, M034, M047
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Casting-class
+    target for six entries.
+- id: class_wizard
+  label: Wizard
+  used_by: M007, M017, M032, M040, M043
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Casting-class
+    target for five entries.
+- id: ex_movement
+  label: Movement
+  used_by: M030
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Excluded
+    by the Resilient Sphere barrier.
+- id: exp_level
+  label: Level
+  used_by: M023, M044
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Bounds
+    Rebuke Unholy's destruction threshold and Shapechange's assumed form.
+- id: rule_check
+  label: Check
+  used_by: M013, M021, M037
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Resolves
+    resistance to Protection from Evil, Rebuke Unholy and Scrying.
+- id: rule_damage
+  label: Damage
+  used_by: M005
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Excluded
+    by Protection from Energy for the chosen energy type.
+- id: rule_disadvantage
+  label: Disadvantage
+  used_by: M011
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. The
+    named rule supplying Protection from Evil's penalty.
+- id: rule_focus
+  label: Focus
+  used_by: M004, M008, M026, M035, M041
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Sustains
+    Protection from Energy, Protection from Evil, Regenerate, Scrying and Sending.
+- id: rule_hit_points
+  label: Hit Points
+  used_by: M027, M045
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Target
+    of the Regenerate and Shapechange rows.
+- id: rule_penance
+  label: Penance
+  used_by: M001
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Gates
+    Prophecy's recasting. Canonical from the class chapter and its first use by a spell.
+- id: rule_spellcasting_check
+  label: Spellcasting Check
+  used_by: M010, M014, M022, M036, M038
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Supplies
+    three resolution thresholds, is worsened by an unfamiliar Scrying subject, and is worsened against
+    a warded target.
+- id: rule_spell_tier_1
+  label: Tier 1
+  used_by: M015, M046
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Tier
+    target for Protection from Evil and Shapechange.
+- id: rule_spell_tier_3
+  label: Tier 3
+  used_by: M006, M024, M033
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Tier
+    target for Protection from Energy, Rebuke Unholy and Restoration.
+- id: rule_spell_tier_4
+  label: Tier 4
+  used_by: M028, M031
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Tier
+    target for Regenerate and Resilient Sphere.
+- id: rule_spell_tier_5
+  label: Tier 5
+  used_by: M002, M039, M042
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Tier
+    target for Prophecy, Scrying and Sending.
+candidate_nodes:
+- proposed_id: spell_prophecy
+  proposed_label: Prophecy
+  kind: spell
+  why_needed: Source of the rows drawn from the Prophecy entry. A named spell with its own heading, tier,
+    class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the 63 canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 68, PROPHECY
+  source_evidence: page 68, the PROPHECY entry heading and its header line.
+- proposed_id: spell_protection_from_energy
+  proposed_label: Protection from Energy
+  kind: spell
+  why_needed: Source of the rows drawn from the Protection from Energy entry. A named spell with its own
+    heading, tier, class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the 63 canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 68, PROTECTION FROM ENERGY
+  source_evidence: page 68, the PROTECTION FROM ENERGY entry heading and its header line.
+- proposed_id: spell_protection_from_evil
+  proposed_label: Protection from Evil
+  kind: spell
+  why_needed: Source of the rows drawn from the Protection from Evil entry. A named spell with its own
+    heading, tier, class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the 63 canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 68, PROTECTION FROM EVIL
+  source_evidence: page 68, the PROTECTION FROM EVIL entry heading and its header line.
+- proposed_id: spell_rebuke_unholy
+  proposed_label: Rebuke Unholy
+  kind: spell
+  why_needed: Source of the rows drawn from the Rebuke Unholy entry. A named spell with its own heading,
+    tier, class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the 63 canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 69, REBUKE UNHOLY
+  source_evidence: page 69, the REBUKE UNHOLY entry heading and its header line.
+- proposed_id: spell_regenerate
+  proposed_label: Regenerate
+  kind: spell
+  why_needed: Source of the rows drawn from the Regenerate entry. A named spell with its own heading,
+    tier, class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the 63 canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 69, REGENERATE
+  source_evidence: page 69, the REGENERATE entry heading and its header line.
+- proposed_id: spell_resilient_sphere
+  proposed_label: Resilient Sphere
+  kind: spell
+  why_needed: Source of the rows drawn from the Resilient Sphere entry. A named spell with its own heading,
+    tier, class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the 63 canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 69, RESILIENT SPHERE
+  source_evidence: page 69, the RESILIENT SPHERE entry heading and its header line.
+- proposed_id: spell_restoration
+  proposed_label: Restoration
+  kind: spell
+  why_needed: Source of the rows drawn from the Restoration entry. A named spell with its own heading,
+    tier, class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the 63 canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 69, RESTORATION
+  source_evidence: page 69, the RESTORATION entry heading and its header line.
+- proposed_id: spell_scrying
+  proposed_label: Scrying
+  kind: spell
+  why_needed: Source of the rows drawn from the Scrying entry. A named spell with its own heading, tier,
+    class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the 63 canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 70, SCRYING
+  source_evidence: page 70, the SCRYING entry heading and its header line.
+- proposed_id: spell_sending
+  proposed_label: Sending
+  kind: spell
+  why_needed: Source of the rows drawn from the Sending entry. A named spell with its own heading, tier,
+    class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the 63 canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 70, SENDING
+  source_evidence: page 70, the SENDING entry heading and its header line.
+- proposed_id: spell_shapechange
+  proposed_label: Shapechange
+  kind: spell
+  why_needed: Source of the rows drawn from the Shapechange entry. A named spell with its own heading,
+    tier, class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the 63 canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 70, SHAPECHANGE
+  source_evidence: page 70, the SHAPECHANGE entry heading and its header line.
+candidate_edges:
+- ref: M001
+  source_id: rule_penance
+  source_label: Penance
+  edge_type: GATES
+  target_id: spell_prophecy
+  target_label: Prophecy
+  aspect: recasting
+  condition: ''
+  book: SD
+  page: 68
+  section: PROPHECY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: spell_prophecy
+  source_label: Prophecy
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_5
+  target_label: Tier 5
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 68
+  section: PROPHECY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: spell_prophecy
+  source_label: Prophecy
+  edge_type: CLASSIFIED_AS
+  target_id: class_priest
+  target_label: Priest
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 68
+  section: PROPHECY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_focus
+  source_label: Focus
+  edge_type: FEEDS_INTO
+  target_id: spell_protection_from_energy
+  target_label: Protection from Energy
+  aspect: sustained duration
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM ENERGY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: spell_protection_from_energy
+  source_label: Protection from Energy
+  edge_type: EXCLUDES
+  target_id: rule_damage
+  target_label: Damage
+  aspect: energy immunity
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM ENERGY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: spell_protection_from_energy
+  source_label: Protection from Energy
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_3
+  target_label: Tier 3
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM ENERGY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: spell_protection_from_energy
+  source_label: Protection from Energy
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM ENERGY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: rule_focus
+  source_label: Focus
+  edge_type: FEEDS_INTO
+  target_id: spell_protection_from_evil
+  target_label: Protection from Evil
+  aspect: sustained duration
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM EVIL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: spell_protection_from_evil
+  source_label: Protection from Evil
+  edge_type: MODIFIES
+  target_id: cbt_attack_roll
+  target_label: Attack Roll
+  aspect: warded target
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM EVIL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: worsens
+  polarity_basis: read
+- ref: M010
+  source_id: spell_protection_from_evil
+  source_label: Protection from Evil
+  edge_type: MODIFIES
+  target_id: rule_spellcasting_check
+  target_label: Spellcasting Check
+  aspect: warded target
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM EVIL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: worsens
+  polarity_basis: read
+- ref: M011
+  source_id: rule_disadvantage
+  source_label: Disadvantage
+  edge_type: FEEDS_INTO
+  target_id: spell_protection_from_evil
+  target_label: Protection from Evil
+  aspect: warded target
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM EVIL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M012
+  source_id: alignment_chaotic
+  source_label: Chaotic
+  edge_type: CONSTRAINS
+  target_id: spell_protection_from_evil
+  target_label: Protection from Evil
+  aspect: warded against
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM EVIL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M013
+  source_id: rule_check
+  source_label: Check
+  edge_type: CONSTRAINS
+  target_id: spell_protection_from_evil
+  target_label: Protection from Evil
+  aspect: expulsion resistance
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM EVIL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M014
+  source_id: rule_spellcasting_check
+  source_label: Spellcasting Check
+  edge_type: FEEDS_INTO
+  target_id: spell_protection_from_evil
+  target_label: Protection from Evil
+  aspect: expulsion threshold
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM EVIL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M015
+  source_id: spell_protection_from_evil
+  source_label: Protection from Evil
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_1
+  target_label: Tier 1
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM EVIL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M016
+  source_id: spell_protection_from_evil
+  source_label: Protection from Evil
+  edge_type: CLASSIFIED_AS
+  target_id: class_priest
+  target_label: Priest
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM EVIL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M017
+  source_id: spell_protection_from_evil
+  source_label: Protection from Evil
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 68
+  section: PROTECTION FROM EVIL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M018
+  source_id: alignment_lawful
+  source_label: Lawful
+  edge_type: FEEDS_INTO
+  target_id: spell_rebuke_unholy
+  target_label: Rebuke Unholy
+  aspect: target selection
+  condition: ''
+  book: SD
+  page: 69
+  section: REBUKE UNHOLY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M019
+  source_id: alignment_neutral
+  source_label: Neutral
+  edge_type: FEEDS_INTO
+  target_id: spell_rebuke_unholy
+  target_label: Rebuke Unholy
+  aspect: target selection
+  condition: ''
+  book: SD
+  page: 69
+  section: REBUKE UNHOLY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M020
+  source_id: alignment_chaotic
+  source_label: Chaotic
+  edge_type: FEEDS_INTO
+  target_id: spell_rebuke_unholy
+  target_label: Rebuke Unholy
+  aspect: target selection
+  condition: ''
+  book: SD
+  page: 69
+  section: REBUKE UNHOLY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M021
+  source_id: rule_check
+  source_label: Check
+  edge_type: CONSTRAINS
+  target_id: spell_rebuke_unholy
+  target_label: Rebuke Unholy
+  aspect: rebuke resistance
+  condition: ''
+  book: SD
+  page: 69
+  section: REBUKE UNHOLY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M022
+  source_id: rule_spellcasting_check
+  source_label: Spellcasting Check
+  edge_type: FEEDS_INTO
+  target_id: spell_rebuke_unholy
+  target_label: Rebuke Unholy
+  aspect: rebuke threshold
+  condition: ''
+  book: SD
+  page: 69
+  section: REBUKE UNHOLY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M023
+  source_id: exp_level
+  source_label: Level
+  edge_type: CONSTRAINS
+  target_id: spell_rebuke_unholy
+  target_label: Rebuke Unholy
+  aspect: destruction threshold
+  condition: ''
+  book: SD
+  page: 69
+  section: REBUKE UNHOLY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M024
+  source_id: spell_rebuke_unholy
+  source_label: Rebuke Unholy
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_3
+  target_label: Tier 3
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 69
+  section: REBUKE UNHOLY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M025
+  source_id: spell_rebuke_unholy
+  source_label: Rebuke Unholy
+  edge_type: CLASSIFIED_AS
+  target_id: class_priest
+  target_label: Priest
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 69
+  section: REBUKE UNHOLY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M026
+  source_id: rule_focus
+  source_label: Focus
+  edge_type: FEEDS_INTO
+  target_id: spell_regenerate
+  target_label: Regenerate
+  aspect: sustained duration
+  condition: ''
+  book: SD
+  page: 69
+  section: REGENERATE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M027
+  source_id: spell_regenerate
+  source_label: Regenerate
+  edge_type: MODIFIES
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: ongoing healing
+  condition: ''
+  book: SD
+  page: 69
+  section: REGENERATE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M028
+  source_id: spell_regenerate
+  source_label: Regenerate
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_4
+  target_label: Tier 4
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 69
+  section: REGENERATE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M029
+  source_id: spell_regenerate
+  source_label: Regenerate
+  edge_type: CLASSIFIED_AS
+  target_id: class_priest
+  target_label: Priest
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 69
+  section: REGENERATE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M030
+  source_id: spell_resilient_sphere
+  source_label: Resilient Sphere
+  edge_type: EXCLUDES
+  target_id: ex_movement
+  target_label: Movement
+  aspect: impassable barrier
+  condition: ''
+  book: SD
+  page: 69
+  section: RESILIENT SPHERE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M031
+  source_id: spell_resilient_sphere
+  source_label: Resilient Sphere
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_4
+  target_label: Tier 4
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 69
+  section: RESILIENT SPHERE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M032
+  source_id: spell_resilient_sphere
+  source_label: Resilient Sphere
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 69
+  section: RESILIENT SPHERE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M033
+  source_id: spell_restoration
+  source_label: Restoration
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_3
+  target_label: Tier 3
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 69
+  section: RESTORATION
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M034
+  source_id: spell_restoration
+  source_label: Restoration
+  edge_type: CLASSIFIED_AS
+  target_id: class_priest
+  target_label: Priest
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 69
+  section: RESTORATION
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M035
+  source_id: rule_focus
+  source_label: Focus
+  edge_type: FEEDS_INTO
+  target_id: spell_scrying
+  target_label: Scrying
+  aspect: sustained duration
+  condition: ''
+  book: SD
+  page: 70
+  section: SCRYING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M036
+  source_id: spell_scrying
+  source_label: Scrying
+  edge_type: MODIFIES
+  target_id: rule_spellcasting_check
+  target_label: Spellcasting Check
+  aspect: unfamiliar subject
+  condition: ''
+  book: SD
+  page: 70
+  section: SCRYING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: worsens
+  polarity_basis: read
+- ref: M037
+  source_id: rule_check
+  source_label: Check
+  edge_type: CONSTRAINS
+  target_id: spell_scrying
+  target_label: Scrying
+  aspect: observation detection
+  condition: ''
+  book: SD
+  page: 70
+  section: SCRYING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M038
+  source_id: rule_spellcasting_check
+  source_label: Spellcasting Check
+  edge_type: FEEDS_INTO
+  target_id: spell_scrying
+  target_label: Scrying
+  aspect: detection threshold
+  condition: ''
+  book: SD
+  page: 70
+  section: SCRYING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M039
+  source_id: spell_scrying
+  source_label: Scrying
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_5
+  target_label: Tier 5
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 70
+  section: SCRYING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M040
+  source_id: spell_scrying
+  source_label: Scrying
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 70
+  section: SCRYING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M041
+  source_id: rule_focus
+  source_label: Focus
+  edge_type: FEEDS_INTO
+  target_id: spell_sending
+  target_label: Sending
+  aspect: sustained duration
+  condition: ''
+  book: SD
+  page: 70
+  section: SENDING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M042
+  source_id: spell_sending
+  source_label: Sending
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_5
+  target_label: Tier 5
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 70
+  section: SENDING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M043
+  source_id: spell_sending
+  source_label: Sending
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 70
+  section: SENDING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M044
+  source_id: exp_level
+  source_label: Level
+  edge_type: CONSTRAINS
+  target_id: spell_shapechange
+  target_label: Shapechange
+  aspect: assumed form level
+  condition: ''
+  book: SD
+  page: 70
+  section: SHAPECHANGE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M045
+  source_id: spell_shapechange
+  source_label: Shapechange
+  edge_type: MODIFIES
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: reversion
+  condition: when the caster's hit points are depleted
+  book: SD
+  page: 70
+  section: SHAPECHANGE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: worsens
+  polarity_basis: read
+- ref: M046
+  source_id: spell_shapechange
+  source_label: Shapechange
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_1
+  target_label: Tier 1
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 70
+  section: SHAPECHANGE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M047
+  source_id: spell_shapechange
+  source_label: Shapechange
+  edge_type: CLASSIFIED_AS
+  target_id: class_priest
+  target_label: Priest
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 70
+  section: SHAPECHANGE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M048
+  source_id: spell_rebuke_unholy
+  source_label: Rebuke Unholy
+  edge_type: TRIGGERS
+  target_id: rule_death
+  target_label: Death
+  aspect: rebuke destruction
+  condition: when an eligible target fails the rebuke check severely
+  book: SD
+  page: 69
+  section: REBUKE UNHOLY
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  polarity: inflicts
+  polarity_basis: read
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Required by REV-GUP-PKT-SD-068-070-spells-prophecy-to-shapechange-r01-r01. The REBUKE
+    UNHOLY entry on printed page 69 states that a creature failing the rebuke check by the stated margin,
+    and within the caster-level bound, is destroyed rather than merely put to flight. M021 through M023
+    carry the check, its threshold and the level bound, but none carries the lethal outcome, so a query
+    for what causes death did not reach this spell. TRIGGERS is the cause-to-effect type and rule_death
+    is canonical, already receiving the same shape from spell_cloudkill and spell_disintegrate. The failure
+    margin is a magnitude and is not stored; the condition names the circumstance instead.
+authored_polarity_declaration: Authored polarity appears on eleven rows and no others, each with basis
+  read as invariant 15 requires, and each is a MODIFIES or CONSTRAINS row as constitution section 5 allows.
+  The six CONSTRAINS rows take governs. Regenerate takes improves. Protection from Evil's two rows, Scrying's
+  unfamiliar-subject row and Shapechange's reversion take worsens. No TRIGGERS row appears in this packet.
+  The 21 CLASSIFIED_AS rows and the twelve FEEDS_INTO, two EXCLUDES and one GATES row carry none, since
+  section 5 derives those.
+polarity_direction_note: Three worsens rows deserve a word because the benefit runs opposite to the polarity.
+  Protection from Evil helps its target, but the rows assert what it does to the attack roll and to the
+  hostile spellcasting check, and it worsens both. Polarity is read against the thing the row modifies,
+  not against whoever benefits. The same reading is already in production for every protective effect,
+  and reading it the other way would make the field mean different things on different rows.
+domains_touched: []
+candidate_domains:
+- proposed: magic
+  basis: Every entry belongs to the spell machinery. Recorded as a candidate only; constitution section
+    8 reserves domain promotion to an Architect Decision.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The classification rows repeat two shapes across ten entries,
+  but they enumerate per-entry source facts rather than instancing a rule, and the Analyst is prohibited
+  from promoting a general rule.
+non_edge_observations:
+- id: OBS-01
+  subject: magnitudes are excluded from every row
+  detail: Regenerate states a healing dice expression, Rebuke Unholy a failure margin and a flight duration,
+    Scrying an explicit DC, Shapechange a creature level bound and the hit point values it reverts at
+    and to, and several entries a duration in rounds. None reaches a field. The one condition in this
+    packet names a circumstance, that the caster's hit points are depleted, and deliberately avoids the
+    number the source gives. That wording follows the correction applied to the equivalent Polymorph row
+    in the previous packet, where an earlier phrasing spelled the quantity out.
+- id: OBS-02
+  subject: Restoration yields no mechanical row
+  detail: 'Restoration ends a curse, illness or affliction. None of the three has a canonical identity,
+    none is defined as a mechanic anywhere read so far, and minting one here would invent an identity
+    the source does not define. Restoration therefore contributes its two classification rows and nothing
+    else. This is the third entry in three packets with this shape, after Knock and Passwall, and the
+    pattern is now worth naming: the rulebook repeatedly acts on things it never defines mechanically,
+    and the graph has no way to represent the effect.'
+- id: OBS-03
+  subject: energy types and creature categories are not proposed
+  detail: Protection from Energy and Rebuke Unholy both turn on categories the source names, fire, cold
+    and electricity in one and demons, devils, outsiders, angels and natural creatures in the other. None
+    is proposed. These are taxonomy, which section 2.4 keeps outside the graph, and no canonical identity
+    exists for any of them. The rows assert the mechanical relationship, immunity to damage and selection
+    of targets, without naming the members.
+- id: OBS-04
+  subject: the check and its threshold are carried as two rows throughout
+  detail: 'Three entries resolve through a check made against the caster''s spellcasting check: Protection
+    from Evil''s expulsion, Rebuke Unholy''s resistance and Scrying''s detection. Each produces two rows,
+    a CONSTRAINS from rule_check and a FEEDS_INTO from rule_spellcasting_check, rather than one collapsed
+    row. This applies the settlement in REV-GUP-PKT-SD-062-065-r01-r01, which required exactly that split
+    for Illusion so a change to the supplying rule reaches the spell. Applied at extraction rather than
+    after a correction, as it was for Magic Missile in the previous packet.'
+- id: OBS-05
+  subject: Rebuke Unholy's alignment rows are three, not one
+  detail: The entry gives a different target set for a lawful or neutral caster than for a chaotic one.
+    Rather than assert a single row against sys_alignment, which is a source-context grouping the constitution
+    keeps out of classification and which would lose which alignment selects what, each of the three canonical
+    alignment identities gets its own FEEDS_INTO row with aspect target selection. The three share an
+    aspect and differ by source, so they remain distinct under the section 4 assertion key. Which creatures
+    each alignment selects is not asserted, per OBS-03.
+- id: OBS-06
+  subject: Prophecy is the second spell to use Penance, not the first
+  detail: 'rule_penance has been canonical since the class chapter and until now nothing pointed at it.
+    Prophecy gates its own recasting on completing penance, which is a precondition, so GATES runs from
+    the gate to the gated. This is worth noting because it is the kind of connection the intake exists
+    to find: a rule defined in one chapter and consumed by a spell thirty pages later, invisible to anyone
+    reading either page alone.'
+  correction: 'Revision 1 stated this observation as ''Prophecy is the first spell to use Penance'' and
+    asserted that nothing pointed at rule_penance until now. Both claims are false; see corrected_observation
+    for the measured position. The observation''s point survives the correction and is strengthened by
+    it: a rule defined in the class chapter is consumed by spells thirty pages later, and it is now known
+    to happen twice, in Dominion on page 60 and Prophecy on page 68.'
+- id: OBS-07
+  subject: Resilient Sphere's own mobility is not asserted
+  detail: The sphere blocks passage, which is asserted, and the caster can roll it a distance each turn,
+    which is not. The second is movement of the conjured object rather than of a creature, and ex_movement
+    is the creature movement rule; asserting it there would conflate two different things. Recorded rather
+    than forced into the nearest node.
+- id: OBS-08
+  subject: Rebuke Unholy's flight outcome is still not carried
+  detail: 'The entry states two outcomes for a failed check: destruction for an eligible target failing
+    severely, which M048 now carries, and fleeing from the caster for a stated number of rounds otherwise.
+    The second is not asserted. There is no canonical flight, fear or morale identity, and ex_movement
+    is the creature movement rule rather than a compelled-movement effect, so pointing the outcome there
+    would conflate two different things.
+
+    This is recorded now because the Review''s finding was that an outcome went uncarried, and the honest
+    position is that one still does, for a reason that is a missing identity rather than an oversight.
+    If Reviewer or Architect considers compelled flight worth representing it needs an identity first,
+    and that is not an Analyst act.'
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: whether alignment_chaotic CONSTRAINS Protection from Evil is the right direction
+  detail: 'Protection from Evil penalises chaotic beings acting against the target. I asserted alignment_chaotic
+    CONSTRAINS the spell, reading the alignment as bounding who the spell affects, which matches how exp_level
+    bounds a target elsewhere in this packet. The defensible alternative is FEEDS_INTO, reading the alignment
+    as an input selecting targets, which is exactly how the three Rebuke Unholy rows are cast in the same
+    GUR. The two entries genuinely differ, one bounds and one selects, but a Reviewer may reasonably want
+    a single shape for alignment across both.
+
+    Consequence if wrong: one row changes type and the Rebuke Unholy rows are unaffected either way. Flagged
+    because it is a convention question that will recur every time alignment gates an effect, and it should
+    be settled once.'
+architectural_escalations: []
+architectural_escalation_note: None raised. Every identity uses an approved prefix, every row uses a legal
+  edge type, and the 21 classification rows use only the two authorized spell forms with the exact aspects
+  section 2.4 names. No new prefix, edge type, domain promotion or general rule is requested, and no CLASSIFIED_AS
+  row points at an alignment identity or a sys_ axis. The recurring limit recorded in OBS-02, that the
+  rulebook acts on undefined things such as curses, barriers and locks, is named for the third time and
+  is left for the Architect to weigh rather than escalated from inside a packet.
+completeness_statement: This revision is scoped to the single correction REV-GUP-PKT-SD-068-070-spells-prophecy-to-shapechange-r01-r01
+  requires. It carries revision 1's 47 rows and 10 nodes forward unchanged and adds one row, spell_rebuke_unholy
+  TRIGGERS rule_death with aspect rebuke destruction on printed page 69, for 48 rows and 10 nodes in total.
+  The new row was checked against the canonical edge set for an assertion-key collision before publication;
+  there is none, and it does not collide with the two existing spell rows pointing at rule_death, which
+  differ in source and aspect. Revision 1's observations stand as written except OBS-06, which was factually
+  wrong and is corrected under corrected_observation, and OBS-08 is added to record an outcome that remains
+  uncarried for want of an identity. IDQ-01 stands unanswered. Nothing else in the packet was re-read
+  or re-extracted, because the Review found nothing else wanting.
+revision_reason: 'Revision 1 was independently reviewed as source-supported in all 47 rows and all 10
+  node registrations, with no row or node requiring alteration. Approval was withheld for one missing
+  relationship, the lethal outcome of Rebuke Unholy, and this revision adds exactly that row and nothing
+  else.
+
+  This is the second successive packet where the withheld row was an outcome the entry states but no row
+  carried. The shape is worth naming: I extracted the resolution machinery of an effect, the check and
+  its threshold and its bound, and did not extract what the resolution produces. Rebuke Unholy''s flight
+  outcome has the same gap and is discussed in OBS-08 below.'
+preservation_statement: Every one of revision 1's 47 candidate edges is carried forward unchanged, in
+  order, with its original ref, and every one of its 10 candidate nodes is carried forward unchanged.
+  The new row takes the next ref, M048. This revision was built by loading the published revision 1 from
+  disk and appending one row, not by regenerating the packet, and the build asserts that. The Review's
+  preserve_reviewed_rows and preserve_approved_node_registrations lists were checked against the result.
+  The only other change is the correction recorded under corrected_observation, which alters no row.
+polarity_fields_note: 'This row carries polarity inflicts with polarity_basis read, exactly as the Review
+  specifies, and that is consistent with the position I took on the two previous successors rather than
+  a reversal of it.
+
+  Constitution section 5 confines author-assigned polarity to MODIFIES, TRIGGERS and CONSTRAINS with basis
+  read. This is a TRIGGERS row, so the polarity is mine to author and invariant 15 requires it. The two
+  earlier successors were FEEDS_INTO rows, where section 5 derives the polarity and the Analyst is prohibited
+  from assigning it, which is why those fields were omitted there. Same rule, opposite outcome, because
+  the edge type differs. The three canonical rows already pointing at rule_death from a spell all carry
+  inflicts with basis read, so this row matches its neighbours.'
+corrected_observation: 'OBS-06 of revision 1 is factually wrong and is corrected here rather than quietly
+  deleted. It claimed that rule_penance had nothing pointing at it until Prophecy and that this was its
+  first use by a spell. The Review''s RF-04 flagged this and I verified it against the canonical edge
+  set rather than taking the flag on trust.
+
+  Measured: six canonical rows already touch rule_penance. rule_critical_failure TRIGGERS it on printed
+  page 45, it GATES rule_spellcasting_check and is RESOLVED_BY tbl_sacrifice_value on page 44, sys_alignment
+  and sys_deity both FEED_INTO it on page 44, and, decisively, rule_penance GATES spell_dominion with
+  aspect recasting on page 60. Dominion therefore carries the identical gate and Prophecy is the second
+  spell to use it, not the first.
+
+  The error was in the observation prose only. No row is affected: the Prophecy row targets a different
+  spell, so it never collided, and the collision check I ran before publishing revision 1 passed correctly.
+  What failed was that I asserted a claim about the graph''s contents from impression instead of measuring
+  it, in the same artifact where I had measured everything else. The corrected reading is the more interesting
+  one anyway: two spells in different chapters share one recasting gate, which is a pattern rather than
+  a one-off.'

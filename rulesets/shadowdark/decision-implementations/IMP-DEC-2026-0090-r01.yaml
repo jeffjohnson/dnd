@@ -1,0 +1,128 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0090-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: Step 2 of DEC-2026-0090. Shadowdark's historical GUR input versions are now 1.0 and 1.1,
+    matching constitution section 9 and both structural schemas. A 1.1 GUR is revalidated under the
+    current version, keeps its older-input warning, and stamps current output; unknown and future
+    versions still fail. Both files in the Decision's exact_diff were changed and nothing else. All
+    three acceptance tests pass.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0090
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0090.yaml
+  checksum: sha256:504152c84d06023ff48802273f9562ee82b11448a2b6382c667bd86d1cbcbf72
+implementation_files:
+- path: tooling/builder/src/adnd1e_builder/vocab.py
+  checksum: sha256:4379d6dda59fd0c356f32a1240f6b5e6f4ed9bce45f2a62611575b8bea06a0e5
+- path: tooling/builder/tests/test_shadowdark_ancestry.py
+  checksum: sha256:dbcf8fe7f96e89dda7b442bd99620ddb27ccda36cc9dce21a33a7cba07b2f1ec
+verified_inputs:
+- path: rulesets/shadowdark/governance/constitution.md
+  checksum: sha256:b25c22e688eeeac5e41d76646714620b0d85a8a5ab90e60b363fa0fd95b86a1a
+- path: rulesets/shadowdark/ruleset.yaml
+  checksum: sha256:e344966e8ee9ea3ce498ae379884a2669947c4a50f3f4f5b64af174d8ca5ac75
+- path: schemas/shadowdark/graph/gur.schema.json
+  checksum: sha256:f71303ba695924be1517ad2bd63fe1d33582c3a48c17457ff45a3e29b2045ad4
+- path: schemas/shadowdark/graph/gup.schema.json
+  checksum: sha256:341082cf48ecacdd6c9066ef6f4a4a42dbaf184716090f321570862535480bde
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0090.yaml
+  checksum: sha256:504152c84d06023ff48802273f9562ee82b11448a2b6382c667bd86d1cbcbf72
+- path: rulesets/shadowdark/decision-implementation-reviews/REV-IMP-DEC-2026-0087-r02-r01.yaml
+  checksum: sha256:e0419706461ee4bcac70e379730f105810f8668c83ffaf66ab15a218a5751892
+- path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-011-014-character-overview-and-starting-level-r01.yaml
+  checksum: sha256:914f94da5cc99eae4adbe44cfaa0f252b21ce1be62f0250cc38b810d38749726
+- path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-015-015-stats-and-stat-modifiers-r01.yaml
+  checksum: sha256:57444a28574d1f810e673ebe7d9bbaac78b40997bfebf223f1157340cde9fabe
+validation_report: build/reports/IMP-DEC-2026-0090-r01.validation.json
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: 'RulesetVocabulary.load(REPO_ROOT, ''shadowdark'') now reports accepted_gur_constitution_versions
+    [''1.0'', ''1.1'', ''1.2''] -- the two governed historical versions plus the current manifest
+    version, which `load` adds from rulesets/shadowdark/ruleset.yaml rather than from the constant.
+    The constant itself holds only {''1.0'', ''1.1''}. No other ruleset is widened: the adnd1e entry
+    is still the shared ACCEPTED_GUR_CONSTITUTION_VERSIONS object, unchanged and asserted identical,
+    and basicdnd has no entry at all, so it still accepts only its own current version. The accepted
+    set is checked against the sentence that governs it -- constitution section 9''s ''Historical
+    Shadowdark GURs declaring 1.0 or 1.1 remain admissible only with full revalidation under the current
+    constitution'' -- rather than against a second transcription of itself. Executable checks: TestHistoricalVersionCompatibility,
+    9 tests, all passing.'
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'A synthetic Shadowdark GUR declaring constitution_version ''1.1'', written to a temporary
+    file and never published, compiles with no constitution_version_mismatch, still raises constitution_version_older_than_compiler,
+    and produces an envelope recording constitution_version ''1.2'' with gur_constitution_version
+    ''1.1'' -- admitted, not trusted, and stamped with the current version on output. A GUR declaring
+    the current version raises neither finding. Unknown versions still fail with constitution_version_mismatch,
+    checked at ''0.9'' below the historical range, at the next minor version above current, and at
+    ''9.9''; the two admitted historical values are admitted because governance names them, not because
+    anything below current is waved through. The change was independently confirmed non-vacuous: with
+    the constant reverted to {''1.0''} in memory, the same 1.1 fixture reports constitution_version_mismatch.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'The immutable 1.0 compatibility tests are unchanged and green: both published 1.0 GURs
+    still compile with no version mismatch and still record gur_constitution_version ''1.0'', asserted
+    both by the existing TestHistoricalGursRevalidate (9 tests) and again by this Decision''s own
+    regression. Their bytes are unchanged -- they are pinned by checksum in verified_inputs and were
+    read, never written. The focused module ran 55 tests and the complete Builder suite 850, both
+    exit code 0 with no failures or errors; exact commands and outcomes are in the validation block
+    and in build/reports/IMP-DEC-2026-0090-r01.validation.json. The suite grew from 841 to 850 by
+    exactly the 9 tests added here.'
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/builder/tests] python -m unittest test_shadowdark_ancestry'
+    exit_code: 0
+    result: passed
+    summary: Ran 55 tests in 3.589s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 850 tests in 188.436s OK (skipped=38)
+changes_in_this_revision:
+- 'tooling/builder/src/adnd1e_builder/vocab.py: the shadowdark entry of HISTORICAL_ACCEPTED_GUR_CONSTITUTION_VERSIONS
+  is now frozenset({''1.0'', ''1.1''}). Its comment records why 1.1 joined 1.0 and that the current
+  manifest version is added by `load`, not listed here. One line of data and its comment; no function,
+  signature or control flow changed.'
+- 'tooling/builder/tests/test_shadowdark_ancestry.py: added TestHistoricalVersionCompatibility, 9
+  tests covering the accepted set, the governing constitution sentence, a synthetic 1.1 compile''s
+  three required properties, the current version raising neither finding, three rejected unknown versions,
+  the untouched adnd1e and basicdnd entries, and the two immutable 1.0 GURs still compiling as before.'
+origin_note: 'This Decision began as a divergence reported, not fixed, in IMP-DEC-2026-0087-r02''s
+  defects_for_the_architect: the constitution admitted historical 1.1 while the Builder constant admitted
+  only 1.0. Admitting an input version is governance transcription rather than a Builder judgment,
+  so the gap was reported and left in place until DEC-2026-0090 authorized it. No 1.1 Shadowdark GUR
+  exists, so no previously published artifact''s compilation outcome changes.'
+concurrent_work_note: Published in the same turn as four packet GUPs (GUP-PKT-SD-015-015-stats-and-stat-modifiers-r02,
+  GUP-PKT-SD-011-014-character-overview-and-starting-level-r02, GUP-PKT-SD-016-017-ancestries-r01
+  and GUP-PKT-SD-322-325-community-credits-and-licensing-r01). Each was compiled before this change
+  and every one of their source GURs declares the current version, so none depends on historical 1.1
+  admission. The suite figures above supersede the 841-test run those GUPs record; the difference
+  is exactly this Decision's 9 new tests. Under DEC-2026-0089 independent roles work concurrently,
+  so the Reviewer should re-measure rather than assume the tree stood still.
+canonical_state: No constitution, ruleset manifest, schema, packet, source Markdown, GUR, graph artifact,
+  registry, queue tooling or Herdr file was edited. rulesets/shadowdark/canonical still does not exist.
+  The two immutable 1.0 GURs are pinned by checksum in verified_inputs and were read only.
+attribution_note: vocab.py also carries uncommitted changes from the DEC-2026-0080 and DEC-2026-0087
+  lineages, reported in IMP-DEC-2026-0080-r04 and IMP-DEC-2026-0087-r02 and not re-claimed here. test_shadowdark_ancestry.py
+  was created under DEC-2026-0087 and its earlier content belongs to that report. The changes attributable
+  to this Decision are exactly those in changes_in_this_revision, so a whole-file diff against HEAD
+  will show more than this report claims authorship of.
+not_done:
+- No packet, GUR, GUP, Review or canonical artifact was reissued to take advantage of the widened
+  input set. DEC-2026-0090 makes no graph row approved.
+- The Shadowdark GUR and GUP schemas already admitted 1.0, 1.1 and 1.2 under DEC-2026-0089; they are
+  Architect-owned and were verified as inputs only.
+- No basicdnd or rc work of any kind was performed, claimed, withdrawn or cleaned up. DEC-2026-0086
+  remains binding.
+validation_report_checksum: sha256:4ed17bf4b98e62d78462cca19d1ff47f7193532622fc7d8bba1404527d1676b7

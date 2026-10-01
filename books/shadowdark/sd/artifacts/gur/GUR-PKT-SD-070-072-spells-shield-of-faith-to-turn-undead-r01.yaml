@@ -1,0 +1,1024 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-070-072-spells-shield-of-faith-to-turn-undead-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-070-072-spells-shield-of-faith-to-turn-undead
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0104.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-070-072-spells-shield-of-faith-to-turn-undead
+  source_file: source.md
+  packet_source_checksum: sha256:02c73c268365e2aec687a90d9b4119093c3dbcd8ea96ed7600d2158aae0dc8b8
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 027-spells-shield-of-faith-to-turn-undead.md
+  citation_code: SD
+  page_start: 70
+  page_end: 72
+  page_number_basis: packet_page_markers
+page_attribution_basis: 'Two markers resolve this packet: p71 ends the SILENCE heading and p72 ends SUMMON
+  EXTRAPLANAR. Placement rule 1 applies each to its whole heading and the persistence rule carries it
+  forward, giving p71 to SILENCE, SLEEP, SMITE, SPEAK WITH DEAD and STONESKIN, and p72 to SUMMON EXTRAPLANAR,
+  TELEKINESIS, TELEPORT and TURN UNDEAD.
+
+  SHIELD OF FAITH precedes the first marker and resolves to printed page 70 through the locator in the
+  claimed manifest, on the structural basis used and accepted for the two preceding packets: a page''s
+  first heading carries its marker, this heading carries none, so it continues the page before p71, whose
+  identity the p70 marker inside PKT-SD-068-070 fixes independently of this file. That packet''s last
+  entry, SHAPECHANGE, immediately precedes SHIELD OF FAITH alphabetically. No page length was estimated.'
+shared_page_note: Printed page 70 is cited by two packets, PKT-SD-068-070 and this one. This is the third
+  mid-page split in the intake after pages 62 and 65. It does not breach the zero-overlap rule, which
+  bars claiming the same source content, not citing the same printed page.
+scope_boundary: The bounded scope is the Primary Source Material section, the ten alphabetically sequenced
+  entries from SHIELD OF FAITH to TURN UNDEAD. The trailing Supporting Source Context is out of scope
+  and contributed nothing.
+source_summary: Ten spell entries in alphabetical order, each a heading, a tier and class line, a duration
+  line, a range line and effect prose. Shield of Faith and Stoneskin both improve armor class. Silence
+  mutes sound in an area and deafens those inside. Sleep puts a level-bounded number of low-level creatures
+  to sleep. Smite deals damage. Speak with Dead questions a corpse and punishes recasting within a stated
+  interval. Summon Extraplanar calls a level-bounded creature controlled only while focus holds, dismissed
+  by a successful check. Telekinesis lifts a weight-bounded target. Teleport moves the caster and willing
+  creatures. Turn Undead makes undead flee or destroys them on a severe failure within a level bound.
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled: the canonical graph
+  holds 239 registry rows and 492 edges. Nine of this packet''s ten entries are new. The tenth, spell_turn_undead,
+  is already canonical and is reused; its two existing rows, a class access gate and a spells-known exclusion
+  from printed page 20, were read so the rows proposed here could be checked against them. The canonical
+  edge set was loaded so every proposed row could be checked against the section 4 assertion key.'
+reused_canonical_spell_note: 'spell_turn_undead is the first already-canonical spell a spell packet has
+  encountered. It was registered from the priest class chapter, where the spell is named as a class feature,
+  and it carries two rows from printed page 20: class_priest GATES it with aspect spell access, and it
+  is EXCLUDED_FROM tbl_priest_spells_known with aspect spell count.
+
+  Neither row describes what the spell does. This packet is its defining locus as a spell and supplies
+  its mechanics, its tier and its casting class for the first time. It is reused rather than re-proposed,
+  and the label in this GUR matches the registry exactly, so the compiler resolves it rather than attempting
+  an addition. None of the six rows proposed for it collides with the two existing rows: they differ in
+  type, direction or aspect in every case, and the classification row runs from the spell to class_priest
+  while the existing access row runs the other way.'
+classification_basis: Tier and casting class are extracted for every entry from its own header line and
+  nothing else. Ten tier rows and eleven class rows result; Speak with Dead is the only entry naming both
+  classes. All five tier values are used, two entries each.
+reused_nodes:
+- id: cbt_armor_class
+  label: Armor Class
+  used_by: M001, M018
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Improved
+    by Shield of Faith and Stoneskin.
+- id: class_priest
+  label: Priest
+  used_by: M013, M016, M039
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Casting-class
+    target for Smite, Speak with Dead and Turn Undead.
+- id: class_wizard
+  label: Wizard
+  used_by: M003, M006, M010, M017, M021, M027, M030, M033
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Casting-class
+    target for nine entries.
+- id: ex_movement
+  label: Movement
+  used_by: M031
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Target
+    of the Teleport row.
+- id: exp_level
+  label: Level
+  used_by: M007, M008, M024, M036
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Feeds
+    Sleep's affected count and bounds three targets.
+- id: rule_check
+  label: Check
+  used_by: M034
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Resolves
+    resistance to Turn Undead.
+- id: rule_critical_failure
+  label: Critical Failure
+  used_by: M014
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Triggered
+    by recasting Speak with Dead within the stated interval.
+- id: rule_damage
+  label: Damage
+  used_by: M011
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Target
+    of the Smite row.
+- id: rule_death
+  label: Death
+  used_by: M037
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Target
+    of the Turn Undead destruction row, alongside the canonical Cloudkill, Disintegrate and Rebuke Unholy
+    rows.
+- id: rule_focus
+  label: Focus
+  used_by: M004, M022, M023, M028
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Sustains
+    Silence, Summon Extraplanar and Telekinesis, and gates control of the summoned creature.
+- id: rule_spellcasting_check
+  label: Spellcasting Check
+  used_by: M019, M025, M035
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Supplies
+    Turn Undead's threshold and Stoneskin's critical result, and gates dismissal of a summoned creature.
+- id: spell_turn_undead
+  label: Turn Undead
+  used_by: M034, M035, M036, M037, M038, M039
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Already
+    canonical from the priest class chapter on printed page 20, where it carries a class-access gate and
+    a spells-known exclusion. Reused, not re-proposed; this packet asserts its own mechanics for the first
+    time.
+- id: rule_spell_tier_1
+  label: Tier 1
+  used_by: M009, M038
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Tier
+    target for Sleep and Turn Undead.
+- id: rule_spell_tier_2
+  label: Tier 2
+  used_by: M005, M012
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Tier
+    target for Silence and Smite.
+- id: rule_spell_tier_3
+  label: Tier 3
+  used_by: M002, M015
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Tier
+    target for Shield of Faith and Speak with Dead.
+- id: rule_spell_tier_4
+  label: Tier 4
+  used_by: M020, M029
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Tier
+    target for Stoneskin and Telekinesis.
+- id: rule_spell_tier_5
+  label: Tier 5
+  used_by: M026, M032
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Tier
+    target for Summon Extraplanar and Teleport.
+candidate_nodes:
+- proposed_id: spell_shield_of_faith
+  proposed_label: Shield of Faith
+  kind: spell
+  why_needed: Source of the rows drawn from the Shield of Faith entry. A named spell with its own heading,
+    tier, class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 70, SHIELD OF FAITH
+  source_evidence: page 70, the SHIELD OF FAITH entry heading and its header line.
+- proposed_id: spell_silence
+  proposed_label: Silence
+  kind: spell
+  why_needed: Source of the rows drawn from the Silence entry. A named spell with its own heading, tier,
+    class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 71, SILENCE
+  source_evidence: page 71, the SILENCE entry heading and its header line.
+- proposed_id: spell_sleep
+  proposed_label: Sleep
+  kind: spell
+  why_needed: Source of the rows drawn from the Sleep entry. A named spell with its own heading, tier,
+    class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 71, SLEEP
+  source_evidence: page 71, the SLEEP entry heading and its header line.
+- proposed_id: spell_smite
+  proposed_label: Smite
+  kind: spell
+  why_needed: Source of the rows drawn from the Smite entry. A named spell with its own heading, tier,
+    class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 71, SMITE
+  source_evidence: page 71, the SMITE entry heading and its header line.
+- proposed_id: spell_speak_with_dead
+  proposed_label: Speak with Dead
+  kind: spell
+  why_needed: Source of the rows drawn from the Speak with Dead entry. A named spell with its own heading,
+    tier, class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 71, SPEAK WITH DEAD
+  source_evidence: page 71, the SPEAK WITH DEAD entry heading and its header line.
+- proposed_id: spell_stoneskin
+  proposed_label: Stoneskin
+  kind: spell
+  why_needed: Source of the rows drawn from the Stoneskin entry. A named spell with its own heading, tier,
+    class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 71, STONESKIN
+  source_evidence: page 71, the STONESKIN entry heading and its header line.
+- proposed_id: spell_summon_extraplanar
+  proposed_label: Summon Extraplanar
+  kind: spell
+  why_needed: Source of the rows drawn from the Summon Extraplanar entry. A named spell with its own heading,
+    tier, class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 72, SUMMON EXTRAPLANAR
+  source_evidence: page 72, the SUMMON EXTRAPLANAR entry heading and its header line.
+- proposed_id: spell_telekinesis
+  proposed_label: Telekinesis
+  kind: spell
+  why_needed: Source of the rows drawn from the Telekinesis entry. A named spell with its own heading,
+    tier, class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 72, TELEKINESIS
+  source_evidence: page 72, the TELEKINESIS entry heading and its header line.
+- proposed_id: spell_teleport
+  proposed_label: Teleport
+  kind: spell
+  why_needed: Source of the rows drawn from the Teleport entry. A named spell with its own heading, tier,
+    class, duration, range and effect.
+  prefix_basis: spell_ is a named spell; matches the canonical spell_ identities
+  source_named: true
+  defining_locus: SD page 72, TELEPORT
+  source_evidence: page 72, the TELEPORT entry heading and its header line.
+candidate_edges:
+- ref: M001
+  source_id: spell_shield_of_faith
+  source_label: Shield of Faith
+  edge_type: MODIFIES
+  target_id: cbt_armor_class
+  target_label: Armor Class
+  aspect: holy protection
+  condition: ''
+  book: SD
+  page: 70
+  section: SHIELD OF FAITH
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M002
+  source_id: spell_shield_of_faith
+  source_label: Shield of Faith
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_3
+  target_label: Tier 3
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 70
+  section: SHIELD OF FAITH
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: spell_shield_of_faith
+  source_label: Shield of Faith
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 70
+  section: SHIELD OF FAITH
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_focus
+  source_label: Focus
+  edge_type: FEEDS_INTO
+  target_id: spell_silence
+  target_label: Silence
+  aspect: sustained duration
+  condition: ''
+  book: SD
+  page: 71
+  section: SILENCE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: spell_silence
+  source_label: Silence
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_2
+  target_label: Tier 2
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 71
+  section: SILENCE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: spell_silence
+  source_label: Silence
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 71
+  section: SILENCE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: exp_level
+  source_label: Level
+  edge_type: FEEDS_INTO
+  target_id: spell_sleep
+  target_label: Sleep
+  aspect: affected count
+  condition: ''
+  book: SD
+  page: 71
+  section: SLEEP
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: exp_level
+  source_label: Level
+  edge_type: CONSTRAINS
+  target_id: spell_sleep
+  target_label: Sleep
+  aspect: target level
+  condition: ''
+  book: SD
+  page: 71
+  section: SLEEP
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M009
+  source_id: spell_sleep
+  source_label: Sleep
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_1
+  target_label: Tier 1
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 71
+  section: SLEEP
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: spell_sleep
+  source_label: Sleep
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 71
+  section: SLEEP
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M011
+  source_id: spell_smite
+  source_label: Smite
+  edge_type: TRIGGERS
+  target_id: rule_damage
+  target_label: Damage
+  aspect: punishing flames
+  condition: ''
+  book: SD
+  page: 71
+  section: SMITE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: inflicts
+  polarity_basis: read
+- ref: M012
+  source_id: spell_smite
+  source_label: Smite
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_2
+  target_label: Tier 2
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 71
+  section: SMITE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M013
+  source_id: spell_smite
+  source_label: Smite
+  edge_type: CLASSIFIED_AS
+  target_id: class_priest
+  target_label: Priest
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 71
+  section: SMITE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M014
+  source_id: spell_speak_with_dead
+  source_label: Speak with Dead
+  edge_type: TRIGGERS
+  target_id: rule_critical_failure
+  target_label: Critical Failure
+  aspect: repeat casting
+  condition: on repeat casting within the stated interval
+  book: SD
+  page: 71
+  section: SPEAK WITH DEAD
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: inflicts
+  polarity_basis: read
+- ref: M015
+  source_id: spell_speak_with_dead
+  source_label: Speak with Dead
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_3
+  target_label: Tier 3
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 71
+  section: SPEAK WITH DEAD
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M016
+  source_id: spell_speak_with_dead
+  source_label: Speak with Dead
+  edge_type: CLASSIFIED_AS
+  target_id: class_priest
+  target_label: Priest
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 71
+  section: SPEAK WITH DEAD
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M017
+  source_id: spell_speak_with_dead
+  source_label: Speak with Dead
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 71
+  section: SPEAK WITH DEAD
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M018
+  source_id: spell_stoneskin
+  source_label: Stoneskin
+  edge_type: MODIFIES
+  target_id: cbt_armor_class
+  target_label: Armor Class
+  aspect: stone skin
+  condition: ''
+  book: SD
+  page: 71
+  section: STONESKIN
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M019
+  source_id: rule_spellcasting_check
+  source_label: Spellcasting Check
+  edge_type: FEEDS_INTO
+  target_id: spell_stoneskin
+  target_label: Stoneskin
+  aspect: critical result
+  condition: ''
+  book: SD
+  page: 71
+  section: STONESKIN
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M020
+  source_id: spell_stoneskin
+  source_label: Stoneskin
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_4
+  target_label: Tier 4
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 71
+  section: STONESKIN
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M021
+  source_id: spell_stoneskin
+  source_label: Stoneskin
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 71
+  section: STONESKIN
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M022
+  source_id: rule_focus
+  source_label: Focus
+  edge_type: FEEDS_INTO
+  target_id: spell_summon_extraplanar
+  target_label: Summon Extraplanar
+  aspect: sustained duration
+  condition: ''
+  book: SD
+  page: 72
+  section: SUMMON EXTRAPLANAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M023
+  source_id: rule_focus
+  source_label: Focus
+  edge_type: GATES
+  target_id: spell_summon_extraplanar
+  target_label: Summon Extraplanar
+  aspect: creature control
+  condition: ''
+  book: SD
+  page: 72
+  section: SUMMON EXTRAPLANAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M024
+  source_id: exp_level
+  source_label: Level
+  edge_type: CONSTRAINS
+  target_id: spell_summon_extraplanar
+  target_label: Summon Extraplanar
+  aspect: summoned creature level
+  condition: ''
+  book: SD
+  page: 72
+  section: SUMMON EXTRAPLANAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M025
+  source_id: rule_spellcasting_check
+  source_label: Spellcasting Check
+  edge_type: GATES
+  target_id: spell_summon_extraplanar
+  target_label: Summon Extraplanar
+  aspect: dismissal
+  condition: ''
+  book: SD
+  page: 72
+  section: SUMMON EXTRAPLANAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M026
+  source_id: spell_summon_extraplanar
+  source_label: Summon Extraplanar
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_5
+  target_label: Tier 5
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 72
+  section: SUMMON EXTRAPLANAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M027
+  source_id: spell_summon_extraplanar
+  source_label: Summon Extraplanar
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 72
+  section: SUMMON EXTRAPLANAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M028
+  source_id: rule_focus
+  source_label: Focus
+  edge_type: FEEDS_INTO
+  target_id: spell_telekinesis
+  target_label: Telekinesis
+  aspect: sustained duration
+  condition: ''
+  book: SD
+  page: 72
+  section: TELEKINESIS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M029
+  source_id: spell_telekinesis
+  source_label: Telekinesis
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_4
+  target_label: Tier 4
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 72
+  section: TELEKINESIS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M030
+  source_id: spell_telekinesis
+  source_label: Telekinesis
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 72
+  section: TELEKINESIS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M031
+  source_id: spell_teleport
+  source_label: Teleport
+  edge_type: MODIFIES
+  target_id: ex_movement
+  target_label: Movement
+  aspect: teleportation
+  condition: ''
+  book: SD
+  page: 72
+  section: TELEPORT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M032
+  source_id: spell_teleport
+  source_label: Teleport
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_5
+  target_label: Tier 5
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 72
+  section: TELEPORT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M033
+  source_id: spell_teleport
+  source_label: Teleport
+  edge_type: CLASSIFIED_AS
+  target_id: class_wizard
+  target_label: Wizard
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 72
+  section: TELEPORT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M034
+  source_id: rule_check
+  source_label: Check
+  edge_type: CONSTRAINS
+  target_id: spell_turn_undead
+  target_label: Turn Undead
+  aspect: turn resistance
+  condition: ''
+  book: SD
+  page: 72
+  section: TURN UNDEAD
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M035
+  source_id: rule_spellcasting_check
+  source_label: Spellcasting Check
+  edge_type: FEEDS_INTO
+  target_id: spell_turn_undead
+  target_label: Turn Undead
+  aspect: turn threshold
+  condition: ''
+  book: SD
+  page: 72
+  section: TURN UNDEAD
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M036
+  source_id: exp_level
+  source_label: Level
+  edge_type: CONSTRAINS
+  target_id: spell_turn_undead
+  target_label: Turn Undead
+  aspect: destruction threshold
+  condition: ''
+  book: SD
+  page: 72
+  section: TURN UNDEAD
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M037
+  source_id: spell_turn_undead
+  source_label: Turn Undead
+  edge_type: TRIGGERS
+  target_id: rule_death
+  target_label: Death
+  aspect: turn destruction
+  condition: when an eligible target fails the turn check severely
+  book: SD
+  page: 72
+  section: TURN UNDEAD
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: inflicts
+  polarity_basis: read
+- ref: M038
+  source_id: spell_turn_undead
+  source_label: Turn Undead
+  edge_type: CLASSIFIED_AS
+  target_id: rule_spell_tier_1
+  target_label: Tier 1
+  aspect: spell tier
+  condition: ''
+  book: SD
+  page: 72
+  section: TURN UNDEAD
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M039
+  source_id: spell_turn_undead
+  source_label: Turn Undead
+  edge_type: CLASSIFIED_AS
+  target_id: class_priest
+  target_label: Priest
+  aspect: casting class
+  condition: ''
+  book: SD
+  page: 72
+  section: TURN UNDEAD
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: Authored polarity appears on ten rows and no others, each with basis read
+  as invariant 15 requires, and each is a MODIFIES, TRIGGERS or CONSTRAINS row as constitution section
+  5 allows. The four CONSTRAINS rows take governs. Shield of Faith, Stoneskin and Teleport take improves.
+  Smite, Speak with Dead's recasting penalty and Turn Undead's destruction take inflicts. The 21 CLASSIFIED_AS
+  rows and the six FEEDS_INTO and two GATES rows carry none, since section 5 derives those.
+domains_touched: []
+candidate_domains:
+- proposed: magic
+  basis: Every entry belongs to the spell machinery. Recorded as a candidate only; constitution section
+    8 reserves domain promotion to an Architect Decision.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The classification rows repeat two shapes across ten entries
+  but enumerate per-entry source facts rather than instancing a rule, and the Analyst is prohibited from
+  promoting a general rule.
+non_edge_observations:
+- id: OBS-01
+  subject: the Turn Undead destruction row is asserted at extraction
+  detail: 'Turn Undead is structurally identical to Rebuke Unholy in the preceding packet: a check against
+    the caster''s spellcasting check, destruction on a severe failure within a level bound, flight otherwise.
+    The Review of that packet withheld approval because the lethal outcome was not carried to rule_death.
+    That row is present here at extraction rather than after a correction, with the same aspect shape
+    and the same treatment of the failure margin as an excluded magnitude.
+
+    The two spells are close enough that the graph now shows a real pattern: two priest effects, one tier
+    1 and one tier 3, resolving identically against different target categories. Neither row collides
+    with the other, since they differ in source.'
+- id: OBS-02
+  subject: the flight outcome is still not carried, for both spells
+  detail: 'Turn Undead''s other stated outcome, fleeing from the caster for a stated number of rounds,
+    is not asserted, for the same reason recorded as OBS-08 of the preceding packet: there is no canonical
+    flight, fear or morale identity, and ex_movement is the creature movement rule rather than a compelled-movement
+    effect, so pointing the outcome there would conflate two different things.
+
+    It is now two spells with the same uncarried outcome rather than one, which makes the missing identity
+    a recurring gap rather than an isolated one. Minting it is not an Analyst act. Recorded for the Architect.'
+- id: OBS-03
+  subject: Silence yields only a duration row
+  detail: 'Silence mutes sound and deafens creatures in the area. Neither sound nor deafness has a canonical
+    identity; spell_blind_deafen exists but is another spell, not a condition, so it is not a target.
+    Only the Focus duration is asserted. Whether muting sound prevents spellcasting is a question the
+    entry does not answer and this GUR does not decide: no row claims it either way. This is the fourth
+    entry in four packets whose main effect has no representable target, after Knock, Passwall and Restoration.'
+- id: OBS-04
+  subject: weight, sigils and control state are not proposed
+  detail: Telekinesis bounds its target by weight, Teleport refers to teleportation sigils and to an off-target
+    chance, and Summon Extraplanar describes a summoned creature turning hostile. None has a canonical
+    identity and none is proposed. rule_gear_capacity is the carried-load rule and is not a general weight
+    concept, so Telekinesis's bound is not asserted against it; doing so would conflate a spell's lifting
+    limit with a character's encumbrance.
+- id: OBS-05
+  subject: Summon Extraplanar's control is a gate, not a duration
+  detail: Focus appears twice for this entry, once as the sustained duration and once as a gate on control
+    of the summoned creature, because losing focus does not end the spell but turns the creature hostile.
+    The two rows differ in type and aspect and so stay distinct under the section 4 assertion key. The
+    same shape appears in Pillar of Salt in PKT-SD-065-067, where focus sustained the spell and separately
+    gated permanence.
+- id: OBS-06
+  subject: Sleep takes both a FEEDS_INTO and a CONSTRAINS row from level
+  detail: 'The entry uses the caster''s level twice and differently: it sets how many creatures may be
+    chosen, which is an input, and the targets are bounded by their own level, which is a bound. Both
+    rows run from exp_level to the spell and differ in type and aspect, so they are distinct. This mirrors
+    the Mirror Image distinction recorded as OBS-06 of PKT-SD-065-067 and is worth checking rather than
+    assuming duplication.'
+- id: OBS-07
+  subject: Shield of Faith's class line reads oddly and is extracted as printed
+  detail: The entry is named Shield of Faith, its prose speaks of holy conviction, and its header line
+    says wizard. Every comparable devotional effect in the book is a priest spell. This may be a source
+    inconsistency, but the Analyst does not author or correct source, and the classification row says
+    wizard because the header says wizard. Recorded so that if the steward later revises the page, the
+    row is known to depend on that line rather than on a reading of the prose.
+unresolved_identity_questions: []
+unresolved_identity_questions_note: 'None. The judgement calls in this packet all have a settled precedent
+  to follow: the death row follows the Rebuke Unholy correction, the two-row check and threshold split
+  follows the Illusion settlement, and the dual-use-of-level split follows Mirror Image. IDQ-01 of the
+  preceding packet, whether alignment should CONSTRAIN or FEED_INTO, is still open but no row here depends
+  on it: no entry in this packet turns on alignment.'
+architectural_escalations: []
+architectural_escalation_note: 'None raised. Every identity uses an approved prefix, every row uses a
+  legal edge type, and the classification rows use only the two authorized spell forms. The recurring
+  gaps are recorded rather than escalated from inside a packet: compelled flight now affects two spells,
+  OBS-02, and undefined targets now affect four entries across four packets, OBS-03.'
+completeness_statement: All ten entries in the bounded scope were read at the recorded checksum and each
+  produced at least its classification rows. The packet yields 9 new spell identities, one reused canonical
+  spell, 18 mechanical rows and 21 classification rows, 39 rows in total, every one checked against the
+  492 canonical edges for an assertion-key collision before publication; there are none, including against
+  the two rows spell_turn_undead already carries. Seventeen canonical identities are reused rather than
+  re-proposed, verified against the registry at extraction. All five tier values are used. What is deliberately
+  not asserted is listed as OBS-01 through OBS-07. No assertion depends on any other ruleset.

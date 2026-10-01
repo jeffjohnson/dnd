@@ -1,0 +1,631 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-090-090-overland-travel-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-090-090-overland-travel
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0104.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-090-090-overland-travel
+  source_file: source.md
+  packet_source_checksum: sha256:05dd3f92f174cee8b41b97a5f81a618297668b442d905d95ab0b167b5b3eeccf
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 035-overland-travel.md
+  citation_code: SD
+  page_start: 90
+  page_end: 90
+  page_number_basis: packet_page_markers
+page_attribution_basis: One marker resolves this packet. p90 ends the OVERLAND TRAVEL heading, which is
+  also the section's first heading, and placement rule 1 applies it to that whole heading while the persistence
+  rule carries it across every subsequent subsection, since no further marker appears in the span. All
+  nineteen rows cite printed page 90. No content precedes the first marker and no page is shared with
+  another packet.
+scope_boundary: The bounded scope is the Primary Source Material section, the single printed page 90 and
+  its seven headings. The trailing Supporting Source Context is out of scope.
+source_summary: One page of procedural rules that explicitly add to the crawling rules rather than replacing
+  them. Play continues in initiative order and the page points to the Time Passes rules for elapsed travel
+  time. Random encounters are checked on a cadence set by the danger level. Light source duration remaining
+  is rolled for, and total darkness rarely occurs outdoors. Travel rate is a number of hexes per day by
+  method, given in a table that also covers difficult and arduous terrain, with a check required for each
+  extra hex attempted. Navigation in unfamiliar territory requires a check on leaving a hex, and failure
+  moves the group into a random adjacent hex. Deprivation of food or water inflicts damage after stated
+  periods, and that damage cannot be healed until the character eats or drinks.
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled: the canonical graph
+  holds 265 registry rows and 595 edges. This time the registry was read in full rather than searched
+  by keyword, which is a deliberate change of method: on the previous packet a keyword survey missed rule_natural_twenty
+  and cost a required row that the Reviewer had to catch. Reading the whole registry surfaced rule_danger_level,
+  rule_time_passes, rule_encounter, rule_total_darkness and item_rations as existing identities this page
+  touches, several of which a keyword search for travel terms would not have returned.
+
+  Every proposed row was checked against the canonical edge set both for an assertion-key collision and
+  for the weaker case of an existing row sharing source, type and target under a different aspect; there
+  are none of either.'
+restatement_note: 'One restatement is deliberately not re-asserted, and it is the sharpest so far because
+  it would have collided exactly rather than merely duplicated.
+
+  rule_danger_level FEEDS_INTO rule_encounter with aspect check cadence is already canonical from printed
+  page 86, where the resting rules define the danger levels and their encounter cadence. This page states
+  the same relationship for overland travel with different intervals. The intervals are magnitudes and
+  no field stores them, so an overland row carrying that pair, type and aspect would be the identical
+  assertion, rejected under the section 4 key.
+
+  What is asserted instead is the pair of rows that are genuinely new: the danger level feeds the overland
+  rule, and the overland rule feeds the encounter check with aspect overland cadence. That preserves the
+  fact this page adds, which is that overland travel has its own cadence, without duplicating the fact
+  page 86 already carries.'
+reused_nodes:
+- id: abil_constitution
+  label: Constitution
+  used_by: M010
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Feeds
+    the check for attempting an extra hex.
+- id: abil_intelligence
+  label: Intelligence
+  used_by: M013
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Feeds
+    the navigator's check.
+- id: cbt_initiative
+  label: Initiative
+  used_by: M002
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Orders
+    play during overland travel, which the page states runs in initiative order as normal.
+- id: ex_movement
+  label: Movement
+  used_by: M016
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Worsened
+    when a failed navigation check misdirects the group.
+- id: item_rations
+  label: Rations
+  used_by: M019
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. The
+    canonical food item, already consumed by resting on printed page 86.
+- id: rule_check
+  label: Check
+  used_by: M011, M014
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Resolves
+    the extra-hex attempt and the navigation attempt.
+- id: rule_crawling_round
+  label: Crawling Round
+  used_by: M001
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. The
+    base procedure this page adds to, stated in its opening sentence.
+- id: rule_damage
+  label: Damage
+  used_by: M017
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Inflicted
+    by deprivation of food or water.
+- id: rule_danger_level
+  label: Danger Level
+  used_by: M005
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Sets
+    the encounter cadence. Already canonical from printed page 86 with its own cadence row into rule_encounter,
+    which is not restated here.
+- id: rule_encounter
+  label: Encounter
+  used_by: M004
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Checked
+    on an overland cadence.
+- id: rule_hit_points
+  label: Hit Points
+  used_by: M018
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Recovery
+    is blocked while deprivation continues.
+- id: rule_light_source
+  label: Light Source
+  used_by: M006
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Its
+    remaining duration is determined by the overland rule.
+- id: rule_terrain
+  label: Terrain
+  used_by: M012
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Bounds
+    the travel rate the table gives. Canonical only since the immediately preceding packet.
+- id: rule_time_passes
+  label: Time Passes
+  used_by: M003
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Explicitly
+    cross-referenced by page number for handling elapsed travel time.
+- id: rule_total_darkness
+  label: Total Darkness
+  used_by: M007
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Excluded
+    outdoors, where the page states it rarely occurs.
+candidate_nodes:
+- proposed_id: rule_overland_travel
+  proposed_label: Overland Travel
+  kind: procedure
+  why_needed: The named rule this page defines, stated to add to the crawling rules rather than replace
+    them. Every other relation on the page hangs off it.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 90, OVERLAND TRAVEL
+  source_evidence: page 90, the OVERLAND TRAVEL section.
+- proposed_id: rule_hex
+  proposed_label: Hex
+  kind: procedure
+  why_needed: The named unit of overland distance the page measures travel in and whose exit triggers
+    the navigation check.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 90, WAYS TO TRAVEL
+  source_evidence: page 90, the WAYS TO TRAVEL section.
+- proposed_id: tbl_hexes_crossed
+  proposed_label: Hexes Crossed Table
+  kind: table
+  why_needed: The named table resolving travel rate by method and by terrain.
+  prefix_basis: tbl_ is a named source table; matches the 30 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 90, HEXES CROSSED TABLE
+  source_evidence: page 90, the HEXES CROSSED TABLE section.
+- proposed_id: rule_navigation
+  proposed_label: Navigation
+  kind: procedure
+  why_needed: The named procedure for keeping course in unfamiliar territory, with a stated check and
+    a stated failure outcome.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 90, NAVIGATION
+  source_evidence: page 90, the NAVIGATION section.
+- proposed_id: rule_food_and_water
+  proposed_label: Food and Water
+  kind: procedure
+  why_needed: 'The named deprivation rule: it inflicts damage after a stated period and blocks healing
+    until the character eats or drinks.'
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 90, FOOD AND WATER
+  source_evidence: page 90, the FOOD AND WATER section.
+candidate_edges:
+- ref: M001
+  source_id: rule_crawling_round
+  source_label: Crawling Round
+  edge_type: FEEDS_INTO
+  target_id: rule_overland_travel
+  target_label: Overland Travel
+  aspect: base procedure
+  condition: ''
+  book: SD
+  page: 90
+  section: OVERLAND TRAVEL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: cbt_initiative
+  source_label: Initiative
+  edge_type: FEEDS_INTO
+  target_id: rule_overland_travel
+  target_label: Overland Travel
+  aspect: turn order
+  condition: ''
+  book: SD
+  page: 90
+  section: TURNS AND TIME
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_overland_travel
+  source_label: Overland Travel
+  edge_type: CROSS_REFERENCES
+  target_id: rule_time_passes
+  target_label: Time Passes
+  aspect: elapsed time
+  condition: ''
+  book: SD
+  page: 90
+  section: TURNS AND TIME
+  evidence: explicit_reference
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_overland_travel
+  source_label: Overland Travel
+  edge_type: FEEDS_INTO
+  target_id: rule_encounter
+  target_label: Encounter
+  aspect: overland cadence
+  condition: ''
+  book: SD
+  page: 90
+  section: TURNS AND TIME
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: rule_danger_level
+  source_label: Danger Level
+  edge_type: FEEDS_INTO
+  target_id: rule_overland_travel
+  target_label: Overland Travel
+  aspect: encounter cadence
+  condition: ''
+  book: SD
+  page: 90
+  section: TURNS AND TIME
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: rule_overland_travel
+  source_label: Overland Travel
+  edge_type: FEEDS_INTO
+  target_id: rule_light_source
+  target_label: Light Source
+  aspect: remaining duration
+  condition: ''
+  book: SD
+  page: 90
+  section: LIGHT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: rule_overland_travel
+  source_label: Overland Travel
+  edge_type: EXCLUDES
+  target_id: rule_total_darkness
+  target_label: Total Darkness
+  aspect: outdoor light
+  condition: ''
+  book: SD
+  page: 90
+  section: LIGHT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: rule_overland_travel
+  source_label: Overland Travel
+  edge_type: RESOLVED_BY
+  target_id: tbl_hexes_crossed
+  target_label: Hexes Crossed Table
+  aspect: travel rate
+  condition: ''
+  book: SD
+  page: 90
+  section: WAYS TO TRAVEL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: rule_hex
+  source_label: Hex
+  edge_type: FEEDS_INTO
+  target_id: rule_overland_travel
+  target_label: Overland Travel
+  aspect: distance unit
+  condition: ''
+  book: SD
+  page: 90
+  section: WAYS TO TRAVEL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: abil_constitution
+  source_label: Constitution
+  edge_type: FEEDS_INTO
+  target_id: rule_overland_travel
+  target_label: Overland Travel
+  aspect: extra hex check
+  condition: ''
+  book: SD
+  page: 90
+  section: WAYS TO TRAVEL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M011
+  source_id: rule_check
+  source_label: Check
+  edge_type: CONSTRAINS
+  target_id: rule_overland_travel
+  target_label: Overland Travel
+  aspect: extra hex
+  condition: ''
+  book: SD
+  page: 90
+  section: WAYS TO TRAVEL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M012
+  source_id: rule_terrain
+  source_label: Terrain
+  edge_type: CONSTRAINS
+  target_id: tbl_hexes_crossed
+  target_label: Hexes Crossed Table
+  aspect: terrain rate
+  condition: ''
+  book: SD
+  page: 90
+  section: HEXES CROSSED TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M013
+  source_id: abil_intelligence
+  source_label: Intelligence
+  edge_type: FEEDS_INTO
+  target_id: rule_navigation
+  target_label: Navigation
+  aspect: navigator check
+  condition: ''
+  book: SD
+  page: 90
+  section: NAVIGATION
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M014
+  source_id: rule_check
+  source_label: Check
+  edge_type: CONSTRAINS
+  target_id: rule_navigation
+  target_label: Navigation
+  aspect: route finding
+  condition: ''
+  book: SD
+  page: 90
+  section: NAVIGATION
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M015
+  source_id: rule_hex
+  source_label: Hex
+  edge_type: GATES
+  target_id: rule_navigation
+  target_label: Navigation
+  aspect: check timing
+  condition: ''
+  book: SD
+  page: 90
+  section: NAVIGATION
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M016
+  source_id: rule_navigation
+  source_label: Navigation
+  edge_type: MODIFIES
+  target_id: ex_movement
+  target_label: Movement
+  aspect: misdirection
+  condition: ''
+  book: SD
+  page: 90
+  section: NAVIGATION
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: worsens
+  polarity_basis: read
+- ref: M017
+  source_id: rule_food_and_water
+  source_label: Food and Water
+  edge_type: TRIGGERS
+  target_id: rule_damage
+  target_label: Damage
+  aspect: deprivation
+  condition: ''
+  book: SD
+  page: 90
+  section: FOOD AND WATER
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: inflicts
+  polarity_basis: read
+- ref: M018
+  source_id: rule_food_and_water
+  source_label: Food and Water
+  edge_type: EXCLUDES
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: blocked recovery
+  condition: ''
+  book: SD
+  page: 90
+  section: FOOD AND WATER
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M019
+  source_id: item_rations
+  source_label: Rations
+  edge_type: EXCLUDES
+  target_id: rule_food_and_water
+  target_label: Food and Water
+  aspect: sustenance
+  condition: ''
+  book: SD
+  page: 90
+  section: FOOD AND WATER
+  evidence: explicit_reference
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: Authored polarity appears on five rows and no others, each with basis read
+  as invariant 15 requires, and each is a MODIFIES, TRIGGERS or CONSTRAINS row as constitution section
+  5 allows. The three CONSTRAINS rows take governs. Navigation's misdirection takes worsens. Deprivation
+  takes inflicts. The eight FEEDS_INTO, three EXCLUDES, one CROSS_REFERENCES, one RESOLVED_BY and one
+  GATES row carry none, since section 5 derives those.
+evidence_class_note: 'Seventeen rows are explicit_rule and two are explicit_reference. Measured rather
+  than asserted: production holds 595 rows, of which 588 are explicit_rule and 7 are explicit_reference,
+  and all 7 come from printed pages 28 and 29. These two are therefore the first use of that class since
+  page 29, and both are deliberate.
+
+  The Time Passes row is explicit_reference because the page''s assertion is the pointer itself: it names
+  the rule and its page number and tells the reader to use it as needed, rather than stating a mechanic.
+  The rations row is explicit_reference because the page says deprivation ends on eating or drinking without
+  naming rations; rations are the book''s food item, canonical from printed page 34 and already consumed
+  by resting, so the connection is sound but is a reference rather than a statement. IDQ-01 records the
+  alternative reading.'
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: The whole page is exploration procedure and it explicitly extends the crawling rules. Recorded
+    as a candidate only; constitution section 8 reserves domain promotion to an Architect Decision. This
+    strengthens the exploration candidate recorded as DBQ-01 in the preceding packet.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+non_edge_observations:
+- id: OBS-01
+  subject: magnitudes are excluded from every row
+  detail: 'This page is almost entirely numeric and none of it reaches a field: the three encounter intervals
+    by danger level, the die expression and multiplier for remaining light, the hex width in miles, the
+    four hexes-per-day rates in the table, the halved rate for difficult terrain, the deprivation periods
+    for water and for food, and the damage die per day. Every one stays in the immutable packet. No row
+    in this packet carries a condition at all, so there is no opportunity for a spelled quantity to enter
+    one; verified programmatically that no aspect carries a digit.'
+- id: OBS-02
+  subject: the three danger levels are not proposed as identities
+  detail: 'Unsafe, Risky and Deadly are named on this page and each is given an interval. They are not
+    proposed, because rule_danger_level is already canonical from printed page 86 as the single rule,
+    its three values were not proposed there either, and the only thing distinguishing them here is an
+    interval, which is a magnitude no field may store. Proposing three identities whose entire content
+    is an excluded number would add nodes that carry nothing.
+
+    This is a different judgement from the spell tiers, which were minted as five identities, and the
+    difference is worth stating: the tier values each carry classification relations to spells and were
+    authorized by a Decision, whereas the danger levels carry only a rate. If that judgement is wrong
+    the correction is additive and no existing row repoints.'
+- id: OBS-03
+  subject: the hexes crossed table's rows are not proposed as identities
+  detail: Walking, Mounted and Sailing are travel methods named only in the table and carrying only a
+    rate. They are not proposed, for the same reason as OBS-02. The table itself is proposed, as tbl_hexes_crossed,
+    and the rule is RESOLVED_BY it, which is the shape used for every other canonical table. Difficult
+    and arduous terrain are the two table rows with a canonical counterpart, so the terrain rule is carried
+    as a constraint on the table rather than as two new identities.
+- id: OBS-04
+  subject: the hex is proposed but its size is not
+  detail: 'rule_hex is proposed because the page uses it as a real mechanical unit: travel is counted
+    in hexes, the extra-hex check is per hex, and the navigation check fires on exiting one. Its stated
+    width in miles is a magnitude and is not stored anywhere, so the identity carries the unit without
+    the number. rule_distance is canonical and is a different concept, the close, near and far band vocabulary
+    used in combat and spells, so the two are deliberately not conflated.'
+- id: OBS-05
+  subject: what ends deprivation is carried, what causes it is not timed
+  detail: 'Recorded because the last three packets each had a Review finding of exactly this shape. The
+    deprivation rule has three stated facts: it inflicts damage, the damage cannot be healed until the
+    character eats or drinks, and it begins after stated periods. The first two are carried, as a TRIGGERS
+    into damage and an EXCLUDES against hit point recovery, and the ending condition is carried as the
+    rations row. The third is only a magnitude and has nothing to point at: no identity represents elapsed
+    days without supply, and rule_time_passes is a GM procedure for advancing the clock rather than a
+    hunger timer. So the graph will show what deprivation does and how it stops, but not when it starts.'
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: whether rations should be linked to the deprivation rule at all
+  detail: 'The page says the damage cannot be healed until eating or drinking. It does not say rations.
+    I asserted item_rations EXCLUDES rule_food_and_water with evidence explicit_reference, because rations
+    are the book''s food item, canonical from printed page 34, and already consumed by the resting rule,
+    so eating in Shadowdark means rations.
+
+    Two reasonable objections. The row supplies an endpoint the source did not name, which is the kind
+    of small inference that accumulates; and it covers food while saying nothing about water, for which
+    no identity exists, so the rule''s two halves are treated unequally.
+
+    I asserted rather than omitted because the last three Reviews each withheld approval for an outcome
+    or an ending the source stated and I had not carried, and this is an ending the source states. Consequence
+    if wrong: one row is withdrawn, the deprivation rule keeps its other two rows, and the ending condition
+    survives in the source text only. Flagged so the choice is the Reviewer''s rather than mine by default.'
+architectural_escalations: []
+architectural_escalation_note: None raised. Every identity uses an approved prefix, every row uses a legal
+  edge type, no CLASSIFIED_AS row appears, and no row targets a sys_ axis. rule_light_source is used as
+  an ordinary endpoint, which DEC-2026-0104 does not restrict; that Decision governs only the item classification
+  form, which is still gated and is not used here. The two standing cross-packet items from earlier packets,
+  the rule_invisibility gap and the rule_morale connection, are unchanged and unaffected by this packet.
+completeness_statement: All seven headings in the bounded scope were read at the recorded checksum. The
+  packet yields 5 new identities and 19 rows, every one checked against the 595 canonical edges both for
+  an assertion-key collision and for a shared source, type and target under a different aspect; there
+  are none of either. Fifteen canonical identities are reused rather than re-proposed, found by reading
+  the registry in full rather than by keyword search. One restatement, the danger-level encounter cadence
+  from printed page 86, is deliberately not re-asserted and is explained in restatement_note; it would
+  have collided exactly. No row carries a condition and no aspect carries a digit. What is deliberately
+  not asserted is listed as OBS-01 through OBS-05, and the single open question is IDQ-01. No assertion
+  depends on any other ruleset.

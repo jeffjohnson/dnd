@@ -1,0 +1,293 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-116-116-the-gauntlet-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-116-116-the-gauntlet
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-116-116-the-gauntlet
+  source_file: source.md
+  packet_source_checksum: sha256:9a266562bc37846e2c6339e0de48e8f3fe50a8afef20dd5b8baf23d9bd6e77c4
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 045-the-gauntlet.md
+  citation_code: SD
+  page_start: 116
+  page_end: 116
+  page_number_basis: packet_page_markers
+page_attribution_basis: 'One marker resolves this packet. p116 ends the first THE GAUNTLET heading and
+  placement rule 1 applies it to that whole heading, with the persistence rule carrying it across every
+  subsection. All three rows cite printed page 116.
+
+  Note that the page repeats its own title: a second-level THE GAUNTLET heading carries the marker and
+  a third-level THE GAUNTLET heading immediately follows it, unmarked. They are two headings, both page
+  116, and the section field of the first row names the third-level one where the text actually sits.
+  The same doubling appeared on printed pages 101 and 102 in PKT-SD-101-109, though there the two were
+  on different pages.'
+scope_boundary: The bounded scope is the Primary Source Material section, the single printed page 116.
+  The trailing Supporting Source Context is out of scope.
+source_summary: 'The Gauntlet is a process a GM can use to determine starting characters. It works best
+  when players randomly generate several 0-level characters each, which the page says prevents build tuning.
+  It is much deadlier than a typical adventure and most characters will not survive: a 0-level character
+  who falls to zero hit points dies instantly rather than entering the dying state. Each player ends with
+  one survivor, who graduates to 1st level, gains a class and becomes their character for future adventures.
+  It is usually run in a dungeon stocked with brutal traps and large groups of monsters, players play
+  one 0-level character at a time and replace the dead from their pool, and a player who loses every character
+  may create a rolled number more.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled, and every figure in
+  this GUR is computed from the canonical files by the assembling script rather than counted by eye. Two
+  prose count slips have been caught downstream in this intake, on rule_encounter and on the traps neighbourhood,
+  both from counting by hand, so the method has changed.
+
+  The canonical graph holds 322 registry rows and 692 edges. No canonical row cites printed page 116,
+  so nothing in this span has been extracted before and no Gauntlet identity existed. rule_dying carries
+  8 rows, of which 1 is an OVERRIDES into it. exp_level_zero carries 4 rows and exp_level_one carries
+  6. The random character generation the page points to accounts for 10 canonical rows across printed
+  pages 40 and 41, all at status optional.
+
+  Every proposed row was checked against the canonical edge set for an assertion-key collision, for a
+  shared source, type and target under a different aspect, and for duplicates within the patch; there
+  are none of any. Every reused label was asserted equal to the registry label by the script rather than
+  checked by reading.'
+optional_status_note: 'All three rows carry status optional. The page opens by saying Game Masters can
+  use a process called The Gauntlet, which makes the whole process elective in the same way the modes
+  of play on printed page 111 are, and those took status optional throughout.
+
+  This matters most for the OVERRIDES row. Instant death at zero hit points for a 0-level character is
+  true inside The Gauntlet and nowhere else; the ordinary dying rules from printed page 89 remain in force
+  for a 0-level character in a normal adventure, and the CHARACTER DEATH advice on printed page 108 assumes
+  exactly that when it says deaths happen especially among 0-level adventurers. A core row here would
+  assert that 0-level characters never get a death timer, which is false.'
+reused_nodes:
+- id: exp_level_zero
+  label: 0-Level Character
+  used_by: M001
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. The characters The Gauntlet consumes.
+- id: exp_level_one
+  label: 1st-Level Character
+  used_by: M003
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. What a survivor graduates to.
+- id: rule_dying
+  label: Dying
+  used_by: M002
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Overridden for 0-level characters inside The Gauntlet.
+candidate_nodes:
+- proposed_id: rule_the_gauntlet
+  proposed_label: The Gauntlet
+  kind: procedure
+  why_needed: The named process this page defines, a deadlier-than-usual opening adventure that consumes
+    0-level characters and produces one 1st-level survivor per player. Every row here runs to or from
+    it.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 116, THE GAUNTLET
+  source_evidence: page 116, the THE GAUNTLET heading and its four subsections.
+candidate_edges:
+- ref: M001
+  source_id: exp_level_zero
+  source_label: 0-Level Character
+  edge_type: FEEDS_INTO
+  target_id: rule_the_gauntlet
+  target_label: The Gauntlet
+  aspect: starting characters
+  condition: ''
+  book: SD
+  page: 116
+  section: THE GAUNTLET
+  evidence: explicit_rule
+  pass: 1
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_the_gauntlet
+  source_label: The Gauntlet
+  edge_type: OVERRIDES
+  target_id: rule_dying
+  target_label: Dying
+  aspect: immediate death
+  condition: ''
+  book: SD
+  page: 116
+  section: DEADLY!
+  evidence: explicit_rule
+  pass: 1
+  status: optional
+  supersession_basis: optional_variant
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_the_gauntlet
+  source_label: The Gauntlet
+  edge_type: GATES
+  target_id: exp_level_one
+  target_label: 1st-Level Character
+  aspect: graduation
+  condition: ''
+  book: SD
+  page: 116
+  section: DEADLY!
+  evidence: explicit_rule
+  pass: 1
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: No authored polarity appears. The three rows are FEEDS_INTO, OVERRIDES
+  and GATES, none of which is among the three types constitution section 5 reserves for authored polarity,
+  so assigning one is prohibited to the Analyst and invariant 15 has nothing to require. Builder derives
+  neutral, neutral and enables respectively.
+supersession_note: 'One OVERRIDES row, rule_the_gauntlet over rule_dying, with supersession_basis optional_variant
+  as constitution section 7 requires and invariant 20 checks. optional_variant rather than explicit_replacement
+  because The Gauntlet is a process a GM may elect, not a rule the book replaces, which is the same reasoning
+  applied to rule_fatality_mode over the same target in PKT-SD-111-111 and to rule_stat_reroll on printed
+  page 15.
+
+  The aspect immediate death deliberately matches the Fatality Mode row rather than being varied to look
+  distinct. The two rules do the same thing to the same target and a reader should see that; the keys
+  stay distinct because the sources differ, which was verified rather than assumed. Shadowdark now has
+  two separate optional ways to remove the dying state, and matching aspects make that visible in one
+  query.'
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: None proposed. The Gauntlet is a campaign-opening procedure rather than a mechanic
+  belonging to exploration or combat, and it borrows from character creation without belonging to it.
+  No candidate fits well enough to be worth recording.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: the random generation pointer, p116
+  quoted_gist: '''The Gauntlet works best when the players use the random generation process (see pg.
+    40) to create four 0-level characters each.'''
+  why_considered: It is an explicit page pointer, and four such pointers have been carried as CROSS_REFERENCES
+    rows earlier in this intake, to Time Passes twice, to multitasking and to overland travel. The shape
+    looked identical.
+  rejection_reason: 'It differs in the one way that matters: there is no single identity to point at.
+    Every earlier pointer named a specific rule that exists as one node. The random generation process
+    is not one node; it is 10 canonical rows across printed pages 40 and 41, resolving ancestry, class,
+    deity, alignment, two kinds of language, both spell lists and starting gear against nine separate
+    tables. Choosing one of those tables to receive the pointer would misrepresent the reference, and
+    tbl_random_character is a gear table rather than the process as a whole.
+
+    The sentence is also hedged with works best when, so it recommends rather than requires. Recorded
+    as OBS-02.'
+- text_locus: the graduation sentence, p116
+  quoted_gist: '''Each player''s active surviving character graduates to 1st level, gains a class, and
+    becomes their character for future adventures.'''
+  why_considered: Three consequences in one sentence, and the one-row-per-statement lesson from PKT-SD-111-111
+    suggests three rows. sys_class is canonical and gaining a class looks like a clean GATES row.
+  rejection_reason: 'Partially rejected, and the reason is restatement rather than conflation. The graduation
+    to 1st level is asserted as M003. Gaining a class is not, because exp_level_one GATES sys_class with
+    aspect class selection is already canonical from printed page 14: once the survivor is 1st level the
+    class follows from the existing row, and asserting rule_the_gauntlet GATES sys_class would put a second
+    path to the same consequence into the graph. Becoming their character for future adventures is narrative
+    continuity with no mechanic.
+
+    This is the distinction between two facts and one fact with a downstream consequence. Recorded so
+    the single row does not read as a missed pair.'
+- text_locus: HOW TO RUN IT, p116
+  quoted_gist: the Gauntlet usually takes place in a dungeon stocked with brutal traps, large groups of
+    monsters and evil plots; the monsters and traps are not undefeatable but many are likely to cause
+    casualties; include enticing rewards
+  why_considered: rule_traps became canonical two packets ago and is named here directly, so a row from
+    The Gauntlet to traps looked available under the incidental-locus test.
+  rejection_reason: 'It is advice about staging, hedged with usually, and it states no mechanic. Traps
+    appear as an example of what to stock a dungeon with, not as a rule about how The Gauntlet works;
+    asserting rule_the_gauntlet CONSTRAINS rule_traps or similar would claim a relation the page does
+    not make. This is the same treatment given to the Caltrops cell in PKT-SD-115-115: the source must
+    state a relationship, not merely mention two things that have identities.'
+- text_locus: the replacement and TOTAL LOSS rules, p116
+  quoted_gist: players play one 0-level character at a time and replace the dead from their backup pool
+    with a fitting explanation; a player who loses every character may create a rolled number more
+  why_considered: These are definite procedural rules rather than advice, unlike most of the page's second
+    half, and TOTAL LOSS has its own heading.
+  rejection_reason: Both are entirely about quantities of characters, and the quantities are magnitudes
+    no field may store. Stripped of the numbers, replacing a dead character from a pool and creating more
+    when the pool empties both reduce to the relation already asserted as M001, that 0-level characters
+    feed the process. There is no identity for a backup pool and minting one would add a node whose whole
+    content is a count.
+- text_locus: the build-tuning rationale and the DEADLY! framing, p116
+  quoted_gist: random generation prevents build tuning and over-investing in a single character; The Gauntlet
+    is much deadlier than a typical adventure and most characters will not survive
+  why_considered: Completeness. The word prevents is unhedged and looked like an EXCLUDES candidate.
+  rejection_reason: Build tuning and over-investment are player behaviours, not mechanics, and have no
+    identity; the sentence explains why the process is designed as it is. Much deadlier and most characters
+    will not survive are characterisations of the experience, and the one mechanical fact behind them,
+    instant death at zero hit points, is asserted as M002.
+non_edge_observations:
+- id: OBS-01
+  subject: the second optional override of the dying state
+  detail: 'rule_dying now receives two OVERRIDES rows, both optional, both with aspect immediate death:
+    rule_fatality_mode from printed page 111 and rule_the_gauntlet from this page. Before this packet
+    it carried 8 rows of which 1 was an override.
+
+    Recorded because the pair says something the individual rows do not. Shadowdark offers two distinct
+    elective ways to remove the death timer, one a table-wide mode and one a campaign-opening process,
+    and a reader querying what can remove the dying state should find both together. Matching the aspect
+    rather than varying it is what makes that query work.'
+- id: OBS-02
+  subject: a page pointer with no single identity to point at
+  detail: 'The page points to the random generation process on printed page 40, and this is the first
+    pointer in the intake that cannot be carried. The four carried so far each named one rule that exists
+    as one node. This one names a process spread across 10 canonical rows and nine tables, with no node
+    standing for the process itself.
+
+    Worth flagging as a shape rather than a one-off, because the Game Master chapter makes several more
+    pointers to chapters rather than to rules: Adventures on printed page 122, NPCs on 124, Rival Crawlers
+    on 126 and treasure on 117. If those chapters produce a process spread over many rows rather than
+    a single named rule, their pointers will be unassertable for the same reason, and that is a property
+    of the vocabulary rather than a gap in the extraction.'
+- id: OBS-03
+  subject: the page is mostly quantities
+  detail: 'Four numbers carry most of this page''s procedure: how many 0-level characters each player
+    makes, how many survive, how many are played at a time, and how many more a wiped-out player may create.
+    None reaches a field, and once they are removed the replacement and total-loss rules reduce to the
+    single relation already asserted, that 0-level characters feed the process.
+
+    This is why a page with four subsections yields three rows. It is not that the page is advice, as
+    the Game Master chapter largely was; it is that the page''s rules are almost entirely about counts.'
+unresolved_identity_questions: []
+unresolved_identity_questions_note: 'None. The two judgements that could have gone otherwise are argued
+  in rejected_candidates: the pointer is unassertable for want of a target rather than by choice, and
+  the class-gain is omitted because it already follows from a canonical row rather than because it is
+  unsupported.'
+architectural_escalations: []
+architectural_escalation_note: None raised. The one identity uses an approved prefix, every row uses a
+  legal edge type at the legal status optional, the single OVERRIDES row carries a section 7 basis and
+  no other row carries supersession_basis, and no CLASSIFIED_AS row appears. OBS-02 records a limit on
+  what a pointer can reach, which is a property of the vocabulary rather than a request for a ruling.
+completeness_statement: 'The whole of printed page 116 and its four subsections was read at the recorded
+  checksum. The packet yields 1 new identity and 3 rows, all citing page 116 and all at status optional,
+  reusing 3 canonical identities whose labels the assembling script asserted equal to the registry. Every
+  row was checked against the 692 canonical edges for an assertion-key collision, for a shared source,
+  type and target under a different aspect, and for duplicates within the patch; there are none of any,
+  and no canonical row cited this page before.
+
+  Five candidates were rejected and each is recorded with its reason. The low yield is explained in OBS-03
+  and is a property of the page rather than of the reading: its rules are largely counts, and counts do
+  not reach fields. Every figure in this GUR was computed from the canonical files rather than counted
+  by hand. No assertion depends on any other ruleset.'

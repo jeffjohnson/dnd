@@ -1,0 +1,35 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0092-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: shadowdark
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+review_date: '2026-09-22'
+overall_disposition: approved
+reviewed_implementation: {id: IMP-DEC-2026-0092-r01, path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0092-r01.yaml, checksum: sha256:2ae17f805868c1b727913c7311b4c7d38b3d80a39a789b8b6f55cbfc758909ec}
+decision_input: {id: DEC-2026-0092, path: rulesets/shadowdark/escalations/decisions/DEC-2026-0092.yaml, checksum: sha256:991cfefc8325a6a35ebc09c6d5fb8757aa883e9de75a8adfca2744fba7d092a8}
+handoff: {next_role: none, readiness: terminal, reason: 'Independent review completes DEC-2026-0092 step 3; ordinary first integration remains separately governed by the current Approved-bundle preconditions.', blocking_ids: []}
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: 'Independently loaded active Constitutions: Shadowdark supplies 13 prefixes and AD&D supplies 26; both supply 13 edge types, ten derived polarities, and authored MODIFIES/TRIGGERS/CONSTRAINS. Focused vocabulary tests passed.'}
+  - {acceptance_test_index: 2, disposition: verified, evidence: 'Focused vocabulary and invariant tests passed. Inspection confirms integrate loads the active vocabulary before precondition and transaction handling, including edge types, polarity table, and citation books.'}
+  - {acceptance_test_index: 3, disposition: verified, evidence: 'Focused genesis and derivation tests passed. Shadowdark explicit empty thresholds/tier2 produces blank roles while populated AD&D behavior remains covered by the suite.'}
+  - {acceptance_test_index: 4, disposition: verified, evidence: 'Live Shadowdark dry run reached ordinary bundle verification without traceback, then rejected on invariant 1; rulesets/shadowdark/canonical remained absent. Inspection confirms CanonicalGraph genesis load is in-memory and save is transaction-bound.'}
+  - {acceptance_test_index: 5, disposition: verified, evidence: 'Focused genesis tests passed, including the forced late-failure rollback-to-absence guard. Snapshot records absent paths and removes only transaction-created empty genesis directories.'}
+  - {acceptance_test_index: 6, disposition: verified, evidence: 'Focused genesis tests passed. Active ruleset citation books are read from Shadowdark registry, allowing a successful approved-only genesis fixture without AD&D citation inheritance.'}
+  - {acceptance_test_index: 7, disposition: verified, evidence: 'Independently ran focused suite: 75 tests, OK. Independently ran complete Integrator suite: 277 tests, OK in 2314.228 seconds. Live dry run produced the expected ordinary invariant-1 bundle rejection and created no state.'}
+independent_validation:
+  passed: true
+  commands:
+    - {command: '[cwd tooling/integrator/tests] PYTHONPATH=../src:. python -m unittest test_vocabulary test_genesis test_derive test_invariants', exit_code: 0, result: passed, summary: 'Ran 75 tests in 0.710s; OK.'}
+    - {command: '[cwd tooling/integrator] PYTHONPATH=src python -m unittest discover -s tests -t tests', exit_code: 0, result: passed, summary: 'Ran 277 tests in 2314.228s; OK.'}
+    - {command: '[cwd tooling/integrator] PYTHONPATH=src python -m adnd1e_integrator --repo-root=../.. --ruleset-id=shadowdark --books=sd integrate --dry-run APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03', exit_code: 1, result: passed, summary: 'Expected ordinary invariant-1 rejection for missing executable registrations; no traceback and no canonical directory created.'}
+review_evidence:
+  validation_report: {path: build/reports/IMP-DEC-2026-0092-r01.validation.json, checksum: sha256:5ad0452ba0e289d71ac36865bace534261e51ed363f3c7da94ccd4ab2e819c98}
+  implementation_file_checksums: verified_exact_match
+  canonical_state: 'rulesets/shadowdark/canonical did not exist before or after independent live dry-run verification.'
+  scope_ruling: 'cli.py is necessary to make the Decision-named validate path genesis-safe and remains Integrator tooling. The active-book-registry citation vocabulary in invariants.py is necessary for acceptance test 6: the former AD&D-only BOOKS tuple rejected every SD-cited row. It preserves the exact AD&D fallback and is tested in both directions; neither change creates graph data or broadens ontology.'
+  observation: 'The separate Reviewer-owned missing node_registry_decisions correction for current Shadowdark bundles remains outside this tooling Decision and is not treated as a DEC-0092 failure.'
+completion_statement: 'All seven DEC-2026-0092 acceptance tests independently hold. The implementation creates no Shadowdark canonical state and is terminally approved.'

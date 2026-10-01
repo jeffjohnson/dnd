@@ -1,0 +1,339 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-094-095-wizards-and-thieves-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-094-095-wizards-and-thieves
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-094-095-wizards-and-thieves
+  source_file: source.md
+  packet_source_checksum: sha256:e1b99d822001e15e6fdfd52394784a0579305682bd48f199bd05c6a51adad8ef
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 037-wizards-and-thieves.md
+  citation_code: SD
+  page_start: 94
+  page_end: 95
+  page_number_basis: packet_page_markers
+page_attribution_basis: 'This packet contains the intake''s first non-heading marker and the attribution
+  turns on it, so it is set out in full.
+
+  p94 ends the WIZARDS AND THIEVES heading and behaves normally: placement rule 1 applies it to the whole
+  heading and the persistence rule carries it forward. p95 does not sit on a heading. It is a trailing
+  marker at the end of the paragraph beginning ''No wizard or thief majority''. SOURCE_MARKDOWN acceptance
+  test 2 assigns a trailing paragraph marker to the whole paragraph, so that entire paragraph is page
+  95 rather than only the text following the marker, and 95 then persists to everything after it.
+
+  The consequence is that the GAMEPLAY section is split across two printed pages: its first five outcome
+  paragraphs are page 94 and its last three are page 95. THE GAME ENDS and all four stakes tables are
+  page 95. This is not the inline case that divides a paragraph, because the marker sits at the paragraph''s
+  end and no evidence follows it within that paragraph. Two rows cite page 94 and five cite page 95.'
+scope_boundary: The bounded scope is the Primary Source Material section, printed pages 94 and 95, covering
+  the minigame and its four stakes tables. The trailing Supporting Source Context is out of scope.
+source_summary: A self-contained dice betting game offered for playing out a wager with a more complex
+  system than a stat check allows. Players agree a stake and each adds coins to a pot. All roll to determine
+  the active player, who then declares wizard or thief before rolling; sixes and ones cancel one another
+  and the resulting majority decides whether the active player takes from the pot or adds to it, and whether
+  play passes on. Rolling all wizards takes the whole pot and ends the game; rolling all thieves splits
+  the pot among the other players. The game ends when the pot is empty, a player who runs out of coins
+  is out, and the winner is whoever ends with the most coins. Four tables list what may be wagered at
+  increasing tiers.
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled: the canonical graph
+  holds 275 registry rows and 633 edges. The registry was read in full. Every proposed row was checked
+  against the canonical edge set for an assertion-key collision, for a shared source, type and target
+  under a different aspect, and for duplicates within the patch; there are none of any. The single ALTERNATIVE_TO
+  row was compared with its endpoints sorted, as constitution section 4 requires.'
+low_yield_note: 'Seven rows from two printed pages is the lowest yield per page of any packet in this
+  intake, and it is the correct outcome rather than an extraction failure. The reasoning is recorded here
+  so nobody re-reads the pages expecting to find more.
+
+  Almost all of this content is the minigame''s internal procedure: who declares, what is rolled, how
+  sixes and ones cancel, who takes from or adds to the pot, and who goes next. Those relations hold between
+  parts of the minigame itself. They have no canonical counterpart, they would require minting identities
+  for the pot, the active player, a declaration and a majority, and every amount involved is a magnitude
+  no field may store. Minting that machinery would produce a cluster of nodes connected to each other
+  and to nothing else in the graph, which answers no query a reader would ask.
+
+  What is asserted is the three genuine connections to the wider ruleset, that the game substitutes for
+  a stat check, consumes coin and is bounded by coin, plus the four tables it is resolved by. That is
+  the whole of this packet''s contribution and it is honest at that size. Wish in PKT-SD-073-074 was the
+  same shape for the same reason.'
+reused_nodes:
+- id: item_coin
+  label: Coin
+  used_by: M002, M003
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Consumed
+    as the pot contribution and bounding continued participation.
+- id: rule_check
+  label: Check
+  used_by: M001
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. The
+    resolution the game is explicitly offered as a substitute for.
+candidate_nodes:
+- proposed_id: rule_wizards_and_thieves
+  proposed_label: Wizards and Thieves
+  kind: procedure
+  why_needed: The named betting minigame this packet defines, offered as a substitute for resolving a
+    wager with a stat check.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 94, WIZARDS AND THIEVES
+  source_evidence: page 94, the WIZARDS AND THIEVES section.
+- proposed_id: tbl_low_stakes
+  proposed_label: Low Stakes Table
+  kind: table
+  why_needed: A named table of what the game may be played for at the lowest tier.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 95, LOW STAKES TABLE
+  source_evidence: page 95, the LOW STAKES TABLE section.
+- proposed_id: tbl_mid_stakes
+  proposed_label: Mid Stakes Table
+  kind: table
+  why_needed: A named table of what the game may be played for at the middle tier.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 95, MID STAKES TABLE
+  source_evidence: page 95, the MID STAKES TABLE section.
+- proposed_id: tbl_high_stakes
+  proposed_label: High Stakes Table
+  kind: table
+  why_needed: A named table of what the game may be played for at the high tier.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 95, HIGH STAKES TABLE
+  source_evidence: page 95, the HIGH STAKES TABLE section.
+- proposed_id: tbl_epic_stakes
+  proposed_label: Epic Stakes Table
+  kind: table
+  why_needed: A named table of what the game may be played for at the highest tier.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 95, EPIC STAKES TABLE
+  source_evidence: page 95, the EPIC STAKES TABLE section.
+candidate_edges:
+- ref: M001
+  source_id: rule_wizards_and_thieves
+  source_label: Wizards and Thieves
+  edge_type: ALTERNATIVE_TO
+  target_id: rule_check
+  target_label: Check
+  aspect: wager resolution
+  condition: ''
+  book: SD
+  page: 94
+  section: WIZARDS AND THIEVES
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_wizards_and_thieves
+  source_label: Wizards and Thieves
+  edge_type: CONSUMES
+  target_id: item_coin
+  target_label: Coin
+  aspect: pot contribution
+  condition: ''
+  book: SD
+  page: 94
+  section: TO START
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: item_coin
+  source_label: Coin
+  edge_type: CONSTRAINS
+  target_id: rule_wizards_and_thieves
+  target_label: Wizards and Thieves
+  aspect: continued participation
+  condition: ''
+  book: SD
+  page: 95
+  section: THE GAME ENDS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M004
+  source_id: rule_wizards_and_thieves
+  source_label: Wizards and Thieves
+  edge_type: RESOLVED_BY
+  target_id: tbl_low_stakes
+  target_label: Low Stakes Table
+  aspect: stake selection
+  condition: ''
+  book: SD
+  page: 95
+  section: LOW STAKES TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: rule_wizards_and_thieves
+  source_label: Wizards and Thieves
+  edge_type: RESOLVED_BY
+  target_id: tbl_mid_stakes
+  target_label: Mid Stakes Table
+  aspect: stake selection
+  condition: ''
+  book: SD
+  page: 95
+  section: MID STAKES TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: rule_wizards_and_thieves
+  source_label: Wizards and Thieves
+  edge_type: RESOLVED_BY
+  target_id: tbl_high_stakes
+  target_label: High Stakes Table
+  aspect: stake selection
+  condition: ''
+  book: SD
+  page: 95
+  section: HIGH STAKES TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: rule_wizards_and_thieves
+  source_label: Wizards and Thieves
+  edge_type: RESOLVED_BY
+  target_id: tbl_epic_stakes
+  target_label: Epic Stakes Table
+  aspect: stake selection
+  condition: ''
+  book: SD
+  page: 95
+  section: EPIC STAKES TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: Authored polarity appears on one row and no other. item_coin CONSTRAINS
+  rule_wizards_and_thieves takes governs with basis read, as constitution section 5 and invariant 15 require
+  for a CONSTRAINS row. The four RESOLVED_BY rows, the ALTERNATIVE_TO row and the CONSUMES row carry none,
+  since section 5 derives those. No MODIFIES or TRIGGERS row appears in this packet.
+excludes_not_used_note: 'No EXCLUDES row appears here and one was considered. A player who runs out of
+  coins is out of the game, which reads at first as prevention. It is carried as item_coin CONSTRAINS
+  rule_wizards_and_thieves with aspect continued participation instead, because coin bounds how long a
+  player keeps playing rather than preventing the game from happening.
+
+  This follows two corrections applied downstream to my earlier rows, where rule_overland_travel EXCLUDES
+  rule_total_darkness became CONSTRAINS with aspect outdoor occurrence, and rule_talents EXCLUDES rule_learning
+  became CONSTRAINS. Measured across the intake, 35 EXCLUDES rows were authored and 33 stood; the two
+  corrected were the two where the source hedged its prohibition. Applied here at extraction rather than
+  after a third correction.'
+domains_touched: []
+candidate_domains:
+- proposed: downtime
+  basis: The game is reached from the carousing section and is a between-adventures diversion. Recorded
+    as a candidate only, consistent with the preceding packet; constitution section 8 reserves domain
+    promotion to an Architect Decision.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The four RESOLVED_BY rows share a shape across four tables,
+  but they enumerate four named source tables rather than instancing a rule, and the Analyst is prohibited
+  from promoting a general rule.
+non_edge_observations:
+- id: OBS-01
+  subject: the minigame's internal machinery is deliberately not modelled
+  detail: The pot, the active player, the declaration of wizard or thief, the cancellation of sixes against
+    ones, the majority, the lowest remaining die and the honour-among-thieves remainder are all named
+    by the source and none is proposed. Each exists only inside this game, each would connect only to
+    the others, and the quantities that give them meaning are magnitudes no field may store. See low_yield_note
+    for the full reasoning.
+- id: OBS-02
+  subject: magnitudes are excluded from every row
+  detail: The agreed stake, the ante, the dice pools, the die faces that count as wizards and as thieves,
+    the payout equal to the lowest remaining die and the pot value at which the game ends are all magnitudes
+    and none reaches a field. No row in this packet carries a condition, so there is no opportunity for
+    a spelled quantity to enter one; verified that no aspect carries a digit.
+- id: OBS-03
+  subject: the stakes tables list things with no identity
+  detail: 'Sixteen entries across four tables name copper, drinks, bragging rights, baubles, gold, a sworn
+    favour, a trophy, jewellery, a finger, an irreplaceable item, diamonds, a life and a magic item. None
+    is proposed. Most are pure flavour with no mechanic, and the two with canonical near-neighbours are
+    not asserted either: item_magic_item is canonical but this table names it as a wager rather than stating
+    any mechanic about it, and asserting a row would claim a relation the source does not make.
+
+    The tables themselves are proposed and the game is RESOLVED_BY each, which carries what is mechanically
+    true: these tables are how a table of players picks what to play for.'
+- id: OBS-04
+  subject: the carousing cross-reference still needs a successor elsewhere
+  detail: 'PKT-SD-091-093 points to printed page 94 from its carousing section, and recorded as its OBS-04
+    that the reference could not be asserted because this identity did not yet exist. It exists once this
+    packet integrates.
+
+    It is not assertable from here either. The sentence making the reference is on printed page 91, inside
+    that packet''s bounded scope and not this one''s, and that packet is integrated. Connecting them needs
+    a successor GUR for PKT-SD-091-093. This is the third such standing item, alongside the rule_invisibility
+    gap in PKT-SD-062-065 and the rule_morale connection owed by PKT-SD-068-070 and PKT-SD-070-072.'
+- id: OBS-05
+  subject: turn order here is table procedure, not a graph relation
+  detail: Play moves clockwise from the highest roller and the active player changes on certain outcomes.
+    No row asserts this against rule_turn or cbt_initiative. Those identities govern the game's own turn
+    structure in play, and this minigame's sequence is internal to itself; pointing at them would claim
+    the combat turn order governs a tavern dice game. This matches the decision recorded as OBS-06 of
+    PKT-SD-087-089, where the clockwise initiative seating was likewise left unasserted.
+unresolved_identity_questions: []
+unresolved_identity_questions_note: None. The judgement calls here are about what not to propose rather
+  than which identity to use, and each is recorded as an observation with its reasoning. The one type
+  choice that could have gone differently, CONSTRAINS against EXCLUDES for running out of coins, is settled
+  by the two corrections recorded in excludes_not_used_note rather than left open.
+architectural_escalations: []
+architectural_escalation_note: 'None raised. Every identity uses an approved prefix, every row uses a
+  legal edge type, no CLASSIFIED_AS row appears and no row targets a sys_ axis. The low yield is explained
+  rather than escalated, because nothing about it needs a ruling: the vocabulary is working as intended
+  by declining to model a self-contained minigame.'
+completeness_statement: All eight headings in the bounded scope were read at the recorded checksum. The
+  packet yields 5 new identities and 7 rows, two citing printed page 94 and five citing page 95, every
+  one checked against the 633 canonical edges for an assertion-key collision, for a shared source, type
+  and target under a different aspect, and for duplicates within the patch; there are none of any, and
+  the ALTERNATIVE_TO row was compared with sorted endpoints. Two canonical identities are reused. The
+  page split rests on a trailing paragraph marker rather than a heading marker and is set out in page_attribution_basis.
+  No row carries a condition and no aspect carries a digit. The deliberately low yield is explained in
+  low_yield_note and OBS-01, what is not asserted is listed as OBS-01 through OBS-05, and there are no
+  open identity questions. No assertion depends on any other ruleset.

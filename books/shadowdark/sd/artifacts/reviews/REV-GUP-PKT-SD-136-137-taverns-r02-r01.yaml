@@ -1,0 +1,120 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-136-137-taverns-r02-r01
+artifact_kind: packet_update_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-136-137-taverns
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-28'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-136-137-taverns-r02
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-136-137-taverns-r02.yaml
+  checksum: sha256:2db4c6b13957202a1396d02ac2f9083093457488f100c754c5fb1cdc9be6f59f
+  artifact_kind: packet_update
+  revision: 2
+  supersedes: GUP-PKT-SD-136-137-taverns-r01
+overall_disposition: approved
+approval_ready: true
+edge_decisions:
+  approved_refs: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012]
+  disposition: approved
+node_registry_decisions:
+  - {proposed_id: rule_taverns, submitted_label: Taverns, kind: rule, disposition: approved}
+  - {proposed_id: tbl_tavern_generator, submitted_label: Tavern Generator Table, kind: tbl, disposition: approved}
+  - {proposed_id: tbl_tavern_menu, submitted_label: Tavern Menu Table, kind: tbl, disposition: approved}
+  - {proposed_id: tbl_tavern_drinks, submitted_label: Tavern Drinks Table, kind: tbl, disposition: approved}
+  - {proposed_id: item_barnacle_grog, submitted_label: Barnacle Grog, kind: item, disposition: approved}
+  - {proposed_id: item_watered_down_swill, submitted_label: Watered-Down Swill, kind: item, disposition: approved}
+  - {proposed_id: item_vinegary_wine, submitted_label: Vinegary Wine, kind: item, disposition: approved}
+  - {proposed_id: item_stale_ale, submitted_label: Stale Ale, kind: item, disposition: approved}
+  - {proposed_id: item_clear_spirits, submitted_label: Clear Spirits, kind: item, disposition: approved}
+  - {proposed_id: item_house_ale, submitted_label: House Ale, kind: item, disposition: approved}
+  - {proposed_id: item_autumn_mead, submitted_label: Autumn Mead, kind: item, disposition: approved}
+  - {proposed_id: item_halfling_summer_wine, submitted_label: Halfling Summer Wine, kind: item, disposition: approved}
+  - {proposed_id: item_elvish_brandy, submitted_label: Elvish Brandy, kind: item, disposition: approved}
+  - {proposed_id: item_dwarvish_gold_ale, submitted_label: Dwarvish Gold Ale, kind: item, disposition: approved}
+  - {proposed_id: item_aged_royal_wine, submitted_label: Aged Royal Wine, kind: item, disposition: approved}
+  - {proposed_id: item_van_dinkle_whiskey, submitted_label: Van Dinkle Whiskey, kind: item, disposition: approved}
+architectural_escalations: []
+blocking_findings: []
+reviewer_findings:
+  - id: RF-01
+    subject: item_grain_revision
+    disposition: approved
+    detail: >-
+      The successor implements the required item-level grain exactly. M004
+      through M012 now originate from the named drink identities, while M001
+      through M003 remain unchanged.
+  - id: RF-02
+    subject: drink_registrations
+    disposition: approved
+    detail: >-
+      All twelve named drinks are source-supported item identities. Clear
+      Spirits, House Ale, and Autumn Mead are correctly retained as registry-only
+      additions because this packet states no independently representable edge
+      for them.
+  - id: RF-03
+    subject: bounded_omissions
+    disposition: approved_nonblocking
+    detail: >-
+      The successor correctly avoids inventing duration, blindness, quantity,
+      or generic cross-drink relationships where the current graph vocabulary
+      lacks a source-supported exact assertion.
+  - id: RF-04
+    subject: preservation
+    disposition: approved
+    detail: >-
+      The twelve refs are preserved. Only source_id and source_label change on
+      M004 through M012, exactly as required; every other submitted edge field
+      is unchanged and the prior GUP remains immutable.
+completeness_statement: >-
+  GUP r02 was independently checked against its source, GUR r02, GUP r01, the
+  prior Review, schemas, registry, and canonical neighborhood. The required
+  item-grain revision is exact, all twelve edges and sixteen registrations are
+  supported, and no unresolved escalation or blocking defect remains.
+reviewer_checklist:
+  source_support: passed
+  node_identity: passed_sixteen_registrations
+  edge_semantics_and_direction: passed
+  grain: passed_item_level_drinks
+  polarity: passed
+  page_attribution: passed
+  graph_neighborhood: passed
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-136-137-taverns/source.md
+    checksum: sha256:dda6325337fd70428f7c77a0ea78a3c6cbe45d690cb221f94337e7a85ec161e0
+    pages: ['136', '137']
+    result: named_drinks_and_effects_confirmed
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-136-137-taverns-r02.yaml
+    checksum: sha256:db1e9625a9b8dc986f29f42a4c6ebb60b733d44c55e0de5ff189bd65922e59ae
+    result: required_item_grain_and_preservation_confirmed
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-136-137-taverns-r02.validation.json
+    checksum: sha256:4bafcb8304b74eea8b63509487b31d58f4d30a22335de25fd94b2f1755d3ecd7
+    result: twelve_rows_zero_findings
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:e9cb56b1efdb7d41396f67a1f309a7b6288cbd9152f09eb09fd3d5e5dddf917a
+    observed_rows: 380
+    result: sixteen_proposals_fresh
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:77ca6c78da3ab2424d5a81a43edfd79780c994b16c920ef9c8941d4d9f83d293
+    observed_edges: 752
+    result: no_pages_136_or_137_rows_and_no_collision
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Apply the exact Approved bundle with twelve pending additions and sixteen
+    approved registrations.
+  blocking_ids: []

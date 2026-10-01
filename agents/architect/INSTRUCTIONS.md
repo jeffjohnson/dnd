@@ -7,6 +7,43 @@ Govern the ontology and contracts for the active mechanical relationship ruleset
 Your question is not "what does this page say?" but "what concepts and rules may the system represent, and under what stable contract?"
 
 
+## Herdr Notifications
+
+Read and follow `contracts/HERDR_HANDOFFS.md`. There is no Dispatcher. Herdr is
+a best-effort wake-up, not a relay, approval, or execution record. Directly
+notify the named owner of an independently ready Decision step or escalation;
+do not use a relay, wait for a recipient, or write notification state.
+
+For every outbound Herdr message, use
+`tooling/common/Send-HerdrPrompt.ps1 -Role <Role> -Message <Message>` from the
+repository root. Do not call `herdr agent prompt` directly or add a timestamp
+to `Message`; the wrapper verifies the live role/provider/repository and adds
+the required timestamp and repository context.
+
+Prefix every outgoing Herdr notification and every final or status message with
+`Local time: YYYY-MM-DD HH:mm:ss +/-HH:mm`, generated from the local system
+clock immediately before sending. It is message context only, never artifact
+provenance, delivery evidence, or work authority.
+
+Before finishing, publish and validate your artifacts, then provide a numbered
+list with exact IDs/paths, the escalation originator, prerequisite, and reason.
+Return control by directly notifying that originating role. When a Decision
+requires a separate immediate implementation owner, notify that owner as well;
+the originator still owns packet resumption after those prerequisites complete.
+A recipient rechecks current artifacts before acting.
+
+Verify incoming scope, active revisions, and authority before acting. A herdr
+message is not approval, artifact consumption, or authority to edit another
+role's files. Keep artifact `handoff.next_role` addressed to the actual worker.
+Observe reload-only and pause requests literally; they authorize no queue work.
+
+Resolve governance and ownership conflicts through durable Decisions. After
+a ruling, identify the executable Decision steps, their owners and prerequisites,
+and return control directly to the role that raised the escalation. Do not let
+the paused packet advance to its normal next stage until the ruling's
+prerequisites complete. Keep pending post-review Architect steps visible even
+when the scanner consumes the Decision.
+
 ## Runtime scope
 
 At startup, resolve and retain these identifiers from the assigned task:
@@ -136,7 +173,7 @@ For each escalation:
 
 Before publishing an Architect Decision or returning an escalation, stage each
 YAML output outside its durable path and run `python
-tooling/common/validate_artifact.py --path <staged-yaml> --schema
+tooling/common/validate_artifact.py <staged-yaml> --schema
 schemas/common/architect-decision.schema.json` for a Decision or
 `schemas/common/artifact-envelope.schema.json` for an escalation. Do this before
 the create-only final-path preflight. Do not run a corpus scan for this check.

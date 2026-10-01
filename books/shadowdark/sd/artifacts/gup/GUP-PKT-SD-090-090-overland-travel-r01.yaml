@@ -1,0 +1,524 @@
+schema_version: '1.0'
+id: GUP-PKT-SD-090-090-overland-travel-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-090-090-overland-travel
+constitution_version: '1.7'
+artifact_kind: packet_update
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 0 edge addition(s), 0 update(s), 19 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-SD-090-090-overland-travel-r01
+  gur_checksum: sha256:1674ab9bfd0db1df3f3c5c7c65f8a2610481161f655c5a90af9bbc5985c1c4cd
+  gur_constitution_version: '1.7'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: false
+    reason: skipped by flag
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: rule_overland_travel
+      proposed_label: Overland Travel
+      kind: rule
+      why_needed: The named rule this page defines, stated to add to the crawling rules rather than replace
+        them. Every other relation on the page hangs off it.
+      edges_depending_on_it:
+        - M001
+        - M002
+        - M003
+        - M004
+        - M005
+        - M006
+        - M007
+        - M008
+        - M009
+        - M010
+        - M011
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: rule_hex
+      proposed_label: Hex
+      kind: rule
+      why_needed: The named unit of overland distance the page measures travel in and whose exit triggers
+        the navigation check.
+      edges_depending_on_it:
+        - M009
+        - M015
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_hexes_crossed
+      proposed_label: Hexes Crossed Table
+      kind: tbl
+      why_needed: The named table resolving travel rate by method and by terrain.
+      edges_depending_on_it:
+        - M008
+        - M012
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: rule_navigation
+      proposed_label: Navigation
+      kind: rule
+      why_needed: The named procedure for keeping course in unfamiliar territory, with a stated check
+        and a stated failure outcome.
+      edges_depending_on_it:
+        - M013
+        - M014
+        - M015
+        - M016
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: rule_food_and_water
+      proposed_label: Food and Water
+      kind: rule
+      why_needed: 'The named deprivation rule: it inflicts damage after a stated period and blocks healing
+        until the character eats or drinks.'
+      edges_depending_on_it:
+        - M017
+        - M018
+        - M019
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions: []
+  pending_additions:
+    - source_id: abil_constitution
+      source_label: Constitution
+      edge_type: FEEDS_INTO
+      target_id: rule_overland_travel
+      target_label: Overland Travel
+      aspect: extra hex check
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: WAYS TO TRAVEL
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M010
+    - source_id: abil_intelligence
+      source_label: Intelligence
+      edge_type: FEEDS_INTO
+      target_id: rule_navigation
+      target_label: Navigation
+      aspect: navigator check
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: NAVIGATION
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M013
+    - source_id: cbt_initiative
+      source_label: Initiative
+      edge_type: FEEDS_INTO
+      target_id: rule_overland_travel
+      target_label: Overland Travel
+      aspect: turn order
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: TURNS AND TIME
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: item_rations
+      source_label: Rations
+      edge_type: EXCLUDES
+      target_id: rule_food_and_water
+      target_label: Food and Water
+      aspect: sustenance
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: FOOD AND WATER
+      evidence: explicit_reference
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M019
+    - source_id: rule_check
+      source_label: Check
+      edge_type: CONSTRAINS
+      target_id: rule_navigation
+      target_label: Navigation
+      aspect: route finding
+      condition: ''
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '90'
+      section: NAVIGATION
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M014
+    - source_id: rule_check
+      source_label: Check
+      edge_type: CONSTRAINS
+      target_id: rule_overland_travel
+      target_label: Overland Travel
+      aspect: extra hex
+      condition: ''
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '90'
+      section: WAYS TO TRAVEL
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M011
+    - source_id: rule_crawling_round
+      source_label: Crawling Round
+      edge_type: FEEDS_INTO
+      target_id: rule_overland_travel
+      target_label: Overland Travel
+      aspect: base procedure
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: OVERLAND TRAVEL
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+    - source_id: rule_danger_level
+      source_label: Danger Level
+      edge_type: FEEDS_INTO
+      target_id: rule_overland_travel
+      target_label: Overland Travel
+      aspect: encounter cadence
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: TURNS AND TIME
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M005
+    - source_id: rule_food_and_water
+      source_label: Food and Water
+      edge_type: EXCLUDES
+      target_id: rule_hit_points
+      target_label: Hit Points
+      aspect: blocked recovery
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: FOOD AND WATER
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M018
+    - source_id: rule_food_and_water
+      source_label: Food and Water
+      edge_type: TRIGGERS
+      target_id: rule_damage
+      target_label: Damage
+      aspect: deprivation
+      condition: ''
+      polarity: inflicts
+      polarity_basis: read
+      book: SD
+      page: '90'
+      section: FOOD AND WATER
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M017
+    - source_id: rule_hex
+      source_label: Hex
+      edge_type: FEEDS_INTO
+      target_id: rule_overland_travel
+      target_label: Overland Travel
+      aspect: distance unit
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: WAYS TO TRAVEL
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M009
+    - source_id: rule_hex
+      source_label: Hex
+      edge_type: GATES
+      target_id: rule_navigation
+      target_label: Navigation
+      aspect: check timing
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: NAVIGATION
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M015
+    - source_id: rule_navigation
+      source_label: Navigation
+      edge_type: MODIFIES
+      target_id: ex_movement
+      target_label: Movement
+      aspect: misdirection
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: SD
+      page: '90'
+      section: NAVIGATION
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M016
+    - source_id: rule_overland_travel
+      source_label: Overland Travel
+      edge_type: CROSS_REFERENCES
+      target_id: rule_time_passes
+      target_label: Time Passes
+      aspect: elapsed time
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: TURNS AND TIME
+      evidence: explicit_reference
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+    - source_id: rule_overland_travel
+      source_label: Overland Travel
+      edge_type: EXCLUDES
+      target_id: rule_total_darkness
+      target_label: Total Darkness
+      aspect: outdoor light
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: LIGHT
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M007
+    - source_id: rule_overland_travel
+      source_label: Overland Travel
+      edge_type: FEEDS_INTO
+      target_id: rule_encounter
+      target_label: Encounter
+      aspect: overland cadence
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: TURNS AND TIME
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+    - source_id: rule_overland_travel
+      source_label: Overland Travel
+      edge_type: FEEDS_INTO
+      target_id: rule_light_source
+      target_label: Light Source
+      aspect: remaining duration
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: LIGHT
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M006
+    - source_id: rule_overland_travel
+      source_label: Overland Travel
+      edge_type: RESOLVED_BY
+      target_id: tbl_hexes_crossed
+      target_label: Hexes Crossed Table
+      aspect: travel rate
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '90'
+      section: WAYS TO TRAVEL
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M008
+    - source_id: rule_terrain
+      source_label: Terrain
+      edge_type: CONSTRAINS
+      target_id: tbl_hexes_crossed
+      target_label: Hexes Crossed Table
+      aspect: terrain rate
+      condition: ''
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '90'
+      section: HEXES CROSSED TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M012
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts: {}
+duplicate_findings: []
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 19
+  edges_compiled: 19
+  edges_rejected: 0
+  edge_additions: 0
+  edge_pending_additions: 19
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 0
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 5
+  cross_packet_dependencies: 0
+  duplicate_findings: 0
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-SD-090-090-overland-travel-r01.validation.json

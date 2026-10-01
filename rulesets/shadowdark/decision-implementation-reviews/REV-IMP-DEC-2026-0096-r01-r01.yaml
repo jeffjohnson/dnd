@@ -1,0 +1,40 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0096-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.3'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation: {id: IMP-DEC-2026-0096-r01, path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0096-r01.yaml, checksum: sha256:53c49fc565247cd8c011ae8d83c199998db503b1356a1c79027e89751126c614}
+decision_input: {id: DEC-2026-0096, path: rulesets/shadowdark/escalations/decisions/DEC-2026-0096.yaml, checksum: sha256:30c134d595d721442e844972657589b927edc28da6ea0e965cda49e9298551ce}
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: 'Independently verified WORK_QUEUES 1.32, its recorded checksum, and all five Decision anchors.'
+    verified_versioned_contract_content:
+      authority: {id: DEC-2026-0096, path: rulesets/shadowdark/escalations/decisions/DEC-2026-0096.yaml, checksum: sha256:30c134d595d721442e844972657589b927edc28da6ea0e965cda49e9298551ce, authorized_acceptance_test_index: 1}
+      authorized_acceptance_test_index: 1
+      contracts:
+        - {path: contracts/WORK_QUEUES.md, checksum: sha256:9b3bdf7008913cbb310cf15e9637e077d683718aa9b91cfcb25d50b6e52184c2, observed_version: '1.32', minimum_version: '1.32', anchors_present: ['Only the active leaf revision of an artifact can create work.', 'A revision is a leaf when no later artifact of the same kind names its ID in `supersedes`.', 'Superseded, consumed, reviewed, integrated, failed, and blocked artifacts are not ready work for the ordinary downstream role.', 'When `supersedes` is absent, infer the latest `rNN` only within one artifact kind and packet.', 'Never infer order from creation or modification time.']}
+  - {acceptance_test_index: 2, disposition: verified, evidence: 'Stats r05-r01 is the sole reported legacy inference; r05-r02 is explicit because r05-r03 names it in supersedes. The wording variance does not change the one active r05-r05 leaf.'}
+  - {acceptance_test_index: 3, disposition: verified, evidence: 'INT-20260922-002 consumes only r05-r05; shared component naming does not consume r05-r01.'}
+  - {acceptance_test_index: 4, disposition: verified, evidence: 'Code groups by full manifested bundle base, a safer narrowing that prevents cross-GUP-revision ranking; focused synthetic and existing-classification tests passed.'}
+  - {acceptance_test_index: 5, disposition: verified, evidence: 'Independent focused test_bundles run passed 34 tests in 191.433s; complete Integrator suite passed 292 tests in 1661.324s.'}
+independent_validation:
+  passed: true
+  commands:
+    - {command: 'PYTHONPATH=../src:. python -m unittest test_bundles', exit_code: 0, result: passed, summary: '34 tests OK in 191.433s'}
+    - {command: 'PYTHONPATH=src python -m unittest discover -s tests -t tests', exit_code: 0, result: passed, summary: '292 tests OK in 1661.324s'}
+overall_disposition: approved
+scope_assessment: >-
+  OBS-1 is correct handling of immutable explicit lineage. OBS-3 is a bounded
+  safer grouping. OBS-2 is within DEC-2026-0078 standing test-only authority:
+  test_vocabulary.py is confined to tooling/integrator/tests and no production
+  or repository artifact changed.
+handoff: {next_role: none, readiness: terminal, reason: 'DEC-2026-0096 is independently approved and terminal.', blocking_ids: []}
+

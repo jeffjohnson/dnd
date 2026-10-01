@@ -1,0 +1,220 @@
+schema_version: '1.0'
+id: ESC-2026-09-22T18.39.08.936Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-027-029-alignment-and-deities
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+raised_by: analyst
+raised_utc: '2026-09-22T18:39:08.936Z'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: no approved prefix admits an individual alignment or an individual deity identity
+  blocking_ids: []
+
+authority:
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - rulesets/shadowdark/governance/constitution.md 1.2
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml
+
+originating_artifacts:
+  - id: PKT-SD-027-029-alignment-and-deities
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-027-029-alignment-and-deities
+    role: claimed packet, read in full, held without a GUR pending this ruling
+    packet_source_checksum: sha256:2bec2b6eea0291f57f621661fd1aebc3b18657ed65926d5b1c7d49437f78dcad
+    packet_source_checksum_basis: lf_normalized
+
+question: >-
+  Shadowdark Constitution 1.2 section 2 lists thirteen approved prefixes. None of them admits an
+  individual alignment such as Lawful, or an individual deity such as Saint Terragnis, as a node
+  identity. Both concepts have their defining locus in this packet, both are source-named with their
+  own headings, and the mechanically load-bearing statements on these pages are expressed in terms of
+  the individuals rather than the axes. May the Analyst propose individual alignment and individual
+  deity identities, and if so under what prefix and kind?
+
+why_this_is_architectural: >-
+  This is not ordinary uncertainty and is not a case ESCALATION_CONTRACT tells the Analyst to resolve
+  itself. That contract says not to escalate when a proposed node uses an approved prefix and kind
+  and can be isolated as a normal registry addition; here no approved prefix applies, which is the
+  first listed trigger for escalation: no existing node ID represents the concept and a new kind or
+  prefix may be needed. The Analyst is separately prohibited from minting a prefix.
+  The precedent is exact. DEC-2026-0087 resolved the identical shape for ancestries: the ancestries
+  packet was claimed, read in full, and held without a GUR because section 2 offered no prefix for an
+  individual ancestry, and the Architect added ancestry_ together with the six source-defined
+  identities. That packet is now extracted and published. This escalation follows the same course
+  deliberately rather than improvising, and it is raised from the defining locus, not from a
+  secondary mention.
+
+exact_source_excerpt:
+  alignment_page_27: >-
+    The ALIGNMENT section states: Alignment defines your role in the clash between good and evil. All
+    creatures are connected to the eternal conflict waged by Law, Chaos, and Neutrality, whether they
+    know it or not. Law is benevolence, Chaos is malevolence, and Neutrality is impartial, favoring
+    neither. Choose one of the following three alignments. Three entries follow, each with its own
+    heading: CHAOTIC, LAWFUL and NEUTRAL, each describing what characters of that alignment align
+    themselves with.
+  deities_page_28: >-
+    The DEITIES section states: The many gods of the universe are the personifications of Law, Chaos,
+    and Neutrality. The most well-known gods are listed here. A character may worship any deity, or
+    none. Priests must choose one god to serve faithfully. A priest's deity can revoke the gift of
+    spellcasting if the priest commits blasphemous acts. It then names three groupings: The Four
+    Lords, the lawful and neutral gods; The Dark Trio, chaotic deities; and The Lost, two of the
+    original nine whose names are expunged.
+  deity_entries_pages_28_and_29: >-
+    Eight entries follow, each with its own heading carrying a parenthesised alignment tag: SAINT
+    TERRAGNIS (LAWFUL), GEDE (NEUTRAL), MADEERA THE COVENANT (LAWFUL), ORD (NEUTRAL), MEMNON
+    (CHAOTIC), RAMLAAT (CHAOTIC), SHUNE THE VILE (CHAOTIC) and THE LOST (?).
+  cross_packet_priest_requirement: >-
+    The priest class entry on printed page 20, already extracted as
+    GUR-PKT-SD-020-021-priest-class-r01, states: Choose a god to serve who matches your alignment
+    (see Deities, pg. 28). That GUR asserts alignment constrains deity at the axis level, as M007,
+    precisely because it could not name the individuals.
+
+page_attribution_note: >-
+  Resolved through the Pandoc AST rather than positionally. {#p27} and {#p28} end the ALIGNMENT and
+  DEITIES headings and apply to those whole headings under SOURCE_MARKDOWN placement rule 1. {#p29}
+  ends the MEMNON (CHAOTIC) heading, so that entry begins page 29 and the three entries after it
+  inherit page 29 under the persistence rule.
+
+affected_canonical_ids: []
+affected_canonical_ids_note: >-
+  None. The Shadowdark canonical graph is empty: nodes.csv is header-only and no integration has
+  occurred. Nothing published would be invalidated by any option below; the question is purely
+  forward-looking.
+
+affected_candidate_ids:
+  - id: sys_alignment
+    proposed_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    also_proposed_by:
+      - GUR-PKT-SD-020-021-priest-class-r01
+      - GUR-PKT-SD-030-031-titles-r01
+    role: >-
+      The alignment axis, already proposed and in use. This escalation does not question it. Four
+      published rows depend on it: the priest's alignment-constrains-deity row and the four titles
+      rows asserting that alignment selects a titles table column.
+  - id: sys_deity
+    proposed_by: GUR-PKT-SD-020-021-priest-class-r01
+    role: >-
+      The deity axis, proposed from the priest entry because that page stated two relationships to
+      it. This escalation does not question it either.
+
+local_graph_neighborhood: >-
+  The graph is empty, so the neighborhood is the set of unintegrated candidate proposals. Relevant
+  published rows, all in GURs that are Builder-ready or already compiled:
+  sys_alignment CONSTRAINS sys_deity, aspect matching alignment, from the priest entry on printed
+  page 20; sys_alignment FEEDS_INTO each of the four titles tables, aspect title column, from printed
+  pages 30 and 31; class_priest GATES sys_deity, aspect deity selection, from printed page 20; and
+  sys_alignment as a candidate node from printed page 12. No row anywhere names an individual
+  alignment or an individual deity, because none could be named.
+
+what_cannot_currently_be_expressed:
+  - >-
+    That the three alignments are mutually exclusive. Page 27 says choose one of the following three,
+    which is an ALTERNATIVE_TO relationship among three named things that have no identities.
+  - >-
+    That each named deity carries a specific alignment. Every one of the eight entries is tagged, and
+    that tag is what makes the priest's matching requirement operable. At axis level the graph can
+    say alignment constrains deity choice but not which god any alignment permits.
+  - >-
+    That a priest's deity can revoke spellcasting for blasphemous acts. This is a genuine mechanical
+    dependency between a deity and the spellcasting mechanic, stated on page 28. It can be asserted
+    at the axis level as sys_deity constraining or overriding spellcasting, and the Analyst would do
+    so in the eventual GUR, but the individuals are where the alignment matching that triggers it
+    lives.
+  - >-
+    That The Four Lords, The Dark Trio and The Lost are groupings of the named gods. These are
+    source-named collective identities layered above the individuals.
+
+options_considered:
+  - id: OPT-A
+    summary: >-
+      Add one new prefix for an individual alignment and one for an individual deity, with their
+      kinds and the source-defined identities enumerated, exactly as DEC-2026-0087 did for ancestry.
+    detail: >-
+      For example alignment_ with kind alignment covering alignment_lawful, alignment_chaotic and
+      alignment_neutral; and deity_ with kind deity covering the seven named gods plus whatever
+      treatment The Lost warrants. The Architect would fix the exact spellings, as section 2.1 does
+      for the six ancestries and their benefits.
+    consequences: >-
+      Follows the settled ancestry precedent closely, which is its main argument. It admits every
+      relationship above. It grows the prefix list from thirteen to fifteen, and it commits the
+      ruleset to deities as first-class graph identities, which is a real ontological choice, not a
+      formatting one.
+  - id: OPT-B
+    summary: Add one prefix for alignment only, and leave deities unrepresented as individuals.
+    detail: >-
+      Alignment is load-bearing across the book: it selects a titles column, it gates a priest's
+      deity, and page 27 makes it a universal property of all creatures. Deities are arguably
+      setting content whose only stated mechanical hook is the priest's spellcasting revocation.
+    consequences: >-
+      Smaller change and a defensible line between mechanics and setting. But it leaves the deity
+      alignment tags unusable, so the priest's matching requirement stays unexpressible at the level
+      the source states it, and a later packet naming a specific god would raise this again.
+  - id: OPT-C
+    summary: Represent individual alignments and deities under existing prefixes.
+    detail: >-
+      The nearest candidates are sys_ for each alignment, and monster_ for each deity on the reading
+      that a god is a creature. Neither is a good fit: constitution section 2 glosses sys_ as a whole
+      subsystem, and an individual alignment is a member of one, not one itself; and section 2.1
+      explicitly separates creature identity from other kinds and warns that a shared label does not
+      merge an ancestry with a creature, which is the same error in the other direction.
+    consequences: >-
+      Needs no constitution amendment, which is its only advantage. It would put members and axes
+      under one prefix, making sys_alignment and sys_lawful indistinguishable in kind, and it would
+      classify gods as monsters on no source evidence. The Analyst recommends against it.
+  - id: OPT-D
+    summary: Rule that neither individual alignments nor individual deities are graph-constitutable.
+    detail: >-
+      Treat both as setting content, keep the two axis nodes, and record the individuals only in the
+      immutable packet. The eventual GUR would assert the axis-level relationships and nothing more.
+    consequences: >-
+      Coherent and cheap, and it keeps the graph focused on mechanics. It would mean the priest's
+      matching requirement and the titles columns are permanently represented one level coarser than
+      the source states them, and the Analyst would want that recorded as a deliberate boundary
+      rather than a gap, so later packets do not re-raise it.
+
+recommended_resolution: >-
+  OPT-A, with the Architect fixing the exact prefixes, kinds and identity spellings, and with two
+  requests the Analyst cannot settle itself. First, that the ruling say whether the three
+  source-named groupings, The Four Lords, The Dark Trio and The Lost, are identities, members of a
+  grouping mechanism, or neither; the Analyst would otherwise have to decide that while extracting.
+  Second, that it say how THE LOST is handled, since its heading carries a question mark rather than
+  an alignment tag and the text says two gods are deliberately unnamed, which is a genuinely unusual
+  identity case.
+  If the Architect prefers OPT-B or OPT-D, the Analyst can extract the packet under either; the
+  eventual GUR would simply carry fewer rows and record the boundary explicitly. What the Analyst
+  cannot do is choose between them, because each is a different ontology for the ruleset rather than
+  a different reading of the source.
+
+expected_migration_impact: >-
+  None to canonical data, which does not exist. No published artifact requires retraction under any
+  option. Four published rows depend on sys_alignment and would remain correct under every option,
+  because they assert axis-level dependencies that stay true whether or not the members are
+  identified; if OPT-A is adopted, a later successor revision of the titles GUR could optionally
+  refine them to name which alignment selects which column, and the titles GUR records that
+  possibility in its own OBS-02.
+  The only work this ruling creates is the extraction of this packet, which is held and waiting.
+
+constitution_registry_or_profile_change: >-
+  OPT-A and OPT-B require a Shadowdark constitution amendment adding to the section 2 prefix table
+  and, following the section 2.1 pattern, enumerating the source-defined identities. OPT-C and OPT-D
+  require no amendment, though the Analyst would ask that OPT-D be recorded in the constitution as a
+  deliberate boundary so it is not re-raised by every later packet that names a god.
+  No registry change is requested by this escalation. In particular
+  rulesets/shadowdark/registries/character_races.yaml is inactive and irrelevant here, and
+  domain_registry.yaml is untouched: no domain promotion is sought.
+
+analyst_constraints_observed: >-
+  The Analyst has not minted a prefix, has not proposed an individual alignment or deity identity in
+  any published artifact, and has not extracted this packet. The packet is claimed, immutable and
+  read in full; its manifest records the block and names this escalation's subject. The sibling
+  titles GUR, which depends on alignment, was published without waiting, because its rows attach to
+  the approved sys_alignment identity and are correct under every option above; that GUR's OBS-02
+  records the dependency on this ruling explicitly. No other work is blocked.

@@ -1,0 +1,147 @@
+schema_version: '1.0'
+id: PKT-SD-001-004-credits-and-contents
+status: claimed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-001-004-credits-and-contents
+constitution_version: '1.2'
+
+citation_code: SD
+page_start: 1
+page_end: 4
+page_number_basis: packet_page_markers
+section_span:
+  - SHADOWDARK
+  - WRITING, DESIGN, LAYOUT
+  - ART
+  - LEGAL
+  - CONTENTS
+
+source_file: source.md
+source_checksum: sha256:675fe80116dfd60696af496fafeb65624962458ebe21b88234da331515b3fb91
+source_checksum_basis: lf_normalized
+source_checksum_note: >-
+  Recorded over LF-normalized content because this repository sets core.autocrlf=true. The supplied
+  file contains no CRLF, so the raw and LF-normalized digests are identical and the value is
+  unambiguous. The claimed copy is byte-for-byte identical to the incoming file at claim time.
+source_bytes: 7002
+original_filename: 001-credits-and-contents.md
+operator_sequence: 1
+
+packet_id_derivation: >-
+  Derived from conforming packet metadata. The book segment SD is the citation_code registered for
+  book sd in rulesets/shadowdark/registries/books.yaml. The page range 1 to 4 is the span the Pandoc
+  AST actually resolves, retaining both classified pages as SOURCE_MARKDOWN 1.8 requires. The slug is
+  taken from the source section headings the packet contains: credits from the WRITING, DESIGN,
+  LAYOUT, ART and LEGAL blocks, and contents from the CONTENTS heading. The form follows
+  contracts/FILE_NAMING.md.
+
+page_composition:
+  p1: >-
+    classified full-page-artwork in source by an empty fenced Div, immediately followed by the
+    SHADOWDARK title heading and the WRITING, DESIGN, LAYOUT, ART and LEGAL credit blocks, which the
+    AST also attributes to page 1. See page_class_content_discrepancy.
+  p2: CONTENTS heading and the table of contents from Introduction through Modes of Play
+  p3: remainder of the table of contents from Modes of Play to Join The Dark
+  p4: classified full-page-artwork in source; excluded from graph extraction by the steward
+
+page_classes:
+  p1:
+    class: full-page-artwork
+    attachment: empty fenced Div
+    declared_by: repository source steward
+    ast_verified: true
+  p4:
+    class: full-page-artwork
+    attachment: empty fenced Div
+    declared_by: repository source steward
+    ast_verified: true
+  effect: >-
+    Both classifications are retained here exactly as SOURCE_MARKDOWN 1.8 requires at claim. Each
+    page stays inside the declared span and in completeness accounting; neither is renumbered or
+    deleted. Under the contract and Shadowdark Constitution 1.2 section 6 the class is page-local
+    intake metadata and creates no node, edge, domain, general rule, citation or uncovered-page
+    obligation. Classification does not waive an unrelated source defect.
+
+page_class_content_discrepancy: >-
+  Recorded, not resolved, and flagged for the source steward. The empty Div declares page 1
+  full-page-artwork, which SOURCE_MARKDOWN 1.8 defines as a page containing full-page artwork and no
+  graph-constitutable content. The very next blocks are the SHADOWDARK title heading and the credit
+  and legal text, and the Pandoc AST attributes all of them to page 1 as well, because the heading
+  carries its own {#p1} marker and no later marker intervenes before {#p2}.
+  These two statements about page 1 can both be literally true only if the printed cover art and the
+  credits share one printed page. The likelier reading is that the cover is page 1 and the title and
+  credits sit on an unnumbered or separately numbered leaf that the intake folded into page 1. The
+  Analyst cannot settle that from the supplied file and does not guess.
+  It is recorded rather than repaired for three reasons. Only the source steward declares or amends a
+  page class, and a pipeline role must not invent or remove a classification. The discrepancy changes
+  no extraction outcome, because credits, art attributions and a legal notice are not
+  graph-constitutable content under constitution section 1 whatever page they sit on, so no citation
+  in any downstream artifact depends on resolving it. And SOURCE_MARKDOWN directs that a conflict be
+  recorded rather than silently overwritten. If the steward intends the title and credits to carry
+  their own printed page, a corrected incoming packet should supply that marker; this claimed copy is
+  immutable and would be superseded by an ordinary later packet rather than edited.
+
+page_class_non_inheritance_check: >-
+  Verified against the Pandoc AST rather than positionally, because SOURCE_MARKDOWN 1.8 states that
+  each class applies only to its identified page and never to later pages. The AST reports exactly
+  two class-bearing page blocks, the empty Divs for p1 and p4, each carrying only full-page-artwork
+  and no unknown class. The page blocks for 2 and 3 carry no class: page 2 is a heading marker and
+  page 3 is a table-row marker. No later page inherits either classification, and the resolved page
+  set is 1, 2, 3 and 4 with no gap.
+
+marker_note: >-
+  Four page assignments resolve through the Pandoc AST. Pages 1 and 4 are empty fenced Divs carrying
+  the artwork class, the form SOURCE_MARKDOWN 1.8 requires for a classified page with no source
+  heading. Page 1 is additionally marked at the end of the SHADOWDARK heading and page 2 at the end
+  of the CONTENTS heading, which placement rule 1 applies to the whole heading. Page 3 is marked in
+  the last cell of the Modes of Play table row, which placement rule 2 applies to the entire row
+  including the cells before the marker; the parser confirms page 3 begins at that row and the
+  persistence rule carries page 3 through the remaining contents rows. No malformed marker token is
+  present anywhere in the file.
+
+packet_wrapper_note: >-
+  The supplied file opens with an intake wrapper: a level-one heading naming the packet, a Source
+  line giving a shadowdark.md line range, a note that original wording and page markers are
+  preserved, and the section heading Primary Source Material. The parser reports four blocks
+  preceding the first resolved page. This manifest is the independent page locator that
+  SOURCE_MARKDOWN Attribution Rules requires for such content. The unattributed text was extracted
+  from the parser and checked rather than assumed: it consists solely of the wrapper sentences listed
+  above and contains no rulebook prose, no heading belonging to the source, and no marker. No source
+  content is stranded, so the wrapper is intake metadata rather than an unresolved source defect, and
+  the condition is identical in kind to the packets already claimed from this intake.
+
+supporting_source_context: >-
+  Present and empty. The trailing section states that no additional passages are appended, so this
+  packet reproduces no other packet's pages and the zero-overlap rule across the 144-file intake
+  holds trivially. Verified against the next packet in operator sequence,
+  002-introduction-and-the-basics.md, whose first marker is {#p5}; this packet's span ends at page 4,
+  so the two spans abut without overlapping.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 1 through 4 as resolved by
+  the Pandoc AST.
+
+content_shape_note: >-
+  Recorded for the downstream reader, not as an extraction conclusion. The packet is front matter: a
+  cover-art page, a title and credit block naming the writer and the artists with their page lists, a
+  printing and trademark notice, a two-page table of contents, and a second artwork page. Whether any
+  of it yields a graph-constitutable mechanic is an extraction question this claim does not answer,
+  and no GUR has been published for this packet_id.
+
+packet_metadata_origin: analyst_derived_at_claim
+
+analyst_status: >-
+  Claimed. Claiming records provenance and freezes the source; it is not an assertion that the packet
+  has been analysed. No GUR exists for this packet_id, so the packet remains active Analyst work.
+
+missing_supplied_inputs:
+  - node_registry_slice.csv
+  - local_neighborhood.json
+  - general_rule_slice.json
+missing_input_impact: >-
+  Immaterial at claim. The Shadowdark canonical graph is empty: nodes.csv is header-only, the domain
+  registry has no domains, general_rules.json is an empty object, and the character race registry is
+  inactive. There is no canonical identity to slice, no neighborhood to compare against and no
+  approved general rule to apply. This assessment must be re-made before extraction.

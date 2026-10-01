@@ -1,0 +1,338 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-086-086-resting-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-086-086-resting
+constitution_version: '1.6'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.2
+  - rulesets/shadowdark/governance/constitution.md 1.6
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+
+classified_as_gate_note: >-
+  DEC-2026-0103 added the bounded CLASSIFIED_AS edge type at Constitution 1.6 and prohibits any such
+  row until Builder's implementation has terminal Reviewer approval. No implementation report exists
+  at extraction time. The ruling also confines the type to spell casting class and spell tier, so
+  even once open it would not admit the light-source and campfire classifications this packet
+  declines; those are recorded in the observations rather than asserted.
+
+in_flight_identity_note: >-
+  rule_encounter is proposed by a sibling GUR published earlier today
+  and is not yet canonical, so this patch proposes it again to satisfy invariant 1. The ID and label
+  are reproduced exactly and the sibling is named on the node, so Reviewer de-duplicates to one
+  registry addition. This is the ordinary consequence of extracting adjacent packets faster than the
+  pipeline integrates them, not a competing naming.
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-086-086-resting
+  source_file: source.md
+  packet_source_checksum: sha256:3b151b417ef6a6a4614556217e40cab941a5f2eb8c76c22af2c3cd471dbd6555
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 033-resting.md
+  citation_code: SD
+  page_start: 86
+  page_end: 86
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Markers resolve through the Pandoc AST rather than positionally, each a plain marker ending a
+  heading, which placement rule 1 applies to the whole heading. The bolded entries under MOVEMENT and
+  the subsections elsewhere carry no marker of their own and take their page from the persistence
+  rule, so each row is cited to the page of the subsection it is drawn from.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 86 through 86. Any other
+  page the parser resolves lies inside the trailing Supporting Source Context, is claimed by another
+  packet, and contributed nothing here.
+
+source_summary: >-
+  A single page. RESTING gives what a rest costs and requires, what interrupts it and what a successful one restores. DANGER LEVEL gives three named levels of surroundings with their random-encounter cadences. CAMPFIRE gives a light source built from torches. This summary is orientation only; every assertion below cites its page.
+
+extraction_posture: >-
+  rule_resting is canonical and already carries its hit-point recovery row from printed page 12. This page states that rule more fully, and that fuller statement is deliberately not re-emitted; see OBS-01. What is new is the ration cost, the interruption check, the danger level and the campfire.
+
+graph_state_at_extraction: >-
+  The canonical graph holds 175 registry rows, read at extraction rather than recalled, together with
+  the canonical edge set so every proposed row could be checked against the section 4 assertion key
+  before publication. The domain registry is still empty and general_rules.json is still an empty
+  object.
+
+reused_nodes:
+- id: rule_resting
+  label: Resting
+  used_by: M001, M002, M003, M006
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: rule_check
+  label: Check
+  used_by: M002
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: abil_constitution
+  label: Constitution
+  used_by: M003
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+
+candidate_nodes:
+- proposed_id: rule_danger_level
+  proposed_label: Danger Level
+  kind: procedure
+  why_needed: Source of M004 and M007. The classification of the surroundings that sets how often a random
+    encounter is checked for while resting.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 86, its own heading DANGER LEVEL
+  source_evidence: page 86, the heading and its three named levels with their check cadences
+- proposed_id: item_rations
+  proposed_label: Rations
+  kind: item category
+  why_needed: Endpoint of M001. What a rest consumes; the gear entry on printed page 34 carried no mechanic,
+    and this page gives it one.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 34, the bolded Rations entry; this page supplies its first mechanic
+  source_evidence: page 86, the rule that a character must consume a ration to rest, and consumes one
+    even on a failed rest
+- proposed_id: item_campfire
+  proposed_label: Campfire
+  kind: item category
+  why_needed: Source of M005. A light source built from torches, with its own duration and reach.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 86, its own heading CAMPFIRE
+  source_evidence: page 86, the heading and the rule combining torches into an immovable campfire
+- proposed_id: item_torch
+  proposed_label: Torch
+  kind: item category
+  why_needed: Endpoint of M005. What a campfire is built from. The gear entry on printed page 34 deferred
+    a torch identity because no relationship was expressible then; this page states one.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 34, the bolded Torch entry; this page supplies the relationship
+  source_evidence: page 86, the rule that three torches combine into a campfire. See IDQ-01.
+- proposed_id: rule_encounter
+  proposed_label: Encounter
+  kind: procedure
+  why_needed: Endpoint of M004. Proposed again here because it is not yet canonical; see in_flight_identity_note.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 83, its own heading ENCOUNTERS; not this packet
+  source_evidence: page 86, the rule that the GM checks for random encounters while resting. The ID and
+    label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-082-083-time-and-turn-order-r01
+
+candidate_edges:
+- ref: M001
+  source_id: rule_resting
+  source_label: Resting
+  edge_type: CONSUMES
+  target_id: item_rations
+  target_label: Rations
+  aspect: ration cost
+  condition: ''
+  book: SD
+  page: 86
+  section: RESTING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: A character must consume a ration to rest, and consumes one even when the rest is
+    interrupted and yields no benefit, so the rest expends it either way. CONSUMES runs consumer to resource.
+    The sleep duration is a magnitude. Derived polarity neutral.
+- ref: M002
+  source_id: rule_check
+  source_label: Check
+  edge_type: CONSTRAINS
+  target_id: rule_resting
+  target_label: Resting
+  aspect: interruption
+  condition: on a stressful interruption
+  polarity: governs
+  polarity_basis: read
+  book: SD
+  page: 86
+  section: RESTING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Each stressful interruption requires a check, and failing it costs the rest's benefit,
+    so the check bounds whether the rest succeeds. The row runs check to rest because the check is what
+    constrains. The difficulty value is a magnitude and is excluded. Read aloud as Check governs Resting;
+    basis read.
+- ref: M003
+  source_id: abil_constitution
+  source_label: Constitution
+  edge_type: FEEDS_INTO
+  target_id: rule_resting
+  target_label: Resting
+  aspect: interruption check
+  condition: ''
+  book: SD
+  page: 86
+  section: RESTING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The interruption check is made against Constitution, so it supplies the input that
+    decides whether an interrupted rest still works. Distinct from M002 by source_id.
+- ref: M004
+  source_id: rule_danger_level
+  source_label: Danger Level
+  edge_type: FEEDS_INTO
+  target_id: rule_encounter
+  target_label: Encounter
+  aspect: check cadence
+  condition: ''
+  book: SD
+  page: 86
+  section: DANGER LEVEL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The three named levels set how often the GM checks for an encounter while resting,
+    so the level supplies the cadence. The three intervals are magnitudes and are excluded; what is stored
+    is that the danger level determines the frequency.
+- ref: M005
+  source_id: item_campfire
+  source_label: Campfire
+  edge_type: CONSUMES
+  target_id: item_torch
+  target_label: Torch
+  aspect: construction
+  condition: ''
+  book: SD
+  page: 86
+  section: CAMPFIRE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: A campfire is made by combining torches, which expends them. CONSUMES runs consumer
+    to resource. The number of torches, the burn duration and the light radius are magnitudes and are
+    excluded, as is the immovability, which is a property rather than a relation. Derived polarity neutral.
+- ref: M006
+  source_id: rule_danger_level
+  source_label: Danger Level
+  edge_type: CONSTRAINS
+  target_id: rule_resting
+  target_label: Resting
+  aspect: rest safety
+  condition: ''
+  polarity: governs
+  polarity_basis: read
+  book: SD
+  page: 86
+  section: DANGER LEVEL
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Resting in a dungeon or perilous environment carries a high chance of failure because
+    of the encounter risk, so the danger level bounds how reliably a rest can be taken without changing
+    what a rest restores. Read aloud as Danger Level governs Resting; basis read.
+
+authored_polarity_declaration: >-
+  2 rows carry authored polarity, all with basis read: M002, M006. Each is
+  MODIFIES, TRIGGERS or CONSTRAINS, the three types constitution section 5 requires to carry
+  source-reviewed authored polarity, and each was read aloud as source polarity target before being
+  recorded. No row uses basis heuristic or unset. Every other row takes its derived polarity from the
+  section 5 table and the Analyst authors none of it.
+
+domains_touched: []
+candidate_domains:
+  - proposed: exploration
+    basis: >-
+      Crawling, light, distance, the movement modes and resting are a coherent cluster the book gives
+      its own chapter. Recorded as a candidate only; constitution section 8 reserves domain promotion
+      to an Architect Decision and the Analyst does not decide a candidate domain is official.
+
+domain_boundary_questions:
+  - >-
+    Movement and light reach into combat and magic as readily as into exploration, so the boundary
+    cannot be settled here. Deferred; no domain is asserted on any edge in this GUR.
+
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The movement modes repeat a shape, each being resolved by a check and bounding
+  speed, but each states its own distinct rule rather than instancing a general one, and the Analyst
+  is prohibited from promoting a general rule in any case.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: the hit-point recovery is already canonical and is not restated
+    detail: >-
+      Page 86 says a successful rest regains all lost hit points and recovers non-permanent stat damage. The canonical graph already carries rule_resting MODIFIES rule_hit_points on the aspect recovery, asserted from printed page 12 where the overview first states it. A row here would have the same source, type, target, aspect and condition and would collide under the constitution section 4 assertion key, so omitting it is required rather than optional.
+            The stat-damage recovery is a second effect and is not asserted either: stat damage is not an identity in this graph and no packet read so far defines it. That is a genuine gap and is recorded here rather than papered over.
+  - id: OBS-02
+    subject: what else a rest restores is stated generically
+    detail: >-
+      The page adds that some talents, spells or items regain their use after a rest. Those relationships are already asserted individually from their own loci and are canonical: resting gates a failed spell's recasting, a wand's restoration, and the Heal spell's recasting. A generic row here would duplicate them at a vaguer grain and would have no determinate target.
+  - id: OBS-03
+    subject: the campfire is a light source and is not said to be one
+    detail: >-
+      A campfire casts light and lasts a stated time, which makes it a light source in every ordinary sense. No row says so, for the membership reason recorded in the sibling crawling packet: DEC-2026-0103 confined CLASSIFIED_AS to spell classifications. M005 asserts what is assertable, that building one consumes torches.
+  - id: OBS-04
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The page carries the sleep duration, the interruption check difficulty, the three danger-level intervals, the torch count for a campfire, the campfire duration and its light radius. All are durations, thresholds, counts or distances, excluded by constitution section 1 and invariant 11. They remain in the immutable claimed packet. No aspect contains a digit, and the conditions name circumstances rather than quantities.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: the torch is proposed here rather than from its own gear entry
+    detail: >-
+      item_torch is proposed by this packet, but its defining locus is the bolded Torch entry on printed page 34. That packet deliberately did not propose it: at the time the torch's only stated content was a duration and a light radius, both magnitudes, with no second identity to relate it to, so it would have been an orphan.
+            This page gives it a relationship, that a campfire is built from torches, so the identity becomes proposable. The node records printed page 34 as its defining locus and takes its label from there, so no spelling is fixed from this secondary mention.
+            Consequence if wrong: if Reviewer prefers the torch to be proposed from its own entry, a successor revision of the gear packet can do so and this proposal de-duplicates against it. The Analyst judged that leaving the only stated torch relationship unassertable for the sake of ordering would lose more than it protects.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Every proposed node uses an approved constitution section 2 prefix with an unchanged
+  kind, every edge uses one of the fourteen legal section 3 types, and no new prefix, edge type,
+  domain promotion or general-rule application is requested. The membership questions this packet
+  declines were settled against representation by DEC-2026-0103, which confined CLASSIFIED_AS to
+  spell classifications; they are recorded in the observations rather than re-escalated.
+
+completeness_statement: >-
+  All printed pages in the declared span are accounted for, and every heading, subsection, bolded
+  entry, list and paragraph within them was read. Each produced either an edge or a dispositioning
+  observation; nothing was skipped. Every page marker was resolved through the Pandoc AST and each
+  row is cited to the page of the subsection it is drawn from. Every row was checked against the
+  canonical edge set for an assertion-key collision before publication. Content not converted to an
+  edge is accounted for in the observations above, and the question the Analyst could not settle is
+  recorded rather than resolved silently. No assertion depends on any other ruleset.

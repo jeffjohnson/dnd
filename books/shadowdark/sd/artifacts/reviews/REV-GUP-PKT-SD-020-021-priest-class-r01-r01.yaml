@@ -1,0 +1,84 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-020-021-priest-class-r01-r01
+artifact_kind: packet_update_review
+status: revision_required
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-020-021-priest-class
+constitution_version: '1.5'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-23'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-020-021-priest-class-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-020-021-priest-class-r01.yaml
+  checksum: sha256:0a7a2817cdfad6f8845a9f4184668d4d49c136baad2ec373cfdda7aeab3d24fd
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: revision_required
+approval_ready: false
+edge_decisions:
+  - {ref: M001, disposition: approved}
+  - {ref: M002, disposition: approved}
+  - {ref: M003, disposition: approved}
+  - {ref: M004, disposition: approved}
+  - {ref: M005, disposition: approved}
+  - {ref: M006, disposition: approved}
+  - {ref: M007, disposition: approved}
+  - {ref: M008, disposition: approved}
+  - {ref: M009, disposition: approved}
+  - {ref: M010, disposition: approved}
+  - {ref: M011, disposition: approved}
+  - {ref: M012, disposition: approved}
+  - {ref: M013, disposition: approved}
+  - {ref: M014, disposition: approved}
+  - {ref: M015, disposition: approved}
+  - {ref: M016, disposition: approved}
+  - {ref: M017, disposition: approved}
+  - {ref: M018, disposition: approved}
+architectural_escalations: []
+blocking_findings:
+  - id: current_registry_drift
+    detail: >-
+      The reviewed 1.2-era GUP proposes identities already registered by current
+      Shadowdark canonical state. Recompile node operations against the current
+      registry; the reviewed relationships remain source-supported.
+    current_registry:
+      path: rulesets/shadowdark/registries/nodes.csv
+      checksum: sha256:244dfe6e18139ec36eac54da6fff422d9668a8b97fcf084d795ec20a7fee6e3
+required_builder_revision:
+  successor_gup_id: GUP-PKT-SD-020-021-priest-class-r02
+  recompute_against_current_registry: true
+  reuse_existing_node_ids: [item_armor, rule_hit_points, sys_language, sys_alignment, exp_level, rule_talent_roll, rule_spellcasting_check, cbt_attack_roll, abil_strength, abil_wisdom]
+  preserve_reviewed_rows: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012, M013, M014, M015, M016, M017, M018]
+  note: 'M013 and M015 are distinct table outcomes: one named spell versus priest spellcasting checks generally.'
+completeness_statement: >-
+  Independently reviewed the Priest Class page, its talent table, and the
+  Priest Spells Known table. All eighteen rows are supported and semantically
+  correct. Approval is blocked only because obsolete node proposals conflict
+  with current registry state.
+reviewer_checklist:
+  source_support: passed
+  node_identity: revision_required_current_registry_reuse
+  edge_semantics_and_direction: passed
+  polarity: passed
+  graph_neighborhood: passed_after_current_registry_recheck
+  canonical_files_modified: false
+independent_validation:
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-020-021-priest-class-r01.validation.json
+    checksum: sha256:11c8200a4fa07de0f4523669cbf61e44d56017ef81a88dd3a886af9318092005
+    result: compiler_clean_but_historically_stale
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-020-021-priest-class/source.md
+    pages: ['20', '21']
+    result: independently_read
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: 'Publish r02 with node operations recomputed against the current registry.'
+  blocking_ids: []

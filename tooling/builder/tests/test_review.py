@@ -1955,3 +1955,121 @@ class PolicyRefsMustBeAListCase(unittest.TestCase):
         if not directives.malformed_policies:  # pragma: no cover - once repaired
             self.skipTest("the Druid policy block has been restated as a list")
         self.assertEqual(directives.rows, {})
+
+
+class TestRefKeyedDecisionMappings(unittest.TestCase):
+    """DEC-2026-0091: `{<ref>: {disposition: ...}}` is an executable form.
+
+    A schema-valid Review stated its rulings this way and the parser read none
+    of them, so a complete ruling loaded as no ruling at all. The Builder was
+    right to refuse rather than apply half of it; the fix is to read the form,
+    not to guess at it, so the invalid shapes below still fail closed.
+    """
+
+    ENVELOPE = {
+        "id": "REV-GUP-PKT-FIXTURE-r01-r01",
+        "reviewed_gup": {"id": "GUP-PKT-FIXTURE-r01"},
+        "packet_id": "PKT-FIXTURE",
+        "overall_disposition": "revision_required",
+    }
+
+    def directives(self, **blocks):
+        document = dict(self.ENVELOPE)
+        document.update(blocks)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "review.yaml"
+            path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+            return ReviewDirectives.load(path)
+
+    def test_each_key_becomes_its_own_row_directive(self):
+        directives = self.directives(edge_decisions={
+            "M001": {"disposition": "approved"},
+            "M002": {"disposition": "rejected"},
+        })
+        self.assertEqual(sorted(directives.rows), ["M001", "M002"])
+        self.assertEqual(directives.rows["M001"].disposition, "approved")
+        self.assertEqual(directives.rows["M002"].disposition, "rejected")
+        self.assertEqual(directives.unread_decision_keys, [])
+
+    def test_row_decisions_reads_the_same_shape(self):
+        directives = self.directives(row_decisions={"M001": {"disposition": "approved"}})
+        self.assertEqual(sorted(directives.rows), ["M001"])
+
+    def test_an_agreeing_embedded_ref_is_permitted(self):
+        directives = self.directives(edge_decisions={
+            "M001": {"ref": "M001", "disposition": "approved"}})
+        self.assertEqual(sorted(directives.rows), ["M001"])
+
+    def test_a_mismatched_embedded_ref_fails_closed(self):
+        directives = self.directives(edge_decisions={
+            "M001": {"ref": "M002", "disposition": "approved"}})
+        self.assertEqual(directives.rows, {})
+        self.assertTrue(directives.unread_decision_keys)
+
+    def test_a_value_that_is_not_a_mapping_fails_closed(self):
+        directives = self.directives(edge_decisions={"M001": "approved"})
+        self.assertEqual(directives.rows, {})
+        self.assertTrue(directives.unread_decision_keys)
+
+    def test_a_map_entry_without_a_disposition_fails_closed(self):
+        directives = self.directives(edge_decisions={
+            "M001": {"rationale": "looks fine"}})
+        self.assertEqual(directives.rows, {})
+        self.assertTrue(directives.unread_decision_keys)
+
+    def test_one_bad_entry_discards_the_whole_block(self):
+        """Applying the readable two thirds of a Review is the silent partial
+        application the refusal exists to prevent."""
+        directives = self.directives(edge_decisions={
+            "M001": {"disposition": "approved"},
+            "M002": {"disposition": "approved"},
+            "M003": "approved",
+        })
+        self.assertEqual(directives.rows, {})
+
+    def test_row_local_corrections_survive_the_expansion(self):
+        directives = self.directives(edge_decisions={
+            "M001": {"disposition": "approved_with_revision",
+                     "exact_corrections": {"aspect": "carry limit"}}})
+        self.assertEqual(directives.rows["M001"].corrections["aspect"], "carry limit")
+
+    def test_the_list_form_is_unchanged(self):
+        directives = self.directives(edge_decisions=[
+            {"ref": "M001", "disposition": "approved"},
+            {"ref": "M002", "disposition": "rejected"},
+        ])
+        self.assertEqual(sorted(directives.rows), ["M001", "M002"])
+        self.assertEqual(directives.unread_decision_keys, [])
+
+    def test_the_bulk_approved_refs_form_is_unchanged(self):
+        directives = self.directives(edge_decisions={
+            "disposition": "approved", "approved_refs": ["M001", "M002"]})
+        self.assertEqual(sorted(directives.rows), ["M001", "M002"])
+        self.assertEqual(directives.rows["M001"].disposition, "approved")
+
+    def test_an_explicitly_empty_approved_refs_is_zero_rulings_not_a_failure(self):
+        """A null-extraction GUP's Review correctly states zero refs to
+        approve. Before the fix, the empty list was falsy, so this fell
+        through to the ref-keyed branch, which read `approved_refs` and
+        `disposition` themselves as bogus per-ref entries and failed the
+        whole block -- exactly the live case that surfaced this defect."""
+        directives = self.directives(edge_decisions={
+            "approved_refs": [], "disposition": "approved"})
+        self.assertEqual(directives.rows, {})
+        self.assertEqual(directives.unread_decision_keys, [])
+
+    def test_an_explicitly_empty_refs_alias_is_also_zero_rulings(self):
+        directives = self.directives(edge_decisions={"refs": [], "disposition": "approved"})
+        self.assertEqual(directives.rows, {})
+        self.assertEqual(directives.unread_decision_keys, [])
+
+    def test_the_live_ref_keyed_review_now_reads(self):
+        """The exact Review that produced DEC-2026-0091, by name."""
+        path = (REPO_ROOT / "books/shadowdark/sd/artifacts/reviews"
+                / "REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r02-r01.yaml")
+        if not path.is_file():  # pragma: no cover - immutable, but not load-bearing
+            self.skipTest("the r02-r01 Review is no longer present")
+        directives = ReviewDirectives.load(path)
+        self.assertEqual(len(directives.rows), 14)
+        self.assertTrue(all(d.disposition == "approved"
+                            for d in directives.rows.values()))

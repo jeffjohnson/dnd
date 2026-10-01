@@ -22,7 +22,12 @@ from adnd1e_builder.emit import edges_csv, gup_document, validation_report
 import json
 
 from adnd1e_builder.registry import NodeRegistry, normalize_label
-from adnd1e_builder.vocab import AUTHORED_POLARITY_TYPES, COLUMNS
+from adnd1e_builder.vocab import (
+    AUTHORED_POLARITY_TYPES,
+    COLUMNS,
+    RulesetVocabulary,
+    UnknownRuleset,
+)
 
 REGISTRY_PATH = REPO_ROOT / "rulesets" / "adnd1e" / "registries" / "nodes.csv"
 EDGES_PATH = REPO_ROOT / "rulesets" / "adnd1e" / "canonical" / "edges_master.csv"
@@ -216,7 +221,7 @@ class TestIdentity(CompilerCase):
         """Invariant 1: the CSV must never carry an edge to a node that does not exist."""
         result = self.compile_gur(
             candidate_nodes=[{"proposed_id": "rule_brand_new_mechanic",
-                              "proposed_label": "Brand New Mechanic"}],
+                              "why_needed": "fixture", "proposed_label": "Brand New Mechanic"}],
             candidate_edges=[
                 dict(BASE_EDGE, ref="P1", target_id="rule_brand_new_mechanic",
                      target_label="Brand New Mechanic"),
@@ -232,7 +237,7 @@ class TestIdentity(CompilerCase):
     def test_every_csv_row_has_canonical_endpoints(self):
         result = self.compile_gur(
             candidate_nodes=[{"proposed_id": "rule_brand_new_mechanic",
-                              "proposed_label": "Brand New Mechanic"}],
+                              "why_needed": "fixture", "proposed_label": "Brand New Mechanic"}],
             candidate_edges=[
                 dict(BASE_EDGE, ref="P1", target_id="rule_brand_new_mechanic",
                      target_label="Brand New Mechanic"),
@@ -246,7 +251,7 @@ class TestIdentity(CompilerCase):
 
     def test_node_additions_are_isolated_from_edges(self):
         result = self.compile_gur(
-            candidate_nodes=[{"proposed_id": "rule_new_thing", "proposed_label": "New Thing"}],
+            candidate_nodes=[{"proposed_id": "rule_new_thing", "why_needed": "fixture", "proposed_label": "New Thing"}],
             candidate_edges=[dict(BASE_EDGE)],
         )
         self.assertEqual(len(result.node_additions), 1)
@@ -264,14 +269,14 @@ class TestIdentity(CompilerCase):
         `TestProposalAlreadyCanonical` for both sides.
         """
         result = self.compile_gur(
-            candidate_nodes=[{"proposed_id": "race_dwarf", "proposed_label": "Hill Dwarf"}]
+            candidate_nodes=[{"proposed_id": "race_dwarf", "why_needed": "fixture", "proposed_label": "Hill Dwarf"}]
         )
         self.assertIn("node_addition_already_canonical", self.rules(result))
 
     def test_unapproved_prefix_on_a_proposal_is_an_error(self):
         # turn_ was rejected by DEC-2026-0004 and must stay unapproved.
         result = self.compile_gur(
-            candidate_nodes=[{"proposed_id": "turn_something", "proposed_label": "Turn Something"}]
+            candidate_nodes=[{"proposed_id": "turn_something", "why_needed": "fixture", "proposed_label": "Turn Something"}]
         )
         self.assertIn("node_prefix_unapproved", self.rules(result))
         self.assertTrue(result.node_additions[0]["architect_required"])
@@ -895,14 +900,14 @@ class TestStatusAndReport(CompilerCase):
     def test_blocked_when_escalations_exist(self):
         # An unapproved prefix is still architectural, so it still blocks.
         result = self.compile_gur(
-            candidate_nodes=[{"proposed_id": "magic_x_new", "proposed_label": "X New"}]
+            candidate_nodes=[{"proposed_id": "magic_x_new", "why_needed": "fixture", "proposed_label": "X New"}]
         )
         self.assertEqual(result.status, "blocked")
         self.assertTrue(result.blocks_approval)
 
     def test_not_blocked_by_an_ordinary_node_proposal(self):
         result = self.compile_gur(
-            candidate_nodes=[{"proposed_id": "rule_x_new", "proposed_label": "X New"}]
+            candidate_nodes=[{"proposed_id": "rule_x_new", "why_needed": "fixture", "proposed_label": "X New"}]
         )
         self.assertEqual(result.status, "proposed")
         self.assertFalse(result.blocks_approval)
@@ -1601,9 +1606,13 @@ class DueMigrationEndpointCase(CompilerCase):
 
 
 class TestEnvelope(CompilerCase):
-    def test_wrong_ruleset_is_rejected(self):
+    def test_an_unregistered_ruleset_is_rejected(self):
+        # `adnd2e` has no rulesets/adnd2e/ruleset.yaml. Before DEC-2026-0080 the
+        # only refusal was "not adnd1e"; now the two ways of being wrong are
+        # separated, and this fixture is the one with nothing to compile against.
         result = self.compile_gur(ruleset_id="adnd2e")
-        self.assertIn("gur_wrong_ruleset", self.rules(result))
+        self.assertIn("gur_unknown_ruleset", self.rules(result))
+        self.assertTrue(result.errors, "an unknown ruleset must block the patch")
 
     def test_constitution_version_mismatch_is_rejected(self):
         result = self.compile_gur(constitution_version="1.1")
@@ -1760,6 +1769,90 @@ class ReviewerRejectedNodeCase(CompilerCase):
         self.assertNotIn(
             "reviewer_rejected_node_dropped", self.by_severity(result, "info")
         )
+
+
+class NodeRoutingBasisCorrectionCase(CompilerCase):
+    """A Review may correct a node's `routing_basis`, not only its label.
+
+    `routing_basis` is not source content -- it is the Builder-generated
+    workflow-authority citation on an isolated node-registry addition. It was
+    published wrong for every Shadowdark node proposal: the boilerplate cites
+    `DEC-2026-0003`, a Decision that exists only for adnd1e. Constitution 1.8
+    section 2 is Shadowdark's actual authority for the same ordinary-workflow
+    rule. REV-GUP-PKT-SD-195-195-monster-family-angels-r01-r01 is the live case
+    that first supplied this correction, on four isolated `monster_` proposals
+    with zero edges.
+    """
+
+    NODE = "abil_fixture_routing_basis_node"
+
+    def compile_with_routing_basis_correction(self, corrected_basis=None):
+        from adnd1e_builder.review import ReviewDirectives
+
+        with tempfile.TemporaryDirectory() as tmp:
+            document = dict(BASE_ENVELOPE)
+            document.update(
+                candidate_nodes=[{
+                    "proposed_id": self.NODE,
+                    "proposed_label": "Fixture Routing Basis Node",
+                    "why_needed": "The packet names it with no dependent edge.",
+                    "edges_depending_on_it": [],
+                }],
+                candidate_edges=[],
+            )
+            gur = Path(tmp) / "gur.yaml"
+            gur.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+            node_decision = {"proposed_id": self.NODE, "disposition": "approved_with_revision"}
+            if corrected_basis is not None:
+                node_decision["exact_corrections"] = {"routing_basis": corrected_basis}
+            review = Path(tmp) / "REV.yaml"
+            review.write_text(yaml.safe_dump({
+                "id": "REV-GUP-PKT-TEST-r01-r01",
+                "packet_id": document["packet_id"],
+                "reviewed_gup": {"id": "GUP-PKT-TEST-r01"},
+                "overall_disposition": "revision_required",
+                "node_registry_decisions": [node_decision],
+            }, sort_keys=False), encoding="utf-8")
+            return self.compiler.compile(
+                gur, directives=ReviewDirectives.load(review), revision=2,
+                supersedes="GUP-PKT-PHB-999-999-fixture-r01",
+            )
+
+    def rules(self, result, severity):
+        return [f.rule for f in result.findings if f.severity == severity]
+
+    def addition(self, result):
+        return next(n for n in result.node_additions if n["proposed_id"] == self.NODE)
+
+    def test_the_corrected_basis_replaces_the_generated_one(self):
+        result = self.compile_with_routing_basis_correction("Constitution 1.8 section 2: fixture authority.")
+        self.assertEqual(
+            self.addition(result)["routing_basis"],
+            "Constitution 1.8 section 2: fixture authority.",
+        )
+
+    def test_it_is_not_reported_as_unapplied(self):
+        result = self.compile_with_routing_basis_correction("Constitution 1.8 section 2: fixture authority.")
+        self.assertNotIn(
+            "reviewer_node_correction_not_applied", self.rules(result, "error")
+        )
+
+    def test_it_is_reported_as_a_corrected_field(self):
+        result = self.compile_with_routing_basis_correction("Constitution 1.8 section 2: fixture authority.")
+        detail = next(
+            f.detail for f in result.findings
+            if f.rule == "reviewer_corrected_node_field"
+        )
+        self.assertIn("routing_basis", detail)
+        self.assertIn(self.NODE, detail)
+
+    def test_without_a_correction_the_generated_basis_survives_unflagged(self):
+        """No routing_basis correction means no field-level finding at all."""
+        result = self.compile_with_routing_basis_correction(None)
+        self.assertNotIn(
+            "reviewer_corrected_node_field", self.rules(result, "info")
+        )
+        self.assertIn("DEC-2026-0003", self.addition(result)["routing_basis"])
 
 
 class BlockedRowsAreSeparableCase(CompilerCase):
@@ -2036,14 +2129,28 @@ class LivePsionicsBlockedCase(CompilerCase):
         whether the dependencies have landed or not.
         """
         result = self.result()
-        self.assertTrue(result.blocked_additions)
         emitted = (
             len(result.additions)
             + len(result.pending_additions)
             + len(result.updates)
         )
         self.assertGreater(emitted, 0)
+        # Rewritten a second time, for the same reason as the first. The last
+        # dependency this packet blocked on was the druid-spells origin, which
+        # has since been published and integrated, so the blocked set is empty --
+        # not because anything regressed but because the cross-packet rule did
+        # its job. Requiring blocked rows to exist made a satisfied dependency
+        # look like a failure. What the rejection was actually about is that
+        # blocking is a small remainder rather than the bulk of the packet, and
+        # that holds whether the remainder is nine rows or none.
         self.assertLess(len(result.blocked_additions), emitted // 4)
+        for row in result.blocked_additions:
+            with self.subTest(ref=row.get("ref")):
+                self.assertTrue(
+                    row["source_id"] not in self.registry
+                    or row["target_id"] not in self.registry,
+                    "a blocked row must be waiting on an unregistered endpoint",
+                )
 
     def test_blocked_rows_are_a_subset_of_the_pending_rows(self):
         """Blocked is a narrowing of pending, not a fourth independent bucket.
@@ -2271,3 +2378,759 @@ class WithdrawnAtSourceRefCase(CompilerCase):
                 supersedes="GUP-PKT-PHB-999-999-fixture-r01",
             )
         self.assertIn("review_ref_not_in_gur", self.rules(result, "error"))
+
+
+class UnknownEscalationIdCase(CompilerCase):
+    """A carried escalation ID that matches nothing must say so.
+
+    The missing-ID case already tells the Analyst what to fix. An ID that is
+    present but matches no open or decided escalation used to say nothing at
+    all: the patch blocked on a question no one could look up.
+
+    GUR-PKT-DMG-064-064-missile-discharge-r03 is the live case. It names
+    `ESC-CAND-01`, a candidate placeholder, for a question the Architect decided
+    on 2026-08-14 as ESC-2026-08-14T04.18.34.386Z under DEC-2026-0034 -- and the
+    same GUR already implements that ruling, carrying source_id
+    `dmg-steward-intake`. The Builder still does not guess which escalation is
+    meant; it says the ID resolves to nothing.
+    """
+
+    def compile_with_escalation(self, entry):
+        with tempfile.TemporaryDirectory() as tmp:
+            document = dict(BASE_ENVELOPE)
+            document.update(
+                candidate_edges=[dict(BASE_EDGE, ref="T1")],
+                architectural_escalations=[entry],
+            )
+            gur = Path(tmp) / "gur.yaml"
+            gur.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+            return self.compiler.compile(gur, revision=1)
+
+    def rules(self, result, severity):
+        return [f.rule for f in result.findings if f.severity == severity]
+
+    def test_an_unmatched_id_is_reported(self):
+        result = self.compile_with_escalation(
+            {"id": "ESC-CAND-01", "subject": "a candidate placeholder"}
+        )
+        self.assertIn("gur_escalation_id_unknown", self.rules(result, "warning"))
+
+    def test_the_warning_names_the_id_and_the_subject(self):
+        result = self.compile_with_escalation(
+            {"id": "ESC-CAND-07", "subject": "source_id for steward packets"}
+        )
+        detail = next(
+            f.detail for f in result.findings
+            if f.rule == "gur_escalation_id_unknown"
+        )
+        self.assertIn("ESC-CAND-07", detail)
+        self.assertIn("source_id for steward packets", detail)
+        self.assertIn("decided escalation ID", detail)
+
+    def test_it_still_blocks(self):
+        """Saying why must not be mistaken for resolving it."""
+        result = self.compile_with_escalation(
+            {"id": "ESC-CAND-01", "subject": "a candidate placeholder"}
+        )
+        self.assertEqual(len(result.escalations), 1)
+
+    def test_a_missing_id_keeps_its_own_warning(self):
+        result = self.compile_with_escalation({"subject": "no id at all"})
+        self.assertIn("gur_escalation_omits_id", self.rules(result, "warning"))
+        self.assertNotIn("gur_escalation_id_unknown", self.rules(result, "warning"))
+
+    def test_a_decided_id_is_not_reported_as_unknown(self):
+        """The decided branch runs first and clears the escalation entirely."""
+        result = self.compile_with_escalation(
+            {"id": "ESC-2026-08-14T04.18.34.386Z", "subject": "already ruled"}
+        )
+        self.assertNotIn("gur_escalation_id_unknown", self.rules(result, "warning"))
+        self.assertEqual(result.escalations, [])
+        self.assertIn("gur_escalation_since_decided", self.rules(result, "info"))
+
+
+class LabelCorrectionNotApplicableCase(CompilerCase):
+    """A label belongs to the node, so a row-level label correction cannot stand.
+
+    `_endpoint_label` normalises every row on a registered node to the registered
+    label, which is what keeps one node from appearing under several spellings.
+    A Reviewer correction to `source_label` was recorded as applied and then
+    overwritten by that normalisation, so the emitted row silently disagreed
+    with the Review.
+
+    REV-GUP-PKT-DMG-064-064-missile-discharge-r02-r01 is the live case: it
+    corrected M014's source_label to 'Giant-Hurled Boulders' on `monster_special`,
+    which is canonically 'Special Creatures' across 36 rows.
+    """
+
+    NODE = "cbt_tohit"
+
+    def compile_with_label_correction(self, to_label, node=None, ref="T1"):
+        from adnd1e_builder.review import ReviewDirectives
+
+        node_id = node or self.NODE
+        with tempfile.TemporaryDirectory() as tmp:
+            document = dict(BASE_ENVELOPE)
+            document.update(candidate_edges=[
+                dict(BASE_EDGE, ref=ref, target_id=node_id, target_label="To-Hit Roll")
+            ])
+            gur = Path(tmp) / "gur.yaml"
+            gur.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+            review = Path(tmp) / "REV.yaml"
+            review.write_text(yaml.safe_dump({
+                "id": "REV-GUP-PKT-TEST-r01-r01",
+                "packet_id": document["packet_id"],
+                "reviewed_gup": {"id": "GUP-PKT-TEST-r01"},
+                "overall_disposition": "revision_required",
+                "row_decisions": [{
+                    "ref": ref,
+                    "disposition": "approved_with_revision",
+                    "exact_corrections": {"target_label": to_label},
+                }],
+            }, sort_keys=False), encoding="utf-8")
+            return self.compiler.compile(
+                gur, directives=ReviewDirectives.load(review), revision=2,
+                supersedes="GUP-PKT-PHB-999-999-fixture-r01",
+            )
+
+    def rules(self, result, severity):
+        return [f.rule for f in result.findings if f.severity == severity]
+
+    def test_a_conflicting_label_correction_is_refused(self):
+        result = self.compile_with_label_correction("Something Else Entirely")
+        self.assertIn(
+            "reviewer_label_correction_not_applicable", self.rules(result, "error")
+        )
+
+    def test_the_row_keeps_the_registered_label(self):
+        """Not the Reviewer's value, and not silently either."""
+        result = self.compile_with_label_correction("Something Else Entirely")
+        emitted = [
+            row for bucket in (result.additions, result.batch_satisfiable_additions,
+                               result.blocked_additions)
+            for row in bucket if row["ref"] == "T1"
+        ]
+        if emitted:
+            self.assertEqual(emitted[0]["target_label"], self.registry.nodes[self.NODE].label)
+
+    def test_it_is_not_reported_as_applied(self):
+        """The old behaviour recorded it as applied and then overwrote it."""
+        result = self.compile_with_label_correction("Something Else Entirely")
+        for entry in result.corrections_applied:
+            with self.subTest(ref=entry["ref"]):
+                self.assertNotIn("target_label", entry["fields"])
+
+    def test_the_error_names_both_labels_and_the_routes(self):
+        result = self.compile_with_label_correction("Something Else Entirely")
+        detail = next(
+            f.detail for f in result.findings
+            if f.rule == "reviewer_label_correction_not_applicable"
+        )
+        self.assertIn("Something Else Entirely", detail)
+        self.assertIn(self.registry.nodes[self.NODE].label, detail)
+        self.assertIn("aspect or condition", detail)
+        self.assertIn("distinct node", detail)
+        self.assertIn("Architect decision", detail)
+
+    def test_a_matching_label_correction_is_not_an_error(self):
+        """Restating the registered label changes nothing and blocks nothing."""
+        result = self.compile_with_label_correction(self.registry.nodes[self.NODE].label)
+        self.assertNotIn(
+            "reviewer_label_correction_not_applicable", self.rules(result, "error")
+        )
+
+    def test_a_proposed_node_keeps_the_reviewers_label(self):
+        """An unregistered node has no registry label to disagree with."""
+        result = self.compile_with_label_correction(
+            "Reviewer Chosen Label", node="cbt_not_registered_fixture"
+        )
+        self.assertNotIn(
+            "reviewer_label_correction_not_applicable", self.rules(result, "error")
+        )
+
+
+class LabelCorrectionSupersededByDecisionCase(LabelCorrectionNotApplicableCase):
+    """A row-level label correction the Architect has already overtaken.
+
+    DEC-2026-0077 is the live case. The Reviewer asked for M014's source_label
+    to read 'Giant-Hurled Boulders'; the Architect ruled that string is an
+    assertion description rather than a reusable identity, registered
+    monster_giant / Giants, and repointed the canonical row. By the time the
+    successor GUP is compiled, the requested label is one the graph has retired.
+
+    Refusing it as unroutable would be false -- there is a route and the
+    Architect took it -- and applying it would put back what the migration
+    removed. So it is recorded as superseded, with the deciding Decision named,
+    and the Review is still consumed by the successor it asked for.
+    """
+
+    NODE = "cbt_tohit"
+    RETIRED = "Retired Fixture Label"
+    DECISION = "DEC-2026-9999"
+
+    def setUp(self):
+        self.key = (self.NODE, self.RETIRED)
+        self.governance.superseded_labels[self.key] = self.DECISION
+        self.addCleanup(self.governance.superseded_labels.pop, self.key, None)
+
+    def superseded(self):
+        return self.compile_with_label_correction(self.RETIRED)
+
+    def test_it_is_not_an_error(self):
+        self.assertNotIn(
+            "reviewer_label_correction_not_applicable",
+            self.rules(self.superseded(), "error"),
+        )
+
+    def test_it_is_reported_as_superseded(self):
+        self.assertIn(
+            "reviewer_label_correction_superseded_by_decision",
+            self.rules(self.superseded(), "info"),
+        )
+
+    def test_it_is_recorded_with_its_authority(self):
+        """Recorded, not dropped: the successor says what became of the instruction."""
+        record = self.superseded().corrections_superseded
+        self.assertEqual(len(record), 1)
+        self.assertEqual(record[0]["requested"], self.RETIRED)
+        self.assertEqual(record[0]["superseded_by"], self.DECISION)
+        self.assertEqual(record[0]["node_id"], self.NODE)
+        self.assertEqual(record[0]["field"], "target_label")
+
+    def test_the_finding_names_the_decision(self):
+        detail = next(
+            f.detail
+            for f in self.superseded().findings
+            if f.rule == "reviewer_label_correction_superseded_by_decision"
+        )
+        self.assertIn(self.DECISION, detail)
+        self.assertIn(self.RETIRED, detail)
+
+    def test_the_row_still_carries_the_registered_label(self):
+        """Superseded means the migration wins, not that the Reviewer does."""
+        result = self.superseded()
+        self.assertEqual(
+            result.rows[0]["target_label"], self.registry.nodes[self.NODE].label
+        )
+
+    def test_it_is_not_reported_as_applied(self):
+        self.assertEqual(self.superseded().corrections_applied, [])
+
+    # -- what must still be refused -------------------------------------------
+
+    def test_a_different_label_on_the_same_node_is_still_refused(self):
+        result = self.compile_with_label_correction("Some Other Label")
+        self.assertIn(
+            "reviewer_label_correction_not_applicable", self.rules(result, "error")
+        )
+        self.assertEqual(result.corrections_superseded, [])
+
+    def test_the_same_label_on_a_different_node_is_still_refused(self):
+        """The retirement is a fact about one node, not about a string."""
+        result = self.compile_with_label_correction(self.RETIRED, node="cbt_initiative")
+        self.assertIn(
+            "reviewer_label_correction_not_applicable", self.rules(result, "error")
+        )
+        self.assertEqual(result.corrections_superseded, [])
+
+
+class SupersededLabelLoadingCase(unittest.TestCase):
+    """What the loader may read out of an approved migration.
+
+    `before_assertion` describes the whole row, so a `target_id` repoint carries
+    a `source_label` belonging to the endpoint it did not touch. Reading the
+    wrong one would let a migration of one endpoint excuse a correction on the
+    other -- the same field-name drift that has cost this pipeline four
+    incidents.
+    """
+
+    def load(self, documents):
+        with tempfile.TemporaryDirectory() as tmp:
+            decisions = Path(tmp) / "escalations" / "decisions"
+            decisions.mkdir(parents=True)
+            for name, document in documents.items():
+                (decisions / (name + ".yaml")).write_text(
+                    yaml.safe_dump(document, sort_keys=False), encoding="utf-8"
+                )
+            return Governance.load(Path(tmp))
+
+    def decision(self, decision_id, field, to, before, supersedes=None):
+        return {
+            "id": decision_id,
+            "status": "approved",
+            "supersedes": supersedes,
+            "canonical_migration": {
+                "endpoint_repoints": [
+                    {"field": field, "to": to, "before_assertion": before}
+                ]
+            },
+        }
+
+    def test_a_source_repoint_reads_the_source_label(self):
+        governance = self.load(
+            {
+                "DEC-2026-0001": self.decision(
+                    "DEC-2026-0001",
+                    "source_id",
+                    "node_new",
+                    {"source_label": "Old Source", "target_label": "Untouched Target"},
+                )
+            }
+        )
+        self.assertEqual(
+            governance.label_superseded_by("node_new", "Old Source"), "DEC-2026-0001"
+        )
+
+    def test_a_source_repoint_does_not_read_the_target_label(self):
+        governance = self.load(
+            {
+                "DEC-2026-0001": self.decision(
+                    "DEC-2026-0001",
+                    "source_id",
+                    "node_new",
+                    {"source_label": "Old Source", "target_label": "Untouched Target"},
+                )
+            }
+        )
+        self.assertIsNone(governance.label_superseded_by("node_new", "Untouched Target"))
+
+    def test_a_target_repoint_reads_the_target_label(self):
+        governance = self.load(
+            {
+                "DEC-2026-0001": self.decision(
+                    "DEC-2026-0001",
+                    "target_id",
+                    "node_new",
+                    {"source_label": "Untouched Source", "target_label": "Old Target"},
+                )
+            }
+        )
+        self.assertEqual(
+            governance.label_superseded_by("node_new", "Old Target"), "DEC-2026-0001"
+        )
+        self.assertIsNone(governance.label_superseded_by("node_new", "Untouched Source"))
+
+    def test_a_superseded_decision_is_not_the_authority(self):
+        """A reissue and the ruling it replaced describe the same repoint."""
+        before = {"source_label": "Old Source"}
+        governance = self.load(
+            {
+                "DEC-2026-0076": self.decision(
+                    "DEC-2026-0076", "source_id", "node_new", before
+                ),
+                "DEC-2026-0077": self.decision(
+                    "DEC-2026-0077",
+                    "source_id",
+                    "node_new",
+                    before,
+                    supersedes="DEC-2026-0076",
+                ),
+            }
+        )
+        self.assertEqual(
+            governance.label_superseded_by("node_new", "Old Source"), "DEC-2026-0077"
+        )
+
+    def test_an_unapproved_decision_retires_nothing(self):
+        document = self.decision(
+            "DEC-2026-0001", "source_id", "node_new", {"source_label": "Old Source"}
+        )
+        document["status"] = "proposed"
+        governance = self.load({"DEC-2026-0001": document})
+        self.assertIsNone(governance.label_superseded_by("node_new", "Old Source"))
+
+    def test_the_live_giant_repoint_is_read_from_the_repository(self):
+        """The case this exists for, against the real Decision."""
+        governance = Governance.load(REPO_ROOT / "rulesets" / "adnd1e")
+        self.assertEqual(
+            governance.label_superseded_by("monster_giant", "Giant-Hurled Boulders"),
+            "DEC-2026-0077",
+        )
+
+
+class RegisteredRulesetCase(unittest.TestCase):
+    """DEC-2026-0080: a second registered ruleset compiles under its own
+    governance, and nothing else does.
+
+    The Decision states that basicdnd does not inherit, share, or merge the
+    adnd1e ontology, registries, canonical data, or artifact lineages, and that
+    the parallel-looking prefix and edge tables are parallel vocabulary rather
+    than shared identity. So the compiler is given a vocabulary instead of
+    importing one, and these tests hold it to the ruleset it was given.
+    """
+
+    RULESET = "basicdnd"
+
+    ENVELOPE = {
+        "schema_version": "1.0",
+        "id": "GUR-PKT-RC-006-012-fixture-r01",
+        "status": "proposed",
+        "ruleset_id": "basicdnd",
+        "book_id": "rc",
+        "source_id": "rc-steward-intake",
+        "packet_id": "PKT-RC-006-012-fixture",
+        "constitution_version": "1.0",
+        "revision": 1,
+        "page_start": 6,
+        "page_end": 12,
+    }
+
+    EDGE = {
+        "ref": "T1",
+        "source_id": "abil_strength",
+        "source_label": "Strength",
+        "edge_type": "GATES",
+        "target_id": "class_dwarf",
+        "target_label": "Dwarf",
+        "aspect": _bootstrap.FIXTURE_ASPECT,
+        "condition": "",
+        "book": "RC",
+        "page": 6,
+        "section": "PRIME REQUISITES",
+        "evidence": "explicit_rule",
+        "pass": "page-sweep",
+        "status": "core",
+        "general_rule_id": "",
+        "supersession_basis": "",
+        "review_flag": "",
+    }
+
+    NODES = [
+        {
+            "proposed_id": "abil_strength",
+            "proposed_label": "Strength",
+            "why_needed": "fixture",
+            "edges_depending_on_it": ["T1"],
+        },
+        {
+            "proposed_id": "class_dwarf",
+            "proposed_label": "Dwarf",
+            "why_needed": "fixture",
+            "edges_depending_on_it": ["T1"],
+        },
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        root = REPO_ROOT / "rulesets" / cls.RULESET
+        cls.vocabulary = RulesetVocabulary.load(REPO_ROOT, cls.RULESET)
+        cls.registry = NodeRegistry.load(root / "registries" / "nodes.csv")
+        # DEC-2026-0080 leaves basicdnd with no canonical baseline: the first one
+        # is the Integrator's, after the first approved bundle. An empty store is
+        # therefore the correct fixture, and constructing it here rather than
+        # reading a file is the point -- there is no file, and this test must not
+        # be what creates one.
+        cls.canonical = CanonicalEdges(path=root / "canonical" / "edges_master.csv")
+        cls.governance = Governance.load(root)
+        cls.compiler = Compiler(
+            cls.registry, cls.canonical, None, cls.governance, cls.vocabulary
+        )
+
+    def compile_gur(self, compiler=None, **overrides):
+        # Every basicdnd node is new: the registry is empty by design, so a
+        # first packet carries its endpoints as proposals or has no endpoints
+        # at all. The fixture supplies them the way an Analyst would.
+        document = dict(self.ENVELOPE, candidate_nodes=[dict(n) for n in self.NODES])
+        document.update(overrides)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "gur.yaml"
+            path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+            return (compiler or self.compiler).compile(path)
+
+    def rules(self, result):
+        return {f.rule for f in result.findings}
+
+    # -- admission ------------------------------------------------------------
+
+    def test_a_basicdnd_gur_is_admitted_by_its_registered_configuration(self):
+        result = self.compile_gur(candidate_edges=[dict(self.EDGE)])
+        self.assertNotIn("gur_wrong_ruleset", self.rules(result))
+        self.assertNotIn("gur_unknown_ruleset", self.rules(result))
+        self.assertNotIn("constitution_version_mismatch", self.rules(result))
+        self.assertEqual(result.errors, [], [f.detail for f in result.errors])
+
+    def test_its_row_is_pending_because_the_registry_is_empty(self):
+        """An empty registry is the initialized state, not a failure.
+
+        Both endpoints are unregistered, so the row travels as pending with node
+        proposals the Integrator can apply. Refusing it instead would mean a new
+        ruleset could never receive its first node.
+        """
+        result = self.compile_gur(candidate_edges=[dict(self.EDGE)])
+        self.assertIn("endpoint_pending_registry_addition", self.rules(result))
+        self.assertEqual(len(result.pending_additions), 1)
+        proposed = {n["proposed_id"] for n in result.node_additions}
+        self.assertEqual(proposed, {"abil_strength", "class_dwarf"})
+
+    def test_the_gup_is_stamped_with_the_basicdnd_constitution(self):
+        """Not the compiler's own transcription of some other ruleset's."""
+        result = self.compile_gur(candidate_edges=[dict(self.EDGE)])
+        self.assertEqual(result.envelope["constitution_version"], "1.0")
+        self.assertEqual(result.envelope["ruleset_id"], "basicdnd")
+
+    # -- refusal --------------------------------------------------------------
+
+    def test_an_unregistered_ruleset_is_rejected(self):
+        result = self.compile_gur(ruleset_id="notaruleset")
+        self.assertIn("gur_unknown_ruleset", self.rules(result))
+        detail = next(
+            f.detail for f in result.findings if f.rule == "gur_unknown_ruleset"
+        )
+        self.assertIn("not a registered ruleset", detail)
+        self.assertIn("basicdnd", detail, "the refusal names what is registered")
+
+    def test_a_registered_ruleset_this_run_did_not_load_is_rejected(self):
+        """Distinct from the unknown case, and with a distinct fix.
+
+        An adnd1e GUR is perfectly valid; it is this run that holds the wrong
+        registry, canonical data and governance for it. Saying 'unknown' would
+        send the Reviewer looking for a missing ruleset instead of a wrong flag.
+        """
+        result = self.compile_gur(ruleset_id="adnd1e", constitution_version="1.8")
+        self.assertIn("gur_wrong_ruleset", self.rules(result))
+        detail = next(f.detail for f in result.findings if f.rule == "gur_wrong_ruleset")
+        self.assertIn("--ruleset adnd1e", detail)
+
+    def test_an_adnd1e_citation_code_is_illegal_in_a_basicdnd_patch(self):
+        """`book` is checked against this ruleset's own book registry."""
+        edge = dict(self.EDGE, book="PHB")
+        result = self.compile_gur(candidate_edges=[edge])
+        self.assertIn("book_illegal", self.rules(result))
+
+    def test_the_registered_basicdnd_citation_code_is_accepted(self):
+        result = self.compile_gur(candidate_edges=[dict(self.EDGE, book="RC")])
+        self.assertNotIn("book_illegal", self.rules(result))
+
+    def test_only_the_basicdnd_constitution_version_is_accepted(self):
+        """1.8 is an AD&D 1e version. Basic D&D has one constitution, at 1.0."""
+        result = self.compile_gur(constitution_version="1.8")
+        self.assertIn("constitution_version_mismatch", self.rules(result))
+
+
+class RulesetVocabularyCase(unittest.TestCase):
+    """What a ruleset's vocabulary is read from, and what it may not borrow."""
+
+    def test_loading_an_unregistered_ruleset_raises(self):
+        with self.assertRaises(UnknownRuleset):
+            RulesetVocabulary.load(REPO_ROOT, "notaruleset")
+
+    def test_the_loaded_adnd1e_vocabulary_matches_the_transcription(self):
+        """The safety property of generalizing: AD&D 1e is unchanged.
+
+        The module constants stay the transcription of the AD&D 1e constitution
+        and keep their Decision history. If reading the governing tables ever
+        disagreed with them, the compiler would silently start accepting or
+        refusing different rows for the ruleset it already compiles -- so the
+        two are pinned to each other rather than trusted to coincide.
+        """
+        loaded = RulesetVocabulary.load(REPO_ROOT, "adnd1e")
+        transcribed = RulesetVocabulary.for_adnd1e()
+        self.assertEqual(loaded.constitution_version, transcribed.constitution_version)
+        self.assertEqual(
+            loaded.accepted_gur_constitution_versions,
+            transcribed.accepted_gur_constitution_versions,
+        )
+        self.assertEqual(loaded.books, transcribed.books)
+        self.assertEqual(loaded.node_prefixes, transcribed.node_prefixes)
+        self.assertEqual(loaded.edge_types, transcribed.edge_types)
+
+    def test_basicdnd_vocabulary_comes_from_its_own_governance(self):
+        vocabulary = RulesetVocabulary.load(REPO_ROOT, "basicdnd")
+        self.assertEqual(vocabulary.constitution_version, "1.0")
+        self.assertEqual(vocabulary.books, {"RC"})
+        self.assertEqual(len(vocabulary.edge_types), 13)
+        self.assertIn("class_", vocabulary.node_prefixes)
+
+    def test_a_new_ruleset_accepts_only_its_own_version(self):
+        """An accepted range is a history of Decisions, and basicdnd has none."""
+        vocabulary = RulesetVocabulary.load(REPO_ROOT, "basicdnd")
+        self.assertEqual(vocabulary.accepted_gur_constitution_versions, {"1.0"})
+
+    def test_the_two_rulesets_share_no_citation_code(self):
+        """Parallel vocabulary, not shared identity: the books do not overlap."""
+        adnd1e = RulesetVocabulary.load(REPO_ROOT, "adnd1e")
+        basicdnd = RulesetVocabulary.load(REPO_ROOT, "basicdnd")
+        self.assertEqual(adnd1e.books & basicdnd.books, frozenset())
+
+    def test_both_rulesets_are_registered(self):
+        vocabulary = RulesetVocabulary.load(REPO_ROOT, "adnd1e")
+        self.assertLessEqual({"adnd1e", "basicdnd"}, vocabulary.registered_rulesets)
+
+    def test_a_compiler_given_no_vocabulary_is_still_adnd1e(self):
+        """Every existing caller and fixture keeps the behaviour it had."""
+        unused = Path("unused.csv")
+        compiler = Compiler(NodeRegistry(path=unused), CanonicalEdges(path=unused))
+        self.assertEqual(compiler.vocabulary.ruleset_id, "adnd1e")
+        self.assertEqual(compiler.vocabulary.books, RulesetVocabulary.for_adnd1e().books)
+
+
+class BasicdndCliCompileCase(unittest.TestCase):
+    """A basicdnd packet compiles end to end with no canonical baseline.
+
+    DEC-2026-0080 gives the first Basic D&D canonical state to the Integrator,
+    after the first approved bundle, and then has the Analyst publish GURs and
+    the Builder compile them before any of that exists. So "no canonical file"
+    has to mean an empty baseline here rather than a crash, or the Decision's
+    own next step could not run. It stays absent rather than empty: this
+    compiles against a copy and creates no canonical file anywhere.
+    """
+
+    def test_a_packet_compiles_with_no_canonical_file(self):
+        import shutil
+
+        from adnd1e_builder.cli import main
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            shutil.copytree(
+                REPO_ROOT / "rulesets" / "basicdnd", root / "rulesets" / "basicdnd"
+            )
+            canonical = root / "rulesets" / "basicdnd" / "canonical"
+            self.assertFalse(canonical.exists(), "the fixture must start with none")
+
+            gur_dir = root / "books" / "basicdnd" / "rc" / "artifacts" / "gur"
+            gur_dir.mkdir(parents=True)
+            document = dict(
+                RegisteredRulesetCase.ENVELOPE,
+                candidate_nodes=[dict(n) for n in RegisteredRulesetCase.NODES],
+                candidate_edges=[dict(RegisteredRulesetCase.EDGE)],
+            )
+            gur_path = gur_dir / (document["id"] + ".yaml")
+            gur_path.write_text(
+                yaml.safe_dump(document, sort_keys=False), encoding="utf-8"
+            )
+
+            code = main([
+                "compile", str(gur_path),
+                "--repo-root", str(root),
+                "--ruleset", "basicdnd",
+                "--skip-tests",
+            ])
+
+            gup_dir = root / "books" / "basicdnd" / "rc" / "artifacts" / "gup"
+            written = sorted(path.name for path in gup_dir.glob("*"))
+            self.assertFalse(canonical.exists(), "compiling must not create one")
+
+        self.assertEqual(code, 0)
+        self.assertIn("GUP-PKT-RC-006-012-fixture-r01.yaml", written)
+
+
+class UnknownRulesetCliCase(unittest.TestCase):
+    def test_an_unregistered_ruleset_fails_before_anything_is_read(self):
+        """Including before the suite runs and before a GUR is opened.
+
+        The point is the message. Falling through to the loaders would report a
+        missing nodes.csv, which reads as a broken repository rather than as a
+        ruleset name that was never registered.
+        """
+        import io
+        from contextlib import redirect_stderr
+
+        from adnd1e_builder.cli import main
+
+        buffer = io.StringIO()
+        with redirect_stderr(buffer):
+            code = main([
+                "compile",
+                str(REPO_ROOT / "does-not-exist.yaml"),
+                "--repo-root", str(REPO_ROOT),
+                "--ruleset", "notaruleset",
+            ])
+        self.assertEqual(code, 2)
+        self.assertIn("not a registered ruleset", buffer.getvalue())
+
+
+
+class TestCandidateNodeRegistrationFields(CompilerCase):
+    """DEC-2026-0091: `proposed_label` and `why_needed` are executable input.
+
+    Shadowdark GURs named these fields `label` and `evidence`, so every node
+    proposal serialized with blank registration fields that no Integrator
+    could act on and a Reviewer had to fill in by hand, ten at a time. Those
+    spellings are not aliases; a candidate that leaves either canonical field
+    empty fails here instead of producing a proposal nobody can use.
+    """
+
+    EDGE = dict(BASE_EDGE, target_id="rule_brand_new_mechanic",
+                target_label="Brand New Mechanic")
+
+    def compile_candidate(self, **candidate):
+        return self.compile_gur(candidate_nodes=[candidate],
+                                candidate_edges=[dict(self.EDGE)])
+
+    def test_a_complete_candidate_is_accepted(self):
+        result = self.compile_candidate(
+            proposed_id="rule_brand_new_mechanic",
+            proposed_label="Brand New Mechanic",
+            why_needed="the packet names it",
+            edges_depending_on_it=["T1"])
+        self.assertNotIn("candidate_node_fields_missing", self.rules(result))
+        self.assertEqual(len(result.node_additions), 1)
+        self.assertEqual(result.node_additions[0]["why_needed"], "the packet names it")
+
+    def test_a_missing_why_needed_blocks_and_proposes_nothing(self):
+        result = self.compile_candidate(
+            proposed_id="rule_brand_new_mechanic",
+            proposed_label="Brand New Mechanic",
+            edges_depending_on_it=["T1"])
+        self.assertIn("candidate_node_fields_missing", self.rules(result))
+        self.assertEqual(result.node_additions, [])
+        self.assertEqual(result.status, "blocked")
+
+    def test_a_missing_proposed_label_blocks_and_proposes_nothing(self):
+        result = self.compile_candidate(
+            proposed_id="rule_brand_new_mechanic",
+            why_needed="the packet names it",
+            edges_depending_on_it=["T1"])
+        self.assertIn("candidate_node_fields_missing", self.rules(result))
+        self.assertEqual(result.node_additions, [])
+
+    def test_a_blank_string_counts_as_missing(self):
+        result = self.compile_candidate(
+            proposed_id="rule_brand_new_mechanic", proposed_label="   ",
+            why_needed="", edges_depending_on_it=["T1"])
+        self.assertIn("candidate_node_fields_missing", self.rules(result))
+
+    def test_the_legacy_spellings_are_not_aliases(self):
+        result = self.compile_candidate(
+            proposed_id="rule_brand_new_mechanic",
+            label="Brand New Mechanic", evidence="page 1",
+            edges_depending_on_it=["T1"])
+        self.assertIn("candidate_node_fields_missing", self.rules(result))
+        self.assertEqual(result.node_additions, [])
+
+    def test_the_diagnostic_names_the_legacy_spellings_it_found(self):
+        """A GUR carrying the value under the old name gets told so, rather
+        than being left to wonder why a populated field reads as absent."""
+        result = self.compile_candidate(
+            proposed_id="rule_brand_new_mechanic",
+            label="Brand New Mechanic", evidence="page 1",
+            edges_depending_on_it=["T1"])
+        finding = next(f for f in result.findings
+                       if f.rule == "candidate_node_fields_missing")
+        self.assertEqual(finding.severity, "error")
+        self.assertIn("legacy spelling", finding.detail)
+        self.assertIn("label", finding.detail)
+        self.assertIn("evidence", finding.detail)
+
+    def test_the_dependent_edge_does_not_reach_the_csv(self):
+        """Invariant 1 still holds: the endpoint was never registered."""
+        result = self.compile_candidate(
+            proposed_id="rule_brand_new_mechanic",
+            proposed_label="Brand New Mechanic",
+            edges_depending_on_it=["T1"])
+        self.assertNotIn("rule_brand_new_mechanic", edges_csv(result))
+
+    def test_a_published_adnd1e_gur_still_compiles_its_candidates(self):
+        """The established corpus already uses the canonical spellings."""
+        directory = REPO_ROOT / "books" / "adnd1e" / "dmg" / "artifacts" / "gur"
+        published = sorted(directory.glob("GUR-*.yaml"))
+        if not published:  # pragma: no cover - the corpus may move
+            self.skipTest("no published adnd1e DMG GUR is present")
+        for path in published:
+            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+            if not (document.get("candidate_nodes") or []):
+                continue
+            with self.subTest(gur=path.name):
+                result = self.compiler.compile(path)
+                self.assertNotIn("candidate_node_fields_missing", self.rules(result))

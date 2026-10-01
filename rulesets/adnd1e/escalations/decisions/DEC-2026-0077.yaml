@@ -1,0 +1,283 @@
+schema_version: '1.0'
+id: DEC-2026-0077
+status: approved
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-steward-intake
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.8'
+revision: 2
+supersedes: DEC-2026-0076
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Plan the exact direct migration with monster_giant stated at the planner's
+    sole executable node-addition location.
+  blocking_ids: []
+
+decision_date: '2026-08-31'
+escalation_id: ESC-2026-08-31T16.44.09.512Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  Must the authorized monster_giant registry addition be stated under the
+  direct-v1 planner's top-level new_nodes_authorized field, or may Builder infer
+  an alternate node-addition location?
+
+ruling: >-
+  This Decision reissues DEC-2026-0076 without changing its identity, source,
+  registry, or canonical scope. The one authorized node addition is stated only
+  under top-level new_nodes_authorized, which is the sole location the direct-v1
+  planner executes. canonical_migration.node_addition is deliberately absent.
+  Builder must not infer an alias or widen the planner.
+
+  Register monster_giant with label Giants and kind monster, then repoint the
+  one existing DMG 64 giant-humanoid assertion from monster_special /
+  Giant-Hurled Boulders to monster_giant / Giants. Existing giant-vermin
+  identities remain distinct. After this migration is integrated, follow the
+  ordinary DMG 64 r05 GUR, r03 GUP, Review, Approved bundle, and Integration
+  sequence specified below.
+
+rationale:
+  - >-
+    The failed plan correctly refused an operation stored where its consumer
+    cannot read it. Moving the one key preserves fail-closed semantics and the
+    planner's single authoritative operation location.
+  - >-
+    The direct-v1 model already supports exactly this registry addition and
+    endpoint repoint. No code or contract change is needed.
+  - >-
+    DEC-2026-0076 remains immutable historical evidence of the authoring error;
+    this reissue is the lawful correction.
+
+affected_contracts: []
+affected_registries:
+  - path: rulesets/adnd1e/registries/nodes.csv
+    change: Add monster_giant / Giants through the approved direct migration.
+affected_artifacts:
+  superseded_decision:
+    id: DEC-2026-0076
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0076.yaml
+    checksum: sha256:d5153aeb6d9a325b62fce4e34ba29c1f1e2a2280a739541d5da09d3f6949a286
+  escalation:
+    id: ESC-2026-08-31T16.44.09.512Z
+    path: rulesets/adnd1e/escalations/decided/ESC-2026-08-31T16.44.09.512Z.yaml
+  active_gur:
+    id: GUR-PKT-DMG-064-064-missile-discharge-r04
+    path: books/adnd1e/dmg/artifacts/gur/GUR-PKT-DMG-064-064-missile-discharge-r04.yaml
+    checksum: sha256:ab68d109b447559e6fbe88bc8a12bd991f4f126955a7fb5e9bb7f32a637bd083
+  reviewed_gup:
+    id: GUP-PKT-DMG-064-064-missile-discharge-r02
+    path: books/adnd1e/dmg/artifacts/gup/GUP-PKT-DMG-064-064-missile-discharge-r02.yaml
+    checksum: sha256:db8de2940a95f288d3e0d8a1710cb0989841903bf6f9b62ef69e229cca88a654
+
+new_nodes_authorized:
+  - id: monster_giant
+    label: Giants
+    kind: monster
+    basis: >-
+      DMG 64 expressly distinguishes giant-hurled boulders, giant-thrown
+      missiles, and the giant attack that negates a target's dexterity armour
+      class bonus. The subject is giant humanoids, not giant vermin.
+
+migration_required: true
+migration_scope:
+  canonical_data_change: true
+  registry_change: true
+  source_interpretation_change: false
+  artifact_lineage_change: >-
+    DEC-2026-0077 is the active reissue of the DEC-2026-0076 migration ruling.
+    The later DMG GUR, GUP, Review, and Approved bundle remain ordinary successors.
+  direct_implementation: >-
+    Builder creates GUP-MIG-DEC-2026-0077-r01 in direct-migration lineage
+    MIG-DEC-2026-0077. It has no edge CSV and is not an implementation report.
+
+canonical_migration:
+  operation_model: decision_migration_v1
+  lineage_id: MIG-DEC-2026-0077
+  required_gup:
+    id: GUP-MIG-DEC-2026-0077-r01
+    path: books/adnd1e/dmg/artifacts/gup/GUP-MIG-DEC-2026-0077-r01.yaml
+  endpoint_repoints:
+    - canonical_row: 1747
+      canonical_index: 1745
+      field: source_id
+      from: monster_special
+      to: monster_giant
+      label: Giants
+      before_assertion:
+        source_id: monster_special
+        source_label: Giant-Hurled Boulders
+        edge_type: EXCLUDES
+        target_id: abil_dex_defensive_adjustment
+        target_label: Dexterity Defensive Adjustment
+        aspect: target loses the dexterity component
+        condition: ''
+        polarity: negates
+        polarity_basis: derived
+        book: DMG
+        page: '64'
+        section: 'Special Note Regarding Giant And Machine Missiles:'
+        evidence: explicit_rule
+        pass: page-sweep
+        status: core
+        supersession_basis: ''
+        general_rule_id: ''
+        review_flag: ''
+  baseline:
+    canonical_edges:
+      path: rulesets/adnd1e/canonical/edges_master.csv
+      checksum: sha256:76b03fc12746ce9ac825bb5e91c59780429b3894ec74971addfcc465e282fb2e
+      rows: 5160
+    nodes_registry:
+      path: rulesets/adnd1e/registries/nodes.csv
+      checksum: sha256:c367056fb80910b45617ea50829533ad57a20be25920f2cd744290241aba79bc
+      rows: 1473
+  unaffected_existing_ids:
+    - monster_ant_giant
+    - monster_beetle_giant
+    - monster_frog_giant
+    - monster_man_o_war_giant
+    - monster_scorpion_giant
+    - monster_snake_giant
+    - monster_toad_giant
+    - monster_wasp_giant
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this reissue and move the escalation to decided state. Preserve
+      DEC-2026-0076 and all active artifacts as immutable history.
+  - step: 2
+    owner: builder
+    action: >-
+      Publish GUP-MIG-DEC-2026-0077-r01 using only this Decision. It carries
+      the one top-level authorized node addition, one endpoint repoint, current
+      baseline provenance, and validation evidence, with no edge CSV.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Verify the exact one-node, one-row migration and publish the matching
+      Approved direct-migration bundle.
+  - step: 4
+    owner: integrator
+    action: >-
+      Integrate only the approved identity migration and rebuild canonical outputs.
+  - step: 5
+    owner: analyst
+    action: >-
+      After the migration Integration record exists, publish DMG 64 GUR r05:
+      replace M014 with monster_giant / Giants, remove IDQ-01 as unresolved, and
+      preserve every other analytical decision.
+  - step: 6
+    owner: builder
+    action: >-
+      Publish DMG 64 GUP r03 after r05. It changes M014 only to monster_giant /
+      Giants and preserves the other eighteen rows, 12 additions, 7 pending
+      additions, and three node proposals.
+  - step: 7
+    owner: reviewer
+    action: >-
+      Publish the ordinary r03 Review and Approved bundle without a
+      Giant-Hurled-Boulders endpoint-label correction.
+  - step: 8
+    owner: integrator
+    action: Verify and integrate the ordinary approved DMG 64 r03 packet bundle.
+
+acceptance_tests:
+  - >-
+    The direct-v1 planner reads monster_giant only from new_nodes_authorized and
+    emits exactly one node addition plus the one named source-endpoint repoint.
+    It does not report a dropped or ambiguous operation.
+  - >-
+    The migration changes the named canonical row only from monster_special /
+    Giant-Hurled Boulders to monster_giant / Giants and preserves every other
+    assertion field. No giant-vermin identity changes.
+  - >-
+    GUR r05 and GUP r03 use monster_giant / Giants for M014, remove IDQ-01 as
+    unresolved, preserve all other DMG 64 assertions and provenance, and do not
+    treat Giant-Hurled Boulders as a node label.
+  - >-
+    The r03 Review and Approved bundle approve the 12/7/0 packet partition with
+    no semantic change beyond M014's resolved identity.
+  - >-
+    Both transactions pass applicable schema, direct-migration, graph, registry,
+    lineage, and repository validation in the stated order.
+
+post_implementation_requirements:
+  - >-
+    A future Decision must use the planner's documented executable operation
+    keys. An unfamiliar location is invalid until a separately approved tooling
+    change makes it executable.
+  - >-
+    DEC-2026-0076 is superseded only as a migration authority; its diagnosis and
+    all cited artifact bytes remain immutable history.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: This corrects operation placement, not ontology or vocabulary.
+
+governance_changelog:
+  - >-
+    DEC-2026-0077 reissues the giant-humanoid migration with its one node addition
+    at top-level new_nodes_authorized, the direct-v1 planner's sole executable key.
+
+exact_diff:
+  books/adnd1e/dmg/artifacts/gup/GUP-MIG-DEC-2026-0077-r01.yaml:
+    - 'Publish the exact one-node, one-endpoint direct-v1 migration plan.'
+  books/adnd1e/dmg/artifacts/reviews/REV-GUP-MIG-DEC-2026-0077-r01-r01.yaml:
+    - 'Review the exact migration plan and baseline.'
+  books/adnd1e/dmg/artifacts/approved/APPROVED-GUP-MIG-DEC-2026-0077-r01-r01.yaml:
+    - 'Approve only the reviewed direct-v1 migration components.'
+  books/adnd1e/dmg/artifacts/gur/GUR-PKT-DMG-064-064-missile-discharge-r05.yaml:
+    - 'Resolve IDQ-01 and use monster_giant / Giants after migration integration.'
+  books/adnd1e/dmg/artifacts/gup/GUP-PKT-DMG-064-064-missile-discharge-r03.yaml:
+    - 'Revise M014 only to the integrated giant-humanoid identity.'
+  books/adnd1e/dmg/artifacts/reviews/REV-GUP-PKT-DMG-064-064-missile-discharge-r03-r01.yaml:
+    - 'Review the r03 giant-identity correction.'
+  books/adnd1e/dmg/artifacts/approved/APPROVED-GUP-PKT-DMG-064-064-missile-discharge-r03-r01.yaml:
+    - 'Approve the reviewed ordinary r03 packet bundle.'
+  rulesets/adnd1e/registries/nodes.csv:
+    - 'Add monster_giant / Giants through the approved migration only.'
+  rulesets/adnd1e/canonical/edges_master.csv:
+    - 'Repoint the historical row and later apply the reviewed r03 packet transaction.'
+  rulesets/adnd1e/canonical/nodes_master.csv:
+    - 'Rebuild after the migrated and subsequently integrated canonical graph.'
+  rulesets/adnd1e/canonical/graph.json:
+    - 'Rebuild after the migrated and subsequently integrated canonical graph.'
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0077.yaml:
+    - 'Reissue DEC-2026-0076 with the executable node-addition location.'
+  rulesets/adnd1e/escalations/decided/ESC-2026-08-31T16.44.09.512Z.yaml:
+    - 'Record DEC-2026-0077 as the exact direct-v1 authoring correction.'
+
+exact_diff_ownership:
+  - {path: books/adnd1e/dmg/artifacts/gup/GUP-MIG-DEC-2026-0077-r01.yaml, owner: builder, sequence_step: 2}
+  - {path: books/adnd1e/dmg/artifacts/reviews/REV-GUP-MIG-DEC-2026-0077-r01-r01.yaml, owner: reviewer, sequence_step: 3}
+  - {path: books/adnd1e/dmg/artifacts/approved/APPROVED-GUP-MIG-DEC-2026-0077-r01-r01.yaml, owner: reviewer, sequence_step: 3}
+  - {path: books/adnd1e/dmg/artifacts/gur/GUR-PKT-DMG-064-064-missile-discharge-r05.yaml, owner: analyst, sequence_step: 5}
+  - {path: books/adnd1e/dmg/artifacts/gup/GUP-PKT-DMG-064-064-missile-discharge-r03.yaml, owner: builder, sequence_step: 6}
+  - {path: books/adnd1e/dmg/artifacts/reviews/REV-GUP-PKT-DMG-064-064-missile-discharge-r03-r01.yaml, owner: reviewer, sequence_step: 7}
+  - {path: books/adnd1e/dmg/artifacts/approved/APPROVED-GUP-PKT-DMG-064-064-missile-discharge-r03-r01.yaml, owner: reviewer, sequence_step: 7}
+  - {path: rulesets/adnd1e/registries/nodes.csv, owner: integrator, sequence_step: 4}
+  - {path: rulesets/adnd1e/canonical/edges_master.csv, owner: integrator, sequence_step: 4}
+  - {path: rulesets/adnd1e/canonical/nodes_master.csv, owner: integrator, sequence_step: 4}
+  - {path: rulesets/adnd1e/canonical/graph.json, owner: integrator, sequence_step: 4}
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0077.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-08-31T16.44.09.512Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Preserve the superseded Decision and all cited artifacts as immutable history.
+  builder:
+    - Plan only DEC-2026-0077; do not infer alternate Decision operation keys.
+  reviewer:
+    - Review the direct migration, then the ordinary packet successor.
+  analyst:
+    - Publish r05 only after the direct migration Integration record exists.
+  integrator:
+    - Integrate each approved transaction separately and in sequence.
+

@@ -1,0 +1,649 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-027-029-alignment-and-deities-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-027-029-alignment-and-deities
+constitution_version: '1.3'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.1
+  - rulesets/shadowdark/governance/constitution.md 1.3
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0093.yaml
+
+unblocking_note: >-
+  This packet was claimed and read in full on 2026-09-22, then held without a GUR because
+  Constitution 1.2 section 2 offered no prefix under which an individual alignment or an individual
+  deity identity could be formed, and the mechanically load-bearing content of these pages is
+  expressed in terms of those individuals. The Analyst escalated rather than mint a prefix, as
+  ESC-2026-09-22T18.39.08.936Z. DEC-2026-0093 resolved it and Constitution 1.3 section 2.2 now
+  authorises alignment_ with machine kind alignment and deity_ with machine kind deity, and
+  enumerates three alignment and seven deity identities. This GUR is DEC-2026-0093 step 5 and uses
+  only those authorised identities, reproduced exactly as section 2.2 states them.
+
+dec_2026_0093_boundaries_observed: >-
+  The ruling draws four explicit prohibitions and each is honoured, not merely avoided by accident.
+  No identity or edge is created for The Four Lords, The Dark Trio or The Nine, which are named on
+  page 28 and are source context rather than graph identities; see OBS-02. No deity_the_lost node,
+  no anonymous deity node and no unknown-alignment node is created, and The Lost is left entirely
+  unrepresented; see OBS-03. No grouping kind, membership edge or hierarchy is proposed, which is
+  why no edge attaches an individual alignment to sys_alignment or an individual deity to sys_deity
+  even though both axes exist as sibling candidates; see OBS-01. And no inferred relationship is
+  drawn, which is the reason the seven alignment tags are represented as they are rather than as the
+  eligibility constraint a reader might expect; see IDQ-01.
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-027-029-alignment-and-deities
+  source_file: source.md
+  packet_source_checksum: sha256:2bec2b6eea0291f57f621661fd1aebc3b18657ed65926d5b1c7d49437f78dcad
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 011-alignment-and-deities.md
+  citation_code: SD
+  page_start: 27
+  page_end: 29
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Three markers resolve in the Primary Source Material, all through the Pandoc AST rather than
+  positionally. The page-27 marker ends the ALIGNMENT heading and the page-28 marker ends the DEITIES
+  heading, which placement rule 1 applies to each whole heading. The page-29 marker ends the MEMNON
+  (CHAOTIC) heading, so that whole entry begins on page 29 and, under the persistence rule, the
+  RAMLAAT, SHUNE THE VILE and THE LOST entries after it inherit page 29. That inheritance is the one
+  attribution here a positional reading could get wrong, and it is why the Memnon, Ramlaat and Shune
+  rows below cite page 29 while the Terragnis, Gede, Madeera and Ord rows cite page 28. A fourth page
+  the parser resolves, 15, lies entirely inside the out-of-scope Supporting Source Context.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 27 through 29. The trailing
+  Supporting Source Context reproduces printed page 15, whose primary packet is
+  PKT-SD-015-015-stats-and-stat-modifiers, outside this packet's declared span. No assertion here is
+  drawn from it and no row cites page 15.
+
+source_summary: >-
+  Printed page 27 defines alignment as a character's role in the conflict between Law, Chaos and
+  Neutrality, glosses each of the three, directs the player to choose one, and gives each of Chaotic,
+  Lawful and Neutral its own heading and description. Printed pages 28 and 29 define deities: gods
+  are personifications of the three alignments, a character may worship any deity or none, a priest
+  must choose one god to serve and that god can revoke the priest's spellcasting for blasphemous
+  acts. Three collective groupings are named, and eight entries follow, each with its own heading
+  carrying a parenthesised alignment tag. This summary is orientation only; every assertion below
+  cites its page.
+
+graph_state_at_extraction: >-
+  The Shadowdark canonical graph is no longer empty. Integrations INT-20260922-002 and
+  INT-20260922-003 applied thirty nodes and thirty-five edges, and
+  rulesets/shadowdark/registries/nodes.csv now carries thirty rows. This is the first packet this
+  Analyst has extracted against a non-empty registry, and the procedure changes accordingly: the
+  registry was checked before proposing anything, and an identity already canonical is reused rather
+  than re-proposed.
+  One endpoint this packet needs, rule_spellcasting_check, is canonical and is therefore listed under
+  reused_nodes with no proposal. Of the identities proposed below, none is canonical: neither
+  sys_alignment nor sys_deity has been integrated, and the three alignment and seven deity
+  identities are new under Constitution 1.3. The domain registry is still empty and
+  general_rules.json is still an empty object, so no domain or general rule is available to apply.
+
+reused_nodes:
+  - id: rule_spellcasting_check
+    label: Spellcasting Check
+    canonical_since: INT-20260922-002 or INT-20260922-003
+    used_by: M004
+    basis: >-
+      Present in rulesets/shadowdark/registries/nodes.csv with kind rule at extraction time, so it
+      resolves against the registry and needs no proposal. Reusing it rather than re-proposing it is
+      what constitution section 3.2 and Analyst responsibility 2 require, and it avoids asking the
+      Integrator to register a node that is already registered.
+
+cross_packet_identity_note: >-
+  sys_deity is proposed by GUR-PKT-SD-020-021-priest-class-r01 from printed page 20 and is proposed
+  again here because M004 uses it as an endpoint and it is not yet canonical. A GUR must propose
+  every endpoint its edges use unless the endpoint is canonical; an endpoint that is neither is an
+  invariant 1 failure. Proposing it is not a competing naming: the ID and label are reproduced
+  exactly and its defining locus is recorded below as these pages, which is where the subsystem is
+  actually defined, while the priest entry only referred to it.
+  sys_alignment is deliberately not proposed. It is a sibling candidate and these pages are its
+  defining locus too, but no edge in this GUR uses it, and proposing an unused node would create an
+  orphan; see OBS-01.
+
+candidate_nodes:
+  - proposed_id: alignment_lawful
+    proposed_label: Lawful
+    kind: alignment
+    why_needed: >-
+      Endpoint of M001 and M003, which record that the three alignments are mutually exclusive, and
+      target of the Terragnis and Madeera alignment tags in M005 and M007.
+    prefix_basis: 'alignment_ is an individual chosen alignment, authorised by constitution section 2.2'
+    source_named: true
+    defining_locus: 'SD page 27, its own heading LAWFUL'
+    source_evidence: >-
+      page 27, the heading LAWFUL over its description of characters aligned with fairness, order and
+      virtue. Constitution section 2.2 names this exact ID and label.
+  - proposed_id: alignment_chaotic
+    proposed_label: Chaotic
+    kind: alignment
+    why_needed: >-
+      Endpoint of M001 and M002, and target of the Memnon, Ramlaat and Shune alignment tags in M009
+      through M011.
+    prefix_basis: 'alignment_ is an individual chosen alignment, authorised by constitution section 2.2'
+    source_named: true
+    defining_locus: 'SD page 27, its own heading CHAOTIC'
+    source_evidence: >-
+      page 27, the heading CHAOTIC over its description of characters aligned with destruction,
+      ambition and wickedness. Constitution section 2.2 names this exact ID and label.
+  - proposed_id: alignment_neutral
+    proposed_label: Neutral
+    kind: alignment
+    why_needed: >-
+      Endpoint of M002 and M003, and target of the Gede and Ord alignment tags in M006 and M008.
+    prefix_basis: 'alignment_ is an individual chosen alignment, authorised by constitution section 2.2'
+    source_named: true
+    defining_locus: 'SD page 27, its own heading NEUTRAL'
+    source_evidence: >-
+      page 27, the heading NEUTRAL over its description of characters finding balance between Law and
+      Chaos. Constitution section 2.2 names this exact ID and label.
+  - proposed_id: sys_deity
+    proposed_label: Deity
+    kind: subsystem
+    why_needed: >-
+      Source of M004. The subsystem whose relationship to a priest's spellcasting page 28 states
+      generically, of any god a priest serves rather than of a named one.
+    prefix_basis: 'sys_ is a whole subsystem'
+    source_named: true
+    defining_locus: 'SD page 28, heading DEITIES; the priest entry on page 20 only referred to it'
+    proposed_also_by: GUR-PKT-SD-020-021-priest-class-r01
+    source_evidence: >-
+      page 28, the DEITIES heading and its framing paragraphs. Constitution section 2.2 confirms that
+      sys_deity remains the subsystem identity and does not merge with any individual deity.
+  - proposed_id: deity_saint_terragnis
+    proposed_label: Saint Terragnis
+    kind: deity
+    why_needed: 'Source of M005, the alignment tag its own heading carries.'
+    prefix_basis: 'deity_ is a source-named individual deity, authorised by constitution section 2.2'
+    source_named: true
+    defining_locus: 'SD page 28, its own heading SAINT TERRAGNIS (LAWFUL)'
+    source_evidence: 'page 28, the heading and its entry. Constitution section 2.2 names this exact ID and label.'
+  - proposed_id: deity_gede
+    proposed_label: Gede
+    kind: deity
+    why_needed: 'Source of M006, the alignment tag its own heading carries.'
+    prefix_basis: 'deity_ is a source-named individual deity, authorised by constitution section 2.2'
+    source_named: true
+    defining_locus: 'SD page 28, its own heading GEDE (NEUTRAL)'
+    source_evidence: 'page 28, the heading and its entry. Constitution section 2.2 names this exact ID and label.'
+  - proposed_id: deity_madeera_the_covenant
+    proposed_label: Madeera the Covenant
+    kind: deity
+    why_needed: 'Source of M007, the alignment tag its own heading carries.'
+    prefix_basis: 'deity_ is a source-named individual deity, authorised by constitution section 2.2'
+    source_named: true
+    defining_locus: 'SD page 28, its own heading MADEERA THE COVENANT (LAWFUL)'
+    source_evidence: >-
+      page 28, the heading and its entry. Constitution section 2.2 names this exact ID and label,
+      with the lower-case the that the section fixes rather than the heading's upper case.
+  - proposed_id: deity_ord
+    proposed_label: Ord
+    kind: deity
+    why_needed: 'Source of M008, the alignment tag its own heading carries.'
+    prefix_basis: 'deity_ is a source-named individual deity, authorised by constitution section 2.2'
+    source_named: true
+    defining_locus: 'SD page 28, its own heading ORD (NEUTRAL)'
+    source_evidence: 'page 28, the heading and its entry. Constitution section 2.2 names this exact ID and label.'
+  - proposed_id: deity_memnon
+    proposed_label: Memnon
+    kind: deity
+    why_needed: 'Source of M009, the alignment tag its own heading carries.'
+    prefix_basis: 'deity_ is a source-named individual deity, authorised by constitution section 2.2'
+    source_named: true
+    defining_locus: 'SD page 29, its own heading MEMNON (CHAOTIC)'
+    source_evidence: >-
+      page 29, the heading and its entry; this heading carries the page-29 marker. Constitution
+      section 2.2 names this exact ID and label.
+  - proposed_id: deity_ramlaat
+    proposed_label: Ramlaat
+    kind: deity
+    why_needed: 'Source of M010, the alignment tag its own heading carries.'
+    prefix_basis: 'deity_ is a source-named individual deity, authorised by constitution section 2.2'
+    source_named: true
+    defining_locus: 'SD page 29, its own heading RAMLAAT (CHAOTIC)'
+    source_evidence: 'page 29, the heading and its entry, inheriting page 29. Constitution section 2.2 names this exact ID and label.'
+  - proposed_id: deity_shune_the_vile
+    proposed_label: Shune the Vile
+    kind: deity
+    why_needed: 'Source of M011, the alignment tag its own heading carries.'
+    prefix_basis: 'deity_ is a source-named individual deity, authorised by constitution section 2.2'
+    source_named: true
+    defining_locus: 'SD page 29, its own heading SHUNE THE VILE (CHAOTIC)'
+    source_evidence: >-
+      page 29, the heading and its entry, inheriting page 29. Constitution section 2.2 names this
+      exact ID and label, with the lower-case the that the section fixes.
+
+candidate_edges:
+  - ref: M001
+    source_id: alignment_chaotic
+    source_label: Chaotic
+    edge_type: ALTERNATIVE_TO
+    target_id: alignment_lawful
+    target_label: Lawful
+    aspect: alignment choice
+    condition: ''
+    book: SD
+    page: 27
+    section: ALIGNMENT
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Choose one of the following three alignments. The three are mutually exclusive, which is
+      exactly what ALTERNATIVE_TO means, and it is the only symmetric type in the section 3
+      vocabulary. Constitution section 4 requires its endpoints to be sorted before comparing
+      assertion keys, and the three rows are written in sorted order so the keys are unambiguous.
+      Three rows express the exclusivity of three options because the vocabulary has no n-way type;
+      see IDQ-02. Derived polarity neutral.
+  - ref: M002
+    source_id: alignment_chaotic
+    source_label: Chaotic
+    edge_type: ALTERNATIVE_TO
+    target_id: alignment_neutral
+    target_label: Neutral
+    aspect: alignment choice
+    condition: ''
+    book: SD
+    page: 27
+    section: ALIGNMENT
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M003
+    source_id: alignment_lawful
+    source_label: Lawful
+    edge_type: ALTERNATIVE_TO
+    target_id: alignment_neutral
+    target_label: Neutral
+    aspect: alignment choice
+    condition: ''
+    book: SD
+    page: 27
+    section: ALIGNMENT
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M004
+    source_id: sys_deity
+    source_label: Deity
+    edge_type: CONSTRAINS
+    target_id: rule_spellcasting_check
+    target_label: Spellcasting Check
+    aspect: spellcasting revocation
+    condition: when a priest serving that deity commits blasphemous acts
+    polarity: governs
+    polarity_basis: read
+    book: SD
+    page: 28
+    section: DEITIES
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      A priest's deity can revoke the gift of spellcasting if the priest commits blasphemous acts.
+      The deity holds power over whether the priest may cast at all, bounding the mechanic's
+      availability without changing how a casting check resolves, which is CONSTRAINS rather than
+      MODIFIES. EXCLUDES was considered and rejected: the source says can revoke, a conditional and
+      reversible power, whereas EXCLUDES asserts that the relation is actively prevented.
+      The source is the subsystem rather than any named deity because page 28 states the rule
+      generically, of a priest's deity, not of one of the seven. Writing it seven times would
+      multiply one stated rule into seven assertions the page does not make; see OBS-04. The target
+      is canonical and is reused, not proposed. Read aloud as Deity governs Spellcasting Check;
+      basis read.
+  - ref: M005
+    source_id: deity_saint_terragnis
+    source_label: Saint Terragnis
+    edge_type: CROSS_REFERENCES
+    target_id: alignment_lawful
+    target_label: Lawful
+    aspect: divine alignment
+    condition: ''
+    book: SD
+    page: 28
+    section: SAINT TERRAGNIS
+    evidence: explicit_reference
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Every deity heading carries a parenthesised alignment, and page 28 opens by stating that the
+      gods are personifications of Law, Chaos and Neutrality. The tag is therefore an explicit,
+      in-packet pointer from this entry to one of the three alignments, and CROSS_REFERENCES, which
+      means explicitly points elsewhere and runs source to target, asserts exactly that and nothing
+      more. Its evidence class is explicit_reference rather than explicit_rule because the tag is a
+      reference, not a stated rule of play.
+      This is the most consequential representational choice in the packet and the alternatives were
+      weighed; see IDQ-01. In particular no eligibility constraint is asserted, because the rule that
+      a priest's god must match their alignment is stated on printed page 20, in another packet, and
+      combining it with this tag would be the inferred relationship constitution section 2.2 forbids.
+      Derived polarity neutral.
+  - ref: M006
+    source_id: deity_gede
+    source_label: Gede
+    edge_type: CROSS_REFERENCES
+    target_id: alignment_neutral
+    target_label: Neutral
+    aspect: divine alignment
+    condition: ''
+    book: SD
+    page: 28
+    section: GEDE
+    evidence: explicit_reference
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M007
+    source_id: deity_madeera_the_covenant
+    source_label: Madeera the Covenant
+    edge_type: CROSS_REFERENCES
+    target_id: alignment_lawful
+    target_label: Lawful
+    aspect: divine alignment
+    condition: ''
+    book: SD
+    page: 28
+    section: MADEERA THE COVENANT
+    evidence: explicit_reference
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M008
+    source_id: deity_ord
+    source_label: Ord
+    edge_type: CROSS_REFERENCES
+    target_id: alignment_neutral
+    target_label: Neutral
+    aspect: divine alignment
+    condition: ''
+    book: SD
+    page: 28
+    section: ORD
+    evidence: explicit_reference
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M009
+    source_id: deity_memnon
+    source_label: Memnon
+    edge_type: CROSS_REFERENCES
+    target_id: alignment_chaotic
+    target_label: Chaotic
+    aspect: divine alignment
+    condition: ''
+    book: SD
+    page: 29
+    section: MEMNON
+    evidence: explicit_reference
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Cited to page 29 because the MEMNON heading carries the page-29 marker, which placement rule 1
+      applies to the whole heading. The three entries after it inherit page 29 under the persistence
+      rule, which is why M010 and M011 also cite it.
+  - ref: M010
+    source_id: deity_ramlaat
+    source_label: Ramlaat
+    edge_type: CROSS_REFERENCES
+    target_id: alignment_chaotic
+    target_label: Chaotic
+    aspect: divine alignment
+    condition: ''
+    book: SD
+    page: 29
+    section: RAMLAAT
+    evidence: explicit_reference
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M011
+    source_id: deity_shune_the_vile
+    source_label: Shune the Vile
+    edge_type: CROSS_REFERENCES
+    target_id: alignment_chaotic
+    target_label: Chaotic
+    aspect: divine alignment
+    condition: ''
+    book: SD
+    page: 29
+    section: SHUNE THE VILE
+    evidence: explicit_reference
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+
+authored_polarity_declaration: >-
+  One row carries authored polarity: M004 CONSTRAINS governs, basis read. CONSTRAINS is among the
+  three types constitution section 5 requires to carry source-reviewed authored polarity, and the row
+  was read aloud as source polarity target before being recorded. It does not use basis heuristic or
+  unset. No other row carries a polarity or polarity_basis value: the three ALTERNATIVE_TO rows and
+  the seven CROSS_REFERENCES rows both take derived neutral from the section 5 table, and the Analyst
+  authors neither.
+
+domains_touched: []
+candidate_domains:
+  - proposed: character_creation
+    basis: >-
+      Alignment is chosen when a character is made, and the priest's deity with it. Recorded as a
+      candidate only; now suggested by an eighth packet, which is noted and deliberately not treated
+      as promotion. Constitution section 8 reserves promotion to an Architect Decision and the
+      Analyst does not decide a candidate domain is official.
+
+domain_boundary_questions:
+  - >-
+    Alignment is a creation choice whose only stated mechanical effects land elsewhere: it selects a
+    titles column on printed pages 30 and 31 and bounds a priest's deity on printed page 20. Whether
+    that makes it a creation concept or a cross-cutting one cannot be settled here. Deferred; no
+    domain is asserted on any edge in this GUR.
+
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed, and the omission is deliberate rather than incidental. The seven alignment-tag rows
+  repeat one shape and would ordinarily suggest a rule that every deity references an alignment. The
+  Analyst does not propose it: constitution section 2.2 states that the section creates no general
+  rule, and a rule covering the seven would be very close to the grouping or membership semantics the
+  same section forbids. The three ALTERNATIVE_TO rows are one stated exclusivity expressed pairwise,
+  not a repeated shape.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: no edge attaches an individual to its axis, by ruling rather than by oversight
+    detail: >-
+      sys_alignment and sys_deity are the subsystem identities and the three alignments and seven
+      deities are their members, so a reader will look for eleven membership edges and find none.
+      Constitution section 2.2 is explicit that the section creates no grouping kind, membership
+      edge or hierarchy, and the section 3 vocabulary has no membership type; the nearest candidates
+      would each assert something false, since FEEDS_INTO would claim a member supplies an input to
+      its axis and GATES would claim it is a precondition for the axis.
+      The consequence is recorded plainly: a query for the members of the alignment subsystem returns
+      nothing, and the connection between alignment_lawful and sys_alignment exists only in the
+      shared prefix, which invariant 4 says is not identity. sys_alignment is therefore not proposed
+      at all here, because no edge would use it and an unused node is an orphan. sys_deity is
+      proposed only because M004 genuinely needs it as an endpoint.
+  - id: OBS-02
+    subject: the three collective groupings are named and deliberately not represented
+    detail: >-
+      Page 28 names The Four Lords, the lawful and neutral gods who stand for justice, order and
+      mercy; The Dark Trio, the chaotic deities; and The Nine, the original nine gods still invoked
+      in oaths. Each is source-named and each describes a real set of the individuals proposed here.
+      None is proposed, and no edge relates any deity to one. Constitution section 2.2 names all
+      three as source context rather than graph identities or membership evidence, and the ruling
+      reasons that the packet gives them no independently load-bearing mechanic and that the graph
+      has no membership edge type. The Analyst agrees on the source reading: nothing on these pages
+      turns mechanically on whether a god belongs to The Four Lords.
+  - id: OBS-03
+    subject: The Lost is left wholly unrepresented
+    detail: >-
+      An eighth entry, THE LOST, carries a question mark where the others carry an alignment tag, and
+      says two of The Nine are lost to the ages with their names expunged. No node is proposed, no
+      edge is drawn, and no alignment is attributed to it.
+      This is the one entry where the Analyst would otherwise have had to invent something, and
+      constitution section 2.2 forecloses each option by name: deity_the_lost is prohibited because
+      The Lost denotes two deities rather than one, an anonymous deity node is prohibited, and an
+      unknown-alignment node is prohibited. The question-mark heading records an unknown source
+      value, not a graph value. The section also states the remedy, that a later source naming an
+      individual follows ordinary deity_ proposal and Review workflow, so nothing is permanently
+      lost by the silence. Recorded because an entry with its own heading producing no node at all is
+      exactly the kind of gap a later reader would otherwise read as an omission.
+  - id: OBS-04
+    subject: the spellcasting revocation is asserted once at the axis, not seven times
+    detail: >-
+      Page 28 says a priest's deity can revoke the gift of spellcasting. Because seven deities are
+      proposed here, it would be possible to write the rule seven times, once per god, and doing so
+      would have the incidental effect of giving every deity a second edge.
+      M004 asserts it once, from sys_deity. The source states the rule of a priest's deity
+      generically and never of a named one, and seven rows would assert seven things the page does
+      not say while adding nothing a query could not reach through the subsystem. The Analyst notes
+      the temptation explicitly because the alternative would have improved the apparent connectivity
+      of the deity nodes, which is not a reason to assert anything.
+  - id: OBS-05
+    subject: two relationships stated here are already asserted by the priest packet
+    detail: >-
+      Page 28 says priests must choose one god to serve faithfully, and printed page 20 says to
+      choose a god who matches your alignment. GUR-PKT-SD-020-021-priest-class-r01 already asserts
+      both, as class_priest gating sys_deity on the aspect deity selection and sys_alignment
+      constraining sys_deity on the aspect matching alignment.
+      Neither is repeated here. Both would collide under the constitution section 4 assertion key,
+      since source, type, target, aspect and condition would all match, so omitting them is required
+      rather than optional. The Analyst records the coincidence because this packet is the defining
+      locus for the deity subsystem while the priest packet asserted the relationships first, which
+      is the reverse of the usual order.
+  - id: OBS-06
+    subject: descriptive content in the alignment and deity entries yields nothing
+    detail: >-
+      Each alignment entry describes a mentality: survival of the fittest, good of the whole, nature
+      must take its course. Each deity entry describes a character: a legendary knight who ascended,
+      a god of feasts whose anger brings storms, the first manifestation of Law who carries the
+      Covenant on her skin, a twin who schemes to rend it, a Pillager whose worshippers live by a
+      prophecy, a whisperer of arcane secrets who schemes to displace Ord.
+      All of it is setting. None names a mechanic, states a dependency or would require review if
+      changed. Two details are worth naming as considered and rejected: that many elves and halflings
+      worship Gede, and that many orcs worship Ramlaat, relate deities to ancestries that are
+      canonical nodes, and an edge was available. They are demographic colour rather than rules, the
+      word many concedes they are not universal, and no mechanic follows from them.
+  - id: OBS-07
+    subject: no magnitudes are present to exclude
+    detail: >-
+      Recorded for symmetry with the other Shadowdark GURs, which each account for the magnitudes
+      they dropped. These three pages contain almost no numerals: the only counts are the three
+      alignments, the nine gods and the two Lost, which are enumerations of source content rather
+      than game values. Nothing here is a die expression, bonus, threshold or duration, so
+      constitution section 1 and invariant 11 exclude nothing a reader might expect represented.
+  - id: OBS-08
+    subject: packet wrapper and supporting context
+    detail: >-
+      The supplied file opens with an intake wrapper ahead of the Primary Source Material heading,
+      for which the claim manifest is the independent page locator SOURCE_MARKDOWN Attribution Rules
+      requires; it contains no rulebook prose, heading or marker. The trailing Supporting Source
+      Context reproduces printed page 15 and is orientation only, contributing nothing here.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: how a deity's alignment tag should be represented
+    detail: >-
+      This is the packet's central representational question and the Analyst wants it reviewed rather
+      than accepted. Each deity heading carries a parenthesised alignment, and page 28 says gods are
+      personifications of the three alignments. The relationship is explicit and in-packet. The
+      difficulty is that the closed section 3 vocabulary has no type meaning is-a or has-property.
+      Three options were weighed. CONSTRAINS, from the alignment to the deity, would say an alignment
+      bounds who may serve that god; that is the true mechanical import, but it is stated on printed
+      page 20 in another packet, so drawing it here would combine two packets into an inference,
+      which constitution section 2.2 forbids in terms. DERIVED_FROM was rejected because a god is not
+      computed or looked up from an alignment. Proposing no edge at all was seriously considered: it
+      would leave the seven deities as orphans, and the Analyst would then not have proposed them,
+      which would leave DEC-2026-0093's deity_ authorisation entirely unused by the packet it was
+      granted for.
+      CROSS_REFERENCES was chosen because it means explicitly points elsewhere and therefore asserts
+      precisely what the page does, that this entry names that alignment, without importing the
+      eligibility rule. It also passes the core test: if alignment_lawful were removed or redefined,
+      Saint Terragnis's entry would need review.
+      Consequence if wrong: if Reviewer judges these seven rows too weak to be mechanical assertions,
+      they should be rejected together with the seven deity nodes, and this packet reduces to the
+      three alignment rows and M004. If a later Decision defines a property or membership type, the
+      seven repoint to it. Either way nothing else in the GUR depends on them.
+  - id: IDQ-02
+    subject: three pairwise rows express one three-way exclusivity
+    detail: >-
+      Choose one of the following three alignments is a single statement about three options, and it
+      is recorded as three ALTERNATIVE_TO rows because the vocabulary is binary and ALTERNATIVE_TO is
+      its only symmetric type. The pairwise expansion is complete and lossless for three options, but
+      it does grow quadratically, and a later source adding a fourth alignment would require three
+      further rows rather than one.
+      Consequence if wrong: if a Decision later introduces an n-way exclusivity representation, these
+      three rows would be replaced by one. Recorded so the choice is visible as a choice; the Analyst
+      judged three explicit rows better than asserting nothing about an exclusivity the source states
+      plainly.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised, and none remains outstanding for this packet. The escalation it was held on,
+  ESC-2026-09-22T18.39.08.936Z, was decided as DEC-2026-0093, and this GUR is step 5 of that
+  Decision. Every proposed node now uses an approved constitution section 2 prefix with the machine
+  kind section 2.2 states, every edge uses one of the thirteen legal section 3 types, and no new
+  prefix, edge type, domain promotion or general-rule application is requested.
+  The related language question, raised from printed page 32 as ESC-2026-09-22T18.43.24.006Z, remains
+  pending and does not block this packet: no row here depends on an individual language.
+
+completeness_statement: >-
+  All three printed pages in the declared span are accounted for. Page 27 was read in full: the
+  ALIGNMENT heading, both framing paragraphs, the instruction to choose one of three which supplies
+  M001 through M003, and the CHAOTIC, LAWFUL and NEUTRAL entries with their descriptions,
+  dispositioned in OBS-06. Page 28 was read in full: the DEITIES heading, the personification
+  sentence, the worship sentence, the priest sentences supplying M004 with their duplicate content in
+  OBS-05, the three grouping paragraphs in OBS-02, and the SAINT TERRAGNIS, GEDE, MADEERA THE
+  COVENANT and ORD entries supplying M005 through M008. Page 29 was read in full: the MEMNON,
+  RAMLAAT and SHUNE THE VILE entries supplying M009 through M011, and THE LOST entry, dispositioned
+  in OBS-03.
+  Every page marker was resolved through the Pandoc AST and the in-scope resolved page set matches
+  the declared span with no gap; the three entries that inherit page 29 under the persistence rule
+  are named explicitly in page_attribution_basis. The Supporting Source Context reproducing printed
+  page 15 is out of scope and contributed nothing. Eleven edges are proposed across eleven candidate
+  nodes, with one canonical node reused rather than proposed. Content not converted to an edge is
+  accounted for in OBS-01 through OBS-08, and the two representational questions the Analyst could
+  not settle are recorded in IDQ-01 and IDQ-02 rather than resolved silently. No assertion depends on
+  any other ruleset.

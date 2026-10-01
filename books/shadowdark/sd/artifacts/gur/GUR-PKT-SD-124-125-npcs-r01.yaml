@@ -1,0 +1,327 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-124-125-npcs-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-124-125-npcs
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0003.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-124-125-npcs
+  source_file: source.md
+  packet_source_checksum: sha256:2dfaf7c67025c0a9869cb241150797b24a2d4cb399505b4c9f2e427d3fc3fcf6
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 050-npcs.md
+  citation_code: SD
+  page_start: 124
+  page_end: 125
+  page_number_basis: packet_page_markers
+units_note: 'Figures in this GUR name their unit explicitly, because a previous packet called data rows
+  cells and was corrected. Measured by the assembling script from the claimed source: 6 named tables,
+  43 data rows across them, and 95 text cells once each row''s leading die-index cell is excluded. Where
+  a count appears below it says which of the three it is.'
+page_attribution_basis: 'Both markers sit on headings. p124 ends the NPCS heading and p125 ends the NPC
+  QUALITIES TABLE heading, and placement rule 1 applies each to its whole heading with the persistence
+  rule carrying it forward. Verified against the claimed source that no marker appears inside a table
+  row in this packet.
+
+  The split therefore runs between tables rather than through one: the ancestry, alignment, age and wealth
+  tables are printed page 124, and the qualities and occupation tables are printed page 125. Both asserted
+  rows cite page 124.'
+scope_boundary: 'The bounded scope is the Primary Source Material section, printed pages 124 and 125:
+  6 named NPC generation tables and no prose whatever. The trailing Supporting Source Context is out of
+  scope.'
+source_summary: Six NPC generation tables with no accompanying prose. Ancestry rolls one of the six ancestries.
+  Alignment rolls one of the three alignments. Age gives one of six bands from child to ancient. Wealth
+  gives one of four bands from poor to extravagant. Qualities gives an appearance, a habit and a secret
+  in three columns. Occupation is a grid read on two dice, giving one of sixteen trades.
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled, and every figure here
+  is computed by the assembling script from the canonical files and the claimed source.
+
+  The canonical graph holds 330 registry rows and 702 edges, and 0 rows cite printed pages 124 or 125,
+  so nothing in this span has been extracted before. No NPC, age, wealth, occupation or quality identity
+  exists. The registry holds 48 tbl_ identities and 27 identities overall carry no edge.
+
+  Decisively for this packet, canonical already holds 6 RESOLVED_BY rows running from a sys_ axis to a
+  random table, all from printed pages 40 and 41 and all at status optional. Those were read before anything
+  here was written, because two of this packet''s tables have the same shape and the comparison decides
+  both the aspect and the status; see IDQ-01.'
+two_kinds_of_table_note: 'This packet breaks the registry-only run of the last three, and the reason is
+  a real distinction rather than a change of approach. Six tables sit on these two pages and they are
+  not all the same kind of thing.
+
+  Two of them resolve to identities the graph already holds. The ancestry table''s results are the six
+  canonical ancestries and the alignment table''s three results are the three canonical alignments, so
+  each selects from an existing axis and each earns a RESOLVED_BY row from that axis. This is exactly
+  the shape canonical already carries 6 times from printed pages 40 and 41, where the random character
+  tables resolve the same two axes plus class, deity and language.
+
+  The other four resolve to nothing. Age, wealth, qualities and occupation each produce a descriptive
+  band or a phrase, and no identity exists for an age, a wealth level, a personal quality or a trade.
+  They are registered and carry no edge, exactly as the four prompt tables of the last three packets were.
+
+  So the same page yields both kinds, and what separates them is whether the table''s output is already
+  an identity. That is a sharper test than the page-level one I have been applying, and it is worth stating
+  because the remaining chapters hold more generators.'
+reused_nodes:
+- id: sys_ancestry
+  label: Ancestry
+  used_by: M001
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. The axis the NPC ancestry table selects from; already resolved by the random character ancestry
+    table from printed page 40.
+- id: sys_alignment
+  label: Alignment
+  used_by: M002
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. The axis the NPC alignment table selects from; already resolved by the random character alignment
+    table from printed page 41.
+candidate_nodes:
+- proposed_id: tbl_npc_ancestry
+  proposed_label: NPC Ancestry Table
+  kind: table
+  why_needed: Resolves an NPC's ancestry. Its results are the six canonical ancestries, so unlike the
+    flavour tables on these pages it selects from an existing axis.
+  prefix_basis: tbl_ is a named source table; matches the 48 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 124, NPC ANCESTRY TABLE
+  source_evidence: page 124, the NPC ANCESTRY TABLE heading and its data rows.
+- proposed_id: tbl_npc_alignment
+  proposed_label: NPC Alignment Table
+  kind: table
+  why_needed: Resolves an NPC's alignment. Its three results are the three canonical alignments.
+  prefix_basis: tbl_ is a named source table; matches the 48 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 124, NPC ALIGNMENT TABLE
+  source_evidence: page 124, the NPC ALIGNMENT TABLE heading and its data rows.
+- proposed_id: tbl_npc_age
+  proposed_label: NPC Age Table
+  kind: table
+  why_needed: Registers the named table giving an NPC's age band. The six bands are descriptive and no
+    age identity exists for them to select from.
+  prefix_basis: tbl_ is a named source table; matches the 48 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 124, NPC AGE TABLE
+  source_evidence: page 124, the NPC AGE TABLE heading and its data rows.
+  registry_addition_only: true
+  registry_addition_basis: Proposed from its defining locus with no edge, because its results are descriptive
+    and no identity exists for them to select from, unlike the ancestry and alignment tables on the same
+    page. DEC-2026-0003 permits a node change to be approved on its own and IDQ-01 of PKT-SD-118-119 settled
+    that an unattached source table is properly registered rather than dropped.
+- proposed_id: tbl_npc_wealth
+  proposed_label: NPC Wealth Table
+  kind: table
+  why_needed: Registers the named table giving an NPC's wealth band. The four bands are descriptive; item_coin
+    is the money identity and the bands state no amount.
+  prefix_basis: tbl_ is a named source table; matches the 48 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 124, NPC WEALTH TABLE
+  source_evidence: page 124, the NPC WEALTH TABLE heading and its data rows.
+  registry_addition_only: true
+  registry_addition_basis: Proposed from its defining locus with no edge, because its results are descriptive
+    and no identity exists for them to select from, unlike the ancestry and alignment tables on the same
+    page. DEC-2026-0003 permits a node change to be approved on its own and IDQ-01 of PKT-SD-118-119 settled
+    that an unattached source table is properly registered rather than dropped.
+- proposed_id: tbl_npc_qualities
+  proposed_label: NPC Qualities Table
+  kind: table
+  why_needed: Registers the named table giving an NPC's appearance, habit and secret. Its content is entirely
+    narrative.
+  prefix_basis: tbl_ is a named source table; matches the 48 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 125, NPC QUALITIES TABLE
+  source_evidence: page 125, the NPC QUALITIES TABLE heading and its data rows.
+  registry_addition_only: true
+  registry_addition_basis: Proposed from its defining locus with no edge, because its results are descriptive
+    and no identity exists for them to select from, unlike the ancestry and alignment tables on the same
+    page. DEC-2026-0003 permits a node change to be approved on its own and IDQ-01 of PKT-SD-118-119 settled
+    that an unattached source table is properly registered rather than dropped.
+- proposed_id: tbl_npc_occupation
+  proposed_label: NPC Occupation Table
+  kind: table
+  why_needed: Registers the named table giving an NPC's trade, read on two dice as a grid. No occupation
+    identity exists.
+  prefix_basis: tbl_ is a named source table; matches the 48 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 125, NPC OCCUPATION TABLE
+  source_evidence: page 125, the NPC OCCUPATION TABLE heading and its data rows.
+  registry_addition_only: true
+  registry_addition_basis: Proposed from its defining locus with no edge, because its results are descriptive
+    and no identity exists for them to select from, unlike the ancestry and alignment tables on the same
+    page. DEC-2026-0003 permits a node change to be approved on its own and IDQ-01 of PKT-SD-118-119 settled
+    that an unattached source table is properly registered rather than dropped.
+candidate_edges:
+- ref: M001
+  source_id: sys_ancestry
+  source_label: Ancestry
+  edge_type: RESOLVED_BY
+  target_id: tbl_npc_ancestry
+  target_label: NPC Ancestry Table
+  aspect: npc selection
+  condition: ''
+  book: SD
+  page: 124
+  section: NPC ANCESTRY TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: sys_alignment
+  source_label: Alignment
+  edge_type: RESOLVED_BY
+  target_id: tbl_npc_alignment
+  target_label: NPC Alignment Table
+  aspect: npc selection
+  condition: ''
+  book: SD
+  page: 124
+  section: NPC ALIGNMENT TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: No authored polarity appears. Both rows are RESOLVED_BY, which is not among
+  the three types constitution section 5 reserves for authored polarity, so assigning one is prohibited
+  to the Analyst and invariant 15 has nothing to require. Builder derives governs, matching the 6 canonical
+  sys-axis RESOLVED_BY rows.
+domains_touched: []
+candidate_domains: []
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The two asserted rows share a shape, but they name two source
+  tables rather than instancing a rule, and the Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: the six ancestry results and three alignment results, p124
+  quoted_gist: Human, Elf, Dwarf, Halfling, Half-orc and Goblin; Lawful, Neutral and Chaotic
+  why_considered: Every one of these nine results is a canonical identity by name, which is the strongest
+    set of matches any table in this intake has produced. Rows from each table to each individual result
+    looked available.
+  rejection_reason: 'Nine rows would assert that the NPC tables select those particular ancestries and
+    alignments, which is true but is already carried more economically by the two rows asserted from the
+    axes. The axis is what the table selects from, and sys_ancestry and sys_alignment exist precisely
+    to stand for their members; the canonical random character tables from printed pages 40 and 41 take
+    the same single-row-per-axis shape rather than one row per member.
+
+    Asserting per member would also embed the tables'' weighting, since Human occupies five of twelve
+    results and Goblin one, and weighting is a magnitude no field may store. One row per axis carries
+    the relationship and loses nothing expressible.'
+- text_locus: the NPC AGE TABLE and NPC WEALTH TABLE bands, p124
+  quoted_gist: six age bands from Child to Ancient, and four wealth bands from Poor to Extravagant
+  why_considered: Both sets are named, bounded and enumerated, which is the identity-shaped pattern. Wealth
+    in particular sits beside a canonical money identity, item_coin, and Poor echoes the Poor treasure
+    quality from printed page 117.
+  rejection_reason: Neither set has any mechanical content. An age band states nothing that any rule reads,
+    and a wealth band states no amount, so item_coin has nothing to receive. This is the reasoning that
+    declined the treasure quality categories on printed page 117, the danger levels on 86 and 90, and
+    the light mishap results on 110, and it applies more strongly here because these bands do not even
+    carry a number. The echo of Poor between the wealth and treasure tables is coincidence of vocabulary,
+    not a shared identity.
+- text_locus: the NPC QUALITIES TABLE, p125
+  quoted_gist: twenty rows of appearance, habit and secret, including being a werewolf, having a pet basilisk,
+    being a half-demon, having left the Thieves' Guild and having been a wizard's apprentice
+  why_considered: Some secrets name creatures and organisations, and a wizard's apprentice brushes class_wizard.
+  rejection_reason: Narrative, and the same name-collision shape measured across the last two packets.
+    A wizard's apprentice in an NPC's backstory is not class_wizard, a werewolf and a basilisk have no
+    identity and the Monsters chapter is unextracted, and the Thieves' Guild is an invented organisation
+    with no mechanical role. No result states a check, a value or a consequence.
+- text_locus: the NPC OCCUPATION TABLE, p125
+  quoted_gist: a grid read on two dice giving sixteen trades from gravedigger to merchant
+  why_considered: Its two-dice grid form is unlike any other table in the intake so far, which raised
+    the question of whether the reading procedure itself is a mechanic.
+  rejection_reason: The grid is a layout for indexing sixteen results with two dice, not a rule; nothing
+    turns on it beyond finding a cell. No occupation identity exists and none of the sixteen trades has
+    a mechanical role anywhere read so far. Recorded as OBS-03 because the form is novel even though the
+    disposition is routine.
+non_edge_observations:
+- id: OBS-01
+  subject: the test that separates a generator with edges from one without
+  detail: 'Four consecutive packets have been registry-only or nearly so, and this one is not, which makes
+    the distinguishing test worth stating for the remaining chapters. It is not whether the page has prose,
+    which is how I described it on the last three packets. It is whether the table''s results are already
+    identities.
+
+    Ancestry and alignment resolve to canonical axes, so each earns one RESOLVED_BY row. Age, wealth,
+    qualities and occupation resolve to descriptions, so they carry nothing. The prompt tables of the
+    last three packets fail the same test for the same reason, and would have failed it even if their
+    pages had carried prose. Stating it this way also predicts the remaining generators: a table whose
+    column is a list of things the graph already names will yield a row, and a table of phrases will not.'
+- id: OBS-02
+  subject: weighting is deliberately not carried
+  detail: 'The ancestry table is weighted, with Human occupying five of twelve results and Goblin one,
+    and the alignment table likewise favours Lawful. Neither weighting reaches the graph, because a die
+    range is a magnitude no field may store.
+
+    Worth recording because the loss is real and a reader might not expect it. The graph will say that
+    NPC ancestry is resolved by this table and not that most NPCs are human. That is a consequence of
+    the single-row-per-axis shape rather than of this extraction, and asserting per result would not have
+    preserved the weighting either.'
+- id: OBS-03
+  subject: the first two-dice grid table in the intake
+  detail: 'The occupation table is laid out as a four-by-four grid read on two dice rather than as a list
+    of ranges, which is a form no earlier packet has met. It changes nothing about the disposition, since
+    the table is registered and carries no edge either way, but it is recorded so a later extractor meeting
+    the same form knows it has been seen and treated as an ordinary named table.
+
+    Measured for the record: this packet holds 6 named tables, 43 data rows across them and 95 text cells
+    excluding each row''s die index.'
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: whether the two asserted rows should be core or optional
+  detail: 'I marked both core and the question is genuine, because the 6 structurally identical rows already
+    in canonical are all optional.
+
+    Those are the random character tables on printed pages 40 and 41, and their optionality comes from
+    their context: a player may simply choose an ancestry, so rolling for it is an alternative to choosing.
+    Nothing on pages 124 and 125 offers an alternative. The book states no other way to determine an NPC''s
+    ancestry or alignment, so these tables are not a variant of anything, which is why I read them as
+    core.
+
+    The case against is consistency of appearance: a reader asking what resolves sys_ancestry will get
+    one optional row and one core row, which looks like an inconsistency until the reason is read. There
+    is also a fair argument that everything in the Game Master half is advisory, which would make the
+    whole page optional; I did not take that route because the page itself says nothing of the kind, unlike
+    The Gauntlet on printed page 116 and the modes of play on 111, both of which declare their own optionality
+    and were marked optional throughout.
+
+    Consequence if wrong: two status fields change and no row, identity or aspect moves. Flagged because
+    status is the field a reader most easily takes on trust, and because the remaining chapters hold more
+    GM-side generators that will inherit whichever way this goes.'
+architectural_escalations: []
+architectural_escalation_note: None raised. All six identities use an approved prefix, both rows use a
+  legal edge type, no row carries supersession_basis and none is an OVERRIDES, and no CLASSIFIED_AS row
+  appears. IDQ-01 is a status judgement within existing rules rather than a request for a ruling.
+completeness_statement: 'Both printed pages in scope were read in full at the recorded checksum: 6 named
+  tables, 43 data rows and 95 text cells excluding die indexes, with no prose on either page. The packet
+  yields 6 new identities and 2 rows. Two identities carry edges and four are declared registry_addition_only
+  with their basis.
+
+  Every row was checked against the 702 canonical edges for an assertion-key collision, for a shared source,
+  type and target under a different aspect, and for duplicates within the patch; there are none of any,
+  and no canonical row cited either page before. Both reused labels were asserted equal to the registry
+  by the script. Four candidates were rejected and each is recorded with its reason, the most consequential
+  being the nine individual ancestry and alignment results, which are carried by two axis rows instead.
+  What is deliberately not asserted is listed as OBS-01 through OBS-03, and the single open question,
+  IDQ-01, is whether the two rows should be core or optional. No assertion depends on any other ruleset.'

@@ -1,0 +1,216 @@
+schema_version: '1.0'
+id: DEC-2026-0103
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.6'
+decision_date: '2026-09-24'
+escalation_id: ESC-2026-09-25T01.00.32.294Z
+question: >-
+  Which source-declared category facts are graph relationships, and how are
+  mechanically operative spell casting class and spell tier represented without
+  converting the impact graph into a general taxonomy?
+ruling: >-
+  Add `CLASSIFIED_AS` as a directed Shadowdark edge type, from an individual to
+  a source-declared mechanically operative classification, with derived neutral
+  polarity. It is not a general membership, hierarchy, parent, table-membership,
+  or shared-prefix relation. It is legal only where the exact classification is
+  a direct input to a named mechanic and source evidence states the individual
+  belongs to it.
+
+  The initial bounded use is spells. A spell may classify as `class_wizard` or
+  `class_priest` with aspect `casting class`, and as exactly one of
+  `rule_spell_tier_1` through `rule_spell_tier_5` with aspect `spell tier`.
+  The five tier values are ordinary `rule_` node proposals, preserving their
+  source labels Tier 1 through Tier 5. Each tier value classifies as the existing
+  `rule_spell_tier` aggregate with aspect `spell tier category`, so the aggregate
+  rule's existing downstream links remain reachable. A spell may have multiple
+  casting classes but exactly one tier.
+
+  Casting class and tier are both classifications, but not the same fact:
+  casting class is plural eligibility membership; tier is one ordered source
+  category. The ordinary edge relation represents both because each is a
+  source-stated input to mechanics. Numeric values remain absent from edge
+  fields; tier is represented by its discrete classification identity.
+
+  All taxonomy-only membership remains outside the graph. No `CLASSIFIED_AS`
+  edge may target a `sys_` axis, language-table heading, named collective,
+  generic ancestry/alignment/deity/language/class axis, creature family, or
+  other source-context grouping. The existing zero membership rows for the 34
+  canonical ancestry, alignment, deity, language, and class identities are
+  correct history and receive no migration. A later classification needs its
+  own evidence-bearing Architect Decision unless it is one of the bounded spell
+  forms above.
+rationale:
+  - >-
+    The graph records impact-relevant relationships, not every taxonomy fact.
+    Broad membership would turn `sys_` axes and table headings into generic
+    parent nodes with no mechanical dependency.
+  - >-
+    A spell's casting class gates scroll and wand use, and its tier drives
+    casting difficulty, mishap selection, and sacrifice value. Those explicit
+    source classifications are mechanical inputs, so leaving them absent loses
+    load-bearing paths rather than merely a convenient query.
+  - >-
+    Discrete tier identities preserve the ordinal category without storing a
+    numeric value in `aspect` or `condition`, and connect each spell to the
+    existing aggregate spell-tier mechanics.
+evidence:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-25T01.00.32.294Z.yaml, checksum: sha256:b49566a2ddb5e6bbd8577a1210193b2f1ea727c220a7221db9c11d794dc635a4, role: complete_cross_packet_membership_escalation}
+  - {path: rulesets/shadowdark/governance/constitution.md, checksum: sha256:431f6b204931f60b34b2d976cf101f0265c66c9200c0405f3d854bc829c423af, role: activated_classification_boundary}
+  - {path: rulesets/shadowdark/ruleset.yaml, checksum: sha256:c314ab8b9d49702f805dbebbd1649b1200adcdd0fd0f7523667183bdab885de3, role: activated_constitution_version}
+  - {path: schemas/shadowdark/graph/edge.schema.json, checksum: sha256:c0d482a7e9a6be779485ea4bfe4da91b10c2a81f5ef03d2b5040a97754c6510e, role: activated_classification_edge_schema}
+  - {path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-059-060-spells-detect-thoughts-to-fireball-r01.yaml, checksum: sha256:3514bdc9fd0b340fc00dffc655cde1b4b9260e259c8c337dc45dc644438902e7, role: representative_source_backed_spell_omission}
+migration_required: false
+migration_scope: >-
+  No existing canonical row, registry row, source packet, GUR, GUP, Review,
+  Approved bundle, or Integration is rewritten or retracted. After independent
+  implementation approval, Analyst may publish ordinary successors: first the
+  spell-tier scaffold, then source-backed spell classifications. Taxonomy-only
+  identities remain unchanged.
+constitution_version_impact: >-
+  Shadowdark Constitution advances from 1.5 to 1.6. It adds one bounded edge
+  semantic and preserves historical 1.0 through 1.5 input compatibility.
+affected_contracts:
+  - rulesets/shadowdark/governance/constitution.md
+  - rulesets/shadowdark/ruleset.yaml
+  - schemas/shadowdark/graph/edge.schema.json
+  - schemas/shadowdark/graph/gur.schema.json
+  - schemas/shadowdark/graph/gup.schema.json
+affected_registries: []
+implementation_bounds:
+  - >-
+    Architect changes only the listed Decision, Shadowdark governance, schemas,
+    and resolved escalation location.
+  - >-
+    Builder changes only the listed compiler vocabulary/polarity path and
+    focused tests. It must read a ruleset's derived-polarity table from its own
+    Constitution or otherwise preserve ruleset scope; adding CLASSIFIED_AS to
+    AD&D 1e or Basic D&D's accepted edge vocabulary is forbidden.
+  - >-
+    Builder enforces the bounded Shadowdark shapes: spell to class_wizard or
+    class_priest with `casting class`; spell to exactly one tier value with
+    `spell tier`; and tier value to rule_spell_tier with `spell tier category`.
+    It rejects a sys_ target, taxonomy-only target, wrong direction, wrong
+    aspect, duplicate tier, missing tier, or an unsupported classification.
+  - >-
+    Do not create the tier nodes, edit source/GUR/GUP/Review/Approved/registry/
+    canonical artifacts, add classifications for the existing 34 taxonomy-only
+    identities, or touch basicdnd/rc during implementation.
+acceptance_tests:
+  - >-
+    Constitution Version 1.6 or later defines CLASSIFIED_AS as directed,
+    neutral, source-declared mechanically operative classification; states its
+    individual-to-classification direction and bounded spell forms; and retains
+    the explicit exclusion of sys axes, source-context groupings, and
+    taxonomy-only membership.
+  - >-
+    Shadowdark edge, GUR, and GUP schemas admit CLASSIFIED_AS and current 1.6
+    artifacts while preserving historical 1.0 through 1.5 admission. No other
+    ruleset's edge vocabulary is widened.
+  - >-
+    Ruleset-scoped Builder polarity derives CLASSIFIED_AS as neutral/derived
+    for Shadowdark without adding it to the AD&D 1e or Basic D&D vocabulary.
+    Existing ruleset-specific vocabularies and all prior edge semantics remain
+    unchanged.
+  - >-
+    Builder accepts only the three bounded Shadowdark classification forms,
+    enforces one tier per spell and plural casting classes, and rejects each
+    prohibited target, direction, aspect, cardinality, and unsupported member
+    form with a specific finding.
+  - >-
+    Focused Builder regressions and the complete Builder suite pass. The
+    implementation report records exact commands and outcomes; Reviewer
+    independently reproduces the classification tests before approval.
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: rulesets/shadowdark/governance/constitution.md
+        minimum_version: '1.6'
+        substantive_anchors:
+          - CLASSIFIED_AS is a directed source-declared mechanically operative classification, not general taxonomy membership.
+          - Spell casting class may be plural while each spell has exactly one discrete spell tier.
+          - Taxonomy-only membership and sys-axis or source-context targets remain outside the graph.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Builder implements the bounded ruleset-scoped classification validation and
+    publishes IMP-DEC-2026-0103-r01. Reviewer independently validates it before
+    any source successor adds a CLASSIFIED_AS edge.
+  blocking_ids: []
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, activate Constitution 1.6 and matching Shadowdark
+      schemas, and relocate the resolved escalation to decided history.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement bounded, ruleset-scoped CLASSIFIED_AS validation and polarity
+      derivation; publish IMP-DEC-2026-0103-r01 with focused and full-suite
+      evidence.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently validate IMP-DEC-2026-0103-r01 and publish its Decision
+      Implementation Review.
+  - step: 4
+    owner: analyst
+    action: >-
+      After terminal implementation approval, publish the source-backed
+      successor for PKT-SD-043-050 that proposes the five Tier identities and
+      their tier-category rows, then publish ordinary successors for spell
+      packets using only their own header's tier and casting-class evidence.
+post_implementation_requirements:
+  - >-
+    Builder, Reviewer, and Integrator process the Analyst successors through
+    the ordinary lifecycle. No role mass-reissues all category artifacts or
+    adds a generic ancestry/alignment/deity/language/class membership edge.
+  - >-
+    Future source-defined classifications outside the bounded spell forms need
+    their own Architect Decision with the defining locus and mechanical impact.
+exact_diff:
+  rulesets/shadowdark/escalations/pending/ESC-2026-09-25T01.00.32.294Z.yaml: Relocate the resolved immutable escalation to decided history.
+  rulesets/shadowdark/escalations/decided/ESC-2026-09-25T01.00.32.294Z.yaml: Preserve the resolved immutable escalation under decided history.
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml: Publish the mechanically operative classification ruling.
+  rulesets/shadowdark/governance/constitution.md: Advance to 1.6 and define bounded CLASSIFIED_AS semantics and spell forms.
+  rulesets/shadowdark/ruleset.yaml: Declare current 1.6 and historical 1.5 compatibility.
+  schemas/shadowdark/graph/edge.schema.json: Admit CLASSIFIED_AS for Shadowdark production edges.
+  schemas/shadowdark/graph/gur.schema.json: Admit historical 1.0 through 1.5 and current 1.6 GURs.
+  schemas/shadowdark/graph/gup.schema.json: Admit historical 1.0 through 1.5 and current 1.6 GUPs.
+  tooling/builder/src/adnd1e_builder/vocab.py: Make derived-polarity vocabulary ruleset-scoped.
+  tooling/builder/src/adnd1e_builder/polarity.py: Resolve polarity from the active ruleset vocabulary.
+  tooling/builder/src/adnd1e_builder/compiler.py: Enforce bounded Shadowdark CLASSIFIED_AS shapes and cardinality.
+  tooling/builder/tests/test_shadowdark_ancestry.py: Cover accepted and rejected Shadowdark classification forms.
+  tooling/builder/tests/test_polarity.py: Cover ruleset-scoped derived polarity without widening AD&D 1e.
+  rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0103-r01.yaml: Record Builder implementation and validation evidence.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-25T01.00.32.294Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decided/ESC-2026-09-25T01.00.32.294Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/governance/constitution.md, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/ruleset.yaml, owner: architect, sequence_step: 1}
+  - {path: schemas/shadowdark/graph/edge.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/shadowdark/graph/gur.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/shadowdark/graph/gup.schema.json, owner: architect, sequence_step: 1}
+  - {path: tooling/builder/src/adnd1e_builder/vocab.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/src/adnd1e_builder/polarity.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/src/adnd1e_builder/compiler.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_shadowdark_ancestry.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_polarity.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0103-r01.yaml, owner: builder, sequence_step: 2}
+follow_up_owners:
+  builder:
+    - Implement the bounded ruleset-scoped classifier before any source successor uses it.
+  reviewer:
+    - Independently review IMP-DEC-2026-0103-r01 after Builder publication.
+  analyst:
+    - After terminal implementation approval, publish the tier scaffold first, then ordinary spell successors.

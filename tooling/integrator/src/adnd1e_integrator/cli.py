@@ -29,6 +29,7 @@ from .derive import load_role_profile
 from .integrate import IntegrationError, integrate
 from .invariants import approved_prefixes, check, check_derived_state
 from .records import write_records
+from .vocabulary import load_vocabulary
 
 DEFAULT_BOOKS = ["phb", "dmg", "mm", "ua"]
 
@@ -86,17 +87,26 @@ def cmd_queue(args) -> int:
 def cmd_validate(args) -> int:
     root = Path(args.repo_root).resolve()
     paths = CanonicalPaths(root=root, ruleset_id=args.ruleset_id)
-    graph = CanonicalGraph.load(paths)
-    prefixes = approved_prefixes(root / "rulesets" / args.ruleset_id / "governance" / "constitution.md")
+    # DEC-2026-0092: `validate` reads and reports; it never creates canonical
+    # state. For a ruleset with none yet, the honest answer is an empty report,
+    # not a crash and emphatically not a file.
+    graph = CanonicalGraph.load(paths, allow_genesis=True)
+    vocabulary = load_vocabulary(root, args.ruleset_id)
+    prefixes = vocabulary.prefixes
     profile = load_role_profile(root / "rulesets" / args.ruleset_id / "profiles" / "roles.yaml")
     general_rules = set(json.loads(
         (root / "rulesets" / args.ruleset_id / "registries" / "general_rules.json")
         .read_text(encoding="utf-8")).keys())
 
-    result = check(graph.edges, graph.nodes, prefixes, general_rules, EDGE_COLUMNS)
-    check_derived_state(graph.edges, graph.nodes, profile["thresholds"], result)
+    thresholds = profile.get("thresholds") or {}
+    tier2_enabled = bool(profile.get("tier2"))
+    result = check(graph.edges, graph.nodes, prefixes, general_rules, EDGE_COLUMNS,
+                   vocabulary=vocabulary)
+    check_derived_state(graph.edges, graph.nodes, thresholds, result,
+                        tier2_enabled=tier2_enabled)
 
     print(json.dumps({
+        "genesis": paths.is_genesis,
         "edges": len(graph.edges),
         "nodes": len(graph.nodes),
         "findings": len(result.findings),

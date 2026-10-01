@@ -1,0 +1,120 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0105-r01-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-189-189-monster-attributes
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Publish a successor implementation report after preserving the blocked
+    GUR handoff's authored reason in the routed item and adding focused
+    regression coverage for that exact requirement.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0105-r01
+  path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0105-r01.yaml
+  checksum: sha256:b007399fe2ed5888c66e12cea7d4d5bc2ed9b55289e7eccae9f3aeb2120ae712
+decision_input:
+  id: DEC-2026-0105
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+  checksum: sha256:8c62a5c9e4d0975bd23d88a70ea78b98fecc12d4813fa718ec3b382c69024777
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      Independently verified DEC-2026-0105 as the exact authority for test 1.
+      Current Shadowdark Constitution 1.8 meets the minimum and retains all
+      three anchors: mstat_ is a shared creature statistic used by an explicit
+      mechanic; mstat_monster_level may feed monster hit-point calculation
+      without storing values; and individual stat-block values remain outside
+      graph content and property storage.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0105
+        path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+        checksum: sha256:8c62a5c9e4d0975bd23d88a70ea78b98fecc12d4813fa718ec3b382c69024777
+        authorized_acceptance_test_index: 1
+      authorized_acceptance_test_index: 1
+      contracts:
+        - path: rulesets/shadowdark/governance/constitution.md
+          checksum: sha256:629e72cde3206228e1d1e569957dfff6aa275728c18ff4890c81cfcdc6e0c93d
+          observed_version: '1.8'
+          minimum_version: '1.8'
+          anchors_present:
+            - mstat_ names a shared creature statistic or rating used by an explicit mechanic.
+            - mstat_monster_level may feed monster hit-point calculation without storing numeric values.
+            - Individual creature stat-block values remain outside graph content and property storage.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      Independently read ruleset.yaml and both Shadowdark GUR/GUP schemas.
+      Current version 1.8 is declared, historical 1.0 through 1.7 are retained,
+      and both schemas enumerate 1.0 through 1.8. The Builder implementation
+      changes only common scanner code and its tests, not ruleset vocabulary.
+  - acceptance_test_index: 3
+    disposition: failed
+    evidence: >-
+      The new branch correctly creates one blocked item, follows the handoff's
+      declared role, retains blocking IDs, avoids ReadyCount, BUILDER-GUR and
+      legacy inference, and leaves other GUR shapes unchanged. However,
+      WORK_QUEUES 1.35 rule 6a also requires the handoff's authored reason to
+      be preserved. _route_leaf_gur instead replaces it with a generated
+      blocker-only string. The BLOCKED_HANDOFF fixture contains a distinct
+      authored reason, but none of the eleven new tests asserts its presence.
+      The uniform blocked-GUR route is therefore incomplete.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      Independently ran the exact focused command. All 36
+      GurHandoffRoutingCase tests passed in 0.543 seconds. This verifies the
+      behavior currently covered, while the missing authored-reason regression
+      is the acceptance-test-3 correction required above.
+independent_validation:
+  passed: false
+  commands:
+    - command: SHA-256 verification of the report, Decision, validation report, two implementation files and every verified input
+      exit_code: 0
+      result: passed
+      summary: All declared checksums match current files; report independently hashes to sha256:b007399fe2ed5888c66e12cea7d4d5bc2ed9b55289e7eccae9f3aeb2120ae712.
+    - command: python -m unittest tooling.common.tests.test_scan_agent_queues.GurHandoffRoutingCase -v
+      exit_code: 0
+      result: passed
+      summary: Ran 36 tests in 0.543s; OK.
+    - command: Inspect _route_leaf_gur against WORK_QUEUES 1.35 rule 6a
+      exit_code: 1
+      result: failed
+      summary: The branch retains blocking IDs but drops the nonempty authored handoff.reason instead of preserving it.
+overall_disposition: revision_required
+required_corrections:
+  - path: tooling/common/scan_agent_queues.py
+    instruction: >-
+      In the conforming blocked-GUR branch, include the handoff's exact nonempty
+      authored reason in the routed item's Reason while also retaining every
+      blocking_id deterministically. Keep the dynamic next-role routing and
+      early return unchanged.
+  - path: tooling/common/tests/test_scan_agent_queues.py
+    instruction: >-
+      Add a focused regression proving that the routed blocked GUR item retains
+      the BLOCKED_HANDOFF fixture's authored reason as well as its blocking ID;
+      rerun the focused and relevant scanner suites.
+  - path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0105-r02.yaml
+    instruction: >-
+      Publish a schema-valid successor with refreshed implementation-file and
+      validation-report checksums and exact command outcomes. Do not alter the
+      Decision, source, GUR, GUP, Review, registry, canonical, compiler, or RC
+      artifacts.
+scope_assessment: >-
+  The submitted implementation is confined to the two Builder-owned code/test
+  paths authorized for step 3, and all pinned bytes match. The report's note
+  that the Shadowdark edge schema does not yet admit mstat_ is accurate but is
+  outside this Builder step's exact_diff and is not the reason for revision.
+  No source, packet artifact, registry, canonical file, compiler file or RC
+  artifact is changed by this Review.

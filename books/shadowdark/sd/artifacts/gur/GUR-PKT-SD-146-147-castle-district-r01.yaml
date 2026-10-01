@@ -1,0 +1,258 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-146-147-castle-district-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-146-147-castle-district
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-146-147-castle-district
+  source_file: source.md
+  packet_source_checksum: sha256:2c0891c38f217fd5fa68c2ba76d57de77a214fdbc55ff4813121ef368311c651
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 060-encounters-castle-district.md
+  citation_code: SD
+  page_start: 146
+  page_end: 147
+  page_number_basis: packet_page_markers
+units_note: 'Figures name their unit. Measured by the building script from the claimed source: 1 named
+  table, 50 data rows keyed to a hundred-sided roll, 0 sentences of prose, 23 rows on printed page 146
+  and 27 on 147.'
+page_attribution_basis: 'The page break falls inside the table, as it has in every packet of this chapter
+  so far. The p146 marker sits on the CASTLE DISTRICT heading under placement rule 1. The p147 marker
+  sits in the last cell of one table row, and acceptance test 3 applies a table-row marker to the whole
+  row, so that row is page 147 and persistence carries 147 to every row after it.
+
+  The script locates the marker by row index rather than by eye and derives each row''s page from it:
+  23 rows are page 146 and 27 are 147. Each submitted row is cited to the page of the cell it rests on,
+  and the script asserts that placement from the located cell index rather than from my reading.'
+scope_boundary: 'The bounded scope is the Primary Source Material section, printed pages 146 and 147:
+  one named table of 50 rows and no prose. The Supporting Source Context appends the random encounter
+  procedure from printed pages 112 and 113 and the monster attributes page from 189. Both are out of scope
+  and no row cites either.
+
+  That exclusion matters here because the appended encounter procedure is the very rule this table resolves.
+  Its content belongs to PKT-SD-112-113, which is already integrated, and re-asserting it would duplicate
+  canonical rows from a repeated passage.'
+source_summary: 'A single hundred-sided encounter table for a settlement''s castle district, 50 rows,
+  with no procedure, no heading prose and no instructions. Every result is a street scene in a seat of
+  power: guards accusing a character of murder, an alarm in the royal palace, prisoners revolting, a lion
+  loose from the coliseum, a catapult igniting in a parade, a wanted poster with a character''s own face
+  on it, the Overlord riding past. Several name individual people. One instructs the reader to roll twice
+  and combine.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled, and every figure here
+  is computed by the building script from the canonical files and the claimed source.
+
+  The canonical graph holds 404 registry rows and 779 edges, and 0 rows cite printed page 146 or 147,
+  so nothing in this span has been extracted before. The registry holds 104 tbl_ identities and 0 monster_
+  identities, the latter being the figure that governs how much of this table is extractable at all.
+
+  rule_encounter carries 12 rows, of which 4 are RESOLVED_BY. The script asserts that the proposed table
+  id is absent from the registry before using it.'
+chapter_disposition_note: 'The disposition for this chapter was argued in full at PKT-SD-142-143 and is
+  applied here rather than re-argued. In short: no procedure identity, because the table''s own title
+  names rule_encounter and that rule has been canonical since printed page 112, so this table is a further
+  resolver of an existing rule rather than evidence of a new one. No terrain or district identity, because
+  values were declined at their own defining loci for danger level, treasure quality and settlement size.
+  No creatures and no named characters, because the registry holds 0 monster_ identities and a creature''s
+  defining locus is its stat block, not a line in an encounter table.
+
+  What remains is the small set of cells that state a mechanic or name a canonical procedure, and those
+  are found by measurement rather than by reading.'
+name_match_measurement_note: 'The cells were matched against the whole registry by script, not scanned
+  by eye, because a table of 50 prose cells is where a reference gets missed and where a false one gets
+  asserted. Both happened in earlier packets: rule_natural_twenty was missed at PKT-SD-101-109 by keyword-searching
+  instead of reading the registry, and a false absence claim about rule_invisibility reached production
+  from PKT-SD-062-065.
+
+  4 of the 50 cells contain a token sequence matching a canonical label. 0 of the matched identities are
+  real references: none. The other 4 are ordinary English colliding with an identity label: ancestry_dwarf,
+  rule_thrown, spell_alarm, weapon_crossbow.
+
+  All four are ordinary English. Horns sounding an alarm is not spell_alarm, a drunk being thrown out
+  of a tavern is not rule_thrown, dwarf miners are not ancestry_dwarf, and a crossbow bolt flying from
+  a rooftop is not weapon_crossbow, because the cell states no attack, no damage and no check; it is the
+  same reading that declined the greatsword and greataxe in stat-block parentheses at PKT-SD-142-143.'
+reused_nodes:
+- id: rule_encounter
+  label: Encounter
+  used_by: M001
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed page 112 with 12 rows and 4 RESOLVED_BY. This table is a further resolver on
+    a distinct aspect.
+candidate_nodes:
+- proposed_id: tbl_castle_district_encounters
+  proposed_label: Castle District Encounters Table
+  kind: table
+  why_needed: The one named table on the page, 50 rows keyed to a hundred-sided roll. It resolves rule_encounter
+    for castle district and is the source of every other row this packet carries.
+  prefix_basis: tbl_ is a named source table; joins the 104 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 146, CASTLE DISTRICT ENCOUNTERS TABLE
+  source_evidence: page 146, the CASTLE DISTRICT ENCOUNTERS TABLE heading and its 50 data rows, which
+    continue onto page 147.
+candidate_edges:
+- ref: M001
+  source_id: rule_encounter
+  source_label: Encounter
+  edge_type: RESOLVED_BY
+  target_id: tbl_castle_district_encounters
+  target_label: Castle District Encounters Table
+  aspect: castle selection
+  condition: ''
+  book: SD
+  page: 146
+  section: CASTLE DISTRICT ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: No authored polarity appears. All 1 rows are RESOLVED_BY or FEEDS_INTO,
+  neither of which constitution section 5 reserves, so assigning one is prohibited to the Analyst. Builder
+  derives governs on the RESOLVED_BY row and neutral on the rest.
+status_note: All 1 rows are core, following the disposition settled as IDQ-01 of PKT-SD-124-125 and applied
+  throughout this chapter.
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: The table resolves encounters during travel and crawling. Recorded as a candidate only; constitution
+    section 8 reserves domain promotion to an Architect Decision.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: the group of crawlers dressed like the party, p147
+  quoted_gist: the characters spot a group of crawlers dressed exactly like them
+  why_considered: It is the nearest thing on this page to the rival crawler reach asserted in the two
+    previous packets, and rule_rival_crawlers is canonical with three inbound rows. A second party of
+    adventurers is, in substance, what that generator produces.
+  rejection_reason: 'The word rival is absent, and crawler is this book''s general term for an adventurer
+    rather than a name for the procedure; it appears in at least twelve claimed packets in that generic
+    sense, including the defining prose on printed page 126, which reads a rival party of Shadowdark crawlers.
+    The two cells that did earn the row, on printed pages 143 and 145, both say rival crawlers. Beyond
+    the wording, this cell''s content is the resemblance rather than the party: what it hands a GM is
+    a hook about doubles or impostors, not an instruction to generate a rival party. Asserting it would
+    widen the test from does the source name the thing to could this be produced by some procedure, which
+    would sweep in every creature cell in the chapter. Recorded as OBS-02.'
+- text_locus: the named individuals and titled figures, pp146 and 147
+  quoted_gist: Targ the Betrayer, Robal Goodwin, Sir Galvin, the singer Branzolini, the disguised Duke,
+    the Overlord, and the Wandering Merchant
+  why_considered: Source-named people, which is the shape that earned identities for the tavern drinks
+    at PKT-SD-136-137.
+  rejection_reason: That ruling attaches an identity at the defining locus, and none of these has one.
+    Most appear once in the book, in this cell, with no stat block and no rule; the Overlord is setting,
+    and the Wandering Merchant has a monster entry on printed page 213 inside an unclaimed packet. Minting
+    any of them here would fix a label and kind from an incidental mention. This is the third packet running
+    in which the same distinction has had to be drawn.
+- text_locus: the violent and destructive scenes that state no mechanic, pp146 and 147
+  quoted_gist: a gargoyle breaking loose overhead and falling, a lion tearing free, an elephant bursting
+    from the coliseum, a catapult igniting in fast flames, a crossbow bolt flying at the characters, an
+    explosion at the garrison, smoke pouring from the theatre, the street crumbling open
+  why_considered: rule_damage and rule_hazards are both canonical, and the arctic table one chapter packet
+    earlier produced a TRIGGERS row to rule_damage.
+  rejection_reason: That row was earned by two cells that state a die of damage and a cadence. Not one
+    cell here states a check, a die, a value or a consequence, and neither the word damage nor the word
+    hazard appears on the page. This is the second district packet in a row where the scenes are dangerous
+    and the mechanics are absent, which is a fact about the source rather than about the reading.
+- text_locus: the objects a character might come away with, pp146 and 147
+  quoted_gist: a golden horseshoe in the gutter filth, a key blown from a window box, a scroll handed
+    to a passing woman, a magic sword appearing in a statue's hand, bags of stolen royal gold
+  why_considered: item_coin, item_spell_scroll and item_magic_item are all canonical, and a magic sword
+    appearing is the clearest acquisition on the page.
+  rejection_reason: None of these cells states that a character obtains anything, nor how, nor with what
+    property. A sword appearing in a statue's hand is an event a GM narrates; a scroll passing between
+    two other people is scenery. The same disposition declined the magical-weapon appraisal one packet
+    ago, and it holds more easily here because these cells do not even reach the party.
+- text_locus: the two-encounter instruction, p147
+  quoted_gist: one result instructs the reader to roll twice more and combine the results, rerolling that
+    result if it comes up again
+  why_considered: It is the only instruction on the page and it is fully mechanical.
+  rejection_reason: Its content is arithmetic on the table's own roll, which is a magnitude, and what
+    would remain is a self-edge asserting nothing. Declined in the same form at PKT-SD-142-143 and PKT-SD-144-145.
+- text_locus: the appended random encounter procedure and monster attributes, out of scope
+  quoted_gist: the printed page 112 and 113 encounter procedure and the printed page 189 monster attributes
+    page
+  why_considered: Both are in the file and the first is the rule this table resolves.
+  rejection_reason: Both are Supporting Source Context, outside the bounded scope. PKT-SD-112-113 is already
+    integrated, so extracting from it would duplicate canonical rows and cite pages outside this packet's
+    range.
+non_edge_observations:
+- id: OBS-01
+  subject: this packet yields one row and that is the disposition working
+  detail: 'The table has 50 rows and this packet submits one edge, the resolver, plus the table registration.
+    Nothing else in it states a mechanic or names a canonical procedure.
+
+    OBS-01 of PKT-SD-142-143 recorded that the chapter''s yield per packet would be very low and that
+    the thinness is a disposition rather than incomplete work. This is the floor of that prediction and
+    it is worth marking when it is reached: arctic gave four rows, artisan two, castle one. The content
+    that is not being extracted is creatures, named people and scenes, and the first of those becomes
+    extractable once the monster chapter exists. A later pass can add those reaches without revising anything
+    submitted here.'
+- id: OBS-02
+  subject: the first near-miss on the rival crawler reach
+  detail: 'Two packets running have carried a row from the encounter table to rule_rival_crawlers, on
+    cells reading a group of rival crawlers and rival crawlers challenge the group. This page has a group
+    of crawlers dressed exactly like them, and it gets no row.
+
+    Recorded because the distinction is thin enough to look arbitrary from outside, and because it is
+    the line the whole chapter rests on. Crawler is the book''s general word for an adventurer and appears
+    in that sense throughout the intake; rival crawlers is the name of a procedure. If the generic word
+    were enough, the test would become could this be produced by some procedure, and on that test every
+    creature cell in these twenty-two tables reaches the monster chapter. The Reviewer may hold that the
+    substance outweighs the wording here, and if so the row is a one-line addition; I would rather be
+    told than widen the test myself.'
+- id: OBS-03
+  subject: the only level-three area heading in the chapter
+  detail: 'The area heading on this page is level three where all twenty-one others are level two. I checked
+    every packet in the chapter rather than assuming this one is the odd case, and it is.
+
+    It changes nothing about page attribution, because placement rule 1 applies a marker to its whole
+    heading at any level. It does mean the area heading and the table heading sit at the same level, so
+    the building script identifies the table section by its title rather than by heading level; the earlier
+    version, which relied on the level, failed loudly on this packet rather than mis-deriving, which is
+    the behaviour the assertions were put there for.'
+unresolved_identity_questions: []
+unresolved_identity_questions_note: None. Every structural choice here follows the chapter disposition
+  settled at PKT-SD-142-143 and the dispositions it rests on.
+architectural_escalations: []
+architectural_escalation_note: None raised. The one proposed identity uses an approved prefix, every row
+  uses a legal edge type at status core, no row carries supersession_basis and none is an OVERRIDES, and
+  no CLASSIFIED_AS row appears. The authority list omits the nonexistent Shadowdark DEC-2026-0003; registry
+  authority for this ruleset is constitution section 2, as recorded in GUR-PKT-SD-142-143-arctic-r01.
+completeness_statement: 'Both printed pages in scope were read in full at the recorded checksum: 1 named
+  table, 50 data rows, 0 sentences of prose. The packet yields 1 new identity and 1 rows, reusing 1 canonical
+  identities whose labels the building script asserted equal to the registry. The proposed table carries
+  edges, so nothing is left unattached.
+
+  Every row was checked against the 779 canonical edges for an assertion-key collision, for a shared source,
+  type and target under a different aspect, and for duplicates within the patch; there are none of any,
+  and no canonical row cited either page before. The script locates the supporting cell for each row and
+  asserts its page, which matters because the page break falls inside the table.
+
+  6 candidates were rejected and each is recorded with its reason. The largest deliberate loss is the
+  creature and scene content, which belongs to the unextracted monster chapter or states no mechanic at
+  all. 4 of the 4 apparent registry references in the cells are spurious collisions with ordinary English,
+  measured rather than filtered by eye. No assertion depends on any other ruleset.'
+heading_level_note: The area heading here is level three, the only one in the chapter; see OBS-03. It
+  does not affect page attribution, and the section is identified by title rather than by level.

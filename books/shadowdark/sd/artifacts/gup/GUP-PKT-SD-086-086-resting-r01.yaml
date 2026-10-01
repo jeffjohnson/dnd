@@ -1,0 +1,249 @@
+schema_version: '1.0'
+id: GUP-PKT-SD-086-086-resting-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-086-086-resting
+constitution_version: '1.6'
+artifact_kind: packet_update
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 2 edge addition(s), 0 update(s), 4 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-SD-086-086-resting-r01
+  gur_checksum: sha256:e6ca9b32f1333511c88550ee106f0648f996ab9cfee80313090fd1798ff65fcd
+  gur_constitution_version: '1.6'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: false
+    reason: skipped by flag
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: rule_danger_level
+      proposed_label: Danger Level
+      kind: rule
+      why_needed: Source of M004 and M007. The classification of the surroundings that sets how often
+        a random encounter is checked for while resting.
+      edges_depending_on_it:
+        - M004
+        - M006
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: item_rations
+      proposed_label: Rations
+      kind: item
+      why_needed: Endpoint of M001. What a rest consumes; the gear entry on printed page 34 carried no
+        mechanic, and this page gives it one.
+      edges_depending_on_it:
+        - M001
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: item_campfire
+      proposed_label: Campfire
+      kind: item
+      why_needed: Source of M005. A light source built from torches, with its own duration and reach.
+      edges_depending_on_it:
+        - M005
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: item_torch
+      proposed_label: Torch
+      kind: item
+      why_needed: Endpoint of M005. What a campfire is built from. The gear entry on printed page 34 deferred
+        a torch identity because no relationship was expressible then; this page states one.
+      edges_depending_on_it:
+        - M005
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions:
+    - source_id: abil_constitution
+      source_label: Constitution
+      edge_type: FEEDS_INTO
+      target_id: rule_resting
+      target_label: Resting
+      aspect: interruption check
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '86'
+      section: RESTING
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+    - source_id: rule_check
+      source_label: Check
+      edge_type: CONSTRAINS
+      target_id: rule_resting
+      target_label: Resting
+      aspect: interruption
+      condition: on a stressful interruption
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '86'
+      section: RESTING
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+  pending_additions:
+    - source_id: item_campfire
+      source_label: Campfire
+      edge_type: CONSUMES
+      target_id: item_torch
+      target_label: Torch
+      aspect: construction
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '86'
+      section: CAMPFIRE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M005
+    - source_id: rule_danger_level
+      source_label: Danger Level
+      edge_type: CONSTRAINS
+      target_id: rule_resting
+      target_label: Resting
+      aspect: rest safety
+      condition: ''
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '86'
+      section: DANGER LEVEL
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M006
+    - source_id: rule_danger_level
+      source_label: Danger Level
+      edge_type: FEEDS_INTO
+      target_id: rule_encounter
+      target_label: Encounter
+      aspect: check cadence
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '86'
+      section: DANGER LEVEL
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+    - source_id: rule_resting
+      source_label: Resting
+      edge_type: CONSUMES
+      target_id: item_rations
+      target_label: Rations
+      aspect: ration cost
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '86'
+      section: RESTING
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts:
+    derived: 1
+    read: 1
+duplicate_findings: []
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 6
+  edges_compiled: 6
+  edges_rejected: 0
+  edge_additions: 2
+  edge_pending_additions: 4
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 0
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 4
+  cross_packet_dependencies: 0
+  duplicate_findings: 0
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-SD-086-086-resting-r01.validation.json

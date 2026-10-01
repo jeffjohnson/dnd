@@ -1,0 +1,132 @@
+schema_version: '1.0'
+id: ESC-2026-08-31T16.44.09.512Z
+status: decided
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-steward-intake
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.8'
+raised_by: builder
+decision_owner: architect
+raised_on: '2026-08-31'
+decision_id: DEC-2026-0077
+decided_on: '2026-08-31'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    DEC-2026-0076 states its node addition at canonical_migration.node_addition.
+    The direct-v1 planner executes registry additions, but reads them from the
+    Decision's top-level new_nodes_authorized, so it refuses rather than drop
+    the operation. One key moves and GUP-MIG-DEC-2026-0076-r01 publishes; the
+    Builder will not read it from an unauthorized location.
+  blocking_ids: []
+
+question: >-
+  Should DEC-2026-0076's `monster_giant` addition be restated under the
+  top-level `new_nodes_authorized` key the direct-v1 planner executes, or should
+  the planner be authorized to read node additions from
+  `canonical_migration.node_addition` as well?
+
+evidence:
+  source_excerpt: >-
+    Not applicable: this concerns where an authorized operation is written, not
+    what DMG 64 says. The ruling itself is not in question.
+
+  the_blocker:
+    decision: DEC-2026-0076
+    stated_at: canonical_migration.node_addition
+    content: {id: monster_giant, label: Giants, kind: monster}
+    planner_reads: new_nodes_authorized
+    planner_fields: [id, label, kind, basis]
+    finding: >-
+      migration_instruction_not_understood -- "DEC-2026-0076 carries
+      canonical_migration.node_addition, which this planner does not read. Any
+      operation it enumerates would be dropped without a trace."
+    effect: >-
+      The plan renders the endpoint repoint correctly and reports nodes_added 0.
+      Publishing it would register nothing, so the repoint would point the DMG 64
+      row at an identity the registry does not hold.
+    capability_is_present: >-
+      decision_migration_v1 covers registry addition by definition, the planner
+      builds node additions into plan.nodes_added, and the four fields the
+      Decision supplies are exactly the four it reads. Only the location differs.
+
+  what_builder_already_removed:
+    before: 6 errors
+    after: 1 error
+    fixed_without_a_ruling: >-
+      canonical_migration.baseline, .lineage_id, .operation_model and
+      .required_gup name the artifact, lineage, model and baseline the migration
+      belongs to. They enumerate no operation, which is exactly the test
+      DOCUMENTARY_MIGRATION_KEYS already expresses, and reporting them as
+      dropped operations buried the one key that really was one. They are now
+      declared documentary.
+    also_fixed: >-
+      endpoint_repoints[].canonical_index restates a locator the planner derives
+      for itself. It is now read and checked against canonical_row rather than
+      refused: a disagreement between them means the Decision was written
+      against a different corpus, which is worth an error of its own, and
+      silently preferring either one would repoint a row nobody authorized.
+    not_fixed_deliberately: >-
+      node_addition enumerates a real operation. Reading it because its content
+      looks familiar is exactly the alias-by-inference DEC-2026-0062 refused for
+      correction keys and DEC-2026-0073 admitted only through one exact
+      checksummed record. The Builder will not widen a migration planner on its
+      own judgment.
+
+  verification_already_done:
+    baseline_checksum: matches the recorded sha256:76b03fc1 exactly
+    before_image: >-
+      All eighteen fields of canonical row 1747 match the Decision's
+      before_assertion, including source_label 'Giant-Hurled Boulders'.
+    registry: monster_giant is absent, as required_absent_from_registry states
+    giant_vermin: >-
+      The eight monster_*_giant identities are untouched by the planned
+      operation.
+    packet_state: >-
+      GUP-PKT-DMG-064-064-missile-discharge-r02 remains published and clean;
+      only M014 awaits this migration.
+
+options_considered:
+  - >-
+    Architect reissues DEC-2026-0076 with the node under `new_nodes_authorized`,
+    keeping canonical_migration.endpoint_repoints as it stands. No tooling
+    change, no new capability, and the planner executes it today.
+  - >-
+    Architect authorizes the planner to read canonical_migration.node_addition
+    as an operation key. Wider than this Decision: every future v1 Decision
+    gains a second place to state additions, and two locations for one operation
+    is how a stated instruction ends up unread.
+  - >-
+    Builder reads it anyway because the fields match. Rejected on the standing
+    rule that an alternate location is not an alias.
+
+recommended_resolution: >-
+  Adopt the first option. It is one key moved, needs no ruling about tooling,
+  and leaves exactly one place where a node addition is stated. The migration
+  then plans and publishes immediately: the repoint is already rendered
+  correctly and the baseline, before-image and registry preconditions are all
+  verified against the live files.
+
+  Worth noting as a pattern rather than a complaint: this is the fourth time an
+  authored artifact has stated a real instruction in a location or spelling its
+  consumer does not read -- exact_correction and corrected_fields under
+  DEC-2026-0062, integration_rejection_input under DEC-2026-0073, and now
+  node_addition. Each was caught, but only because the consumer fails closed.
+  A Decision-authoring check that validates a Decision's operation keys against
+  what the planner reads, before the Decision is published, would turn all four
+  into an error message at authoring time. That is an Architect-owned question
+  and is not proposed here as Builder work.
+
+expected_migration_impact:
+  canonical_data: >-
+    Unchanged by this escalation. The authorized migration still moves exactly
+    one DMG 64 row once it can be planned.
+  registry: >-
+    Unchanged by this escalation; the migration still adds exactly monster_giant.
+  historical_artifacts: retained unchanged
+  tooling: >-
+    None under the recommended option. The documentary and locator corrections
+    above are already made and are reported in the resulting implementation
+    evidence.

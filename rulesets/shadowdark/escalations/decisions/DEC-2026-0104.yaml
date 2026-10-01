@@ -1,0 +1,192 @@
+schema_version: '1.0'
+id: DEC-2026-0104
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-084-085-crawling-light-and-movement
+constitution_version: '1.7'
+decision_date: '2026-09-25'
+escalation_id: ESC-2026-09-25T13.05.10.731Z
+question: >-
+  May a source-explicit item be represented as a mechanically operative Light
+  Source without widening Shadowdark CLASSIFIED_AS into general item taxonomy?
+ruling: >-
+  Approve one additional bounded Shadowdark CLASSIFIED_AS form: an item whose
+  source evidence explicitly identifies it as a light source may point to
+  rule_light_source with aspect light source. The edge is directed item to
+  classification, has derived neutral polarity, and each individual item may
+  carry at most one such row.
+
+  This authorization is restricted to item_ source IDs, target
+  rule_light_source, and the exact aspect light source. It does not establish
+  an item hierarchy, a generic provider relation, a property store, or a
+  classification form for another rule_ target. A GUR must cite a source locus
+  that explicitly identifies that individual item as a light source; the
+  existence of light mechanics alone is insufficient. Torch, Lantern, and
+  Campfire are not asserted by this Decision and require ordinary
+  source-backed successor artifacts before entering the graph.
+
+  The prior spell forms, their spell-specific tier cardinality, and the
+  exclusions for sys_ axes, table headings, collective groupings, and
+  taxonomy-only memberships remain unchanged. Any further CLASSIFIED_AS shape
+  requires a new Architect Decision.
+rationale:
+  - >-
+    Light Source directly gates Vision and excludes Total Darkness at the
+    defining locus. The identity of a source-explicit item that provides that
+    mechanically required classification is therefore impact-relevant rather
+    than merely descriptive taxonomy.
+  - >-
+    Limiting the form to one item prefix, one target identity, one aspect, and
+    source-explicit evidence preserves the closed ontology and prevents the
+    classification edge from becoming a general item-property mechanism.
+  - >-
+    At-most-one cardinality prevents duplicate assertions without requiring
+    every item to be classified or inventing a completeness obligation for
+    unread equipment sources.
+evidence:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-25T13.05.10.731Z.yaml, checksum: sha256:a3a82f7ddd552f7e057b2692db5a90785d66cf7fcdb2fbb424971664ecbf880d, role: complete_light_source_escalation}
+  - {path: books/shadowdark/sd/packets/claimed/PKT-SD-084-085-crawling-light-and-movement/source.md, checksum: sha256:1a24fd38b99ce5627381997c7641764e2f4c00de83fd5167012957f82df9fbec, role: defining_light_mechanics_locus}
+  - {path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-084-085-crawling-light-and-movement-r01.yaml, checksum: sha256:0bf15e64c125917df49ab1687e228ef78202957e7c32f55448ef2cb504b4c19e, role: current_packet_boundary}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml, checksum: sha256:3a9fa4cd37e0cf4172d0b716d79f420ce5f7ea25fdf7e5fffe4a1e8715e40985, role: bounded_classification_authority}
+  - {path: rulesets/shadowdark/decision-implementation-reviews/REV-IMP-DEC-2026-0103-r01-r01.yaml, checksum: sha256:90ae984457345f8f67fd7da0a74bb5a7c3397275b98b82a3e11ea120a7e4fc4a, role: terminal_classifier_implementation_approval}
+migration_required: false
+migration_scope: >-
+  No canonical row, registry row, source packet, GUR, GUP, Review, Approved
+  bundle, or Integration is rewritten or retracted. After terminal approval of
+  the Decision implementation, Analyst may publish ordinary source-backed
+  successors for current or future packets. Each successor supplies its own
+  item evidence; no mass reissue and no inferred Light Source classifications
+  are authorized.
+constitution_version_impact: >-
+  Shadowdark Constitution advances from 1.6 to 1.7. It expands one existing
+  bounded edge type by a single mechanically operative item form and preserves
+  historical 1.0 through 1.6 input compatibility.
+affected_contracts:
+  - rulesets/shadowdark/governance/constitution.md
+  - rulesets/shadowdark/ruleset.yaml
+  - schemas/shadowdark/graph/gur.schema.json
+  - schemas/shadowdark/graph/gup.schema.json
+affected_registries: []
+implementation_bounds:
+  - >-
+    Architect changes only this Decision, Shadowdark governance and structural
+    schemas, and the resolved escalation location.
+  - >-
+    Builder changes only tooling/builder/src/adnd1e_builder/compiler.py and
+    tooling/builder/tests/test_shadowdark_ancestry.py. It extends the existing
+    enumerated Shadowdark classifier with the one item-to-rule_light_source
+    shape and must not create a generic item classifier or change another
+    ruleset's vocabulary.
+  - >-
+    Builder must reject a non-item source, a target other than rule_light_source,
+    a reversed direction, an aspect other than light source, and duplicate
+    item-to-light-source rows with specific findings. It must retain all
+    DEC-2026-0103 spell validation and cardinality behavior.
+  - >-
+    Do not create or edit ordinary source, GUR, GUP, Review, Approved, registry,
+    or canonical artifacts during implementation. Do not touch basicdnd/rc.
+acceptance_tests:
+  - >-
+    Constitution Version 1.7 or later defines CLASSIFIED_AS as a directed,
+    neutral, source-declared mechanically operative classification; retains the
+    bounded spell forms and exclusions; and adds only item_ to rule_light_source
+    with aspect light source, source-explicit evidence, and at-most-one
+    cardinality.
+  - >-
+    Shadowdark GUR and GUP schemas admit current 1.7 artifacts while preserving
+    historical 1.0 through 1.6 admission. No other ruleset schema or edge
+    vocabulary changes.
+  - >-
+    Builder accepts a valid item_ CLASSIFIED_AS rule_light_source light source
+    row with derived neutral polarity and rejects non-item sources, non-light
+    targets, reversed direction, wrong aspect, and duplicate item-light-source
+    classifications with specific findings. All DEC-2026-0103 spell checks
+    remain unchanged.
+  - >-
+    Focused classifier regressions and the complete Builder suite pass. The
+    implementation report records exact commands and outcomes; Reviewer
+    independently reproduces the focused tests before approval.
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: rulesets/shadowdark/governance/constitution.md
+        minimum_version: '1.7'
+        substantive_anchors:
+          - CLASSIFIED_AS remains directed, neutral, source-declared, and mechanically operative rather than general taxonomy membership.
+          - Only a source-explicit item may classify as rule_light_source with aspect light source and at-most-one cardinality.
+          - Spell forms and taxonomy, sys-axis, and source-context exclusions remain unchanged.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Builder implements the one bounded item-to-light-source classifier extension
+    and publishes IMP-DEC-2026-0104-r01. Reviewer independently validates it
+    before any Analyst successor asserts a Light Source classification.
+  blocking_ids: []
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, activate Constitution 1.7 and matching Shadowdark
+      schemas, and relocate the resolved escalation to decided history.
+  - step: 2
+    owner: builder
+    action: >-
+      Extend only the enumerated Shadowdark CLASSIFIED_AS compiler shape and
+      focused tests; publish IMP-DEC-2026-0104-r01 with focused and full-suite
+      evidence.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently validate IMP-DEC-2026-0104-r01 and publish the terminal
+      Decision Implementation Review.
+  - step: 4
+    owner: analyst
+    action: >-
+      After terminal implementation approval, publish only source-backed
+      ordinary successors that assert item-to-rule_light_source rows. Start
+      with the exact source packet that explicitly identifies an item as a
+      light source; do not infer a row from the current mechanics packet.
+post_implementation_requirements:
+  - >-
+    Builder, Reviewer, and Integrator process any Analyst successor through the
+    ordinary lifecycle. Current packet artifacts remain valid until a
+    source-specific successor exists.
+  - >-
+    Future classification forms, item property categories, or evidence weaker
+    than a source-explicit identification require a new Architect Decision.
+exact_diff:
+  rulesets/shadowdark/escalations/pending/ESC-2026-09-25T13.05.10.731Z.yaml: Relocate the resolved immutable escalation to decided history.
+  rulesets/shadowdark/escalations/decided/ESC-2026-09-25T13.05.10.731Z.yaml: Preserve the resolved immutable escalation under decided history.
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0104.yaml: Publish the bounded item Light Source ruling.
+  rulesets/shadowdark/governance/constitution.md: Advance to 1.7 and add the single item Light Source classification form.
+  rulesets/shadowdark/ruleset.yaml: Declare current 1.7 and historical 1.6 compatibility.
+  schemas/shadowdark/graph/gur.schema.json: Admit historical 1.0 through 1.6 and current 1.7 GURs.
+  schemas/shadowdark/graph/gup.schema.json: Admit historical 1.0 through 1.6 and current 1.7 GUPs.
+  tooling/builder/src/adnd1e_builder/compiler.py: Extend the bounded Shadowdark classifier with the item Light Source shape.
+  tooling/builder/tests/test_shadowdark_ancestry.py: Cover accepted and rejected item Light Source classifications.
+  rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0104-r01.yaml: Record Builder implementation and validation evidence.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-25T13.05.10.731Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decided/ESC-2026-09-25T13.05.10.731Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0104.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/governance/constitution.md, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/ruleset.yaml, owner: architect, sequence_step: 1}
+  - {path: schemas/shadowdark/graph/gur.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/shadowdark/graph/gup.schema.json, owner: architect, sequence_step: 1}
+  - {path: tooling/builder/src/adnd1e_builder/compiler.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_shadowdark_ancestry.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0104-r01.yaml, owner: builder, sequence_step: 2}
+follow_up_owners:
+  builder:
+    - Implement the single bounded item-to-rule_light_source classifier before any ordinary successor uses it.
+  reviewer:
+    - Independently review IMP-DEC-2026-0104-r01 after Builder publication.
+  analyst:
+    - After terminal implementation approval, publish only source-explicit ordinary successors for item Light Source classifications.

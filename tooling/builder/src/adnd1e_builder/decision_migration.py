@@ -50,6 +50,20 @@ DOCUMENTARY_MIGRATION_KEYS = frozenset(
         "canonical_source",
         "registry_source",
         "required_no_change_fields",
+        # DEC-2026-0076 states these alongside its operations. Each names the
+        # artifact, lineage, model or baseline the migration belongs to, which
+        # the planner already learns from its own arguments and the file it
+        # reads. Not reading one changes nothing about what the migration does,
+        # which is the test this set exists to express -- and reporting them as
+        # dropped operations buried the one key that really was an operation.
+        "baseline",
+        "lineage_id",
+        "operation_model",
+        "required_gup",
+        # A Reviewer constraint naming identities the migration must leave
+        # alone. It enumerates nothing to execute, but it is not ignored either:
+        # `_check_unaffected_ids` proves the finished plan touches none of them.
+        "unaffected_existing_ids",
     }
 )
 
@@ -57,6 +71,12 @@ DOCUMENTARY_MIGRATION_KEYS = frozenset(
 UNDERSTOOD_REPOINT_KEYS = frozenset(
     {"canonical_row", "field", "from", "to", "label", "before_assertion", "note"}
 )
+
+#: Repoint keys that restate a locator the planner derives for itself. Read to
+#: be checked rather than trusted: a `canonical_index` that disagrees with its
+#: `canonical_row` means the Decision was written against a different corpus,
+#: and silently preferring one of them would repoint a row nobody authorized.
+CHECKED_REPOINT_KEYS = frozenset({"canonical_index"})
 
 
 @dataclass
@@ -203,7 +223,20 @@ def _check_understood_shape(block: dict, decision_id: str, plan: DecisionMigrati
     for position, entry in enumerate(block.get("endpoint_repoints") or [], start=1):
         if not isinstance(entry, dict):
             continue
-        unknown = sorted(set(entry) - UNDERSTOOD_REPOINT_KEYS)
+        stated_index = entry.get("canonical_index")
+        if stated_index is not None:
+            row = entry.get("canonical_row")
+            expected = row - 2 if isinstance(row, int) else None
+            if expected is not None and stated_index != expected:
+                plan.finding(
+                    "migration_repoint_locator_disagrees",
+                    "error",
+                    f"{decision_id} endpoint_repoints[{position}] states "
+                    f"canonical_row {row} and canonical_index {stated_index}, which "
+                    f"do not describe the same row. The Decision was written "
+                    f"against a different corpus than this one.",
+                )
+        unknown = sorted(set(entry) - UNDERSTOOD_REPOINT_KEYS - CHECKED_REPOINT_KEYS)
         if unknown:
             plan.finding(
                 "migration_repoint_key_not_understood",
@@ -992,7 +1025,51 @@ def plan_from_decisions(
         "rows_removed": len(plan.removals),
         "canonical_row_net_change": -len(plan.removals),
     }
+    _check_unaffected_ids(decision_paths, plan)
     return plan
+
+
+def _check_unaffected_ids(decision_paths, plan: "DecisionMigration") -> None:
+    """Prove the plan touches none of the identities a Decision protects.
+
+    `unaffected_existing_ids` is a constraint rather than an operation, so not
+    reading it changes nothing about what the migration does. That makes it
+    documentary -- but a constraint nobody checks is a comment, and DEC-2026-0077
+    names the eight giant-vermin identities precisely because the whole risk of
+    adding `monster_giant` is that one of them is caught up in it.
+    """
+    for path in decision_paths:
+        document = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+        if not isinstance(document, dict):
+            continue
+        decision_id = document.get("id") or Path(path).stem
+        block = document.get("canonical_migration")
+        if not isinstance(block, dict):
+            continue
+        protected = {str(i) for i in block.get("unaffected_existing_ids") or []}
+        if not protected:
+            continue
+        touched: set[str] = set()
+        for node in plan.nodes_added:
+            touched.add(str(node.get("proposed_id") or ""))
+        for entry in plan.nodes_replaced:
+            touched.update(str(v) for k, v in entry.items() if k.endswith("_id"))
+        for merge in plan.nodes_merged:
+            touched.update(str(n) for n in merge.get("retired_nodes") or [])
+            touched.add(str(merge.get("canonical_id") or ""))
+        for change in plan.row_changes:
+            for field, (before, after) in change.changes.items():
+                if field.endswith("_id"):
+                    touched.update({str(before), str(after)})
+        collision = sorted(protected & touched)
+        if collision:
+            plan.finding(
+                "migration_touches_protected_identity",
+                "error",
+                f"{decision_id} lists {', '.join(collision)} under "
+                f"unaffected_existing_ids, but the planned migration changes "
+                f"{'them' if len(collision) > 1 else 'it'}.",
+            )
 
 
 def validation_report(

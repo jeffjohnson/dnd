@@ -1,0 +1,217 @@
+schema_version: '1.0'
+id: ESC-2026-09-20T17.41.06.057Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.0'
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-09-20'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The repository source steward has declared two further page classes valid for intake,
+    page-intentionally-ignored and blank-page. contracts/SOURCE_MARKDOWN.md 1.7 declares the page
+    class vocabulary closed and containing only full-page-artwork, so neither the steward nor the
+    Analyst may adopt them. SOURCE_MARKDOWN is a universal contract at the top of the
+    REPOSITORY_STRUCTURE authority hierarchy, above every ruleset, so only an Architect Decision can
+    widen it. One occurrence is already present in supplied source and the linter rejects it.
+  blocking_ids: []
+
+question: >-
+  Should the closed page-class vocabulary in contracts/SOURCE_MARKDOWN.md be widened from
+  full-page-artwork alone to include page-intentionally-ignored and blank-page, and if so with what
+  exact definitions, what intake obligations, and what treatment in the packet manifest?
+
+scope_limits: >-
+  This escalation asks only about intake page classification. It proposes no node, edge, domain,
+  general rule or identity, requests no change to the Shadowdark constitution, and does not ask any
+  role to read a page. It blocks exactly one packet, identified below; it does not block the other
+  143 supplied Shadowdark packets and must not be treated as a hold on extraction.
+
+steward_declaration:
+  declared_by: repository source steward
+  declared_on: '2026-09-20'
+  statement: >-
+    The steward states that page-intentionally-ignored is valid and should simply be ignored, and
+    that such a page is usually a character sheet or a blank list for the user to write their own
+    ideas into. The steward further states that blank-page is also valid and will appear in later
+    intake.
+  authority_basis: >-
+    contracts/SOURCE_MARKDOWN.md External Source Intake makes the repository source steward
+    responsible for source acquisition and for supplying conforming incoming packets, and the Page
+    classes section already defines the existing class as a steward declaration about a printed
+    page. Recording a dated steward statement as steward authority follows the pattern used for the
+    PHB 108 marker_note and for the coverage exception in adnd1e DEC-2026-0079.
+  evidence_status: >-
+    This is a declaration about intake classification, not source-read evidence about the mechanical
+    content of any page. It is recorded in this artifact so the question rests on a durable record
+    rather than on conversation, which the Analyst is prohibited from using as evidence.
+
+current_contract_state:
+  contract: contracts/SOURCE_MARKDOWN.md
+  version: '1.7'
+  clause: >-
+    The Page classes section states that the initial closed vocabulary contains only
+    full-page-artwork, and defines it as the steward declaring that an in-span printed page contains
+    full-page artwork and no graph-constitutable content. It states that the class is intake
+    metadata and not a graph node, edge, domain, general rule or source citation, that a class
+    marker must sit on a heading or an empty fenced Div, that the classified page is retained in
+    packet.yaml composition metadata at claim, that the manifest governs if the source class and the
+    intake description conflict, and that a class-marked page inside a packet's declared span is not
+    an uncovered-page or graph-content obligation.
+  authority_level: >-
+    REPOSITORY_STRUCTURE places contracts/ at position 1 of the authority hierarchy, above
+    schemas/common, agents/, every ruleset and every book. A change here reaches adnd1e, basicdnd and
+    shadowdark alike. The word initial in the clause suggests the vocabulary was expected to grow,
+    but the clause is written as closed and names no extension procedure.
+
+evidence:
+  occurrence_present_now:
+    page: 322
+    packet_file: books/shadowdark/sd/packets/incoming/144-community-credits-and-licensing.md
+    marker: '::: {#p322 .page-intentionally-ignored}'
+    subject: community credits and licensing
+    parser_state: >-
+      The Div is now well formed and Pandoc resolves page 322 correctly, so this is purely a
+      vocabulary question and not a parse failure.
+    linter_state: >-
+      The marker linter rejects it with: page 322: unknown page class(es) page-intentionally-ignored;
+      the closed vocabulary is full-page-artwork. The linter therefore already enforces the closed
+      vocabulary, which is why the Analyst cannot proceed on this packet by treating the class as
+      informational.
+  anticipated_occurrence:
+    class: blank-page
+    present_in_current_intake: false
+    basis: >-
+      The steward states it will appear in later intake. No supplied Shadowdark packet uses it today,
+      verified across all 144 files: the only classes in use are full-page-artwork, fifteen times,
+      and page-intentionally-ignored, once.
+  intake_health_context: >-
+    After the steward's corrections and a mechanical two-line Div repair applied to sixteen markers,
+    the Shadowdark main rules intake resolves contiguously from printed page 1 to page 325 with no
+    gap, no packet lacking a resolved page, and sixteen well-formed class markers. This escalation is
+    the only remaining source-classification question in the set.
+
+semantic_analysis: >-
+  The three classes share one consequence, that the page owes the graph nothing, but they differ in
+  why, and the difference is not cosmetic. full-page-artwork asserts the page carries artwork instead
+  of text. blank-page asserts the page carries nothing at all. page-intentionally-ignored, on the
+  steward's description, asserts something materially different: the page does carry printed matter,
+  such as a character sheet or a list left blank for a reader to fill in, and that matter is
+  deliberately excluded rather than absent. A later reader auditing coverage can distinguish a page
+  that was empty from a page that was skipped on purpose only if the vocabulary records the
+  difference. Collapsing all three into full-page-artwork would make the record false for two of
+  them, which is the Analyst's reason for not simply relabelling page 322 and moving on.
+
+options_considered:
+  - id: OPT-A
+    summary: widen the closed vocabulary to the three named classes
+    detail: >-
+      Amend SOURCE_MARKDOWN to enumerate full-page-artwork, page-intentionally-ignored and
+      blank-page, each with a one-sentence definition, keeping the vocabulary closed and keeping the
+      existing attachment, manifest and non-obligation rules unchanged. Update the linter's accepted
+      set to match the contract.
+    cost: >-
+      A universal contract revision from 1.7 and a small Builder linter change. Every ruleset
+      inherits the wider vocabulary whether or not it uses it.
+    benefit: >-
+      Preserves the distinction the steward is actually drawing, keeps the vocabulary closed and
+      auditable, needs no parser change because all three attach identically, and settles blank-page
+      before its first occurrence rather than after it blocks a packet.
+  - id: OPT-B
+    summary: relabel the existing occurrence as full-page-artwork and add nothing
+    detail: >-
+      Ask the steward to write full-page-artwork on page 322 and on any future page of this kind.
+    cost: >-
+      Records a false statement about the page. Page 322 is community credits and licensing, which is
+      neither artwork nor blank. The steward has explicitly described a third situation, so this
+      option discards information the steward is deliberately supplying.
+    benefit: No contract or tooling change.
+  - id: OPT-C
+    summary: open the vocabulary to arbitrary steward-defined classes
+    detail: >-
+      Allow any class on a page marker and treat unknown classes as informational.
+    cost: >-
+      Removes the guarantee the closed vocabulary exists to provide. Source files could then assert
+      classifications no contract defines, and the linter could no longer catch a typo such as
+      full-page-artwrok, which would silently become a new meaning. The Analyst does not recommend
+      this.
+    benefit: No future escalation when a class is added.
+  - id: OPT-D
+    summary: one class plus a free-text reason field
+    detail: >-
+      Keep a single no-graph-content class and carry the reason in packet.yaml composition metadata
+      at claim rather than in the source marker.
+    cost: >-
+      Splits the fact across two artifacts and makes the source file alone insufficient to explain
+      itself. The contract already says the manifest governs a conflict, which presumes the source
+      carries a class at all.
+    benefit: >-
+      No vocabulary growth; the distinction still survives, in the manifest. Worth considering if the
+      Architect prefers to keep the source-side vocabulary minimal.
+
+recommended_resolution: >-
+  OPT-A. The steward is drawing a real distinction, the vocabulary stays closed and therefore still
+  catches typos, all three classes attach to the same Pandoc constructs so no parser work is needed,
+  and settling blank-page now costs nothing while settling it later costs another blocked packet and
+  another serial escalation. The Analyst asks that the Decision state each class definition
+  explicitly, say whether the packet manifest must still record the classified page in composition
+  metadata as the current clause requires for full-page-artwork, and confirm that a class-marked page
+  remains a non-obligation for coverage in all three cases. The Analyst has no preference about the
+  exact class spellings and defers entirely to the Architect on whether the vocabulary should be
+  widened at all.
+
+expected_migration_impact:
+  graph_data_change: false
+  registry_change: false
+  canonical_data_change: false
+  existing_artifact_invalidation: >-
+    None. No published GUR, GUP, Review, Approved bundle or Integration record in any ruleset cites a
+    page class. The single published Shadowdark artifact,
+    GUR-PKT-SD-015-015-stats-and-stat-modifiers-r01, cites printed page 15, which carries a plain
+    heading marker and no class, and is unaffected either way.
+  existing_source_invalidation: >-
+    None. The fifteen full-page-artwork markers in this intake remain valid under every option.
+  tooling_change_required: true
+  tooling_change_detail: >-
+    The marker linter in the Builder package enforces the accepted class set and currently rejects
+    page-intentionally-ignored. Under OPT-A its accepted set must be updated to match the amended
+    contract. This is Builder-owned code and should be sequenced with the contract change so the
+    linter and the contract never disagree.
+
+governance_change_surface:
+  contract_change: >-
+    Yes under OPT-A, OPT-C and OPT-D: contracts/SOURCE_MARKDOWN.md would move from 1.7. This is a
+    universal contract and the change reaches adnd1e, basicdnd and shadowdark.
+  constitution_change: >-
+    No. The Shadowdark constitution defers page-marker handling to SOURCE_MARKDOWN in section 6 and
+    would not itself change.
+  registry_change: No.
+  schema_change: No.
+
+blocked_work:
+  - packet_file: books/shadowdark/sd/packets/incoming/144-community-credits-and-licensing.md
+    pages: 323 to 325 primary, with the classified page 322
+    reason: >-
+      Claiming this packet would record a page class the governing contract does not recognise and
+      that its own linter rejects.
+    note: >-
+      This is the last packet in the supplied sequence and nothing depends on it.
+unblocked_work: >-
+  The remaining 143 supplied Shadowdark packets are unaffected. None of the other 15 class markers
+  uses a disputed class, and page classification does not participate in any assertion. Under
+  contracts/HERDR_HANDOFFS.md the existence of this escalation does not block unrelated ready work,
+  and the Analyst continues ordinary extraction rather than holding the book.
+
+analyst_position: >-
+  The Analyst verified the parser state before raising this, so the Architect is deciding a
+  vocabulary question and not a formatting one. The Analyst did not relabel page 322 to the one
+  permitted class, because that would assert the page is artwork when the steward has said it is a
+  character sheet or a write-in list, and hiding the distinction would be exactly the kind of
+  plausible-looking substitution the role is prohibited from making. The Analyst also did not widen
+  the linter's accepted set, which is Builder-owned code implementing an Architect-owned contract.

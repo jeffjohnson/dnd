@@ -1,0 +1,167 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-068-070-spells-prophecy-to-shapechange-r01-r01
+artifact_kind: packet_update_review
+status: revision_required
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-068-070-spells-prophecy-to-shapechange
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-26'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-068-070-spells-prophecy-to-shapechange-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-068-070-spells-prophecy-to-shapechange-r01.yaml
+  checksum: sha256:e40894aba310584319272ac6daa4c16adfe1bc9cffb23f2f9db04ec612d1803e
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: revision_required
+approval_ready: false
+edge_decisions:
+  approved_refs: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012, M013, M014, M015, M016, M017, M018, M019, M020, M021, M022, M023, M024, M025, M026, M027, M028, M029, M030, M031, M032, M033, M034, M035, M036, M037, M038, M039, M040, M041, M042, M043, M044, M045, M046, M047]
+  disposition: approved
+node_registry_decisions:
+  - {proposed_id: spell_prophecy, submitted_label: Prophecy, kind: spell, disposition: approved}
+  - {proposed_id: spell_protection_from_energy, submitted_label: Protection from Energy, kind: spell, disposition: approved}
+  - {proposed_id: spell_protection_from_evil, submitted_label: Protection from Evil, kind: spell, disposition: approved}
+  - {proposed_id: spell_rebuke_unholy, submitted_label: Rebuke Unholy, kind: spell, disposition: approved}
+  - {proposed_id: spell_regenerate, submitted_label: Regenerate, kind: spell, disposition: approved}
+  - {proposed_id: spell_resilient_sphere, submitted_label: Resilient Sphere, kind: spell, disposition: approved}
+  - {proposed_id: spell_restoration, submitted_label: Restoration, kind: spell, disposition: approved}
+  - {proposed_id: spell_scrying, submitted_label: Scrying, kind: spell, disposition: approved}
+  - {proposed_id: spell_sending, submitted_label: Sending, kind: spell, disposition: approved}
+  - {proposed_id: spell_shapechange, submitted_label: Shapechange, kind: spell, disposition: approved}
+architectural_escalations: []
+blocking_findings:
+  - id: missing_rebuke_unholy_destruction_outcome
+    severity: blocking
+    detail: >-
+      REBUKE UNHOLY explicitly destroys an eligible creature that fails its
+      resistance check by the stated margin. The GUP records the resistance,
+      threshold input, and level bound but no edge for the resulting lethal
+      outcome. rule_death is canonical and already receives TRIGGERS edges from
+      lethal spells including Cloudkill and Disintegrate, so no new identity or
+      architectural choice is required. Without this row, a change to the
+      spell's destruction outcome would not reach rule_death in impact analysis.
+    source_citation:
+      path: books/shadowdark/sd/packets/claimed/PKT-SD-068-070-spells-prophecy-to-shapechange/source.md
+      page: '69'
+      section: REBUKE UNHOLY
+      evidence: >-
+        An affected creature is destroyed when it fails the rebuke check by the
+        stated margin and is within the caster-level bound.
+required_builder_revision:
+  successor_gup_id: GUP-PKT-SD-068-070-spells-prophecy-to-shapechange-r02
+  source_gur_successor_required: true
+  required_relationship:
+    source_id: spell_rebuke_unholy
+    edge_type: TRIGGERS
+    target_id: rule_death
+    aspect: rebuke destruction
+    condition: when an eligible target fails the rebuke check severely
+    book: SD
+    page: '69'
+    section: REBUKE UNHOLY
+    evidence: explicit_rule
+    polarity: inflicts
+    polarity_basis: read
+  preserve_reviewed_rows: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012, M013, M014, M015, M016, M017, M018, M019, M020, M021, M022, M023, M024, M025, M026, M027, M028, M029, M030, M031, M032, M033, M034, M035, M036, M037, M038, M039, M040, M041, M042, M043, M044, M045, M046, M047]
+  preserve_approved_node_registrations: [spell_prophecy, spell_protection_from_energy, spell_protection_from_evil, spell_rebuke_unholy, spell_regenerate, spell_resilient_sphere, spell_restoration, spell_scrying, spell_sending, spell_shapechange]
+  note: >-
+    Builder must return the omitted source relationship to Analyst for a
+    successor GUR, then compile the named successor GUP. No submitted row or
+    proposed node requires alteration.
+reviewer_findings:
+  - id: RF-01
+    subject: protection_from_evil_alignment_shape
+    disposition: approved
+    ref: M012
+    detail: >-
+      Chaotic alignment bounds which beings are affected by Protection from
+      Evil, so alignment_chaotic CONSTRAINS the spell and governs its
+      applicability. Rebuke Unholy is different: the caster's alignment is an
+      input selecting between target sets, so M018 through M020 correctly use
+      FEEDS_INTO. A single alignment edge type across both mechanics would erase
+      that source-level distinction.
+  - id: RF-02
+    subject: check_and_threshold_pairs
+    disposition: approved
+    refs: [M013, M014, M021, M022, M037, M038]
+    detail: >-
+      Each resisting or detecting check and its spellcasting-check threshold
+      are independently load-bearing. The CONSTRAINS plus FEEDS_INTO pairs
+      correctly apply the established Illusion settlement.
+  - id: RF-03
+    subject: rebuke_alignment_identity_grain
+    disposition: approved
+    refs: [M018, M019, M020]
+    detail: >-
+      The source separately states the lawful, neutral, and chaotic caster
+      cases. Three canonical alignment identities preserve which value selects
+      targets; one sys_alignment row would collapse those distinctions.
+  - id: RF-04
+    subject: prophecy_penance_history
+    disposition: informational_correction
+    ref: M001
+    detail: >-
+      M001 is correct, but GUR OBS-06 and its completeness statement are
+      factually wrong in calling this rule_penance's first spell use and first
+      inbound use. Canonical spell_dominion already has the same
+      rule_penance GATES spell relationship with aspect recasting, and
+      rule_penance has other inbound edges. This historical prose error does
+      not alter M001 or require a row correction.
+completeness_statement: >-
+  All 47 submitted rows and ten proposed spell registrations were independently
+  checked against pages 68 through 70, Constitution 1.7, the active registry,
+  and the canonical neighborhood. Every submitted row is correct as written,
+  including the distinct alignment semantics and the check/threshold pairs.
+  Approval is withheld because the packet omits the explicit, source-backed
+  Rebuke Unholy destruction outcome. A successor adding that one relationship
+  while preserving all submitted material will be complete.
+reviewer_checklist:
+  source_support: passed_for_submitted_rows_but_packet_incomplete
+  node_identity: passed
+  edge_semantics_and_direction: revision_required_missing_death_trigger
+  grain: passed
+  polarity: passed
+  page_attribution: passed
+  graph_neighborhood: passed_with_existing_rule_death_precedent
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-068-070-spells-prophecy-to-shapechange/source.md
+    checksum: sha256:c63fc99541f539a01388d2c84c489d22e04729c77e611644a69460db942dcb13
+    pages: ['68', '69', '70']
+    result: independently_read
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-068-070-spells-prophecy-to-shapechange-r01.yaml
+    checksum: sha256:7b0d5351278f1ba266d0634990b53f54b43d4540d1a1174e39a2fda639e76d9a
+    result: identity_question_resolved_and_completeness_defect_found
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-068-070-spells-prophecy-to-shapechange-r01.validation.json
+    checksum: sha256:a7fd38a89ed59e47641cb354316344b32c689f4adfcf969564e79791e1c38a71
+    result: compiler_clean_but_source_incomplete
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:0f032edee62c748ae66c233baf452c4d761bf3369b3110c8fea2922e36ecdd8c
+    observed_rows: 253
+    result: all_ten_spell_proposals_fresh_and_rule_death_canonical
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:92b466e31a0b7d2ba960bbe9e524e31971e349f9c9546b679172d27bdf3186bd
+    observed_edges: 444
+    result: >-
+      No assertion-key collision. rule_death already receives lethal spell
+      triggers, and spell_dominion already has the penance recasting gate.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Return the missing Rebuke Unholy destruction relationship to Analyst, then
+    compile GUP-PKT-SD-068-070-spells-prophecy-to-shapechange-r02 while
+    preserving all 47 reviewed rows and ten approved registrations.
+  blocking_ids: []

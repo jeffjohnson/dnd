@@ -1,0 +1,182 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-126-127-rival-crawlers-r01-r01
+artifact_kind: packet_update_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-126-127-rival-crawlers
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-28'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-126-127-rival-crawlers-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-126-127-rival-crawlers-r01.yaml
+  checksum: sha256:0380f6c16655e2b3d7937eed07d6cc7c075d23438ca04fc433952a5c819c3b4a
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: approved
+approval_ready: true
+edge_decisions:
+  approved_refs: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012, M013]
+  disposition: approved
+node_registry_decisions:
+  - proposed_id: rule_rival_crawlers
+    submitted_label: Rival Crawlers
+    kind: rule
+    disposition: approved
+  - proposed_id: tbl_rival_crawler_ancestry
+    submitted_label: Rival Crawler Ancestry Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_rival_crawler_class
+    submitted_label: Rival Crawler Class Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_rival_crawler_alignment
+    submitted_label: Rival Crawler Alignment Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_rival_crawler_renown
+    submitted_label: Rival Crawler Renown Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_rival_crawler_secret
+    submitted_label: Rival Crawler Secret Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_rival_crawler_wealth
+    submitted_label: Rival Crawler Wealth Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_rival_crawler_party_name
+    submitted_label: Rival Crawler Party Name Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_rival_crawler_signature_tactics
+    submitted_label: Rival Crawler Signature Tactics Table
+    kind: tbl
+    disposition: approved
+architectural_escalations: []
+blocking_findings: []
+reviewer_findings:
+  - id: RF-01
+    subject: party_uniformity_endpoint
+    disposition: approved
+    refs: [M013]
+    detail: >-
+      The unhedged source rule that all rival crawlers share one alignment is
+      mechanical and belongs in the graph. rule_rival_crawlers is the named
+      procedure that generates the party, and CONSTRAINS sys_alignment with
+      aspect party uniformity accurately limits alignment selection inside
+      that procedure. It does not constrain the global Alignment axis. A
+      separate party or member identity would add an unsupported participant
+      abstraction and is not required for this bounded relationship.
+  - id: RF-02
+    subject: generator_and_axis_rows
+    disposition: approved
+    refs: [M001, M002, M003, M009, M010, M011, M012]
+    detail: >-
+      The Ancestry, Class, and Alignment tables resolve corresponding parts of
+      Rival Crawlers. The axis-level rows preserve the established graph grain
+      without redundantly encoding thirteen already-canonical result members.
+      Alignment also feeds the Signature Tactics table because its columns are
+      explicitly indexed by alignment. The FEEDS_INTO and RESOLVED_BY
+      directions describe distinct input and output roles and do not collide.
+  - id: RF-03
+    subject: descriptive_generator_tables
+    disposition: approved
+    refs: [M004, M005, M006, M007, M008]
+    detail: >-
+      Renown, Secret, Wealth, Party Name, and Signature Tactics are source-named
+      tables that resolve parts of Rival Crawlers. Their individual results are
+      descriptive or magnitude-only and correctly remain unregistered while
+      the table identities and generator relationships are retained.
+  - id: RF-04
+    subject: registry_additions
+    disposition: approved
+    proposed_ids:
+      - rule_rival_crawlers
+      - tbl_rival_crawler_ancestry
+      - tbl_rival_crawler_class
+      - tbl_rival_crawler_alignment
+      - tbl_rival_crawler_renown
+      - tbl_rival_crawler_secret
+      - tbl_rival_crawler_wealth
+      - tbl_rival_crawler_party_name
+      - tbl_rival_crawler_signature_tactics
+    detail: >-
+      All nine proposals are source-named identities at their defining locus,
+      use approved prefixes and matching kinds, carry complete labels and
+      rationales, and are absent from the current registry. Each supports at
+      least one approved relationship.
+  - id: RF-05
+    subject: status_and_precedent
+    disposition: approved_core
+    refs: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012, M013]
+    detail: >-
+      Pages 126–127 present Rival Crawlers and all eight generator tables as
+      ordinary GM procedures without offering a choose-versus-roll alternative
+      or optional-mode framing. Core status is consistent with the settled NPC
+      generator ruling for pages 124–125; the optional page-40 character
+      generation context does not transfer its source-specific status here.
+  - id: RF-06
+    subject: source_structure_count
+    disposition: informational_correction
+    detail: >-
+      The source contains eight tables and 51 data rows, not the 52 stated in
+      the GUR units note: 6 + 4 + 3 + 4 + 6 + 4 + 20 + 4 = 51. This descriptive
+      count does not alter any proposed identity, relationship, page
+      attribution, or completeness conclusion.
+completeness_statement: >-
+  Printed pages 126 and 127, the opening Rival Crawlers rule, all eight tables,
+  all 51 data rows, all thirteen submitted relationships, all nine node
+  proposals, rejected candidates, IDQ-01, page attribution, and the relevant
+  NPC and random-generation neighborhood were independently checked against
+  Constitution 1.7, the registry, and canonical state. All thirteen rows are
+  source-supported, correctly scoped, collision-free, and core; all nine
+  registrations are complete and approval-ready.
+reviewer_checklist:
+  source_support: passed
+  node_identity: passed_nine_registrations
+  edge_semantics_and_direction: passed
+  grain: passed_axis_level_and_procedure_scope
+  polarity: passed_authored_and_derived
+  page_attribution: passed_heading_markers
+  graph_neighborhood: passed_status_and_axis_precedents
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-126-127-rival-crawlers/source.md
+    checksum: sha256:5c16ea1adb28fc8fe542c1bc4c4718146a95fe9295df66d33dff212f20941e56
+    pages: ['126', '127']
+    result: independently_read_opening_rule_and_all_eight_tables_and_counted_51_rows
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-126-127-rival-crawlers-r01.yaml
+    checksum: sha256:a344df661dd23f55a394e267910ee290b40694622ee8309b710898e57c5033fa
+    result: thirteen_assertions_nine_proposals_rejections_and_idq_01_independently_dispositioned
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-126-127-rival-crawlers-r01.validation.json
+    checksum: sha256:12c009acbfc5c881dad2d4e12b5005bd2038480f97d3aabb7d5b68c9a8c46fdf
+    result: zero_errors_warnings_duplicates_conflicts_or_escalations
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:2e74ff39949bc3d5c05cd43e8c89a9b3a75e2fcfc07097a48cb33dad827102c4
+    observed_rows: 336
+    result: all_nine_proposals_fresh_and_three_axis_labels_confirmed
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:ada204ee93e5f8324d3a40db0bb046050c19dc3546998a743e935464e8d79f85
+    observed_edges: 704
+    result: no_page_126_or_127_rows_and_relevant_generator_precedents_confirmed
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Apply the exact Approved bundle containing thirteen pending core additions
+    and nine approved registrations.
+  blocking_ids: []

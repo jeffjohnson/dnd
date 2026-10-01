@@ -1,0 +1,172 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-090-090-overland-travel-r01-r01
+artifact_kind: packet_update_review
+status: revision_required
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-090-090-overland-travel
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-26'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-090-090-overland-travel-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-090-090-overland-travel-r01.yaml
+  checksum: sha256:da410f14ed653ae7859290c4a860393ddd87b63a6e6b153003ca6d40dae964ac
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: revision_required
+approval_ready: false
+edge_decisions:
+  - {ref: M001, disposition: approved}
+  - {ref: M002, disposition: approved}
+  - {ref: M003, disposition: approved}
+  - {ref: M004, disposition: approved}
+  - {ref: M005, disposition: approved}
+  - {ref: M006, disposition: approved}
+  - ref: M007
+    disposition: approved_with_revision
+    exact_corrections:
+      edge_type: CONSTRAINS
+      aspect: outdoor occurrence
+      polarity: governs
+      polarity_basis: read
+    source_citation:
+      path: books/shadowdark/sd/packets/claimed/PKT-SD-090-090-overland-travel/source.md
+      page: '90'
+      section: LIGHT
+      evidence: >-
+        Total darkness is rare outside, even at night; overland context bounds
+        its occurrence but does not actively prevent it.
+  - {ref: M008, disposition: approved}
+  - {ref: M009, disposition: approved}
+  - {ref: M010, disposition: approved}
+  - {ref: M011, disposition: approved}
+  - {ref: M012, disposition: approved}
+  - {ref: M013, disposition: approved}
+  - {ref: M014, disposition: approved}
+  - {ref: M015, disposition: approved}
+  - {ref: M016, disposition: approved}
+  - {ref: M017, disposition: approved}
+  - {ref: M018, disposition: approved}
+  - {ref: M019, disposition: approved}
+node_registry_decisions:
+  - {proposed_id: rule_overland_travel, submitted_label: Overland Travel, kind: rule, disposition: approved}
+  - {proposed_id: rule_hex, submitted_label: Hex, kind: rule, disposition: approved}
+  - {proposed_id: tbl_hexes_crossed, submitted_label: Hexes Crossed Table, kind: tbl, disposition: approved}
+  - {proposed_id: rule_navigation, submitted_label: Navigation, kind: rule, disposition: approved}
+  - {proposed_id: rule_food_and_water, submitted_label: Food and Water, kind: rule, disposition: approved}
+architectural_escalations: []
+blocking_findings:
+  - id: total_darkness_not_excluded
+    severity: blocking
+    ref: M007
+    detail: >-
+      Constitution 1.7 defines EXCLUDES as actively preventing a relation. The
+      page says Total Darkness is rare outside, not impossible, so the submitted
+      empty-condition EXCLUDES row overstates the source. Overland Travel
+      instead CONSTRAINS Total Darkness's outdoor occurrence with authored
+      governs/read polarity.
+required_builder_revision:
+  successor_gup_id: GUP-PKT-SD-090-090-overland-travel-r02
+  source_gur_successor_required: false
+  apply_exact_corrections_from_ref: [M007]
+  preserve_reviewed_rows: [M001, M002, M003, M004, M005, M006, M008, M009, M010, M011, M012, M013, M014, M015, M016, M017, M018, M019]
+  preserve_approved_node_registrations: [rule_overland_travel, rule_hex, tbl_hexes_crossed, rule_navigation, rule_food_and_water]
+  note: >-
+    Compile r02 by applying M007's executable exact_corrections. No other row,
+    identity, source judgment, or registry operation may change.
+reviewer_findings:
+  - id: RF-01
+    subject: rations_deprivation_resolution
+    disposition: approved_explicit_reference
+    ref: M019
+    detail: >-
+      The page-90 rule ends the blocked-healing state when the character eats
+      or drinks. The canonical Rations definition on page 34 explicitly says
+      it is one day of food and water supply for one person, so M019 covers both
+      halves of the combined Food and Water rule. explicit_reference accurately
+      records that the endpoint name comes from the defining equipment locus.
+  - id: RF-02
+    subject: encounter_cadence_restatement
+    disposition: approved_nonduplication
+    refs: [M004, M005]
+    detail: >-
+      The existing rule_danger_level FEEDS_INTO rule_encounter row already
+      records check cadence. The packet correctly avoids duplicating it and
+      adds only the distinct overland-context relationships, preserving the
+      source's hour-based cadence without encoding numeric intervals.
+  - id: RF-03
+    subject: magnitude_only_categories
+    disposition: informational_nonblocking
+    detail: >-
+      Danger-level values, travel methods, rates, light duration, hex width,
+      deprivation periods, and damage amounts are magnitude-only distinctions
+      here. Retaining them in the immutable source rather than minting graph
+      identities is consistent with graph grain; the named Hex unit and Hexes
+      Crossed Table remain mechanically operative and are correctly proposed.
+  - id: RF-04
+    subject: gur_registry_snapshot
+    disposition: informational
+    detail: >-
+      The GUR says 265 registry rows; the independently measured current
+      registry contains 289. The compiler used live state, all five proposals
+      are fresh, and the stale prose count changes no operation.
+completeness_statement: >-
+  All nineteen rows and five proposed registrations were independently checked
+  against page 90, the defining Rations text on page 34, Constitution 1.7, the
+  current registry, and the canonical neighborhood. Eighteen rows are correct
+  as submitted, including M019's source-supported food-and-water reference.
+  M007 is source-supported only after replacing absolute EXCLUDES semantics
+  with CONSTRAINS, aspect outdoor occurrence, and governs/read polarity. The
+  exact row-local correction is sufficient; no new identity or escalation is
+  required.
+reviewer_checklist:
+  source_support: passed_with_m007_semantic_correction
+  node_identity: passed
+  edge_semantics_and_direction: revision_required_m007
+  grain: passed
+  polarity: revision_required_m007
+  page_attribution: passed
+  graph_neighborhood: passed
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-090-090-overland-travel/source.md
+    checksum: sha256:05dd3f92f174cee8b41b97a5f81a618297668b442d905d95ab0b167b5b3eeccf
+    pages: ['90']
+    result: independently_read
+  related_rations_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-033-037-starting-gear-armor-class-and-equipment/source.md
+    checksum: sha256:8eddb5c44b81831b61800bf1f810a3870062a9c53fa84036f6e054975d758eb5
+    page: '34'
+    result: rations_explicitly_defined_as_food_and_water_supply
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-090-090-overland-travel-r01.yaml
+    checksum: sha256:1674ab9bfd0db1df3f3c5c7c65f8a2610481161f655c5a90af9bbc5985c1c4cd
+    result: idq_resolved_and_m007_semantic_defect_found
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-090-090-overland-travel-r01.validation.json
+    checksum: sha256:4277cef79d85e488e4e24e3f57956b88ecad9173c4473555d5306c3583adb497
+    result: compiler_clean_but_m007_overstates_source
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:61f75211281bcbc875f095604c5958fcc85aa0619118bfb52de837e59b81a2a8
+    observed_rows: 289
+    result: five_proposals_fresh_and_reused_endpoints_verified
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:06a46d066ca1ebcc3790be074c97d28cbf87aed94c4519839403b1d99e61f91c
+    observed_edges: 595
+    result: encounter_restatement_avoided_and_no_assertion_key_collisions
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Publish GUP-PKT-SD-090-090-overland-travel-r02 by applying M007's exact
+    correction and preserving the other eighteen rows and five registrations.
+  blocking_ids: []

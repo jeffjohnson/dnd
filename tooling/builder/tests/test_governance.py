@@ -149,7 +149,7 @@ class TestRoutingInTheCompiler(unittest.TestCase):
     def test_clean_proposal_is_reviewer_approvable_not_escalated(self):
         result = self.compile_gur(
             candidate_nodes=[{"proposed_id": self.pending_node,
-                              "proposed_label": "Fixture Ordinary Proposal",
+                              "why_needed": "fixture", "proposed_label": "Fixture Ordinary Proposal",
                               "edges_depending_on_it": ["T1"]}],
             candidate_edges=[dict(self.EDGE, target_id=self.pending_node,
                                   target_label="Fixture Ordinary Proposal")],
@@ -167,7 +167,7 @@ class TestRoutingInTheCompiler(unittest.TestCase):
         # rather than on a defect.
         result = self.compile_gur(
             candidate_nodes=[{"proposed_id": self.pending_node,
-                              "proposed_label": "Fixture Pending Proposal"}],
+                              "why_needed": "fixture", "proposed_label": "Fixture Pending Proposal"}],
             candidate_edges=[dict(self.EDGE, target_id=self.pending_node,
                                   target_label="Fixture Pending Proposal")],
         )
@@ -180,7 +180,7 @@ class TestRoutingInTheCompiler(unittest.TestCase):
     def test_pending_row_is_still_held_out_of_the_csv(self):
         result = self.compile_gur(
             candidate_nodes=[{"proposed_id": self.pending_node,
-                              "proposed_label": "Fixture Pending Proposal"}],
+                              "why_needed": "fixture", "proposed_label": "Fixture Pending Proposal"}],
             candidate_edges=[dict(self.EDGE, target_id=self.pending_node,
                                   target_label="Fixture Pending Proposal")],
         )
@@ -191,7 +191,7 @@ class TestRoutingInTheCompiler(unittest.TestCase):
         """DEC-2026-0009 acceptance tests."""
         result = self.compile_gur(
             candidate_nodes=[{"proposed_id": "rule_racial_detection",
-                              "proposed_label": "Racial Underground Detection"}],
+                              "why_needed": "fixture", "proposed_label": "Racial Underground Detection"}],
             candidate_edges=[dict(self.EDGE, target_id="rule_racial_detection",
                                   target_label="Racial Underground Detection")],
         )
@@ -210,7 +210,7 @@ class TestRoutingInTheCompiler(unittest.TestCase):
         # The question is decided, so it must not be re-raised to the Architect.
         result = self.compile_gur(
             candidate_nodes=[{"proposed_id": "rule_racial_detection",
-                              "proposed_label": "Racial Underground Detection"}]
+                              "why_needed": "fixture", "proposed_label": "Racial Underground Detection"}]
         )
         self.assertEqual(result.escalations, [])
 
@@ -255,14 +255,14 @@ class TestRoutingInTheCompiler(unittest.TestCase):
 
     def test_unapproved_prefix_still_escalates(self):
         result = self.compile_gur(
-            candidate_nodes=[{"proposed_id": "turn_something", "proposed_label": "Turn Something"}]
+            candidate_nodes=[{"proposed_id": "turn_something", "why_needed": "fixture", "proposed_label": "Turn Something"}]
         )
         self.assertTrue(result.node_additions[0]["architect_required"])
         self.assertIn("node_prefix_unapproved", self.rules(result))
 
     def test_wpn_prefix_proposal_is_now_accepted(self):
         result = self.compile_gur(
-            candidate_nodes=[{"proposed_id": "wpn_reach", "proposed_label": "Weapon Reach"}]
+            candidate_nodes=[{"proposed_id": "wpn_reach", "why_needed": "fixture", "proposed_label": "Weapon Reach"}]
         )
         addition = result.node_additions[0]
         self.assertTrue(addition["prefix_approved"])

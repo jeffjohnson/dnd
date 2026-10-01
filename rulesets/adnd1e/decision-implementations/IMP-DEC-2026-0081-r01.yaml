@@ -1,0 +1,339 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0081-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: >-
+    DEC-2026-0081 step 2 is complete. The verifier accepts the Dispatcher as a
+    sixth role with the eleven literal reading paths the Decision names, no
+    common-pattern inheritance, and a repository-wide receipt scope whose
+    ruleset and book are null. The five processing roles are unchanged. The
+    focused role-context suite goes from 50 tests to 123 and passes, and the
+    Architect's expected transition failure in
+    test_every_role_is_declared_exactly_once now passes. Only the two
+    Builder-owned files in the Decision's exact diff were edited; manual
+    Dispatcher startup and ROLE_CONTEXT_LOADING 1.1 are untouched and remain
+    authoritative pending step 3 and step 4.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0081
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0081.yaml
+  checksum: sha256:98d6c72cf71ec6724474e5d5686f8c41fc4f6749a9b43c9b65c4924dbb6a3bb7
+implementation_files:
+- path: tooling/common/role_context.py
+  checksum: sha256:6329a9d9b135ea4b995258d699b7581da47a2b4dab000166b2e0f21993ccc4a1
+- path: tooling/common/tests/test_role_context.py
+  checksum: sha256:b91875c22c16d8837af0f2b7bcf1ea2e1311382e6a6c3f2d4402acfe301bf387
+- path: contracts/ROLE_CONTEXT_MANIFEST.yaml
+  checksum: sha256:c3cf5dbe1965877dda1d419f8ee14107172fa91ac80568d905ed2b5c739b416a
+- path: schemas/common/role-context-manifest.schema.json
+  checksum: sha256:53905b3b7b54f3fd118aa562e3417f74f28b7d7f79040db21d1e857cd45b2299
+- path: contracts/ROLE_CONTEXT_LOADING.md
+  checksum: sha256:13f4bd405a8990e54ca1e7659fb7fac3a1399dc31c24c6ccdca1d39ae2a2788c
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0081.yaml
+  checksum: sha256:98d6c72cf71ec6724474e5d5686f8c41fc4f6749a9b43c9b65c4924dbb6a3bb7
+validation_report: build/reports/IMP-DEC-2026-0081-r01.validation.json
+validation_report_checksum: sha256:c6e85823a20ddb30975ac6678d49538d7899f40772cdc6edd83e98044def7e5e
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: >-
+    Manifest languages. TestTheLiveManifest.test_the_manifest_validates_against_its_schema
+    validates the live contracts/ROLE_CONTEXT_MANIFEST.yaml against
+    schemas/common/role-context-manifest.schema.json with jsonschema and
+    asserts no errors; TestTheLiveDispatcherSet.test_the_live_manifest_declares_all_six_roles_at_version_1_1
+    asserts schema_version 1.1, cache_format_version 1, and exactly the six
+    role keys; test_every_role_is_declared_exactly_once (the Architect's
+    expected transition failure) now passes because ROLES contains the sixth
+    role. TestManifestVersionsAndInheritance holds the fail-closed cases on
+    fixtures: a legacy five-role 1.0 manifest still verifies and still caches
+    (test_a_legacy_five_role_manifest_is_still_accepted); 1.0 refuses a
+    Dispatcher entry (test_a_legacy_manifest_may_not_declare_the_dispatcher)
+    and a Dispatcher request against it fails closed on the absent entry
+    rather than being filled in from contract prose
+    (test_a_dispatcher_request_against_a_legacy_manifest_fails_closed); an
+    unsupported schema_version (1.2, 2.0, the float 1.0, None, empty) and an
+    unsupported cache_format_version (2, 0, "1", None) each raise; 1.1 without
+    a Dispatcher, a missing worker role, and an unknown role name each raise;
+    a worker declaring inherit_common_patterns false is refused with "only
+    'dispatcher' may opt out"; a worker declaring it true is accepted and
+    still inherits; a malformed value raises for each of None, "false",
+    "true", 0, 1, [] and {} -- the integers matter, because `1` is truthy and
+    a truthy near-miss silently granting the common set is the failure the
+    opt-out exists to prevent; and a Dispatcher entry that omits the opt-out
+    or declares it true is refused. These unit tests ran: Ran 123 tests in
+    2.432s OK.
+- acceptance_test_index: 2
+  result: passed
+  evidence: >-
+    The bounded set, proved twice. On a fixture whose Dispatcher patterns are
+    deliberately disjoint from the common ones -- so an inheritance leak
+    surfaces as the extra files it is, rather than as a duplicate-path error
+    that would pass for the wrong reason -- TestDispatcherStableSet asserts the
+    resolved set equals exactly the declared patterns, that no common pattern
+    and no worker instructions reach it, that effective_patterns reports the
+    opt-out, and that a worker under the same manifest still inherits, so the
+    opt-out is per role and not a manifest-wide mode. Against the repository,
+    TestTheLiveDispatcherSet.test_it_is_exactly_the_paths_the_decision_names
+    reads manifest_contract.dispatcher_stable_authority_paths out of
+    DEC-2026-0081 itself and asserts equality with the resolved set and a
+    count of 11; the list is not transcribed into the test, so governance
+    changing it becomes a failure rather than silent drift. The same class
+    asserts the set is sorted, duplicate-free and all real files inside the
+    root; that five concrete files inheritance would have added
+    (contracts/GRAPH_INVARIANTS.md, contracts/SOURCE_MARKDOWN.md,
+    contracts/ROLE_CONTEXT_MANIFEST.yaml, schemas/common/gur.schema.json,
+    schemas/common/decision-implementation.schema.json) exist on disk and are
+    absent from it; that no worker instructions appear and no path starts with
+    rulesets/, books/, schemas/ or build/; and that the manifest and schema are
+    separately checksummed verification inputs present as manifest_checksum and
+    manifest_schema_checksum while absent from stable_authority. These unit
+    tests ran: Ran 123 tests in 2.432s OK.
+- acceptance_test_index: 3
+  result: passed
+  evidence: >-
+    Scope. TestDispatcherScope asserts verify and record work with no scope
+    arguments; that the receipt's scope is exactly {"ruleset_id": null,
+    "book_id": null} with both keys present; that the receipt's top-level keys
+    are exactly the ten format-1 fields and the serialised receipt contains
+    neither "source_id" nor "packet_id"; that every public entry point --
+    resolve_paths, build_receipt, receipt_path, verify and record -- raises
+    "takes no scope arguments" when handed a ruleset or a book, rather than
+    discarding it, because a caller that passed one believes the receipt it
+    gets back is scoped to it; that the filename matches
+    ^dispatcher-repository-no-book-[0-9a-f]{32}\.json$; that "repository" is a
+    filename label while scope.ruleset_id stays null; that the scope key
+    differs from every worker role's for the rulesets "repository", "" and
+    "adnd1e", so the label cannot collide with a worker that named a ruleset
+    spelled like it; and that the key is SHA-256 of the NUL-joined resolved
+    root, "dispatcher", empty ruleset, empty book and session, truncated to 32
+    hex, recomputed independently in the test. TestDispatcherCli covers the
+    command line: a scope-free verify/record/verify returns 1, 0, 0; supplying
+    --ruleset, --book, an empty --ruleset, an empty --book, or both exits 2 and
+    leaves the receipt directory empty; and an invalid invocation after a good
+    one leaves the existing receipt byte-identical. These unit tests ran: Ran
+    123 tests in 2.432s OK.
+- acceptance_test_index: 4
+  result: passed
+  evidence: >-
+    The five roles. All 50 pre-existing tests are retained unmodified in
+    substance and still pass; the only edits to existing tests are the four
+    live-manifest loops that iterate every role, which now ask live_scope(role)
+    for the arguments each role takes instead of passing "adnd1e"/"phb" to a
+    role that has no ruleset. TestWorkerBehaviourIsUnchanged adds explicit
+    regression assertions: each of the five still exits 2 without --ruleset; an
+    empty --ruleset is refused; --book remains optional; the scope-key material
+    and receipt filename for every worker role with and without a book are
+    recomputed by hand in the test and match the implementation exactly; and a
+    worker receipt still records scope {"ruleset_id": "adnd1e", "book_id":
+    "phb"} with cache_format_version 1. TestBothRegisteredRulesetsResolve
+    exercises AD&D 1e and Basic D&D live: every worker resolves a sorted
+    non-empty set containing AGENTS.md, its own instructions and at least one
+    rulesets/<id>/ path in each, and the builder's adnd1e and basicdnd sets
+    differ. Live counts are unchanged by this work at 43 (architect), 35
+    (analyst) and 44 (builder, reviewer, integrator) for both registered
+    rulesets. These unit tests ran: Ran 123 tests in 2.432s OK.
+- acceptance_test_index: 5
+  result: passed
+  evidence: >-
+    Cold to warm. TestDispatcherColdAndWarm asserts a cold verify returns
+    reload_required and emits exactly its reading paths; that record followed
+    by verify is a cache_hit and repeats; that a hit emits no authority
+    contents, checked by planting a marker string in the fixture's dispatcher
+    instructions and asserting it appears in no value of the result; and that
+    record is an attestation which reports the set it wrote rather than
+    observing a read. Against the repository, `python
+    tooling/common/role_context.py verify --root . --role dispatcher
+    --session-id <id>` prints reload_required with scope=repository and lists
+    the eleven paths, exiting 1. No live actor receipt was created by this
+    work: the fixtures write into temporary directories, and the live
+    invocation above was a verify, which writes nothing. These unit tests ran:
+    Ran 123 tests in 2.432s OK.
+- acceptance_test_index: 6
+  result: passed
+  evidence: >-
+    Fifteen ways not to hit, in TestDispatcherInvalidation: a missing receipt;
+    an unreadable one; a non-mapping one; one with each of the nine identity
+    fields deleted in turn; a wrong cache_format_version; a different session;
+    a receipt copied to another actor session's path; one carrying another
+    repository root; and a worker receipt relabelled as the Dispatcher, which
+    misses on its worker scope. The scope check is explicit rather than
+    incidental: test_a_receipt_missing_a_scope_key_is_malformed_not_null feeds
+    {}, {"ruleset_id": null} and {"book_id": null} and asserts the difference
+    reads "malformed, not a null scope", because a receipt written by a tool
+    with no concept of a scope-free role must not compare equal to a
+    Dispatcher's. These unit tests ran: Ran 123 tests in 2.432s OK.
+- acceptance_test_index: 7
+  result: passed
+  evidence: >-
+    Changed inputs. TestDispatcherInvalidation asserts a changed authority file
+    misses and names the file, a changed manifest misses, a changed schema
+    misses with manifest_schema_checksum in the differences, and a pattern
+    leaving the set misses with "is no longer in the stable set". The upgrade
+    case is TestManifestUpgradeInvalidatesExistingReceipts: a worker receipt is
+    recorded under a 1.0 manifest, the manifest is then upgraded to 1.1 with a
+    Dispatcher entry and the schema file's bytes change, and the same worker
+    verification misses on manifest_checksum while cache_format_version stays 1
+    on both sides -- ordinary hash invalidation, not a format migration. The
+    same test asserts the stale receipt is left byte-identical, and
+    test_no_receipt_is_rehashed_or_deleted_on_a_miss asserts the same for the
+    Dispatcher: nothing is rehashed, upgraded in place or purged. These unit
+    tests ran: Ran 123 tests in 2.432s OK.
+- acceptance_test_index: 8
+  result: passed
+  evidence: >-
+    Guards. The nine pre-existing TestFailsClosed cases are unmodified and
+    pass. TestDispatcherFailsClosed proves the same guards reach the new role
+    and adds its literal-pattern rule: a glob ("contracts/*.md",
+    "agents/?/INSTRUCTIONS.md", "contracts/[a-z].md") is refused with "is a
+    glob"; a scope placeholder is refused because the Dispatcher has no ruleset
+    to fill it with; a literal naming a missing file is refused; two different
+    literal spellings of one path ("README.md" and "./README.md") are refused
+    with "declares that authority twice"; a path under an excluded tree is
+    refused with "would cache"; a verification error during record writes no
+    receipt; and a malformed stored receipt yields reload_required rather than
+    an exception, keeping errors for governance problems and misses for cache
+    problems. _expand also refuses to substitute a null scope into a
+    "{ruleset}" pattern rather than filling it with an empty string. These unit
+    tests ran: Ran 123 tests in 2.432s OK.
+- acceptance_test_index: 9
+  result: passed
+  evidence: >-
+    Receipts remain operational cache records.
+    TestDispatcherReceiptIsNotProvenance asserts the receipt lives only under
+    .local/role-context/ (which .gitignore excludes at line 22), that a marker
+    string planted in an authority file appears nowhere in the receipt and that
+    every stable_authority value is a sha256: digest rather than content, and
+    that a verify result carries the null/null scope and mentions neither
+    "queue" nor "packet" -- a cached set cannot supply job scope, source
+    evidence, a baseline, an approval or routing state. Combined with
+    test_no_source_or_packet_identifier_is_invented under acceptance test 3,
+    the receipt's key set is exactly the ten format-1 fields and nothing was
+    added. No herdr launch, retry, skill or event handler is implemented: the
+    module's imports are unchanged (argparse, hashlib, json, sys, pathlib,
+    typing and yaml), it makes no network or subprocess call, and its only
+    writes are the receipt JSON. These unit tests ran: Ran 123 tests in
+    2.432s OK.
+- acceptance_test_index: 10
+  result: passed
+  evidence: >-
+    Both commands are recorded below with a working directory, exit code,
+    result and unittest verdict. The focused role-context suite grows from 50
+    tests to 123 and passes (Ran 123 tests in 2.432s OK); the
+    complete common-tooling suite passes (Ran 1220 tests in 366.679s OK). All 50
+    pre-existing tests are still present -- the eight pre-existing classes
+    retain their exact counts (TestCli 4, TestColdAndWarm 4, TestFailsClosed 9,
+    TestInvalidation 15, TestPathSetIsDeterministic 6, TestReceiptContent 4,
+    TestTheCacheExcludesLiveState 3, TestTheLiveManifest 5) -- so the 73 new
+    tests are additions and none was removed to make room. This report pins
+    DEC-2026-0081, both Architect-published governance files, both
+    implementation files, and contracts/ROLE_CONTEXT_LOADING.md at its
+    pre-activation baseline, each by exact checksum, and publishes its
+    companion validation report. Architect activation under step 4 is a
+    post-implementation requirement and is not asserted passed here.
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common/tests] python -m unittest test_role_context'
+    exit_code: 0
+    result: passed
+    summary: Ran 123 tests in 2.432s OK
+  - command: '[cwd tooling/common/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 1220 tests in 366.679s OK
+artifact_self_check:
+  why: >-
+    This report lives in the adnd1e store, which
+    tooling/common/tests/test_implementation_evidence.py actually scans, so its
+    own evidence records are machine-checked rather than only asserted. Recorded
+    separately from validation.commands because it validates this artifact, not
+    the implementation.
+  command: '[cwd tooling/common/tests] python -m unittest test_implementation_evidence'
+  exit_code: 0
+  result: passed
+  summary: Ran 25 tests in 7.582s OK
+  covers: >-
+    Exit code, result and summary agree on every command record; each command
+    names its working directory; every evidence line citing unit tests records
+    an outcome; an approval-ready report carries a passing validation; and no
+    evidence line calls an active leaf blocked or historical. Run against these
+    exact acceptance results; only this block was added afterwards.
+pre_activation_baseline:
+  why: >-
+    DEC-2026-0081 sequences the contract amendment after independent Review, so
+    this report must show which contract text it was built against without
+    changing it. Recording the checksum is what lets the Reviewer confirm the
+    manual Dispatcher startup was still in force when the implementation was
+    measured.
+  contract: contracts/ROLE_CONTEXT_LOADING.md
+  observed_version: '1.1'
+  checksum: sha256:13f4bd405a8990e54ca1e7659fb7fac3a1399dc31c24c6ccdca1d39ae2a2788c
+  state: >-
+    Unmodified by this work. Its "Dispatcher Definition-Only Startup" section
+    still states that the verifier supports the five graph-processing roles
+    only and still forbids manufacturing a Dispatcher receipt. That wording is
+    now behind the implementation, which is expected and is exactly what step 4
+    exists to correct; it is not this report's to amend. The same applies to
+    agents/dispatcher/INSTRUCTIONS.md, which still says the verifier does not
+    accept `dispatcher`. Until an Approved Review and the Architect's step 4,
+    the manual startup path remains authoritative for a live Dispatcher actor.
+implementation_notes:
+  - subject: the opt-out is validated for every declared role, not only the requested one
+    detail: >-
+      load_manifest checks inheritance and the Dispatcher's literal-pattern rule
+      across every role the manifest declares, so a malformed Dispatcher entry
+      fails a Builder verification too. The manifest is governance: if it is
+      malformed anywhere, no role's set should be trusted, and a worker
+      verifying today should not depend on nobody having asked for the
+      Dispatcher yet. The manifest hash is part of every receipt regardless, so
+      this makes the failure legible rather than merely eventual.
+  - subject: strict boolean reading
+    detail: >-
+      isinstance(value, bool) is what rejects 1 and 0, since Python treats them
+      as ints and not bools here, while "false" and None are rejected as
+      non-booleans. A YAML author writing `inherit_common_patterns: 1` gets an
+      error rather than an inherited common set.
+  - subject: argparse change directed by the Decision
+    detail: >-
+      --ruleset is now syntactically optional and enforced per role before any
+      path resolution or receipt read/write, as DEC-2026-0081's cli ruling
+      requires; argparse cannot express "required for five roles, forbidden for
+      the sixth". The CLI exit code for a worker invoked without --ruleset is
+      still 2. The observable difference is for a programmatic caller: argparse
+      previously raised SystemExit(2) for that case and main() now returns 2.
+      Recorded because it is a real interface change, and it is the change the
+      Decision directs rather than one this report chose.
+  - subject: an empty --ruleset for a worker
+    detail: >-
+      Refused explicitly with "requires a non-empty ruleset". Previously it
+      resolved a pattern like rulesets//ruleset.yaml, failed on the missing
+      literal and exited 2; the exit code and the absence of a receipt are
+      unchanged, only the message is now about the invocation rather than about
+      a file nobody named.
+scope_note: >-
+  Only the two Builder-owned paths in DEC-2026-0081's exact_diff_ownership were
+  edited: tooling/common/role_context.py and
+  tooling/common/tests/test_role_context.py. No governance file was amended.
+  contracts/ROLE_CONTEXT_MANIFEST.yaml and
+  schemas/common/role-context-manifest.schema.json are pinned as Architect
+  step-1 inputs and were read, not written; contracts/ROLE_CONTEXT_LOADING.md is
+  pinned as the pre-activation baseline and is untouched, with its amendment
+  reserved to Architect step 4. No canonical data, registry, schema, worker
+  artifact, scanner, or source file was changed, and no herdr automation exists
+  in this change. Changes 2-6 are not implemented.
+canonical_state: >-
+  No canonical or registry file was written by this work. This change touches
+  only common operational tooling and its tests; it reads no graph data and the
+  Dispatcher's stable set deliberately contains none.
+  rulesets/adnd1e/canonical/edges_master.csv is at
+  sha256:e321666ea303ab65c1303bb1c120ccc8fb80a176c6dc2f45147532495dce549b and
+  basicdnd still has no canonical directory.

@@ -31,7 +31,11 @@ from .derive import (
     Degrees,
     derive_polarity,
 )
+from .vocabulary import RulesetVocabulary, load_vocabulary, read_prefixes
 
+# AD&D citation codes, kept as the fallback for callers that name no ruleset.
+# DEC-2026-0092: `check()` takes the active ruleset's codes from its own book
+# registry, because invariant 9 rejects every Shadowdark row against this tuple.
 BOOKS = ("PHB", "DMG", "UA", "MM")
 EVIDENCE_CLASSES = (
     "explicit_rule", "explicit_reference", "inferred_rule",
@@ -55,21 +59,21 @@ MAGNITUDE = re.compile(r"\d")
 
 
 def approved_prefixes(constitution: Path) -> frozenset[str]:
-    """Read the section 3.1 prefix table rather than transcribing it.
+    """Read the node-prefix table rather than transcribing it.
 
     A transcribed copy goes stale the moment the Architect amends the
     constitution, and the Integrator is forbidden from resolving ontology
     questions -- so the constitution has to be the live source.
+
+    DEC-2026-0092 replaced two AD&D assumptions here. This used to split on the
+    literal heading `### 3.1 Format`, which exists only in the AD&D
+    constitution, and then reject any parse of fewer than twenty prefixes.
+    Shadowdark declares thirteen prefixes under a differently numbered heading,
+    so a correct constitution failed twice over: once with `IndexError` and,
+    had that been patched alone, again on the count. The table is now located by
+    its header cells and its size is whatever the ruleset declares.
     """
-    text = Path(constitution).read_text(encoding="utf-8")
-    section = text.split("### 3.1 Format", 1)[1].split("### 3.2", 1)[0]
-    found = re.findall(r"^\|\s*`([a-z]+_)`\s*\|", section, re.MULTILINE)
-    if len(found) < 20:
-        raise ValueError(
-            f"parsed only {len(found)} node prefixes from constitution section 3.1; "
-            "the table format changed and this parser must be updated"
-        )
-    return frozenset(found)
+    return read_prefixes(Path(constitution).read_text(encoding="utf-8"))
 
 
 @dataclass
@@ -124,10 +128,20 @@ def check(
     prefixes: frozenset[str],
     general_rule_ids: set[str],
     columns: list[str],
+    vocabulary: RulesetVocabulary | None = None,
 ) -> Result:
-    """Run every machine-checkable invariant over the supplied canonical state."""
+    """Run every machine-checkable invariant over the supplied canonical state.
+
+    `vocabulary` carries the active ruleset's edge types, derived-polarity
+    table, and citation codes. Omitting it keeps the AD&D constants, so every
+    existing caller behaves exactly as before.
+    """
     result = Result()
     node_ids = {n["id"] for n in nodes}
+    edge_types = EDGE_TYPES if vocabulary is None else vocabulary.edge_types
+    books = BOOKS if vocabulary is None else tuple(sorted(vocabulary.citation_books))
+    authored = AUTHORED_TYPES if vocabulary is None else vocabulary.authored_types
+    polarity_table = DERIVED_POLARITY if vocabulary is None else vocabulary.derived_polarity
 
     result.checked = [
         "1 endpoints exist", "2 one canonical ID per node", "3 approved prefix and snake_case",
@@ -178,12 +192,13 @@ def check(
                 result.add(1, "endpoint exists", f"{side}={edge[side]} is not a canonical node", row, ref)
 
         # -- invariant 7 -----------------------------------------------------
-        if edge["edge_type"] not in EDGE_TYPES:
-            result.add(7, "legal edge type", f"{edge['edge_type']} is not one of the thirteen", row, ref)
+        if edge["edge_type"] not in edge_types:
+            result.add(7, "legal edge type",
+                       f"{edge['edge_type']} is not in the ruleset's edge vocabulary", row, ref)
 
         # -- invariant 9 -----------------------------------------------------
-        if edge["book"] not in BOOKS:
-            result.add(9, "citation book", f"book={edge['book']!r} is not one of {BOOKS}", row, ref)
+        if edge["book"] not in books:
+            result.add(9, "citation book", f"book={edge['book']!r} is not one of {books}", row, ref)
         if not (edge["page"].strip() or edge["section"].strip()):
             result.add(9, "citation locus", "neither page nor section is present", row, ref)
 
@@ -206,7 +221,7 @@ def check(
         if edge["polarity_basis"] not in POLARITY_BASIS_VALUES:
             result.add(17, "polarity_basis vocabulary", f"polarity_basis={edge['polarity_basis']!r}", row, ref)
 
-        derived = derive_polarity(edge)
+        derived = derive_polarity(edge, polarity_table)
         if derived is not None:
             polarity, basis = derived
             if edge["polarity"] != polarity or edge["polarity_basis"] != basis:
@@ -214,7 +229,7 @@ def check(
                     17, "derived polarity matches the derivation table",
                     f"{edge['edge_type']} must be {polarity}/{basis}, found "
                     f"{edge['polarity']}/{edge['polarity_basis']}", row, ref)
-        elif edge["edge_type"] in AUTHORED_TYPES:
+        elif edge["edge_type"] in authored:
             if edge["polarity_basis"] in ("unset", "heuristic"):
                 result.add(
                     16, "no unresolved authored polarity",
@@ -264,9 +279,10 @@ def check_derived_state(
     nodes: list[dict[str, str]],
     thresholds: dict,
     result: Result,
+    tier2_enabled: bool = True,
 ) -> None:
     """Invariant 22: stored degrees and roles must equal a fresh recomputation."""
-    degrees = Degrees(edges)
+    degrees = Degrees(edges, tier2_enabled=tier2_enabled)
     for node in nodes:
         node_id = node["id"]
         expected = {

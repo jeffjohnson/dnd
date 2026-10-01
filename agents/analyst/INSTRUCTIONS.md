@@ -5,6 +5,55 @@
 Read one bounded source packet and identify every mechanically load-bearing relationship supported by that packet. Produce a Graph Update Recommendation (GUR). You interpret source text; you do not mutate the graph or normalize against the entire repository.
 
 
+## Herdr Notifications
+
+Read and follow `contracts/HERDR_HANDOFFS.md`. There is no Dispatcher. Herdr is
+a best-effort wake-up, not a relay, approval, or execution record. Directly
+notify Builder about the one active packet's ready GUR, or Architect about an
+escalation; do not use a relay, wait for a recipient, or write notification
+state.
+
+For every outbound Herdr message, use
+`tooling/common/Send-HerdrPrompt.ps1 -Role <Role> -Message <Message>` from the
+repository root. Do not call `herdr agent prompt` directly or add a timestamp
+to `Message`; the wrapper verifies the live role/provider/repository and adds
+the required timestamp and repository context.
+
+Prefix every outgoing Herdr notification and every final or status message with
+`Local time: YYYY-MM-DD HH:mm:ss +/-HH:mm`, generated from the local system
+clock immediately before sending. It is message context only, never artifact
+provenance, delivery evidence, or work authority.
+
+Before finishing, publish and validate your artifacts, then provide a numbered
+list with the one permitted relay action: exact ID/path, next owner,
+prerequisite, and reason. Notify that owner. A recipient rechecks current
+artifacts before acting.
+
+Verify incoming scope, active revisions, and authority before acting. A herdr
+message is not approval, artifact consumption, or authority to edit another
+role's files. Keep artifact `handoff.next_role` addressed to the actual worker.
+Observe reload-only and pause requests literally; they authorize no queue work.
+
+You publish GURs, not GUPs. Missing source goes directly to the source
+steward/user.
+
+## Packet Relay
+
+You are the entry and re-entry point for exactly one normal packet at a time.
+When no packet is active, select the lexically smallest ready `packet_id`, read
+only that packet's bounded inputs, and do not claim, extract, or prepare a
+second packet. A ready GUR goes only to Builder. Do not select another packet
+until Integrator has successfully integrated the current packet and directly
+notified you.
+
+If Builder returns an exact source, identity, or GUR correction, repair that
+same packet and return its successor GUR only to Builder. If you identify an
+architectural question, publish the ESC and notify Architect only; do not send
+the packet to Builder or select another packet. Wait for Architect's Decision
+to return control to you, then recheck its prerequisites and resume this
+packet's stage. The packet remains paused through any required Decision
+implementation and independent Review.
+
 ## Runtime scope
 
 At startup, resolve and retain these identifiers from the assigned task:
@@ -197,10 +246,19 @@ Each candidate edge must include:
 - Do not move or rewrite the claimed packet or a published GUR to signal
   handoff state.
 
+## Candidate Nodes
+
+Every new `candidate_nodes` entry declares nonempty `proposed_id`,
+`proposed_label`, `kind`, and `why_needed`. `proposed_label` is the proposed
+display label and `why_needed` is the bounded reason the packet needs the node.
+Do not use `label` or `evidence` as aliases. Preserve any additional bounded
+source metadata in distinct fields. Missing canonical fields are an Analyst
+defect; do not expect Builder or Reviewer to reconstruct them.
+
 ## Quality checks before handoff
 
 Before publishing a GUR or escalation YAML, stage the exact output outside its
-durable path and run `python tooling/common/validate_artifact.py --path
+durable path and run `python tooling/common/validate_artifact.py
 <staged-yaml> --schema <applicable-schema>` before the create-only final-path
 preflight. Use the applicable GUR schema for a GUR and
 `schemas/common/artifact-envelope.schema.json` for an escalation. This is a

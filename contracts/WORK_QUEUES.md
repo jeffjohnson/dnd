@@ -1,6 +1,6 @@
 # Agent Work Queue Contract
 
-**Version 1.28.**
+**Version 1.35.**
 
 ## Purpose
 
@@ -14,6 +14,35 @@ paths and checksums are provenance and must remain valid.
 
 ## Core Rules
 
+### Direct Herdr Coordination
+
+The five roles communicate directly under `contracts/HERDR_HANDOFFS.md`.
+There is no Dispatcher. Herdr notifications are best effort. For normal
+`packet_update` work, ready queue entries are candidates, but only the one
+active Analyst -> Builder -> Reviewer -> Integrator packet relay is executable.
+When idle, Analyst selects the lexically smallest ready `packet_id`; all other
+packet candidates wait. After every successful terminal integration, Integrator
+must directly notify Analyst with `Send-HerdrPrompt.ps1` to select the next
+packet; publishing the Integration record alone is not a completed relay step.
+Keep `handoff.next_role` addressed to the actual worker or `none`; messaging
+changes no consumption predicate.
+
+Normal correction routing is Integrator -> Reviewer -> Builder -> Analyst.
+Builder returns a revision to Analyst only when the needed repair requires
+source interpretation, identity, or GUR revision. An escalation pauses the
+active packet at its originator and routes only to Architect. Architect returns
+the published ruling to that originator; no normal stage advances while the
+escalation is unresolved. Decision implementation lineages retain their
+Decision-specific sequences but do not authorize a second normal packet.
+
+Workers independently verify incoming assignments and publish normal artifacts.
+Recheck readiness and exact Decision prerequisites before action. Where the
+scanner disagrees with a Decision sequence, report the discrepancy and follow
+the verified prerequisites; do not infer a repair or launch blocked work.
+Herdr completion is never proof of artifact approval or consumption.
+
+### Artifact Rules
+
 1. One logical artifact bundle is one work item.
 2. The primary YAML artifact supplies the bundle ID. Companion CSV and validation
    files with that base ID are components, not separate jobs.
@@ -24,6 +53,12 @@ paths and checksums are provenance and must remain valid.
    and checksum in provenance.
 6. Superseded, consumed, reviewed, integrated, failed, and blocked artifacts are
    not ready work for the ordinary downstream role.
+6a. An active-leaf artifact with a conforming `handoff.readiness: blocked` is
+    one blocked item for its declared `handoff.next_role`, with its
+    `blocking_ids` and reason preserved. It contributes nothing to ReadyCount
+    and never falls through to ordinary downstream or legacy routing. This
+    applies uniformly to GURs, GUPs, Reviews, Decisions, and every later
+    handoff-bearing artifact kind.
 7. Filesystem modification time never determines workflow order.
 8. A role must not move, rename, overwrite, or delete an upstream artifact after
    publication.
@@ -154,6 +189,23 @@ They are invalid on such a row, as is an executable correction nested under
 non-row-local 1.2 correction with the ref and observed key; it never guesses or
 silently drops a correction. Reviews declaring 1.1 or omitting the field remain
 immutable historical evidence under their original structural treatment.
+
+For `edge_decisions` and `row_decisions`, an executable per-row disposition is
+one of: a list entry with its own `ref`; a mapping whose key is the exact GUP
+`ref` and whose value carries that row's disposition; or the existing bulk
+`approved_refs`/`refs` form. In a ref-keyed mapping, an optional embedded `ref`
+must equal the mapping key. A mismatched ref or a mapping value without a
+disposition is unread and fails closed. The mapping key is not commentary or a
+label to be inferred; it is the row identity.
+
+### GUR Candidate-node Input
+
+Every new `candidate_nodes` entry carries nonempty `proposed_id`,
+`proposed_label`, `kind`, and `why_needed`. `proposed_label` is the proposed
+display label; `why_needed` is the bounded reason the packet needs the node.
+`label` and `evidence` are not aliases in this structure. A missing canonical
+field is a GUR/Builder error, not a reason to emit a blank node proposal or ask
+Reviewer to supply routine source text.
 
 An approved Review hands Integrator only its exact Approved bundle. A
 `revision_required` Review may request a concrete Builder, Analyst, Reviewer,
@@ -696,7 +748,7 @@ other unreadable artifact.
 Every role stages a YAML artifact outside its durable destination, then runs:
 
 ```text
-python tooling/common/validate_artifact.py --path <staged-yaml> --schema <applicable-schema>
+python tooling/common/validate_artifact.py <staged-yaml> --schema <applicable-schema>
 ```
 
 The command parses the exact staged UTF-8 bytes as a YAML mapping and validates
@@ -1102,6 +1154,30 @@ Queue tooling must prove that:
     target-only and does not require a corpus scan.
 
 ## Version History
+
+- **1.35 - 2026-09-30:** DEC-2026-0105 made the existing blocked-handoff
+  exclusion executable for every artifact kind, including GURs; a blocked
+  active leaf is never inferred as ordinary ready work.
+
+- **1.34 - 2026-09-26:** Required Integrator's direct Analyst next-packet
+  notification after every successful terminal integration.
+
+- **1.33 - 2026-09-26:** Adopted the single normal packet relay, its backward
+  correction path, deterministic idle Analyst selection, and escalation pause
+  behavior from HERDR_HANDOFFS 2.3. Queue discovery remains lineage-derived.
+
+- **1.32 - 2026-09-22:** DEC-2026-0091 standardized executable candidate-node
+  and ref-keyed Review decision input, and corrected the staged-validator
+  command to its positional interface.
+
+- **1.31 - 2026-09-22:** DEC-2026-0089 made Herdr notification-only and
+  permitted concurrent independent role work; queue consumption is unchanged.
+
+- **1.30 - 2026-09-19:** Replaced Dispatcher with direct priority-ordered herdr
+  handoffs and repository-wide single-agent execution; consumption is unchanged.
+
+- **1.29 - 2026-09-07:** Added Dispatcher coordination over existing worker
+  handoffs, preserving artifact ownership and queue-consumption semantics.
 
 - **1.27 - 2026-08-29:** Added exact repair-record handling for an unreadable
   Decision Implementation Review and required target-only staged YAML/schema

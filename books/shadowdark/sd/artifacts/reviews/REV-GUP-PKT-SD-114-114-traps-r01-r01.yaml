@@ -1,0 +1,144 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-114-114-traps-r01-r01
+artifact_kind: packet_update_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-114-114-traps
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-26'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-114-114-traps-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-114-114-traps-r01.yaml
+  checksum: sha256:702f8fd8d645ddbf49a60e10a8a77399889f7ecf801c451455eb0a92e9eba71a
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: approved
+approval_ready: true
+edge_decisions:
+  approved_refs: [M001, M002, M003, M004, M005, M006]
+  disposition: approved
+node_registry_decisions:
+  - proposed_id: rule_traps
+    submitted_label: Traps
+    kind: rule
+    disposition: approved
+  - proposed_id: tbl_traps
+    submitted_label: Traps Table
+    kind: tbl
+    disposition: approved
+architectural_escalations: []
+blocking_findings: []
+reviewer_findings:
+  - id: RF-01
+    subject: check_trap_near_duplicate
+    disposition: approved_intentionally_distinct
+    refs: [M001, M004]
+    detail: >-
+      The shared endpoints and type preserve two different source statements.
+      M001 governs the usual check for avoiding a trap's effect. M004 governs
+      a disabling attempt only when time pressure or exceptional skill makes a
+      check necessary. Their aspects and M004's condition encode genuinely
+      different moments of trap handling, not a restatement.
+  - id: RF-02
+    subject: discovery_and_disabling_rules
+    disposition: approved
+    refs: [M002, M003]
+    detail: >-
+      Searching the correct area automatically finds the trap, so Check is
+      EXCLUDED_FROM trap discovery without hedging. The source separately
+      names Thieves as having disabling access. These rows coexist with the
+      two CONSTRAINS rows because discovery, avoidance, and disabling are
+      distinct procedures.
+  - id: RF-03
+    subject: traps_table_mechanics
+    disposition: approved
+    refs: [M005, M006]
+    detail: >-
+      The named table resolves trap selection and its damage column inflicts
+      Damage. The table-level relations retain the reusable mechanics while
+      excluding numeric damage magnitudes and unsupported identities for
+      individual fictional triggers or results.
+  - id: RF-04
+    subject: registry_additions
+    disposition: approved
+    proposed_ids: [rule_traps, tbl_traps]
+    detail: >-
+      Traps is the source-named packet procedure and Traps Table is its named
+      reusable resolution table. Both use constitution-approved prefixes and
+      mechanically matching kinds, have complete labels and rationales, and
+      are absent from the current registry.
+  - id: RF-05
+    subject: condition_vocabulary_gap
+    disposition: informational_nonblocking
+    detail: >-
+      Sleep, blindness, confusion, paralysis, unconsciousness, and
+      petrification are table effects, but the registry has no condition or
+      status identities for them. The same-name canonical nodes spell_sleep,
+      spell_blind_deafen, and spell_confusion are spells and cannot substitute
+      without falsely asserting that a trap casts those spells. The gap may
+      warrant a future Architect vocabulary decision, but it neither makes a
+      submitted row false nor authorizes this packet to invent identities.
+  - id: RF-06
+    subject: rejected_candidates
+    disposition: rejected_candidates_confirmed
+    detail: >-
+      Individual table triggers are fictional examples rather than general
+      mechanics; A Tell and pacing are GM design advice; tinkering lacks a
+      named identity and does not establish a Learning or Thievery relation;
+      and the opening use of peril and surprise is thematic rather than the
+      canonical combat Surprise rule. The exclusions are complete and avoid
+      both unsupported generalization and misleading same-name reuse.
+completeness_statement: >-
+  Printed page 114, all six submitted rows, both node proposals, the five
+  rejected-candidate groups, the M001/M004 near-duplicate, and the current
+  graph neighborhood were independently checked against Constitution 1.7,
+  the registry, and canonical state. The rows are source-supported,
+  collision-free, correctly grained, and complete for the representable
+  mechanics. All six correctly await the two approved registrations.
+reviewer_checklist:
+  source_support: passed
+  node_identity: passed_two_registrations
+  edge_semantics_and_direction: passed_near_duplicate_dispositioned
+  grain: passed
+  polarity: passed
+  page_attribution: passed
+  graph_neighborhood: passed
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-114-114-traps/source.md
+    checksum: sha256:4fcd431d83e8f1c0501bd9830994d1f240e8c180c0d9d75f48c6b9b0525f15c9
+    pages: ['114']
+    result: independently_read_full_page_and_table
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-114-114-traps-r01.yaml
+    checksum: sha256:5ff5d2ab6bdcab38031f14bc949002795c32b6ad13e824b3acc9ab6e7532a118
+    result: six_assertions_and_five_rejections_independently_dispositioned
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-114-114-traps-r01.validation.json
+    checksum: sha256:bd9a446cf210afabd14b50b4e333a47cc68cb772a97db0dd35e05ecd5d767c04
+    result: zero_errors_and_near_duplicate_confirmed_distinct
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:25ec0f38b746214f2b11ee69ce79133b358d4678b6f688d30596eea9eaea0252
+    observed_rows: 318
+    result: trap_ids_fresh_reused_labels_confirmed_and_same_name_nodes_are_spells
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:a85de7161d707fcec98caff6d5fadd6086fe2e0f7fb39de31412aef1685a0ce0
+    observed_edges: 683
+    result: no_page_114_rows_or_assertion_key_collisions
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Apply the exact Approved bundle containing six pending additions and two
+    approved node registrations.
+  blocking_ids: []

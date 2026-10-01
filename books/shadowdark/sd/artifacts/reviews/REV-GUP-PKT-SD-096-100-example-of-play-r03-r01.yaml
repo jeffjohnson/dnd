@@ -1,0 +1,118 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-096-100-example-of-play-r03-r01
+artifact_kind: packet_update_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-096-100-example-of-play
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-26'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-096-100-example-of-play-r03
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-096-100-example-of-play-r03.yaml
+  checksum: sha256:05239cca49fa32450e49c0a83b3b39ee4854cf88a50d1d42d1c3de87658b5f62
+  artifact_kind: packet_update
+  revision: 3
+  supersedes: GUP-PKT-SD-096-100-example-of-play-r02
+overall_disposition: approved
+approval_ready: true
+edge_decisions:
+  approved_refs: [M001]
+  disposition: approved
+node_registry_decisions: []
+architectural_escalations: []
+blocking_findings: []
+reviewer_findings:
+  - id: RF-01
+    subject: torch_extinguish_resolution
+    disposition: approved
+    ref: M001
+    detail: >-
+      Page 98 explicitly directs a d6 roll to determine whether the Torch
+      extinguishes, and the player's statement that they forgot about the roll
+      confirms a standing procedure rather than the immediately preceding
+      improvised damage ruling. Both endpoints are canonical. RESOLVED_BY runs
+      from the item to the procedure, extinguishing is the supported aspect,
+      and governs/derived is the constitutionally determined polarity.
+  - id: RF-02
+    subject: successor_scope
+    disposition: approved
+    detail: >-
+      Revision 3 adds exactly M001 to the formerly null packet, preserves zero
+      node proposals, and directly supersedes the parser-diagnostic r02. The
+      other seven candidate rejections independently confirmed in the r01
+      Review remain unaffected.
+  - id: RF-03
+    subject: review_parser_fix
+    disposition: informational_nonblocking
+    detail: >-
+      The Builder's key-presence change for an explicitly empty approved_refs
+      or refs list is fail-closed and does not broaden acceptance. It prevents
+      a valid zero-ruling bulk block from being misread as a ref-keyed mapping;
+      malformed ref-keyed values, mismatched embedded refs, and missing
+      dispositions still discard the block. All 13 focused parser tests pass.
+  - id: RF-04
+    subject: r02_history
+    disposition: informational
+    detail: >-
+      GUP r02 remains immutable superseded history showing three spurious
+      review_decision_key_not_read findings plus the legitimate undecided-row
+      finding. GUP r03 removes only the spurious parser findings and correctly
+      retains review_row_undecided until this Review dispositions M001.
+completeness_statement: >-
+  M001, the only row in GUP r03, was independently checked against page 98,
+  Constitution 1.7, both canonical endpoint registrations, and the current
+  canonical neighborhood. It is source-supported, correctly directed,
+  collision-free, and requires no new identity. The seven surviving rejected
+  candidates and the artwork-only page remain correctly excluded. The packet
+  is complete and approval-ready.
+reviewer_checklist:
+  source_support: passed
+  node_identity: passed_no_new_nodes
+  edge_semantics_and_direction: passed
+  grain: passed
+  polarity: passed_derived
+  page_attribution: passed
+  graph_neighborhood: passed
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-096-100-example-of-play/source.md
+    checksum: sha256:f9476eeab83747fba43afca578c81fec34e656bec89d4c597577b55682e302f3
+    pages: ['96', '97', '98', '99', '100']
+    result: page_98_torch_extinguish_procedure_confirmed
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-096-100-example-of-play-r02.yaml
+    checksum: sha256:1064e198f0c67431a8712538787c3e8e0c0edc9ff922deb402c9163bbca2ebd3
+    result: one_row_successor_matches_required_relationship
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-096-100-example-of-play-r03.validation.json
+    checksum: sha256:cf0f95cdd4bf53f716151eb17ebeeb709de7c89124438ac6ca77ed9b6d96c6a1
+    result: only_review_row_undecided_before_this_formal_disposition
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:cad9efdfb7b4516f81ab8f7fc8afa2c23110688731ee18c7ceb0c2c117c75c04
+    observed_rows: 304
+    result: item_torch_and_rule_d6_decider_canonical
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:c38dda23ae1cda98b773860e099727ca76273473fd1dc4bff5c52011fb97a854
+    observed_edges: 640
+    result: no_existing_assertion_key_collision
+  parser_regression:
+    paths:
+      - tooling/builder/src/adnd1e_builder/review.py
+      - tooling/builder/tests/test_review.py
+    result: 13_focused_tests_pass_and_malformed_shapes_remain_fail_closed
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Apply the exact Approved bundle containing one immediate edge addition and
+    zero node registrations.
+  blocking_ids: []

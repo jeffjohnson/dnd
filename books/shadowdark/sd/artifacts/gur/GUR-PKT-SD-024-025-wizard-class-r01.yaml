@@ -1,0 +1,879 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-024-025-wizard-class-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-024-025-wizard-class
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.0
+  - rulesets/shadowdark/governance/constitution.md 1.2
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-024-025-wizard-class
+  source_file: source.md
+  packet_source_checksum: sha256:31f9f69ed855ae45e2c1e80464149e24250e074e4839b91c6c78efaa471019c7
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 009-wizard-class.md
+  citation_code: SD
+  page_start: 24
+  page_end: 25
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Two markers resolve in the Primary Source Material, both through the Pandoc AST rather than
+  positionally. {#p24} ends the WIZARD CLASS heading and {#p25} ends the WIZARD SPELLS KNOWN BY SPELL
+  TIER TABLE heading; placement rule 1 applies each to its whole heading. The persistence rule
+  carries page 24 through the three benefits and page 25 through both tables. The WIZARD TALENTS
+  TABLE carries no marker of its own, so under the persistence rule it inherits page 25; every row
+  drawn from it is cited accordingly, which is the one page attribution on this page that a
+  positional reading could get wrong.
+
+out_of_scope_context_warning: >-
+  This packet's Supporting Source Context reproduces printed pages 44 through 50 and 86, which
+  include the wizard mishaps tables and the scrolls-and-wands material that this class entry depends
+  on directly. They were not used. Every assertion in this GUR is drawn from printed page 24 or 25
+  and cites one of them. Where this entry refers to a mechanic defined on one of those pages, the
+  identity is proposed as provisional and the reference is recorded as an observation, exactly as if
+  the text were absent from the file.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 24 and 25. The parser
+  resolves nine further pages inside the trailing Supporting Source Context, all claimed by other
+  packets, so the zero-overlap rule across the intake holds for this packet.
+
+source_summary: >-
+  Printed page 24 is the wizard class entry: a heading, a flavour sentence, three attribute lines
+  giving two permitted weapons, an armor line reading None, and a hit point die per level, and three
+  separately named benefits covering additional known languages, permanently learning a spell from a
+  scroll on a successful check, and spellcasting with its spells-known and level-progression
+  paragraphs. Printed page 25 carries the spells-known table, ten character-level rows across five
+  spell-tier columns, and a five-row rollable talents table. This summary is orientation only; every
+  assertion below cites its page.
+
+graph_state_at_extraction: >-
+  The Shadowdark canonical graph is still empty; nodes.csv is header-only, the domain registry has no
+  domains, general_rules.json is an empty object, and character_races.yaml is inactive. The three
+  supplied slices named in the packet manifest as missing remain immaterial, re-assessed here rather
+  than carried over from claim. reused_nodes is empty. Eight of the fifteen identities below are
+  already proposed by sibling GURs from their defining loci and are marked as such.
+
+cross_packet_identity_note: >-
+  item_armor, rule_hit_points, sys_language, exp_level, rule_talent_roll, rule_spellcasting_check,
+  rule_check and abil_intelligence are proposed by sibling GURs from their defining loci and are
+  proposed again here because this patch uses them as edge endpoints. A GUR must propose every
+  endpoint its edges use: an endpoint present only in a sibling GUR is not canonical, is not proposed
+  by the patch, and fails invariant 1 as endpoint_unresolved. Proposing them is not a competing
+  naming; each records its defining locus and the sibling GUR that also proposes it, and each ID and
+  label is reproduced exactly.
+
+reused_nodes: []
+
+candidate_nodes:
+  - proposed_id: class_wizard
+    proposed_label: Wizard
+    kind: class
+    why_needed: >-
+      Source of M001 through M004, M009 and M010. The class identity this page defines; the armor,
+      hit point, language, benefit and spellcasting dependencies all originate from it.
+    prefix_basis: 'class_ is a character class'
+    source_named: true
+    defining_locus: 'SD page 24, heading WIZARD CLASS'
+    source_evidence: 'page 24, the heading WIZARD CLASS, which is this class entry''s defining locus'
+  - proposed_id: abil_learning_spells
+    proposed_label: Learning Spells
+    kind: ability
+    why_needed: >-
+      Endpoint of M004 and M005 and source of M007 and M008. A separately named wizard benefit that
+      converts a scroll into a permanently known spell on a successful check and whose results are
+      excluded from the spells-known count.
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 24, the bolded benefit name Learning Spells'
+    source_evidence: 'page 24, Learning Spells in bold followed by its three paragraphs'
+  - proposed_id: spell_wizard_spells
+    proposed_label: Wizard Spells
+    kind: spell family
+    why_needed: >-
+      Endpoint of M009 and M012 and source of M013. The source-named family this class can learn and
+      cast; the casting, count and resolution dependencies all need it.
+    prefix_basis: 'spell_ explicitly covers a source-named spell family'
+    source_named: true
+    defining_locus: 'SD page 52, the wizard spell list, per this page''s own pointer; not this packet'
+    source_evidence: >-
+      page 24, wizard spells in the Spellcasting benefit and wizard spell list. The plural is the
+      source's own and is preserved under SOURCE_MARKDOWN.
+  - proposed_id: tbl_wizard_spells_known
+    proposed_label: Wizard Spells Known By Spell Tier Table
+    kind: table
+    why_needed: >-
+      Endpoint of M008, M010, M011 and M019 and source of M012. The table that fixes how many spells
+      of each tier a wizard knows at a given level, and the mechanic scroll-learned spells are
+      excluded from.
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 25, its own heading WIZARD SPELLS KNOWN BY SPELL TIER TABLE'
+    source_evidence: >-
+      page 25, the heading over a six-column table; separately referenced from page 24 by the
+      Spellcasting benefit, which names the Wizard Spells Known table, satisfying invariant 5.
+  - proposed_id: tbl_wizard_talents
+    proposed_label: Wizard Talents Table
+    kind: table
+    why_needed: >-
+      Endpoint of M014 and source of M015 through M019. The separately headed table that resolves a
+      wizard's talent roll; its outcome rows are the source of five distinct dependencies.
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 25, its own heading WIZARD TALENTS TABLE'
+    source_evidence: 'page 25, the heading WIZARD TALENTS TABLE over a two-column table, satisfying invariant 5'
+  - proposed_id: item_spell_scroll
+    proposed_label: Spell Scroll
+    kind: item category
+    why_needed: >-
+      Endpoint of M007. What the Learning Spells benefit consumes; without it the only CONSUMES
+      relationship this packet states cannot be expressed.
+    prefix_basis: 'item_ is an item or item category'
+    source_named: true
+    defining_locus: 'SD page 49, Scrolls and Wands, per the contents listing; not this packet'
+    source_evidence: >-
+      page 24, spell scroll in the Learning Spells benefit and the sentence expending it. Named here
+      but defined elsewhere; this packet states a relationship to it and so must propose it. See IDQ-02.
+  - proposed_id: item_magic_item
+    proposed_label: Magic Item
+    kind: item category
+    why_needed: >-
+      Endpoint of M015. What one talents row lets a wizard create; without it that outcome row has no
+      target and the dependency is lost.
+    prefix_basis: 'item_ is an item or item category'
+    source_named: true
+    defining_locus: 'SD page 282, Magic Item Attributes, per this row''s own pointer; not this packet'
+    source_evidence: >-
+      page 25, the talents row letting the wizard make a random magic item of a chosen type, with an
+      explicit page pointer. Named here but defined elsewhere. See IDQ-02.
+  - proposed_id: item_armor
+    proposed_label: Armor
+    kind: item category
+    why_needed: 'Endpoint of M001. What the class entry''s Armor line addresses. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'item_ is an item or item category'
+    source_named: true
+    defining_locus: 'SD page 13, the AC entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 24, the Armor line reading None. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: rule_hit_points
+    proposed_label: Hit Points
+    kind: procedure
+    why_needed: 'Endpoint of M002. What the class entry''s Hit Points line supplies a die for. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the HP entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 24, the bolded Hit Points attribute line. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: sys_language
+    proposed_label: Language
+    kind: subsystem
+    why_needed: 'Endpoint of M003. What the class''s Languages benefit supplies. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'sys_ is a whole subsystem'
+    source_named: false
+    defining_locus: 'SD page 32, Languages, per this page''s own pointer; not this packet'
+    proposed_also_by: GUR-PKT-SD-016-017-ancestries-r03
+    source_evidence: >-
+      page 24, the Languages benefit granting additional common and rare languages. As in the
+      ancestries and priest packets, no individual language identity is proposed and the axis is
+      Analyst-named; the ID and label are reproduced from the sibling proposal exactly.
+  - proposed_id: exp_level
+    proposed_label: Level
+    kind: advancement mechanic
+    why_needed: 'Source of M011. What indexes the spells-known table. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'exp_ is a character advancement mechanic'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the LEVEL entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 24, Each time you gain a level; page 25, the table''s Level column. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: rule_talent_roll
+    proposed_label: Talent Roll
+    kind: procedure
+    why_needed: 'Source of M014. The roll this class''s talents table resolves. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD pages 13 and 14; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 25, the WIZARD TALENTS TABLE heading and its rollable column. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: rule_spellcasting_check
+    proposed_label: Spellcasting Check
+    kind: procedure
+    why_needed: 'Endpoint of M013, M017 and M018. How a spell is cast and what two talents branches improve. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 44, Spellcasting, per this page''s own pointer; not this packet'
+    proposed_also_by: GUR-PKT-SD-016-017-ancestries-r03
+    source_evidence: 'page 25, wizard spellcasting checks in a talents row; page 24, the Spellcasting benefit. Secondary statement; the ID and label are reproduced from the sibling proposal exactly.'
+  - proposed_id: rule_check
+    proposed_label: Check
+    kind: procedure
+    why_needed: 'Source of M005 and endpoint of M006. The check that must succeed for a spell to be learned from a scroll. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 9, CHECKS, and more fully at Making Checks, printed page 81; not this packet'
+    proposed_also_by: GUR-PKT-SD-005-010-introduction-and-the-basics-r01
+    source_evidence: 'page 24, succeeding on an Intelligence check in the Learning Spells benefit. Secondary statement; the ID and label are reproduced from the sibling proposal exactly.'
+  - proposed_id: abil_intelligence
+    proposed_label: Intelligence
+    kind: ability
+    why_needed: 'Source of M006 and endpoint of M016. The stat the learning check uses and one a talents branch can raise. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 15, STATS; not this packet'
+    proposed_also_by: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+    source_evidence: 'page 24, an Intelligence check; page 25, the Intelligence branch of a talents row. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+
+candidate_edges:
+  - ref: M001
+    source_id: class_wizard
+    source_label: Wizard
+    edge_type: CONSTRAINS
+    target_id: item_armor
+    target_label: Armor
+    aspect: permitted armor
+    condition: ''
+    polarity: governs
+    polarity_basis: read
+    book: SD
+    page: 24
+    section: WIZARD CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The Armor line reads None. CONSTRAINS is used rather than EXCLUDES so that all four class
+      entries state the same relationship in the same shape, with the permitted set as the value
+      that differs; see OBS-01, where the EXCLUDES alternative is set out. The bound here is to the
+      empty set, which CONSTRAINS expresses as a bound without changing any armor's rating. Read
+      aloud as Wizard governs Armor; basis read.
+  - ref: M002
+    source_id: class_wizard
+    source_label: Wizard
+    edge_type: FEEDS_INTO
+    target_id: rule_hit_points
+    target_label: Hit Points
+    aspect: hit dice
+    condition: ''
+    book: SD
+    page: 24
+    section: WIZARD CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: 'The Hit Points line gives the die this class rolls per level. The die expression is a magnitude and is excluded.'
+  - ref: M003
+    source_id: class_wizard
+    source_label: Wizard
+    edge_type: FEEDS_INTO
+    target_id: sys_language
+    target_label: Language
+    aspect: starting languages
+    condition: ''
+    book: SD
+    page: 24
+    section: WIZARD CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The Languages benefit grants additional common and rare languages, so the class supplies a
+      starting-language input, matching the ancestry and priest shape. The counts are magnitudes and
+      are excluded, as is the common and rare distinction, which is a classification the Languages
+      section defines and this entry only uses; see OBS-02.
+  - ref: M004
+    source_id: class_wizard
+    source_label: Wizard
+    edge_type: GATES
+    target_id: abil_learning_spells
+    target_label: Learning Spells
+    aspect: benefit access
+    condition: ''
+    book: SD
+    page: 24
+    section: WIZARD CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: 'The benefit is printed inside the class entry and reached by being that class, which is GATES read gate to gated. Derived polarity enables.'
+  - ref: M005
+    source_id: rule_check
+    source_label: Check
+    edge_type: GATES
+    target_id: abil_learning_spells
+    target_label: Learning Spells
+    aspect: learning success
+    condition: ''
+    book: SD
+    page: 24
+    section: WIZARD CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The spell is learned only on succeeding at the check, so a successful check is the precondition
+      for the benefit taking effect, which is GATES read gate to gated. This is distinct from M004,
+      which gates access to the benefit at all: the class lets a wizard attempt it, the check decides
+      whether the attempt works. The difficulty value and the study time are magnitudes and are
+      excluded. Derived polarity enables.
+  - ref: M006
+    source_id: abil_intelligence
+    source_label: Intelligence
+    edge_type: FEEDS_INTO
+    target_id: rule_check
+    target_label: Check
+    aspect: learning check
+    condition: ''
+    book: SD
+    page: 24
+    section: WIZARD CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The source names the check as an Intelligence check, so Intelligence is the stat this check is
+      linked to. The introduction packet asserts the general shape, that a stat modifier feeds a
+      check total; this row records the specific linkage this page states, and is distinct from that
+      row by source_id and aspect under the section 4 assertion key.
+  - ref: M007
+    source_id: abil_learning_spells
+    source_label: Learning Spells
+    edge_type: CONSUMES
+    target_id: item_spell_scroll
+    target_label: Spell Scroll
+    aspect: scroll expenditure
+    condition: ''
+    book: SD
+    page: 24
+    section: WIZARD CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Whether you succeed or fail, you expend the spell scroll. CONSUMES means expends a finite
+      resource and runs consumer to resource, which is exactly this. The source is emphatic that the
+      expenditure happens either way, which is why no condition is recorded: making the consumption
+      conditional on success would misstate the rule. Derived polarity neutral.
+  - ref: M008
+    source_id: abil_learning_spells
+    source_label: Learning Spells
+    edge_type: EXCLUDED_FROM
+    target_id: tbl_wizard_spells_known
+    target_label: Wizard Spells Known By Spell Tier Table
+    aspect: spell count
+    condition: ''
+    book: SD
+    page: 24
+    section: WIZARD CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Spells learned in this way do not count toward your known spells. This is a negative dependency
+      of the kind responsibility 16 admits: the source denies a relationship a reader would otherwise
+      assume, since every other known spell does count. The source of the row is the benefit rather
+      than the spells it produces, because this packet proposes no identity for an individually
+      learned spell; the benefit is the mechanism whose output is excluded. Structurally identical to
+      the priest's turn undead exclusion. Derived polarity negates.
+  - ref: M009
+    source_id: class_wizard
+    source_label: Wizard
+    edge_type: GATES
+    target_id: spell_wizard_spells
+    target_label: Wizard Spells
+    aspect: casting access
+    condition: ''
+    book: SD
+    page: 24
+    section: WIZARD CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      You can cast wizard spells you know. Being a wizard is the precondition for casting this
+      family. The entry does not say only wizards may, so this asserts eligibility rather than
+      exclusivity.
+  - ref: M010
+    source_id: class_wizard
+    source_label: Wizard
+    edge_type: GATES
+    target_id: tbl_wizard_spells_known
+    target_label: Wizard Spells Known By Spell Tier Table
+    aspect: table applicability
+    condition: ''
+    book: SD
+    page: 24
+    section: WIZARD CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The Spellcasting benefit directs the character to learn new spells according to this table, so
+      being a wizard is the precondition for the table applying. Cited to page 24, where the
+      reference is made, rather than page 25, where the table is printed.
+  - ref: M011
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: tbl_wizard_spells_known
+    target_label: Wizard Spells Known By Spell Tier Table
+    aspect: spells known
+    condition: ''
+    book: SD
+    page: 25
+    section: WIZARD SPELLS KNOWN BY SPELL TIER TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table's rows are indexed by character level, so level is the input that selects a row. All
+      fifty counts in the body of the table are magnitudes and are excluded; what is stored is that
+      the lookup depends on level.
+  - ref: M012
+    source_id: tbl_wizard_spells_known
+    source_label: Wizard Spells Known By Spell Tier Table
+    edge_type: CONSTRAINS
+    target_id: spell_wizard_spells
+    target_label: Wizard Spells
+    aspect: known count
+    condition: ''
+    polarity: governs
+    polarity_basis: read
+    book: SD
+    page: 25
+    section: WIZARD SPELLS KNOWN BY SPELL TIER TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table bounds how many wizard spells of each tier may be known without changing any spell,
+      which is CONSTRAINS rather than MODIFIES. Read aloud as Wizard Spells Known By Spell Tier Table
+      governs Wizard Spells; basis read. The per-tier structure is dispositioned in OBS-03.
+  - ref: M013
+    source_id: spell_wizard_spells
+    source_label: Wizard Spells
+    edge_type: RESOLVED_BY
+    target_id: rule_spellcasting_check
+    target_label: Spellcasting Check
+    aspect: casting resolution
+    condition: ''
+    book: SD
+    page: 24
+    section: WIZARD CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The entry names wizard spellcasting checks as the mechanism by which this family is cast and
+      points at the Spellcasting procedure for the detail. RESOLVED_BY identifies the resolution
+      procedure and runs thing to procedure. The page pointer is navigational and is not itself drawn
+      as an edge; see OBS-05. Derived polarity governs.
+  - ref: M014
+    source_id: rule_talent_roll
+    source_label: Talent Roll
+    edge_type: RESOLVED_BY
+    target_id: tbl_wizard_talents
+    target_label: Wizard Talents Table
+    aspect: wizard talents
+    condition: for a wizard
+    book: SD
+    page: 25
+    section: WIZARD TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table is the procedure that turns a talent roll into an outcome for this class. The
+      condition records that it resolves the roll only for wizards. Cited to page 25 because the
+      table inherits that page under the persistence rule, having no marker of its own.
+  - ref: M015
+    source_id: tbl_wizard_talents
+    source_label: Wizard Talents Table
+    edge_type: GATES
+    target_id: item_magic_item
+    target_label: Magic Item
+    aspect: item creation
+    condition: ''
+    book: SD
+    page: 25
+    section: WIZARD TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      One outcome row lets the wizard make a random magic item of a chosen type, so rolling that
+      outcome is the precondition for the creation, which is GATES read gate to gated. The count and
+      the randomness are magnitudes and procedure belonging to the Magic Items chapter. Derived
+      polarity enables.
+  - ref: M016
+    source_id: tbl_wizard_talents
+    source_label: Wizard Talents Table
+    edge_type: MODIFIES
+    target_id: abil_intelligence
+    target_label: Intelligence
+    aspect: stat increase
+    condition: when that branch is chosen
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 25
+    section: WIZARD TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      One outcome row offers a choice between raising Intelligence and improving wizard spellcasting
+      checks. The two branches are recorded as two rows each carrying the condition that selects it,
+      matching the treatment given to the other classes' either-or rows. The increase is a magnitude.
+  - ref: M017
+    source_id: tbl_wizard_talents
+    source_label: Wizard Talents Table
+    edge_type: MODIFIES
+    target_id: rule_spellcasting_check
+    target_label: Spellcasting Check
+    aspect: wizard checks
+    condition: when that branch is chosen
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 25
+    section: WIZARD TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The second branch of the same row. Distinct from M018 by aspect and condition under the section
+      4 assertion key: this branch improves wizard casting generally and is chosen instead of the
+      stat increase, while M018 is a separate outcome row keyed to one chosen spell.
+  - ref: M018
+    source_id: tbl_wizard_talents
+    source_label: Wizard Talents Table
+    edge_type: MODIFIES
+    target_id: rule_spellcasting_check
+    target_label: Spellcasting Check
+    aspect: chosen spell
+    condition: ''
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 25
+    section: WIZARD TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      A separate outcome row grants advantage on casting one chosen known spell, matching the priest
+      table's row of the same shape. The mechanism is advantage, whose defining locus is another
+      packet; see OBS-04.
+  - ref: M019
+    source_id: tbl_wizard_talents
+    source_label: Wizard Talents Table
+    edge_type: MODIFIES
+    target_id: tbl_wizard_spells_known
+    target_label: Wizard Spells Known By Spell Tier Table
+    aspect: known count
+    condition: ''
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 25
+    section: WIZARD TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      One outcome row grants an additional known wizard spell of any tier already accessible, which
+      increases the count the spells-known table otherwise fixes. The target is the table rather than
+      the spell family because the table is the mechanic that determines the count; the effect
+      reaches the family through M012. Distinct from M012 by source_id and edge type. The count is a
+      magnitude and is excluded, as is the tier restriction, for the reason in OBS-03. Read aloud as
+      Wizard Talents Table improves Wizard Spells Known By Spell Tier Table; basis read.
+
+authored_polarity_declaration: >-
+  Six rows carry authored polarity, all with basis read: M001 and M012 CONSTRAINS governs, and M016,
+  M017, M018 and M019 MODIFIES improves. Each is among the three types constitution section 5
+  requires to carry source-reviewed authored polarity, and each was read aloud as source polarity
+  target before being recorded. No row uses basis heuristic or unset. No other row carries a polarity
+  or polarity_basis value: the five GATES rows, the four FEEDS_INTO rows, the two RESOLVED_BY rows,
+  the one CONSUMES row and the one EXCLUDED_FROM row take their derived polarity from the section 5
+  table and the Analyst authors none of them.
+
+domains_touched: []
+candidate_domains:
+  - proposed: magic
+    basis: >-
+      Spells, spell tiers, spells known, spellcasting checks, spell scrolls and magic items are a
+      coherent cluster this entry depends on more heavily than any packet read so far, and the
+      contents list gives magic its own chapter. Recorded as a candidate only; the priest packet
+      recorded the same candidate from its own page, so two packets now support it. Constitution
+      section 8 reserves promotion to an Architect Decision and a lone occurrence does not promote a
+      domain; two do not either, and the Analyst does not decide a candidate domain is official.
+  - proposed: character_creation
+    basis: >-
+      A class is chosen at creation and its languages and starting spells are received then. Recorded
+      as a candidate only; now suggested by a sixth packet, and deliberately not treated as promotion.
+
+domain_boundary_questions:
+  - >-
+    The wizard entry reaches magic, items and creation at once, and unlike the other three classes it
+    barely touches combat. Whether that makes a class node's domain class-specific cannot be settled
+    here. Deferred; no domain is asserted on any edge in this GUR.
+
+candidate_general_rules:
+  - proposed: every class gates the benefits printed in its own entry
+    establishing_locus: 'SD page 24, the Languages, Learning Spells and Spellcasting benefits inside the WIZARD CLASS entry'
+    basis: >-
+      M004 and M009 repeat the shape recorded from the fighter, priest and thief entries. All four
+      class entries now show it, and the ancestries packet recorded a structurally identical
+      candidate for ancestry benefits.
+    not_applied: >-
+      Recorded as a candidate only. The four class entries are now complete, which removes the
+      obstacle the earlier packets cited, but promoting a general rule still requires a separate
+      Architect ruling with an establishing locus, scope, counterexamples and affected set under
+      constitution section 5, and the Analyst is prohibited from promoting one. This is flagged as
+      the strongest general-rule candidate in the intake so far and is the natural subject of an
+      escalation once a role that may raise one judges the affected set complete. No edge in this GUR
+      sets general_rule_id.
+  - proposed: every class resolves its talent roll on its own talents table
+    establishing_locus: 'SD page 25, WIZARD TALENTS TABLE'
+    basis: >-
+      M014 is the wizard instance and completes the set of four. Four separately headed and
+      materially different tables are now read, which settles the fighter GUR's IDQ-02 in the
+      negative: they are not one shared table.
+    not_applied: >-
+      Recorded as a candidate only and deliberately not promoted, for the same reason as above. No
+      edge sets general_rule_id.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: the armor line reads None and EXCLUDES was considered and rejected
+    detail: >-
+      This is the one class entry whose Armor line denies rather than permits, and EXCLUDES, which
+      actively prevents a relation, reads naturally for it. M001 uses CONSTRAINS anyway, deliberately.
+      All four class entries state the same rule in the same place, namely which armor this class may
+      wear, and they differ only in the permitted set: all armor and shields for the fighter and
+      priest, two named armors for the thief, none for the wizard. Representing three of them as
+      CONSTRAINS and the fourth as EXCLUDES would make one rule appear as two different kinds of
+      relationship, and a query asking which classes bound armor would have to know to look for both.
+      The graph stores the relationship, not its magnitude, and an empty permitted set is the value
+      here. Recorded so Reviewer can overturn this if it prefers the sharper reading; it is a
+      presentation choice within the closed vocabulary, not a source question, and nothing else in
+      the row would change.
+  - id: OBS-02
+    subject: common and rare languages are a classification this entry uses but does not define
+    detail: >-
+      The Languages benefit grants additional common languages and rare languages, distinguishing two
+      kinds. That distinction is mechanical and is not extracted: this entry uses the classification
+      and points at printed page 32 for it, which is the Languages section and its defining locus. As
+      in the ancestries and priest packets, no individual language identity is proposed either. M003
+      asserts that the class supplies starting languages, which is what this page supports without
+      fixing a language ontology from a class entry.
+  - id: OBS-03
+    subject: spell tier is again depended on and again not defined here
+    detail: >-
+      The spells-known table is organised by spell tier, the entry grants three tier 1 spells at the
+      outset, and a talents row refers to any tier you know. Tier is plainly a real mechanic and is
+      not proposed, for the reason recorded in the priest GUR: the table's columns are its only
+      appearance, the page defines nothing about what a tier is, and Spell Attributes on printed page
+      50 is the defining locus. That page is reproduced in this packet's own Supporting Source
+      Context and was deliberately not read. Two packets now defer this identity.
+  - id: OBS-04
+    subject: advantage remains the unextracted mechanism behind a talents row
+    detail: >-
+      One talents row grants advantage on casting a chosen known spell. As with Stout, Grit, Thievery,
+      the thief's initiative talent and the priest's casting talent, M018 asserts the effect rather
+      than the mechanism, because printed page 9 defines advantage without relating it to any other
+      named mechanic. This is the sixth packet to depend on advantage. Rolling the Dice on printed
+      page 78 is the defining locus, and the dependency is now the most-repeated deferral in the
+      intake.
+  - id: OBS-05
+    subject: four navigational page pointers are not drawn as edges
+    detail: >-
+      The entry points at Languages on printed page 32, the wizard spell list on printed page 52,
+      Spellcasting on printed page 44, and Magic Item Attributes on printed page 282. Each is a reader
+      pointer to a packet not claimed here. A CROSS_REFERENCES edge needs two identities, and in each
+      case the target is a page rather than a named mechanic this packet can supply. The relationships
+      those pointers stand behind are asserted where this page states them in its own words.
+  - id: OBS-06
+    subject: the final talents row is again a choice with no fixed target
+    detail: >-
+      The highest outcome row reads Choose a talent or points to distribute to stats, identical in
+      shape to the other three classes'. Neither branch names a determinate target, so no edge can be
+      drawn without the Analyst choosing one. All four class entries have now repeated this row
+      verbatim, which confirms it is a standard closing row rather than a class-specific effect and
+      makes it a good candidate for a single ruled treatment once a role that may raise an escalation
+      considers the set complete.
+  - id: OBS-07
+    subject: the two permitted weapons are not proposed
+    detail: >-
+      The Weapons line names dagger and staff. As in the priest and thief entries, no weapon identity
+      is proposed: a permission list is a secondary listing under SOURCE_MARKDOWN Source Identity
+      Authority and cannot name a concept whose defining locus is the Weapons chapter on printed page
+      292 or the Gear section on printed page 34. All four class entries have now deferred this, and
+      the debt is now four entries deep.
+  - id: OBS-08
+    subject: flavour carries no mechanics
+    detail: >-
+      The entry opens with a sentence about rune-tattooed adepts, bespectacled magi and
+      flame-conjuring witches. It establishes tone, names no mechanic and states no dependency.
+  - id: OBS-09
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The pages carry the hit point die, the counts of additional languages, the study time and
+      difficulty value for learning a spell, the count and tier of starting spells, every one of the
+      fifty cells in the spells-known table together with its ten level rows and five tier columns,
+      the talents table's die expression and all five row ranges, the magic item count, the stat
+      increase, the spellcasting bonus, the additional spell count and the distributable points. All
+      are die expressions, counts, numeric bonuses, durations or thresholds, excluded by constitution
+      section 1 and invariant 11. They remain in the immutable claimed packet. No aspect in this GUR
+      contains a digit and no condition encodes a numeric value.
+  - id: OBS-10
+    subject: the supporting source context was available and deliberately unread
+    detail: >-
+      This packet reproduces printed pages 44 through 50 and 86, including the wizard mishaps tables
+      and the scrolls-and-wands material that this class entry depends on directly. Those pages would
+      answer what a spellcasting check is, what a spell tier is, and what a spell scroll does. They
+      were not read as evidence. Recorded explicitly because the omission would otherwise look like
+      an oversight rather than the scope rule being obeyed.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: the four class entries are now complete and their shared shape is unresolved
+    detail: >-
+      With the wizard entry, all four classes are extracted. Each produced the same five relationship
+      shapes: a class constrains armor, feeds hit points, gates its own benefits, resolves its talent
+      roll on its own table, and for the two casters gates a spell family and a spells-known table.
+      Each also deferred the same two things, the permitted weapons list and the advantage mechanism.
+      No single packet can settle whether these shapes should remain as per-class rows, be promoted to
+      general rules, or coexist with the class-axis rows the overview packet asserted from printed
+      pages 12 to 14. That question is now ripe and is recorded here because this is the packet that
+      completes the evidence for it, not because this packet can answer it.
+      Consequence if wrong: if general rules are later approved for these shapes, the per-class rows
+      become derived applications and the establishing rows must be identified; under invariant 19
+      the establishing edges would leave general_rule_id empty, which every row here already does.
+      Nothing published needs retracting either way.
+  - id: IDQ-02
+    subject: two item identities are minted from single mentions
+    detail: >-
+      item_spell_scroll is named twice in one benefit and item_magic_item once in a talents row.
+      Neither is defined here; their loci are Scrolls and Wands on printed page 49 and the magic item
+      chapters beginning at printed page 282. Both are proposed only because M007 and M015 need
+      endpoints and a GUR must propose every endpoint its edges use.
+      Consequence if wrong: the defining chapters may use different spellings, may distinguish a
+      scroll from a spell scroll, or may split magic items by type, in which case M007 and M015
+      repoint. The Analyst judged that recording a stated CONSUMES relationship and a stated creation
+      permission with provisional identities is better than discarding them. Reviewer should
+      de-duplicate against those packets when they are read, and the defining packet's name takes
+      precedence over these stems.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Every proposed node uses an approved constitution section 2 prefix with an unchanged
+  kind, every edge uses one of the thirteen legal section 3 types, and no new prefix, edge type,
+  domain promotion or general-rule application is requested. ESCALATION_CONTRACT states that a
+  proposed node under an approved prefix and kind which passes identity and duplicate checks is
+  ordinary GUR, GUP and Review work rather than an escalation.
+  IDQ-01 records that the class-shape question is now ripe, and the two general-rule candidates above
+  are the strongest in the intake so far. The Analyst does not escalate them: constitution section 5
+  and the Analyst prohibitions reserve general-rule promotion to an Architect ruling and forbid the
+  Analyst from promoting one, and nothing here is blocked in the meantime, since every affected row is
+  published with general_rule_id empty and remains correct whether or not a rule is later approved.
+  Recorded for Reviewer and Architect to act on when they judge the affected set complete.
+
+completeness_statement: >-
+  Both printed pages in the declared span are accounted for. Page 24 was read in full: the WIZARD
+  CLASS heading, the flavour sentence in OBS-08, the Weapons line in OBS-07, the Armor line supplying
+  M001 with the EXCLUDES alternative in OBS-01, the Hit Points line supplying M002, the Languages
+  benefit supplying M003 with its common and rare distinction in OBS-02, the Learning Spells benefit
+  and both its following paragraphs supplying M004 through M008, and the Spellcasting benefit and all
+  three of its following paragraphs supplying M009, M010 and M013, with their page pointers in
+  OBS-05. Page 25 was read in full: the WIZARD SPELLS KNOWN BY SPELL TIER TABLE heading, its Level
+  column and five tier columns supplying M011 and M012, all ten level rows whose fifty cells are
+  magnitudes recorded in OBS-09, the WIZARD TALENTS TABLE heading and column headers supplying M014,
+  and all five talents rows of which four supply M015 through M019 and the fifth is dispositioned in
+  OBS-06. Every page marker was resolved through the Pandoc AST and the in-scope resolved page set
+  matches the declared span with no gap; the talents table's page attribution follows the persistence
+  rule and is stated explicitly in page_attribution_basis. The Supporting Source Context reproducing
+  printed pages 15, 44 through 50 and 86 is out of scope, was deliberately not read as evidence, and
+  contributed nothing, as recorded in OBS-10. Nineteen edges are proposed across fifteen candidate
+  nodes, eight of which are also proposed by sibling GURs from their defining loci and are marked as
+  such. No node is reused because the Shadowdark graph is empty. Content not converted to an edge is
+  accounted for in OBS-01 through OBS-10, and every identity the Analyst could not settle is recorded
+  in IDQ-01 and IDQ-02 rather than resolved by picking a plausible ID. No assertion depends on any
+  other ruleset.

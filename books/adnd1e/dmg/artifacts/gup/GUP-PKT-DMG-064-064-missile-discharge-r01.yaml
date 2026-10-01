@@ -1,0 +1,610 @@
+schema_version: '1.0'
+id: GUP-PKT-DMG-064-064-missile-discharge-r01
+status: blocked
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-steward-intake
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.8'
+artifact_kind: packet_update
+revision: 1
+supersedes: null
+handoff:
+  next_role: architect
+  readiness: blocked
+  reason: 1 unresolved architectural question(s); a schema-valid patch is not an approvable one
+  blocking_ids:
+    - ESC-CAND-01
+provenance:
+  gur_id: GUR-PKT-DMG-064-064-missile-discharge-r03
+  gur_checksum: sha256:bf22e611651c2757dfd418095250867fc9562f5809e5cf9b0ef36bf9d78f3b00
+  gur_constitution_version: '1.8'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 695
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: false
+blocking_reason: 0 validation error(s) and 1 unresolved escalation(s); a schema-valid patch is not an
+  approvable one
+node_changes:
+  additions_proposed:
+    - proposed_id: rule_acid
+      proposed_label: Acid
+      kind: rule
+      why_needed: Acid is named in the section heading and given its own row in both the Size and the
+        Effect tables, alongside holy water, oil and poison. Canonical carries a DERIVED_FROM row for
+        the other three and none for acid, so the graph currently records three of the four container
+        contents. The registry has spell_melfs_acid_arrow and item_oil_acid_resistance but nothing for
+        acid as a substance. Parallel in form to the existing rule_holy_water and rule_oil.
+      edges_depending_on_it:
+        - M001
+        - M002
+        - M003
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: cbt_missile_scatter
+      proposed_label: Missile Scatter
+      kind: cbt
+      why_needed: 'The Misses paragraph is a self-contained procedure: distance off target, direction
+        off target, an optional short-range die, and a re-reading of the direction table when the target
+        is a wall. Nothing in canonical covers it. It is invoked from two places on this page alone, the
+        missed container and the torch used to light spilled oil, so it is referenced apart from the throw
+        itself and is a node rather than a property of one.'
+      edges_depending_on_it:
+        - M016
+        - M017
+        - M018
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: cbt_dropped_object
+      proposed_label: Dropped Object
+      kind: cbt
+      why_needed: '''A dropped boulder (or any heavy weight) will do damage as follows'' states a rule
+        about dropped weights in general, not about boulders. Nothing in canonical covers it. The registry''s
+        nearest node is ex_falling, which is damage to a creature that falls, the opposite direction.
+        Kept distinct from cbt_grenade_missile because nothing is thrown and no container breaks.'
+      edges_depending_on_it:
+        - M015
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions:
+    - source_id: cbt_grenade_missile
+      source_label: Grenade-Like Missiles
+      edge_type: TRIGGERS
+      target_id: item_saving_throw
+      target_label: Item Saving Throw
+      aspect: stoppered breakage
+      condition: hurled into orifice
+      polarity: neutral
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M012
+    - source_id: cbt_grenade_missile
+      source_label: Grenade-Like Missiles
+      edge_type: TRIGGERS
+      target_id: save_poison
+      target_label: Saving Throw vs Poison
+      aspect: splash avoidance
+      condition: container breaks nearby
+      polarity: neutral
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M009
+    - source_id: monster_special
+      source_label: Special Creatures
+      edge_type: MODIFIES
+      target_id: cbt_grenade_missile
+      target_label: Grenade-Like Missiles
+      aspect: boulder size
+      condition: ''
+      polarity: neutral
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M014
+    - source_id: rule_cover
+      source_label: Cover
+      edge_type: CROSS_REFERENCES
+      target_id: rule_spell_casting
+      target_label: Casting a Spell
+      aspect: cover against spells
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: DMG
+      page: '64'
+      section: Missile Fire Cover And Concealment Adjustments
+      evidence: explicit_reference
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M019
+    - source_id: rule_holy_water
+      source_label: Holy Water
+      edge_type: MODIFIES
+      target_id: cbt_damage
+      target_label: Damage
+      aspect: direct hit and splash
+      condition: ''
+      polarity: inflicts
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M005
+    - source_id: rule_holy_water
+      source_label: Holy Water
+      edge_type: MODIFIES
+      target_id: cbt_grenade_missile
+      target_label: Grenade-Like Missiles
+      aspect: area of effect
+      condition: ''
+      polarity: neutral
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+    - source_id: rule_oil
+      source_label: Oil
+      edge_type: GATES
+      target_id: cbt_damage
+      target_label: Damage
+      aspect: ignition required
+      condition: oil alight
+      polarity: enables
+      polarity_basis: derived
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M008
+    - source_id: rule_oil
+      source_label: Oil
+      edge_type: MODIFIES
+      target_id: cbt_damage
+      target_label: Damage
+      aspect: direct hit and splash
+      condition: ''
+      polarity: inflicts
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M007
+    - source_id: rule_oil
+      source_label: Oil
+      edge_type: MODIFIES
+      target_id: cbt_grenade_missile
+      target_label: Grenade-Like Missiles
+      aspect: area of effect
+      condition: ''
+      polarity: neutral
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M006
+    - source_id: rule_poison_use
+      source_label: Use of Poison
+      edge_type: MODIFIES
+      target_id: cbt_grenade_missile
+      target_label: Grenade-Like Missiles
+      aspect: breakage requirement
+      condition: hurled into orifice
+      polarity: neutral
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M011
+    - source_id: rule_siege_engine
+      source_label: Siege Engines
+      edge_type: MODIFIES
+      target_id: cbt_grenade_missile
+      target_label: Grenade-Like Missiles
+      aspect: boulder size
+      condition: ''
+      polarity: neutral
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M013
+    - source_id: wpn_range
+      source_label: Weapon Range
+      edge_type: MODIFIES
+      target_id: cbt_grenade_missile
+      target_label: Grenade-Like Missiles
+      aspect: to hit chance
+      condition: medium or long range
+      polarity: worsens
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M010
+  pending_additions:
+    - source_id: cbt_dropped_object
+      source_label: Dropped Object
+      edge_type: MODIFIES
+      target_id: cbt_damage
+      target_label: Damage
+      aspect: weight and drop distance
+      condition: ''
+      polarity: inflicts
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M015
+    - source_id: cbt_grenade_missile
+      source_label: Grenade-Like Missiles
+      edge_type: TRIGGERS
+      target_id: cbt_missile_scatter
+      target_label: Missile Scatter
+      aspect: off target placement
+      condition: attack misses
+      polarity: neutral
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M016
+    - source_id: cbt_missile_scatter
+      source_label: Missile Scatter
+      edge_type: MODIFIES
+      target_id: cbt_grenade_missile
+      target_label: Grenade-Like Missiles
+      aspect: impact point
+      condition: ''
+      polarity: neutral
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M017
+    - source_id: rule_acid
+      source_label: Acid
+      edge_type: DERIVED_FROM
+      target_id: cbt_grenade_missile
+      target_label: Grenade-Like Missiles
+      aspect: thrown container
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+    - source_id: rule_acid
+      source_label: Acid
+      edge_type: MODIFIES
+      target_id: cbt_damage
+      target_label: Damage
+      aspect: direct hit and splash
+      condition: ''
+      polarity: inflicts
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+    - source_id: rule_acid
+      source_label: Acid
+      edge_type: MODIFIES
+      target_id: cbt_grenade_missile
+      target_label: Grenade-Like Missiles
+      aspect: area of effect
+      condition: ''
+      polarity: neutral
+      polarity_basis: read
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: rule_oil
+      source_label: Oil
+      edge_type: RESOLVED_BY
+      target_id: cbt_missile_scatter
+      target_label: Missile Scatter
+      aspect: torch placement
+      condition: lighting spilled oil
+      polarity: governs
+      polarity_basis: derived
+      book: DMG
+      page: '64'
+      section: 'GRENADE-LIKE MISSILES: BOULDERS AND CONTAINERS OF ACID, HOLY/UNHOLY WATER, OIL, POISON'
+      evidence: explicit_rule
+      pass: page-sweep
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M018
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts:
+    derived: 2
+    read: 10
+duplicate_findings:
+  - grade: near_vs_canonical
+    ref: M012
+    canonical:
+      canonical_row: 594
+      canonical_index: 592
+      source_id: cbt_grenade_missile
+      edge_type: TRIGGERS
+      target_id: item_saving_throw
+      aspect: container may not shatter
+      condition: crushing blow column
+      book: DMG
+      page: '64'
+      section: GRENADE-LIKE MISSILES
+    detail: same endpoints and edge type as an existing canonical edge, differing in aspect or condition;
+      Reviewer must decide restatement vs addition
+neighbourhood_conflicts:
+  - ref: M004
+    endpoints:
+      - rule_holy_water
+      - cbt_grenade_missile
+    existing_edges:
+      - canonical_row: 597
+        canonical_index: 595
+        source_id: rule_holy_water
+        edge_type: DERIVED_FROM
+        target_id: cbt_grenade_missile
+        aspect: thrown container
+        condition: ''
+        book: DMG
+        page: '64'
+        section: GRENADE-LIKE MISSILES
+    detail: the same node pair is already related by other edge types
+  - ref: M006
+    endpoints:
+      - rule_oil
+      - cbt_grenade_missile
+    existing_edges:
+      - canonical_row: 598
+        canonical_index: 596
+        source_id: rule_oil
+        edge_type: DERIVED_FROM
+        target_id: cbt_grenade_missile
+        aspect: thrown container
+        condition: ''
+        book: DMG
+        page: '64'
+        section: GRENADE-LIKE MISSILES
+    detail: the same node pair is already related by other edge types
+  - ref: M011
+    endpoints:
+      - rule_poison_use
+      - cbt_grenade_missile
+    existing_edges:
+      - canonical_row: 600
+        canonical_index: 598
+        source_id: rule_poison_use
+        edge_type: DERIVED_FROM
+        target_id: cbt_grenade_missile
+        aspect: thrown container
+        condition: ''
+        book: DMG
+        page: '64'
+        section: GRENADE-LIKE MISSILES
+    detail: the same node pair is already related by other edge types
+  - ref: M013
+    endpoints:
+      - rule_siege_engine
+      - cbt_grenade_missile
+    existing_edges:
+      - canonical_row: 2075
+        canonical_index: 2073
+        source_id: rule_siege_engine
+        edge_type: TRIGGERS
+        target_id: cbt_grenade_missile
+        aspect: misses resolved by the grenade rules
+        condition: ''
+        book: DMG
+        page: '109'
+        section: 'Hit Determination:'
+    detail: the same node pair is already related by other edge types
+  - ref: M019
+    endpoints:
+      - rule_cover
+      - rule_spell_casting
+    existing_edges:
+      - canonical_row: 590
+        canonical_index: 588
+        source_id: rule_cover
+        edge_type: MODIFIES
+        target_id: rule_spell_casting
+        aspect: affects spells and spell-like powers
+        condition: ''
+        book: DMG
+        page: '65'
+        section: SPELL CASTING DURING MELEE
+    detail: the same node pair is already related by other edge types
+escalations:
+  - kind: carried_from_gur
+    id: ESC-CAND-01
+    subject: source_id for steward-extracted, non-legacy packets
+    statement: 'This packet is recorded under dmg-legacy-unspecified because that is the only source_id
+      registered for the DMG and an Analyst may not add a registry entry. Its registered provenance is
+      ''legacy graph dump'', which is false for this packet: the text was supplied fresh by the repository
+      source steward under DEC-2026-0029.'
+    why_it_matters: DEC-2026-0029 forbids legacy canonical data and archive extraction batches as source-read
+      evidence, and this packet exists specifically to supply evidence that is not legacy. A reader who
+      takes source_id at face value would conclude the opposite of what is true, on the one reading where
+      that distinction decides whether the work is admissible. The same mismatch already sits under every
+      PHB packet, so the fix is a registry change, not a packet field.
+    analyst_position: Register a source_id whose provenance names steward intake, and record which packets
+      were extracted under it. Raised here rather than earlier because this is the first packet where
+      the label actively contradicts the governing Decision.
+    owner: architect
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 19
+  edges_compiled: 19
+  edges_rejected: 0
+  edge_additions: 12
+  edge_pending_additions: 7
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 1
+  escalations: 1
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 3
+  cross_packet_dependencies: 0
+  duplicate_findings: 1
+  neighbourhood_conflicts: 5
+validation_report: build/reports/GUP-PKT-DMG-064-064-missile-discharge-r01.validation.json

@@ -1,0 +1,300 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-026-026-background-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-026-026-background
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.0
+  - rulesets/shadowdark/governance/constitution.md 1.2
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-026-026-background
+  source_file: source.md
+  packet_source_checksum: sha256:2801ddbff0a2f40864c056024fd7f139264ff9f44cb60709a1f2543f225492b6
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 010-background.md
+  citation_code: SD
+  page_start: 26
+  page_end: 26
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  One marker resolves in the Primary Source Material, through the Pandoc AST rather than
+  positionally. {#p26} ends the BACKGROUND heading, which placement rule 1 applies to the whole
+  heading, and the persistence rule carries page 26 through both framing sentences and every row of
+  the backgrounds table. Both rows below cite page 26. A second page the parser resolves, 15, lies
+  entirely inside the out-of-scope Supporting Source Context.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed page 26. The trailing Supporting
+  Source Context reproduces printed page 15, whose primary packet is
+  PKT-SD-015-015-stats-and-stat-modifiers, outside this packet's declared span. No assertion here is
+  drawn from it and no row cites page 15.
+
+source_summary: >-
+  Printed page 26 is a short section: the BACKGROUND heading, one sentence saying a character's
+  background knowledge and skills might prove useful in play, one sentence directing the player and
+  GM to determine together whether a background grants advantages in a given situation, and a
+  twenty-row rollable table of named backgrounds each with a one-line description. This summary is
+  orientation only; both assertions below cite page 26.
+
+graph_state_at_extraction: >-
+  The Shadowdark canonical graph is still empty; nodes.csv is header-only, the domain registry has no
+  domains, general_rules.json is an empty object, and character_races.yaml is inactive. The three
+  supplied slices named in the packet manifest as missing remain immaterial, re-assessed here rather
+  than carried over from claim. reused_nodes is empty. One of the three identities below is already
+  proposed by a sibling GUR from its defining locus and is marked as such.
+
+cross_packet_identity_note: >-
+  rule_check is proposed by a sibling GUR from its defining locus and is proposed again here because
+  this patch uses it as an edge endpoint. A GUR must propose every endpoint its edges use: an
+  endpoint present only in a sibling GUR is not canonical, is not proposed by the patch, and fails
+  invariant 1 as endpoint_unresolved. Proposing it is not a competing naming; it records its defining
+  locus and the sibling GUR that also proposes it, and the ID and label are reproduced exactly.
+
+prior_withdrawal_note: >-
+  An earlier draft of GUR-PKT-SD-011-014 proposed rule_background from printed page 12, where the
+  OVERVIEW entry names a background and says a character is adept at tasks related to it. The Analyst
+  withdrew that node before publication because no edge in that packet used it and it would have been
+  an orphan. This packet is the mechanic's defining locus, states two relationships to it, and
+  therefore proposes it properly. Recorded so the earlier withdrawal is not mistaken for a judgment
+  that the concept is not graph-constitutable.
+
+reused_nodes: []
+
+candidate_nodes:
+  - proposed_id: rule_background
+    proposed_label: Background
+    kind: procedure
+    why_needed: >-
+      Source of M001 and M002. The mechanic this page defines; both the table lookup and the
+      situational benefit originate from it, and without it neither dependency can be expressed.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 26, heading BACKGROUND'
+    source_evidence: >-
+      page 26, the heading BACKGROUND over the section that defines how a background is chosen and
+      used. Printed page 12 names the concept in the character overview, but this page defines it.
+  - proposed_id: tbl_backgrounds
+    proposed_label: Backgrounds Table
+    kind: table
+    why_needed: >-
+      Endpoint of M001. The separately headed, separately referenced table that supplies the twenty
+      backgrounds a character may have; without it the background has no stated source.
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 26, its own heading BACKGROUNDS TABLE'
+    source_evidence: >-
+      page 26, the heading BACKGROUNDS TABLE over a two-column rollable table, satisfying
+      GRAPH_INVARIANTS invariant 5 as a table referenced separately from the rule it serves.
+  - proposed_id: rule_check
+    proposed_label: Check
+    kind: procedure
+    why_needed: >-
+      Endpoint of M002. What a relevant background improves. Proposed here because this patch uses it
+      as an endpoint.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: false
+    defining_locus: 'SD page 9, CHECKS, and more fully at Making Checks, printed page 81; not this packet'
+    proposed_also_by: GUR-PKT-SD-005-010-introduction-and-the-basics-r01
+    source_evidence: >-
+      page 26, the sentence directing the player and GM to determine whether the background provides
+      advantages in a given situation. The page does not use the word check; see IDQ-01. The ID and
+      label are reproduced from the sibling proposal exactly.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_background
+    source_label: Background
+    edge_type: RESOLVED_BY
+    target_id: tbl_backgrounds
+    target_label: Backgrounds Table
+    aspect: background selection
+    condition: ''
+    book: SD
+    page: 26
+    section: BACKGROUNDS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table is the procedure that supplies a character's background, which is RESOLVED_BY read
+      thing to procedure. This is the same shape the class GURs use for their talents tables. The
+      table's die column is a magnitude and is excluded, as are its twenty row numbers. Derived
+      polarity governs.
+  - ref: M002
+    source_id: rule_background
+    source_label: Background
+    edge_type: MODIFIES
+    target_id: rule_check
+    target_label: Check
+    aspect: situational advantage
+    condition: when the background is judged relevant
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 26
+    section: BACKGROUND
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The page states that a background may provide advantages in a given situation, determined
+      between the player and the GM. Where it applies it changes how the situation resolves, which is
+      MODIFIES, and it only ever helps, so read aloud as Background improves Check; basis read. The
+      condition records that the benefit is not automatic without encoding a threshold, and carries
+      the GM's judgment without proposing a GM identity, consistently with OBS-04 of the introduction
+      GUR. The target is the check because that is the mechanic a situational advantage acts on; see
+      IDQ-01, which records that this page does not use the word check.
+
+authored_polarity_declaration: >-
+  One row carries authored polarity: M002 MODIFIES improves, basis read. MODIFIES is among the three
+  types constitution section 5 requires to carry source-reviewed authored polarity, and the row was
+  read aloud as source polarity target before being recorded. The row does not use basis heuristic or
+  unset. M001 is RESOLVED_BY and takes its derived polarity governs from the section 5 table; the
+  Analyst authors none of it.
+
+domains_touched: []
+candidate_domains:
+  - proposed: character_creation
+    basis: >-
+      A background is chosen when a character is made and the twenty entries are creation-time
+      identities. Recorded as a candidate only; now suggested by a seventh packet, which is noted and
+      deliberately not treated as promotion. Constitution section 8 reserves promotion to an
+      Architect Decision and the Analyst does not decide a candidate domain is official.
+
+domain_boundary_questions:
+  - >-
+    A background is chosen at creation but its only mechanical effect lands during play, on checks in
+    arbitrary situations. Whether it belongs to a creation domain, a resolution domain or both cannot
+    be settled from one page. Deferred; no domain is asserted on either edge in this GUR.
+
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. This page states one rule about one mechanic and repeats no shape within itself. The
+  RESOLVED_BY relationship in M001 resembles the four class talents tables, but a rule covering both
+  would have to span a background and a talent roll, which are different mechanics, and the Analyst
+  does not propose a general rule spanning mechanics on the strength of a shared table idiom.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: the twenty named backgrounds are deliberately not proposed as identities
+    detail: >-
+      The table names Urchin, Wanted, Cult Initiate, Thieves' Guild, Banished, Orphaned, Wizard's
+      Apprentice, Jeweler, Herbalist, Barbarian, Mercenary, Sailor, Acolyte, Soldier, Ranger, Scout,
+      Minstrel, Scholar, Noble and Chirurgeon, each in bold with a one-line description. They are
+      source-named and each has a bounded entry, which is ordinarily what makes an identity
+      proposable, so the omission is a decision and not an oversight.
+      None of them states a mechanical dependency. Each description says what the character knows or
+      once did: grew up in the streets, can appraise value, knows plants and poisons, served in an
+      army. Not one names a second mechanic, a value, a check, a permitted item or a procedure, so
+      not one would produce an edge. Twenty nodes with no edges would be twenty orphans, and the
+      Analyst has already withdrawn one orphan from this intake rather than publish it.
+      The mechanical content of the section is entirely in M002: whatever the background is, it may
+      improve a check when the GM judges it relevant. That assertion is true of all twenty and does
+      not need them enumerated. If a later packet gives a specific background a specific mechanical
+      effect, that packet is its defining locus and can propose it then with an edge to carry it.
+  - id: OBS-02
+    subject: several background names collide with identities elsewhere in the book
+    detail: >-
+      Barbarian, Ranger, Acolyte and Scout appear in this table, and Barbarian, Acolyte and several
+      others also appear as titles in the titles tables on printed pages 30 and 31; Wizard's
+      Apprentice echoes the wizard class and Thieves' Guild the thief. These are not the same
+      concepts. A background named Barbarian is a character's history; a title named Barbarian is
+      what a neutral fighter is called at a given level.
+      Recorded because this is exactly the situation SOURCE_MARKDOWN Source Identity Authority warns
+      about, where a shared label invites a false merge, and because constitution section 2 states
+      that labels do not determine identity. Since no background identity is proposed here, no
+      collision is created; the observation exists so that a later packet does not resolve a name
+      clash by merging a background into a title or a class.
+  - id: OBS-03
+    subject: the advantage mechanism is not named on this page
+    detail: >-
+      Unlike the class benefits, which say advantage explicitly, this page says only that a background
+      may provide advantages in a given situation, using the ordinary English word rather than the
+      named mechanic. M002 therefore asserts an improvement to the check without claiming the page
+      invokes the advantage mechanic. Recorded to distinguish this case from the six packets that do
+      name advantage and whose deferral is a different matter.
+  - id: OBS-04
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The page carries the table's die expression and its twenty row numbers. Both are die
+      expressions and index values, excluded by constitution section 1 and invariant 11. They remain
+      in the immutable claimed packet, which is the authority for the values themselves. Neither
+      aspect in this GUR contains a digit and neither condition encodes a numeric value.
+  - id: OBS-05
+    subject: packet wrapper and supporting context
+    detail: >-
+      The supplied file opens with an intake wrapper ahead of the Primary Source Material heading,
+      for which the claim manifest is the independent page locator SOURCE_MARKDOWN Attribution Rules
+      requires; it contains no rulebook prose, heading or marker. The trailing Supporting Source
+      Context reproduces printed page 15 and is orientation only, contributing nothing here.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: the page says advantages in a situation, not advantage on a check
+    detail: >-
+      M002 targets rule_check. The page never uses the word check: it says the background may provide
+      advantages in a given situation. The Analyst read a situation as resolved by a check because
+      that is the only resolution mechanic the book has introduced, printed page 9 establishing that
+      a risky action is resolved by one, and because a benefit that attaches to nothing would be
+      unassertable.
+      Consequence if wrong: if the Making Checks chapter on printed page 81 or a later section gives
+      backgrounds a different mechanical hook, for example a distinct trained-task mechanic like the
+      thief's Thievery, M002 repoints to it. Nothing else in this GUR depends on the choice.
+      This is not an Architect escalation: rule_ is an approved prefix, the identity already exists as
+      a sibling proposal, and ESCALATION_CONTRACT states that a weak citation is not grounds to
+      escalate and that an edge one is unsure of should simply be rejected. The Analyst judged the
+      edge supported enough to propose and has recorded the exact uncertainty rather than hiding it.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Both proposed identities use an approved constitution section 2 prefix with an
+  unchanged kind, both edges use one of the thirteen legal section 3 types, and no new prefix, edge
+  type, domain promotion or general-rule application is requested. ESCALATION_CONTRACT states that a
+  proposed node under an approved prefix and kind which passes identity and duplicate checks is
+  ordinary GUR, GUP and Review work rather than an escalation. IDQ-01 is recorded for Reviewer on
+  that basis.
+  Note for contrast: the sibling packet covering printed pages 27 to 29, alignment and deities, is
+  being escalated rather than extracted, because its named members have no approved prefix. This
+  packet's twenty backgrounds are not escalated, because the Analyst is not proposing them at all and
+  nothing here is blocked by their absence; see OBS-01.
+
+completeness_statement: >-
+  The single printed page in the declared span is accounted for. Page 26 was read in full: the
+  BACKGROUND heading, the sentence about background knowledge and skills, the sentence directing the
+  player and GM to determine situational advantages which supplies M002, the BACKGROUNDS TABLE
+  heading and its column headers which supply M001, and all twenty table rows with their names and
+  descriptions, dispositioned in OBS-01 and OBS-02. Every page marker was resolved through the Pandoc
+  AST and the in-scope resolved page set matches the declared span with no gap. The Supporting Source
+  Context reproducing printed page 15 is out of scope and contributed nothing. Two edges are proposed
+  across three candidate nodes, one of which is also proposed by a sibling GUR from its defining
+  locus and is marked as such. No node is reused because the Shadowdark graph is empty. Content not
+  converted to an edge is accounted for in OBS-01 through OBS-05, and the one reading the Analyst
+  could not settle is recorded in IDQ-01 rather than resolved silently. No assertion depends on any
+  other ruleset.

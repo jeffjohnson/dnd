@@ -1,0 +1,234 @@
+schema_version: '1.0'
+id: ESC-2026-09-30T06.00.29.086Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-189-189-monster-attributes
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+raised_by: analyst
+raised_utc: '2026-09-30T06:00:29.086Z'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    monster level has no identity and no approved prefix covers a creature statistic; the
+    concept recurs in 38 incoming monster files and whatever is chosen here becomes the
+    convention for all of them
+  blocking_ids: []
+
+authority:
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.34
+  - rulesets/shadowdark/governance/constitution.md 1.7
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+
+originating_artifacts:
+  - id: GUR-PKT-SD-189-189-monster-attributes-r01
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-189-189-monster-attributes-r01.yaml
+  - id: PKT-SD-189-189-monster-attributes
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-189-189-monster-attributes
+
+question: >-
+  Printed page 189 states that a monster's hit points are calculated by rolling dice per monster
+  level, printed LV. Monster level is a creature statistic. Constitution section 2 reserves exp_
+  for character advancement and monster_ for a creature or creature family, and no other
+  approved prefix describes a statistic belonging to a creature. What identity, under what
+  prefix and kind, represents monster level?
+  A second question follows from the first and is the reason this is worth ruling on now rather
+  than per packet. Roughly sixty stat block packets follow, each printing AC, HP, LV, ATK, MV,
+  six stat modifiers and AL for one creature. Are those per creature statistics graph content at
+  all, and if so does each creature carry its own rows to the shared mechanics, or does the
+  chapter yield only creature identities and their named special abilities?
+
+why_this_is_architectural: >-
+  ESCALATION_CONTRACT lists as its first trigger that no existing node ID represents the concept
+  and a new kind or prefix may be needed. That is exactly the case, and it is established by
+  enumeration rather than by failing to find something; see measured_evidence.
+  The contract also says not to escalate when a proposed node uses an approved prefix and kind.
+  The Analyst has applied that test and it does not rescue this case: the candidate prefixes are
+  approved but their declared kinds describe something else, so choosing one is a decision about
+  what the prefix means rather than an ordinary registration under it.
+  The second question is a scope ruling about how much of an eighty page chapter is graph
+  content. No role below Architect can answer it, and answering it wrongly by default is
+  expensive in both directions: sixty packets of near empty extractions, or sixty packets of
+  roughly eight rows each added to a graph that currently holds 851.
+
+measured_evidence:
+  method: >-
+    Counted directly from rulesets/shadowdark/registries/nodes.csv and
+    rulesets/shadowdark/canonical/edges_master.csv at 424 registry rows and 851 edges, and from
+    the claimed packet source via the Pandoc AST. No figure here is recalled.
+  whole_registry_search_for_a_monster_statistic: >-
+    The whole registry was searched for any identity whose id or label mentions level, lv,
+    monster or creature. It returns ten and none is a creature statistic: exp_level,
+    exp_level_one and exp_level_zero are character levels; rule_danger_level,
+    tbl_hex_danger_level and tbl_map_danger_level are environment danger; spell_hold_monster is
+    a spell; tbl_map_boss_monster, tbl_map_monster_mob and tbl_map_solo_monster are map
+    generator tables. There is no monster statistic identity of any kind in production.
+  prefix_census:
+    abil: 19
+    alignment: 3
+    ancestry: 6
+    cbt: 6
+    class: 4
+    deity: 7
+    ex: 1
+    exp: 4
+    item: 31
+    lang: 14
+    rule: 98
+    spell: 87
+    sys: 5
+    tbl: 124
+    weapon: 15
+  what_exp_level_currently_means: >-
+    exp_level carries 30 canonical rows and every one is character side: it feeds four title
+    tables and the title rule, weapon mastery, backstab, both spells-known tables, the
+    advancement table and XP; it constrains eleven spells by target level; and it modifies
+    maximum hit points on reaching a new level. Aliasing monster LV onto that identity would
+    place a creature statistic in the neighbourhood of thirty assertions about character
+    progression, and would imply that a monster's LV feeds the fighter titles table.
+  every_other_attribute_on_the_page_already_has_an_identity: >-
+    This is what makes the gap precise rather than general. AC is cbt_armor_class with 12 rows,
+    HP is rule_hit_points with 30, ATK is cbt_attack_roll with 27, damage is rule_damage with
+    25, MV is ex_movement with 22, the stat modifiers are abil_stat_modifier with 2 plus the six
+    named abil_ stats, AL is sys_alignment with 13, spellcasting is rule_spellcasting_check with
+    40, the DC is rule_difficulty_class with 6 and the tier is rule_spell_tier with 10. Monster
+    level is the only concept on the page with no identity available.
+  restatements_already_canonical: >-
+    Three of the page's statements restate rules whose defining locus is printed pages 14 and
+    45, and the Analyst proposes no row for any of them. rule_critical_failure TRIGGERS the
+    three wizard mishap tables and TRIGGERS rule_penance, both from printed page 45 and both
+    unconditioned as to who is casting, so they already cover monsters. abil_constitution
+    FEEDS_INTO rule_hit_points on hit point value from printed page 14 is likewise
+    unconditioned, so the CON half of the monster hit point calculation is already represented.
+  the_one_inversion: >-
+    rule_spell_tier FEEDS_INTO rule_difficulty_class on casting difficulty, from printed page 44,
+    says a spell's tier determines its DC. Page 189 says that for a monster the tier is derived
+    from the DC. That is a genuine new assertion in the opposite direction rather than a
+    restatement, and it does not depend on this escalation because both endpoints are canonical.
+  sys_axis_precedent: >-
+    An aggregate axis can carry a dependency row in this graph: sys_class FEEDS_INTO
+    rule_hit_points on hit dice at first level, from printed page 14. sys_ holds five axes,
+    being alignment, ancestry, class, deity and language, and four of the five carry outbound
+    dependency rows. So a sys_monster axis would be a well formed place to hang a statement
+    about monsters in general. The Analyst notes this and does not propose it, because page 189
+    attributes hit points to the monster's level rather than to its being a monster.
+  scale: >-
+    38 incoming files in books/shadowdark/sd/packets/incoming name monsters, running from
+    081-monster-attributes to 117-monsters-zombie-to-zombie. Every stat block in them prints the
+    same eight attributes. The chapter is the largest remaining body of source in the book.
+
+why_no_existing_prefix_fits: >-
+  Each approved prefix in constitution section 2 was considered against monster level and the
+  reason for rejecting it is stated rather than assumed.
+  exp_ is declared as character advancement mechanic. A monster does not advance; LV is a fixed
+  rating printed in its stat block, and the existing exp_level rows are all progression.
+  monster_ is declared as creature or creature family. LV is an attribute of a creature, not a
+  creature. DEC-2026-0097 uses monster_dwarf as a fixture for an unregistered creature, which
+  confirms the prefix means the creature itself.
+  rule_ is a named rule or procedure. LV is a statistic, not a procedure, and treating every
+  stat block field as a rule would make rule_ the catch-all prefix.
+  abil_ is an ability or derived ability mechanic. Constitution section 2.1 uses it for
+  independently named mechanical benefits such as Stout and Farsight. LV is not a benefit.
+  cbt_ is a combat mechanic; LV is used outside combat, for hit point calculation and for
+  encounter difficulty. ex_ is exploration. sys_ is a whole subsystem, which LV is not. The
+  remaining prefixes, ancestry_, alignment_, class_, deity_, lang_, tbl_, spell_, item_ and
+  weapon_, are plainly wrong.
+
+options_considered:
+  - id: OPT-A
+    summary: Add a creature-statistic prefix, for example mstat_, with monster level as its first member.
+    detail: >-
+      A new prefix and kind for a statistic printed in a creature stat block, admitted only for
+      attributes the monster chapter defines. The Decision would fix which attributes get an
+      identity and which reuse the existing character-side mechanic, so that AC, HP, ATK, MV and
+      the stat modifiers continue to be cbt_armor_class, rule_hit_points and the rest.
+    consequences: >-
+      Keeps the character graph clean and makes the one genuinely new concept expressible. It is
+      a new prefix, which constitution section 2 reserves to an evidence bearing escalation, and
+      it introduces a kind whose membership must be bounded or it becomes a second catch-all.
+  - id: OPT-B
+    summary: Widen exp_ to mean level or rating rather than character advancement, and register exp_monster_level.
+    detail: >-
+      Amend the section 2 kind description so exp_ covers a level valued rating on any subject,
+      then register a distinct exp_monster_level identity rather than reusing exp_level.
+    consequences: >-
+      No new prefix, and exp_ already holds three level identities so the shape is familiar. It
+      changes the declared meaning of an existing prefix, and a reader querying exp_ would get a
+      mix of character progression and creature ratings. The Analyst notes it is at least
+      honest, because it distinguishes the two identities rather than merging them.
+  - id: OPT-C
+    summary: Rule that monster level is the existing exp_level identity.
+    detail: 'Treat the book''s single word level as one concept and write the row against exp_level.'
+    consequences: >-
+      Cheapest and needs no amendment. The Analyst recommends against it. It asserts that a
+      monster's LV is the same thing as a character's level, which puts a creature statistic into
+      the neighbourhood of thirty character progression rows and makes the graph answer yes to
+      whether a monster's level feeds the fighter titles table. If the Architect nonetheless
+      reads them as one concept, that is a legitimate ruling and the Analyst will write it, but
+      it should be a ruling rather than an Analyst's silent aliasing.
+  - id: OPT-D
+    summary: Rule that creature statistics are not graph content.
+    detail: >-
+      Affirm that a stat block is data about one creature rather than a mechanical dependency
+      between mechanics, so the monster chapter yields creature identities and their named
+      special abilities and nothing else. The hit point sentence on page 189 would then earn no
+      row at all.
+    consequences: >-
+      Bounds the largest remaining chapter sharply and is defensible on the constitution section
+      1 grain: knowing a goblin has LV 1 does not tell you what breaks if something changes. It
+      loses the one stated derivation on this page. It is also the option that most needs to be
+      a ruling rather than a default, because the Analyst would otherwise decline sixty packets
+      one at a time for a reason never written down.
+
+recommended_resolution: >-
+  On the first question the Analyst recommends OPT-A or OPT-B over OPT-C, and has no strong
+  preference between the two; the choice turns on whether a prefix should name the subject of a
+  statistic or the kind of value it holds, which is an ontology question section 8 reserves to
+  the Architect.
+  On the second question the Analyst has no recommendation and asks only that it be answered
+  explicitly, because the two readings differ by roughly five hundred rows across the chapter.
+  Whichever way both go, the Analyst asks that the ruling state which of the eight attributes on
+  printed page 189 reuse their existing character side identity, since six of them plainly do
+  and saying so once would prevent the question recurring per stat block.
+
+expected_migration_impact: >-
+  None to existing canonical rows under any option. Nothing published would be retracted or
+  rewritten; the gap is an absent assertion rather than a wrong one, and the 851 canonical rows
+  are untouched by every option above.
+  Under OPT-A or OPT-B this packet gains one row and the registry gains one identity. Under
+  OPT-C this packet gains one row against an existing identity and no registration is needed.
+  Under OPT-D this packet loses that row and the remaining two stand.
+  No canonical migration, domain promotion or general rule is sought under any option.
+
+constitution_registry_or_profile_change: >-
+  OPT-A amends the constitution section 2 prefix table and needs Builder work in the compiler's
+  prefix validation and Reviewer verification. OPT-B amends the section 2 kind description for
+  exp_ without adding a prefix. OPT-C amends nothing. OPT-D amends constitution prose only, to
+  record the boundary durably.
+
+what_this_escalation_does_not_ask: >-
+  Stated so the ruling can be narrow. It does not ask for a membership or taxonomy relation:
+  DEC-2026-0103 settled that at constitution section 2.4 and the Analyst is not reopening it. It
+  does not ask to register any creature identity, which DEC-2026-0097 already treats as an
+  ordinary monster_ proposal. It does not ask about the six attributes that already have
+  identities, except to request that their reuse be confirmed in passing. It proposes no new
+  edge type; every row this packet would write uses the existing section 3 vocabulary.
+
+analyst_constraints_observed: >-
+  The Analyst has not minted a prefix, has not aliased monster level onto exp_level, and has not
+  proposed a sys_monster axis merely to have a subject. The packet was read in full and the
+  accompanying GUR records the complete reading, including the two rows that do not depend on
+  this ruling and the six subsections that state scope rather than dependency. That GUR is
+  published with a blocked handoff naming this escalation, and the packet is not forwarded to
+  Builder. Under HERDR_HANDOFFS 2.4 the normal relay pauses here until the Architect returns a
+  ruling to the Analyst.

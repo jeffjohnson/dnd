@@ -1,0 +1,386 @@
+schema_version: '1.0'
+id: GUP-PKT-SD-136-137-taverns-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-136-137-taverns
+constitution_version: '1.7'
+artifact_kind: packet_update
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 0 edge addition(s), 0 update(s), 12 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-SD-136-137-taverns-r01
+  gur_checksum: sha256:4f5e7f0cdf0c2855dc671fe1605a5cc3949d0c47c3677099a8cffba5b326eb69
+  gur_constitution_version: '1.7'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: false
+    reason: skipped by flag
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: rule_taverns
+      proposed_label: Taverns
+      kind: rule
+      why_needed: The named procedure these pages define. The 3 quality bullets state what a tavern of
+        each grade serves, which is a rule rather than a heading, and three tables resolve it. It is also
+        the endpoint printed page 134 points at, which cannot be asserted here but will need this identity
+        to exist.
+      edges_depending_on_it:
+        - M001
+        - M002
+        - M003
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_tavern_generator
+      proposed_label: Tavern Generator Table
+      kind: tbl
+      why_needed: Resolves a tavern's two-part name and the thing it is known for. It is the table the
+        procedure rolls to produce the tavern itself.
+      edges_depending_on_it:
+        - M001
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_tavern_menu
+      proposed_label: Tavern Menu Table
+      kind: tbl
+      why_needed: Resolves what food a tavern serves, in three price columns the tavern's quality selects
+        between.
+      edges_depending_on_it:
+        - M002
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_tavern_drinks
+      proposed_label: Tavern Drinks Table
+      kind: tbl
+      why_needed: Resolves what a tavern serves to drink. Unlike every other generator table in this chapter
+        its result cells state mechanics, and those mechanics are what most of this packet's rows carry.
+      edges_depending_on_it:
+        - M003
+        - M004
+        - M005
+        - M006
+        - M007
+        - M008
+        - M009
+        - M010
+        - M011
+        - M012
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions: []
+  pending_additions:
+    - source_id: rule_taverns
+      source_label: Taverns
+      edge_type: RESOLVED_BY
+      target_id: tbl_tavern_drinks
+      target_label: Tavern Drinks Table
+      aspect: drink selection
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '137'
+      section: TAVERN DRINKS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+    - source_id: rule_taverns
+      source_label: Taverns
+      edge_type: RESOLVED_BY
+      target_id: tbl_tavern_generator
+      target_label: Tavern Generator Table
+      aspect: tavern identity
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '136'
+      section: TAVERN GENERATOR TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+    - source_id: rule_taverns
+      source_label: Taverns
+      edge_type: RESOLVED_BY
+      target_id: tbl_tavern_menu
+      target_label: Tavern Menu Table
+      aspect: menu selection
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '137'
+      section: TAVERN MENU TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: tbl_tavern_drinks
+      source_label: Tavern Drinks Table
+      edge_type: MODIFIES
+      target_id: abil_charisma
+      target_label: Charisma
+      aspect: stat bonus
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '137'
+      section: TAVERN DRINKS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M007
+    - source_id: tbl_tavern_drinks
+      source_label: Tavern Drinks Table
+      edge_type: MODIFIES
+      target_id: abil_charisma
+      target_label: Charisma
+      aspect: stat penalty
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: SD
+      page: '137'
+      section: TAVERN DRINKS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M006
+    - source_id: tbl_tavern_drinks
+      source_label: Tavern Drinks Table
+      edge_type: MODIFIES
+      target_id: abil_constitution
+      target_label: Constitution
+      aspect: stat penalty
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: SD
+      page: '137'
+      section: TAVERN DRINKS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M005
+    - source_id: tbl_tavern_drinks
+      source_label: Tavern Drinks Table
+      edge_type: MODIFIES
+      target_id: abil_intelligence
+      target_label: Intelligence
+      aspect: stat bonus
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '137'
+      section: TAVERN DRINKS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M010
+    - source_id: tbl_tavern_drinks
+      source_label: Tavern Drinks Table
+      edge_type: MODIFIES
+      target_id: abil_wisdom
+      target_label: Wisdom
+      aspect: stat bonus
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '137'
+      section: TAVERN DRINKS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M009
+    - source_id: tbl_tavern_drinks
+      source_label: Tavern Drinks Table
+      edge_type: MODIFIES
+      target_id: abil_wisdom
+      target_label: Wisdom
+      aspect: stat penalty
+      condition: ''
+      polarity: worsens
+      polarity_basis: read
+      book: SD
+      page: '137'
+      section: TAVERN DRINKS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M008
+    - source_id: tbl_tavern_drinks
+      source_label: Tavern Drinks Table
+      edge_type: MODIFIES
+      target_id: exp_xp
+      target_label: XP
+      aspect: drink award
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '137'
+      section: TAVERN DRINKS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M012
+    - source_id: tbl_tavern_drinks
+      source_label: Tavern Drinks Table
+      edge_type: MODIFIES
+      target_id: rule_hit_points
+      target_label: Hit Points
+      aspect: drink recovery
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '137'
+      section: TAVERN DRINKS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M011
+    - source_id: tbl_tavern_drinks
+      source_label: Tavern Drinks Table
+      edge_type: TRIGGERS
+      target_id: rule_check
+      target_label: Check
+      aspect: drink resolution
+      condition: ''
+      polarity: neutral
+      polarity_basis: read
+      book: SD
+      page: '137'
+      section: TAVERN DRINKS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts: {}
+duplicate_findings:
+  - grade: near
+    ref: M006
+    conflicts_with:
+      - M007
+    detail: 2 edges share endpoints and type (tbl_tavern_drinks MODIFIES abil_charisma) but differ in
+      aspect or condition; Reviewer must confirm they are distinct assertions rather than one restated
+  - grade: near
+    ref: M008
+    conflicts_with:
+      - M009
+    detail: 2 edges share endpoints and type (tbl_tavern_drinks MODIFIES abil_wisdom) but differ in aspect
+      or condition; Reviewer must confirm they are distinct assertions rather than one restated
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 12
+  edges_compiled: 12
+  edges_rejected: 0
+  edge_additions: 0
+  edge_pending_additions: 12
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 0
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 4
+  cross_packet_dependencies: 0
+  duplicate_findings: 2
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-SD-136-137-taverns-r01.validation.json

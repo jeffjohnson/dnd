@@ -1,0 +1,603 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-091-093-downtime-and-carousing-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-091-093-downtime-and-carousing
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-091-093-downtime-and-carousing
+  source_file: source.md
+  packet_source_checksum: sha256:08075eb975e0aabd703f3112159d213c8893be85a0a5af0a5463d8744b86b452
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 036-downtime-and-carousing.md
+  citation_code: SD
+  page_start: 91
+  page_end: 93
+  page_number_basis: packet_page_markers
+page_attribution_basis: 'Three markers resolve this packet: p91 ends the DOWNTIME heading, p92 ends the
+  second CAROUSING heading and p93 ends the CAROUSING OUTCOME TABLE heading. Placement rule 1 applies
+  each to its whole heading and the persistence rule carries it forward.
+
+  The p93 marker matters and is easy to get wrong. It sits on the outcome table''s own heading, so that
+  table is printed page 93, while the event table, which precedes it under the p92 marker, is printed
+  page 92. The two tables are on different pages and are cited separately: rows touching the event table
+  cite 92, rows touching the outcome table cite 93. No content precedes the first marker and no page is
+  shared with another packet.'
+scope_boundary: The bounded scope is the Primary Source Material section, printed pages 91 to 93, covering
+  the downtime frame, its two activities and the two carousing tables. The trailing Supporting Source
+  Context is out of scope.
+source_summary: 'Between adventures a character undertakes one downtime activity. Carousing spends coin
+  to convert it into experience, usually yields an NPC contact and may yield a magic item, can run for
+  days of game time, and points to the Time Passes rule. Learning acquires an auxiliary skill, requires
+  a willing instructor, cannot take another class''s or ancestry''s unique talents, enables new actions
+  or grants advantage on certain checks, and is resolved by a hard Intelligence check whose difficulty
+  eases by one step on each retry. Carousing is then given in full: participants share the cost, each
+  rolls against an outcome table with the event''s bonus, and each gains the experience and consequences
+  their result states.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled: the canonical graph
+  holds 270 registry rows and 614 edges. The registry was read in full rather than keyword-searched, which
+  is now the standing method; it surfaced rule_luck_token, rule_difficulty_class, rule_talents and exp_xp
+  as existing identities this packet touches. Every proposed row was checked against the canonical edge
+  set for an assertion-key collision, for the weaker case of a shared source, type and target under a
+  different aspect, and for duplicates within the patch itself; there are none of any. The single ALTERNATIVE_TO
+  row was compared with its endpoints sorted, as constitution section 4 requires.'
+one_rule_two_pages_note: 'Carousing is described twice in this packet, in overview on printed page 91
+  and in full on printed page 92. It is one rule and carries one identity, rule_carousing, proposed from
+  page 91 where it is first named.
+
+  Its rows are cited to whichever page states them, not all to one page. The coin cost, the experience
+  conversion and the Time Passes pointer are page 91 statements. The two table-resolution rows are page
+  92 statements. Nothing is asserted twice: the page 92 text restates that carousing costs coin and yields
+  experience, and those restatements are not given second rows, because a second row for one fact reads
+  as two rules.'
+reused_nodes:
+- id: abil_intelligence
+  label: Intelligence
+  used_by: M007
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Feeds
+    the learning check.
+- id: exp_xp
+  label: Experience Points
+  used_by: M005, M018
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Awarded
+    by carousing and set in amount by the outcome table.
+- id: item_coin
+  label: Coin
+  used_by: M004, M015
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Consumed
+    by carousing and selecting the event on the event table.
+- id: rule_action
+  label: Action
+  used_by: M011
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. A learned
+    skill enables new actions.
+- id: rule_advantage
+  label: Advantage
+  used_by: M012
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. A learned
+    skill grants advantage on certain checks.
+- id: rule_check
+  label: Check
+  used_by: M008
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Resolves
+    the learning attempt.
+- id: rule_difficulty_class
+  label: Difficulty Class
+  used_by: M009, M010
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Sets
+    the learning check's difficulty and is eased on a retry.
+- id: rule_luck_token
+  label: Luck Token
+  used_by: M019
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Awarded
+    by two outcome-table results.
+- id: rule_talents
+  label: Talents
+  used_by: M013
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Class
+    and ancestry talents are explicitly excluded from what learning can acquire.
+- id: rule_time_passes
+  label: Time Passes
+  used_by: M006
+  basis: Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact label. Explicitly
+    cross-referenced by page number for elapsed carousing time.
+candidate_nodes:
+- proposed_id: rule_downtime
+  proposed_label: Downtime
+  kind: procedure
+  why_needed: 'The named frame this page defines: between adventures a character undertakes one activity.
+    It is what makes the two activities mutually exclusive.'
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 91, DOWNTIME
+  source_evidence: page 91, the DOWNTIME section.
+- proposed_id: rule_carousing
+  proposed_label: Carousing
+  kind: procedure
+  why_needed: A named downtime activity converting coin into experience and incidental consequences. Described
+    in overview on printed page 91 and in full on printed page 92; one identity.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 91, CAROUSING
+  source_evidence: page 91, the CAROUSING section.
+- proposed_id: rule_learning
+  proposed_label: Learning
+  kind: procedure
+  why_needed: A named downtime activity acquiring an auxiliary skill on a check, with its own stated retry
+    rule and its own stated exclusion.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 91, LEARNING
+  source_evidence: page 91, the LEARNING section.
+- proposed_id: tbl_carousing_event
+  proposed_label: Carousing Event Table
+  kind: table
+  why_needed: The named table selecting the event by cost and supplying the bonus applied to the outcome
+    roll.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 92, CAROUSING EVENT TABLE
+  source_evidence: page 92, the CAROUSING EVENT TABLE section.
+- proposed_id: tbl_carousing_outcome
+  proposed_label: Carousing Outcome Table
+  kind: table
+  why_needed: The named table resolving each participant's individual result and its experience award.
+  prefix_basis: tbl_ is a named source table; matches the canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 93, CAROUSING OUTCOME TABLE
+  source_evidence: page 93, the CAROUSING OUTCOME TABLE section.
+candidate_edges:
+- ref: M001
+  source_id: rule_downtime
+  source_label: Downtime
+  edge_type: GATES
+  target_id: rule_carousing
+  target_label: Carousing
+  aspect: activity access
+  condition: ''
+  book: SD
+  page: 91
+  section: DOWNTIME
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_downtime
+  source_label: Downtime
+  edge_type: GATES
+  target_id: rule_learning
+  target_label: Learning
+  aspect: activity access
+  condition: ''
+  book: SD
+  page: 91
+  section: DOWNTIME
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_carousing
+  source_label: Carousing
+  edge_type: ALTERNATIVE_TO
+  target_id: rule_learning
+  target_label: Learning
+  aspect: downtime activity
+  condition: ''
+  book: SD
+  page: 91
+  section: DOWNTIME
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_carousing
+  source_label: Carousing
+  edge_type: CONSUMES
+  target_id: item_coin
+  target_label: Coin
+  aspect: event cost
+  condition: ''
+  book: SD
+  page: 91
+  section: CAROUSING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: rule_carousing
+  source_label: Carousing
+  edge_type: MODIFIES
+  target_id: exp_xp
+  target_label: Experience Points
+  aspect: carousing award
+  condition: ''
+  book: SD
+  page: 91
+  section: CAROUSING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M006
+  source_id: rule_carousing
+  source_label: Carousing
+  edge_type: CROSS_REFERENCES
+  target_id: rule_time_passes
+  target_label: Time Passes
+  aspect: elapsed time
+  condition: ''
+  book: SD
+  page: 91
+  section: CAROUSING
+  evidence: explicit_reference
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: abil_intelligence
+  source_label: Intelligence
+  edge_type: FEEDS_INTO
+  target_id: rule_learning
+  target_label: Learning
+  aspect: instruction check
+  condition: ''
+  book: SD
+  page: 91
+  section: LEARNING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: rule_check
+  source_label: Check
+  edge_type: CONSTRAINS
+  target_id: rule_learning
+  target_label: Learning
+  aspect: skill acquisition
+  condition: ''
+  book: SD
+  page: 91
+  section: LEARNING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: governs
+  polarity_basis: read
+- ref: M009
+  source_id: rule_difficulty_class
+  source_label: Difficulty Class
+  edge_type: FEEDS_INTO
+  target_id: rule_learning
+  target_label: Learning
+  aspect: extreme difficulty
+  condition: ''
+  book: SD
+  page: 91
+  section: LEARNING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: rule_learning
+  source_label: Learning
+  edge_type: MODIFIES
+  target_id: rule_difficulty_class
+  target_label: Difficulty Class
+  aspect: retry easing
+  condition: ''
+  book: SD
+  page: 91
+  section: LEARNING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M011
+  source_id: rule_learning
+  source_label: Learning
+  edge_type: FEEDS_INTO
+  target_id: rule_action
+  target_label: Action
+  aspect: new actions
+  condition: ''
+  book: SD
+  page: 91
+  section: LEARNING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M012
+  source_id: rule_learning
+  source_label: Learning
+  edge_type: FEEDS_INTO
+  target_id: rule_advantage
+  target_label: Advantage
+  aspect: learned skill
+  condition: ''
+  book: SD
+  page: 91
+  section: LEARNING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M013
+  source_id: rule_talents
+  source_label: Talents
+  edge_type: EXCLUDES
+  target_id: rule_learning
+  target_label: Learning
+  aspect: unique talents
+  condition: ''
+  book: SD
+  page: 91
+  section: LEARNING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M014
+  source_id: rule_carousing
+  source_label: Carousing
+  edge_type: RESOLVED_BY
+  target_id: tbl_carousing_event
+  target_label: Carousing Event Table
+  aspect: event selection
+  condition: ''
+  book: SD
+  page: 92
+  section: CAROUSING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M015
+  source_id: item_coin
+  source_label: Coin
+  edge_type: FEEDS_INTO
+  target_id: tbl_carousing_event
+  target_label: Carousing Event Table
+  aspect: event cost
+  condition: ''
+  book: SD
+  page: 92
+  section: CAROUSING EVENT TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M016
+  source_id: rule_carousing
+  source_label: Carousing
+  edge_type: RESOLVED_BY
+  target_id: tbl_carousing_outcome
+  target_label: Carousing Outcome Table
+  aspect: outcome roll
+  condition: ''
+  book: SD
+  page: 92
+  section: OUTCOMES
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M017
+  source_id: tbl_carousing_event
+  source_label: Carousing Event Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_carousing_outcome
+  target_label: Carousing Outcome Table
+  aspect: event bonus
+  condition: ''
+  book: SD
+  page: 92
+  section: CAROUSING
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M018
+  source_id: tbl_carousing_outcome
+  source_label: Carousing Outcome Table
+  edge_type: MODIFIES
+  target_id: exp_xp
+  target_label: Experience Points
+  aspect: outcome award
+  condition: ''
+  book: SD
+  page: 93
+  section: CAROUSING OUTCOME TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M019
+  source_id: tbl_carousing_outcome
+  source_label: Carousing Outcome Table
+  edge_type: FEEDS_INTO
+  target_id: rule_luck_token
+  target_label: Luck Token
+  aspect: outcome benefit
+  condition: ''
+  book: SD
+  page: 93
+  section: CAROUSING OUTCOME TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: Authored polarity appears on four rows and no others, each with basis read
+  as invariant 15 requires, and each is a MODIFIES or CONSTRAINS row as constitution section 5 allows.
+  The single CONSTRAINS row takes governs. The two experience awards take improves, and so does the retry
+  easing, because lowering a difficulty improves the check's prospects. There is no TRIGGERS row in this
+  packet. The seven FEEDS_INTO, two GATES, two RESOLVED_BY, one ALTERNATIVE_TO, one CONSUMES, one CROSS_REFERENCES
+  and one EXCLUDES row carry none, since section 5 derives those.
+alternative_to_note: 'One ALTERNATIVE_TO row appears, between carousing and learning, and it is the mechanical
+  content of the downtime frame rather than a convenience. The page states that a character chooses one
+  downtime activity, which makes the two mutually exclusive, and ALTERNATIVE_TO is the type for exactly
+  that. Its endpoints were sorted before the collision check, as constitution section 4 requires for this
+  type.
+
+  The row will need revisiting when further downtime activities are extracted, because mutual exclusivity
+  among three or more activities is not expressible as a single pairwise row. Recorded now rather than
+  discovered later.'
+domains_touched: []
+candidate_domains:
+- proposed: downtime
+  basis: The page defines a frame of play distinct from exploration and combat, with its own activities
+    and its own economy. Recorded as a candidate only; constitution section 8 reserves domain promotion
+    to an Architect Decision.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+non_edge_observations:
+- id: OBS-01
+  subject: magnitudes are excluded from every row
+  detail: 'The outcome table is the densest numeric content extracted so far and none of it reaches a
+    field: seven event costs in coin, seven event bonuses, fourteen die results, fourteen experience awards,
+    six percentages of total wealth, a fine duration, two treasure-table ranges and the learning check''s
+    difficulty number. All stay in the immutable packet. No row in this packet carries a condition, so
+    there is no opportunity for a spelled quantity to enter one; verified programmatically that no aspect
+    carries a digit.'
+- id: OBS-02
+  subject: the fourteen outcomes are not proposed as identities
+  detail: Each row of the outcome table names a vivid event and a benefit. None is proposed. The events
+    are narrative rather than mechanical, and the benefits reduce to experience, which is asserted, luck
+    tokens, which are asserted, NPC relationships, which have no identity, and treasure items, discussed
+    in OBS-04. Proposing fourteen identities whose mechanical content is already carried by three rows
+    would inflate the registry without adding a queryable fact. This follows the same reasoning as the
+    danger levels and travel methods in the preceding packet.
+- id: OBS-03
+  subject: NPC allies, enemies and debts are not representable
+  detail: 'Seven of the fourteen outcomes grant a relationship: a priest ally, a famous bard ally, an
+    ally in the City Watch, an NPC ally or enemy, a noble''s debt, being barred from a tavern. There is
+    no NPC, faction, reputation or relationship identity in the graph and none is proposed, since minting
+    one is not an Analyst act and the source defines no mechanic for them. The carousing overview''s promise
+    of an NPC contact is therefore recorded and not asserted.
+
+    This is the same class of gap as the spells that act on the fiction, recorded across the spell chapter.
+    Here it is more visible because the relationship outcomes are half the table.'
+- id: OBS-04
+  subject: two forward references are deliberately not asserted
+  detail: 'The page points to the Wizards and Thieves game on printed page 94 for playing out a gambling
+    scene, and two outcomes grant an item from a treasure table by range. Neither target exists as a canonical
+    identity: page 94 is the next packet''s defining locus and the treasure chapter is unextracted.
+
+    Asserting either would require proposing an identity whose defining locus belongs to another packet,
+    which would pre-empt that packet''s own extraction and risk a label or kind that its own page contradicts.
+    Both are recorded here so the connection is available to whoever extracts those pages. The Time Passes
+    reference is different and is asserted, because that rule is already canonical from printed page 82.'
+- id: OBS-05
+  subject: what learning cannot acquire is carried, what it can is not enumerated
+  detail: 'The page states the exclusion precisely, that class and ancestry unique talents cannot be learned,
+    and that is asserted against the canonical rule_talents. What learning can acquire is given only by
+    example, a new language or riding a sandworm, with the real answer being whatever the GM agrees. The
+    examples are not asserted: languages are canonical identities but the page is not their defining locus
+    and does not state a mechanic connecting learning to any particular one.
+
+    What is carried instead is the two general effects the page does state, that learning enables new
+    actions and grants advantage on certain checks.'
+unresolved_identity_questions:
+- id: IDQ-01
+  subject: whether carousing should carry its own experience row at all
+  detail: 'Two rows point at exp_xp: rule_carousing MODIFIES it from printed page 91, and tbl_carousing_outcome
+    MODIFIES it from printed page 93. I judged these to be different facts, the first that carousing converts
+    coin into experience and the second that the table sets how much, and cited each to the page that
+    states it.
+
+    A Reviewer could reasonably hold this to be one fact carried twice, which is exactly the duplication
+    I argued against in the restatement notes of the last two packets, and prefer only the table row.
+    My reason for keeping both is that the page 91 statement is the reason a player chooses carousing
+    at all and survives even if the table is later revised, whereas the page 93 row is about quantity.
+    But I hold it loosely.
+
+    Consequence if wrong: the page 91 row is withdrawn, carousing keeps its coin and table rows, and the
+    experience connection survives through the table. Flagged rather than defaulted.'
+architectural_escalations: []
+architectural_escalation_note: None raised. Every identity uses an approved prefix, every row uses a legal
+  edge type, no CLASSIFIED_AS row appears and no row targets a sys_ axis. The two forward references in
+  OBS-04 are recorded rather than escalated, because they resolve naturally when those pages are extracted.
+  The relationship gap in OBS-03 is recorded for the Architect as part of the standing pattern rather
+  than raised from inside a packet.
+completeness_statement: All six headings in the bounded scope were read at the recorded checksum. The
+  packet yields 5 new identities and 19 rows across three printed pages, every one checked against the
+  614 canonical edges for an assertion-key collision, for a shared source, type and target under a different
+  aspect, and for duplicates within the patch; there are none of any, and the ALTERNATIVE_TO row was compared
+  with sorted endpoints. Ten canonical identities are reused rather than re-proposed, found by reading
+  the registry in full. Carousing is described on two pages and carries one identity, with each row cited
+  to the page that states it, explained in one_rule_two_pages_note. The two tables sit on different printed
+  pages and are cited separately. No row carries a condition and no aspect carries a digit. What is deliberately
+  not asserted is listed as OBS-01 through OBS-05, and the single open question is IDQ-01. No assertion
+  depends on any other ruleset.

@@ -1,0 +1,123 @@
+schema_version: '1.0'
+id: ESC-2026-09-01T23.29.02.119Z
+status: decided
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-steward-intake
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-09-01'
+decision_id: DEC-2026-0078
+decided_on: '2026-09-04'
+concerns_decisions:
+- DEC-2026-0032
+- DEC-2026-0075
+- DEC-2026-0077
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: Disclosure and one scope question. The authorized DEC-2026-0077 migration turned four Integrator
+    tests red on a limitation in the Integrator's own rewind fixture. The Integrator has repaired
+    it and added a guard for the class; the suite is green. Nothing is blocked.
+  blocking_ids: []
+question: DEC-2026-0075 accepted a disclosed Integrator test-fixture repair under existing integration
+  authority but required its prospective guard to carry an ordinary implementation report and Review.
+  This repair carries a guard the Integrator wrote on its own initiative, under DEC-2026-0075's standing
+  requirement that a fixture reading live corpus state assert an invariant surviving a successful
+  authorized integration. Is that standing requirement sufficient authority for such a guard, or does
+  each new guard need its own Decision and report?
+what_was_integrated:
+  integration_id: INT-20260901-001
+  bundle_id: APPROVED-GUP-MIG-DEC-2026-0077-r01-r01
+  authority: DEC-2026-0077 sequence step 4 assigns the Integrator to integrate only the approved identity
+    migration and rebuild canonical outputs.
+  result: 0 blocking precondition failures across 26 checks, 0 advisories, 0 invariant findings introduced.
+    One registry addition, monster_giant / Giants / monster, and one paired source-endpoint repoint
+    on canonical file line 1747 from monster_special / Giant-Hurled Boulders. Edges unchanged at 5160,
+    nodes 1452 to 1453, registry 1473 to 1474, findings unchanged at 1691. monster_special retains
+    its other 35 rows, so no giant-vermin identity moved.
+the_defect:
+  finding: 'Four tests in test_migration_v2 failed immediately after the transaction: one setUpClass
+    error and three failures, all reporting that the DEC-2026-0032 v2 plan''s enumerated before-image
+    for canonical row 1747 no longer matches. Canonical is correct; the fixture could not reproduce
+    the corpus that plan describes.'
+  mechanism: 'The v2 and migration fixtures rebuild a plan''s baseline by reversing the migrations
+    the repository has since applied. The v1 branch of the rewind decided whether a plan was applied
+    solely by asking whether its replacement identities were registered, and returned False for any
+    plan with no replacements. DEC-2026-0077 replaces nothing: it adds one identity and repoints one
+    row. It was therefore unreversible by construction, its repoint stayed in place, and it sat on
+    exactly the row the older DEC-2026-0032 v2 plan pins a before-image for, on the two fields it
+    changed.'
+  why_it_is_not_a_canonical_defect: DEC-2026-0032's migration was integrated on 2026-08-18 as INT-20260818-001,
+    so its plan is history rather than pending work and nothing was invalidated. The failures appear
+    only inside a rewound clone. Live canonical passed its own validation with zero findings introduced
+    and the repointed row reads monster_giant / Giants exactly as the plan declared.
+  affected_tests:
+  - test_migration_v2.TestMergeExecution (setUpClass)
+  - test_migration_v2.TestDiscoveryAndPreconditions.test_a_clean_v2_bundle_passes_every_blocking_check
+  - test_migration_v2.TestDiscoveryAndPreconditions.test_a_moved_advisory_locator_is_informational_only
+  - test_migration_v2.TestTransactional.test_a_duplicate_assertion_key_rolls_everything_back
+the_repair:
+  file:
+    path: tooling/integrator/tests/test_transaction.py
+    checksum: sha256:ac8b6929f6cb652375d9d183394d5ac03c5b773ef9d62e36144393bf42379780
+  change: 'The v1 rewind now tests applied-ness against a plan''s additions when it declares no replacements.
+    That is the same idempotence witness in a different field: the plan is applied exactly while every
+    ID it registered is present, and the existing final step already drops those rows, so a second
+    pass matches nothing. A plan with neither replacements nor additions is still left alone.'
+  guard: 'A new class, TestEveryIntegratedMigrationStaysRewindable, asserts over whatever the repository
+    has integrated in either book that no identity a migration registered survives the rewind''s fixed
+    point. It is stated on the registry rather than on row locators on purpose: locators deliberately
+    do not survive a full rewind, because a plan is measured against a corpus where earlier migrations
+    are applied and undoing one that removed a row shifts every locator below it. The first draft
+    of this guard asserted before-images and was wrong for exactly that reason; it was corrected rather
+    than weakened. Only the forward direction of a replacement is asserted, because migrations chain:
+    DEC-2026-0024-0025 renamed item_pipes_sewers to item_pipes_sewer and DEC-2026-0037 renamed that
+    to item_pipes_of_sewers, so at the fixed point the restored ID is the first plan''s retired one,
+    not each plan''s own.'
+  falsification: The guard was falsified against the defect it exists to catch. Reverting the rewind
+    change made it fail with 'monster_giant' unexpectedly found in the rewound registry, and the file
+    was then restored from a byte-exact copy taken beforehand.
+  evidence: '[cwd tooling/integrator] PYTHONPATH=src python -m unittest discover -s tests -t tests
+    reports Ran 224 tests in 1646.335s OK after the repair, against Ran 215 tests in 1637.755s FAILED
+    (failures=3, errors=1) before it. A focused run of test_migration_v2, test_migration and test_transaction
+    reports Ran 71 tests in 161.677s OK.'
+a_second_disclosure: In verifying the plan the Integrator first compared the enumerated before-image
+  against canonical using the wrong row convention, treating canonical_row as a data-row ordinal,
+  and briefly read a mismatch that did not exist. canonical_row is a file line number with the header
+  on line 1, which the migration reader states as canonical_row - 2. The check was redone through
+  the reader itself and the before-image matches exactly. Nothing was written while that reading stood,
+  and it is recorded because a hand-rolled probe convention has produced a false reading in this repository
+  before.
+recommendation: The Integrator recommends treating DEC-2026-0075's post-implementation requirement
+  as standing authority for guards of this shape, with disclosure by escalation rather than a Decision
+  per instance. The requirement already names the property, the guards are confined to Integrator-owned
+  fixtures, they touch no production applier, and each one so far was written the same day the defect
+  it catches was found. If the Architect prefers a Decision and report per guard, the Integrator will
+  publish one for this change on request; it is small, disclosed here in full, and reversible.
+what_is_not_in_question:
+- INT-20260901-001, which verified cleanly, applied exactly the one registry addition and one repoint
+  DEC-2026-0077 enumerates, and introduced no finding.
+- DEC-2026-0032 and its integrated migration, DEC-2026-0037, and DEC-2026-0024-0025, all of which
+  remain valid. No published artifact was altered.
+- The Integrator applier. Only test fixtures changed; nothing under tooling/integrator/src was touched.
+- The remaining DEC-2026-0077 sequence. Steps 5 through 8 belong to the Analyst, Builder and Reviewer,
+  and step 8 returns to the Integrator as ordinary packet work once the DMG 64 r03 bundle exists.
+affected_canonical_ids:
+- monster_giant
+- monster_special
+migration_impact:
+  canonical_data_change: false
+  registry_change: false
+  note: This escalation proposes no write. The write that occurred is INT-20260901-001, performed
+    under DEC-2026-0077, recorded in its own manifest and validation report.
+systemic_finding: This is the second time in three days that a correct, authorized integration has
+  turned the Integrator's own suite red without anything being wrong in canonical state, and both
+  times the cause was a rewind fixture that could not represent the corpus the transaction produced.
+  The first was a partial rewind that did not close over a retired identity; this one is a rewind
+  that could not reverse a whole class of plan. The pattern worth naming is that these fixtures encode
+  assumptions about which shapes of migration exist, and each new operation model or plan shape silently
+  invalidates one.
+blocking: false

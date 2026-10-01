@@ -1,0 +1,173 @@
+schema_version: '1.0'
+id: ESC-2026-09-22T23.23.17.245Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.3'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-09-22'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    DEC-2026-0095 settled how a manifested Approved leaf is resolved and bounded its
+    implementation to tooling/common/scan_agent_queues.py, stating explicitly that Builder
+    must not touch integrator files. The Integrator's own queue derivation has the same gap
+    the ruling closes for the scanner, so after that Decision is implemented the two views
+    will still disagree about this lineage. The Integrator will not change its queue
+    semantics without authorization, because queue derivation is governed by
+    contracts/WORK_QUEUES.md rather than owned outright by the role that runs it.
+  blocking_ids: []
+
+question: >-
+  Should the Integrator's own bundle discovery apply the same active-leaf resolution
+  DEC-2026-0095 requires of the queue scanner, so that a manifested Approved bundle which no
+  successor names in `supersedes` is still resolved by the bounded legacy rNN rule, and if
+  so, who implements and independently verifies it?
+
+scope_limits: >-
+  This asks only for authorization and an owner. It proposes no change to canonical data, to
+  any published Stats artifact, to the Approved-bundle schema, to WORK_QUEUES, or to
+  DEC-2026-0095 itself. It does not ask to reintegrate, reverse, or revalidate any
+  integration. It does not ask to widen the legacy rNN rule beyond the bounded form
+  DEC-2026-0095 already defines.
+
+observed_state:
+  integrator_queue_today: >-
+    `adnd1e_integrator queue --ruleset-id=shadowdark --books=sd` reports
+    APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01 as ready Integrator work. It
+    reports r05-r02 and r05-r03 as superseded, r05-r04 as rejected under INT-20260922-001, and
+    r05-r05 as integrated under INT-20260922-002.
+  what_the_decision_says: >-
+    DEC-2026-0095 rules that for this historical same-kind, same-packet lineage the bounded
+    legacy rNN rule places r05-r01 through r05-r05 in sequence and selects r05-r05 as the sole
+    active leaf, and that r05-r01 through r05-r04 are immutable informational history, not
+    repair or integration work.
+  therefore: >-
+    The Integrator queue currently offers as ready an artifact the governing Decision
+    classifies as history.
+
+cause:
+  file: tooling/integrator/src/adnd1e_integrator/bundles.py
+  checksum: sha256:c04cf9b9e14e9ceb65650a69ec4de9af61c62fde824f1b8d0cd00f339d901820
+  detail: >-
+    `superseded_bundle_ids` retires a bundle only when some later manifest names it in
+    `supersedes`. That is correct for an unforked chain and is why r05-r02 and r05-r03 are
+    correctly retired here. It has no fallback for a forked lineage: r05-r02 declared no
+    `supersedes` and began a separate chain reaching r05-r05, so no manifest ever named
+    r05-r01 and nothing retires it. This is the same condition DEC-2026-0095 resolves for the
+    scanner by applying the bounded legacy rNN rule before downstream queue effects. The
+    Integrator has no equivalent step.
+  not_the_cause: >-
+    This is not the `approves.review_id` defect or the `APPROVED-` substring defect. The
+    Integrator reads `approves.review_id` correctly and derives consumption from declared
+    bundle identities, which is why it reports r05-r05 integrated and does not report r05-r01
+    as consumed. Only leaf resolution is missing.
+
+risk_assessment:
+  severity: low for canonical integrity, persistent for queue correctness
+  canonical_is_protected: >-
+    Re-applying r05-r01 would present fourteen rows whose assertion keys are already in
+    canonical. `integrate()` checks for a post-operation duplicate assertion key before any
+    derived output is rebuilt and raises IntegrationError, and the transaction restores every
+    file. The Integrator therefore fails closed rather than duplicating rows.
+  what_is_actually_at_risk: >-
+    A recurring phantom work item. An Integrator reading its own queue sees ready work that
+    governance has classified as history, and only out-of-band knowledge of DEC-2026-0095
+    prevents an attempt. A stateless successor agent, which this repository's model assumes,
+    would not have that knowledge. The failure would be safe but it would consume a
+    transaction attempt and could produce a rejection record against an artifact that should
+    never have been offered.
+  not_observed: >-
+    No canonical row, registry row, or published artifact is wrong today. INT-20260922-002 and
+    INT-20260922-003 stand as written and this escalation does not question either.
+
+evidence:
+  - path: rulesets/shadowdark/escalations/decisions/DEC-2026-0095.yaml
+    checksum: sha256:68e302182640762f4f1704e9f40523419052561f03d8ab5d18c9aced42e2f20a
+    role: the ruling whose implementation bounds exclude integrator files
+  - path: tooling/integrator/src/adnd1e_integrator/bundles.py
+    checksum: sha256:c04cf9b9e14e9ceb65650a69ec4de9af61c62fde824f1b8d0cd00f339d901820
+    role: integrator bundle discovery with explicit-supersedes resolution and no legacy fallback
+  - path: rulesets/shadowdark/manifests/INT-20260922-002.json
+    checksum: sha256:e844ecd72e43812d940b010fbab2b820764b4f09b971f0af9d9cbfae41f442e3
+    role: proves r05-r05 is the consumed bundle and the packet is integrated
+  - path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01.yaml
+    checksum: sha256:fddaefc4fe3793ca11e1cff8c1c9473b4cb74bae197871c15697f116d1317e5a
+    role: the manifest still offered as ready; it also declares no required `status` property
+
+options_considered:
+  - id: OPT-A
+    summary: authorize the Integrator to apply the same bounded leaf resolution
+    detail: >-
+      A Decision with a ready Integrator handoff and `migration_required: false` authorizing a
+      change to bundle discovery only: resolve explicit `supersedes` first, then apply the
+      bounded legacy rNN rule within one ruleset, book, and packet for manifested Approved
+      bundles, reporting the inference exactly as the scanner does. Completion through the
+      ordinary implementation report and independent Review.
+    cost: Integrator implementation plus tests, and one Reviewer implementation Review.
+    benefit: >-
+      The two queue views agree, the phantom item disappears for every future agent rather
+      than for whoever happens to have read this Decision, and the rule applied is the one
+      already reasoned through and approved in DEC-2026-0095 rather than a second convention.
+  - id: OPT-B
+    summary: leave the Integrator queue as it is and rely on the Decision as standing guidance
+    assessment: >-
+      The Integrator does not recommend this. It is defensible only while an agent that has
+      read DEC-2026-0095 is the one running the queue, which contradicts the stateless-agent
+      rule in contracts/GRAPH_INVARIANTS.md invariant 31 and
+      contracts/ROLE_CONTEXT_LOADING.md. It also leaves an artifact that fails its own schema
+      sitting in a ready bucket indefinitely.
+  - id: OPT-C
+    summary: have Reviewer publish a successor manifest that names r05-r01 in `supersedes`
+    assessment: >-
+      Recorded and not recommended. It would retire the fork through ordinary lineage without
+      any tooling change, but DEC-2026-0095 states that no Stats workflow artifact repair is
+      permitted or needed and that r05-r01 through r05-r04 are immutable history. Publishing a
+      further Stats manifest to satisfy a tooling gap would contradict that ruling and add a
+      sixth manifest to a lineage the Architect has just closed.
+  - id: OPT-D
+    summary: widen DEC-2026-0095's implementation bounds to include integrator files
+    assessment: >-
+      Possible but recorded as the Architect's call rather than a recommendation. DEC-2026-0095
+      is immutable and its bounds are deliberate; a reissue or a separate Decision are both
+      available, and the Integrator has no view on which is tidier governance.
+
+recommended_resolution: >-
+  OPT-A, as a separate Decision rather than a reissue of DEC-2026-0095, so that Decision's
+  Builder scope stays exactly as approved. The Integrator recommends itself as implementation
+  owner because bundle discovery is its own surface, and Reviewer as independent verifier. The
+  Integrator asks that any acceptance test require the inference to be reported rather than
+  silent, so a legacy-resolved leaf is always visible as an inference in queue output, and
+  that it require the existing AD&D bundle discovery to be unchanged.
+
+expected_migration_impact:
+  graph_data_change: false
+  registry_change: false
+  canonical_data_change: false
+  artifact_invalidation: >-
+    None. No GUR, GUP, Review, Approved bundle, Integration record, or rejection record is
+    altered. r05-r01 through r05-r04 remain immutable at their published paths.
+  tooling_change_required: true
+  tooling_change_detail: >-
+    tooling/integrator/src/adnd1e_integrator/bundles.py and tests under
+    tooling/integrator/tests/, both Integrator-owned.
+
+governance_change_surface:
+  contract_change: >-
+    None expected. WORK_QUEUES Legacy Queue Derivation clause 2 already defines the bounded
+    rNN rule; this asks for it to be applied in a second implementation, not rewritten.
+  constitution_change: No.
+  registry_change: No.
+  schema_change: No.
+
+integrator_position: >-
+  The Integrator has not integrated and will not integrate any Stats bundle, consistent with
+  the Architect's direction. It has changed no code while raising this. It notes that its own
+  applier would refuse r05-r01 on a duplicate assertion key, so this is a correctness-of-queue
+  question rather than a threat to canonical state, and it is raised now because the gap
+  becomes permanent the moment DEC-2026-0095 is implemented on the scanner side alone.

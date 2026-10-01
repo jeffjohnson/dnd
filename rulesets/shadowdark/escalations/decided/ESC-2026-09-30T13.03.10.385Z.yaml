@@ -1,0 +1,119 @@
+schema_version: '1.0'
+id: ESC-2026-09-30T13.03.10.385Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-189-189-monster-attributes
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+raised_by: reviewer
+raised_utc: '2026-09-30T13:03:10.385Z'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Constitution 1.8 and DEC-2026-0105 authorize mstat_monster_level and its
+    page-189 dependency, but the authoritative Shadowdark edge schema rejects
+    mstat_ in both endpoint positions.
+  blocking_ids: []
+
+authority:
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/WORK_QUEUES.md 1.35
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+originating_artifacts:
+  packet_id: PKT-SD-189-189-monster-attributes
+  gur_id: GUR-PKT-SD-189-189-monster-attributes-r02
+  gup_id: GUP-PKT-SD-189-189-monster-attributes-r01
+  review_id: REV-GUP-PKT-SD-189-189-monster-attributes-r01-r01
+
+question: >-
+  May schemas/shadowdark/graph/edge.schema.json be amended to admit the
+  DEC-2026-0105-authorized mstat_ prefix in both source_id and target_id, so
+  M001 can enter production under the ordinary packet lifecycle?
+
+smallest_relevant_source_excerpt: >-
+  Page 189: "Calculate a monster's hit points (HP) by rolling a number of d8s
+  per monster level (LV) and adding its CON modifier (minimum 1)."
+
+why_this_is_architectural: >-
+  DEC-2026-0105 made mstat_ an approved prefix and explicitly required the
+  ordinary successor to use mstat_monster_level for this page-189 dependency.
+  Its exact_diff admitted Constitution, ruleset, GUR-schema, and GUP-schema
+  changes, but did not include the Architect-owned production edge schema.
+  The resulting constitution/schema disagreement cannot be corrected by
+  Reviewer, Builder, or Integrator and directly blocks a source-supported row.
+
+local_graph_neighborhood:
+  canonical_snapshot:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:d9d353895fd891314043936f3673281d3f96d1144dff27dcc155de9d7f2a2549
+    rows: 851
+  node_registry_snapshot:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:355986c8ed416450de723583a6d33c653fe242061334fcabd773aa0c4c5b57b3
+    rows: 424
+  proposed_node: {id: mstat_monster_level, label: Monster Level, kind: mstat}
+  blocked_row: >-
+    M001 mstat_monster_level FEEDS_INTO rule_hit_points on hit point value,
+    for a monster.
+  incident_canonical_context: >-
+    rule_hit_points has established character, damage, recovery, spell, and
+    encounter relationships, but production contains no mstat_ identity or
+    edge because this is the prefix's first authorized use.
+
+affected_canonical_ids: [rule_hit_points]
+affected_proposed_ids: [mstat_monster_level]
+
+measured_evidence:
+  edge_schema:
+    path: schemas/shadowdark/graph/edge.schema.json
+    checksum: sha256:c0d482a7e9a6be779485ea4bfe4da91b10c2a81f5ef03d2b5040a97754c6510e
+    result: >-
+      Both endpoint patterns enumerate abil, ancestry, alignment, class,
+      deity, lang, rule, tbl, spell, item, monster, cbt, sys, exp, ex, and
+      weapon, but omit mstat.
+  independent_row_validation: >-
+    M002 validates against the current production edge schema; M001 fails only
+    because mstat_monster_level does not match the source_id pattern.
+  decision_boundary: >-
+    DEC-2026-0105 explicitly authorizes the exact M001 identity and dependency,
+    while its exact_diff omits schemas/shadowdark/graph/edge.schema.json.
+
+options_considered:
+  - id: OPT-A
+    summary: Admit mstat in both production edge endpoint patterns.
+    consequences: >-
+      Aligns the production schema with Constitution 1.8 and DEC-2026-0105,
+      unblocks M001, and permits future separately governed mstat_ uses. The
+      amendment should preserve every other pattern and validate synthetic
+      source- and target-position fixtures.
+  - id: OPT-B
+    summary: Revoke or narrow DEC-2026-0105 so mstat_ cannot be an edge endpoint.
+    consequences: >-
+      Keeps the current edge schema unchanged but contradicts the Decision's
+      required page-189 dependency and requires a replacement representation
+      or omission ruling for M001.
+
+recommended_resolution: >-
+  Recommend OPT-A as a narrow corrective Decision: add mstat to both endpoint
+  patterns in schemas/shadowdark/graph/edge.schema.json, preserve all existing
+  admissions and rejections, and test mstat_ in both directions. After that
+  prerequisite is implemented and independently verified, return this packet
+  to Reviewer for a successor approval Review of the same immutable GUP.
+
+expected_migration_impact: >-
+  No canonical row or registry row is rewritten. The schema amendment enables
+  the already authorized first mstat_ registration and M001 through the normal
+  Approved-bundle transaction. M002 and M003 remain unchanged.
+
+constitution_registry_or_profile_change: >-
+  OPT-A changes only the Shadowdark production edge schema and its focused
+  tests; Constitution 1.8, the registry format, extraction profile, GUR, GUP,
+  and canonical data require no change.

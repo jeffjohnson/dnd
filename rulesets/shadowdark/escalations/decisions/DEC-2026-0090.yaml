@@ -1,0 +1,127 @@
+schema_version: '1.0'
+id: DEC-2026-0090
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.2'
+decision_date: '2026-09-22'
+request_origin:
+  type: reviewer_finding
+  summary: >-
+    REV-IMP-DEC-2026-0087-r02-r01 found that Constitution 1.2 and the
+    Shadowdark GUR/GUP schemas admit historical 1.1 GURs, while
+    RulesetVocabulary accepts only historical 1.0 plus current 1.2.
+question: >-
+  How must the Builder validate a previously published Shadowdark GUR that
+  declares Constitution 1.1 after the ruleset has advanced to 1.2?
+ruling: >-
+  Treat Constitution 1.1 exactly as a historical Shadowdark GUR input version,
+  alongside 1.0. RulesetVocabulary for shadowdark must admit 1.0, 1.1, and the
+  current manifest version 1.2. A 1.1 GUR is revalidated under 1.2, produces the
+  existing constitution_version_older_than_compiler warning, and stamps any new
+  compile output with 1.2 while preserving its input version. It must not be
+  trusted solely because it was valid under 1.1.
+
+  This is compatibility for immutable historical inputs only. New Shadowdark
+  GURs and GUPs continue to declare the current Constitution 1.2. Unknown and
+  future versions remain constitution_version_mismatch errors. No published GUR,
+  packet, source, graph row, registry, or schema is changed by this Decision.
+rationale:
+  - >-
+    Constitution 1.2 expressly admits 1.0 and 1.1 historical GURs with current
+    revalidation, and the current structural schemas already read both versions.
+  - >-
+    The compiler's one-version omission would turn a governance-approved input
+    into an implementation error without a semantic reason.
+  - >-
+    The existing older-version warning and current-output stamping preserve the
+    distinction between compatibility and authoring authority.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Builder owns the two bounded vocabulary and focused-regression changes;
+    Reviewer independently approves their implementation report afterward.
+  blocking_ids: []
+evidence:
+  - path: rulesets/shadowdark/decision-implementation-reviews/REV-IMP-DEC-2026-0087-r02-r01.yaml
+    checksum: sha256:e0419706461ee4bcac70e379730f105810f8668c83ffaf66ab15a218a5751892
+    role: approved_review_that_identified_the_divergence
+  - path: rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml
+    checksum: sha256:ac292466989d18e446778145464f7d8bb1dd4fd82a5379606bb1cdf02536595b
+    role: original_historical_gur_compatibility_ruling
+  - path: rulesets/shadowdark/governance/constitution.md
+    checksum: sha256:b25c22e688eeeac5e41d76646714620b0d85a8a5ab90e60b363fa0fd95b86a1a
+    role: current_governance_admitting_historical_1_0_and_1_1_gurs
+  - path: tooling/builder/src/adnd1e_builder/vocab.py
+    checksum: sha256:1a66854c7c53497973d0bf222532bec33e58407c55555fd2012cab72173c7e70
+    role: current_incomplete_ruleset_vocabulary
+migration_required: false
+migration_scope: >-
+  This corrects prospective Builder validation. Existing immutable artifacts
+  remain unchanged and no historical 1.1 GUR currently exists in Shadowdark.
+constitution_version_impact: >-
+  None. Constitution 1.2 already defines this compatibility policy; this
+  Decision aligns the Builder implementation with it.
+affected_contracts: []
+affected_registries: []
+implementation_bounds:
+  - >-
+    Change only the Shadowdark historical-version entry in RulesetVocabulary and
+    focused Shadowdark ancestry tests. Do not edit the Constitution, ruleset
+    manifest, GUR/GUP schemas, packets, source Markdown, graph artifacts,
+    registries, queue behavior, or Herdr tooling.
+  - >-
+    Preserve the current behavior for immutable 1.0 GURs, AD&D, Basic D&D,
+    current 1.2 output, and unknown/future versions.
+  - NO RC processing, cleanup, compilation, or testing is authorized.
+acceptance_tests:
+  - >-
+    RulesetVocabulary loaded for shadowdark accepts exactly historical 1.0 and
+    1.1 plus current manifest version 1.2; no other ruleset is widened.
+  - >-
+    A focused synthetic 1.1 Shadowdark GUR compiles without
+    constitution_version_mismatch, retains constitution_version_older_than_compiler,
+    and records 1.2 as the output constitution version with 1.1 as the input
+    version. A synthetic unknown future version still fails.
+  - >-
+    Existing immutable 1.0 Shadowdark GUR compatibility tests remain green and
+    their source artifacts are unchanged. The focused test module and complete
+    Builder suite pass with exact commands and outcomes recorded in the report.
+sequence:
+  - step: 1
+    owner: architect
+    action: Publish this Decision and notify Builder of the bounded implementation.
+  - step: 2
+    owner: builder
+    action: >-
+      Update RulesetVocabulary and its focused Shadowdark regression tests,
+      validate the three acceptance tests, and publish an implementation report
+      with a validation report for Reviewer.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently verify the implementation and acceptance evidence. Publish
+      a terminal approving or corrective implementation Review through ordinary
+      immutable lineage.
+post_implementation_requirements:
+  - >-
+    A future historical 1.1 GUR follows ordinary current-input validation,
+    Builder compilation, Review, and Integration. This Decision does not make
+    any existing or future graph row approved.
+exact_diff:
+  tooling/builder/src/adnd1e_builder/vocab.py: Add the governed historical 1.1 Shadowdark GUR input version.
+  tooling/builder/tests/test_shadowdark_ancestry.py: Add focused 1.1 compatibility and unknown-version regression coverage.
+exact_diff_ownership:
+  - {path: tooling/builder/src/adnd1e_builder/vocab.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_shadowdark_ancestry.py, owner: builder, sequence_step: 2}
+follow_up_owners:
+  builder:
+    - Implement and report the bounded historical-1.1 compatibility alignment.
+  reviewer:
+    - Independently review the Builder report before any 1.1 input is relied on.

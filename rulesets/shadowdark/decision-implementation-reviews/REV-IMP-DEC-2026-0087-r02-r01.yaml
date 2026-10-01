@@ -1,0 +1,87 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0087-r02-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: shadowdark
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+review_date: '2026-09-22'
+overall_disposition: approved
+reviewed_implementation:
+  id: IMP-DEC-2026-0087-r02
+  path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0087-r02.yaml
+  checksum: sha256:1392f711a81c6360fb647965f117fcef713dcbbcbe9f1bfc81135ba749db6c40
+decision_input:
+  id: DEC-2026-0087
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml
+  checksum: sha256:ac292466989d18e446778145464f7d8bb1dd4fd82a5379606bb1cdf02536595b
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: 'Independent review completes DEC-2026-0087 step 3 for r02; no Integrator artifact exists.'
+  blocking_ids: []
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: 'Verified current Constitution 1.2 at sha256:b25c22e688eeeac5e41d76646714620b0d85a8a5ab90e60b363fa0fd95b86a1a, ruleset.yaml 1.2, and all four exact DEC-0087 substantive anchors.'
+    verified_versioned_contract_content:
+      authority: {id: DEC-2026-0087, path: rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml, checksum: sha256:ac292466989d18e446778145464f7d8bb1dd4fd82a5379606bb1cdf02536595b, authorized_acceptance_test_index: 1}
+      authorized_acceptance_test_index: 1
+      contracts:
+        - path: rulesets/shadowdark/governance/constitution.md
+          checksum: sha256:b25c22e688eeeac5e41d76646714620b0d85a8a5ab90e60b363fa0fd95b86a1a
+          observed_version: '1.2'
+          minimum_version: '1.1'
+          anchors_present:
+            - ancestry_ identifies a character ancestry, separate from classes, creatures and the ancestry subsystem.
+            - Six source-defined ancestry IDs include ancestry_half_orc and separately named abil_ benefits.
+            - No automatic inheritance or activation of the inactive character-race registry.
+            - Historical 1.0 GURs require current validation; new artifacts declare the current version.
+  - {acceptance_test_index: 2, disposition: verified, evidence: 'Current scoped schemas admit ancestry endpoints and historical 1.0/1.1 plus current 1.2; unknown future versions remain rejected and no other ruleset gains ancestry_.'}
+  - {acceptance_test_index: 3, disposition: verified, evidence: 'Focused synthetic tests read the six Decision identities, preserve labels/pages and produce ordinary ancestry and ability proposals.'}
+  - {acceptance_test_index: 4, disposition: verified, evidence: 'ancestry_ is absent from AD&D, Basic D&D and global NODE_PREFIXES; a held Shadowdark ancestry blocks its dependent registration.'}
+  - {acceptance_test_index: 5, disposition: verified, evidence: 'Both named immutable 1.0 GURs retain their pinned hashes, current dry compilation retains visible findings, and no Shadowdark canonical directory exists.'}
+  - {acceptance_test_index: 6, disposition: verified, evidence: 'Independent focused ancestry suite passed 46/46; the complete Builder suite completed with the report-recorded 841 passing tests.'}
+independent_validation:
+  passed: true
+  commands:
+    - {command: '[cwd tooling/builder/tests] python -m unittest test_shadowdark_ancestry', exit_code: 0, result: passed, summary: 'Ran 46 tests in 3.374s; OK.'}
+    - {command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py" -t .', exit_code: 0, result: passed, summary: 'Complete suite completed; report records 841 tests, no failures or errors, skipped=38.'}
+review_evidence:
+  validation_report: {path: build/reports/IMP-DEC-2026-0087-r02.validation.json, checksum: sha256:802df3509a62b908caf5191d29ccfbf1c224bc361ed4abd360f237c6130bdb19}
+  active_leaf_check: 'Queue scan identifies IMP-DEC-2026-0087-r02 as the sole Reviewer-ready decision-implementation report; r01 is superseded.'
+  scope_ruling: >-
+    _field_text remains within DEC-0087 implementation_bounds: compiler.py is
+    one of the four permitted Builder modules; coercion is necessary for
+    constitution-permitted scalar pass values in immutable 1.0 GURs; and it
+    occurs before, rather than instead of, closed-field validation.
+  finding_for_architect: >-
+    Constitution 1.2 says historical Shadowdark GURs declaring 1.0 or 1.1 are
+    admissible with revalidation. RulesetVocabulary currently adds only the
+    transcribed 1.0 historical version plus the current manifest version. No
+    1.1 Shadowdark GUR exists and DEC-0087's named historical inputs are both
+    1.0, so this does not fail a DEC-0087 acceptance test; it remains a material
+    governance/compiler divergence requiring Architect disposition before a
+    1.1 historical input is relied on.
+  analyst_defects: >-
+    The immutable stats GUR retains 14 missing evidence fields; overview retains
+    21 missing evidence fields and two unresolved endpoints. These remain
+    visible Analyst defects outside this Decision.
+completion_statement: 'Approved without canonical creation, source/GUR mutation, or ancestry GUP publication.'
+ordered_next_steps:
+  - priority: 1
+    owner: analyst
+    input: books/shadowdark/sd/packets/claimed/PKT-SD-016-017-ancestries
+    action: 'Complete DEC-2026-0087 step 4 and publish the ancestry GUR under Constitution 1.2.'
+    prerequisite_ids: [DEC-2026-0087, REV-IMP-DEC-2026-0087-r02-r01]
+    readiness: ready
+    reason: 'The exact implementation report is independently approved; this is the next Decision step.'
+  - priority: 2
+    owner: architect
+    input: rulesets/shadowdark/governance/constitution.md
+    action: 'Decide the 1.1 historical-GUR compatibility divergence before any such input is relied on.'
+    prerequisite_ids: []
+    readiness: ready
+    reason: 'Current Constitution 1.2 and compiler vocabulary disagree about a future historical 1.1 GUR.'

@@ -7,6 +7,53 @@ Compile a GUR into a deterministic, schema-valid Graph Update Patch (GUP). You o
 Although you are an AI agent, treat this role as compiler engineering. Build and maintain code so repeated decisions are deterministic, tested, and auditable.
 
 
+## Herdr Notifications
+
+Read and follow `contracts/HERDR_HANDOFFS.md`. There is no Dispatcher. Herdr is
+a best-effort wake-up, not a relay, approval, or execution record. Directly
+notify Reviewer about a ready GUP or implementation report, Analyst about a
+source/GUR correction, or Architect about an escalation; do not use a relay,
+wait for a recipient, or write notification state.
+
+For every outbound Herdr message, use
+`tooling/common/Send-HerdrPrompt.ps1 -Role <Role> -Message <Message>` from the
+repository root. Do not call `herdr agent prompt` directly or add a timestamp
+to `Message`; the wrapper verifies the live role/provider/repository and adds
+the required timestamp and repository context.
+
+Prefix every outgoing Herdr notification and every final or status message with
+`Local time: YYYY-MM-DD HH:mm:ss +/-HH:mm`, generated from the local system
+clock immediately before sending. It is message context only, never artifact
+provenance, delivery evidence, or work authority.
+
+Before finishing, publish and validate your artifacts, then provide a numbered
+list with the one permitted relay action: exact ID/path, next owner,
+prerequisite, and reason. Notify that owner. A recipient rechecks current
+artifacts before acting.
+
+Verify incoming scope, active revisions, and authority before acting. A herdr
+message is not approval, artifact consumption, or authority to edit another
+role's files. Keep artifact `handoff.next_role` addressed to the actual worker.
+Observe reload-only and pause requests literally; they authorize no queue work.
+
+Identify the active GUR, revision request, or implementation Decision before
+building. Send a blocking governance issue to Architect before dependent builds.
+Send ready GUPs and implementation reports to Reviewer, not Integrator. Never
+infer corrections from a chat summary.
+
+## Packet Relay
+
+Work only on the active packet received from Analyst or returned by Reviewer.
+After publishing a valid GUP, notify Reviewer only. If a Reviewer-requested
+repair requires source interpretation, packet identity, or a GUR revision that
+you cannot author, return the exact correction to Analyst only; do not forward
+an incomplete packet to Reviewer. If the defect is architectural, publish an
+ESC and notify Architect only; do not advance the packet.
+
+Do not start a second normal packet while this one is at Builder, Reviewer,
+Integrator, correction, or escalation stage. After an Analyst successor arrives,
+compile that same packet and resume the normal Builder -> Reviewer step.
+
 ## Runtime scope
 
 At startup, resolve and retain these identifiers from the assigned task:
@@ -177,7 +224,7 @@ report directly from a command-specific script.
 
 Before that create-only final-path preflight, stage every GUP, Decision
 Implementation Report, or escalation YAML and run `python
-tooling/common/validate_artifact.py --path <staged-yaml> --schema
+tooling/common/validate_artifact.py <staged-yaml> --schema
 <applicable-schema>`. The command validates only the staged bytes and required
 schemas; it must not trigger a corpus scan, source reload, or canonical-graph
 reload merely to publish one artifact.

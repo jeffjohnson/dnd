@@ -21,7 +21,14 @@ from pathlib import Path
 
 import yaml
 
-# Constitution section 6.1. Ten types where polarity follows from edge type.
+# AD&D constitution section 6.1. Ten types where polarity follows from edge type.
+#
+# DEC-2026-0092: this transcription is a *fallback for callers that supply no
+# ruleset*, not the authority. The active ruleset's constitution is, and
+# `integrate()` always reads it through `vocabulary.load_vocabulary`. Shadowdark
+# declares the same ten pairs, so the transcription happened to agree -- which
+# is precisely why it survived undetected, and why nothing here may be trusted
+# for a ruleset the caller has actually named.
 DERIVED_POLARITY = {
     "GATES": "enables",
     "RESOLVED_BY": "governs",
@@ -48,24 +55,34 @@ def load_role_profile(path: Path) -> dict:
     return yaml.safe_load(Path(path).read_text(encoding="utf-8"))
 
 
-def derive_polarity(edge: dict[str, str]) -> tuple[str, str] | None:
+def derive_polarity(
+    edge: dict[str, str],
+    derived_polarity: dict[str, str] | None = None,
+) -> tuple[str, str] | None:
     """The (polarity, polarity_basis) the build owns, or None if authored.
 
-    Returning None means the edge type is one of the three where the Analyst
+    Returning None means the edge type is one of the ones where the Analyst
     reads polarity off the page. The build validates those but never assigns
     them.
+
+    `derived_polarity` is the active ruleset's table, read from its own
+    constitution. Omitting it falls back to the AD&D transcription above.
     """
+    table = DERIVED_POLARITY if derived_polarity is None else derived_polarity
     edge_type = edge["edge_type"]
-    if edge_type in DERIVED_POLARITY:
-        return DERIVED_POLARITY[edge_type], "derived"
+    if edge_type in table:
+        return table[edge_type], "derived"
     return None
 
 
-def apply_derived_polarity(edges: list[dict[str, str]]) -> list[dict]:
+def apply_derived_polarity(
+    edges: list[dict[str, str]],
+    derived_polarity: dict[str, str] | None = None,
+) -> list[dict]:
     """Recompute deterministic polarity in place; report every correction."""
     corrections = []
     for index, edge in enumerate(edges):
-        derived = derive_polarity(edge)
+        derived = derive_polarity(edge, derived_polarity)
         if derived is None:
             continue
         polarity, basis = derived
@@ -86,7 +103,13 @@ def apply_derived_polarity(edges: list[dict[str, str]]) -> list[dict]:
 class Degrees:
     """Per-node counters computed from the full edge list."""
 
-    def __init__(self, edges: list[dict[str, str]]):
+    def __init__(self, edges: list[dict[str, str]], tier2_enabled: bool = True):
+        # DEC-2026-0092: the tier-2 rules below name AD&D identities directly
+        # (`xp_`, `enc_encumbrance`, `money_gp`, `rule_time`,
+        # `rule_hit_points`). A ruleset whose profile declares an empty `tier2`
+        # mapping has no tier-2 rules at all, and must not have AD&D's applied
+        # by coincidence of a shared ID spelling.
+        self.tier2_enabled = tier2_enabled
         self.inbound = collections.Counter()
         self.outbound = collections.Counter()
         self.core = collections.Counter()
@@ -115,6 +138,8 @@ class Degrees:
 
     def _tier2(self, edge, source, target, edge_type) -> None:
         """Constitution section 11 tier 2. Direction matters and was wrong in v1.0."""
+        if not self.tier2_enabled:
+            return
         if edge_type == "FEEDS_INTO" and target.startswith("xp_"):
             self.tier2[source].add("advancement_currency")
         if edge_type == "FEEDS_INTO" and target == "enc_encumbrance":
@@ -130,8 +155,17 @@ class Degrees:
         return self.inbound[node] + self.outbound[node]
 
     def roles(self, node: str, thresholds: dict) -> set[str]:
-        """Tier 1 structural roles plus any tier 2 role already collected."""
+        """Tier 1 structural roles plus any tier 2 role already collected.
+
+        DEC-2026-0092: an explicitly empty `thresholds` mapping is valid
+        bootstrap configuration, not a missing file. Shadowdark's profile
+        records that no corpus-based thresholds exist yet, so a genesis graph
+        derives no tier-1 role. Inventing thresholds to fill the gap would be an
+        unsupported graph conclusion, and borrowing AD&D's would be worse.
+        """
         found = set(self.tier2.get(node, ()))
+        if not thresholds:
+            return found
         out, inn = self.out_by_type[node], self.in_by_type[node]
         t = thresholds
 
@@ -180,6 +214,7 @@ def rebuild_nodes(
     labels: dict[str, str],
     kinds: dict[str, str],
     thresholds: dict,
+    tier2_enabled: bool = True,
 ) -> list[dict[str, str]]:
     """Recompute every node row and return them in canonical order.
 
@@ -188,7 +223,7 @@ def rebuild_nodes(
     exactly and stays stable as edges are added, so an integration diff shows
     only nodes whose numbers actually moved.
     """
-    degrees = Degrees(edges)
+    degrees = Degrees(edges, tier2_enabled=tier2_enabled)
     node_ids = set(degrees.inbound) | set(degrees.outbound)
 
     rows = []

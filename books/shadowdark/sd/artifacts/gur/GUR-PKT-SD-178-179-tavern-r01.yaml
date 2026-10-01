@@ -1,0 +1,501 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-178-179-tavern-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-178-179-tavern
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-178-179-tavern
+  source_file: source.md
+  packet_source_checksum: sha256:05b8927c84a2cdb6801472c19b6d0cd7f01256095ef8bfa774b268c2792af139
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 076-encounters-tavern.md
+  citation_code: SD
+  page_start: 178
+  page_end: 179
+  page_number_basis: packet_page_markers
+units_note: 'Figures name their unit. Measured by the building script from the claimed source: 1 named
+  table, 50 data rows keyed to a hundred-sided roll, 0 sentences of prose, 23 rows on printed page 178
+  and 27 on 179. The script asserts the recorded packet checksum against the claimed file before reading
+  a single cell.'
+page_attribution_basis: 'The page break falls inside the table, as it has in every packet of this chapter.
+  The p178 marker sits on the TAVERN heading under placement rule 1. The p179 marker sits in the last
+  cell of the row keyed 46-47, and acceptance test 3 applies a table-row marker to the whole row, so that
+  row is page 179 and persistence carries 179 to every row after it.
+
+
+  The script locates the marker by row index rather than by eye, asserts that it is in the row''s final
+  cell, and derives each row''s page from it: the marker is at row index 23, 23 rows are page 178 and
+  27 are 179. Each submitted row is cited to the page of the cell it rests on, and the script asserts
+  that placement from the located cell index rather than from my reading.'
+scope_boundary: 'The bounded scope is the Primary Source Material section, printed pages 178 and 179:
+  one named table of 50 rows and no prose. The Supporting Source Context appends the random encounter
+  procedure from printed pages 112 and 113 and the monster attributes page from 189. Both are out of scope
+  and no row cites either.
+
+
+  That exclusion matters here because the appended encounter procedure is the very rule this table resolves.
+  Its content belongs to PKT-SD-112-113, which is already integrated, and re-asserting it would duplicate
+  canonical rows from a repeated passage.'
+source_summary: 'A single hundred-sided encounter table for taverns, 50 rows, with no procedure, no heading
+  prose and no instructions. Most results are barroom incident and local colour: a vampire asking to be
+  invited in, a half-orc lifting a table over his head, a landscape painting that changes when nobody
+  is looking, a woman lifting a purse from a belt. Four cells name rival crawlers, one awards a luck token,
+  one points the reader to another printed page for a named drink, and the hundredth slot names a magic
+  item by its own name.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled, and every figure here
+  is computed by the building script from the canonical files and the claimed source.
+
+
+  The canonical graph holds 420 registry rows and 834 edges, and 0 rows cite printed page 178 or 179,
+  so nothing in this span has been extracted before. The registry holds 120 tbl_ identities and 0 monster_
+  identities, the latter being the figure that governs how much of this table is extractable at all.
+
+
+  rule_encounter carries 28 rows, of which 20 are RESOLVED_BY and 18 name a location encounter table.
+  The script asserts that the proposed table id is absent from the registry before using it.'
+chapter_disposition_note: 'The disposition for this chapter was argued in full at PKT-SD-142-143 and is
+  applied here rather than re-argued. In short: no procedure identity, because the table''s own title
+  names rule_encounter and that rule has been canonical since printed page 112, so this table is a further
+  resolver of an existing rule rather than evidence of a new one. No terrain or district identity. No
+  creatures and no named characters, because the registry holds 0 monster_ identities and a creature''s
+  defining locus is its stat block, not a line in an encounter table.
+
+
+  One part of that disposition needs restating rather than citing, because this is the first page of the
+  chapter where the location word is itself a canonical identity. rule_taverns is canonical with 3 rows
+  from printed pages 136 and 137. It is still not the parent of this table; see the rejected candidate
+  for the full reason.
+
+
+  What remains is the small set of cells that state a mechanic or name a canonical procedure, and those
+  are found by measurement rather than by reading.'
+name_match_measurement_note: 'The cells were matched against the whole registry by script, not scanned
+  by eye, because a table of 50 prose cells is where a reference gets missed and where a false one gets
+  asserted. Both have happened in this intake: rule_natural_twenty was missed at PKT-SD-101-109 by keyword-searching
+  instead of reading the registry, and a false absence claim about rule_invisibility reached production
+  from PKT-SD-062-065.
+
+
+  Three scans are run on this page rather than the chapter''s usual two, and the third is new here. Scan
+  1 matches a whole registry label on word boundaries. Scan 2 matches every stemmed token of a label,
+  which recovers an inflected mention scan 1 misses. Both require the complete label, so neither can see
+  a cell that names part of a multi-word identity. Scan 3 flags any cell sharing a distinctive token of
+  a multi-token label and is deliberately noisy; its output is triage rather than a result.
+
+
+  Scan 1: 17 of 50 cells match, over these identities: ancestry_dwarf, ancestry_elf, ancestry_half_orc,
+  ancestry_halfling, class_fighter, class_priest, class_wizard, item_coin, rule_luck_token, rule_rival_crawlers.
+  Scan 2: 20 cells match, adding item_oil_flask, rule_encounter, rule_loading, rule_taverns. Scan 3: 20
+  cells match on a partial label, and it is the only scan that recovers item_van_dinkle_whiskey, from
+  a cell that says Van Dinkle flask against the registry label Van Dinkle Whiskey. That recovery is why
+  the third scan was written, and it carries M004.
+
+
+  Of the 14 identities the first two scans reach, 2 are real references that carry a row, rule_luck_token
+  and rule_rival_crawlers. item_oil_flask, rule_encounter, rule_taverns are real mentions deliberately
+  not given a row of their own, for the reasons in rejected_candidates. The remaining 9 are ordinary English
+  colliding with an identity label: ancestry_dwarf, ancestry_elf, ancestry_half_orc, ancestry_halfling,
+  class_fighter, class_priest, class_wizard, item_coin, rule_loading.
+
+
+  Ancestry labels dominate the false set: ancestry_halfling matches 4 cells and ancestry_half_orc 3, every
+  one of them a person in a barroom rather than a playable ancestry. class_fighter matches a pit fighter,
+  class_wizard a halfling named in a cell and class_priest a weeping drunk, the usual creature-versus-class
+  collision. item_coin matches a coin purse and a coin box, and rule_loading matches loaded dice.
+
+
+  Three candidates on this page are reachable by no scan and were found by reading every cell: the chained
+  trapdoor at index 37, the shared rumour at index 40, and the contest cells at [17, 23, 25]. The script
+  asserts that rule_traps, tbl_rumors and rule_contested_check appear in none of the three scans'' output,
+  so each was considered because the cell was read rather than because a scan pointed at it. Each is recorded
+  in rejected_candidates with the reason it earns nothing. Recording them is the point: a scan that reports
+  nothing for a cell is not evidence that the cell holds nothing.'
+reused_nodes:
+- id: rule_encounter
+  label: Encounter
+  used_by: M001
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed page 112 with 28 rows and 20 RESOLVED_BY, 18 of them location encounter tables.
+    This table is the next of those and differs from all of them in aspect.
+- id: rule_rival_crawlers
+  label: Rival Crawlers
+  used_by: M002
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed pages 126 and 127 with 17 inbound rows. 4 cells name it here, at indices [12,
+    25, 30, 36], more than any page in the chapter has carried; one row is written because all four support
+    the same assertion key, and it is cited to the first.
+- id: rule_luck_token
+  label: Luck Token
+  used_by: M003
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed page 79 with 6 inbound rows, 4 of them FEEDS_INTO from a tbl_ source on aspect
+    encounter award. The cell at index 45 states that a brass wolf's nose imparts good luck and names
+    the token; the percentage in it is a magnitude and is not stored.
+- id: item_van_dinkle_whiskey
+  label: Van Dinkle Whiskey
+  used_by: M004
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed page 137 with 0 inbound rows and 1 outbound, a MODIFIES to exp_xp on aspect
+    drink award. The cell at index 47 says Van Dinkle flask and points to printed page 137, which is that
+    identity's defining locus. See van_dinkle_reference_note for the identity and the edge type.
+candidate_nodes:
+- proposed_id: tbl_tavern_encounters
+  proposed_label: Tavern Encounters Table
+  kind: table
+  why_needed: The one named table on the page, 50 rows keyed to a hundred-sided roll. It resolves rule_encounter
+    for the tavern and is the source of every other row this packet carries.
+  prefix_basis: tbl_ is a named source table; joins the 120 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 178, TAVERN ENCOUNTERS TABLE
+  source_evidence: page 178, the TAVERN ENCOUNTERS TABLE heading and its 50 data rows, which continue
+    onto page 179.
+candidate_edges:
+- ref: M001
+  source_id: rule_encounter
+  source_label: Encounter
+  edge_type: RESOLVED_BY
+  target_id: tbl_tavern_encounters
+  target_label: Tavern Encounters Table
+  aspect: tavern selection
+  condition: ''
+  book: SD
+  page: 178
+  section: TAVERN ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: tbl_tavern_encounters
+  source_label: Tavern Encounters Table
+  edge_type: FEEDS_INTO
+  target_id: rule_rival_crawlers
+  target_label: Rival Crawlers
+  aspect: encounter result
+  condition: ''
+  book: SD
+  page: 178
+  section: TAVERN ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: tbl_tavern_encounters
+  source_label: Tavern Encounters Table
+  edge_type: FEEDS_INTO
+  target_id: rule_luck_token
+  target_label: Luck Token
+  aspect: encounter award
+  condition: ''
+  book: SD
+  page: 179
+  section: TAVERN ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: tbl_tavern_encounters
+  source_label: Tavern Encounters Table
+  edge_type: CROSS_REFERENCES
+  target_id: item_van_dinkle_whiskey
+  target_label: Van Dinkle Whiskey
+  aspect: drink reference
+  condition: ''
+  book: SD
+  page: 179
+  section: TAVERN ENCOUNTERS TABLE
+  evidence: explicit_reference
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: '0 of the 4 rows carry authored polarity. None is a MODIFIES, a TRIGGERS
+  or a CONSTRAINS, the three types constitution section 5 reserves, so Builder derives every value: governs
+  for the RESOLVED_BY and neutral for the two FEEDS_INTO and the CROSS_REFERENCES. This is the first packet
+  of the chapter with no authored polarity at all, which follows from the page carrying no cell that states
+  an effect on a value.'
+status_note: All 4 rows are core, following the disposition settled as IDQ-01 of PKT-SD-124-125 and applied
+  throughout this chapter.
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: The table resolves encounters during travel and crawling. Recorded as a candidate only; constitution
+    section 8 reserves domain promotion to an Architect Decision.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: the table's relation to rule_taverns, p178
+  quoted_gist: the section heading TAVERN above the TAVERN ENCOUNTERS TABLE heading
+  why_considered: This is the first page in the chapter whose location word is a canonical identity. rule_taverns
+    carries 3 rows from printed pages 136 and 137, all RESOLVED_BY to the tavern generator, drinks and
+    menu tables. A fourth resolver pointing at this table would have been the obvious shape, and unlike
+    swamp or slums there is a real node to point from.
+  rejection_reason: 'The source does not state it. This table sits in the encounters chapter, its own
+    title names encounters, and the heading TAVERN is the location axis that names which of the 18 location
+    tables this is, exactly as SWAMP and SLUMS did. The settlement chapter has the same shape already
+    and it was resolved the same way: tbl_settlement_artisan_district and tbl_settlement_market are canonical
+    and neither is an endpoint of the artisan or market encounters table''s rows. A parent has to be stated,
+    not inferred from a shared word, and inferring one here would make the chapter''s 18 preceding packets
+    inconsistent.'
+- text_locus: the magic item in the hundredth slot, p179
+  quoted_gist: a die sits in a dusty corner and it is Brak's Cube of Perfection, named in italics
+  why_considered: 'The hundredth slot has earned a treasure row on several pages of this chapter, and
+    availability is stated as plainly here as anywhere: the die is simply sitting there to be picked up.
+    rule_treasure carries 11 inbound rows and the route from item_magic_item exists, 1 row on xp source
+    from printed page 117.'
+  rejection_reason: The canonical category is not named. Every treasure row in this chapter rests on a
+    cell that says magic item, the exact label of an identity the graph already feeds to Treasure. This
+    cell names one particular item instead, Brak's Cube of Perfection, which has no registry identity
+    and whose defining locus is not in this packet. Element one of the settled three-element test therefore
+    fails on its own, before availability or routing is reached. This is a different failure from the
+    spell scroll one packet before last, which named a canonical category and failed on routing with 0
+    rows from item_spell_scroll to rule_treasure; see OBS-01. Pointing a row at the cube itself would
+    propose an identity from an incidental mention, and pointing one at item_magic_item would assert a
+    category the cell does not use.
+- text_locus: the Wandering Merchant's flask as treasure, p179
+  quoted_gist: the Wandering Merchant has a Van Dinkle flask and the cell cites page 137
+  why_considered: The cell names a canonical item and the merchant is standing in front of the characters,
+    so the treasure test was applied to it as well as the cross-reference reading that M004 records.
+  rejection_reason: 'Has is bare possession. It is weaker than sells, which OBS-02 of the swamp packet
+    already placed below the line, and far weaker than the offers and bestows that carry rows elsewhere
+    in the chapter; the cell states no price, no transfer and no way for the party to obtain it. The routing
+    element fails independently: item_van_dinkle_whiskey carries 1 outbound row and it goes to exp_xp,
+    with 0 rows reaching rule_treasure from it. Two of three elements fail, so the cell earns the reference
+    row and nothing else.'
+- text_locus: the chained trapdoor, p179
+  quoted_gist: everyone in the room avoids a chained trapdoor of stone set in the floor
+  why_considered: rule_traps is canonical with 8 inbound FEEDS_INTO rows, several of them from encounter
+    tables in this chapter, and the word trapdoor is the closest this page comes to one. No scan reports
+    it, because trapdoor is one token and Traps is another; it was found by reading the cell.
+  rejection_reason: 'It fails the first element of the settled three-element trap test outright: the cell
+    states no operation. Nothing triggers, nothing is concealed, nothing resolves; a chained stone trapdoor
+    in a tavern floor is a feature the patrons walk around. The second and third elements are not reached.
+    This is the same reading that declined the portcullis on printed page 172.'
+- text_locus: the shared rumour, p179
+  quoted_gist: a sympathetic City Watch guard shares an inside rumour with the party
+  why_considered: 'tbl_rumors is a registered identity, so a cell that hands the party a rumour looked
+    like it might reach it. No scan reports this cell either: the registry label is Rumors Table and the
+    cell says rumor.'
+  rejection_reason: The cell states no mechanism. It does not say to roll, to consult a table, or to treat
+    the rumour as an input to anything; a guard telling the party something is narration. The target's
+    own machinery is absent as well, since tbl_rumors carries 0 canonical rows in either direction, so
+    there is no procedure for this cell to feed even if it stated one.
+- text_locus: the contest cells, pp178 and 179
+  quoted_gist: two rival bards start a singing contest, a dwarf in clogs challenges a PC to a dancing
+    contest, rival crawlers challenge the PCs to a drinking contest, and a half-orc and a halfling arm
+    wrestle
+  why_considered: rule_contested_check is canonical from printed page 81 with 1 row. 3 cells use the word
+    contest, at indices [17, 23, 25], and a fourth has two patrons arm wrestling, so four cells pit two
+    parties against each other. It is the densest cluster of contest language the intake has produced.
+  rejection_reason: No cell states the mechanism. None says to make a contested check, an opposed roll
+    or a check of any kind; they state that a contest is proposed or underway and stop there. Deciding
+    that a drinking contest is resolved by rule_contested_check would be my inference about how the table
+    should be run, which is exactly the step the chapter has refused everywhere else. The one cell in
+    this group that does earn a row, the drinking contest at index 25, earns it for naming rival crawlers
+    rather than for being a contest.
+- text_locus: the flask of flaming oil, p178
+  quoted_gist: a hooded patron smashes a flask of flaming oil on the floor and runs
+  why_considered: item_oil_flask is canonical and the stem scan reports this cell, so a row looked available.
+  rejection_reason: The cell states no damage, no check, no area and no duration. It states that a flammable
+    object is broken, which is presence rather than effect, and it is the same reading that declined the
+    torches and the lit lantern on printed page 176 and the campfire on 173.
+- text_locus: the barroom incident cells that state no mechanic, pp178 and 179
+  quoted_gist: a brawl erupting over a dice game, a chandelier being swung on, loaded dice, a purse lifted
+    from a belt, a painting that changes when unobserved, a chair broken over a man's head and a note
+    warning of spies
+  why_considered: The luck token cell on this page shows that a barroom result can name a canonical rule
+    and say what it does, so the rest were checked against the same standard rather than dismissed as
+    scenery.
+  rejection_reason: Only the luck token cell names a rule the graph holds and states an outcome for it.
+    The rest state an event and no mechanic. Theft, brawling and cheating at dice all have obvious procedural
+    readings in a system that has checks, and none of those readings is on the page.
+- text_locus: the creature and named-character results, pp178 and 179
+  quoted_gist: a vampire at the door, Overlord's Assassins, chaos cultists, a sprinting crocodile, a seared
+    cobra, City Watch guards, Atticus Gnarl the halfling wizard, Violet Dorn the bard and the Wandering
+    Merchant
+  why_considered: Three are individually named and two carry a type in apposition, which is the shape
+    that has prompted the question in each packet of this chapter.
+  rejection_reason: A creature's defining locus is its stat block in the unextracted monster chapter and
+    the registry holds 0 monster_ identities. This is the 19th packet running the same disposition. The
+    Wandering Merchant is the one of these that touches a row, and the row is about the drink the cell
+    cites, not about the merchant.
+- text_locus: the two-encounter instruction, p179
+  quoted_gist: one result instructs the reader to roll two encounters and combine the results, rerolling
+    that result if it comes up again
+  why_considered: It is the only instruction on the page, and the stem scan flags it as matching rule_encounter.
+  rejection_reason: The match is on the plain word encounters in the instruction's own text; M001 already
+    carries the table's relation to rule_encounter. Declined in the same form in each of the 18 preceding
+    chapter packets.
+- text_locus: the appended random encounter procedure and monster attributes, out of scope
+  quoted_gist: the printed page 112 and 113 encounter procedure and the printed page 189 monster attributes
+    page
+  why_considered: Both are in the file and the first is the rule this table resolves.
+  rejection_reason: Both are Supporting Source Context, outside the bounded scope. PKT-SD-112-113 is already
+    integrated, so extracting from it would duplicate canonical rows and cite pages outside this packet's
+    range.
+non_edge_observations:
+- id: OBS-01
+  subject: the hundredth slot failed on a third, separate element
+  detail: 'The treasure test has three elements and this chapter has now lost a hundredth slot to each
+    of them in turn. The market cell failed on category, saying scroll where the registry says Spell Scroll.
+    The slums cell named the category exactly and failed on routing, because item_spell_scroll carries
+    0 rows to rule_treasure. This cell fails on category again but in the opposite direction from the
+    market one: it is not vaguer than the canonical label, it is more specific, naming Brak''s Cube of
+    Perfection where the qualifying cells say magic item.
+
+
+    That is worth separating because the two category failures look alike and are not. A vague word fails
+    because it may not be the canonical category. A proper name fails because it is certainly not a category
+    at all, and the identity it does name has no registry row and no defining locus in any claimed packet.
+    Availability was stated and the 1 route from item_magic_item was available; neither helped.
+
+
+    Recorded because the remaining packets of this chapter each have a hundredth slot and the naming in
+    them varies, and because this is the cleanest demonstration the intake has produced that the three
+    elements are independent rather than three phrasings of one judgement.'
+- id: OBS-02
+  subject: the chapter's first CROSS_REFERENCES row, and what made it available
+  detail: 'M004 is the first CROSS_REFERENCES row from any encounter table. Canonical holds 13 of them,
+    11 at evidence explicit_reference, 0 with a tbl_ source and 0 with an item_ target, so both endpoint
+    shapes are new even though the type is not.
+
+
+    It exists because the source did the pointing. The cell ends with a printed page number in parentheses,
+    which is the same shape as the canonical row rule_encounter CROSS_REFERENCES rule_overland_travel,
+    written from a see-page sentence on printed page 112. One other cell in this chapter carried a page
+    pointer, the otyugh on printed page 176, and it earned nothing because its target has no identity
+    to point at. Here the target is canonical and the pointer resolves to that target''s own defining
+    locus.
+
+
+    Recorded because a page pointer is easy to read as decoration. It is not: it is the source explicitly
+    naming another locus, which is the whole content of the type.'
+- id: OBS-03
+  subject: two scans were not enough on this page
+  detail: 'The chapter has run a whole-label scan and a stem scan since PKT-SD-148-149, where the second
+    was added because the first missed inflected mentions. Both require every token of a registry label
+    to be present in the cell, so both are blind to a cell that names part of a multi-word identity. This
+    page contains exactly that case and it carries a row: Van Dinkle flask against Van Dinkle Whiskey.
+
+
+    A third scan was written for it, matching on a distinctive token of a multi-token label. It reports
+    20 of the 50 cells and is mostly noise, 52 identities that no other scan reaches and that share only
+    a common word. It recovered the one real reference the other two could not see, and that ratio is
+    the point rather than a defect: a triage scan is allowed to be noisy if every hit is read.
+
+
+    Three further candidates on this page are invisible to all three scans, the trapdoor, the rumour and
+    the contests, and each was found by reading every cell. The scans narrow attention; they have never
+    been the reading.'
+- id: OBS-04
+  subject: four cells, one assertion key
+  detail: '4 cells name rival crawlers, at indices [12, 25, 30, 36]: they claim the tavern as theirs,
+    challenge the party to a drinking contest, whisper over a book and try to pawn off an undecipherable
+    map. That is the most any page in this chapter has carried, against two on printed page 172.
+
+
+    All four produce one row. The assertion key is source, type, target, aspect and condition, and every
+    one of these cells is the table feeding an encounter result to the same rule; splitting them by flavour
+    would need four different aspects, each of which would be a description of the cell rather than of
+    the mechanical facet. The row is cited to the first supporting cell, which is on page 178.
+
+
+    Recorded because a page with four supporting cells and one row looks like an undercount until the
+    key is stated.'
+unresolved_identity_questions: []
+unresolved_identity_questions_note: None. The one identity question this page raises, whether Van Dinkle
+  flask renames item_van_dinkle_whiskey, is answered by contract rather than left open; see van_dinkle_reference_note.
+  Every other structural choice follows the chapter disposition settled at PKT-SD-142-143 and the dispositions
+  it rests on.
+architectural_escalations: []
+architectural_escalation_note: None raised. The one proposed identity uses an approved prefix, every row
+  uses a legal edge type at status core, no row carries supersession_basis and none is an OVERRIDES, and
+  no CLASSIFIED_AS row appears. The authority list omits the nonexistent Shadowdark DEC-2026-0003; registry
+  authority for this ruleset is constitution section 2, as recorded in GUR-PKT-SD-142-143-arctic-r01.
+completeness_statement: 'Both printed pages in scope were read in full at the recorded checksum, which
+  the script asserts against the packet manifest before parsing: 1 named table, 50 data rows, 0 sentences
+  of prose. The packet yields 1 new identity and 4 rows, reusing 4 canonical identities whose labels the
+  building script asserted equal to the registry. The proposed table carries edges, so nothing is left
+  unattached.
+
+
+  Every row was checked against the 834 canonical edges for an assertion-key collision, for a shared source,
+  type and target under a different aspect, and for duplicates within the patch; there are none of any,
+  and no canonical row cited either page before. The script locates the supporting cell for each row and
+  asserts its page, which matters because the page break falls inside the table.
+
+
+  11 candidates were rejected and each is recorded with its reason. The largest deliberate loss is the
+  creature and barroom-incident content, which belongs to the unextracted monster chapter or states no
+  mechanic at all. 9 of the 14 identities the first two scans reach are spurious collisions with ordinary
+  English, measured rather than filtered by eye, and the one real reference neither of those scans could
+  see was recovered by a third scan written for this page. No assertion depends on any other ruleset.'
+van_dinkle_reference_note: 'M004 is the chapter''s first CROSS_REFERENCES row, so the identity, the type
+  and the evidence class are each argued.
+
+
+  The identity first. The cell at index 47 says the Wandering Merchant has a Van Dinkle flask and cites
+  printed page 137 in parentheses. The registry label is Van Dinkle Whiskey and its defining locus is
+  that same page 137, the TAVERN DRINKS TABLE, already claimed and integrated. SOURCE_MARKDOWN 1.4 is
+  explicit that a secondary or incidental mention can support a relationship stated in its own packet
+  but does not rename a concept whose defining mechanics belong to another locus, so the canonical identity
+  is reused and no renaming is proposed. The source''s own page pointer settles the referent; flask is
+  the vessel, not a different drink.
+
+
+  The type next. CROSS_REFERENCES is explicitly points elsewhere, and a printed page number in the cell
+  is exactly that. The alternatives were checked and each says something the source does not: FEEDS_INTO
+  would make the drink an input to the table, RESOLVED_BY would make the drink a procedure that resolves
+  it, and a treasure row would assert availability, which the verb has does not support and which the
+  missing route from this item forecloses anyway.
+
+
+  The evidence class is explicit_reference rather than explicit_rule, because the cell states no rule;
+  it points at one. 11 of the 13 canonical CROSS_REFERENCES rows carry that class, and the closest of
+  them, rule_encounter to rule_overland_travel, was written from the same shape of see-page sentence.
+  Polarity is left to Builder, which derives neutral; all 13 canonical rows of this type carry it.
+
+
+  The core test passes in the direction that matters. If the page 137 entry for this drink changed, this
+  cell would need review, because the whole content of the cell is that the merchant is carrying that
+  particular drink.'
+measured_figures_note: 'Figures quoted in this artifact''s prose are computed by the building script from
+  the claimed source and the canonical files, and the finished document is checked for unsubstituted format
+  specifiers before it is written. Located cells: the rival crawlers at [12, 25, 30, 36], the luck token
+  at 45, the Van Dinkle flask at 47, the magic item at 49, the trapdoor at 37, the rumour at 40, the contests
+  at [17, 23, 25], the oil flask at 22 and the two-encounter instruction at 48, of 50 rows. Canonical
+  counts at extraction: 20 resolvers on rule_encounter of which 18 are location tables, 17 inbound on
+  rule_rival_crawlers, 6 inbound on rule_luck_token of which 4 are FEEDS_INTO from a tbl_ source, 11 inbound
+  on rule_treasure, 13 CROSS_REFERENCES rows of which 0 have a tbl_ source, 3 on rule_taverns, 0 on tbl_rumors
+  and 1 on rule_contested_check. This is packet 19 of the chapter''s claimed set.'

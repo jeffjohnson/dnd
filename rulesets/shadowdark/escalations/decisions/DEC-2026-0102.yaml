@@ -1,0 +1,130 @@
+schema_version: '1.0'
+id: DEC-2026-0102
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.5'
+decision_date: '2026-09-23'
+escalation_id: null
+request_origin:
+  type: owner_process_directive
+  summary: >-
+    Every role must use the repository's checked direct-notification wrapper so
+    Herdr communication has one consistent safety and timestamp path.
+question: >-
+  What is the mandatory outbound Herdr interface for the five repository roles?
+ruling: >-
+  `tooling/common/Send-HerdrPrompt.ps1` is the only permitted interface for
+  every outbound Herdr notification. A sender invokes it from the repository
+  root with `-Role <Analyst|Builder|Integrator|Reviewer|Architect>` and a
+  concise `-Message`. The message itself does not add a timestamp or repository
+  prefix: the wrapper verifies the unique live target, expected provider, and
+  repository, then adds the current local timestamp and repository context.
+
+  Roles may use the wrapper's `-List` mode to inspect validated targets. They
+  must not call `herdr agent prompt` directly, use a relay, or recreate the
+  wrapper's target checks. This is a communication-path standard only. It does
+  not change artifact ownership, queue readiness, review independence,
+  background-work restrictions, or the `basicdnd/rc` pause.
+rationale:
+  - >-
+    One wrapper removes duplicated timestamp formatting and prevents a role
+    from prompting an absent, ambiguous, wrong-provider, or wrong-repository
+    pane.
+  - >-
+    Centralizing the invocation makes direct Herdr communication predictable
+    without restoring the retired Dispatcher or relay state.
+evidence:
+  - {path: tooling/common/Send-HerdrPrompt.ps1, checksum: sha256:18341022aec55c210e57bbfcf804d4850617483da830e44e4e04af2969173b9d, role: existing_validated_notification_wrapper}
+  - {path: contracts/HERDR_HANDOFFS.md, checksum: sha256:8316eccc12ed5385c67e1f1dfe0d9d864ae1876ae6eff2ede0c96fb1f8511d45, role: amended_shared_notification_contract}
+migration_required: false
+migration_scope: >-
+  No graph, source, packet, GUR, GUP, Review, Approved bundle, registry,
+  canonical row, integration, queue derivation, or Herdr state changes. This
+  changes only the documented command used for direct notifications.
+constitution_version_impact: None.
+affected_contracts:
+  - contracts/HERDR_HANDOFFS.md
+affected_registries: []
+implementation_bounds:
+  - >-
+    Architect updates only the shared notification contract, AGENTS.md, and
+    the five role instruction files listed below. Do not alter the wrapper,
+    queue tooling, artifact schemas, source/graph artifacts, or basicdnd/rc.
+acceptance_tests:
+  - >-
+    HERDR_HANDOFFS Version 2.2 or later requires
+    `tooling/common/Send-HerdrPrompt.ps1` for every outbound notification,
+    documents `-List` and `-Role`/`-Message`, and prohibits direct
+    `herdr agent prompt` calls.
+  - >-
+    AGENTS.md and each of the Analyst, Builder, Integrator, Reviewer, and
+    Architect instruction files require the same wrapper invocation and state
+    that the wrapper supplies timestamp, repository context, and target
+    validation.
+  - >-
+    The existing wrapper remains PowerShell parse-valid and exposes the five
+    supported role names through its `-Role` validation set.
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/HERDR_HANDOFFS.md
+        minimum_version: '2.2'
+        substantive_anchors:
+          - Every outbound Herdr notification uses tooling/common/Send-HerdrPrompt.ps1.
+          - The wrapper verifies the target role provider and repository and adds timestamp and repository context.
+          - Roles do not call herdr agent prompt directly.
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    The Architect-owned instruction and contract amendment is complete. Each
+    role reloads its own stable context before its next task.
+  blocking_ids: []
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision; activate HERDR_HANDOFFS 2.2; update AGENTS.md and
+      all five role instructions; validate the wrapper syntax; and notify each
+      role to reload its stable context.
+post_implementation_requirements:
+  - >-
+    Every role uses the wrapper on its next and subsequent direct Herdr
+    notifications. The normal role-context cache verifier detects the changed
+    stable authorities and requires reload before ordinary work.
+exact_diff:
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0102.yaml: Publish the direct-notification interface ruling.
+  AGENTS.md: Require the common wrapper for repository-wide direct notifications.
+  contracts/HERDR_HANDOFFS.md: Advance to 2.2 and make the wrapper mandatory.
+  agents/analyst/INSTRUCTIONS.md: Require the wrapper for Analyst notifications.
+  agents/builder/INSTRUCTIONS.md: Require the wrapper for Builder notifications.
+  agents/integrator/INSTRUCTIONS.md: Require the wrapper for Integrator notifications.
+  agents/reviewer/INSTRUCTIONS.md: Require the wrapper for Reviewer notifications.
+  agents/architect/INSTRUCTIONS.md: Require the wrapper for Architect notifications.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0102.yaml, owner: architect, sequence_step: 1}
+  - {path: AGENTS.md, owner: architect, sequence_step: 1}
+  - {path: contracts/HERDR_HANDOFFS.md, owner: architect, sequence_step: 1}
+  - {path: agents/analyst/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/builder/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/integrator/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/reviewer/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/architect/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+follow_up_owners:
+  analyst:
+    - Reload stable context before the next task and use the wrapper for future notifications.
+  builder:
+    - Reload stable context before the next task and use the wrapper for future notifications.
+  integrator:
+    - Reload stable context before the next task and use the wrapper for future notifications.
+  reviewer:
+    - Reload stable context before the next task and use the wrapper for future notifications.
+  architect:
+    - Reload stable context before the next task and use the wrapper for future notifications.

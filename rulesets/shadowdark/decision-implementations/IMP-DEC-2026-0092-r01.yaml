@@ -1,0 +1,276 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0092-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: integrator
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: >-
+    Step 2 of DEC-2026-0092. The Integrator transaction now reads its vocabulary from
+    the active ruleset's own Constitution, treats an explicitly empty role profile as
+    bootstrap configuration rather than a missing one, and creates a ruleset's first
+    canonical files only inside a transaction that has already passed every ordinary
+    Approved-bundle precondition, restoring their absence on any later failure. All
+    seven acceptance tests pass. No Shadowdark canonical state was created. Two changed
+    paths fall outside the Decision's exact_diff and are declared in scope_note rather
+    than folded in silently.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0092
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0092.yaml
+  checksum: sha256:991cfefc8325a6a35ebc09c6d5fb8757aa883e9de75a8adfca2744fba7d092a8
+implementation_files:
+- path: tooling/integrator/src/adnd1e_integrator/vocabulary.py
+  checksum: sha256:8b75a9f112f5eb33994d21ffc4edc942e0635e39cf6e873095a438d75f792b3b
+- path: tooling/integrator/src/adnd1e_integrator/invariants.py
+  checksum: sha256:c4a1ebde1ae8f769a384f0d87cb3370e19f08bf4a64e1734eaa5a7da1315276c
+- path: tooling/integrator/src/adnd1e_integrator/derive.py
+  checksum: sha256:92e0c6f2b49fcf6779ad35e20d889671d61edccc745d8f7b5d429514024fc9cf
+- path: tooling/integrator/src/adnd1e_integrator/canonical.py
+  checksum: sha256:31fc4055dd175f5ce578b1a380520f8a88c7589a9e4ad46c96f3032628bd92b2
+- path: tooling/integrator/src/adnd1e_integrator/snapshot.py
+  checksum: sha256:cf5c733adf917e13a003510e26fccb7f144b8b0f07c6c459258e741c3f5f9d74
+- path: tooling/integrator/src/adnd1e_integrator/integrate.py
+  checksum: sha256:74f795114cae77724c8d3929c81b40c2e5c3b237b8db54f3710569d536e00e4b
+- path: tooling/integrator/src/adnd1e_integrator/cli.py
+  checksum: sha256:1f2df98d4d7e5a44e1ad5f2db3475c475367cfed8693bf0374897f20a626379a
+- path: tooling/integrator/tests/test_vocabulary.py
+  checksum: sha256:37e301660f09ad083ea364bcee0b5f4e25be713869cfec14acd4b319aaaaf04e
+- path: tooling/integrator/tests/test_invariants.py
+  checksum: sha256:e54101bf9da44ca2c1f70eff70c016757d0429866a4a72c92cffca96ed99781b
+- path: tooling/integrator/tests/test_derive.py
+  checksum: sha256:a3fa2a6a7a8f457099a8283f5c6b3861f2f7540bd2c9b76d5f769c1ac06a6023
+- path: tooling/integrator/tests/test_transaction.py
+  checksum: sha256:79a133e80fd7946f98c575a29edaabed4b0f6254379d57a8ea8cdd8520e1dc8d
+- path: tooling/integrator/tests/test_genesis.py
+  checksum: sha256:f0ae17fb2cf1644fd6781fe56cac0b7a969344eca43a5d1b0b549d2772581ce7
+- path: tooling/integrator/README.md
+  checksum: sha256:707bf23fc3ebf7f2ffd702e12cca2454c8bb60ba5c0dc477d4e4bbe10d19706d
+verified_inputs:
+- path: rulesets/shadowdark/escalations/decided/ESC-2026-09-22T17.16.24.550Z.yaml
+  checksum: sha256:59c787fda853aec232de07224293fd7b3dc6b43f7f60b1219e85330e19908055
+- path: rulesets/shadowdark/governance/constitution.md
+  checksum: sha256:b25c22e688eeeac5e41d76646714620b0d85a8a5ab90e60b363fa0fd95b86a1a
+- path: rulesets/shadowdark/profiles/roles.yaml
+  checksum: sha256:a7ba1d4b21859b925f6b5d3244fc3c1da22e13cd4802135b631ac6ff56881f6e
+- path: rulesets/shadowdark/registries/books.yaml
+  checksum: sha256:6f9447d248fef2755255841bd8a0982f7980dfd5b2dbb835029839acc0ebe2fe
+- path: rulesets/shadowdark/registries/nodes.csv
+  checksum: sha256:e92d95d9e61276be70dd6cacedae39dbf684614554516c97d89797c0b3878e8c
+- path: rulesets/adnd1e/governance/constitution.md
+  checksum: sha256:861e7dfe3aad011759042075fb4db65f2d6c628e2b4140ec4f0defa5180f0734
+- path: rulesets/adnd1e/profiles/roles.yaml
+  checksum: sha256:0958bec9592e7381ae3538152ea51c4bbdef9291b78550bac9f5a2dfb1b35793
+- path: rulesets/adnd1e/registries/books.yaml
+  checksum: sha256:e9e3c4276efc92ac69c565428c6dcda44a241ad2ca84bec6ac0c1c705cca854a
+validation_report: build/reports/IMP-DEC-2026-0092-r01.validation.json
+validation_report_checksum: sha256:5ad0452ba0e289d71ac36865bace534261e51ed363f3c7da94ccd4ab2e819c98
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: >-
+    tooling/integrator/src/adnd1e_integrator/vocabulary.py reads the node-prefix table
+    by its header cells ('Prefix | Kind'), with no section heading and no minimum
+    count anywhere in the module. Measured from the current files: shadowdark yields
+    exactly 13 prefixes (abil_, ancestry_, cbt_, class_, ex_, exp_, item_, monster_,
+    rule_, spell_, sys_, tbl_, weapon_) and adnd1e yields 26 including race_ and
+    excluding ancestry_. invariants.approved_prefixes now delegates to the same
+    reader, so its existing callers get the identical set. A missing prefix table, and
+    a table whose rows carry no usable prefix, each raise VocabularyError. Covered by
+    test_vocabulary.TestTheActiveConstitutionSuppliesTheVocabulary (prefix cases,
+    including test_a_count_below_twenty_is_no_longer_rejected) and
+    TestAMalformedConstitutionFailsClosed.
+- acceptance_test_index: 2
+  result: passed
+  evidence: >-
+    vocabulary.read_edge_types and vocabulary.read_derived_polarity locate the edge
+    vocabulary by 'Type | Meaning | Direction' and the derivation table by an
+    'Edge type' header naming a polarity column. Both rulesets are read from disk:
+    each yields 13 edge types, 10 derived polarities, and the authored set
+    {MODIFIES, TRIGGERS, CONSTRAINS}, with derived and authored partitioning the
+    vocabulary exactly. AD&D states its authored types in a second table of the same
+    shape whose polarity cell reads 'Analyst-authored'; because a row counts as
+    derived only when its polarity is a legal value and it declares no other basis,
+    that table contributes nothing without being skipped by position. A polarity table
+    that is missing, states no derived row, names an edge type the vocabulary does not
+    declare, or derives two polarities for one type each raise VocabularyError.
+    'Before a transaction starts' is structural: integrate.py calls load_vocabulary at
+    line 816, the blocking-precondition raise is at line 879, the Transaction opens at
+    line 905, and the first canonical write is at line 1181. Covered by
+    test_vocabulary.
+- acceptance_test_index: 3
+  result: passed
+  evidence: >-
+    derive.Degrees.roles returns early on an empty thresholds mapping, and
+    Degrees/rebuild_nodes/check_derived_state take tier2_enabled, which integrate.py
+    derives as bool(profile.get('tier2')). Against Shadowdark's real profile
+    (thresholds {} and tier2 {}, checksum a7ba1d4b...), the genesis fixture derives a
+    blank roles field for every canonical node row and every registry row:
+    test_genesis.test_every_node_and_registry_row_has_blank_roles. Degrees themselves
+    are still derived, because those are topology rather than policy:
+    test_derive.test_degrees_are_still_derived_when_roles_are_not. The AD&D tier-2
+    rules name AD&D identities directly, so a ruleset declaring no tier-2 mapping does
+    not receive them even when an ID is spelled the same:
+    test_derive.test_tier2_rules_are_not_applied_to_a_ruleset_that_declares_none. The
+    populated AD&D profile is unchanged: rebuild_nodes still reproduces the entire
+    canonical node table byte-for-byte
+    (test_derive.TestAPopulatedProfileIsUnchanged, which also asserts some canonical
+    node actually carries a role so the empty-profile cases cannot pass vacuously).
+- acceptance_test_index: 4
+  result: passed
+  evidence: >-
+    CanonicalGraph.load(allow_genesis=True) returns an empty in-memory graph and
+    cannot create a file even when asked to; the only mkdir of canonical_dir is inside
+    CanonicalGraph.save, which integrate.py calls at line 1181 under 'if not dry_run',
+    inside the Transaction opened at line 905, after the blocking-precondition raise
+    at line 879. Proven for discovery, verification, genesis load and dry run by
+    test_genesis.TestReadOnlyPathsCreateNoCanonicalState, which asserts the canonical
+    directory and all three files are absent after each, and that a dry run leaves the
+    node registry byte-identical. Omitting the flag still raises FileNotFoundError, so
+    no existing caller silently starts from empty. Confirmed against the live
+    repository: four dry runs over the four ready Shadowdark bundles, after which
+    'ls rulesets/shadowdark/canonical' still reports No such file or directory.
+- acceptance_test_index: 5
+  result: passed
+  evidence: >-
+    Snapshot.take now records absent paths explicitly and restore() unlinks any that
+    exist, then removes a directory it created only while that directory is empty;
+    Transaction discards its snapshot directory on a rolled-back genesis.
+    test_genesis.TestALateGenesisFailureRestoresAbsence injects the failure at the
+    post-write reread, after the canonical files have actually been written, and
+    asserts the canonical directory and files are absent again, the registry is
+    byte-identical, no manifest, report or integrated record remains, and no
+    transaction snapshot remains. Falsifiability was measured, not assumed: restoring
+    the pre-change Snapshot.take behaviour, which skipped a non-existent path, makes
+    test_the_canonical_directory_and_files_are_absent_again fail with 'a canonical
+    directory exists that nothing authorized'. The mechanism is additionally pinned at
+    unit level by test_transaction.TestASnapshotRestoresAbsenceNotJustContent, which
+    also proves a non-empty directory is left alone and an ordinary non-genesis
+    rollback still restores bytes and keeps its snapshot.
+- acceptance_test_index: 6
+  result: passed
+  evidence: >-
+    test_genesis.TestASuccessfulGenesisWritesOnlyWhatWasApproved integrates a genesis
+    fixture and asserts the post-state edge count equals the manifest's declared rows,
+    that the exact five-field identity set of the written rows equals the approved set
+    (so no seed, placeholder, sample, inferred or unapproved row exists), that the
+    registry holds exactly the approved registrations, and that graph.json is
+    reproducible by reloading the written tabular data. Reaching a passing genesis also
+    required invariant 9 to stop rejecting the SD citation code; see scope_note.
+- acceptance_test_index: 7
+  result: passed
+  evidence: >-
+    Complete Integrator suite: 277 tests, OK, 1699.795s, exit 0 (225 before this
+    change, so 52 added). Focused genesis and vocabulary regressions: 75 tests, OK.
+    Pre-change failure, as recorded in the escalation this Decision resolves: the same
+    dry-run command raised IndexError at invariants.py line 65 against
+    invariants.py sha256:fb3b7401845a9c45d43cdfc95693cf737679cb6630f05cbcab25b40a2df09768,
+    before any bundle was read. Post-change, that file is
+    sha256:c4a1ebde1ae8f769a384f0d87cb3370e19f08bf4a64e1734eaa5a7da1315276c and no
+    traceback occurs. A post-change dry run that creates no state and succeeds is the
+    genesis fixture's test_a_dry_run_creates_no_canonical_state. Against the live
+    repository the same command instead completes ordinary verification and rejects on
+    invariant 1, which is a bundle defect rather than a tooling failure; see
+    observations. Exact commands and outcomes are recorded in the validation report.
+validation:
+  passed: true
+  commands:
+  - command: PYTHONPATH=src python -m unittest discover -s tests -t tests
+    exit_code: 0
+    result: passed
+    summary: complete Integrator suite, 277 tests OK in 1699.795s; 225 before this change
+  - command: PYTHONPATH=../src:. python -m unittest test_vocabulary test_genesis test_derive test_invariants
+    exit_code: 0
+    result: passed
+    summary: focused genesis and vocabulary regressions, 75 tests OK
+  - command: >-
+      PYTHONPATH=src python -m adnd1e_integrator --repo-root=../.. --ruleset-id=shadowdark
+      --books=sd integrate --dry-run APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+    exit_code: 1
+    result: passed
+    summary: >-
+      post-change, no traceback; the transaction reaches ordinary bundle verification and
+      rejects on invariant 1 because the approving Review carries no executable
+      node_registry_decisions. rulesets/shadowdark/canonical remains absent.
+  - command: ls rulesets/shadowdark/canonical
+    exit_code: 2
+    result: passed
+    summary: >-
+      No such file or directory, before and after all four live dry runs; no Shadowdark
+      canonical state was created at any point during this implementation.
+scope_note: >-
+  Two changed paths fall outside the Decision's exact_diff and are declared here rather
+  than folded in.
+
+  First, tooling/integrator/src/adnd1e_integrator/cli.py. Acceptance test 4 names the
+  validate path explicitly, and validate is implemented there. It now loads the active
+  vocabulary, reads a genesis graph permissively, honours an empty bootstrap profile,
+  and reports "genesis": true instead of failing on a ruleset that has no canonical
+  files. It still writes nothing.
+
+  Second, and more substantive: invariants.py carried BOOKS = ("PHB", "DMG", "UA", "MM"),
+  so invariant 9 rejected every Shadowdark row citing SD. This was not named in the
+  escalation or the Decision, and a Shadowdark genesis cannot pass its own invariant
+  suite while it stands, which makes acceptance test 6 unreachable. check() now takes
+  the citation codes from the ruleset's book registry, read by
+  vocabulary.read_citation_books. Omitting the vocabulary preserves the AD&D tuple
+  exactly, and both directions are pinned by
+  test_invariants.TestTheSuiteUsesTheActiveRulesetVocabulary, including the falsifying
+  case that the same Shadowdark row is rejected under the AD&D vocabulary.
+
+  No other file was changed. No Shadowdark Constitution, role profile, schema, source
+  packet, GUR, GUP, Review, Approved bundle, registry, or canonical file was touched,
+  and no basicdnd/rc work was performed.
+observations:
+- id: OBS-1
+  severity: blocking for the first ordinary Shadowdark integration, and not this Decision's work
+  subject: every currently ready Shadowdark Approved bundle
+  detail: >-
+    With the tooling fixed, all four ready bundles now reach ordinary verification and
+    are rejected on invariant 1, each naming an endpoint that is neither a canonical
+    node nor registered by its batch: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+    (abil_charisma), -r05-r01 (abil_charisma),
+    APPROVED-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r01
+    (abil_constitution), and APPROVED-GUP-PKT-SD-016-017-ancestries-r02-r01
+    (abil_ambitious). The cause is the same in each case: the approving Review carries
+    no node_registry_decisions block. REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+    states in prose that "ten node registrations are source-supported, mechanically
+    complete, and approval-ready" and its handoff reads "Apply the exact Approved bundle
+    after node registration", but the executable registrations an Integrator reads are
+    absent, so nothing registers and every endpoint dangles.
+  owner: reviewer
+  integrator_position: >-
+    The Integrator cannot supply these. Inventing a node label or kind would be
+    authoring graph identity, which its prohibited actions forbid. This is recorded as
+    an observation rather than an Integration Rejection because no transaction was
+    authorized to run yet: DEC-2026-0092 post-implementation requirements place the
+    first ordinary integration after an approved implementation Review, and a rejection
+    record is owed only when an Approved bundle was actually rejected in an authorized
+    transaction.
+- id: OBS-2
+  severity: informational
+  subject: the escalation this Decision resolves
+  detail: >-
+    ESC-2026-09-22T17.16.24.550Z moved from escalations/pending to escalations/decided
+    with its bytes unchanged; its checksum is still
+    sha256:59c787fda853aec232de07224293fd7b3dc6b43f7f60b1219e85330e19908055, matching
+    the value recorded at publication and in DEC-2026-0092's own evidence block.
+- id: OBS-3
+  severity: informational
+  subject: genesis operation indexes
+  detail: >-
+    In a genesis every edge depends on an identity the same batch registers, because
+    nothing was registered before it. Every row is therefore a pending_addition and a
+    genesis manifest legitimately carries an empty additions list. This is not a new
+    rule; it is the existing dependency check behaving correctly against an empty
+    registry, and it is recorded so a Reviewer reading the fixture manifest does not
+    read the empty additions list as a defect.

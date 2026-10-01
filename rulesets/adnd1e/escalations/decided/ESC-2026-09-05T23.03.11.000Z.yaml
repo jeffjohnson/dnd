@@ -1,0 +1,119 @@
+schema_version: '1.0'
+id: ESC-2026-09-05T23.03.11.000Z
+status: decided
+ruleset_id: adnd1e
+book_id: phb
+source_id: phb-legacy-unspecified
+packet_id: cross-packet
+constitution_version: '1.8'
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-09-05'
+decision_id: DEC-2026-0079
+decided_on: '2026-09-05'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The source steward has confirmed that PHB printed page 121 is a two-image diagram of the Planes
+    of Existence carrying no rules text. The repository has no available place to record that fact.
+    The established precedent for a no-content page, PHB 108, was recorded in the claimed packet
+    manifest whose marker span contained the page and in that packet's GUR. Page 121 falls outside
+    every claimed packet span, and the only packet manifest whose subject it belongs to is immutable
+    and already consumed. Analyst may not choose where a new class of repository record lives.
+  blocking_ids: []
+
+question: >-
+  Where does the repository durably record that a printed page carries no graph-constitutable content
+  when that page falls outside every claimed packet span, so that no later worker re-raises it as a
+  coverage gap?
+
+evidence:
+  steward_confirmation:
+    page: 121
+    book: phb
+    citation_code: PHB
+    confirmed_on: '2026-09-05'
+    statement: >-
+      The repository source steward states that printed page 121 is a diagram of the Planes of
+      Existence consisting of two images, and that nothing on it can be constituted as data in the
+      graph. Recorded on the steward's authority under SOURCE_MARKDOWN Incoming Packet Authority.
+      No pipeline role read or authored this page.
+    consequence: >-
+      No edge, node, domain or general rule is owed for PHB 121. This escalation asks only where the
+      fact is written down, not whether the page yields graph content.
+  coverage_gap:
+    preceding_packet:
+      id: PKT-PHB-120-120-planes-of-existence
+      page_span: 120 to 120
+      section: 'APPENDIX IV: THE KNOWN PLANES OF EXISTENCE'
+    following_packet:
+      id: PKT-PHB-122-122-division-of-treasure
+      page_span: 122 to 122
+      section: 'APPENDIX V: SUGGESTED AGREEMENTS FOR DIVISION OF TREASURE'
+    finding: >-
+      No claimed PHB packet spans page 121. Every other PHB page from 1 to 122 is inside some claimed
+      packet span. Page 121 is the single uncovered page in the book, and the diagram it carries
+      depicts the subject of the preceding packet rather than the following one.
+  established_precedent:
+    page: 108
+    recorded_in:
+      - path: books/adnd1e/phb/packets/claimed/PKT-PHB-100-109-playing-the-game/packet.yaml
+        fields: page_composition p108 and marker_note
+        authority: written by the source steward at intake, on the steward's confirmation of 2026-08-11
+      - path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-100-109-playing-the-game-r01.yaml
+        fields: non_edge_observations OBS-01 and completeness_statement
+        authority: written by Analyst inside the GUR for the packet whose span contained the page
+    why_it_does_not_transfer: >-
+      Page 108 fell inside the marker span of a claimed packet, so both homes existed. The packet
+      manifest could name it because the manifest was still being written at intake, and the GUR
+      could name it because the packet covering it was the artifact under analysis. Neither
+      condition holds for page 121.
+  why_each_available_route_is_blocked:
+    packet_manifest: >-
+      WORK_QUEUES and SOURCE_MARKDOWN make a claimed packet immutable after an Analyst uses it. The
+      PKT-PHB-120-120-planes-of-existence manifest was written at intake and its GUR lineage is
+      fully integrated, so the manifest can no longer take an intake note. The Analyst may not edit
+      a claimed packet in any case.
+    successor_gur: >-
+      Recording the fact as a non-edge observation would require publishing
+      GUR-PKT-PHB-120-120-planes-of-existence-r04, superseding r03. That lineage is complete and
+      integrated under INT-20260814-002 through GUP r06 and its Approved bundle. Superseding the GUR
+      would make an integrated GUP rest on a superseded GUR, which WORK_QUEUES classes as diagnostic
+      rather than Reviewer-ready, and would force a fresh Builder, Reviewer, Approved and
+      Integration cycle that changes no edge. The cost is disproportionate to a documentary note and
+      the destabilisation is not the Analyst's to choose.
+    registry: >-
+      rulesets/adnd1e/registries/books.yaml carries no page-coverage structure, and the Analyst is
+      prohibited from adding a registry entry.
+
+analyst_position: >-
+  The fact is settled and needs no further reading; only its location is open. The Analyst recommends
+  the cheapest durable record that does not disturb an integrated lineage, and does not recommend
+  superseding GUR-PKT-PHB-120-120-planes-of-existence-r03 for a note that changes no assertion. Three
+  shapes appear workable and the choice among them is the Architect's, because each creates or extends
+  a repository record class rather than applying an existing one. First, a book-level page-coverage
+  record, for example a no_graph_content list in the books registry or a sibling file, which would
+  also serve any comparable page in DMG, MM or UA. Second, a steward-owned intake note outside the
+  immutable packet, recording confirmed no-content pages per book. Third, an accepted permanent
+  coverage exception recorded in this escalation and its Decision alone, with the scanner and any
+  future coverage check reading the Decision. The Analyst has no preference among these beyond
+  favouring whichever the Architect judges reusable, since PHB 121 is unlikely to be the last such
+  page.
+
+scope_limits: >-
+  This escalation asks a location question only. It does not propose an edge, node, domain, general
+  rule or identity, does not ask for a packet to be created for page 121, and does not ask any role
+  to read the page. If the Architect rules that no record is warranted at all, that ruling itself
+  answers the question and this escalation becomes the durable record.
+
+affected_artifacts:
+  - id: PKT-PHB-120-120-planes-of-existence
+    path: books/adnd1e/phb/packets/claimed/PKT-PHB-120-120-planes-of-existence
+    relationship: subject of the page 121 diagram; immutable and integrated
+  - id: GUR-PKT-PHB-120-120-planes-of-existence-r03
+    path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-120-120-planes-of-existence-r03.yaml
+    relationship: active leaf whose supersession the Analyst declines to propose
+  - id: GUR-PKT-PHB-100-109-playing-the-game-r01
+    path: books/adnd1e/phb/artifacts/gur/GUR-PKT-PHB-100-109-playing-the-game-r01.yaml
+    relationship: carries OBS-01, the page 108 precedent this case cannot follow

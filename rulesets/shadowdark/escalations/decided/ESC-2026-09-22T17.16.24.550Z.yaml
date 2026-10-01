@@ -1,0 +1,421 @@
+schema_version: '1.0'
+id: ESC-2026-09-22T17.16.24.550Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.2'
+raised_by: integrator
+decision_owner: architect
+raised_on: '2026-09-22'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    Shadowdark has its first Integrator-ready Approved bundle, and the Integrator cannot
+    apply it. Constitution 1.2 section 8 and the DEC-2026-0083 ruling both make the first
+    Shadowdark integration conditional on independently verified new-ruleset initialization
+    support, and no Decision, implementation report, or approved implementation Review grants
+    it. The Integrator has additionally measured that the capability is genuinely absent
+    rather than merely unattested: the transaction entry point raises before it reads any
+    bundle. Deciding who implements and independently verifies that support is an Architect
+    ruling, and the Integrator may not self-authorize the creation of a ruleset's first
+    canonical state.
+  blocking_ids: []
+
+question: >-
+  Who implements and who independently verifies new-ruleset canonical initialization support
+  for the Integrator transaction, and what exactly must that support prove before the first
+  Shadowdark Approved bundle may be applied, given that no canonical baseline exists to
+  snapshot or roll back to and that fabricating one is expressly forbidden?
+
+scope_limits: >-
+  This escalation asks for an implementation assignment and its acceptance criteria. It
+  proposes no graph row, no node identity, no registry membership, no edge semantics, no
+  polarity, no citation, and no change to any published GUR, GUP, Review, or Approved bundle.
+  It does not ask to relax the initialization gate; it asks for the gate to be discharged
+  properly. It takes no position on which of the several concurrently published Approved
+  bundles for PKT-SD-015-015 is the active leaf, which is Reviewer packaging work tracked
+  separately. No canonical state was created, and none may be created before this is decided.
+
+originating_artifacts:
+  approved_bundle:
+    id: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+    path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01.yaml
+    checksum: sha256:fddaefc4fe3793ca11e1cff8c1c9473b4cb74bae197871c15697f116d1317e5a
+    note: >-
+      The bundle the repository queue scanner offers as the single ready Integrator item.
+      Pinned as the subject of the blocked transaction, not as an assertion that it is the
+      active leaf.
+  approved_edges_component:
+    path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01.edges.csv
+    checksum: sha256:8fb598534b73748454186cc3a7975daf8f68fddfcbae5a5576b8ecb24ce2c84d
+    rows: 14
+  reviewed_gup:
+    id: GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05
+    checksum: sha256:2dec645d58b9428e5199dc7a25534a8917639f0d88569cfec48333760cc75996
+  approving_review:
+    id: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+    checksum: sha256:3517bc9d521ca65bae0d8320f1c5fee2eb88050344ce7c282c20b6024797d31b
+    disposition: approved
+    handoff: 'next_role: integrator, readiness: ready'
+  originating_gur:
+    id: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+  packet_id_of_subject: PKT-SD-015-015-stats-and-stat-modifiers
+
+governing_constraints:
+  - id: CON-1
+    source: rulesets/shadowdark/governance/constitution.md
+    checksum: sha256:b25c22e688eeeac5e41d76646714620b0d85a8a5ab90e60b363fa0fd95b86a1a
+    version: '1.2'
+    locus: section 8, Roles, Domains, and Workflow
+    excerpt: >-
+      Only Integrator creates or edits canonical graph files. The first integration requires
+      independently verified new-ruleset initialization support; do not fabricate a
+      header-only canonical baseline to bypass that gate.
+  - id: CON-2
+    source: rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+    checksum: sha256:33020a16d52bec4b8153176f56c74a9a72ebe07873d76fde85ceabf9ca161656
+    locus: ruling, implementation bounds
+    excerpt: >-
+      Only Integrator initializes canonical state after the first Approved bundle and
+      independently verified new-graph transaction support. This Decision is not authority to
+      seed, auto-approve, or integrate a graph.
+  - id: CON-3
+    source: rulesets/shadowdark/governance/constitution.md
+    locus: section 9, Initial State and Change Control
+    excerpt: >-
+      There are no canonical data files and no packet identities before actual intake.
+  - id: CON-4
+    source: rulesets/shadowdark/ruleset.yaml
+    checksum: sha256:e344966e8ee9ea3ce498ae379884a2669947c4a50f3f4f5b64af174d8ca5ac75
+    locus: notes
+    excerpt: >-
+      Initialized means governance and directories exist, not that a production build has been
+      approved. Only Integrator creates canonical state after the ordinary approval and
+      bootstrap gates.
+
+attestation_gap:
+  claim: >-
+    No artifact in the repository grants independently verified new-ruleset initialization
+    support for Shadowdark.
+  method: >-
+    Enumerated every Shadowdark decision-implementation report and implementation Review, and
+    every Shadowdark Decision handoff.
+  observed_implementation_reports:
+    - IMP-DEC-2026-0084-r01
+    - IMP-DEC-2026-0087-r01
+    - IMP-DEC-2026-0087-r02
+    - IMP-DEC-2026-0090-r01
+    - IMP-DEC-2026-0091-r01
+  observed_decision_handoff_owners: >-
+    No Shadowdark Decision declares handoff.next_role integrator. Every implementation lineage
+    above is Builder-owned and concerns source markdown classes, ancestry identity, historical
+    GUR constitution versions, and candidate-node and Review input shape. None concerns
+    Integrator transaction capability or canonical initialization.
+
+measured_capability_state:
+  summary: >-
+    The gate is not merely unattested. The Integrator transaction entry point raises before it
+    reads any bundle, and three further ruleset-specific assumptions sit behind that first
+    failure. These are reported so the Architect can size the implementation, not as a request
+    for the Integrator to fix them unauthorized.
+
+  reproduction:
+    command: >-
+      cd tooling/integrator && PYTHONPATH=src python -m adnd1e_integrator --repo-root=../..
+      --ruleset-id=shadowdark --books=sd integrate --dry-run
+      APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02
+    result: nonzero exit, uncaught IndexError, no file written, canonical untouched
+    note: >-
+      Run with --dry-run. The failure occurs before the dry-run boundary is reached, so no
+      canonical or registry path was opened for writing at any point.
+    traceback: |-
+      Traceback (most recent call last):
+        File "<frozen runpy>", line 203, in _run_module_as_main
+        File "<frozen runpy>", line 88, in _run_code
+        File "D:\analysis\dnd\tooling\integrator\src\adnd1e_integrator\__main__.py", line 3, in <module>
+          raise SystemExit(main())
+                           ~~~~^^
+        File "D:\analysis\dnd\tooling\integrator\src\adnd1e_integrator\cli.py", line 199, in main
+          return args.func(args)
+                 ~~~~~~~~~^^^^^^
+        File "D:\analysis\dnd\tooling\integrator\src\adnd1e_integrator\cli.py", line 143, in cmd_integrate
+          batch = integrate(root, args.ruleset_id, selected,
+                            integration_id=args.integration_id, dry_run=args.dry_run)
+        File "D:\analysis\dnd\tooling\integrator\src\adnd1e_integrator\integrate.py", line 813, in integrate
+          prefixes = approved_prefixes(constitution)
+        File "D:\analysis\dnd\tooling\integrator\src\adnd1e_integrator\invariants.py", line 65, in approved_prefixes
+          section = text.split("### 3.1 Format", 1)[1].split("### 3.2", 1)[0]
+      IndexError: list index out of range
+
+  blockers:
+    - id: B1
+      severity: blocking, first failure
+      title: the prefix parser is keyed to an adnd1e-only constitution heading
+      file: tooling/integrator/src/adnd1e_integrator/invariants.py
+      checksum: sha256:fb3b7401845a9c45d43cdfc95693cf737679cb6630f05cbcab25b40a2df09768
+      detail: >-
+        approved_prefixes() reads the active ruleset's constitution, which is correct in
+        intent, but locates the prefix table by splitting on the literal heading
+        "### 3.1 Format". That heading exists in the adnd1e constitution and does not exist in
+        Shadowdark Constitution 1.2, which carries its prefix table under "## 2. Node
+        Identity". The split returns a one-element list and index 1 raises.
+      measured: >-
+        A count of the literal heading returns 1 for rulesets/adnd1e/governance/constitution.md
+        and 0 for rulesets/shadowdark/governance/constitution.md.
+    - id: B2
+      severity: blocking, would fail immediately after B1 is fixed
+      title: the prefix-count guard is calibrated to the adnd1e table size
+      file: tooling/integrator/src/adnd1e_integrator/invariants.py
+      detail: >-
+        The same function raises ValueError when it parses fewer than 20 prefixes, on the
+        stated assumption that a smaller result means the table format changed. Shadowdark
+        Constitution 1.2 section 2 defines exactly 13 prefixes, namely abil_, ancestry_,
+        class_, rule_, tbl_, spell_, item_, monster_, cbt_, sys_, exp_, ex_, and weapon_. A
+        correct parse of a correct constitution would therefore still be rejected as a
+        malformed table.
+    - id: B3
+      severity: blocking, and the reason this needs governance rather than only code
+      title: there is no canonical baseline to snapshot, diff, or roll back to
+      detail: >-
+        CanonicalPaths resolves the directory rulesets/<ruleset-id>/canonical/ with
+        edges_master.csv, nodes_master.csv, and graph.json. For Shadowdark that directory does
+        not exist. The file rulesets/shadowdark/registries/nodes.csv exists but is
+        header-only, containing exactly one header line and no rows. The Integrator
+        transaction model is built on snapshot, apply, verify, and byte-for-byte restore on
+        failure. A genesis transaction has no prior state, so the Architect must rule on what
+        a rollback restores when a first integration fails: absence of the files, or a defined
+        empty baseline created as part of the transaction rather than fabricated beforehand.
+      constraint: >-
+        CON-1 forbids fabricating a header-only canonical baseline to bypass the gate. The
+        Integrator reads that as prohibiting the creation of canonical files outside an
+        authorized transaction, and has created none.
+    - id: B4
+      severity: blocking for derived outputs
+      title: the Shadowdark role-derivation profile is an empty bootstrap
+      file: rulesets/shadowdark/profiles/roles.yaml
+      detail: >-
+        integrate.py reads the profile thresholds mapping to derive node roles. The Shadowdark
+        profile declares status bootstrap with an empty thresholds mapping and an empty tier2
+        mapping, and states that thresholds await an integrated Shadowdark corpus. The adnd1e
+        profile by contrast carries fourteen populated threshold groups calibrated against
+        3851 edges. A first Shadowdark integration of 14 edges has no meaningful derived
+        roles, and the Architect should say whether genesis derivation emits empty roles by
+        design or whether a populated profile is a prerequisite deliverable.
+    - id: B5
+      severity: latent, not currently failing
+      title: the derived-polarity table is transcribed from the adnd1e constitution
+      file: tooling/integrator/src/adnd1e_integrator/derive.py
+      detail: >-
+        DERIVED_POLARITY is a hardcoded mapping introduced by a comment citing Constitution
+        section 6.1, which is an adnd1e locus. Shadowdark Constitution 1.2 section 5 happens to
+        declare the same ten derived types with the same polarities and the same three
+        authored types, so the transcription agrees today. Nothing detects divergence if a
+        future ruleset or amendment differs, and the same class of defect as B1 is what
+        produced the first failure. Recorded so the implementation can decide whether to read
+        this from the active constitution as approved_prefixes already intends to.
+
+  affected_tests:
+    file: tooling/integrator/tests/_bootstrap.py
+    detail: >-
+      The Integrator suite pins its shared ruleset identifier to adnd1e in the test bootstrap,
+      and the migration suites additionally pin adnd1e Decision paths such as
+      rulesets/adnd1e/escalations/decisions/DEC-2026-0038.yaml and DEC-2026-0050.yaml. There is
+      no genesis or second-ruleset coverage anywhere in tooling/integrator/tests. Any
+      implementation of this support therefore requires new tests rather than adaptation of
+      existing ones, and the suite as it stands cannot fail if new-ruleset support is broken.
+    current_suite_state: >-
+      The existing adnd1e suite must continue to pass unchanged; this work adds a capability
+      and must not alter adnd1e behaviour.
+
+local_graph_neighborhood:
+  canonical_rows_before: 0
+  registry_rows_before: 0
+  proposed_edges: 14
+  distinct_node_ids_referenced: 10
+  node_ids:
+    - abil_charisma
+    - abil_constitution
+    - abil_dexterity
+    - abil_intelligence
+    - abil_stat_modifier
+    - abil_strength
+    - abil_wisdom
+    - rule_stat_generation
+    - rule_stat_reroll
+    - tbl_stat_modifiers
+  note: >-
+    Every node the bundle references is absent from the registry, which is expected for a
+    genesis integration and is not itself a defect. Edge types used are DERIVED_FROM,
+    FEEDS_INTO, and one OVERRIDES carrying supersession_basis optional_variant. All 14 rows
+    cite book SD page 15.
+
+affected_canonical_ids: >-
+  None. No canonical row, node, or registry entry exists in this ruleset, so no existing
+  identity is altered, retired, merged, relabeled, or repointed by the blocked transaction.
+
+options_considered:
+  - id: OPT-A
+    summary: assign Integrator to implement ruleset-neutral initialization support, Reviewer to verify
+    detail: >-
+      Architect publishes a non-migration Decision with a ready Integrator handoff and
+      migration_required false, naming acceptance tests. The Integrator implements a
+      constitution prefix-table reader that locates the table by structure rather than by an
+      adnd1e heading and validates against the active ruleset's declared prefix set; derives
+      the minimum prefix count from the parsed constitution instead of the literal 20; and
+      adds an explicit authorized genesis path that creates the canonical files inside the
+      transaction with full rollback to absence. The Integrator then publishes a Decision
+      Implementation Report and Reviewer publishes an independent implementation Review.
+      Approval of that Review discharges CON-1 and CON-2.
+    cost: >-
+      Integrator implementation plus new genesis tests, and one Reviewer implementation
+      Review. No contract or constitution change. No graph change.
+    benefit: >-
+      Discharges the gate exactly as both CON-1 and CON-2 word it, through the lineage the
+      repository already uses for non-migration Decisions. The capability is owned by the role
+      that owns the transaction, the verification is independent, and nothing is fabricated.
+    risk: >-
+      The Integrator both implements and later uses the capability. This is the ordinary
+      arrangement for Integrator-owned tooling under ARTIFACT_LIFECYCLE section 6, and the
+      independent Review is the control.
+  - id: OPT-B
+    summary: assign the implementation to Builder
+    detail: >-
+      Builder implements the same changes in tooling/integrator and Reviewer verifies them.
+    cost: Same implementation, plus a cross-role ownership question.
+    assessment: >-
+      The Integrator does not recommend this. REPOSITORY_STRUCTURE places tooling under the
+      roles that own it, and agents/integrator/INSTRUCTIONS.md assigns the Integrator
+      ownership of the migration runner, transactional patch applier, rollback and snapshot
+      tools, registry updater, graph exporter, and global invariant suite. Every blocker above
+      is inside that owned surface. Builder ownership would split one transaction across two
+      roles without removing the need for independent Review.
+  - id: OPT-C
+    summary: define the genesis baseline as an Architect-published empty canonical set
+    detail: >-
+      Architect authorizes the creation of empty canonical files as a separate governance act,
+      after which the ordinary transaction applies with a normal snapshot and rollback target.
+    assessment: >-
+      The Integrator records this to be weighed carefully and does not recommend it as stated.
+      CON-1 specifically names a fabricated header-only canonical baseline as the thing not to
+      do. If the Architect judges that an authorized empty baseline is categorically different
+      from a fabricated one, the Decision must say so explicitly and name who creates it,
+      because the sentence that only Integrator creates or edits canonical graph files appears
+      in the same section. B1, B2, and B4 remain unfixed under this option, so it does not by
+      itself make the transaction runnable.
+  - id: OPT-D
+    summary: integrate Shadowdark into a shared canonical store
+    assessment: >-
+      Rejected, and recorded only to close the option. DEC-2026-0083 and ruleset.yaml
+      establish Shadowdark as an independent graph inheriting no canonical baseline or
+      identities, and the constitution states that matching IDs in other rulesets are
+      unrelated identities. This option contradicts the bootstrap and is named here solely so
+      the Architect need not wonder whether it was overlooked.
+
+recommended_resolution: >-
+  OPT-A. The Integrator recommends itself as implementation owner because every measured
+  blocker lies inside the tooling its own instructions assign it, and recommends Reviewer as
+  the independent verifier because CON-1 and CON-2 both require the support to be
+  independently verified rather than self-attested. The Integrator asks the Architect to rule
+  on B3 explicitly in the Decision text, because what a failed genesis transaction restores is
+  a governance question the Integrator must not answer for itself, and to state whether B4's
+  empty role-derivation profile is acceptable for a genesis corpus or is a prerequisite
+  deliverable. The Integrator has changed no code, created no canonical file, and integrated
+  nothing while raising this.
+
+non_fabrication_acceptance_criteria:
+  intent: >-
+    Criteria the Architect may adopt into the Decision's acceptance tests. Each is written so
+    that it fails if the implementation fabricates state rather than earning it.
+  criteria:
+    - id: AC-1
+      statement: >-
+        The prefix set the transaction enforces for a ruleset is parsed from that ruleset's own
+        constitution at rulesets/<ruleset-id>/governance/constitution.md. A test proves that
+        Shadowdark yields exactly its 13 declared prefixes and adnd1e continues to yield its
+        existing set, with no prefix list transcribed into code.
+    - id: AC-2
+      statement: >-
+        No minimum prefix count is hardcoded. A constitution declaring fewer prefixes than
+        adnd1e is accepted when its table is well formed, and a genuinely malformed table is
+        still rejected. A test proves both directions.
+    - id: AC-3
+      statement: >-
+        Canonical files for a ruleset with no canonical directory are created only inside an
+        authorized integration transaction that is applying a specific Approved bundle. A test
+        proves that no code path creates, touches, or writes any file under
+        rulesets/<ruleset-id>/canonical/ outside such a transaction, including the queue,
+        validate, and dry-run paths.
+    - id: AC-4
+      statement: >-
+        A genesis transaction that fails at any step, including a late invariant failure,
+        leaves the repository byte-for-byte as it was, which for a genesis means the canonical
+        directory and every file in it are absent afterwards. A test forces a late failure and
+        asserts absence, not an empty file.
+    - id: AC-5
+      statement: >-
+        A genesis integration writes exactly the rows the Approved bundle declares and no
+        others. A test asserts that the post-state edge count equals the manifest's declared
+        row count, that the registry contains exactly the node IDs those rows reference, and
+        that no placeholder, seed, sample, or inferred row exists.
+    - id: AC-6
+      statement: >-
+        The existing adnd1e Integrator suite passes unchanged, proving the capability was added
+        rather than the invariants loosened. The report records the exact command and count.
+    - id: AC-7
+      statement: >-
+        The implementation report records the exact reproduction command above failing before
+        the change and succeeding after it, so the Reviewer can re-derive the same result
+        rather than accept a summary.
+
+expected_migration_impact:
+  graph_data_change: false
+  registry_change: false
+  canonical_data_change: false
+  artifact_invalidation: >-
+    None. No GUR, GUP, Review, Approved bundle, or Integration record is altered or
+    invalidated. The blocked Approved bundle remains immutable at its published path and
+    remains Integrator-ready once the gate is discharged.
+  tooling_change_required: true
+  tooling_change_detail: >-
+    tooling/integrator/src/adnd1e_integrator/invariants.py and integrate.py, plus new
+    genesis-path tests under tooling/integrator/tests/. Possibly derive.py for B5 if the
+    Architect includes it. All within the Integrator-owned surface.
+
+governance_change_surface:
+  contract_change: >-
+    None expected. WORK_QUEUES, ARTIFACT_LIFECYCLE, and the Integrator role instructions
+    already describe the non-migration Decision implementation lineage this would use.
+  constitution_change: >-
+    None expected. CON-1 already anticipates this exact moment and states the gate; this
+    escalation asks for the gate to be discharged, not amended or removed.
+  registry_change: >-
+    None by this Decision. The registry gains rows only later, through the ordinary approved
+    transaction once it can run.
+  profile_change: >-
+    Possibly, for B4. rulesets/shadowdark/profiles/roles.yaml is an empty bootstrap and the
+    Architect may rule that genesis derivation legitimately emits no roles, or may require a
+    populated profile first. The Integrator does not propose thresholds, which would be an
+    ontology judgment outside its authority.
+  schema_change: None.
+
+integrator_position: >-
+  The Integrator did not integrate, did not create canonical state, did not edit any published
+  artifact, and did not modify tooling while raising this. It ran the transaction once with
+  --dry-run to obtain a reproducible failure and confirmed no file was written. It is willing
+  to own the implementation if the Architect assigns it, and will accept the Decision's
+  acceptance tests as written rather than proposing its own scope afterwards.
+
+concurrent_state_note: >-
+  While this escalation was being prepared, the Reviewer published further Approved bundles in
+  this book, including APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02 and
+  -r05-r03, APPROVED-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r01, and
+  APPROVED-GUP-PKT-SD-016-017-ancestries-r02-r01. Concurrent independent work is permitted
+  under DEC-2026-0089. That churn does not affect this escalation: the initialization gate
+  blocks the first Shadowdark integration of any bundle, and the subject bundle above is
+  pinned by checksum only to identify the blocked transaction. Which PKT-SD-015-015 bundle is
+  the active leaf is a separate Reviewer packaging question already routed to Reviewer, and
+  the Architect need not resolve it to answer this question.

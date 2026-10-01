@@ -35,7 +35,7 @@ from adnd1e_integrator.canonical import CanonicalGraph, CanonicalPaths, Registry
 from adnd1e_integrator.checksums import checksum_file
 from adnd1e_integrator.integrate import IntegrationError, integrate, verify_bundle
 from adnd1e_integrator.migration import MigrationError, read_plan
-from test_transaction import rewind_migrations_in
+from test_transaction import _rewind
 
 PLAN_PATH = "books/adnd1e/dmg/artifacts/gup/GUP-MIG-DEC-2026-0032-r03.yaml"
 GUP_ID = "GUP-MIG-DEC-2026-0032-r03"
@@ -71,7 +71,15 @@ def clone(target: Path) -> Path:
     # Once this plan's own migration is integrated, the live corpus is the
     # post-merge state: the survivors are registered and the retired IDs are
     # gone. Rewind so the clone is again the corpus the plan describes.
-    rewind_migrations_in(target, books=("phb", "dmg"))
+    #
+    # `_rewind` with an empty set rather than `rewind_migrations_in`: reversing
+    # a migration retires the identity it registered, and a packet bundle
+    # integrated afterwards may anchor on it. DEC-2026-0077 registered
+    # `monster_giant`, the DMG 64 packet then anchored M014 on it, and rewinding
+    # the migration alone left the clone holding a node no registry row covered.
+    # `_rewind` pulls in exactly the bundles that stranding makes necessary and
+    # nothing else.
+    _rewind(target, only=set())
     return target
 
 

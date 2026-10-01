@@ -1,0 +1,190 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-111-111-optional-modes-of-play-r01-r01
+artifact_kind: packet_update_review
+status: revision_required
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-111-111-optional-modes-of-play
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-26'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-111-111-optional-modes-of-play-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-111-111-optional-modes-of-play-r01.yaml
+  checksum: sha256:b26a9fc66de93875a1398ddf10612ef08202eb3b0cce9bf3b1d35091bde281fc
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: revision_required
+approval_ready: false
+edge_decisions:
+  approved_refs: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012, M013, M014, M015, M016, M017, M018, M019, M020, M021, M023, M024]
+  disposition: approved
+row_decisions:
+  - ref: M022
+    disposition: approved_with_revision
+    exact_corrections:
+      aspect: token capacity
+node_registry_decisions:
+  - {proposed_id: rule_modes_of_play, submitted_label: Modes of Play, kind: rule, disposition: approved}
+  - {proposed_id: rule_blitz_mode, submitted_label: Blitz Mode, kind: rule, disposition: approved}
+  - {proposed_id: rule_chaos_mode, submitted_label: Chaos Mode, kind: rule, disposition: approved}
+  - {proposed_id: rule_deadly_mode, submitted_label: Deadly Mode, kind: rule, disposition: approved}
+  - {proposed_id: rule_fatality_mode, submitted_label: Fatality Mode, kind: rule, disposition: approved}
+  - {proposed_id: rule_grinder_mode, submitted_label: Grinder Mode, kind: rule, disposition: approved}
+  - {proposed_id: rule_hunter_mode, submitted_label: Hunter Mode, kind: rule, disposition: approved}
+  - {proposed_id: rule_momentum_mode, submitted_label: Momentum Mode, kind: rule, disposition: approved}
+  - {proposed_id: rule_pulp_mode, submitted_label: Pulp Mode, kind: rule, disposition: approved}
+architectural_escalations: []
+blocking_findings:
+  - id: pulp_token_changes_conflated
+    severity: blocking
+    ref: M022
+    detail: >-
+      Pulp Mode makes two qualitatively distinct changes to Luck Tokens: it
+      removes the maximum a player may hold, and it grants a starting supply
+      each session. Their numeric magnitudes are excluded, but token capacity
+      and starting supply remain separately queryable mechanics. M022's generic
+      token-supply aspect collapses them into one assertion.
+    source_citation:
+      path: books/shadowdark/sd/packets/claimed/PKT-SD-111-111-optional-modes-of-play/source.md
+      page: '111'
+      section: PULP MODE
+      evidence: >-
+        The first bullet removes the maximum luck-token holding; the second
+        gives players luck tokens at the start of every session.
+required_builder_revision:
+  successor_gup_id: GUP-PKT-SD-111-111-optional-modes-of-play-r02
+  source_gur_successor_required: true
+  required_relationship:
+    expected_ref: M025
+    source_id: rule_pulp_mode
+    source_label: Pulp Mode
+    edge_type: MODIFIES
+    target_id: rule_luck_token
+    target_label: Luck Token
+    aspect: starting supply
+    condition: ''
+    book: SD
+    page: '111'
+    section: PULP MODE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    polarity: improves
+    polarity_basis: read
+  preserve_reviewed_rows: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012, M013, M014, M015, M016, M017, M018, M019, M020, M021, M023, M024]
+  preserve_approved_node_registrations:
+    - rule_modes_of_play
+    - rule_blitz_mode
+    - rule_chaos_mode
+    - rule_deadly_mode
+    - rule_fatality_mode
+    - rule_grinder_mode
+    - rule_hunter_mode
+    - rule_momentum_mode
+    - rule_pulp_mode
+  note: >-
+    Apply M022's executable aspect correction, return the omitted starting-supply
+    relationship to Analyst for a successor GUR, and compile the named GUP.
+reviewer_findings:
+  - id: RF-01
+    subject: modes_as_graph_identities
+    disposition: approved
+    detail: >-
+      The frame and eight named modes are legitimate rule_ identities. Unlike
+      danger levels or outcome labels that differ only by excluded magnitude,
+      each mode participates in one or more reusable relationships, and the
+      frame records their optional adoption.
+  - id: RF-02
+    subject: optional_status_and_compatibility
+    disposition: approved
+    refs: [M001, M002, M003, M004, M005, M006, M007, M008]
+    detail: >-
+      All eight frame-to-mode GATES rows correctly carry optional status. The
+      source says to mix and match, so no ALTERNATIVE_TO relationship is owed.
+  - id: RF-03
+    subject: fatality_and_deadly_semantics
+    disposition: approved
+    refs: [M011, M012, M013]
+    detail: >-
+      Deadly Mode hardens but retains the dying machinery, so its timer and
+      stabilization changes are MODIFIES. Fatality Mode abolishes Dying at zero
+      hit points, so OVERRIDES with optional_variant is the correct distinct
+      operation.
+  - id: RF-04
+    subject: remaining_mode_mechanics
+    disposition: approved
+    refs: [M009, M010, M014, M015, M016, M017, M018, M019, M020, M021, M023, M024]
+    detail: >-
+      Blitz, Chaos, Grinder, Hunter, Momentum, and the two new Luck Token uses
+      are source-supported, correctly directed, and preserve the qualitative
+      mechanic while excluding numeric magnitudes. The optional status on
+      M023 and M024 limits those Luck Token inputs to variant play.
+  - id: RF-05
+    subject: pulp_token_grain
+    disposition: approved_with_revision
+    ref: M022
+    detail: >-
+      Correct M022's aspect from token supply to token capacity, then add a
+      separate Pulp Mode MODIFIES Luck Token row with aspect starting supply.
+      Both take improves/read and optional status; neither stores a number.
+  - id: RF-06
+    subject: unrepresented_effects
+    disposition: informational_nonblocking
+    detail: >-
+      The forced-GM-reroll bullet lacks a GM-roll identity, and Hunter Mode's
+      monster-level input lacks a monster-level identity. Those are genuine
+      vocabulary/source-boundary gaps rather than missing relationships this
+      packet can safely invent.
+completeness_statement: >-
+  Page 111, all twenty-four submitted rows, all nine proposed registrations,
+  and the five disclosed observations were independently checked against
+  Constitution 1.7, the current registry, and the canonical neighborhood. The
+  identity model, optional status, mode compatibility, OVERRIDES basis, and
+  twenty-three rows are correct. M022 must be narrowed to token capacity and a
+  separate starting-supply row added before the packet is complete.
+reviewer_checklist:
+  source_support: revision_required_one_missing_relationship
+  node_identity: passed_nine_registrations
+  edge_semantics_and_direction: passed_except_m022_grain
+  grain: revision_required_split_pulp_supply_mechanics
+  polarity: passed
+  page_attribution: passed
+  graph_neighborhood: passed
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-111-111-optional-modes-of-play/source.md
+    checksum: sha256:a5e65ca8e183da5e657e745dc58107a45bac7efae7527385d8556a6d5ab18a52
+    pages: ['111']
+    result: independently_read_and_pulp_supply_grain_split_required
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-111-111-optional-modes-of-play-r01.yaml
+    checksum: sha256:416d30b5d414df05394f11c9cf0bc138431a1f3b17ee470fe6e49fa80e6f9204
+    result: identity_model_confirmed_and_one_row_conflation_found
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-111-111-optional-modes-of-play-r01.validation.json
+    checksum: sha256:06dbb15fc3ed8058fa203812b2d22d41e5202b85d9e3371adc88f428903d3795
+    result: compiler_clean_but_source_grain_incomplete
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:4689394a8c6b2544f18f99172d92886edd63cd57831bc426b1cb8913e0823b0d
+    observed_rows: 305
+    result: all_nine_proposals_fresh_and_fourteen_reused_labels_confirmed
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:3363405f1586b804377bbd82f56433cd9935578980abb80a3748977f0bc780f3
+    observed_edges: 650
+    result: zero_collisions_and_optional_override_precedent_confirmed
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Return the omitted starting-supply row to Analyst, apply M022's token-capacity
+    correction, and compile GUP-PKT-SD-111-111-optional-modes-of-play-r02.
+  blocking_ids: []

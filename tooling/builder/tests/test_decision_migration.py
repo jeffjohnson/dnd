@@ -2660,3 +2660,117 @@ class MigrationPublicationPreflightCase(unittest.TestCase):
                     cli.main([command, "--help"])
                 self.assertNotIn("--allow-overwrite", captured.getvalue())
                 self.assertNotIn("--force", captured.getvalue())
+
+
+class ProtectedIdentityCase(SyntheticCorpusCase):
+    """`unaffected_existing_ids` is a constraint, so it is checked, not ignored.
+
+    It enumerates nothing to execute, which makes it documentary by the planner's
+    own test -- not reading it changes nothing about what the migration does. But
+    a constraint nobody checks is a comment. DEC-2026-0077 names the eight
+    giant-vermin identities precisely because the whole risk of adding
+    `monster_giant` is that one of them is swept up in it.
+    """
+
+    def plan(self, *paths):
+        return plan_from_decisions(self.canonical, [Path(p) for p in paths])
+
+    def decision(self, protected, *, replace=False):
+        document = {
+            "canonical_migration": {
+                "unaffected_existing_ids": list(protected),
+                "endpoint_repoints": [{
+                    "canonical_row": 3,
+                    "field": "target_id",
+                    "from": "spell_old",
+                    "to": "spell_new",
+                    "label": "New Name",
+                }],
+            },
+            "new_nodes_authorized": [
+                {"id": "spell_new", "label": "New Name", "kind": "spell",
+                 "basis": "fixture"},
+            ],
+        }
+        if replace:
+            document["canonical_migration"]["endpoint_repoints"][0]["to"] = protected[0]
+            document["new_nodes_authorized"] = [
+                {"id": protected[0], "label": "Protected", "kind": "spell",
+                 "basis": "fixture"},
+            ]
+        return self.write_decision("DEC-2026-9801", document)
+
+    def rules(self, plan, severity):
+        return [f["rule"] for f in plan.findings if f["severity"] == severity]
+
+    def test_the_key_is_not_reported_as_an_unread_operation(self):
+        plan = self.plan(self.decision(["spell_untouched"]))
+        self.assertNotIn(
+            "migration_instruction_not_understood", self.rules(plan, "error")
+        )
+
+    def test_a_plan_that_avoids_them_is_clean(self):
+        plan = self.plan(self.decision(["spell_untouched", "spell_also_untouched"]))
+        self.assertNotIn(
+            "migration_touches_protected_identity", self.rules(plan, "error")
+        )
+
+    def test_touching_a_protected_identity_is_an_error(self):
+        """The case the constraint exists for."""
+        plan = self.plan(self.decision(["spell_protected"], replace=True))
+        self.assertIn(
+            "migration_touches_protected_identity", self.rules(plan, "error")
+        )
+
+    def test_the_error_names_the_identity_and_the_decision(self):
+        plan = self.plan(self.decision(["spell_protected"], replace=True))
+        detail = next(
+            f["detail"] for f in plan.findings
+            if f["rule"] == "migration_touches_protected_identity"
+        )
+        self.assertIn("spell_protected", detail)
+        self.assertIn("DEC-2026-9801", detail)
+
+    def test_a_repoint_onto_a_protected_identity_is_caught(self):
+        """Not only node additions: any planned change to the ID is a touch."""
+        path = self.write_decision("DEC-2026-9802", {
+            "canonical_migration": {
+                "unaffected_existing_ids": ["spell_old"],
+                "endpoint_repoints": [{
+                    "canonical_row": 3,
+                    "field": "target_id",
+                    "from": "spell_old",
+                    "to": "spell_new",
+                    "label": "New Name",
+                }],
+            },
+            "new_nodes_authorized": [
+                {"id": "spell_new", "label": "New Name", "kind": "spell",
+                 "basis": "fixture"},
+            ],
+        })
+        plan = self.plan(path)
+        self.assertIn(
+            "migration_touches_protected_identity", self.rules(plan, "error")
+        )
+
+    def test_no_protected_list_means_no_check(self):
+        path = self.write_decision("DEC-2026-9803", {
+            "canonical_migration": {
+                "endpoint_repoints": [{
+                    "canonical_row": 3,
+                    "field": "target_id",
+                    "from": "spell_old",
+                    "to": "spell_new",
+                    "label": "New Name",
+                }],
+            },
+            "new_nodes_authorized": [
+                {"id": "spell_new", "label": "New Name", "kind": "spell",
+                 "basis": "fixture"},
+            ],
+        })
+        plan = self.plan(path)
+        self.assertNotIn(
+            "migration_touches_protected_identity", self.rules(plan, "error")
+        )

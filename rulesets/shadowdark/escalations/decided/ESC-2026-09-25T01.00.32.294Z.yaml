@@ -1,0 +1,190 @@
+schema_version: '1.0'
+id: ESC-2026-09-25T01.00.32.294Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.5'
+revision: 1
+supersedes: null
+raised_by: analyst
+raised_utc: '2026-09-25T01:00:32.294Z'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    category membership has no representation in the closed edge vocabulary; 34 canonical identities
+    and 40 proposed spells sit in a named category with no edge to it, and the pattern recurs in
+    every remaining chapter
+  blocking_ids: []
+
+authority:
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - rulesets/shadowdark/governance/constitution.md 1.5
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0093.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0098.yaml
+
+question: >-
+  Shadowdark's closed section 3 edge vocabulary has no type meaning "is a member of" or "is of kind".
+  Three Decisions have now authorised individual identities inside a named category, and each said in
+  terms that it created no membership edge. The result is that every such member is in the graph with
+  no relationship to the category it belongs to. Should membership be representable, and if so how?
+  If it should not, may that be recorded as a durable boundary so it stops being re-derived once per
+  packet?
+
+why_this_is_architectural: >-
+  ESCALATION_CONTRACT lists as triggers that an edge does not fit the closed vocabulary and that a
+  proposed interpretation would change edge semantics globally. Both apply. This is not a request to
+  approve a node: every identity involved is already authorised or canonical. It is a question about
+  whether a relationship kind exists, which no role below Architect may answer, and the Analyst is
+  prohibited from adding an edge type.
+  It is raised as cross-packet rather than from one packet because no single packet is the locus. The
+  same shape has now been met five times from five different defining loci, and the Analyst has
+  declined it five times for the same reason. Declining a sixth time inside the Monsters chapter,
+  where the affected set is far larger, would be the wrong moment to notice it.
+
+measured_evidence:
+  method: >-
+    Counted directly from rulesets/shadowdark/registries/nodes.csv and
+    rulesets/shadowdark/canonical/edges_master.csv at 155 nodes and 261 edges, not recalled. An
+    earlier probe by this Analyst counted any edge touching an axis node and reported six linked
+    ancestries; that was wrong and the figure is corrected here. Those six are
+    ancestry_X FEEDS_INTO sys_language, a relationship to a different axis, not membership in
+    sys_ancestry. The corrected probe counts only edges between a member and its own axis.
+  membership_edges_in_production:
+    ancestry_to_sys_ancestry: {members: 6, with_membership_edge: 0}
+    alignment_to_sys_alignment: {members: 3, with_membership_edge: 0}
+    deity_to_sys_deity: {members: 7, with_membership_edge: 0}
+    lang_to_sys_language: {members: 14, with_membership_edge: 0}
+    class_to_sys_class: {members: 4, with_membership_edge: 0}
+    total: {canonical_members: 34, with_membership_edge: 0}
+  also_affected_not_yet_integrated: >-
+    Forty individual spells were published today across four packets covering printed pages 54 to 62.
+    None asserts its tier or its casting class, both of which are membership. The Spells chapter
+    continues to printed page 74, so roughly forty-five more spells will follow with the same shape.
+  what_the_rulings_said: >-
+    Each authorising Decision drew the boundary itself rather than leaving it implicit. Constitution
+    section 2.1 states that ancestry, class and creature identity are distinct and that a shared
+    label does not merge an ancestry with a creature. Section 2.2 states that the section creates no
+    grouping kind, membership edge, hierarchy, general rule or inferred relationship, and refuses
+    identities for The Four Lords, The Dark Trio and The Nine partly on that basis. Section 2.3
+    states that table headings are source context and not an automatic table-membership edge, and
+    forbids using the table layout to invent a membership vocabulary or a language hierarchy.
+    The Analyst reads those as three deliberate refusals of a membership edge in each local case, not
+    as a general ruling that membership is unrepresentable. This escalation asks for the general case.
+
+what_is_currently_lost: >-
+  Stated concretely rather than in the abstract, because the cost is what makes this worth ruling on.
+  A query for the members of a category returns nothing: which ancestries exist, which spells a
+  wizard may cast, which languages are rare. The graph holds all of those identities and none of
+  those answers.
+  Two losses are load-bearing rather than merely tidy. Printed page 49 gates scroll and wand use on
+  whether a spell is on the caster's list, so class membership is a precondition the graph cannot
+  express. And the canonical row making a spell's tier drive its casting difficulty, its mishap table
+  and its sacrifice value has no per-spell tier to draw on, so the mechanism is represented while
+  every input to it is absent.
+  Against that, nothing currently in production is wrong. Every published row is a relationship the
+  source states between two identities. The gap is of absent assertions, not false ones, which is
+  why the Analyst has been willing to keep extracting rather than stopping.
+
+why_no_existing_type_fits: >-
+  Each of the thirteen types was considered against the ancestry case and each asserts something the
+  source does not say. FEEDS_INTO would claim a member supplies an input to its category, which
+  inverts the relationship. GATES would claim the member is a precondition for the category existing.
+  DERIVED_FROM would claim the member is computed or looked up from the category. CROSS_REFERENCES
+  is the least wrong and was used once, for a deity's printed alignment tag, precisely because the
+  source there prints an explicit pointer; it would be a misuse for a membership that the source
+  states structurally rather than by reference. CONSTRAINS, CONSUMES, TRIGGERS, MODIFIES,
+  ALTERNATIVE_TO, OVERRIDES, RESOLVED_BY, EXCLUDES and EXCLUDED_FROM are all plainly wrong.
+
+options_considered:
+  - id: OPT-A
+    summary: Add one membership edge type to the section 3 vocabulary.
+    detail: >-
+      For example MEMBER_OF, running member to category, with derived polarity neutral, admitted only
+      between an individual identity and the subsystem or family axis of its own kind. The Decision
+      would fix the direction, the derived polarity, and the constraint that both endpoints be of
+      related kinds so it cannot become a general-purpose association edge.
+    consequences: >-
+      Answers every case at once and makes the 34 canonical members and the spells connectable by
+      ordinary successor revisions. It changes the closed vocabulary, which is the most significant
+      kind of amendment this ruleset can make, and the count rises from thirteen to fourteen. It also
+      invites misuse: a membership edge is the easiest type to over-apply, and the Decision would need
+      to say what is not a membership.
+  - id: OPT-B
+    summary: Represent membership as registry metadata rather than as an edge.
+    detail: >-
+      The node registry already carries a kind column. A Decision could add a category or parent
+      column, populated by the Integrator from the proposing GUR, so that membership is queryable
+      without entering the edge graph at all.
+    consequences: >-
+      Keeps the edge vocabulary closed and untouched, which is its main attraction, and matches the
+      intuition that membership is a property of an identity rather than a mechanical dependency
+      between two. It needs registry schema and Integrator changes rather than a vocabulary change,
+      and it makes membership invisible to any query that reads only the edge set. The Analyst has no
+      view on whether that split is acceptable; it is an architecture question.
+  - id: OPT-C
+    summary: Rule that membership is not graph content, and record it once.
+    detail: >-
+      Affirm the three existing local refusals as a general principle in the constitution, stating
+      that a shared prefix is the only representation of category membership and that queries needing
+      it read the registry by prefix rather than the graph.
+    consequences: >-
+      Cheapest, and defensible on the grounds that the graph exists for impact analysis rather than
+      taxonomy: knowing that Fireball is a wizard spell does not tell you what breaks if Fireball
+      changes. It would leave the scroll-and-wand gating and the per-spell tier permanently
+      unexpressible, which the Analyst thinks is the strongest argument against it. Its real value is
+      that it stops the question recurring, which is worth something on its own.
+  - id: OPT-D
+    summary: Rule case by case as each category arises.
+    detail: 'Continue the current pattern, with a Decision per category at its defining locus.'
+    consequences: >-
+      The Analyst recommends against it and notes it only because it is the status quo. It has
+      produced three Decisions, five deferrals and an inconsistency already visible in production:
+      a deity's alignment is represented by CROSS_REFERENCES while a language's table is represented
+      by nothing, for reasons that are locally sound and globally arbitrary.
+
+recommended_resolution: >-
+  The Analyst recommends OPT-A or OPT-B over OPT-C, and any of the three over OPT-D, but does not
+  have a preference between the first two and does not think it is the Analyst's call. The choice
+  turns on whether membership is a mechanical relationship or an identity property, which is exactly
+  the kind of ontology question constitution section 8 and ESCALATION_CONTRACT reserve to the
+  Architect.
+  What the Analyst does ask for, whichever way it goes, is that the ruling be general rather than
+  another per-category authorisation, and that it say explicitly whether a spell's tier is the same
+  kind of fact as a spell's class. Tier is an attribute with a numeric value that already drives
+  three canonical mechanisms; class is membership in a named family. They may deserve different
+  answers, and a ruling that covers one and not the other would leave the Spells chapter half
+  resolved.
+
+expected_migration_impact: >-
+  None to existing canonical rows under any option: nothing published would be retracted or rewritten,
+  because the gap is absent assertions rather than wrong ones. Under OPT-A or OPT-B the affected
+  packets would gain ordinary successor revisions adding membership, which is Analyst work and is
+  bounded: six ancestries, three alignments, seven deities, fourteen languages, four classes and the
+  spells as their packets are extracted. Under OPT-C nothing changes at all except that the
+  constitution records the boundary.
+  The Analyst will keep extracting under any outcome. The remaining chapters are Gameplay, Game
+  Master, roughly eighty pages of monster statistics and roughly thirty-five of treasure; monsters in
+  particular will present this shape at a much larger scale, which is the reason for raising it now
+  rather than after that chapter is read.
+
+constitution_registry_or_profile_change: >-
+  OPT-A amends the constitution section 3 edge table and needs Builder work in the compiler's edge
+  vocabulary and Reviewer verification. OPT-B amends the node registry schema and the Integrator's
+  registry handling rather than the edge vocabulary. OPT-C amends the constitution prose only. None
+  requires a canonical migration, and no domain promotion or general rule is sought.
+
+analyst_constraints_observed: >-
+  The Analyst has not added an edge type, has not used an existing type to stand in for membership
+  except in the one documented CROSS_REFERENCES case where the source prints an explicit pointer, and
+  has not proposed a grouping identity. Every packet affected by this question was extracted and
+  published rather than held, because the absent rows make no published assertion wrong; each records
+  the omission in its own observations so the gap is auditable. Five GURs published today and the
+  four earlier packets all remain correct under every option above.

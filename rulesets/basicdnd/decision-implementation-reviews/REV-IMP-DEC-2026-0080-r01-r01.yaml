@@ -1,0 +1,118 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0080-r01-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: basicdnd
+constitution_version: '1.0'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Reissue the report with truthful current live-input evidence for acceptance
+    test 4. No compiler, linter, governance, registry, or canonical-data edit is
+    requested by this Review.
+  blocking_ids: []
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0080-r01
+  path: rulesets/basicdnd/decision-implementations/IMP-DEC-2026-0080-r01.yaml
+  checksum: sha256:9bc457df7dee2342401691f326b9f447156e2adcabf5d4c3b1293048e6013ab1
+decision_input:
+  id: DEC-2026-0080
+  path: rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+  checksum: sha256:b4eb6d27766119ccceefee17a651e8923b813dbe2b8366232d74d3919f3d7108
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified
+    evidence: >-
+      Independently ran the context verifier for architect, analyst, and builder
+      at basicdnd/rc. Each resolved its correct role-specific Basic D&D scope,
+      and books/basicdnd/rc/book.yaml declares basicdnd, rc, and
+      rc-steward-intake.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      Independently read Basic D&D Constitution 1.0 and its ruleset-local
+      vocabulary. The targeted RulesetVocabulary tests passed, including own-
+      governance loading, the class-only Dwarf/Elf/Halfling identities, and
+      no shared citation code with AD&D 1e.
+  - acceptance_test_index: 3
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      DEC-2026-0080 expressly authorizes current versioned-contract-content
+      evidence for this index. SOURCE_MARKDOWN is Version 1.5; its current
+      checksum, minimum version, and all four Decision anchors independently
+      match.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0080
+        path: rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+        checksum: sha256:b4eb6d27766119ccceefee17a651e8923b813dbe2b8366232d74d3919f3d7108
+        authorized_acceptance_test_index: 3
+      authorized_acceptance_test_index: 3
+      contracts:
+        - path: contracts/SOURCE_MARKDOWN.md
+          checksum: sha256:f9455e37cd36c8c0cc08c43edfd6f32ce794e687afb65a18aa6236a638610eab
+          observed_version: '1.5'
+          minimum_version: '1.5'
+          anchors_present:
+            - Pandoc YAML frontmatter is informational steward intake metadata only.
+            - packet.yaml remains the authoritative claimed-packet record. If frontmatter conflicts with that manifest, use the manifest.
+            - The initial closed vocabulary contains only `.full-page-artwork`.
+            - A bare paragraph such as `{#p23 .full-page-artwork}` is invalid. Parsers and linters must inspect the Pandoc AST for a heading or Div attribute; raw-text matching must not reject a valid attributed marker as malformed.
+  - acceptance_test_index: 4
+    disposition: failed
+    evidence: >-
+      The focused Basic D&D admission and marker test classes pass (37 tests),
+      and lint-source accepts RC_pages_6-12.md. But the report's stated live-
+      input proof is false on the current named RC_pages_1-5.md: it claims
+      exactly one problem, while the command exits 1 with three problems—the
+      malformed marker plus two unattributed-leading-content consequences.
+      The file's current SHA-256 is
+      sha256:a61c584fa5f47430db53515865bda943303ce13c7c703b84e19ba0a2f715b8f4.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      The report schema-validates; its validation report, Decision, contract,
+      and every eight declared implementation-file checksums match current
+      bytes. The targeted 37-test independent run passes. The report must be
+      reissued only because its acceptance-4 live-input evidence is inaccurate.
+scope_assessment: >-
+  The report's absent-canonical-file handling is justified by DEC-2026-0080's
+  empty initial canonical state and its required ordinary compilation before
+  first integration; it does not write a canonical baseline. The renamed
+  unregistered-ruleset test clarifies the same pre-existing refusal. Neither
+  scope note requires an architectural change. The defective live-input claim
+  must be corrected in a Builder-owned report successor; the steward's malformed
+  unclaimed input remains outside Builder authority.
+required_builder_revision:
+  successor_id: IMP-DEC-2026-0080-r02
+  supersedes: IMP-DEC-2026-0080-r01
+  preserve:
+    - decision_input and every current implementation-file checksum
+    - the verified acceptance-test 1 through 3 evidence
+    - the no-canonical-write finding
+  revise:
+    - >-
+      Replace the false claim that current RC_pages_1-5.md produces exactly one
+      lint problem. State the actual three-problem outcome, or omit live-input
+      outcome evidence that is not an acceptance requirement; do not attribute
+      a source-steward correction to Builder.
+independent_validation:
+  passed: false
+  commands:
+    - command: 'python tooling/common/validate_artifact.py --schema schemas/common/decision-implementation.schema.json rulesets/basicdnd/decision-implementations/IMP-DEC-2026-0080-r01.yaml'
+      exit_code: 0
+      result: passed
+      summary: The report schema-validates.
+    - command: '[cwd tooling/builder/tests] python -m unittest test_compiler.RegisteredRulesetCase test_compiler.RulesetVocabularyCase test_compiler.BasicdndCliCompileCase test_compiler.UnknownRulesetCliCase test_pagemarkers.TestStewardFrontmatter test_pagemarkers.TestPageClasses test_pagemarkers.TestPageClassLint'
+      exit_code: 0
+      result: passed
+      summary: Ran 37 targeted registered-ruleset and marker tests; all passed.
+    - command: 'PYTHONPATH=tooling/builder/src python -m adnd1e_builder lint-source books/basicdnd/rc/packets/incoming/RC_pages_1-5.md'
+      exit_code: 1
+      result: failed
+      summary: Current live input reports three problems, not the report's claimed one.
+overall_disposition: revision_required

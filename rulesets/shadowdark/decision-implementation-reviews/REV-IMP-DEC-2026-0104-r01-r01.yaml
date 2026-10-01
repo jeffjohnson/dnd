@@ -1,0 +1,106 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0104-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-084-085-crawling-light-and-movement
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0104-r01
+  path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0104-r01.yaml
+  checksum: sha256:34f12ef9e39b0711afcfd8f9a273bffa3d7dc0265e223c3d925a40828431d623
+decision_input:
+  id: DEC-2026-0104
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0104.yaml
+  checksum: sha256:71ae65ec07591f1a1d845cb63f18d7d11c0a6f145c1974b97765a2b8bc06e664
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      Independently read Shadowdark Constitution 1.7 and verified all three
+      authorized anchors. CLASSIFIED_AS remains a directed, neutral,
+      source-declared mechanically operative classification rather than general
+      taxonomy. The sole new form is source-explicit item_ to
+      rule_light_source with aspect light source and at-most-one cardinality.
+      The three spell forms and the taxonomy, sys-axis, table, collective, and
+      source-context exclusions remain in force.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0104
+        path: rulesets/shadowdark/escalations/decisions/DEC-2026-0104.yaml
+        checksum: sha256:71ae65ec07591f1a1d845cb63f18d7d11c0a6f145c1974b97765a2b8bc06e664
+        authorized_acceptance_test_index: 1
+      authorized_acceptance_test_index: 1
+      contracts:
+        - path: rulesets/shadowdark/governance/constitution.md
+          checksum: sha256:633fad432d5b48791d226142266c79ae5f9d158a20445ffc13365ed2b2d80a8c
+          observed_version: '1.7'
+          minimum_version: '1.7'
+          anchors_present:
+            - CLASSIFIED_AS remains directed, neutral, source-declared, and mechanically operative rather than general taxonomy membership.
+            - Only a source-explicit item may classify as rule_light_source with aspect light source and at-most-one cardinality.
+            - Spell forms and taxonomy, sys-axis, and source-context exclusions remain unchanged.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      Independently parsed the Shadowdark GUR and GUP schemas and confirmed
+      that both admit Constitution versions 1.0 through 1.7. The Shadowdark
+      edge schema continues to admit CLASSIFIED_AS, while direct searches found
+      no CLASSIFIED_AS vocabulary in the AD&D 1e or Basic D&D edge schemas.
+      The change is therefore scoped to the current Shadowdark contract.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      Independently inspected the compiler and reproduced all focused tests.
+      The implementation adds exactly one fourth entry to the enumerated
+      Shadowdark classification table: item_ to rule_light_source, aspect light
+      source, cardinality at_most_one, under DEC-2026-0104. Valid rows derive
+      neutral polarity. Non-item sources, other targets, reversed direction,
+      wrong aspect, and duplicate light-source rows receive the required
+      specific findings. An item with no such row is accepted, and all prior
+      spell classification behavior remains independently green.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      Independent runs passed all 26 focused classifier tests, all 114 tests in
+      the Shadowdark ancestry/compiler module, and the complete 936-test Builder
+      suite with 38 expected skips and no failures. A separate read-only compile
+      of GUR-PKT-SD-084-085-crawling-light-and-movement-r01 produced 16 rows,
+      zero errors, and zero CLASSIFIED_AS rows; hashes of that GUR and every
+      canonical file were unchanged before and after.
+independent_validation:
+  passed: true
+  commands:
+    - command: python -m unittest test_shadowdark_ancestry.TestBoundedClassifications test_shadowdark_ancestry.TestBoundedItemLightSourceClassification test_shadowdark_ancestry.TestClassifiedAsRulesetScoping
+      exit_code: 0
+      result: passed
+      summary: 26 tests OK in 0.884s
+    - command: python -m unittest test_shadowdark_ancestry
+      exit_code: 0
+      result: passed
+      summary: 114 tests OK in 8.214s
+    - command: python -m unittest discover -s . -p "test_*.py" -t .
+      exit_code: 0
+      result: passed
+      summary: 936 tests OK in 191.212s; 38 skipped
+overall_disposition: approved
+scope_assessment: >-
+  The implementation is confined to the two Builder-owned paths authorized by
+  DEC-2026-0104: compiler.py and test_shadowdark_ancestry.py. The compiler adds
+  a bounded table entry and its matching at-most-one validation without
+  creating a generic item classifier or changing another ruleset. No ordinary
+  source, GUR, GUP, Review, Approved bundle, registry, canonical artifact, or
+  Basic D&D RC packet was changed by this Review.
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    DEC-2026-0104 implementation is independently approved and terminal.
+    Analyst sequence step 4 may now publish only ordinary source-backed
+    successors for items explicitly identified as Light Sources.
+  blocking_ids: []

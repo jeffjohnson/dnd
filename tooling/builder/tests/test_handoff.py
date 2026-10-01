@@ -67,7 +67,7 @@ class TestHandoffBlock(HandoffCase):
 
     def test_escalation_hands_off_to_architect_with_blocking_ids(self):
         result = self.compile_gur(
-            candidate_nodes=[{"proposed_id": "magic_new_thing", "proposed_label": "New Thing"}]
+            candidate_nodes=[{"proposed_id": "magic_new_thing", "why_needed": "fixture", "proposed_label": "New Thing"}]
         )
         handoff = result.handoff
         self.assertEqual(handoff["next_role"], "architect")
@@ -88,7 +88,7 @@ class TestHandoffBlock(HandoffCase):
         for result in (
             self.compile_gur(candidate_edges=[dict(EDGE)]),
             self.compile_gur(candidate_edges=[dict(EDGE, evidence="nonsense")]),
-            self.compile_gur(candidate_nodes=[{"proposed_id": "magic_x", "proposed_label": "X"}]),
+            self.compile_gur(candidate_nodes=[{"proposed_id": "magic_x", "why_needed": "fixture", "proposed_label": "X"}]),
         ):
             with self.subTest(status=result.status):
                 self.assertIn(result.handoff["next_role"], VALID_ROLES)

@@ -23,19 +23,15 @@ from .registry import ID_FORMAT, NodeRegistry, normalize_label, prefix_of
 from .review import ReviewDirectives, RowDirective
 from .governance import Governance
 from .vocab import (
-    ACCEPTED_GUR_CONSTITUTION_VERSIONS,
     AUTHORED_POLARITY_TYPES,
-    BOOKS,
     BUILD_OWNED_FIELDS,
     COLUMNS,
-    CONSTITUTION_VERSION,
-    EDGE_TYPES,
     EVIDENCE_CLASSES,
-    NODE_PREFIXES,
     PASS_GENERAL_RULE,
     REVIEW_FLAG_VALUES,
     STATUS_VALUES,
     SUPERSESSION_BASIS_VALUES,
+    RulesetVocabulary,
 )
 
 TOOL_NAME = "adnd1e-builder"
@@ -71,6 +67,78 @@ REQUIRED_EDGE_FIELDS = (
     "supersession_basis",
     "review_flag",
 )
+
+# DEC-2026-0103 / DEC-2026-0104: the four bounded Shadowdark CLASSIFIED_AS
+# shapes, constitution section 2.4. Deliberately enumerated rather than a
+# general taxonomy/membership mechanism: nothing outside these four triples is
+# a legal classification, for Shadowdark or any other ruleset, and no other
+# ruleset admits CLASSIFIED_AS at all (it is absent from their own edge
+# vocabulary tables).
+SHADOWDARK_SPELL_TIER_VALUES: frozenset[str] = frozenset(
+    f"rule_spell_tier_{n}" for n in range(1, 6)
+)
+SHADOWDARK_CLASSIFIED_AS_SHAPES: tuple[dict, ...] = (
+    {
+        "source_prefix": "spell_",
+        "targets": frozenset({"class_wizard", "class_priest"}),
+        "aspect": "casting class",
+        "cardinality": "one_or_more",
+        "decision": "DEC-2026-0103",
+    },
+    {
+        "source_prefix": "spell_",
+        "targets": SHADOWDARK_SPELL_TIER_VALUES,
+        "aspect": "spell tier",
+        "cardinality": "exactly_one",
+        "decision": "DEC-2026-0103",
+    },
+    {
+        "source_ids": SHADOWDARK_SPELL_TIER_VALUES,
+        "targets": frozenset({"rule_spell_tier"}),
+        "aspect": "spell tier category",
+        "cardinality": "exactly_one",
+        "decision": "DEC-2026-0103",
+    },
+    {
+        "source_prefix": "item_",
+        "targets": frozenset({"rule_light_source"}),
+        "aspect": "light source",
+        "cardinality": "at_most_one",
+        "decision": "DEC-2026-0104",
+    },
+)
+
+
+def _shadowdark_classification_shape(source_id: str, target_id: str) -> dict | None:
+    """The one bounded shape a CLASSIFIED_AS (source, target) pair matches, if any."""
+    for shape in SHADOWDARK_CLASSIFIED_AS_SHAPES:
+        prefix = shape.get("source_prefix")
+        ids = shape.get("source_ids")
+        source_matches = (prefix is not None and source_id.startswith(prefix)) or (
+            ids is not None and source_id in ids
+        )
+        if source_matches and target_id in shape["targets"]:
+            return shape
+    return None
+
+
+def _field_text(edge: dict, name: str) -> str:
+    """One edge field as text, whatever scalar type the GUR used.
+
+    `page` has always been read this way; the other controlled fields assumed a
+    string and raised AttributeError on anything else. A schema-valid Shadowdark
+    GUR writes `pass: 1` as an integer -- the constitution leaves `pass`
+    open-ended -- and that crashed the compiler on an immutable input
+    DEC-2026-0087 requires to stay compilable.
+
+    Coercion happens before validation, never instead of it: a field with a
+    controlled vocabulary is still checked against that vocabulary afterwards,
+    so `evidence: 1` is still rejected as illegal rather than quietly accepted.
+    """
+    value = edge.get(name)
+    if value is None:
+        return ""
+    return str(value).strip()
 
 
 def sha256_of(path: Path) -> str:
@@ -118,6 +186,11 @@ class CompileResult:
     direction_findings: list[dict] = field(default_factory=list)
     resolved_escalations: list[dict] = field(default_factory=list)
     corrections_applied: list[dict] = field(default_factory=list)
+    #: Row-level label corrections an approved Architect migration has already
+    #: overtaken. Recorded, never silently dropped: the Review still named this
+    #: GUP as its successor, so the successor has to say what became of every
+    #: instruction it was given.
+    corrections_superseded: list[dict] = field(default_factory=list)
     review_id: str | None = None
     duplicate_findings: list[dict] = field(default_factory=list)
     conflict_findings: list[dict] = field(default_factory=list)
@@ -331,11 +404,17 @@ class Compiler:
         canonical: CanonicalEdges,
         general_rules: dict | None = None,
         governance: Governance | None = None,
+        vocabulary: RulesetVocabulary | None = None,
     ) -> None:
         self.registry = registry
         self.canonical = canonical
         self.general_rules = general_rules or {}
         self.governance = governance or Governance()
+        # DEC-2026-0080: the vocabulary is supplied, not imported, so a compiler
+        # run is scoped to the ruleset whose registry, canonical data and
+        # governance were also loaded for it. The AD&D 1e transcription is the
+        # default, which is why every existing caller and fixture is unaffected.
+        self.vocabulary = vocabulary or RulesetVocabulary.for_adnd1e()
 
     # -- envelope ------------------------------------------------------------
     def _check_envelope(self, gur: dict, result: CompileResult) -> None:
@@ -349,28 +428,58 @@ class Compiler:
                         field_name=field_name,
                     )
                 )
-        if gur.get("ruleset_id") not in (None, "adnd1e"):
+        # DEC-2026-0080 replaced a literal `adnd1e` here. The rule did not
+        # change -- SCOPE_AND_IDENTITY still forbids moving an artifact between
+        # rulesets -- but with a second ruleset registered, the ruleset this
+        # compiler was configured for is the thing to compare against, and a
+        # name no ruleset.yaml claims is a different failure from a name that
+        # belongs to a ruleset this run did not load.
+        declared_ruleset = gur.get("ruleset_id")
+        vocabulary = self.vocabulary
+        if declared_ruleset not in (None, vocabulary.ruleset_id):
+            registered = declared_ruleset in vocabulary.registered_rulesets
             result.findings.append(
                 Finding(
-                    "gur_wrong_ruleset",
+                    "gur_wrong_ruleset" if registered else "gur_unknown_ruleset",
                     "error",
-                    f"ruleset_id {gur.get('ruleset_id')!r} is not adnd1e; "
-                    f"SCOPE_AND_IDENTITY forbids silently moving artifacts between rulesets",
+                    (
+                        f"ruleset_id {declared_ruleset!r} is a registered ruleset but this "
+                        f"compiler was loaded with {vocabulary.ruleset_id!r} governance, "
+                        f"registry and canonical data; recompile under "
+                        f"--ruleset {declared_ruleset}. SCOPE_AND_IDENTITY forbids silently "
+                        f"moving artifacts between rulesets"
+                        if registered
+                        else
+                        f"ruleset_id {declared_ruleset!r} is not a registered ruleset in this "
+                        f"repository (registered: "
+                        f"{', '.join(sorted(vocabulary.registered_rulesets)) or 'none'}). "
+                        f"There is no constitution, registry or canonical baseline to compile "
+                        f"it against, and the Builder does not create one"
+                    ),
+                    field_name="ruleset_id",
                 )
             )
+        constitution_version = vocabulary.constitution_version
+        accepted_versions = vocabulary.accepted_gur_constitution_versions
         declared = str(gur.get("constitution_version") or "")
-        if declared and declared != CONSTITUTION_VERSION:
-            if declared in ACCEPTED_GUR_CONSTITUTION_VERSIONS:
+        if declared and declared != constitution_version:
+            if declared in accepted_versions:
                 result.findings.append(
                     Finding(
                         "constitution_version_older_than_compiler",
                         "warning",
-                        f"GUR was authored under constitution {declared} and is revalidated under "
-                        f"{CONSTITUTION_VERSION}, not trusted on its declared version. "
-                        f"{CONSTITUTION_VERSION} is not purely permissive over {declared}: it fixes "
-                        f"citation cardinality at one locus per edge (DEC-2026-0008) and settles "
-                        f"MODIFIES vs DERIVED_FROM for table lookups (DEC-2026-0011). Rows that "
-                        f"were valid under {declared} may fail here.",
+                        f"GUR was authored under {vocabulary.ruleset_id} constitution "
+                        f"{declared} and is revalidated under {constitution_version}, not "
+                        f"trusted on its declared version. {constitution_version} is not "
+                        f"purely permissive over {declared}, so rows that were valid under "
+                        f"{declared} may fail here."
+                        + (
+                            " It fixes citation cardinality at one locus per edge "
+                            "(DEC-2026-0008) and settles MODIFIES vs DERIVED_FROM for table "
+                            "lookups (DEC-2026-0011)."
+                            if vocabulary.ruleset_id == "adnd1e"
+                            else ""
+                        ),
                     )
                 )
             else:
@@ -378,13 +487,24 @@ class Compiler:
                     Finding(
                         "constitution_version_mismatch",
                         "error",
-                        f"GUR declares constitution {declared}; compiler implements "
-                        f"{CONSTITUTION_VERSION} and accepts "
-                        f"{sorted(ACCEPTED_GUR_CONSTITUTION_VERSIONS)}",
+                        f"GUR declares constitution {declared}; {vocabulary.ruleset_id} is at "
+                        f"{constitution_version} and accepts {sorted(accepted_versions)}",
                     )
                 )
 
     # -- nodes ---------------------------------------------------------------
+    def _prefix_of(self, node_id: str) -> str | None:
+        """The approved prefix for this compile's ruleset, not AD&D 1e's.
+
+        Every node-proposal, carried-forward and revision path routes through
+        here. `RulesetVocabulary` already loaded the local table; before
+        DEC-2026-0087 these checks still consulted the global AD&D constants, so
+        a Shadowdark `ancestry_` proposal would have been reported as an
+        unapproved prefix and escalated instead of offered for ordinary Reviewer
+        approval.
+        """
+        return prefix_of(node_id, self.vocabulary.node_prefixes)
+
     def _register_migration_node(
         self, node_id: str, replaces_id: str, ref: str, result: CompileResult
     ) -> None:
@@ -410,13 +530,13 @@ class Compiler:
             {
                 "proposed_id": node_id,
                 "proposed_label": old.label if old else "",
-                "kind": (prefix_of(node_id) or "").rstrip("_"),
+                "kind": (self._prefix_of(node_id) or "").rstrip("_"),
                 "why_needed": (
                     f"{decision_id or 'An Architect decision'} rejects the prefix of "
                     f"{replaces_id!r} and names {node_id!r} as its replacement."
                 ),
                 "edges_depending_on_it": [ref],
-                "prefix_approved": prefix_of(node_id) is not None,
+                "prefix_approved": self._prefix_of(node_id) is not None,
                 "id_format_valid": bool(ID_FORMAT.match(node_id)),
                 "already_canonical": False,
                 "label_collides_with": [],
@@ -608,21 +728,41 @@ class Compiler:
             if integration_action:
                 addition["integration_action"] = integration_action
 
-            label = directive.corrected_label
-            if not label or label == addition.get("proposed_label"):
-                continue
-            previous = addition.get("proposed_label") or ""
-            addition["proposed_label"] = label
-            result.findings.append(
-                Finding(
-                    "reviewer_corrected_node_label",
-                    "info",
-                    f"proposed node {addition['proposed_id']!r} takes label {label!r} from "
-                    f"{directive.review_id}"
-                    + (f", replacing {previous!r}" if previous else ", which the proposal left blank")
-                    + ".",
+            # A correction this compiler cannot execute is reported, never
+            # dropped: half-applying a Review is indistinguishable in the
+            # output from a Review that only asked for half.
+            for name in directive.unapplied_corrections:
+                result.findings.append(
+                    Finding(
+                        "reviewer_node_correction_not_applied",
+                        "error",
+                        f"{directive.review_id or 'the Review'} corrects "
+                        f"{name!r} on proposed node {addition['proposed_id']!r}, which "
+                        f"this compiler does not apply to a node proposal. Applying "
+                        f"the rest would publish a partial revision of a complete "
+                        f"ruling.",
+                    )
                 )
-            )
+
+            for name, value in sorted(directive.corrected_fields.items()):
+                if value == addition.get(name):
+                    continue
+                previous = addition.get(name) or ""
+                addition[name] = value
+                rule = ("reviewer_corrected_node_label"
+                        if name == "proposed_label"
+                        else "reviewer_corrected_node_field")
+                result.findings.append(
+                    Finding(
+                        rule,
+                        "info",
+                        f"proposed node {addition['proposed_id']!r} takes {name} "
+                        f"{value!r} from {directive.review_id}"
+                        + (f", replacing {previous!r}" if previous
+                           else ", which the proposal left blank")
+                        + ".",
+                    )
+                )
 
         # A label the Reviewer supplied is only applied if the proposal is still
         # in the patch. One that is not tells the Reviewer their correction went
@@ -725,7 +865,7 @@ class Compiler:
                 carried.setdefault("edges_depending_on_it", [])
                 if ref not in carried["edges_depending_on_it"]:
                     carried["edges_depending_on_it"].append(ref)
-                carried["prefix_approved"] = prefix_of(node_id) is not None
+                carried["prefix_approved"] = self._prefix_of(node_id) is not None
                 carried["id_format_valid"] = bool(ID_FORMAT.match(node_id))
                 carried["already_canonical"] = False
                 result.node_additions.append(carried)
@@ -775,7 +915,7 @@ class Compiler:
                     continue
 
                 label_field = field_name.replace("_id", "_label")
-                prefix_ok = prefix_of(node_id) is not None
+                prefix_ok = self._prefix_of(node_id) is not None
                 format_ok = bool(ID_FORMAT.match(node_id))
                 result.node_additions.append(
                     {
@@ -783,7 +923,7 @@ class Compiler:
                         "proposed_label": str(
                             directive.corrections.get(label_field) or ""
                         ).strip(),
-                        "kind": (prefix_of(node_id) or "").rstrip("_"),
+                        "kind": (self._prefix_of(node_id) or "").rstrip("_"),
                         "why_needed": (
                             f"{directive.review_id or directives.review_id} repointed {ref} here"
                             + (f": {directive.rationale}" if directive.rationale else "")
@@ -1207,16 +1347,16 @@ class Compiler:
                 continue
             held = self.governance.held_by_package(node_id)
             architect_required = (
-                prefix_of(node_id) is None or not ID_FORMAT.match(node_id) or held is not None
+                self._prefix_of(node_id) is None or not ID_FORMAT.match(node_id) or held is not None
             )
             result.node_additions.append(
                 {
                     "proposed_id": node_id,
                     "proposed_label": "",
-                    "kind": (prefix_of(node_id) or "").rstrip("_"),
+                    "kind": (self._prefix_of(node_id) or "").rstrip("_"),
                     "why_needed": (carried.get("note") or "").strip(),
                     "edges_depending_on_it": list(carried.get("edges_here") or []),
-                    "prefix_approved": prefix_of(node_id) is not None,
+                    "prefix_approved": self._prefix_of(node_id) is not None,
                     "id_format_valid": bool(ID_FORMAT.match(node_id)),
                     "already_canonical": False,
                     "label_collides_with": [],
@@ -1272,6 +1412,37 @@ class Compiler:
             proposed_id = (candidate.get("proposed_id") or "").strip()
             label = (candidate.get("proposed_label") or "").strip()
 
+            # DEC-2026-0091: `proposed_label` and `why_needed` are the two
+            # executable registration fields. A candidate that leaves either
+            # blank -- including one that carries the value under the legacy
+            # `label` or `evidence` spelling, which is not an alias -- used to
+            # serialize as a proposal with empty registration fields that no
+            # Integrator could act on and that a Reviewer had to fill in by
+            # hand. It fails closed here instead, and no proposal is emitted.
+            missing = [
+                name for name in ("proposed_label", "why_needed")
+                if not str(candidate.get(name) or "").strip()
+            ]
+            if missing:
+                legacy = [
+                    spelling for spelling in ("label", "evidence")
+                    if str(candidate.get(spelling) or "").strip()
+                ]
+                result.findings.append(
+                    Finding(
+                        "candidate_node_fields_missing",
+                        "error",
+                        f"candidate node {proposed_id!r} is missing "
+                        f"{', '.join(missing)}. DEC-2026-0091 makes proposed_label and "
+                        f"why_needed the executable registration fields"
+                        + (f"; this candidate carries {', '.join(legacy)}, which is a "
+                           f"legacy spelling and not an alias" if legacy else "")
+                        + ". No registry proposal is emitted for it.",
+                        ref=proposed_id or None,
+                    )
+                )
+                continue
+
             rejected = self.governance.rejected_identity(proposed_id)
             if rejected:
                 # Already decided: the Architect refused this identity. It is not
@@ -1325,10 +1496,10 @@ class Compiler:
             entry = {
                 "proposed_id": proposed_id,
                 "proposed_label": label,
-                "kind": (prefix_of(proposed_id) or "").rstrip("_"),
+                "kind": (self._prefix_of(proposed_id) or "").rstrip("_"),
                 "why_needed": (candidate.get("why_needed") or "").strip(),
                 "edges_depending_on_it": list(candidate.get("edges_depending_on_it") or []),
-                "prefix_approved": prefix_of(proposed_id) is not None,
+                "prefix_approved": self._prefix_of(proposed_id) is not None,
                 "id_format_valid": bool(ID_FORMAT.match(proposed_id)),
                 "already_canonical": proposed_id in self.registry,
                 "label_collides_with": list(self.registry.label_collisions(proposed_id, label)),
@@ -1580,6 +1751,83 @@ class Compiler:
                 }
                 revised[field_name] = new_value
 
+            # A label belongs to the node, not to one row: `_endpoint_label`
+            # normalises every row on a registered node to the registered label.
+            # A Reviewer correction to a label was therefore recorded as applied
+            # and then quietly overwritten, and the emitted row disagreed with
+            # the Review with nothing said. Refusing it loudly, with the routes
+            # that do work, is the only honest answer.
+            for role in ("source", "target"):
+                field = f"{role}_label"
+                if field not in applied:
+                    continue
+                node_id = str(revised.get(f"{role}_id") or "")
+                ruled = self.governance.approved_label(node_id)
+                if ruled:
+                    registered = ruled[0]
+                elif node_id in self.registry:
+                    registered = self.registry.nodes[node_id].label
+                else:
+                    # A node this patch proposes carries the Reviewer's label.
+                    continue
+                if registered == applied[field]["to"]:
+                    continue
+                # The Architect may have already ruled on exactly this label by
+                # migrating the endpoint away from it. Then the Reviewer is not
+                # wrong, only overtaken: the correction names a label the graph
+                # no longer carries. Refusing it as unroutable would be false,
+                # and applying it would reinstate what the migration retired.
+                retired_by = self.governance.label_superseded_by(
+                    node_id, applied[field]["to"]
+                )
+                if retired_by:
+                    result.corrections_superseded.append(
+                        {
+                            "ref": ref,
+                            "field": field,
+                            "requested": applied[field]["to"],
+                            "registered": registered,
+                            "node_id": node_id,
+                            "superseded_by": retired_by,
+                        }
+                    )
+                    result.findings.append(
+                        Finding(
+                            "reviewer_label_correction_superseded_by_decision",
+                            "info",
+                            f"{ref}: Reviewer corrected {field} to "
+                            f"{applied[field]['to']!r}. {retired_by} has since "
+                            f"repointed this endpoint to {node_id}, registered as "
+                            f"{registered!r}, retiring that label from the graph. "
+                            f"The correction is recorded as superseded rather than "
+                            f"applied; the Reviewer owns the disposition and the "
+                            f"Architect owns the identity.",
+                            ref=ref,
+                            field_name=field,
+                        )
+                    )
+                    applied.pop(field)
+                    revised[field] = registered
+                    continue
+                result.findings.append(
+                    Finding(
+                        "reviewer_label_correction_not_applicable",
+                        "error",
+                        f"{ref}: Reviewer corrected {field} to "
+                        f"{applied[field]['to']!r}, but {node_id} is registered as "
+                        f"{registered!r}. A label is a property of the node, so the "
+                        f"build normalises every row on it to the registered label "
+                        f"and this correction would be discarded without trace. The "
+                        f"distinction belongs in aspect or condition, or in a "
+                        f"distinct node the Analyst proposes, or in an Architect "
+                        f"decision relabelling {node_id} for every row that uses it.",
+                        ref=ref,
+                        field_name=field,
+                    )
+                )
+                applied.pop(field)
+                revised[field] = registered
+
             if applied:
                 result.corrections_applied.append(
                     {
@@ -1656,6 +1904,151 @@ class Compiler:
                 )
         return revised
 
+    def _validate_shadowdark_classification(
+        self, source_id: str | None, target_id: str | None, aspect: str, ref: str,
+        result: "CompileResult",
+    ) -> None:
+        """DEC-2026-0103: enforce the three bounded Shadowdark classification
+        shapes on a CLASSIFIED_AS edge.
+
+        `CLASSIFIED_AS` is only ever in a Shadowdark GUR's vocabulary -- no
+        other ruleset's constitution admits it -- so this is reachable only
+        for Shadowdark, but the check is written defensively rather than
+        trusting that fact silently. Reports findings; does not drop the row,
+        so the Reviewer sees exactly what the Analyst submitted. Cardinality
+        (one tier, one-or-more classes, at most one light source) is checked
+        once per GUR after every edge has compiled, in
+        `_validate_classification_cardinality`.
+        """
+        if self.vocabulary.ruleset_id != "shadowdark":
+            result.findings.append(
+                Finding(
+                    "classified_as_wrong_ruleset", "error",
+                    f"CLASSIFIED_AS is a Shadowdark-only edge type (DEC-2026-0103) and "
+                    f"is not legal for {self.vocabulary.ruleset_id}.",
+                    ref=ref, field_name="edge_type",
+                )
+            )
+            return
+        if source_id is None or target_id is None:
+            # Endpoint resolution already reported its own finding.
+            return
+
+        shape = _shadowdark_classification_shape(source_id, target_id)
+        if shape is None:
+            reversed_shape = _shadowdark_classification_shape(target_id, source_id)
+            if reversed_shape is not None:
+                result.findings.append(
+                    Finding(
+                        "classified_as_direction_illegal", "error",
+                        f"{source_id} CLASSIFIED_AS {target_id} is reversed: constitution "
+                        f"section 2.4 points an individual at its classification, not the "
+                        f"other way around.",
+                        ref=ref, field_name="target_id",
+                    )
+                )
+            elif target_id.startswith("sys_"):
+                result.findings.append(
+                    Finding(
+                        "classified_as_target_illegal", "error",
+                        f"{target_id} is a sys_ axis; constitution section 2.4 forbids "
+                        f"classifying anything as a subsystem axis.",
+                        ref=ref, field_name="target_id",
+                    )
+                )
+            else:
+                result.findings.append(
+                    Finding(
+                        "classified_as_target_illegal", "error",
+                        f"{source_id} CLASSIFIED_AS {target_id} matches none of the four "
+                        f"Shadowdark-bounded classification shapes in constitution section "
+                        f"2.4 (DEC-2026-0103, DEC-2026-0104): it is not an authorized "
+                        f"classification.",
+                        ref=ref, field_name="target_id",
+                    )
+                )
+            return
+
+        if aspect != shape["aspect"]:
+            result.findings.append(
+                Finding(
+                    "classified_as_aspect_illegal", "error",
+                    f"{source_id} CLASSIFIED_AS {target_id} requires aspect "
+                    f"{shape['aspect']!r} ({shape['decision']}); found {aspect!r}.",
+                    ref=ref, field_name="aspect",
+                )
+            )
+
+    def _validate_classification_cardinality(
+        self, gur: dict, result: "CompileResult"
+    ) -> None:
+        """DEC-2026-0103: exactly one tier per spell; casting class may repeat.
+        DEC-2026-0104: at most one light-source classification per item.
+
+        Runs once per GUR against every already-compiled CLASSIFIED_AS row, so
+        it sees the whole picture regardless of edge order. A spell or item
+        that carries no classification at all in this GUR is not evaluated --
+        classification may arrive as an ordinary later successor, and nothing
+        requires every spell or item to be classified the moment it is
+        proposed.
+        """
+        if self.vocabulary.ruleset_id != "shadowdark":
+            return
+        tier_refs: dict[str, list[str]] = {}
+        classified_spells: set[str] = set()
+        light_source_refs: dict[str, list[str]] = {}
+        for row in result.rows:
+            if row.get("edge_type") != "CLASSIFIED_AS":
+                continue
+            source_id = row.get("source_id") or ""
+            aspect = row.get("aspect") or ""
+            if aspect == "casting class":
+                classified_spells.add(source_id)
+            elif aspect == "spell tier":
+                classified_spells.add(source_id)
+                tier_refs.setdefault(source_id, []).append(row.get("ref") or "<no ref>")
+            elif aspect == "light source":
+                light_source_refs.setdefault(source_id, []).append(
+                    row.get("ref") or "<no ref>"
+                )
+
+        for source_id, refs in sorted(tier_refs.items()):
+            if len(refs) > 1:
+                result.findings.append(
+                    Finding(
+                        "classified_as_duplicate_tier", "error",
+                        f"{source_id} carries {len(refs)} spell tier classifications "
+                        f"({', '.join(refs)}); constitution section 2.4 requires exactly "
+                        f"one (DEC-2026-0103).",
+                        ref=refs[-1],
+                    )
+                )
+
+        for source_id in sorted(classified_spells):
+            if source_id not in tier_refs and source_id.startswith("spell_"):
+                result.findings.append(
+                    Finding(
+                        "classified_as_tier_missing", "error",
+                        f"{source_id} carries a casting-class classification but no spell "
+                        f"tier classification in this GUR; constitution section 2.4 "
+                        f"requires exactly one once a spell is being classified "
+                        f"(DEC-2026-0103).",
+                        ref=None,
+                    )
+                )
+
+        for source_id, refs in sorted(light_source_refs.items()):
+            if len(refs) > 1:
+                result.findings.append(
+                    Finding(
+                        "classified_as_duplicate_light_source", "error",
+                        f"{source_id} carries {len(refs)} light source classifications "
+                        f"({', '.join(refs)}); constitution section 2.4 allows at most "
+                        f"one (DEC-2026-0104).",
+                        ref=refs[-1],
+                    )
+                )
+
     def _compile_edge(self, edge: dict, gur: dict, result: CompileResult) -> dict | None:
         ref = edge.get("ref") or "<no ref>"
 
@@ -1670,14 +2063,16 @@ class Compiler:
                 )
             )
 
-        edge_type = (edge.get("edge_type") or "").strip()
-        if edge_type not in EDGE_TYPES:
+        edge_type = _field_text(edge, "edge_type")
+        if edge_type not in self.vocabulary.edge_types:
             result.findings.append(
                 Finding(
                     "edge_type_illegal",
                     "error",
-                    f"edge_type {edge_type!r} is outside the thirteen-type closed vocabulary "
-                    f"(invariant 7). Builder does not extend the ontology.",
+                    f"edge_type {edge_type!r} is outside the "
+                    f"{len(self.vocabulary.edge_types)}-type closed vocabulary of "
+                    f"{self.vocabulary.ruleset_id} (invariant 7). Builder does not extend "
+                    f"the ontology.",
                     ref=ref,
                     field_name="edge_type",
                 )
@@ -1695,7 +2090,14 @@ class Compiler:
         source_id = self._resolve_endpoint(edge, "source", result)
         target_id = self._resolve_endpoint(edge, "target", result)
 
-        pol = polarity_mod.resolve(edge_type, edge.get("polarity"), edge.get("polarity_basis"))
+        if edge_type == "CLASSIFIED_AS":
+            self._validate_shadowdark_classification(
+                source_id, target_id, _field_text(edge, "aspect"), ref, result
+            )
+
+        pol = polarity_mod.resolve(
+            edge_type, edge.get("polarity"), edge.get("polarity_basis"), self.vocabulary
+        )
         for item in pol.findings:
             result.findings.append(
                 Finding(item["rule"], item["severity"], item["detail"], ref=ref, field_name="polarity")
@@ -1707,14 +2109,23 @@ class Compiler:
             )
 
         # -- controlled vocabularies -----------------------------------------
-        book = (edge.get("book") or "").strip()
-        if book not in BOOKS:
+        book = _field_text(edge, "book")
+        if book not in self.vocabulary.books:
+            # The citation codes come from the ruleset's own book registry, so a
+            # PHB citation in a Basic D&D patch fails here rather than being
+            # carried into a graph that has no such book.
             result.findings.append(
-                Finding("book_illegal", "error", f"book {book!r} is not one of PHB, DMG, UA, MM",
-                        ref=ref, field_name="book")
+                Finding(
+                    "book_illegal",
+                    "error",
+                    f"book {book!r} is not a registered {self.vocabulary.ruleset_id} citation "
+                    f"code ({', '.join(sorted(self.vocabulary.books)) or 'none registered'})",
+                    ref=ref,
+                    field_name="book",
+                )
             )
 
-        evidence = (edge.get("evidence") or "").strip()
+        evidence = _field_text(edge, "evidence")
         if evidence not in EVIDENCE_CLASSES:
             result.findings.append(
                 Finding("evidence_illegal", "error",
@@ -1722,7 +2133,7 @@ class Compiler:
                         ref=ref, field_name="evidence")
             )
 
-        status = (edge.get("status") or "").strip()
+        status = _field_text(edge, "status")
         if status not in STATUS_VALUES:
             result.findings.append(
                 Finding("status_illegal", "error", f"status {status!r} is not core or optional",
@@ -1735,7 +2146,7 @@ class Compiler:
                         ref=ref, field_name="status")
             )
 
-        review_flag = (edge.get("review_flag") or "").strip()
+        review_flag = _field_text(edge, "review_flag")
         if review_flag and review_flag not in REVIEW_FLAG_VALUES:
             result.findings.append(
                 Finding("review_flag_illegal", "error",
@@ -1744,7 +2155,7 @@ class Compiler:
             )
 
         # -- conditional fields ----------------------------------------------
-        supersession = (edge.get("supersession_basis") or "").strip()
+        supersession = _field_text(edge, "supersession_basis")
         if edge_type == "OVERRIDES":
             if not supersession:
                 result.findings.append(
@@ -1766,8 +2177,8 @@ class Compiler:
                         ref=ref, field_name="supersession_basis")
             )
 
-        general_rule_id = (edge.get("general_rule_id") or "").strip()
-        pass_value = (edge.get("pass") or "").strip()
+        general_rule_id = _field_text(edge, "general_rule_id")
+        pass_value = _field_text(edge, "pass")
         if pass_value == PASS_GENERAL_RULE:
             if not general_rule_id:
                 result.findings.append(
@@ -1791,15 +2202,16 @@ class Compiler:
             )
 
         # -- citation ---------------------------------------------------------
-        page = str(edge.get("page") or "").strip()
-        section = (edge.get("section") or "").strip()
+        page = _field_text(edge, "page")
+        section = _field_text(edge, "section")
         if ";" in section:
             # Constitution 1.4: `section` never contains a list of headings.
             result.findings.append(
                 Finding(
                     "citation_multi_locus", "error",
                     f"section {section!r} joins several headings. Constitution "
-                    f"{CONSTITUTION_VERSION} allows one section heading or blank; where evidence "
+                    f"{self.vocabulary.constitution_version} allows one section heading or blank; where "
+                    f"evidence "
                     f"spans pages within one section, cite that section and leave page blank.",
                     ref=ref, field_name="section",
                 )
@@ -1846,7 +2258,8 @@ class Compiler:
                     Finding(
                         "citation_multi_locus", "error",
                         f"page {page!r} is a range or delimiter-joined value. Constitution "
-                        f"{CONSTITUTION_VERSION} section 5 allows one printed page number or blank.",
+                        f"{self.vocabulary.constitution_version} section 5 allows one printed page number "
+                        f"or blank.",
                         ref=ref, field_name="page",
                     )
                 )
@@ -1908,8 +2321,8 @@ class Compiler:
             "edge_type": edge_type,
             "target_id": target_id,
             "target_label": self._endpoint_label(target_id, edge, "target", result),
-            "aspect": (edge.get("aspect") or "").strip(),
-            "condition": (edge.get("condition") or "").strip(),
+            "aspect": _field_text(edge, "aspect"),
+            "condition": _field_text(edge, "condition"),
             "polarity": pol.polarity,
             "polarity_basis": pol.polarity_basis,
             "book": book,
@@ -2101,7 +2514,7 @@ class Compiler:
             # would tell the Reviewer the patch was checked against rules that
             # were never applied to it. What the GUR declared is preserved in
             # provenance, where it describes the input instead of the output.
-            "constitution_version": CONSTITUTION_VERSION,
+            "constitution_version": self.vocabulary.constitution_version,
             "gur_constitution_version": str(gur.get("constitution_version") or ""),
         }
 
@@ -2386,6 +2799,8 @@ class Compiler:
             if row is not None:
                 result.rows.append(row)
 
+        self._validate_classification_cardinality(gur, result)
+
         # Carry the Analyst's own architectural escalations through; Builder
         # does not resolve them (invariant 27).
         for item in gur.get("architectural_escalations") or []:
@@ -2429,6 +2844,27 @@ class Compiler:
                         "against the decided escalations and is carried forward as "
                         "open. If the Architect has already ruled, the GUR must name "
                         f"the escalation ID. Topic: {item.get('topic') or item.get('question') or 'unstated'}",
+                    )
+                )
+            elif not self.governance.is_open(escalation_id):
+                # An ID that matches nothing is the same problem as no ID at
+                # all, and it reads worse: the patch blocks on an escalation
+                # the repository has never heard of, with no hint that the
+                # question may already be settled under its real ID. The
+                # missing-ID case above already says what to do; this one used
+                # to say nothing. The Builder still does not guess which
+                # escalation is meant (invariant 27).
+                result.findings.append(
+                    Finding(
+                        "gur_escalation_id_unknown",
+                        "warning",
+                        f"{escalation_id} is neither an open nor a decided escalation "
+                        f"in this ruleset, so it cannot be matched and is carried "
+                        f"forward as open. A candidate or placeholder ID blocks the "
+                        f"patch on a question no one can look up. If the Architect has "
+                        f"ruled, the GUR must name the decided escalation ID; if the "
+                        f"question is genuinely open, it must name the published one. "
+                        f"Subject: {item.get('subject') or item.get('topic') or item.get('question') or 'unstated'}",
                     )
                 )
             result.escalations.append({"kind": "carried_from_gur", **item})

@@ -1,0 +1,187 @@
+schema_version: '1.0'
+id: DEC-2026-0089
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 2
+supersedes: DEC-2026-0088
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.2'
+decision_date: '2026-09-22'
+request_origin:
+  type: repository_owner_directive
+  summary: >-
+    Retire serialized Herdr relays and the one-agent-at-a-time restriction.
+    Herdr is a simple notification channel: tell a role it has work and let
+    repository artifacts and the queue scanner determine what it may do.
+question: >-
+  How should the repository notify roles of ready work without turning delivery
+  observation into a second workflow engine or preventing independent roles
+  from progressing concurrently?
+ruling: >-
+  Supersede and retire DEC-2026-0088's unimplemented relay work. Herdr is a
+  best-effort notification channel only. A sender may directly prompt a named
+  role with a concise artifact path and requested action, without a background
+  relay, local request record, lock, settlement observation, delivery state,
+  retry protocol, or turn wait. The prompt is not work authority: each receiver
+  verifies current queue state, inputs, checksums, ownership, and prerequisites
+  before acting.
+
+  Permit concurrent repository roles. Priority orders dependencies; it does not
+  reserve execution. Independent ready work may proceed in parallel. Artifact
+  ownership, immutable publication, exact provenance, create-only output, and
+  current-input verification remain the coordination boundary. A role must not
+  edit another role's files or assume an upstream artifact remains current after
+  its own work begins. It rechecks the active leaf and required inputs before
+  publication, then follows ordinary revision and Review lifecycle if they
+  changed.
+
+  Retire `tooling/common/send-agent-handoff.ps1` from operational use. Preserve
+  the file, its tests, local historical request records, DEC-2026-0082, and
+  DEC-2026-0088 as history; do not delete or repair them. No Builder
+  implementation report or Reviewer implementation Review is required for this
+  retirement. Update shared and role instructions immediately. A role may send
+  more than one notification when multiple recipients have independent ready
+  work, but must make each notification bounded and point the recipient at the
+  authoritative artifact or scanner.
+rationale:
+  - >-
+    Immutable artifacts, ownership boundaries, and the queue scanner already
+    prevent duplicate graph work. The relay duplicated those controls poorly.
+  - >-
+    Delivery settlement is not graph state and cannot safely substitute for a
+    receiver's current-input verification.
+  - >-
+    Serializing every role creates idle capacity and deadlocks unrelated work;
+    dependency checks, not a global turn lock, determine whether work is safe.
+  - >-
+    Retaining the old utility and records preserves audit history while removing
+    it from every future workflow path.
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    Architect applies the documentation and contract amendment directly. The
+    superseded DEC-2026-0088 has no executable Builder or Reviewer follow-up.
+  blocking_ids: []
+evidence:
+  - path: rulesets/shadowdark/escalations/decisions/DEC-2026-0088.yaml
+    checksum: sha256:3ac4a37a60a600cce6376cef947acd5c0b1ebdc26b7d801c1f804efb27b93402
+    role: superseded_unimplemented_relay_decision
+  - path: contracts/HERDR_HANDOFFS.md
+    checksum: sha256:e521c640f4470b0449a3bd553437d4829d2a61a76afdb4af2ceea5011fd94d72
+    role: serialized_handoff_contract_replaced_by_this_decision
+migration_required: false
+migration_scope: >-
+  No graph, registry, source, packet, GUR, GUP, Review, Approved bundle,
+  canonical row, or role-context receipt is migrated. Existing local Herdr
+  files remain ignored historical operations data. Future notifications do not
+  read or write those records.
+constitution_version_impact: >-
+  No ontology impact. Shadowdark Constitution 1.2 removes its contradictory
+  serialized-work instruction; the GUR and GUP schemas admit the current 1.2
+  declaration while retaining immutable 1.0 and 1.1 artifacts.
+affected_contracts:
+  - AGENTS.md
+  - README.md
+  - REPOSITORY_STRUCTURE.md
+  - contracts/HERDR_HANDOFFS.md
+  - contracts/ROLE_CONTEXT_LOADING.md
+  - contracts/WORK_QUEUES.md
+  - agents/architect/INSTRUCTIONS.md
+  - agents/analyst/INSTRUCTIONS.md
+  - agents/builder/INSTRUCTIONS.md
+  - agents/reviewer/INSTRUCTIONS.md
+  - agents/integrator/INSTRUCTIONS.md
+  - rulesets/shadowdark/governance/constitution.md
+  - rulesets/shadowdark/ruleset.yaml
+  - schemas/shadowdark/graph/gur.schema.json
+  - schemas/shadowdark/graph/gup.schema.json
+affected_registries: []
+implementation_bounds:
+  - >-
+    Update only the fifteen listed documentation, governance, and schema paths.
+    Do not edit relay tooling or tests, scanner code, packet artifacts, graph
+    data, or any .local/herdr history.
+  - >-
+    Replace serial delivery language with direct notification and concurrent
+    role work. Retain all ownership, immutable-artifact, source-authority,
+    current-input, validation, and no-RC requirements.
+  - >-
+    Do not create a replacement coordination service, hidden task store,
+    settlement state, lock, or delivery receipt. Herdr is not provenance and a
+    missed prompt is remedied by another direct notification, never by altering
+    graph artifacts.
+acceptance_tests:
+  - >-
+    HERDR_HANDOFFS Version 2.0 or later defines direct best-effort
+    notifications, no relay state or lock, concurrent independent role work,
+    receiver-side queue/input verification, and artifact ownership as the
+    coordination boundary.
+  - >-
+    AGENTS, README, REPOSITORY_STRUCTURE, ROLE_CONTEXT_LOADING, WORK_QUEUES,
+    all five role instructions, the Shadowdark constitution, and its current
+    GUR/GUP schemas contain no
+    instruction to serialize roles, defer a handoff, await settlement, use a
+    relay, or write a local handoff request state.
+  - >-
+    DEC-2026-0089 is the active terminal successor to DEC-2026-0088, so queue
+    derivation exposes no Builder or Reviewer work from the retired relay
+    Decision. Existing relay tooling and local records remain untouched history.
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/HERDR_HANDOFFS.md
+        minimum_version: '2.0'
+        substantive_anchors:
+          - Herdr is a best-effort notification channel, not a relay or workflow state system.
+          - Independent repository roles may work concurrently; dependencies and ownership govern publication.
+          - Receivers verify current queue state and inputs, while artifact records remain the only provenance.
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this terminal successor and update the exact documentation and
+      contract paths. Validate the Decision and textual consistency. Notify all
+      five roles to reload their instructions, then directly notify each role
+      that currently has ready work. No relay, wait, or state record is used.
+post_implementation_requirements:
+  - >-
+    Future workers use direct Herdr notifications and the scanner/artifacts.
+    The old relay may remain readable for historical troubleshooting only.
+exact_diff:
+  AGENTS.md: Allow concurrent roles and direct best-effort notifications.
+  README.md: Describe concurrent direct notifications.
+  REPOSITORY_STRUCTURE.md: Remove serial coordination from the repository model.
+  contracts/HERDR_HANDOFFS.md: Replace relay lifecycle with notification-only operation.
+  contracts/ROLE_CONTEXT_LOADING.md: Remove sequential control-operation language.
+  contracts/WORK_QUEUES.md: Separate priority from execution serialization.
+  agents/architect/INSTRUCTIONS.md: Replace deferred serial relay requirements.
+  agents/analyst/INSTRUCTIONS.md: Replace deferred serial relay requirements.
+  agents/builder/INSTRUCTIONS.md: Replace deferred serial relay requirements.
+  agents/reviewer/INSTRUCTIONS.md: Replace deferred serial relay requirements.
+  agents/integrator/INSTRUCTIONS.md: Replace deferred serial relay requirements.
+  rulesets/shadowdark/governance/constitution.md: Align workflow wording with concurrent roles.
+  rulesets/shadowdark/ruleset.yaml: Declare Constitution 1.2 as the current Shadowdark version.
+  schemas/shadowdark/graph/gur.schema.json: Admit current Constitution 1.2 output while retaining historical versions.
+  schemas/shadowdark/graph/gup.schema.json: Admit current Constitution 1.2 output while retaining historical versions.
+exact_diff_ownership:
+  - {path: AGENTS.md, owner: architect, sequence_step: 1}
+  - {path: README.md, owner: architect, sequence_step: 1}
+  - {path: REPOSITORY_STRUCTURE.md, owner: architect, sequence_step: 1}
+  - {path: contracts/HERDR_HANDOFFS.md, owner: architect, sequence_step: 1}
+  - {path: contracts/ROLE_CONTEXT_LOADING.md, owner: architect, sequence_step: 1}
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: agents/architect/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/analyst/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/builder/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/reviewer/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/integrator/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/governance/constitution.md, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/ruleset.yaml, owner: architect, sequence_step: 1}
+  - {path: schemas/shadowdark/graph/gur.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/shadowdark/graph/gup.schema.json, owner: architect, sequence_step: 1}
+follow_up_owners: []

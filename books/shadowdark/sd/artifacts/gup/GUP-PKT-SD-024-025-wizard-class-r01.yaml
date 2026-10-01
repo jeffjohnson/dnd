@@ -1,0 +1,683 @@
+schema_version: '1.0'
+id: GUP-PKT-SD-024-025-wizard-class-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-024-025-wizard-class
+constitution_version: '1.2'
+artifact_kind: packet_update
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 0 edge addition(s), 0 update(s), 19 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-SD-024-025-wizard-class-r01
+  gur_checksum: sha256:fb5f2d1a4bf8a6e36ea7dd1b7a6664d6ec31cd4353d954eeb3124640d6e72572
+  gur_constitution_version: '1.2'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 876
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: class_wizard
+      proposed_label: Wizard
+      kind: class
+      why_needed: Source of M001 through M004, M009 and M010. The class identity this page defines; the
+        armor, hit point, language, benefit and spellcasting dependencies all originate from it.
+      edges_depending_on_it:
+        - M001
+        - M002
+        - M003
+        - M004
+        - M009
+        - M010
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: abil_learning_spells
+      proposed_label: Learning Spells
+      kind: abil
+      why_needed: Endpoint of M004 and M005 and source of M007 and M008. A separately named wizard benefit
+        that converts a scroll into a permanently known spell on a successful check and whose results
+        are excluded from the spells-known count.
+      edges_depending_on_it:
+        - M004
+        - M005
+        - M007
+        - M008
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: spell_wizard_spells
+      proposed_label: Wizard Spells
+      kind: spell
+      why_needed: Endpoint of M009 and M012 and source of M013. The source-named family this class can
+        learn and cast; the casting, count and resolution dependencies all need it.
+      edges_depending_on_it:
+        - M009
+        - M012
+        - M013
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_wizard_spells_known
+      proposed_label: Wizard Spells Known By Spell Tier Table
+      kind: tbl
+      why_needed: Endpoint of M008, M010, M011 and M019 and source of M012. The table that fixes how many
+        spells of each tier a wizard knows at a given level, and the mechanic scroll-learned spells are
+        excluded from.
+      edges_depending_on_it:
+        - M008
+        - M010
+        - M011
+        - M012
+        - M019
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_wizard_talents
+      proposed_label: Wizard Talents Table
+      kind: tbl
+      why_needed: Endpoint of M014 and source of M015 through M019. The separately headed table that resolves
+        a wizard's talent roll; its outcome rows are the source of five distinct dependencies.
+      edges_depending_on_it:
+        - M014
+        - M015
+        - M016
+        - M017
+        - M018
+        - M019
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: item_spell_scroll
+      proposed_label: Spell Scroll
+      kind: item
+      why_needed: Endpoint of M007. What the Learning Spells benefit consumes; without it the only CONSUMES
+        relationship this packet states cannot be expressed.
+      edges_depending_on_it:
+        - M007
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: item_magic_item
+      proposed_label: Magic Item
+      kind: item
+      why_needed: Endpoint of M015. What one talents row lets a wizard create; without it that outcome
+        row has no target and the dependency is lost.
+      edges_depending_on_it:
+        - M015
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: item_armor
+      proposed_label: Armor
+      kind: item
+      why_needed: Endpoint of M001. What the class entry's Armor line addresses. Proposed here because
+        this patch uses it as an endpoint.
+      edges_depending_on_it:
+        - M001
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: rule_hit_points
+      proposed_label: Hit Points
+      kind: rule
+      why_needed: Endpoint of M002. What the class entry's Hit Points line supplies a die for. Proposed
+        here because this patch uses it as an endpoint.
+      edges_depending_on_it:
+        - M002
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: sys_language
+      proposed_label: Language
+      kind: sys
+      why_needed: Endpoint of M003. What the class's Languages benefit supplies. Proposed here because
+        this patch uses it as an endpoint.
+      edges_depending_on_it:
+        - M003
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: exp_level
+      proposed_label: Level
+      kind: exp
+      why_needed: Source of M011. What indexes the spells-known table. Proposed here because this patch
+        uses it as an endpoint.
+      edges_depending_on_it:
+        - M011
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: rule_talent_roll
+      proposed_label: Talent Roll
+      kind: rule
+      why_needed: Source of M014. The roll this class's talents table resolves. Proposed here because
+        this patch uses it as an endpoint.
+      edges_depending_on_it:
+        - M014
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: rule_spellcasting_check
+      proposed_label: Spellcasting Check
+      kind: rule
+      why_needed: Endpoint of M013, M017 and M018. How a spell is cast and what two talents branches improve.
+        Proposed here because this patch uses it as an endpoint.
+      edges_depending_on_it:
+        - M013
+        - M017
+        - M018
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: rule_check
+      proposed_label: Check
+      kind: rule
+      why_needed: Source of M005 and endpoint of M006. The check that must succeed for a spell to be learned
+        from a scroll. Proposed here because this patch uses it as an endpoint.
+      edges_depending_on_it:
+        - M005
+        - M006
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: abil_intelligence
+      proposed_label: Intelligence
+      kind: abil
+      why_needed: Source of M006 and endpoint of M016. The stat the learning check uses and one a talents
+        branch can raise. Proposed here because this patch uses it as an endpoint.
+      edges_depending_on_it:
+        - M006
+        - M016
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions: []
+  pending_additions:
+    - source_id: abil_intelligence
+      source_label: Intelligence
+      edge_type: FEEDS_INTO
+      target_id: rule_check
+      target_label: Check
+      aspect: learning check
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '24'
+      section: WIZARD CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M006
+    - source_id: abil_learning_spells
+      source_label: Learning Spells
+      edge_type: CONSUMES
+      target_id: item_spell_scroll
+      target_label: Spell Scroll
+      aspect: scroll expenditure
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '24'
+      section: WIZARD CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M007
+    - source_id: abil_learning_spells
+      source_label: Learning Spells
+      edge_type: EXCLUDED_FROM
+      target_id: tbl_wizard_spells_known
+      target_label: Wizard Spells Known By Spell Tier Table
+      aspect: spell count
+      condition: ''
+      polarity: negates
+      polarity_basis: derived
+      book: SD
+      page: '24'
+      section: WIZARD CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M008
+    - source_id: class_wizard
+      source_label: Wizard
+      edge_type: CONSTRAINS
+      target_id: item_armor
+      target_label: Armor
+      aspect: permitted armor
+      condition: ''
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '24'
+      section: WIZARD CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+    - source_id: class_wizard
+      source_label: Wizard
+      edge_type: FEEDS_INTO
+      target_id: rule_hit_points
+      target_label: Hit Points
+      aspect: hit dice
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '24'
+      section: WIZARD CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: class_wizard
+      source_label: Wizard
+      edge_type: FEEDS_INTO
+      target_id: sys_language
+      target_label: Language
+      aspect: starting languages
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '24'
+      section: WIZARD CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+    - source_id: class_wizard
+      source_label: Wizard
+      edge_type: GATES
+      target_id: abil_learning_spells
+      target_label: Learning Spells
+      aspect: benefit access
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '24'
+      section: WIZARD CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+    - source_id: class_wizard
+      source_label: Wizard
+      edge_type: GATES
+      target_id: spell_wizard_spells
+      target_label: Wizard Spells
+      aspect: casting access
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '24'
+      section: WIZARD CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M009
+    - source_id: class_wizard
+      source_label: Wizard
+      edge_type: GATES
+      target_id: tbl_wizard_spells_known
+      target_label: Wizard Spells Known By Spell Tier Table
+      aspect: table applicability
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '24'
+      section: WIZARD CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M010
+    - source_id: exp_level
+      source_label: Level
+      edge_type: FEEDS_INTO
+      target_id: tbl_wizard_spells_known
+      target_label: Wizard Spells Known By Spell Tier Table
+      aspect: spells known
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '25'
+      section: WIZARD SPELLS KNOWN BY SPELL TIER TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M011
+    - source_id: rule_check
+      source_label: Check
+      edge_type: GATES
+      target_id: abil_learning_spells
+      target_label: Learning Spells
+      aspect: learning success
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '24'
+      section: WIZARD CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M005
+    - source_id: rule_talent_roll
+      source_label: Talent Roll
+      edge_type: RESOLVED_BY
+      target_id: tbl_wizard_talents
+      target_label: Wizard Talents Table
+      aspect: wizard talents
+      condition: for a wizard
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '25'
+      section: WIZARD TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M014
+    - source_id: spell_wizard_spells
+      source_label: Wizard Spells
+      edge_type: RESOLVED_BY
+      target_id: rule_spellcasting_check
+      target_label: Spellcasting Check
+      aspect: casting resolution
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '24'
+      section: WIZARD CLASS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M013
+    - source_id: tbl_wizard_spells_known
+      source_label: Wizard Spells Known By Spell Tier Table
+      edge_type: CONSTRAINS
+      target_id: spell_wizard_spells
+      target_label: Wizard Spells
+      aspect: known count
+      condition: ''
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '25'
+      section: WIZARD SPELLS KNOWN BY SPELL TIER TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M012
+    - source_id: tbl_wizard_talents
+      source_label: Wizard Talents Table
+      edge_type: GATES
+      target_id: item_magic_item
+      target_label: Magic Item
+      aspect: item creation
+      condition: ''
+      polarity: enables
+      polarity_basis: derived
+      book: SD
+      page: '25'
+      section: WIZARD TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M015
+    - source_id: tbl_wizard_talents
+      source_label: Wizard Talents Table
+      edge_type: MODIFIES
+      target_id: abil_intelligence
+      target_label: Intelligence
+      aspect: stat increase
+      condition: when that branch is chosen
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '25'
+      section: WIZARD TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M016
+    - source_id: tbl_wizard_talents
+      source_label: Wizard Talents Table
+      edge_type: MODIFIES
+      target_id: rule_spellcasting_check
+      target_label: Spellcasting Check
+      aspect: chosen spell
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '25'
+      section: WIZARD TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M018
+    - source_id: tbl_wizard_talents
+      source_label: Wizard Talents Table
+      edge_type: MODIFIES
+      target_id: rule_spellcasting_check
+      target_label: Spellcasting Check
+      aspect: wizard checks
+      condition: when that branch is chosen
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '25'
+      section: WIZARD TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M017
+    - source_id: tbl_wizard_talents
+      source_label: Wizard Talents Table
+      edge_type: MODIFIES
+      target_id: tbl_wizard_spells_known
+      target_label: Wizard Spells Known By Spell Tier Table
+      aspect: known count
+      condition: ''
+      polarity: improves
+      polarity_basis: read
+      book: SD
+      page: '25'
+      section: WIZARD TALENTS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M019
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts: {}
+duplicate_findings:
+  - grade: near
+    ref: M017
+    conflicts_with:
+      - M018
+    detail: 2 edges share endpoints and type (tbl_wizard_talents MODIFIES rule_spellcasting_check) but
+      differ in aspect or condition; Reviewer must confirm they are distinct assertions rather than one
+      restated
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 19
+  edges_compiled: 19
+  edges_rejected: 0
+  edge_additions: 0
+  edge_pending_additions: 19
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 0
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 15
+  cross_packet_dependencies: 0
+  duplicate_findings: 1
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-SD-024-025-wizard-class-r01.validation.json

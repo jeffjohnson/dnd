@@ -1,0 +1,156 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0100-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+constitution_version: '1.5'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: Shadowdark historical GUR-version compatibility is now derived from rulesets/shadowdark/ruleset.yaml's
+    own historical_gur_constitution_versions list, unioned with the current manifest version, instead
+    of a Builder-transcribed constant. A malformed governed list raises a clear configuration error
+    rather than falling back to the retired hardcoded history. All five acceptance tests pass, including
+    a read-only dry compile of the exact GUR this Decision names. No GUP was published; recompilation
+    is step 4, after this report's independent approval.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0100
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+  checksum: sha256:087e0de08447e0e503adb0fe29093770b4b2c0e0bad505d2d5b33c8ac546bfb8
+implementation_files:
+- path: tooling/builder/src/adnd1e_builder/vocab.py
+  checksum: sha256:d13fb28b488fc99b682da2b002abbd127a959cf36022aeacc0efe30365fd42e1
+- path: tooling/builder/tests/test_shadowdark_ancestry.py
+  checksum: sha256:86d1ab2ff62fa223f2367ee690312ece9530ee712972b591d1e934aeb6e6e9d7
+verified_inputs:
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+  checksum: sha256:087e0de08447e0e503adb0fe29093770b4b2c0e0bad505d2d5b33c8ac546bfb8
+- path: rulesets/shadowdark/governance/constitution.md
+  checksum: sha256:321341469fe0196241864b9f62dd00527607446668b02a2b715a9296ed813e72
+- path: rulesets/shadowdark/ruleset.yaml
+  checksum: sha256:d5901396d6a7c7d53abaaa734de681f8229d23eb923ddd853a1f1ecb0fb94280
+- path: schemas/shadowdark/graph/gur.schema.json
+  checksum: sha256:78a839dadcb0c698c3e44cbdce1bb9bd8ac1504aadf848180e3c9ff887c3d125
+- path: schemas/shadowdark/graph/gup.schema.json
+  checksum: sha256:18742ef459b6a2bbd76fda2c318f419f6524037d85c58f54260daa71f98dd6fc
+- path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-027-029-alignment-and-deities-r01.yaml
+  checksum: sha256:bd211b3f70180d5627c8a379ed426b3784b512d2fc8cf316b29e2107851a3506
+validation_report: build/reports/IMP-DEC-2026-0100-r01.validation.json
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: Verified as an Architect-owned input, not authored here. Constitution 1.5 section 9 now
+    reads 'Historical Shadowdark GURs declaring a version listed in rulesets/shadowdark/ruleset.yaml
+    under historical_gur_constitution_versions remain admissible only with full revalidation under
+    the current Constitution', names the list as '1.0 through 1.4 at this amendment', and states new
+    output declares the current version (1.5). ruleset.yaml declares constitution_version '1.5' and
+    historical_gur_constitution_versions ['1.0', '1.1', '1.2', '1.3', '1.4'], an explicit unique five-entry
+    list. All three authorized anchors were read in place. Structured evidence is recorded in versioned_contract_content.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0100
+      path: rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+      checksum: sha256:087e0de08447e0e503adb0fe29093770b4b2c0e0bad505d2d5b33c8ac546bfb8
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: rulesets/shadowdark/governance/constitution.md
+      checksum: sha256:321341469fe0196241864b9f62dd00527607446668b02a2b715a9296ed813e72
+      observed_version: '1.5'
+      minimum_version: '1.5'
+      anchors_present:
+      - Historical GUR compatibility is governed by the ruleset manifest list plus its current constitution
+        version.
+      - Historical artifacts are fully revalidated under the current Constitution and new output declares
+        the current version.
+      - Immutable GURs are not rewritten solely because an additive Constitution amendment advances
+        the current version.
+- acceptance_test_index: 2
+  result: passed
+  evidence: 'Verified as an Architect-owned input. Both Shadowdark structural schemas enumerate constitution_version
+    as [''1.0'', ''1.1'', ''1.2'', ''1.3'', ''1.4'', ''1.5''], admitting 1.0 through 1.5 and no other
+    value; a synthetic ''1.6'' GUR is exercised against the vocabulary below and still fails constitution_version_mismatch.
+    adnd1e and basicdnd schemas are unedited: their historical-version behaviour is unchanged.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'RulesetVocabulary.load(REPO_ROOT, ''shadowdark'') now derives its accepted set from the
+    governed list, measured live as [''1.0'', ''1.1'', ''1.2'', ''1.3'', ''1.4'', ''1.5''] -- the
+    five governed historical versions plus current 1.5, not transcribed. It accepts 1.2 and 1.3 specifically
+    (the two DEC-2026-0100 exists to unstrand) and a synthetic ''1.6'' GUR still fails constitution_version_mismatch.
+    A constructed ruleset root with a non-dotted-numeric entry, a duplicate entry, an empty list,
+    or a non-list value each raises MalformedHistoricalVersionList rather than falling back to the
+    retired hardcoded {''1.0'', ''1.1''} Shadowdark entry, which no longer exists in HISTORICAL_ACCEPTED_GUR_CONSTITUTION_VERSIONS
+    at all. AD&D 1e is confirmed unaffected: its dict entry is still exactly ACCEPTED_GUR_CONSTITUTION_VERSIONS,
+    and a root with no governed field (the shape every other ruleset has) falls back to that entry
+    -- or to nothing, for a ruleset with neither, which is the correct default for one newly registered.
+    Executable checks: TestHistoricalVersionCompatibility (11 tests) and TestMalformedGovernedHistoricalVersions
+    (8 tests), all passing.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'A read-only dry compile of the unchanged GUR-PKT-SD-027-029-alignment-and-deities-r01
+    -- the exact artifact this Decision names -- reports no constitution_version_mismatch and no error
+    finding of any kind. Its bytes hash identically before and after compilation. No GUP was published
+    by this report: step 4''s ordinary recompilation, and any resulting GUP successor declaring current
+    1.5, is separate work that follows only after this report''s independent Reviewer approval. No
+    version-only Analyst GUR successor was requested or created for this or any of the other fifteen
+    affected leaves.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: The focused module ran 88 tests, up from 78 before this Decision's 10 new tests, and the
+    complete Builder suite ran 902, up from 892; both exit code 0 with no failures or errors. Exact
+    commands and outcomes are in the validation block and in build/reports/IMP-DEC-2026-0100-r01.validation.json.
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/builder/tests] python -m unittest test_shadowdark_ancestry'
+    exit_code: 0
+    result: passed
+    summary: Ran 88 tests in 6.559s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 902 tests in 192.020s OK (skipped=38)
+changes_in_this_revision:
+- 'vocab.py: retired the hardcoded ''shadowdark'' entry from HISTORICAL_ACCEPTED_GUR_CONSTITUTION_VERSIONS
+  entirely (the dict now holds only ''adnd1e''). Added MalformedHistoricalVersionList and _historical_versions(ruleset_id,
+  manifest), which reads historical_gur_constitution_versions from a ruleset''s own manifest when
+  present, validating each entry as a unique dotted-numeric string and raising on an empty, non-list,
+  malformed, or duplicate-containing value; falls back to the transcribed dict entry (or nothing)
+  when the field is absent, preserving every other ruleset''s existing behaviour. RulesetVocabulary.load
+  now calls it in place of the direct dict lookup.'
+- 'test_shadowdark_ancestry.py: rewrote TestHistoricalVersionCompatibility''s two version-transcribing
+  tests to derive their expectations from ruleset.yaml''s governed list instead of hardcoding ''1.0''/''1.1''
+  and the retired constitution sentence, and added three tests covering every governed version, 1.2
+  and 1.3 specifically, and the governed-list-pointer shape of the current constitution text. Added
+  TestMalformedGovernedHistoricalVersions, 8 tests covering a valid list, a non-dotted-numeric entry,
+  a duplicate, an empty list, a non-list value, absence of the field entirely, and that adnd1e''s
+  transcribed constant is unaffected.'
+concurrent_work_note: GUR-PKT-SD-040-042-random-characters-r01 was published by the Analyst while
+  this report was being written, declaring the current 1.5 directly; it is unaffected by this Decision
+  and was not touched. Fifteen other immutable GUR leaves besides GUR-PKT-SD-027-029-alignment-and-deities-r01
+  declare 1.2 or 1.3 and are equally unblocked by this fix; none was compiled or published by this
+  report. Step 4 -- normal recompilation, beginning with PKT-SD-027-029 -- follows only after this
+  report's terminal Reviewer approval, per the Decision's own sequence.
+observed_evidence_checksum_drift: 'DEC-2026-0100''s own evidence block pins checksums for constitution.md,
+  ruleset.yaml, and gur.schema.json that do not match their current bytes, though the Decision''s
+  ruling text is fully consistent with the current content of all three (verified directly: section
+  9''s governed-list wording, the five-entry historical list, and the 1.0-1.5 schema enum all match
+  what the ruling describes). All three files carry the same modification timestamp as the Decision''s
+  own publication, consistent with a same-turn snapshot difference rather than a substantive disagreement
+  or later edit by another role. Reported for the record rather than treated as a blocker, since implementation_bounds
+  do not authorize Builder to touch any of the four files in question and the ruling''s own text is
+  unambiguous.'
+not_done:
+- No GUP was compiled or published for any of the sixteen affected GUR leaves. Step 4 recompilation
+  follows this report's Reviewer approval, per the Decision's own sequence, not this report.
+- No version-only GUR successor was requested from or published by the Analyst for any leaf, as the
+  Decision requires.
+- No constitution, ruleset manifest, schema, contract, GUR, GUP, Review, Approved bundle, registry,
+  or canonical file was edited.
+- No basicdnd or rc work of any kind was performed. DEC-2026-0086 remains binding.
+validation_report_checksum: sha256:9a2a4abf4664b2fec933dd4875758272f97ee8c5a53e99c9e14a9e01314418e1

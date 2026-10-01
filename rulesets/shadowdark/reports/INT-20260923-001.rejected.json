@@ -1,0 +1,138 @@
+{
+  "schema_version": "1.0",
+  "id": "INT-20260923-001",
+  "integration_id": "INT-20260923-001",
+  "status": "rejected",
+  "ruleset_id": "shadowdark",
+  "book_id": "sd",
+  "constitution_version": "1.4",
+  "revision": 1,
+  "supersedes": null,
+  "rejected_at_utc": "2026-09-23T11:12:54.432Z",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "handoff": {
+    "next_role": "reviewer",
+    "readiness": "ready",
+    "reason": "Two defects, both of the exact shape you have already repaired on this book. The approving Review states its nineteen node registrations in prose and carries no executable node_registry_decisions block, so the Integrator reads zero approved registrations and fifteen endpoints dangle. The Approved manifest also declares no operation_index, which is the same packaging defect INT-20260922-001 recorded for Stats. Neither a GUP revision nor a new source reading is implied: GUP-PKT-SD-011-014-character-overview-and-starting-level-r03 already proposes all nineteen nodes.",
+    "blocking_ids": []
+  },
+  "rejected_bundles": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r01",
+      "bundle_checksum": "sha256:120ba225b84a6703c1c93439fe94a969cf169a4939d4a7d6830a6809517fce13",
+      "manifest_path": "books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r01.yaml",
+      "review_id": "REV-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r01",
+      "review_checksum": "sha256:e5d670a3c6473e9b2e5854623303aabbe4ea765228d3d0ce4460389367112420",
+      "gup_id": "GUP-PKT-SD-011-014-character-overview-and-starting-level-r03",
+      "gup_checksum": "sha256:722b251baf5e21d0f2f2da5533bc6acf1dd55cff0a6c36329c523813f9a4d3e9",
+      "packet_id": "PKT-SD-011-014-character-overview-and-starting-level",
+      "edge_csv": {
+        "path": "books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r01.edges.csv",
+        "checksum": "sha256:fe6ab0e1a21614afb95d3d0fe27266916404e42a0bdf73daa1a5a1ac3c0ed782",
+        "rows": 21
+      },
+      "approved_node_registrations_read": 0,
+      "blocking_failure_count": 2,
+      "blocking_failures": [
+        {
+          "check": "the approving Review declares executable node registrations",
+          "detail": "REV-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r01 contains no node_registry_decisions block. Its completeness_statement asserts that 'nineteen node registrations are source-supported, mechanically complete, and approval-ready', and the reviewed GUP proposes nineteen nodes, but a registration stated only in prose is not executable, so the Integrator registers nothing.",
+          "blocking": true,
+          "result": "fail"
+        },
+        {
+          "check": "every edge endpoint resolves to a canonical node or a node this batch registers (invariant 1)",
+          "detail": "APPROVED-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r01: target_id=rule_gear_capacity is not a canonical node and is not registered by this batch (invariant 1). The transaction aborts on the first unresolved endpoint; the complete set of fifteen is enumerated in unresolved_endpoints below.",
+          "blocking": true,
+          "result": "fail"
+        }
+      ],
+      "advisory_failure_count": 1,
+      "advisory_failures": [
+        {
+          "check": "operation classification is declared, not inferred",
+          "detail": "bundle carries no operation_index; every CSV row read as an addition. In a batch that registers its own endpoints every such row is a pending_addition, which is the packaging defect INT-20260922-001 recorded for the Stats bundle.",
+          "blocking": false,
+          "result": "fail"
+        }
+      ],
+      "unresolved_endpoints": {
+        "distinct_endpoints_in_the_edge_component": 19,
+        "already_canonical": 4,
+        "unregistered": 15,
+        "ids": [
+          "cbt_armor_class",
+          "exp_level",
+          "exp_level_one",
+          "exp_level_zero",
+          "exp_xp",
+          "item_armor",
+          "item_gear",
+          "rule_beginners_luck",
+          "rule_gear_capacity",
+          "rule_resting",
+          "rule_talents",
+          "rule_title",
+          "sys_alignment",
+          "sys_ancestry",
+          "sys_class"
+        ],
+        "note": "Measured against the current registry, which holds 30 rows after INT-20260922-002 and INT-20260922-003. Four endpoints now resolve against canonical state that did not exist when this bundle was first offered, which is why the transaction's first reported failure moved from abil_constitution to rule_gear_capacity. The underlying defect is unchanged."
+      }
+    }
+  ],
+  "what_is_not_in_dispute": {
+    "summary": "This record disputes no source reading, no assertion, no edge semantics, no node identity and no citation.",
+    "components_resolve": "The manifest's declared components resolve by repository-relative path and every declared checksum matches the bytes on disk.",
+    "review_is_approved": "The Review declares status approved, overall_disposition approved, approval_ready true, and a ready Integrator handoff. The defect is the absent registration block, not the disposition.",
+    "gup_is_correct": "GUP-PKT-SD-011-014-character-overview-and-starting-level-r03 proposes all nineteen nodes. The Builder output is not implicated and needs no revision."
+  },
+  "defect_attribution": {
+    "owner": "reviewer",
+    "primary": "An approving Review must carry node_registry_decisions for every node the batch registers. Prose in completeness_statement is not executable.",
+    "secondary": "The Approved manifest must declare the reviewed GUP's operation_index so rows that depend on this batch's own registrations are classified as pending_additions rather than plain additions.",
+    "not_a_defect_in": [
+      "the reviewed GUP, which proposes the nineteen nodes",
+      "the edge component, whose 21 rows and checksum are exactly as declared",
+      "the Integrator tooling, whose genesis and queue-derivation behaviour were independently approved in REV-IMP-DEC-2026-0092-r01-r01 and are evidenced again in IMP-DEC-2026-0096-r01"
+    ]
+  },
+  "remediation": {
+    "owner": "reviewer",
+    "kind": "review_and_packaging",
+    "gup_revision_required": false,
+    "new_source_reading_required": false,
+    "precedent": "This is the same two-step repair already completed on this book: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02 added the registration block and APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05 added the operation_index, after which INT-20260922-002 applied cleanly. REV-GUP-PKT-SD-016-017-ancestries-r02-r02 and its successor bundle did both in one step and INT-20260922-003 applied cleanly.",
+    "action": "Publish a successor Review carrying node_registry_decisions for all nineteen nodes the reviewed GUP proposes, each with its own proposed_id, submitted_label, kind and an approved disposition, then a successor Approved bundle that consumes that Review, keeps the same components and checksums, and declares additions: [] with pending_additions listing csv_row 1 through 21.",
+    "verification_the_integrator_will_repeat": "Every declared checksum against disk, active-leaf status of Review and bundle, a non-zero count of approved node registrations, then a dry run reporting zero blocking failures before any canonical file is written."
+  },
+  "canonical_state": {
+    "ruleset": "shadowdark",
+    "edges": 35,
+    "nodes": 30,
+    "registry_rows": 30,
+    "edges_master_checksum": "sha256:5471a40cc7c0cb9d5540760ed5ac4e0295394d278f38f14ddf7f952b618e7c8e",
+    "registry_checksum": "sha256:60ff9ca3b57dc1fd9ee2c9bad4e130818b3ebcfb5af0178e25f08770bc7bd3da",
+    "statement": "No canonical file was created, modified or removed. The rejection was decided inside a dry run that wrote nothing, and canonical is byte-identical to the state INT-20260922-003 left. The invariant suite reports 0 findings over 35 edges and 30 nodes under Constitution 1.4."
+  },
+  "related_records": [
+    {
+      "id": "INT-20260922-001",
+      "path": "rulesets/shadowdark/reports/INT-20260922-001.rejected.json",
+      "relation": "recorded the same operation_index packaging defect for the Stats bundle; its remediation is the precedent named above"
+    },
+    {
+      "id": "INT-20260922-002",
+      "path": "rulesets/shadowdark/manifests/INT-20260922-002.json",
+      "relation": "the repaired Stats bundle that applied cleanly once both defects were fixed"
+    },
+    {
+      "id": "INT-20260922-003",
+      "path": "rulesets/shadowdark/manifests/INT-20260922-003.json",
+      "relation": "the Ancestries bundle, repaired in one step and applied cleanly; four of this bundle's endpoints now resolve because of these two integrations"
+    }
+  ]
+}

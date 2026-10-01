@@ -1,0 +1,185 @@
+schema_version: '1.0'
+id: DEC-2026-0100
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.5'
+decision_date: '2026-09-23'
+escalation_id: ESC-2026-09-23T11.55.59.428Z
+question: >-
+  Which constitution versions may an immutable incoming Shadowdark GUR declare,
+  and how is that compatibility governed without repeatedly transcribing it
+  into Builder code?
+ruling: >-
+  Shadowdark accepts incoming GURs declaring any version in its governed
+  `historical_gur_constitution_versions` list plus the current
+  `constitution_version`. Constitution 1.5 establishes the historical list as
+  1.0 through 1.4. Every accepted historical GUR remains subject to full
+  validation under the current Constitution; acceptance does not make its
+  former interpretation authoritative and does not authorize new artifacts to
+  declare an older version.
+
+  The Builder must load this list from `rulesets/shadowdark/ruleset.yaml`,
+  validate its values as unique dotted numeric versions, and union it with the
+  current manifest version. A missing list retains each other ruleset's
+  existing behavior. For Shadowdark, a malformed list is a configuration error,
+  not a permissive fallback and not a reason to use the retired hardcoded
+  history. This ruleset-owned metadata is the sole source for Shadowdark's
+  historical GUR compatibility; the old hardcoded Shadowdark entry must no
+  longer control it.
+
+  GUR-PKT-SD-027-029-alignment-and-deities-r01 and every other immutable 1.2
+  or 1.3 Shadowdark GUR remain unchanged. After the implementation receives its
+  ordinary independent approval, Builder recompiles each queued GUR normally
+  against Constitution 1.5, producing only ordinary GUP successors where an
+  output revision is required. No version-only Analyst GUR reissue is
+  authorized.
+rationale:
+  - >-
+    The historical compatibility rule was missed on two successive amendments:
+    schemas admitted versions 1.2 and 1.3 while the Constitution and Builder
+    gate retained only 1.0 and 1.1. A structured ruleset field removes that
+    repeated transcription point.
+  - >-
+    The sixteen affected GUR leaves declared the current version at publication.
+    Reissuing them solely for a later additive amendment contradicts the
+    Constitution's immutable-history rule and creates needless downstream work.
+evidence:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-23T11.55.59.428Z.yaml, checksum: sha256:456ac8abb3d6be3b32ee9f14687fe0342421ce876255fd6c415b983445f1d4bb, role: complete_version_compatibility_escalation}
+  - {path: rulesets/shadowdark/governance/constitution.md, checksum: sha256:566d75ac43b27b2727412cec77203a167bb9e0ff8a6f0a0ef01de8b4b1656860, role: conflicting_current_constitution}
+  - {path: rulesets/shadowdark/ruleset.yaml, checksum: sha256:e8f5e511cec8978aa07ed536975814289026189ab4b2df42a133b0922f04d457, role: governed_ruleset_metadata}
+  - {path: schemas/shadowdark/graph/gur.schema.json, checksum: sha256:588788e476924dbf34483f43f1efd4528674552fb599d413800c2ca52b855c8d, role: historical_schema_admission}
+  - {path: tooling/builder/src/adnd1e_builder/vocab.py, checksum: sha256:4379d6dda59fd0c356f32a1240f6b5e6f4ed9bce45f2a62611575b8bea06a0e5, role: retired_shadowdark_code_transcription}
+migration_required: false
+migration_scope: >-
+  No source, packet, GUR, Review, Approved bundle, registry, canonical row, or
+  integration is migrated. Existing GURs retain their identities and declared
+  historical versions. Downstream recompiles use the ordinary artifact
+  lifecycle only after the approved implementation is available.
+constitution_version_impact: >-
+  Shadowdark Constitution advances from 1.4 to 1.5. It centralizes historical
+  GUR-version admission without changing node identity, edge vocabulary, or
+  graph semantics.
+affected_contracts:
+  - rulesets/shadowdark/governance/constitution.md
+  - rulesets/shadowdark/ruleset.yaml
+  - schemas/shadowdark/graph/gur.schema.json
+  - schemas/shadowdark/graph/gup.schema.json
+affected_registries: []
+implementation_bounds:
+  - >-
+    Architect changes only the listed Shadowdark Decision, Constitution,
+    ruleset manifest, GUR/GUP schemas, and resolved escalation location.
+  - >-
+    Builder changes only `tooling/builder/src/adnd1e_builder/vocab.py` and
+    focused Builder tests. Preserve behavior for rulesets with no governed
+    historical list.
+  - >-
+    Do not edit existing GURs, GUPs, Reviews, Approved bundles, source packets,
+    registries, canonical data, Integrator code, shared contracts, or
+    `basicdnd/rc`.
+acceptance_tests:
+  - >-
+    Constitution Version 1.5 or later and `rulesets/shadowdark/ruleset.yaml`
+    identify historical GUR compatibility as the explicit unique list 1.0,
+    1.1, 1.2, 1.3, and 1.4. They state that new output uses current 1.5 and
+    historical input is revalidated under the current Constitution.
+  - >-
+    Shadowdark GUR and GUP schemas accept 1.0 through 1.5 and reject an
+    unknown future version. No other ruleset schema is widened.
+  - >-
+    `RulesetVocabulary.load(..., "shadowdark")` derives its accepted incoming
+    GUR versions from the governed list plus current 1.5. It accepts 1.2 and
+    1.3, rejects 1.6, and raises a clear configuration error for malformed or
+    duplicate governed values rather than silently falling back to a hardcoded
+    Shadowdark list. AD&D 1e and Basic D&D behavior remains unchanged.
+  - >-
+    After a Reviewer-approved implementation report, the unchanged
+    GUR-PKT-SD-027-029-alignment-and-deities-r01 compiles without a
+    `constitution_version_mismatch`; any ordinary resulting GUP successor
+    declares current 1.5. No version-only GUR successor is published.
+  - >-
+    Focused Builder regressions and the complete Builder suite pass. The
+    implementation report records exact commands and outcomes, and Reviewer
+    independently reproduces the focused compatibility checks.
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: rulesets/shadowdark/governance/constitution.md
+        minimum_version: '1.5'
+        substantive_anchors:
+          - Historical GUR compatibility is governed by the ruleset manifest list plus its current constitution version.
+          - Historical artifacts are fully revalidated under the current Constitution and new output declares the current version.
+          - Immutable GURs are not rewritten solely because an additive Constitution amendment advances the current version.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Builder implements the bounded manifest-driven compatibility loader and
+    publishes IMP-DEC-2026-0100-r01. Reviewer independently validates it before
+    any queued historical GUR is recompiled.
+  blocking_ids: []
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, activate Constitution 1.5 and governed historical
+      compatibility metadata, update only matching Shadowdark schemas, and
+      relocate the resolved escalation to decided history.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement manifest-driven Shadowdark historical GUR compatibility and
+      focused regressions; publish IMP-DEC-2026-0100-r01.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently validate the implementation report and publish its Decision
+      Implementation Review. Return only implementation defects to Builder.
+  - step: 4
+    owner: builder
+    action: >-
+      After terminal approval, recompile queued immutable Shadowdark GURs
+      normally, beginning with PKT-SD-027-029; do not ask Analyst to make
+      version-only successor GURs.
+post_implementation_requirements:
+  - >-
+    GUPs, Reviews, Approved bundles, and Integrations follow the ordinary
+    lifecycle. No direct canonical change is authorized by this Decision.
+  - >-
+    Future Shadowdark Constitution amendments update the single governed
+    manifest list and matching schema range as part of the Architect amendment;
+    Builder does not add another Shadowdark-specific code constant.
+exact_diff:
+  rulesets/shadowdark/escalations/pending/ESC-2026-09-23T11.55.59.428Z.yaml: Relocate the resolved immutable escalation to decided history.
+  rulesets/shadowdark/escalations/decided/ESC-2026-09-23T11.55.59.428Z.yaml: Preserve the resolved immutable escalation under decided history.
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml: Publish the governed historical-version compatibility ruling.
+  rulesets/shadowdark/governance/constitution.md: Advance to 1.5 and define manifest-governed historical GUR compatibility.
+  rulesets/shadowdark/ruleset.yaml: Declare current 1.5 and the unique historical GUR compatibility list.
+  schemas/shadowdark/graph/gur.schema.json: Admit historical 1.0 through 1.4 and current 1.5.
+  schemas/shadowdark/graph/gup.schema.json: Admit historical 1.0 through 1.4 and current 1.5.
+  tooling/builder/src/adnd1e_builder/vocab.py: Load Shadowdark historical GUR compatibility from governed metadata.
+  tooling/builder/tests/test_shadowdark_ancestry.py: Cover manifest-driven historical compatibility and malformed metadata.
+  rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0100-r01.yaml: Record Builder implementation and test evidence.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-23T11.55.59.428Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decided/ESC-2026-09-23T11.55.59.428Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/governance/constitution.md, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/ruleset.yaml, owner: architect, sequence_step: 1}
+  - {path: schemas/shadowdark/graph/gur.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/shadowdark/graph/gup.schema.json, owner: architect, sequence_step: 1}
+  - {path: tooling/builder/src/adnd1e_builder/vocab.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_shadowdark_ancestry.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0100-r01.yaml, owner: builder, sequence_step: 2}
+follow_up_owners:
+  builder:
+    - Implement DEC-2026-0100 step 2, then after terminal Review approval perform step 4 normal recompilation.
+  reviewer:
+    - Independently review IMP-DEC-2026-0100-r01 after Builder publication.

@@ -1,0 +1,828 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-018-019-fighter-class-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-018-019-fighter-class
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.0
+  - rulesets/shadowdark/governance/constitution.md 1.2
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-018-019-fighter-class
+  source_file: source.md
+  packet_source_checksum: sha256:b0d07098048795f30920ad60af2d56b40e56f713657d8e8a3adfa3654724decb
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 006-fighter-class.md
+  citation_code: SD
+  page_start: 18
+  page_end: 19
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Two markers resolve in the Primary Source Material, both through the Pandoc AST rather than
+  positionally. {#p18} ends the FIGHTER CLASS heading, which placement rule 1 applies to the whole
+  heading, and the persistence rule carries page 18 through every following block including the
+  benefits, the talents table and its five rows, and the closing epigraph. Page 19 is an empty fenced
+  Div carrying the artwork class. Every row below therefore cites page 18. A third page the parser
+  resolves, 15, lies entirely inside the out-of-scope Supporting Source Context.
+
+page_class_treatment: >-
+  Page 19 is classified full-page-artwork by the repository source steward. Under SOURCE_MARKDOWN 1.8
+  and constitution section 6 the class is page-local intake metadata and creates no node, edge,
+  domain, general rule, citation or uncovered-page obligation, and a classified page inside a
+  declared span is not an uncovered page. It is retained in the completeness accounting below. The
+  AST confirms the Div is empty and that page 18 does not inherit the classification.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 18 and 19. The trailing
+  Supporting Source Context reproduces printed page 15, STATS and the STAT MODIFIERS TABLE, whose
+  primary packet is PKT-SD-015-015-stats-and-stat-modifiers. The parser resolves those spans to page
+  15, outside this packet's declared span. No assertion here is drawn from them and no row cites page
+  15, so the zero-overlap rule across the intake holds for this packet.
+
+source_summary: >-
+  Printed page 18 is the complete fighter class entry: a heading, a flavour sentence, three
+  attribute lines giving permitted weapons, permitted armor and a hit point die per level, three
+  separately named and bolded class benefits, a five-row rollable talents table, and an attributed
+  epigraph. Page 19 is artwork. This summary is orientation only; every assertion below cites page 18.
+
+graph_state_at_extraction: >-
+  The Shadowdark canonical graph is still empty; nodes.csv is header-only, the domain registry has no
+  domains, general_rules.json is an empty object, and character_races.yaml is inactive. The three
+  supplied slices named in the packet manifest as missing remain immaterial, re-assessed here rather
+  than carried over from claim: there is no canonical identity to match, no neighborhood to compare
+  for redundancy or contradiction, and no approved general rule to apply. reused_nodes is empty.
+  Twelve of the seventeen identities below are already proposed by sibling GURs from their defining
+  loci and are marked as such.
+
+cross_packet_identity_note: >-
+  item_armor, rule_hit_points, rule_gear_capacity, rule_talent_roll, cbt_armor_class, exp_level,
+  abil_strength, abil_dexterity, abil_constitution, cbt_attack_roll, cbt_damage_roll and rule_check
+  are proposed by sibling GURs from their defining loci and are proposed again here because this
+  patch uses them as edge endpoints. A GUR must propose every endpoint its edges use: an endpoint
+  present only in a sibling GUR is not canonical, is not proposed by the patch, and fails invariant 1
+  as endpoint_unresolved. Proposing them is not a competing naming; each records its defining locus
+  and the sibling GUR that also proposes it, and each ID and label is reproduced exactly. Where two
+  patches propose one identity, Reviewer de-duplicates and the Integrator applies a single registry
+  addition.
+
+reused_nodes: []
+
+candidate_nodes:
+  - proposed_id: class_fighter
+    proposed_label: Fighter
+    kind: class
+    why_needed: >-
+      Source of M001 through M005. The class identity this page defines; every permission, hit point
+      and benefit dependency on the page originates from it.
+    prefix_basis: 'class_ is a character class'
+    source_named: true
+    defining_locus: 'SD page 18, heading FIGHTER CLASS'
+    source_evidence: 'page 18, the heading FIGHTER CLASS, which is this class entry''s defining locus'
+  - proposed_id: abil_hauler
+    proposed_label: Hauler
+    kind: ability
+    why_needed: >-
+      Endpoint of M003 and source of M006. A separately named fighter benefit that increases gear
+      slots; without it the Constitution-to-gear-capacity dependency has no carrier.
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 18, the bolded benefit name Hauler'
+    source_evidence: 'page 18, Hauler in bold followed by its effect on gear slots'
+  - proposed_id: abil_weapon_mastery
+    proposed_label: Weapon Mastery
+    kind: ability
+    why_needed: >-
+      Endpoint of M004, M010 and M013 and source of M008 and M009. A separately named fighter benefit
+      that improves attack and damage with a chosen weapon type and scales with level.
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 18, the bolded benefit name Weapon Mastery'
+    source_evidence: 'page 18, Weapon Mastery in bold; also named by the first talents table row'
+  - proposed_id: abil_grit
+    proposed_label: Grit
+    kind: ability
+    why_needed: >-
+      Endpoint of M005 and source of M011. A separately named fighter benefit that improves checks of
+      a chosen stat made to overcome an opposing force.
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 18, the bolded benefit name Grit'
+    source_evidence: 'page 18, Grit in bold followed by its effect on checks'
+  - proposed_id: tbl_fighter_talents
+    proposed_label: Fighter Talents Table
+    kind: table
+    why_needed: >-
+      Endpoint of M012 and source of M013 through M018. The separately headed and separately
+      referenced table that resolves a fighter's talent roll; its outcome rows are the source of six
+      distinct dependencies.
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 18, its own heading FIGHTER TALENTS TABLE'
+    source_evidence: >-
+      page 18, the heading FIGHTER TALENTS TABLE over a two-column table. Separately referenced by
+      the talent roll mechanic, satisfying GRAPH_INVARIANTS invariant 5.
+  - proposed_id: item_armor
+    proposed_label: Armor
+    kind: item category
+    why_needed: 'Endpoint of M001. What the class entry''s Armor line permits. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'item_ is an item or item category'
+    source_named: true
+    defining_locus: 'SD page 13, the AC entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 18, the Armor line reading All armor and shields. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: rule_hit_points
+    proposed_label: Hit Points
+    kind: procedure
+    why_needed: 'Endpoint of M002. What the class entry''s Hit Points line supplies a die for. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the HP entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 18, the bolded Hit Points attribute line. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: rule_gear_capacity
+    proposed_label: Gear Capacity
+    kind: procedure
+    why_needed: 'Endpoint of M006. What the Hauler benefit increases. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: false
+    defining_locus: 'SD page 13, the GEAR entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 18, Hauler adds to your gear slots. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: rule_talent_roll
+    proposed_label: Talent Roll
+    kind: procedure
+    why_needed: 'Source of M012. The roll this class''s talents table resolves. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD pages 13 and 14; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 18, the FIGHTER TALENTS TABLE heading and its rollable column. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: cbt_armor_class
+    proposed_label: Armor Class
+    kind: combat mechanic
+    why_needed: 'Endpoint of M018. What one talents table row improves. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'cbt_ is a combat mechanic'
+    source_named: true
+    defining_locus: 'SD page 13, the AC entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 18, the talents table row granting AC from a chosen kind of armor. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: exp_level
+    proposed_label: Level
+    kind: advancement mechanic
+    why_needed: 'Source of M010. What the Weapon Mastery bonus scales with. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'exp_ is a character advancement mechanic'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the LEVEL entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 18, Weapon Mastery adds half your level to those rolls, and the Hit Points line is per level. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: abil_strength
+    proposed_label: Strength
+    kind: ability
+    why_needed: 'Endpoint of M015. One of the stats a talents table row can raise, and one of the two Grit may be keyed to. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 15, STATS; not this packet'
+    proposed_also_by: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+    source_evidence: 'page 18, named in the Grit benefit and in the stat-increase talents row. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: abil_dexterity
+    proposed_label: Dexterity
+    kind: ability
+    why_needed: 'Endpoint of M016. One of the stats a talents table row can raise, and one of the two Grit may be keyed to. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 15, STATS; not this packet'
+    proposed_also_by: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+    source_evidence: 'page 18, named in the Grit benefit and in the stat-increase talents row. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: abil_constitution
+    proposed_label: Constitution
+    kind: ability
+    why_needed: 'Source of M007 and endpoint of M017. Its modifier feeds the Hauler benefit, and it is one of the stats a talents row can raise. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 15, STATS; not this packet'
+    proposed_also_by: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+    source_evidence: 'page 18, named in the Hauler benefit and in the stat-increase talents row. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: cbt_attack_roll
+    proposed_label: Attack Roll
+    kind: combat mechanic
+    why_needed: 'Endpoint of M008 and M014. What Weapon Mastery and one talents row improve. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'cbt_ is a combat mechanic'
+    source_named: true
+    defining_locus: 'SD page 88, Combat, per the contents listing; not this packet'
+    proposed_also_by: GUR-PKT-SD-016-017-ancestries-r03
+    source_evidence: 'page 18, attack in the Weapon Mastery benefit and melee and ranged attacks in a talents row. Secondary statement; the ID and label are reproduced from the sibling proposal exactly.'
+  - proposed_id: cbt_damage_roll
+    proposed_label: Damage Roll
+    kind: combat mechanic
+    why_needed: 'Endpoint of M009. What Weapon Mastery improves alongside the attack roll. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'cbt_ is a combat mechanic'
+    source_named: true
+    defining_locus: 'SD page 88, Combat, per the contents listing; not this packet'
+    proposed_also_by: GUR-PKT-SD-016-017-ancestries-r03
+    source_evidence: 'page 18, damage in the Weapon Mastery benefit. Secondary statement; the ID and label are reproduced from the sibling proposal exactly.'
+  - proposed_id: rule_check
+    proposed_label: Check
+    kind: procedure
+    why_needed: 'Endpoint of M011. What the Grit benefit improves. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 9, CHECKS, and more fully at Making Checks, printed page 81; not this packet'
+    proposed_also_by: GUR-PKT-SD-005-010-introduction-and-the-basics-r01
+    source_evidence: 'page 18, Grit gives advantage on checks of that type. Secondary statement; the ID and label are reproduced from the sibling proposal exactly.'
+
+candidate_edges:
+  - ref: M001
+    source_id: class_fighter
+    source_label: Fighter
+    edge_type: CONSTRAINS
+    target_id: item_armor
+    target_label: Armor
+    aspect: permitted armor
+    condition: ''
+    polarity: governs
+    polarity_basis: read
+    book: SD
+    page: 18
+    section: FIGHTER CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The Armor line states what this class may wear. It bounds which armor is available without
+      changing any armor's rating, which is CONSTRAINS rather than MODIFIES. That this particular
+      class's bound happens to be permissive does not remove the dependency: if the armor categories
+      changed, the fighter entry would need review. Read aloud as Fighter governs Armor; basis read.
+      Distinct under the section 4 assertion key from the sibling GUR's row asserting the same
+      relationship for the class axis, because the source_id differs; see OBS-02.
+  - ref: M002
+    source_id: class_fighter
+    source_label: Fighter
+    edge_type: FEEDS_INTO
+    target_id: rule_hit_points
+    target_label: Hit Points
+    aspect: hit dice
+    condition: ''
+    book: SD
+    page: 18
+    section: FIGHTER CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The Hit Points line gives the die this class rolls per level, so the class supplies an input to
+      the hit point total. The die expression and the per-level rate are magnitudes and are excluded.
+  - ref: M003
+    source_id: class_fighter
+    source_label: Fighter
+    edge_type: GATES
+    target_id: abil_hauler
+    target_label: Hauler
+    aspect: benefit access
+    condition: ''
+    book: SD
+    page: 18
+    section: FIGHTER CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The benefit is printed inside the class entry and is reached by being that class, which is
+      GATES read gate to gated. This parallels the ancestry-to-benefit shape the ancestries GUR uses
+      and, as there, asserts eligibility rather than global exclusivity. Derived polarity enables.
+  - ref: M004
+    source_id: class_fighter
+    source_label: Fighter
+    edge_type: GATES
+    target_id: abil_weapon_mastery
+    target_label: Weapon Mastery
+    aspect: benefit access
+    condition: ''
+    book: SD
+    page: 18
+    section: FIGHTER CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M005
+    source_id: class_fighter
+    source_label: Fighter
+    edge_type: GATES
+    target_id: abil_grit
+    target_label: Grit
+    aspect: benefit access
+    condition: ''
+    book: SD
+    page: 18
+    section: FIGHTER CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M006
+    source_id: abil_hauler
+    source_label: Hauler
+    edge_type: MODIFIES
+    target_id: rule_gear_capacity
+    target_label: Gear Capacity
+    aspect: gear slots
+    condition: ''
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 18
+    section: FIGHTER CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Hauler adds to your gear slots, which changes the carrying capacity value, so MODIFIES. The
+      benefit only ever adds, so read aloud as Hauler improves Gear Capacity; basis read. The
+      positivity qualification is carried on M007, which is where the Constitution dependency sits.
+  - ref: M007
+    source_id: abil_constitution
+    source_label: Constitution
+    edge_type: FEEDS_INTO
+    target_id: abil_hauler
+    target_label: Hauler
+    aspect: slot bonus
+    condition: when the modifier is positive
+    book: SD
+    page: 18
+    section: FIGHTER CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The amount Hauler adds is the Constitution modifier, so Constitution supplies the benefit's
+      input. The source restricts the benefit to a positive modifier, which is a qualitative
+      applicability condition rather than a stored threshold value and is retained as written.
+  - ref: M008
+    source_id: abil_weapon_mastery
+    source_label: Weapon Mastery
+    edge_type: MODIFIES
+    target_id: cbt_attack_roll
+    target_label: Attack Roll
+    aspect: chosen weapon
+    condition: ''
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 18
+    section: FIGHTER CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Weapon Mastery grants a bonus to attack and damage with a chosen weapon type; the two targets
+      are separate mechanics, so this is two rows rather than one compound row. The bonus values and
+      the level fraction are magnitudes and are excluded; the restriction to the chosen weapon type
+      is carried in aspect, and no weapon identity is minted from the example. Read aloud as Weapon
+      Mastery improves Attack Roll; basis read.
+  - ref: M009
+    source_id: abil_weapon_mastery
+    source_label: Weapon Mastery
+    edge_type: MODIFIES
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: chosen weapon
+    condition: ''
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 18
+    section: FIGHTER CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: 'The second target of the same sentence. Read aloud as Weapon Mastery improves Damage Roll; basis read.'
+  - ref: M010
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: abil_weapon_mastery
+    target_label: Weapon Mastery
+    aspect: mastery bonus
+    condition: ''
+    book: SD
+    page: 18
+    section: FIGHTER CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The benefit adds a fraction of the character's level to the same rolls, so level supplies an
+      input to how large the benefit is. It passes the core test: if the level mechanic changed, this
+      benefit's size would need review. The fraction and its rounding are magnitudes and are excluded.
+  - ref: M011
+    source_id: abil_grit
+    source_label: Grit
+    edge_type: MODIFIES
+    target_id: rule_check
+    target_label: Check
+    aspect: opposing force
+    condition: for the chosen stat
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 18
+    section: FIGHTER CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Grit gives advantage on checks of a chosen stat made to overcome an opposing force. Advantage
+      changes how the check resolves, so MODIFIES, and it only ever helps, so read aloud as Grit
+      improves Check; basis read. The aspect records the narrow circumstance the source names and
+      the condition records that the benefit is keyed to a stat chosen at creation. The mechanism
+      itself is advantage, whose defining locus is another packet; see OBS-03.
+  - ref: M012
+    source_id: rule_talent_roll
+    source_label: Talent Roll
+    edge_type: RESOLVED_BY
+    target_id: tbl_fighter_talents
+    target_label: Fighter Talents Table
+    aspect: fighter talents
+    condition: for a fighter
+    book: SD
+    page: 18
+    section: FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table is the procedure that turns a talent roll into an outcome for this class, which is
+      RESOLVED_BY read thing to procedure. The condition records that this table resolves the roll
+      only for fighters, since each class entry carries its own table. Derived polarity governs.
+  - ref: M013
+    source_id: tbl_fighter_talents
+    source_label: Fighter Talents Table
+    edge_type: FEEDS_INTO
+    target_id: abil_weapon_mastery
+    target_label: Weapon Mastery
+    aspect: additional weapon
+    condition: ''
+    book: SD
+    page: 18
+    section: FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      One outcome row grants Weapon Mastery with a further weapon, so the table supplies an input to
+      how far that benefit extends. FEEDS_INTO rather than MODIFIES because the row widens what the
+      benefit applies to rather than changing a value it produces. The die expression in the table's
+      first column and the row ranges are magnitudes and are excluded.
+  - ref: M014
+    source_id: tbl_fighter_talents
+    source_label: Fighter Talents Table
+    edge_type: MODIFIES
+    target_id: cbt_attack_roll
+    target_label: Attack Roll
+    aspect: melee and ranged
+    condition: ''
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 18
+    section: FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      One outcome row improves melee and ranged attacks generally, unlike M008 which is keyed to a
+      chosen weapon type. Distinct from M008 under the section 4 assertion key by source_id and
+      aspect. Read aloud as Fighter Talents Table improves Attack Roll; basis read.
+  - ref: M015
+    source_id: tbl_fighter_talents
+    source_label: Fighter Talents Table
+    edge_type: MODIFIES
+    target_id: abil_strength
+    target_label: Strength
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 18
+    section: FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      One outcome row raises one of three named stats, chosen by the player. The three branches are
+      recorded as three rows each carrying the condition that selects it, rather than one row that
+      hides the choice, which is the same treatment the ancestries GUR gave the Farsight either-or.
+      The increase is a magnitude and is excluded. Read aloud as Fighter Talents Table improves
+      Strength; basis read.
+  - ref: M016
+    source_id: tbl_fighter_talents
+    source_label: Fighter Talents Table
+    edge_type: MODIFIES
+    target_id: abil_dexterity
+    target_label: Dexterity
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 18
+    section: FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M017
+    source_id: tbl_fighter_talents
+    source_label: Fighter Talents Table
+    edge_type: MODIFIES
+    target_id: abil_constitution
+    target_label: Constitution
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 18
+    section: FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M018
+    source_id: tbl_fighter_talents
+    source_label: Fighter Talents Table
+    edge_type: MODIFIES
+    target_id: cbt_armor_class
+    target_label: Armor Class
+    aspect: chosen armor
+    condition: when that armor is worn
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 18
+    section: FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      One outcome row improves armor class from a chosen kind of armor. The bonus is a magnitude and
+      is excluded; the condition records that the improvement applies only while that armor is worn.
+      Read aloud as Fighter Talents Table improves Armor Class; basis read.
+
+authored_polarity_declaration: >-
+  Ten rows carry authored polarity, all with basis read: M001 CONSTRAINS governs, and M006, M008,
+  M009, M011, M014, M015, M016, M017 and M018 MODIFIES improves. Every one is among the three types
+  constitution section 5 requires to carry source-reviewed authored polarity, and each was read aloud
+  as source polarity target before being recorded. No row uses basis heuristic or unset. No other row
+  carries a polarity or polarity_basis value: the three GATES rows, the four FEEDS_INTO rows and the
+  one RESOLVED_BY row take their derived polarity from the section 5 table and the Analyst authors
+  none of them. Every improves reading is one-directional in the source; no row on this page can
+  worsen the mechanic it targets.
+
+domains_touched: []
+candidate_domains:
+  - proposed: character_creation
+    basis: >-
+      A class is chosen at creation and its permissions and benefits are received then. Recorded as a
+      candidate only; the domain registry is empty and constitution section 8 reserves promotion to
+      an Architect Decision. This is now the third packet to suggest this candidate, which is noted
+      and is deliberately not treated as promotion.
+  - proposed: combat
+    basis: >-
+      Weapon Mastery, the attack and damage rolls, armor class and permitted armor all sit in combat
+      rather than creation, and the class entry mixes the two freely. Recorded as a candidate only,
+      and not promoted.
+
+domain_boundary_questions:
+  - >-
+    A class entry deliberately spans creation, combat and carrying capacity, so whether a class node
+    belongs to one domain or to each domain it reaches cannot be settled from this page. Deferred; no
+    domain is asserted on any edge in this GUR.
+
+candidate_general_rules:
+  - proposed: every class gates the benefits printed in its own entry
+    establishing_locus: 'SD page 18, the Hauler, Weapon Mastery and Grit benefits inside the FIGHTER CLASS entry'
+    basis: >-
+      M003, M004 and M005 repeat one shape, and the contents list shows three further class entries
+      on printed pages 20 to 25 that are likely to repeat it again. The ancestries packet recorded a
+      structurally identical candidate for ancestry benefits.
+    not_applied: >-
+      Recorded as a candidate only. Constitution section 5 requires a separate Architect ruling with
+      an establishing locus, scope, counterexamples and affected set before a general rule exists,
+      and the counterexamples cannot be assessed until the other three class entries are read. No
+      edge in this GUR sets general_rule_id, and under invariant 19 the establishing edges would
+      leave it empty in any case.
+  - proposed: every class resolves its talent roll on its own talents table
+    establishing_locus: 'SD page 18, FIGHTER TALENTS TABLE'
+    basis: 'M012 is the fighter instance; three further class entries are likely to supply the same shape.'
+    not_applied: >-
+      Recorded as a candidate only, on one class entry. Deliberately not promoted, and no edge sets
+      general_rule_id.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: the permitted weapons line is not extracted, unlike the armor line
+    detail: >-
+      The entry's Weapons line reads All weapons, and the parallel Armor line reads All armor and
+      shields. The armor line is extracted as M001 because item_armor already exists as an identity
+      proposed from its defining locus on printed page 13. No comparable weapon identity exists: the
+      constitution's weapon_ prefix covers a weapon identity or weapon family, and All weapons is
+      neither, being a statement that no restriction applies. Minting a node to carry the absence of
+      a restriction would put an artifact of this one class entry into the registry.
+      The relationship is real and is deliberately deferred rather than dropped: the Weapons chapter
+      on printed page 292 and the Gear section on printed page 34 are the defining loci, and the
+      packet that claims them should assert class weapon permissions with the identities it defines.
+      Recorded so the omission is visibly a decision rather than an oversight.
+  - id: OBS-02
+    subject: this page's class rows coexist with the class-axis rows from the overview packet
+    detail: >-
+      GUR-PKT-SD-011-014 asserts, from printed pages 12 to 14, that the class axis constrains armor,
+      feeds hit points and feeds talents, using sys_class as the source. This GUR asserts the
+      fighter-specific versions using class_fighter. They do not collide under the section 4
+      assertion key because the source_id differs, and they are not redundant: the axis rows record
+      that a character's class determines these things at all, and these rows record what this
+      particular class determines. Recorded because a reader meeting both may suspect duplication.
+      Whether the axis rows should later be withdrawn in favour of per-class rows, once all four
+      classes are read, is a question for Reviewer and ultimately for the packet that completes the
+      set; the Analyst does not pre-empt it from one class entry.
+  - id: OBS-03
+    subject: advantage is the mechanism behind Grit and is still not extractable
+    detail: >-
+      Grit grants advantage on certain checks. Advantage is defined on printed page 9 as rolling
+      twice and taking the better result, but that page states no relationship between advantage and
+      any other named mechanic, so the introduction packet deliberately did not propose it. This is
+      now the third packet whose content depends on advantage, after the ancestries packet's Stout
+      benefit and the introduction packet's own definition.
+      M011 therefore asserts the effect, Grit improving the check, rather than the mechanism, Grit
+      granting advantage. That is the assertion this page supports without inventing an identity the
+      source has not yet given a relationship to. The Rolling the Dice chapter on printed page 78 is
+      the defining locus, and the packet claiming it should propose advantage and let these three
+      benefits be repointed through it if Reviewer prefers the mechanism to the effect.
+  - id: OBS-04
+    subject: the Grit stat choice is recorded in a condition rather than as edges
+    detail: >-
+      Grit is keyed to either Strength or Dexterity, chosen by the player. M011 carries this as the
+      condition for the chosen stat rather than as two rows targeting the two stats, because the
+      benefit modifies the check, not the stat: whichever stat is chosen, what changes is how checks
+      of that type resolve. Two stat-targeted rows would assert that Grit changes Strength or
+      Dexterity, which the source does not say. This differs deliberately from M015 through M017,
+      where the talents row does raise the stat itself and three rows are therefore correct.
+  - id: OBS-05
+    subject: the final talents table row is a choice with no fixed target
+    detail: >-
+      The highest outcome row reads Choose a talent or points to distribute to stats. Its first
+      branch refers back to the table it is printed in, and its second distributes an unspecified
+      number of points across unspecified stats. Neither branch names a determinate target, so no
+      edge can be drawn without the Analyst choosing one. The stat-raising row that does name its
+      three candidate stats is extracted as M015 through M017; this row is not. Recorded so the
+      asymmetry between the two rows is visibly deliberate.
+  - id: OBS-06
+    subject: flavour and epigraph carry no mechanics
+    detail: >-
+      The entry opens with a sentence about gladiators, duelists and elven archers and closes with an
+      attributed epigraph about a whistling axe. Both establish tone. They name no mechanic and state
+      no dependency, and striking them would require no mechanic to be reviewed. The epigraph's
+      speaker is a character in an anecdote, and the dwarf ancestry it mentions is not being related
+      to the fighter class by that mention.
+  - id: OBS-07
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The page carries the hit point die, the Weapon Mastery attack and damage bonus, the level
+      fraction and its rounding, the talents table's die expression and all five of its row ranges,
+      the attack bonus, the stat increase, the armor class bonus and the distributable points. All
+      are die expressions, numeric bonuses or thresholds, excluded by constitution section 1 and
+      invariant 11. They remain in the immutable claimed packet, which is the authority for the values
+      themselves. No aspect in this GUR contains a digit and no condition encodes a numeric value.
+  - id: OBS-08
+    subject: supporting source context reproduces another packet's page
+    detail: >-
+      The trailing Supporting Source Context reproduces printed page 15, STATS and the STAT MODIFIERS
+      TABLE, whose primary packet is PKT-SD-015-015. The parser resolves those spans to page 15,
+      outside this packet's declared span of 18 to 19. It is orientation only; no assertion here is
+      drawn from it and no row cites page 15.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: whether a class benefit and an ancestry benefit share the abil_ kind appropriately
+    detail: >-
+      Hauler, Weapon Mastery and Grit are proposed under abil_ with kind ability, the same prefix and
+      kind constitution section 2.1 assigns to the six ancestry benefits. That section settles the
+      ancestry case explicitly and says independently named mechanical benefits use the existing
+      abil_ kind; it does not speak to class benefits, but the reasoning transfers directly and no
+      other approved prefix fits a named benefit.
+      Consequence if wrong: if class benefits later warrant their own kind, these three and their
+      counterparts in the remaining class entries would need a kind migration, which is a registry
+      change rather than a re-reading of source. The Analyst chose consistency with the settled
+      ancestry case over minting a distinction the constitution has not drawn.
+      This is not an Architect escalation: abil_ is an approved prefix with an unchanged kind, so
+      these are ordinary registry additions under ESCALATION_CONTRACT.
+  - id: IDQ-02
+    subject: the talents table is proposed per class rather than as one shared table
+    detail: >-
+      tbl_fighter_talents is scoped to this class because the table is printed inside the class entry
+      under its own class-specific heading. The alternative, one shared talents table with per-class
+      rows, cannot be assessed from this packet: the other three class entries have not been read and
+      the contents list does not show a shared table.
+      Consequence if wrong: if the remaining entries turn out to share one table, four per-class
+      identities would need merging into one, which is a v2-style merge migration. The Analyst
+      followed the source's own division, since the heading names this table as the fighter's.
+      Reviewer should revisit once the priest, thief and wizard entries are extracted.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Every proposed node uses an approved constitution section 2 prefix with an unchanged
+  kind, every edge uses one of the thirteen legal section 3 types, and no new prefix, edge type,
+  domain promotion or general-rule application is requested. class_ is the approved prefix for a
+  character class and section 2.1 confirms that class identity is distinct from ancestry and creature
+  identity, so class_fighter is an ordinary proposal from its defining locus. ESCALATION_CONTRACT
+  states that a proposed node under an approved prefix and kind which passes identity and duplicate
+  checks is ordinary GUR, GUP and Review work rather than an escalation. IDQ-01 and IDQ-02 are
+  recorded for Reviewer on that basis, and the deferrals in OBS-01 and OBS-03 resolve when the
+  relevant defining packets are claimed.
+
+completeness_statement: >-
+  Both printed pages in the declared span are accounted for. Page 18 was read in full: the FIGHTER
+  CLASS heading, the flavour sentence in OBS-06, the Weapons line in OBS-01, the Armor line supplying
+  M001, the Hit Points line supplying M002, the Hauler benefit supplying M006 and M007, the Weapon
+  Mastery benefit supplying M008 through M010, the Grit benefit supplying M011 with its stat choice
+  in OBS-04, the FIGHTER TALENTS TABLE heading and column headers supplying M012, all five table rows
+  of which four supply M013 through M018 and the fifth is dispositioned in OBS-05, and the closing
+  epigraph in OBS-06. Page 19 is the steward's full-page-artwork page. Every page marker was resolved
+  through the Pandoc AST and the in-scope resolved page set matches the declared span with no gap.
+  The Supporting Source Context reproducing printed page 15 is out of scope and contributed nothing.
+  Eighteen edges are proposed across seventeen candidate nodes, twelve of which are also proposed by
+  sibling GURs from their defining loci and are marked as such. No node is reused because the
+  Shadowdark graph is empty. Content not converted to an edge is accounted for in OBS-01 through
+  OBS-08, and every identity the Analyst could not settle is recorded in IDQ-01 and IDQ-02 rather
+  than resolved by picking a plausible ID. No assertion depends on any other ruleset.

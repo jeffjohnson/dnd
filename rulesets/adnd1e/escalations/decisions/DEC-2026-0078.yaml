@@ -1,0 +1,168 @@
+schema_version: '1.0'
+id: DEC-2026-0078
+status: approved
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-steward-intake
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    The disclosed test-only rewind repair is accepted under the Integrator's
+    standing ownership. It creates no report, Review, migration, or packet
+    handoff.
+  blocking_ids: []
+
+decision_date: '2026-09-04'
+escalation_id: ESC-2026-09-01T23.29.02.119Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  Does DEC-2026-0075's live-corpus invariant requirement authorize the
+  disclosed test-only rewind guard, or must each such guard have a separate
+  Decision Implementation Report and independent Review?
+
+ruling: >-
+  The disclosed repair is accepted as ordinary Integrator-owned test-fixture
+  maintenance. DEC-2026-0075's prospective Report and Review requirement was
+  limited to the exact dependency-closure guard that Decision ordered; it does
+  not make every later test-only guard a direct Decision implementation.
+
+  Going forward, the Integrator may repair or add a test-only regression guard
+  without a new Decision, Decision Implementation Report, or Review when all
+  of these conditions hold: the changed paths are confined to
+  tooling/integrator/tests/; no production applier, schema, contract,
+  registry, canonical data, migration plan, GUR, GUP, Review, Approved bundle,
+  manifest, or report changes; the guard derives its result from current
+  corpus state or an authorized transaction and asserts an invariant that
+  survives successful integration; and the guard is shown falsifiable by the
+  defect it prevents. Any change outside that boundary, or a corpus-specific
+  special case rather than an invariant, remains subject to an Architect
+  Decision and the normal implementation lifecycle before it is published.
+
+  The existing escalation is the durable disclosure for this repair. Future
+  repairs that satisfy the standing boundary need no escalation solely to
+  obtain authorization; their test source, commit history, and normal suite
+  evidence are the record. The Integrator must escalate before publication
+  whenever its scope is uncertain.
+
+rationale:
+  - >-
+    The authorized DEC-2026-0077 integration changed canonical state exactly
+    as planned. The defect occurred only while the Integrator rebuilt a test
+    clone and therefore did not alter graph semantics, provenance, or any
+    published integration artifact.
+  - >-
+    The repair changes only tooling/integrator/tests/test_transaction.py. Its
+    fixed-point guard is expressed over registered identities rather than a
+    transient row locator, fixed queue bucket, or named active revision, and
+    the escalation records that reverting the repair makes the guard fail.
+  - >-
+    Requiring a Decision, implementation report, and independent Review for
+    every confined test maintenance change would duplicate the ordinary
+    ownership already assigned to the Integrator while adding no protection to
+    canonical data. The stated boundary preserves that lifecycle for changes
+    with repository-wide or production effects.
+
+affected_contracts: []
+affected_registries: []
+affected_artifacts:
+  escalation:
+    id: ESC-2026-09-01T23.29.02.119Z
+    path: rulesets/adnd1e/escalations/pending/ESC-2026-09-01T23.29.02.119Z.yaml
+    checksum: sha256:4a8f14d764d1ec266bdb4050c37ae23a287b577a5fcb6fafc0c819fb09334923
+  prior_decision:
+    id: DEC-2026-0075
+    path: rulesets/adnd1e/escalations/decisions/DEC-2026-0075.yaml
+    checksum: sha256:17794eeb6d7e19fd37b3eb52930ce53d9801ee64a50d7f068b637ac46dc917f1
+  authorized_integration:
+    id: INT-20260901-001
+    path: rulesets/adnd1e/manifests/INT-20260901-001.json
+    checksum: sha256:8082475ebfdfe0f61eecf8cc4f1cf6d82cb2352026597f1ec31dde3740f09b3e
+  disclosed_test_repair:
+    path: tooling/integrator/tests/test_transaction.py
+    checksum: sha256:ac8b6929f6cb652375d9d183394d5ac03c5b773ef9d62e36144393bf42379780
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: false
+  source_interpretation_change: false
+  artifact_lineage_change: none
+  direct_implementation: >-
+    None. The completed repair is accepted as ordinary test-fixture
+    maintenance and no implementation report is required.
+
+acceptance_tests:
+  - >-
+    The accepted repair is confined to
+    tooling/integrator/tests/test_transaction.py at checksum
+    sha256:ac8b6929f6cb652375d9d183394d5ac03c5b773ef9d62e36144393bf42379780;
+    this Decision authorizes no production or repository-artifact write.
+  - >-
+    The disclosed guard proves every registered identity added by an integrated
+    migration is absent after its rewind reaches a fixed point. The escalation
+    records successful focused and full-suite runs and the failure produced by
+    reverting the repair.
+  - >-
+    Any future use of this standing authority is valid only when every boundary
+    in this Decision's ruling is met. A change to tooling/integrator/src or a
+    repository artifact fails this condition and requires a separate Decision
+    before publication.
+
+post_implementation_requirements:
+  - >-
+    DEC-2026-0075's named dependency-closure guard and its completed Report
+    and Review lineage remain unchanged. This Decision does not waive or
+    reinterpret that exact ordered work.
+  - >-
+    The ordinary DEC-2026-0077 DMG 64 packet sequence remains outside this
+    Decision: Analyst must publish the post-migration GUR successor using
+    monster_giant / Giants before Builder may compile its corresponding GUP.
+
+constitution_version_impact:
+  changed: false
+  retained: '1.8'
+  rationale: >-
+    This Decision clarifies execution ownership for test-only Integrator
+    maintenance. It changes neither graph semantics nor a governed contract.
+
+governance_changelog:
+  - >-
+    DEC-2026-0078 distinguishes ordinary test-only Integrator maintenance from
+    direct Decision implementation and sets an explicit no-production-change
+    boundary for the former.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision and move ESC-2026-09-01T23.29.02.119Z to decided
+      state. No worker artifact follows from this resolution.
+
+exact_diff:
+  rulesets/adnd1e/escalations/decisions/DEC-2026-0078.yaml:
+    - Record the standing test-only Integrator maintenance boundary.
+  rulesets/adnd1e/escalations/decided/ESC-2026-09-01T23.29.02.119Z.yaml:
+    - Record DEC-2026-0078 as the escalation resolution.
+
+exact_diff_ownership:
+  - {path: rulesets/adnd1e/escalations/decisions/DEC-2026-0078.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/adnd1e/escalations/decided/ESC-2026-09-01T23.29.02.119Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: architect
+follow_up_owners:
+  architect:
+    - No further action after publication and escalation disposition.
+  analyst:
+    - Publish the separate DEC-2026-0077 post-migration GUR successor.
+  builder:
+    - Do not compile the DMG 64 packet until that successor GUR is available.
+  reviewer:
+    - No action from this Decision.
+  integrator:
+    - Maintain only test-only guards within the ruling boundary; escalate before publication when scope is uncertain.

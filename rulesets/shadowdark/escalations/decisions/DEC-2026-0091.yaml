@@ -1,0 +1,212 @@
+schema_version: '1.0'
+id: DEC-2026-0091
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.2'
+decision_date: '2026-09-22'
+request_origin:
+  type: builder_report
+  summary: >-
+    Current Shadowdark GUR candidate-node fields do not match the Builder's
+    input convention, and a schema-valid ref-keyed Review decision map is not
+    executable. The staged-validator command is also documented with an
+    unsupported --path option.
+question: >-
+  Which GUR candidate-node fields and Review per-row decision forms are
+  executable repository inputs, and how are the observed Shadowdark artifacts
+  corrected without silently aliasing or rewriting published history?
+ruling: >-
+  Candidate-node input uses proposed_id, proposed_label, kind, and why_needed.
+  proposed_label is the source or analyst-approved display label, and why_needed
+  is the bounded reason the candidate is necessary to represent packet edges.
+  The legacy candidate-node spellings label and evidence are not aliases and
+  are prohibited on newly published candidate nodes. Add this shape to the
+  common GUR schema. The Builder must fail a candidate node that lacks a
+  nonempty proposed_label or why_needed before it can emit a blank registration
+  proposal.
+
+  A Review's edge_decisions or row_decisions is executable in exactly these
+  forms: a list whose individual entries carry ref; a mapping whose keys are
+  the exact GUP refs and whose values are individual dispositions; or the
+  existing bulk approved_refs/refs form. For the ref-keyed mapping, the key is
+  the ref. An embedded ref is optional but, if present, must equal the key.
+  A mismatched key/ref or a map entry with no disposition is an executable-input
+  error, never a guessed correction. Existing bulk forms remain unchanged.
+
+  Correct the staged-artifact command everywhere it is operationally
+  instructed: validate_artifact.py takes the staged YAML path positionally,
+  followed by --schema. Do not change the tool interface.
+
+  Published artifacts remain immutable. The three active legacy Shadowdark GUR
+  leaves receive Analyst-owned successor revisions that rename only each
+  candidate node's label to proposed_label and evidence to why_needed, retaining
+  all values and other candidate-node fields. GUP r03 and its reviewed
+  predecessor remain history; a later build follows ordinary successor lineage
+  from the corrected GUR and an independently current Review.
+rationale:
+  - >-
+    The established AD&D GUR corpus and compiler both use proposed_label and
+    why_needed; the Shadowdark spellings otherwise serialize blank node
+    registration fields in every affected GUP.
+  - >-
+    The common Review schema intentionally validates both list and mapping
+    decision collections. Ignoring the latter contradicts the declared input
+    contract and turns a complete Review into an unread ruling.
+  - >-
+    Explicit rejection of aliases preserves the source of every correction and
+    prevents a parser convenience from becoming unreviewed graph content.
+  - >-
+    The validator accepts the staged path positionally, so changing docs is the
+    smallest correction and avoids an unnecessary interface expansion.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Builder implements the bounded compiler and Review-parser changes while
+    Analyst may independently publish the three field-only GUR successors.
+  blocking_ids: []
+evidence:
+  - path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-015-015-stats-and-stat-modifiers-r02.yaml
+    checksum: sha256:258c77c0ddbdaeb879dc53102a50e3eca79b0131a2a4cb2cc90b59f64ff704c0
+    role: active_legacy_candidate_node_input_with_ten_blank_emitted_fields
+  - path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-011-014-character-overview-and-starting-level-r03.yaml
+    checksum: sha256:746bb3b2481e649959f1cd2811d64ceb91d80a411a9a49b6307f61bc4ac58b6b
+    role: active_legacy_candidate_node_input_with_nineteen_affected_nodes
+  - path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-016-017-ancestries-r02.yaml
+    checksum: sha256:cfeceea5adc38a5fa80749bc09e9f5334cf5787478e0880834fba0758603a739
+    role: active_legacy_candidate_node_input_with_twenty_affected_nodes
+  - path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r02-r01.yaml
+    checksum: sha256:b0c7a3258d8572c9e6def3b715bb6594037b7a8bd1c5c40f1b4976b95aae5140
+    role: schema_valid_ref_keyed_review_decision_mapping
+  - path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-015-015-stats-and-stat-modifiers-r03.yaml
+    checksum: sha256:cd632f6edfaf3bd9a4a7f76e2a46da292719c4c27b0aa4aeebb8e9a41e98845e
+    role: blocked_historical_compile_that_refused_to_ignore_the_review
+  - path: tooling/common/validate_artifact.py
+    checksum: sha256:c13f3e8a5321ca8a0b4f32d1da5c42a714f446fe21bb94b899abe2bb784538e8
+    role: installed_positional_staged_argument_interface
+migration_required: false
+migration_scope: >-
+  No canonical graph, registry, packet, or source migration occurs. Three
+  immutable GUR leaves receive ordinary field-only successors; all older GURs,
+  GUPs, and Reviews remain unchanged historical evidence.
+constitution_version_impact: None. This standardizes artifact input structure and Review execution, not graph ontology.
+affected_contracts:
+  - contracts/WORK_QUEUES.md
+  - agents/architect/INSTRUCTIONS.md
+  - agents/analyst/INSTRUCTIONS.md
+  - agents/builder/INSTRUCTIONS.md
+  - agents/reviewer/INSTRUCTIONS.md
+  - agents/integrator/INSTRUCTIONS.md
+  - schemas/common/gur.schema.json
+  - schemas/common/review.schema.json
+affected_registries: []
+implementation_bounds:
+  - >-
+    Architect changes only the listed common schemas and operational
+    instructions. Builder changes only compiler.py, review.py, and focused
+    tests. Analyst changes only the three named GUR successor files.
+  - >-
+    Do not add label/evidence aliases, mutate published input artifacts, alter
+    source assertions, repair GUP r03 in place, loosen unknown-version or
+    unknown-disposition handling, change queue semantics, or edit Herdr tooling.
+  - NO RC processing, cleanup, compilation, or testing is authorized.
+acceptance_tests:
+  - >-
+    The common GUR schema accepts a candidate node with nonempty proposed_id,
+    proposed_label, kind, and why_needed and rejects a candidate node that
+    omits either executable registration field or uses legacy label/evidence.
+  - >-
+    Builder compilation reports a blocking candidate_node_fields_missing error
+    and emits no blank ordinary registration proposal when either canonical
+    candidate-node field is absent. Existing valid AD&D candidate nodes remain
+    accepted.
+  - >-
+    A ref-keyed edge_decisions or row_decisions mapping expands each key into
+    its matching per-row directive. A mismatched embedded ref or a nondisposition
+    map value fails closed, while existing list and approved_refs/refs forms
+    retain their behavior.
+  - >-
+    WORK_QUEUES 1.32 or later and the Analyst/Reviewer instructions document the
+    exact executable candidate-node/Review forms. All five role instructions use
+    the positional staged YAML argument for validate_artifact.py. The installed
+    tool interface is unchanged.
+  - >-
+    Focused tests and the complete Builder suite pass with exact commands and
+    outcomes in the implementation report. The three named legacy GUR leaves
+    and every older GUP/Review checksum remain unchanged.
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision; update the common GUR/Review schema documentation,
+      WORK_QUEUES, and role instructions; validate the exact docs and schemas.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement candidate-node fail-closed validation and ref-keyed Review map
+      execution with focused regressions. Publish a Decision Implementation
+      Report and validation report for Reviewer.
+  - step: 3
+    owner: analyst
+    action: >-
+      After step 1, publish the three named field-only GUR successors. This may
+      proceed concurrently with Builder step 2; preserve every non-key field and
+      do not compile a packet.
+  - step: 4
+    owner: reviewer
+    action: >-
+      Independently verify the Builder implementation report and all acceptance
+      evidence through ordinary immutable Review lineage.
+post_implementation_requirements:
+  - >-
+    After steps 2 through 4 and the relevant corrected GUR, Builder may create
+    ordinary successor GUPs and route them through normal Review/Integration.
+    The blocked GUP-PKT-SD-015-015-stats-and-stat-modifiers-r03 is not edited or
+    implicitly reclassified by this Decision.
+exact_diff:
+  contracts/WORK_QUEUES.md: Define canonical candidate-node and executable Review decision forms; correct the staged-validator command.
+  agents/architect/INSTRUCTIONS.md: Correct the staged-validator command.
+  agents/analyst/INSTRUCTIONS.md: Require canonical candidate-node keys and correct the staged-validator command.
+  agents/builder/INSTRUCTIONS.md: Correct the staged-validator command.
+  agents/reviewer/INSTRUCTIONS.md: Define executable Review decision forms and correct the staged-validator command.
+  agents/integrator/INSTRUCTIONS.md: Correct the staged-validator command.
+  schemas/common/gur.schema.json: Add the canonical candidate-node input shape and reject legacy aliases.
+  schemas/common/review.schema.json: Document ref-keyed mappings as executable decision collections.
+  tooling/builder/src/adnd1e_builder/compiler.py: Fail closed on missing candidate-node registration fields.
+  tooling/builder/src/adnd1e_builder/review.py: Execute ref-keyed Review decision mappings and reject conflicting keys.
+  tooling/builder/tests/test_compiler.py: Cover candidate-node fail-closed behavior.
+  tooling/builder/tests/test_review.py: Cover list, bulk, ref-keyed, and invalid mapping Review forms.
+  tooling/builder/tests/test_shadowdark_ancestry.py: Cover the common candidate-node schema contract and retained Shadowdark compatibility.
+  books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03.yaml: Publish the field-only canonical-key successor.
+  books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-011-014-character-overview-and-starting-level-r04.yaml: Publish the field-only canonical-key successor.
+  books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-016-017-ancestries-r03.yaml: Publish the field-only canonical-key successor.
+exact_diff_ownership:
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: agents/architect/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/analyst/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/builder/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/reviewer/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: agents/integrator/INSTRUCTIONS.md, owner: architect, sequence_step: 1}
+  - {path: schemas/common/gur.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/common/review.schema.json, owner: architect, sequence_step: 1}
+  - {path: tooling/builder/src/adnd1e_builder/compiler.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/src/adnd1e_builder/review.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_compiler.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_review.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_shadowdark_ancestry.py, owner: builder, sequence_step: 2}
+  - {path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03.yaml, owner: analyst, sequence_step: 3}
+  - {path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-011-014-character-overview-and-starting-level-r04.yaml, owner: analyst, sequence_step: 3}
+  - {path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-016-017-ancestries-r03.yaml, owner: analyst, sequence_step: 3}
+follow_up_owners:
+  builder:
+    - Implement and evidence the bounded parser/compiler alignment.
+  analyst:
+    - Publish the three exact field-only GUR successors after the Architect schema amendment.
+  reviewer:
+    - Independently review the implementation report before a ref-keyed Review is relied on.

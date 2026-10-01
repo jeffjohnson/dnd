@@ -1,0 +1,247 @@
+schema_version: '1.0'
+id: GUP-PKT-SD-192-193-designing-monsters-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-192-193-designing-monsters
+constitution_version: '1.8'
+artifact_kind: packet_update
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 4 edge addition(s), 0 update(s), 3 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-SD-192-193-designing-monsters-r01
+  gur_checksum: sha256:50358b91f531c47303c11ba1010a68316d7b6d8c746215dcb92e9b1f943310fc
+  gur_constitution_version: '1.8'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 938
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: rule_designing_monsters
+      proposed_label: Designing Monsters
+      kind: rule
+      why_needed: The source names DESIGNING MONSTERS as a section and gives the procedure for building
+        a monster under it. It is the named procedure the one-to-one table resolves, and it is the source
+        of M001.
+      edges_depending_on_it:
+        - M001
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_one_to_one_monsters
+      proposed_label: 1:1 Monsters Table
+      kind: tbl
+      why_needed: The named table on printed page 193, 4 rows matching average party level to the monster
+        level that produces an average-difficulty fight at one monster per character. It is the source
+        of M003 and the target of M002.
+      edges_depending_on_it:
+        - M001
+        - M002
+        - M003
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions:
+    - source_id: cbt_attack_roll
+      source_label: Attack Roll
+      edge_type: DERIVED_FROM
+      target_id: abil_stat_modifier
+      target_label: Stat Modifier
+      aspect: monster attack bonus
+      condition: for a monster
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '193'
+      section: ATTACK BONUS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+    - source_id: mstat_monster_level
+      source_label: Monster Level
+      edge_type: CONSTRAINS
+      target_id: cbt_attack_roll
+      target_label: Attack Roll
+      aspect: attack bonus ceiling
+      condition: ''
+      polarity: governs
+      polarity_basis: read
+      book: SD
+      page: '193'
+      section: ATTACK BONUS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M005
+    - source_id: mstat_monster_level
+      source_label: Monster Level
+      edge_type: FEEDS_INTO
+      target_id: rule_damage
+      target_label: Damage
+      aspect: damage by level
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '193'
+      section: DAMAGE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M007
+    - source_id: mstat_monster_level
+      source_label: Monster Level
+      edge_type: FEEDS_INTO
+      target_id: rule_treasure
+      target_label: Treasure
+      aspect: treasure quality
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '192'
+      section: LEVEL
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M006
+  pending_additions:
+    - source_id: exp_level
+      source_label: Level
+      edge_type: FEEDS_INTO
+      target_id: tbl_one_to_one_monsters
+      target_label: 1:1 Monsters Table
+      aspect: party level
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '193'
+      section: 1:1 MONSTERS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: rule_designing_monsters
+      source_label: Designing Monsters
+      edge_type: RESOLVED_BY
+      target_id: tbl_one_to_one_monsters
+      target_label: 1:1 Monsters Table
+      aspect: level selection
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '193'
+      section: 1:1 MONSTERS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+    - source_id: tbl_one_to_one_monsters
+      source_label: 1:1 Monsters Table
+      edge_type: FEEDS_INTO
+      target_id: mstat_monster_level
+      target_label: Monster Level
+      aspect: encounter level
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '193'
+      section: HOW MANY MONSTERS?
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts:
+    derived: 3
+    read: 1
+duplicate_findings: []
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 7
+  edges_compiled: 7
+  edges_rejected: 0
+  edge_additions: 4
+  edge_pending_additions: 3
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 0
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 2
+  cross_packet_dependencies: 0
+  duplicate_findings: 0
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-SD-192-193-designing-monsters-r01.validation.json

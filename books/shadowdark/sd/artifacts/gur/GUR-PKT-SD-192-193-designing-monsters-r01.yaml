@@ -1,0 +1,525 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-192-193-designing-monsters-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-192-193-designing-monsters
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.35
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-192-193-designing-monsters
+  source_file: source.md
+  packet_source_checksum: sha256:185ec951be7ebd010dddb015277db911483e90e3e143142940083b80e4ddc8cb
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 083-designing-monsters.md
+  citation_code: SD
+  page_start: 192
+  page_end: 193
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit and are computed from the claimed source and the canonical files, not
+  recalled. Measured from the Pandoc AST: 11 headings, 23 prose paragraphs and 1 named table of
+  4 data rows. 27 numerals appear in the in-scope text once page-marker text is removed, the
+  highest density of quantities in any packet of this chapter, and none is stored in any field.
+
+page_attribution_basis: >-
+  Two markers, both on headings, and no ambiguity. The p192 marker ends the DESIGNING MONSTERS
+  heading and the p193 marker ends the ATTACK BONUS subsection heading; placement rule 1 applies
+  each to its whole heading and persistence carries each page through the blocks that follow.
+  The script asserts that the one table carries no marker, so it rests wholly on page 193. Three
+  rows cite 192 and four cite 193, each taken from the page of the block that supports it.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 192 and 193. The
+  Supporting Source Context appends the monster attributes page from 189 for the third
+  consecutive packet; its own packet is integrated and its three rows are canonical, so no row
+  here cites 189 and the script asserts that every submitted row cites 192 or 193.
+
+source_summary: >-
+  A GM's guide to building a monster, in nine short subsections. It names six combat roles,
+  advises on stat modifiers and description, states what a monster's level determines, says how
+  a monster's attack bonus is derived and bounded, gives damage and attack counts by level band,
+  notes that monsters have talents, and closes with a four-row table matching average party
+  level to the monster level that makes a one-to-one fight of average difficulty.
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 429 registry
+  rows and 859 edges, and 0 rows cite printed page 192 or 193. The registry holds 126 tbl_
+  identities, 99 rule_ identities and 1 mstat_ identity.
+  The endpoints this packet reuses carry 3 rows on mstat_monster_level, 28 on cbt_attack_roll, 2
+  on abil_stat_modifier, 15 on rule_treasure, 25 on rule_damage and 31 on exp_level. The script
+  asserts that both proposed ids are absent from the registry before using them.
+
+disposition_note: >-
+  This page sits between two settled readings and resembles both, so the test was applied
+  subsection by subsection rather than to the page as a whole.
+  PKT-SD-075-077 yielded nothing because its content was advice about how to think, stating no
+  dependency. PKT-SD-190-191 yielded five rows because its content was a construction procedure
+  whose prose said what is computed from what. This page contains both kinds in alternating
+  subsections.
+  The test used is the one that separated them: a sentence of the form one thing is based on, or
+  bounded by, or determined by another states a dependency and earns a row; a sentence
+  describing what a designer should aim for does not. Four subsections pass it and five do not,
+  and each is recorded individually.
+  Bands of values keyed to level are the hard case and are treated as follows. The figures in
+  them are magnitudes and none is stored. But a band table establishes a direction: the level is
+  the input and the damage, or the treasure quality, is the output. Where the source states that
+  direction, the dependency is assertable without the values, which is M006 and M007.
+
+mstat_boundary_observed: >-
+  mstat_monster_level is the hub of this page and carries 4 of the 7 rows. Every one of them is
+  a dependency between shared mechanics: what the monster level is selected from, what it
+  constrains, and what it determines. None stores a level value, a band, or any individual
+  creature's level, which is the line constitution 2.5 draws.
+  No new mstat_ identity is proposed. Average party level is expressed through exp_level for the
+  same reason PL was at printed page 190: it is the characters' level, not a creature statistic.
+
+candidate_nodes:
+  - proposed_id: rule_designing_monsters
+    proposed_label: Designing Monsters
+    kind: rule
+    why_needed: >-
+      The source names DESIGNING MONSTERS as a section and gives the procedure for building a
+      monster under it. It is the named procedure the one-to-one table resolves, and it is the
+      source of M001.
+    prefix_basis: >-
+      rule_ is a named rule or procedure; joins the 99 canonical rule_ identities and follows the
+      shape of rule_monster_generator, registered one packet ago from the adjacent section.
+    source_named: true
+    defining_locus: SD page 192, DESIGNING MONSTERS
+    source_evidence: >-
+      page 192, the DESIGNING MONSTERS heading and the nine subsections beneath it that state how
+      a monster is built.
+  - proposed_id: tbl_one_to_one_monsters
+    proposed_label: '1:1 Monsters Table'
+    kind: table
+    why_needed: >-
+      The named table on printed page 193, 4 rows matching average party level to the monster
+      level that produces an average-difficulty fight at one monster per character. It is the
+      source of M003 and the target of M002.
+    prefix_basis: 'tbl_ is a named source table; joins the 126 canonical tbl_ identities'
+    source_named: true
+    defining_locus: SD page 193, 1:1 MONSTERS TABLE
+    source_evidence: >-
+      page 193, the 1:1 MONSTERS TABLE heading, its two columns and its 4 data rows, together
+      with the preceding sentence instructing the reader to use it.
+    id_transliteration_note: >-
+      The source name contains a colon, which cannot appear in an identity under constitution
+      section 2. The stem spells the ratio in words, one_to_one, rather than dropping the
+      punctuation to give a digit run. The proposed label preserves the source spelling exactly.
+      Recorded because the registry contains both conventions, rule_natural_one spelling a number
+      and tbl_wizard_mishaps_tier_1_2 using digits, so this is a choice rather than the only
+      option; Reviewer may prefer tbl_1_1_monsters and the correction is a relabel, not a
+      re-extraction.
+
+reused_nodes:
+  - id: exp_level
+    label: Level
+    used_by: M002
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical with 31 rows, all character side. The table's input column is average party
+      level, which is the characters' level; this is the same bridge used for PL at printed page
+      190 and it keeps character level distinct from monster level.
+  - id: mstat_monster_level
+    label: Monster Level
+    used_by: M003, M005, M006, M007
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Registered under DEC-2026-0105 and carrying 3 rows before this packet. Four rows here make
+      it the hub of the page, which is what the section LEVEL says it is: a monster's level
+      determines its power level.
+  - id: cbt_attack_roll
+    label: Attack Roll
+    used_by: M004, M005
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical with 28 rows. Two rows reach it here from different directions, one saying what
+      the monster's attack bonus is derived from and one saying what bounds it.
+  - id: abil_stat_modifier
+    label: Stat Modifier
+    used_by: M004
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 15 with 2 rows, its derivation from the stat modifiers table
+      and its contribution to a check. This is its third row and the first from the monster side.
+  - id: rule_treasure
+    label: Treasure
+    used_by: M006
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 117 with 15 rows, including its RESOLVED_BY into the XP for
+      Treasure Quality Table, which is the quality concept the LEVEL bands name.
+  - id: rule_damage
+    label: Damage
+    used_by: M007
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical with 25 rows. The DAMAGE subsection states damage by level band; the bands are
+      magnitudes and the dependency is the row.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_designing_monsters
+    source_label: Designing Monsters
+    edge_type: RESOLVED_BY
+    target_id: tbl_one_to_one_monsters
+    target_label: '1:1 Monsters Table'
+    aspect: level selection
+    condition: ''
+    book: SD
+    page: 193
+    section: 1:1 MONSTERS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M002
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: tbl_one_to_one_monsters
+    target_label: '1:1 Monsters Table'
+    aspect: party level
+    condition: ''
+    book: SD
+    page: 193
+    section: 1:1 MONSTERS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M003
+    source_id: tbl_one_to_one_monsters
+    source_label: '1:1 Monsters Table'
+    edge_type: FEEDS_INTO
+    target_id: mstat_monster_level
+    target_label: Monster Level
+    aspect: encounter level
+    condition: ''
+    book: SD
+    page: 193
+    section: HOW MANY MONSTERS?
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M004
+    source_id: cbt_attack_roll
+    source_label: Attack Roll
+    edge_type: DERIVED_FROM
+    target_id: abil_stat_modifier
+    target_label: Stat Modifier
+    aspect: monster attack bonus
+    condition: for a monster
+    book: SD
+    page: 193
+    section: ATTACK BONUS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M005
+    source_id: mstat_monster_level
+    source_label: Monster Level
+    edge_type: CONSTRAINS
+    target_id: cbt_attack_roll
+    target_label: Attack Roll
+    aspect: attack bonus ceiling
+    condition: ''
+    book: SD
+    page: 193
+    section: ATTACK BONUS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    polarity: governs
+    polarity_basis: read
+  - ref: M006
+    source_id: mstat_monster_level
+    source_label: Monster Level
+    edge_type: FEEDS_INTO
+    target_id: rule_treasure
+    target_label: Treasure
+    aspect: treasure quality
+    condition: ''
+    book: SD
+    page: 192
+    section: LEVEL
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M007
+    source_id: mstat_monster_level
+    source_label: Monster Level
+    edge_type: FEEDS_INTO
+    target_id: rule_damage
+    target_label: Damage
+    aspect: damage by level
+    condition: ''
+    book: SD
+    page: 193
+    section: DAMAGE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+
+authored_polarity_declaration: >-
+  1 of the 7 rows carries authored polarity: M005, a CONSTRAINS, which constitution section 5
+  reserves. Its value is governs at basis read, following the uniform canonical convention for
+  the type. The remaining 6 rows are RESOLVED_BY, FEEDS_INTO or DERIVED_FROM, none reserved, so
+  Builder derives governs, neutral and neutral respectively.
+
+status_note: >-
+  All 7 rows are core. The section is main-rules guidance in the steward-designated main rules
+  work and is not presented as an optional or variant mode.
+
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: >-
+  None recorded. The page is a GM construction procedure and resolves nothing in play.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The Analyst is prohibited from promoting a general rule. The level bands apply
+  to every monster and would be the natural candidate, which is why M006 and M007 are written as
+  single rows from the level identity rather than proposed as inherited rules.
+
+rejected_candidates:
+  - text_locus: 'COMBAT ROLE, p192'
+    quoted_gist: >-
+      six named roles, Mook, Soldier, Striker, Tank, Controller and Legendary, each described by
+      relative damage, hit points, armour class and attack bonus, with the striker often stealthy
+      and the controller having environment-altering talents
+    why_considered: >-
+      This is the page's strongest temptation. Six terms are named, capitalised and bolded, each
+      with a stated profile, and they read like a taxonomy the graph could hold. The controller
+      entry also names talents, and rule_talents is canonical with 5 rows.
+    rejection_reason: >-
+      They are a designer's vocabulary, not a mechanic. Every profile is stated in relative terms
+      only, low, mid-range and high, which are magnitudes without values and cannot be stored in
+      any field; nothing is computed from a role and nothing changes if a role is renamed.
+      Minting six identities would create exactly the creature classification constitution
+      section 2.4 keeps out of the graph, and section 8 adds that structural roles are query-time
+      conclusions rather than stored assertions. The talents mention is a description of what a
+      controller tends to have, not a dependency.
+  - text_locus: 'STAT MODIFIERS and DESCRIPTION, p192'
+    quoted_gist: >-
+      compare with measuring-stick monsters such as elephants when choosing modifiers, monsters
+      can have higher modifiers than PCs, and describe a monster's defining characteristics and
+      behaviours
+    why_considered: >-
+      abil_stat_modifier is canonical and the first subsection is about it, immediately raising
+      the question of why M004 reaches it and this does not.
+    rejection_reason: >-
+      Both are advice about how to choose, not statements of what depends on what. Comparing with
+      an elephant is a method for the designer; that monsters can exceed PC modifiers states a
+      permission rather than a relationship. M004 exists because a different subsection says the
+      attack bonus is based on the modifier, which is a derivation. This is the distinction the
+      whole page turns on and it is recorded here rather than only in disposition_note.
+  - text_locus: 'MOVEMENT, p192'
+    quoted_gist: >-
+      most monsters can move near, or double near if large, and note if they can swim, fly, climb
+      or burrow
+    why_considered: 'ex_movement is canonical with 22 rows and rule_distance already constrains it.'
+    rejection_reason: >-
+      Most and typically hedge a default value, near is a distance band already carried by
+      rule_distance CONSTRAINS ex_movement from printed page 85, and the special modes are a
+      list of things to note in a stat block. This is the same reading applied to the identical
+      sentence at printed page 189, which the appended context repeats.
+  - text_locus: 'the level band descriptors, p192'
+    quoted_gist: >-
+      each level band is labelled weak, risky, dangerous or mighty, common through unique, and a
+      challenge to novice, experienced, expert or supreme crawlers
+    why_considered: >-
+      The bands are the most structured content on the page and the challenge descriptors read
+      like a difficulty mechanic.
+    rejection_reason: >-
+      There is no identity for a difficulty or rarity rating and none may be minted from an
+      adjective list; the descriptors are prose labels on ranges of a value. M006 takes from this
+      subsection only the part that names a mechanic the graph holds, which is treasure quality,
+      and leaves the labels alone.
+  - text_locus: 'the damage and attack-count bands, p193'
+    quoted_gist: >-
+      each level band lists weapon quality, a damage die range on each attack and a number of
+      attacks
+    why_considered: >-
+      Every figure here is a magnitude, so the subsection could be read as storing nothing at all
+      and therefore earning nothing.
+    rejection_reason: >-
+      The figures are indeed magnitudes and none is stored. What is not a magnitude is the
+      direction: the subsection is organised by level and the damage follows from it. M007
+      asserts that dependency and nothing else. The attack-count half is declined separately
+      because the number of attacks has no identity of its own; cbt_attack_roll is the roll, not
+      how many are made, and the page-189 attack sentence was declined on the same ground.
+  - text_locus: 'MONSTER TALENTS, p193'
+    quoted_gist: 'monsters typically have one to three talents that grant special powers or attacks'
+    why_considered: >-
+      rule_talents is canonical with 5 rows and this is the only sentence on the page that names
+      it directly.
+    rejection_reason: >-
+      Typically and the count are a hedge and a magnitude, and what remains is that monsters have
+      talents, which states scope rather than dependency. Nothing is computed from a talent here
+      and no talent is named. Constitution 2.5 reaches the same result: how many talents a
+      creature has is one of its stat-block values.
+  - text_locus: 'the HOW MANY MONSTERS? prose, p193'
+    quoted_gist: >-
+      levels can be combined into a different quantity of monsters, an example of four
+      fourth-level adventurers facing a combined twelve levels of monsters, large groups being
+      deadly because they take more actions each round, and a solo monster being too easy if
+      swarmed
+    why_considered: >-
+      rule_action and rule_round are canonical and the passage explains why the table's output
+      needs judgement, which sounds like a constraint on it.
+    rejection_reason: >-
+      The worked example is entirely magnitudes. The two closing observations are advisory and
+      hedged, can be deadly and can be too easy, and state no rule: nothing in the graph changes
+      if a group is large. The action-economy remark is an explanation of why the guidance is
+      approximate, not an assertion that monster count modifies the action rule.
+  - text_locus: 'average party level as its own identity, p193'
+    quoted_gist: 'the table''s first column is average party level'
+    why_considered: >-
+      It is the same shape as PL at printed page 190, a party-level quantity with no identity, and
+      consistency required that it be answered the same way rather than by habit.
+    rejection_reason: >-
+      Average party level is the characters' level and constitution 2.5 bounds mstat_ to a
+      creature statistic, so no identity is minted. M002 reaches exp_level directly, which is
+      what the column holds. The word average is an aggregation of that value rather than a
+      different mechanic, and constitution section 2 states that labels do not determine
+      identity.
+  - text_locus: 'the appended monster attributes page, out of scope'
+    quoted_gist: 'the printed page 189 monster attributes page'
+    why_considered: >-
+      It is in the file for the third consecutive packet and its MOVEMENT and STAT MODIFIERS
+      subsections are near-duplicates of subsections on this page.
+    rejection_reason: >-
+      It is Supporting Source Context, outside the bounded scope, and
+      PKT-SD-189-189-monster-attributes already carries its three rows. The near-duplication is
+      the hazard: the in-scope MOVEMENT subsection is declined on its own terms above, not
+      because the repeated copy was read.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: the page alternates guidance and procedure, and the test separates them cleanly
+    detail: >-
+      Nine subsections: four state a dependency and five do not, and they alternate rather than
+      grouping. STAT MODIFIERS is advice and ATTACK BONUS, two subsections later, is a
+      derivation; MOVEMENT is advice and LEVEL, immediately after, states what level determines.
+      That alternation is why the page was tested subsection by subsection. A verdict on the
+      whole page would have been wrong in either direction: read as guidance it loses four real
+      dependencies, read as procedure it invents six combat-role identities and a difficulty
+      vocabulary.
+  - id: OBS-02
+    subject: a band of magnitudes can still carry a direction
+    detail: >-
+      27 numerals appear on this page, more than any other in the chapter, and not one is stored.
+      The LEVEL and DAMAGE subsections are tables of values in prose form, and the instinct is
+      that a subsection made entirely of magnitudes yields nothing.
+      That instinct is wrong here. A band table has an input and an output: the level is what you
+      look up by, and the treasure quality and the damage are what you read off. The values
+      cannot be stored and the direction can, which is M006 and M007. The test is whether the
+      source organises the bands by the input, and this one does, four times over in each
+      subsection.
+      Recorded because roughly sixty stat-block packets follow and each will present values
+      without any such direction, where the correct answer is nothing.
+  - id: OBS-03
+    subject: two rows reach the attack roll from opposite sides
+    detail: >-
+      M004 says the monster's attack bonus is derived from its stat modifier and M005 says its
+      level bounds that bonus. Both come from the same two-sentence subsection and they are
+      different kinds of statement: one supplies the value, the other caps it.
+      The cap is hedged, should rarely exceed, which makes it CONSTRAINS rather than EXCLUDES
+      under the test settled at PKT-SD-114-114 and applied to the swamp mosquitoes at 176. An
+      unhedged must not exceed would have been the same row at the same polarity, so the hedge
+      does not change this one, but recording it keeps the reading auditable.
+  - id: OBS-04
+    subject: the third bridge from character level, and the pattern is now settled
+    detail: >-
+      exp_level has now been reached from the monster chapter three times: PL at printed page
+      190, and average party level here in M002. Each time the source names a party-level
+      quantity that has no identity, and each time it is the characters' level under another
+      label.
+      The pattern is worth stating once so it stops being re-derived: a party-level quantity is
+      exp_level, a creature's level is mstat_monster_level, and constitution 2.5 keeps the second
+      from absorbing the first. The remaining monster packets will meet this again in the XP and
+      treasure material.
+
+unresolved_identity_questions: []
+unresolved_identity_questions_note: >-
+  None. The two identity questions this page raises, average party level and the six combat
+  roles, are both answered within existing governance and recorded as declines rather than
+  carried forward. The one transliteration choice, the colon in the table's name, is recorded on
+  the candidate node so Reviewer can correct it without a re-extraction.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Both proposed identities use an approved prefix and kind and pass identity and
+  duplicate checks, which ESCALATION_CONTRACT names as ordinary Builder and Reviewer work. Every
+  row uses a legal edge type at status core, no row carries supersession_basis and none is an
+  OVERRIDES, and no CLASSIFIED_AS row appears. No new mstat_ identity is proposed, so the
+  boundary constitution 2.5 reserves to an Architect Decision is not approached.
+
+completeness_statement: >-
+  Both printed pages in the declared span were read in full at the recorded checksum, which the
+  script asserts against the packet manifest before parsing: 11 headings, 23 prose paragraphs and
+  1 named table of 4 data rows. Every subsection is dispositioned, four as rows and five as
+  declines.
+  The packet yields 2 new identities and 7 rows, reusing 6 canonical identities whose labels the
+  script asserted equal to the registry, and both proposed ids were asserted absent before use.
+  Every proposed identity carries at least one edge, so nothing is left unattached.
+  Every row was checked against the 859 canonical edges for an assertion-key collision, for a
+  shared source, type and target under a different aspect, and for duplicates within the patch;
+  there are none of any, no two rows in the patch share a source, type and target, and no
+  canonical row cited either page before. The script asserts that every submitted row cites 192
+  or 193 and that the table carries no page marker.
+  9 candidates were rejected and each is recorded with its reason. The largest deliberate loss is
+  the six combat roles, which are a designer's vocabulary rather than a mechanic. 27 numerals
+  appear on the page and none is stored. No assertion depends on any other ruleset.
+
+measured_figures_note: >-
+  Figures quoted in this artifact's prose are computed from the claimed source and the canonical
+  files at extraction, not recalled. Measured here: 11 headings, 23 paragraphs, 1 table of 4 data
+  rows, 27 numerals; 3 rows cite printed page 192 and 4 cite 193. Canonical counts at extraction:
+  429 registry rows, 859 edges, 0 rows citing page 192 or 193, 126 tbl_ identities, 99 rule_
+  identities and 1 mstat_ identity; 3 rows on mstat_monster_level, 28 on cbt_attack_roll, 2 on
+  abil_stat_modifier, 15 on rule_treasure, 25 on rule_damage, 5 on rule_talents and 31 on
+  exp_level.

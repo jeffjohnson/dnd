@@ -1,0 +1,330 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-082-083-time-and-turn-order-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-082-083-time-and-turn-order
+constitution_version: '1.6'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.2
+  - rulesets/shadowdark/governance/constitution.md 1.6
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+
+classified_as_gate_note: >-
+  DEC-2026-0103 added the bounded CLASSIFIED_AS edge type at Constitution 1.6 and prohibits any
+  CLASSIFIED_AS row until Builder's implementation has terminal Reviewer approval. No implementation
+  report exists at extraction time, so no such row appears here. The ruling's authorised use is
+  confined to spell casting class and spell tier, and nothing in this packet is either, so the gate
+  would not affect this extraction even once it opens.
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-082-083-time-and-turn-order
+  source_file: source.md
+  packet_source_checksum: sha256:e457087d93c4bf44f98e33b883cbf61c56b81f28ea9f5e7c8588d5ad2594b1bb
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 031-time-and-turn-order.md
+  citation_code: SD
+  page_start: 82
+  page_end: 83
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Markers resolve through the Pandoc AST rather than positionally, each a plain marker ending a
+  heading, which placement rule 1 applies to the whole heading. Every subsection carries no marker of
+  its own and takes its page from the persistence rule, so each row below is cited to the page of the
+  subsection it is drawn from rather than to the page of the nearest heading above it in the file.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 82 through 83. Any other
+  page the parser resolves lies inside the trailing Supporting Source Context, is claimed by another
+  packet, and contributed nothing here.
+
+source_summary: >-
+  Printed page 82 is TIME, tying game time to real time, restating turns and rounds, and defining what happens when time is fast-forwarded. Page 83 is TURN ORDER, defining initiative, the ordered steps of a player turn and a GM turn, and what an encounter is. This summary is orientation only; every assertion below cites its page.
+
+extraction_posture: >-
+  This packet is the defining locus for initiative and for the encounter, and it restates several relationships already asserted from printed page 8. The restatements are not re-emitted; each would collide under the section 4 assertion key. What is new is how initiative is rolled and ordered, what fast-forwarding time does to ongoing effects, and how often an encounter is checked for.
+
+graph_state_at_extraction: >-
+  The canonical graph holds 175 registry rows, read at extraction rather than recalled, and the
+  canonical edge set was read too so every proposed row could be checked against the section 4
+  assertion key before publication. Every endpoint this packet reaches is already canonical and is
+  reused rather than proposed. The domain registry is still empty and general_rules.json is still an
+  empty object.
+
+reused_nodes:
+- id: rule_round
+  label: Round
+  used_by: M001, M006
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: rule_spell_duration
+  label: Spell Duration
+  used_by: M002
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: abil_dexterity
+  label: Dexterity
+  used_by: M004
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: cbt_initiative
+  label: Initiative
+  used_by: M004, M005
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: rule_turn
+  label: Turn
+  used_by: M005
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+
+candidate_nodes:
+- proposed_id: rule_real_time
+  proposed_label: Real Time
+  kind: procedure
+  why_needed: Endpoint of M001. The rule tying game time to real time, which the light-source timers depend
+    on.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 82, its own heading REAL TIME
+  source_evidence: page 82, the heading and its rule that game time passes at the pace of real time
+- proposed_id: rule_time_passes
+  proposed_label: Time Passes
+  kind: procedure
+  why_needed: Source of M002 and M003. The fast-forward procedure that expires effects and triggers an
+    encounter check.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 82, its own heading TIME PASSES
+  source_evidence: page 82, the heading and its rules for moving timers down and resolving what happens
+- proposed_id: rule_encounter
+  proposed_label: Encounter
+  kind: procedure
+  why_needed: Endpoint of M003 and M006. The challenge that stops the characters' progress and whose chance
+    is rolled periodically.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 83, its own heading ENCOUNTERS
+  source_evidence: page 83, the heading and its definition of an encounter and of how often its chance
+    is rolled
+
+candidate_edges:
+- ref: M001
+  source_id: rule_round
+  source_label: Round
+  edge_type: FEEDS_INTO
+  target_id: rule_real_time
+  target_label: Real Time
+  aspect: time conversion
+  condition: ''
+  book: SD
+  page: 82
+  section: REAL TIME
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Where real time cannot be tracked, the source gives a conversion expressed in rounds,
+    so the round supplies the unit real time is measured in at the table. The conversion figure is a magnitude
+    and is excluded.
+- ref: M002
+  source_id: rule_time_passes
+  source_label: Time Passes
+  edge_type: CONSTRAINS
+  target_id: rule_spell_duration
+  target_label: Spell Duration
+  aspect: effect expiry
+  condition: ''
+  polarity: governs
+  polarity_basis: read
+  book: SD
+  page: 82
+  section: TIME PASSES
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Fast-forwarding expires effects whose duration is shorter than the time passed, bounding
+    how long an effect survives without changing the effect. The units named are magnitudes. Read aloud
+    as Time Passes governs Spell Duration; basis read.
+- ref: M003
+  source_id: rule_time_passes
+  source_label: Time Passes
+  edge_type: TRIGGERS
+  target_id: rule_encounter
+  target_label: Encounter
+  aspect: random check
+  condition: ''
+  polarity: neutral
+  polarity_basis: read
+  book: SD
+  page: 82
+  section: TIME PASSES
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'Passing time causes the GM to roll for an encounter, which is TRIGGERS read cause
+    to effect. Polarity is neutral with basis read: the check is a procedure the passage of time causes,
+    and whether its outcome helps or harms is not stated here. The roll bands are magnitudes.'
+- ref: M004
+  source_id: abil_dexterity
+  source_label: Dexterity
+  edge_type: FEEDS_INTO
+  target_id: cbt_initiative
+  target_label: Initiative
+  aspect: initiative roll
+  condition: ''
+  book: SD
+  page: 83
+  section: INITIATIVE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Initiative is rolled by adding the Dexterity modifier, so Dexterity supplies an input.
+    This is the defining locus for initiative, which the thief talents table already modifies from printed
+    page 22; that row remains correct and is not restated.
+- ref: M005
+  source_id: cbt_initiative
+  source_label: Initiative
+  edge_type: FEEDS_INTO
+  target_id: rule_turn
+  target_label: Turn
+  aspect: turn order
+  condition: ''
+  book: SD
+  page: 83
+  section: INITIATIVE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The highest initiative result takes the first turn and the order proceeds from there,
+    so initiative supplies the ordering the turn sequence depends on. The seating direction is procedural
+    colour naming no mechanic.
+- ref: M006
+  source_id: rule_round
+  source_label: Round
+  edge_type: FEEDS_INTO
+  target_id: rule_encounter
+  target_label: Encounter
+  aspect: check frequency
+  condition: ''
+  book: SD
+  page: 83
+  section: ENCOUNTERS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The GM rolls for the chance of an encounter every few rounds depending on the environment,
+    so the round supplies the interval the check is paced by. The interval is deliberately vague in the
+    source and no figure is stored. Distinct from M001 by target.
+
+authored_polarity_declaration: >-
+  2 rows carry authored polarity, all with basis read: M002, M003. Each is
+  MODIFIES, TRIGGERS or CONSTRAINS, the three types constitution section 5 requires to carry
+  source-reviewed authored polarity, and each was read aloud as source polarity target before being
+  recorded. No row uses basis heuristic or unset. Every other row takes its derived polarity from the
+  section 5 table and the Analyst authors none of it.
+
+domains_touched: []
+candidate_domains:
+  - proposed: core_resolution
+    basis: >-
+      This material is the general machinery every other chapter draws on. Recorded as a candidate
+      only; constitution section 8 reserves domain promotion to an Architect Decision and the Analyst
+      does not decide a candidate domain is official.
+
+domain_boundary_questions:
+  - >-
+    The resolution machinery is used by creation, magic, combat and exploration alike, which is an
+    argument that it is a domain and an argument that it is none. Deferred; no domain is asserted on
+    any edge in this GUR.
+
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The repeated shapes here are one rule stated once each rather than a pattern across
+  instances, and the Analyst is prohibited from promoting a general rule in any case.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: three relationships restated here are already asserted from printed page 8
+    detail: >-
+      The TURNS AND ROUNDS subsection restates that a round completes when each person has taken a turn, and the PLAYER TURN steps restate that a turn allows an action and a move and that skipping the action allows a second move. GUR-PKT-SD-005-010 asserts all three from printed page 8, as a turn feeding the round, a turn gating the action, a turn gating movement and an action constraining the additional move. Each is now canonical.
+            Re-emitting any of them would produce an identical source, type, target, aspect and condition and collide under the assertion key, so omitting them is required rather than optional. This page adds the ordering of turns, which M005 carries, and the timer step, which is dispositioned in OBS-02.
+  - id: OBS-02
+    subject: personal and GM timers are a procedure with no second identity
+    detail: >-
+      Both turn sequences begin with counting down timers, the player's for spells and effects and the GM's for everything else. A timer is not a named mechanic in this book; the things being timed are spell durations and effects, whose expiry M002 already carries from the TIME PASSES rule. Asserting a timer identity from a step in a procedure would mint a mechanic the source never defines.
+  - id: OBS-03
+    subject: the light-source dependency is real and belongs to the next packet
+    detail: >-
+      The REAL TIME subsection says tracking real time matters because most light sources last one hour of real time. That is a genuine dependency and it is not asserted here: no light identity exists, the torch and lantern entries on printed page 34 deferred it, and Light is defined on printed page 84, which is the next packet in the intake. That packet should assert it from its own locus, and the duration is a magnitude in any case.
+  - id: OBS-04
+    subject: the encounter definition names examples rather than mechanics
+    detail: >-
+      An encounter is defined as a challenge that stops the characters' progress, illustrated by a monster charging out of the darkness, a sinkhole opening and a town guard halting the party. The examples name no identity this graph holds and the Monsters chapter is not claimed. M003 and M006 carry the two relationships the page states about encounters, that passing time triggers a check and that the round paces it.
+  - id: OBS-05
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The pages carry the real-time-to-rounds conversion, the random encounter roll band, the die and modifier for initiative, and the movement allowance restated in the player turn. All are conversions, thresholds, die expressions or distances, excluded by constitution section 1 and invariant 11. They remain in the immutable claimed packet. No aspect contains a digit.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: whether real time is properly a graph identity
+    detail: >-
+      rule_real_time is proposed because the page gives it its own heading and states a rule, and because M001 needs an endpoint for the conversion the source supplies. It is unusual among the identities in this graph: it describes how the table measures elapsed time rather than a mechanic characters interact with, and its only stated consequence, light-source tracking, is deferred to the next packet.
+            Consequence if wrong: if Reviewer judges it out of scope, the node and M001 are withdrawn together and nothing else changes. The Analyst proposed it because the light dependency will need it shortly and because the conversion is a real rule, but records the doubt rather than presenting it as settled.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Every proposed node uses an approved constitution section 2 prefix with an unchanged
+  kind, every edge uses one of the fourteen legal section 3 types, and no new prefix, edge type,
+  domain promotion or general-rule application is requested. ESCALATION_CONTRACT states that a
+  proposed node under an approved prefix and kind which passes identity and duplicate checks is
+  ordinary GUR, GUP and Review work rather than an escalation, and that an unsupported edge should
+  simply be rejected rather than escalated, which is what the observations above record.
+
+completeness_statement: >-
+  All printed pages in the declared span are accounted for, and every heading, subsection, list and
+  paragraph within them was read. Each produced either an edge, a marked registry-addition node, or a
+  dispositioning observation; nothing was skipped. 0 node in this packet is a registry addition
+  only, marked and given its basis so an accidental orphan remains distinguishable. Every page marker
+  was resolved through the Pandoc AST and each row is cited to the page of the subsection it is drawn
+  from. Every row was checked against the canonical edge set for an assertion-key collision before
+  publication. Content not converted to an edge is accounted for in the observations above, and the
+  question the Analyst could not settle is recorded rather than resolved silently. No assertion
+  depends on any other ruleset.

@@ -1,0 +1,121 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-DMG-064-064-missile-discharge-r02-r01
+artifact_kind: packet_update_review
+status: revision_required
+ruleset_id: adnd1e
+book_id: dmg
+source_id: dmg-steward-intake
+packet_id: PKT-DMG-064-064-missile-discharge
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Publish one successor GUP applying the source-label correction for M014;
+    preserve every other checked edge, node proposal, and provenance field.
+  blocking_ids: []
+review_role: independent_reviewer
+review_date: '2026-08-31'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-DMG-064-064-missile-discharge-r02
+  path: books/adnd1e/dmg/artifacts/gup/GUP-PKT-DMG-064-064-missile-discharge-r02.yaml
+  checksum: sha256:db8de2940a95f288d3e0d8a1710cb0989841903bf6f9b62ef69e229cca88a654
+  artifact_kind: packet_update
+  revision: 2
+  supersedes: GUP-PKT-DMG-064-064-missile-discharge-r01
+  validation_report:
+    path: build/reports/GUP-PKT-DMG-064-064-missile-discharge-r02.validation.json
+    checksum: sha256:169531cc3bce1a784f90426639b03c54807320ab850a28e70752ec662ab703bf
+    reported_errors: 0
+    reported_warnings: 0
+overall_disposition: revision_required
+approval_ready: false
+approved_bundle_emitted: null
+summary:
+  approved: 18
+  approved_with_revision: 1
+  rejected: 0
+  architect_escalations: 0
+  node_additions_approved: 3
+  executable_additions: 12
+  pending_additions: 7
+  blocked_rows: 0
+completeness_statement: >-
+  Every r02 assertion was independently checked against the claimed DMG p64
+  packet, its explicit page marker, the active GUR traceability record, registry
+  identities, and the cited local canonical neighborhood. M014 alone needs a
+  source-label correction; all other submitted fields and node proposals pass.
+field_decision_policy:
+  applies_to: [M001, M002, M003, M004, M005, M006, M007, M008, M009, M010, M011, M012, M013, M015, M016, M017, M018, M019]
+  fields: [source_id, source_label, edge_type, target_id, target_label, aspect, condition, polarity, polarity_basis, book, page, section, evidence, pass, status, supersession_basis, general_rule_id, review_flag]
+  disposition: approved
+  rationale: >-
+    The submitted rows express only the affected qualitative facet, retain the
+    printed p64 attribution, use supported identities, directions, and read or
+    deterministic polarity, and introduce no duplicate assertion key.
+edge_decisions:
+  - ref: M014
+    disposition: approved_with_revision
+    source_locus: 'DMG p64, Boulders paragraph under GRENADE-LIKE MISSILES'
+    rationale: >-
+      The source states that boulders are one foot in diameter for giants. The
+      existing generic monster_special identity may be reused because its prior
+      p64 giant-boulder row establishes the packet-local registry neighborhood,
+      but “Special Creatures” is not the named source subject for this assertion.
+    exact_corrections:
+      source_label: Giant-Hurled Boulders
+    correction_citations:
+      - {book: DMG, page: '64', section: Boulders}
+node_registry_decisions:
+  - proposed_id: rule_acid
+    submitted_label: Acid
+    kind: rule
+    disposition: approved
+    basis: The p64 Size and Effect tables expressly distinguish acid, and no canonical substance identity duplicates it.
+    edges_depending_on_it: [M001, M002, M003]
+  - proposed_id: cbt_missile_scatter
+    submitted_label: Missile Scatter
+    kind: cbt
+    disposition: approved
+    basis: The p64 Misses procedure is a distinct reusable combat procedure with no canonical identity.
+    edges_depending_on_it: [M016, M017, M018]
+  - proposed_id: cbt_dropped_object
+    submitted_label: Dropped Object
+    kind: cbt
+    disposition: approved
+    basis: The p64 dropped-heavy-weight rule is distinct from a falling creature and grenade-container resolution.
+    edges_depending_on_it: [M015]
+required_builder_revision:
+  successor_id: GUP-PKT-DMG-064-064-missile-discharge-r03
+  preserve_immutable_input: GUP-PKT-DMG-064-064-missile-discharge-r02
+  requirements:
+    - Apply M014 source_label exactly as stated in its row-local correction.
+    - Preserve the 12 additions, 7 pending additions, three proposed nodes, source provenance, and all other r02 assertion fields unchanged.
+    - Regenerate validation evidence and publish the ordinary successor GUP for independent review.
+architectural_escalations: []
+blocking_findings:
+  - id: m014_non_source_subject_label
+    affected_refs: [M014]
+    resolution: Replace the generic registry label with the source-faithful Giant-Hurled Boulders label.
+reviewer_checklist:
+  source_support: passed_except_M014_source_label
+  printed_page_attribution: passed_p64_from_explicit_marker
+  identity: passed_after_M014_source_label_correction
+  edge_semantics_and_direction: passed
+  grain: passed
+  polarity: passed_no_heuristic_or_unset
+  provenance_and_activation: passed_DEC_2026_0034_steward_intake_reconciliation
+  graph_neighborhood: passed_no_duplicate_assertion_key
+  canonical_files_modified: false
+  gup_files_modified: false
+independent_validation:
+  methods:
+    - Validated the reviewed GUP against schemas/common/gup.schema.json and verified its GUR, component, and validation-report checksums.
+    - Re-read every claimed-packet p64 assertion, including the complete Boulders, Misses, and pre-truncation Lighting Oil clauses.
+    - Compared all submitted endpoints and duplicate findings to the local canonical DMG p64 neighborhood and registry identities.
+    - Verified DEC-2026-0034 authorizes the steward-intake GUR provenance without rewriting the immutable claimed packet manifest.
+    - Validated this Review against schemas/common/review.schema.json.
+  result: revision_required_for_M014_source_label_only

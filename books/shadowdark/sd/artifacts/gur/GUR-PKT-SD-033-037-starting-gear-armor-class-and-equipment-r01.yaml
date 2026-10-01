@@ -1,0 +1,1911 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-033-037-starting-gear-armor-class-and-equipment-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-033-037-starting-gear-armor-class-and-equipment
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.0
+  - rulesets/shadowdark/governance/constitution.md 1.2
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-033-037-starting-gear-armor-class-and-equipment
+  source_file: source.md
+  packet_source_checksum: sha256:8eddb5c44b81831b61800bf1f810a3870062a9c53fa84036f6e054975d758eb5
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 014-starting-gear-armor-class-and-equipment.md
+  citation_code: SD
+  page_start: 33
+  page_end: 37
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Five markers resolve in the Primary Source Material, all through the Pandoc AST rather than
+  positionally, and all plain markers ending headings, which placement rule 1 applies to each whole
+  heading: page 33 at STARTING GEAR, AC; page 34 at GEAR; page 35 at BASIC GEAR TABLE; page 36 at
+  CRAWLING KIT TABLE; page 37 at WEAPONS TABLE. Three blocks carry no marker of their own and take
+  their page from the persistence rule, which is where a positional reading would go wrong: the GEAR
+  SLOTS subsection falls on page 35, the ARMOR TABLE on page 36, and the five weapon property
+  definitions with the type and range notes on page 37. Rows below are cited accordingly. Five
+  further pages the parser resolves, 78 through 81 and 85, lie entirely inside the out-of-scope
+  Supporting Source Context.
+
+out_of_scope_context_warning: >-
+  This packet's Supporting Source Context reproduces printed pages 78 through 81 and 85, which define
+  advantage and disadvantage, the check procedure, how stats are used, and the distance bands. Those
+  are exactly the mechanics this packet's entries keep invoking: the crowbar grants advantage, two
+  armors impose disadvantage, and the weapons table classifies every weapon by a range band. They
+  were not read as evidence. Every assertion below is drawn from printed pages 33 to 37 and cites one
+  of them, and where an entry depends on a mechanic defined on one of those pages the dependency is
+  recorded as an observation rather than asserted from borrowed text.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 33 through 37. Five further
+  pages appear only as Supporting Source Context and are claimed by other packets, so the
+  zero-overlap rule across the intake holds for this packet.
+
+source_summary: >-
+  Printed pages 33 to 37 are the equipment chapter. Page 33 gives the starting gear for each of the
+  two starting tiers and defines armor class. Page 34 describes eighteen items of adventuring gear in
+  bolded entries. Page 35 tabulates those items with cost and quantity per gear slot and states the
+  carrying capacity rule. Page 36 gives a bundled crawling kit and the armor table with five entries.
+  Page 37 gives the weapons table with fifteen entries and defines five weapon properties plus the
+  weapon type and range notation. This summary is orientation only; every assertion below cites its
+  page.
+
+extraction_posture: >-
+  This packet is the defining locus for identities that four earlier GURs deferred to it. The priest,
+  thief and wizard class entries each name permitted weapons, and all four class entries state
+  permitted armor; in each case the Analyst declined to mint an identity from a permission list and
+  recorded the debt, because SOURCE_MARKDOWN Source Identity Authority names a permission list as a
+  secondary listing that cannot name a concept defined elsewhere. This is where that debt is paid.
+  Fifteen weapons and five armors are therefore proposed here, from the tables that define them. The
+  grain rule still applies in full: a weapon's cost, damage die, range band and slot count are
+  magnitudes and none is stored. What is stored is that a weapon supplies the damage die, that a
+  property applies to the weapons whose row carries it, and what each property then does.
+
+graph_state_at_extraction: >-
+  The Shadowdark canonical graph is still empty; nodes.csv is header-only, the domain registry has no
+  domains, general_rules.json is an empty object, and character_races.yaml is inactive. The three
+  supplied slices named in the packet manifest as missing remain immaterial, re-assessed here rather
+  than carried over from claim. reused_nodes is empty. Twelve of the identities below are already
+  proposed by sibling GURs and are marked as such.
+
+cross_packet_identity_note: >-
+  Twelve identities below are proposed by sibling GURs and are proposed again here because this patch
+  uses them as edge endpoints. A GUR must propose every endpoint its edges use: an endpoint present
+  only in a sibling GUR is not canonical, is not proposed by the patch, and fails invariant 1 as
+  endpoint_unresolved. Proposing them is not a competing naming; each records its defining locus and
+  the sibling GUR that also proposes it, and each ID and label is reproduced exactly.
+  Three of them are unusual in that this page is arguably their fuller locus rather than a secondary
+  mention: cbt_armor_class, whose calculation is stated here for the first time; item_gear; and
+  rule_gear_capacity, whose rule is restated here in full. The Analyst keeps printed pages 12 and 13
+  as the recorded defining loci because the overview packet proposed them there and both pages use
+  the same names, so no identity conflict arises. See IDQ-01.
+
+reused_nodes: []
+
+candidate_nodes:
+- proposed_id: cbt_armor_class
+  proposed_label: Armor Class
+  kind: combat mechanic
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: cbt_ is a combat mechanic
+  source_named: true
+  defining_locus: SD page 13, the AC entry; this page is its calculation locus
+  source_evidence: page 33, ARMOR CLASS, your armor class is a base value plus your Dexterity modifier.
+    The ID and label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+- proposed_id: cbt_attack_roll
+  proposed_label: Attack Roll
+  kind: combat mechanic
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: cbt_ is a combat mechanic
+  source_named: true
+  defining_locus: SD page 88, Combat, per the contents listing; not this packet
+  source_evidence: page 37, the Finesse and Thrown property definitions, which govern attacking. The ID
+    and label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-016-017-ancestries-r03
+- proposed_id: cbt_damage_roll
+  proposed_label: Damage Roll
+  kind: combat mechanic
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: cbt_ is a combat mechanic
+  source_named: true
+  defining_locus: SD page 88, Combat, per the contents listing; not this packet
+  source_evidence: page 37, the WEAPONS TABLE Damage column and the Versatile property. The ID and label
+    are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-016-017-ancestries-r03
+- proposed_id: abil_dexterity
+  proposed_label: Dexterity
+  kind: ability
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: abil_ is an ability or derived ability mechanic
+  source_named: true
+  defining_locus: SD page 15, STATS; not this packet
+  source_evidence: page 33, ARMOR CLASS, plus your Dexterity modifier; page 37, the Finesse property.
+    The ID and label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+- proposed_id: abil_strength
+  proposed_label: Strength
+  kind: ability
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: abil_ is an ability or derived ability mechanic
+  source_named: true
+  defining_locus: SD page 15, STATS; not this packet
+  source_evidence: page 37, the Finesse and Thrown property definitions. The ID and label are reproduced
+    from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+- proposed_id: rule_check
+  proposed_label: Check
+  kind: procedure
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 9, CHECKS, and more fully at Making Checks, printed page 81; not this packet
+  source_evidence: page 34, the Crowbar entry granting advantage on checks; page 36, the armor stealth
+    and swim penalties. The ID and label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-005-010-introduction-and-the-basics-r01
+- proposed_id: ex_movement
+  proposed_label: Movement
+  kind: exploration mechanic
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: ex_ is an exploration mechanic; the constitution section 2 example for this prefix is
+    ex_movement
+  source_named: true
+  defining_locus: SD page 8, MOVEMENT; not this packet
+  source_evidence: page 34, the Caltrops entry halving speed; page 37, the Loading property forgoing movement.
+    The ID and label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-005-010-introduction-and-the-basics-r01
+- proposed_id: rule_damage
+  proposed_label: Damage
+  kind: procedure
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 9, HIT POINTS; not this packet
+  source_evidence: page 34, the Caltrops and Oil flask entries, both of which deal damage. The ID and
+    label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-005-010-introduction-and-the-basics-r01
+- proposed_id: item_gear
+  proposed_label: Gear
+  kind: item category
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 13, the GEAR entry; this page is its fuller locus
+  source_evidence: page 35, GEAR SLOTS, all gear besides typical clothing fills one gear slot. The ID
+    and label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+- proposed_id: rule_gear_capacity
+  proposed_label: Gear Capacity
+  kind: procedure
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 13, the GEAR entry; this page restates it
+  source_evidence: page 35, GEAR SLOTS, you can carry a number of items equal to your Strength stat or
+    a fixed floor. The ID and label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+- proposed_id: exp_level_zero
+  proposed_label: 0-Level Character
+  kind: advancement mechanic
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: exp_ is a character advancement mechanic
+  source_named: true
+  defining_locus: SD page 14, heading 0-LEVEL CHARACTERS; not this packet
+  source_evidence: page 33, STARTING GEAR, 0-level characters start with a rolled number of listed items.
+    The ID and label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+- proposed_id: exp_level_one
+  proposed_label: 1st-Level Character
+  kind: advancement mechanic
+  why_needed: Used as an edge endpoint by this patch. Proposed here because a GUR must propose every endpoint
+    its edges use; see cross_packet_identity_note.
+  prefix_basis: exp_ is a character advancement mechanic
+  source_named: true
+  defining_locus: SD page 14, heading 1ST-LEVEL CHARACTERS; not this packet
+  source_evidence: page 33, STARTING GEAR, 1st-level characters start with rolled gold to buy gear. The
+    ID and label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+- proposed_id: item_leather_armor
+  proposed_label: Leather Armor
+  kind: item category
+  why_needed: Source of the armor rating row for the lightest armor; the thief class entry permits it
+    by name.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 36, ARMOR TABLE
+  source_evidence: page 36, the ARMOR TABLE row Leather armor with its cost, slot and armor class entries
+- proposed_id: item_chainmail
+  proposed_label: Chainmail
+  kind: item category
+  why_needed: Source of an armor rating row and of a stealth and swim penalty row.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 36, ARMOR TABLE
+  source_evidence: page 36, the ARMOR TABLE row Chainmail
+- proposed_id: item_plate_mail
+  proposed_label: Plate Mail
+  kind: item category
+  why_needed: Source of an armor rating row, a penalty row, and the exclusion of Dexterity from armor
+    class.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 36, ARMOR TABLE
+  source_evidence: page 36, the ARMOR TABLE row Plate mail, whose armor class entry carries no Dexterity
+    term
+- proposed_id: item_shield
+  proposed_label: Shield
+  kind: item category
+  why_needed: Source of a separate armor class bonus row; permitted by two class entries.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 36, ARMOR TABLE
+  source_evidence: page 36, the ARMOR TABLE row Shield with its bonus and its one-hand property
+- proposed_id: item_mithral
+  proposed_label: Mithral
+  kind: item category
+  why_needed: Source of two rows that undo the penalties metal armor otherwise imposes; named by the thief
+    class entry as mithral chainmail.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 36, ARMOR TABLE
+  source_evidence: page 36, the ARMOR TABLE row Mithral, marked metal armor only
+- proposed_id: tbl_basic_gear
+  proposed_label: Basic Gear Table
+  kind: table
+  why_needed: Source of the slot-quantity bound on ordinary gear and the reference table for every listed
+    item.
+  prefix_basis: tbl_ is a separately referenced mechanical table
+  source_named: true
+  defining_locus: SD page 35, its own heading BASIC GEAR TABLE
+  source_evidence: page 35, the heading over a three-column table of eighteen items with cost and quantity
+    per gear slot, satisfying invariant 5
+- proposed_id: tbl_crawling_kit
+  proposed_label: Crawling Kit Table
+  kind: table
+  why_needed: Source of a bundled equipment package with its own stated slot cost.
+  prefix_basis: tbl_ is a separately referenced mechanical table
+  source_named: true
+  defining_locus: SD page 36, its own heading CRAWLING KIT TABLE
+  source_evidence: page 36, the heading over a four-column table of seven items, with a stated total cost
+    and slot count
+- proposed_id: tbl_armor
+  proposed_label: Armor Table
+  kind: table
+  why_needed: Endpoint for the armor category; the separately headed table that enumerates the five armors
+    and their ratings.
+  prefix_basis: tbl_ is a separately referenced mechanical table
+  source_named: true
+  defining_locus: SD page 36, its own heading ARMOR TABLE
+  source_evidence: page 36, the heading over a five-column table, satisfying invariant 5
+- proposed_id: tbl_weapons
+  proposed_label: Weapons Table
+  kind: table
+  why_needed: Endpoint for the weapon category; the separately headed table that enumerates the fifteen
+    weapons and their properties.
+  prefix_basis: tbl_ is a separately referenced mechanical table
+  source_named: true
+  defining_locus: SD page 37, its own heading WEAPONS TABLE
+  source_evidence: page 37, the heading over a six-column table, satisfying invariant 5
+- proposed_id: item_backpack
+  proposed_label: Backpack
+  kind: item category
+  why_needed: Source of an explicit exemption from carrying capacity, the only stated exemption of its
+    kind.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 34, the bolded Backpack entry
+  source_evidence: page 34, Backpack holds all the gear you can carry; page 35, its table row reads first
+    one free to carry
+- proposed_id: item_coin
+  proposed_label: Coin
+  kind: item category
+  why_needed: Endpoint of the 1st-level starting wealth row and subject of its own carrying exemption.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 34, the bolded Coin entry
+  source_evidence: page 34, Coin with its gold, silver and copper conversions; page 35, its table row
+    with a free-to-carry allowance
+- proposed_id: item_crowbar
+  proposed_label: Crowbar
+  kind: item category
+  why_needed: Source of a check-improving row; one of the few gear entries that states a mechanical effect.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 34, the bolded Crowbar entry
+  source_evidence: page 34, Crowbar grants advantage on checks to pry open stuck objects
+- proposed_id: item_lantern
+  proposed_label: Lantern
+  kind: item category
+  why_needed: Source of the only fuel-consumption row in the packet.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 34, the bolded Lantern entry
+  source_evidence: page 34, Lantern casts light, requires oil, and has a shutter
+- proposed_id: item_oil_flask
+  proposed_label: Oil Flask
+  kind: item category
+  why_needed: Endpoint of the lantern fuel row and source of a damage row.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 34, the bolded Oil flask entry
+  source_evidence: page 34, Oil flask fuels a lantern and, when used offensively, covers an area and burns
+- proposed_id: item_caltrops
+  proposed_label: Caltrops
+  kind: item category
+  why_needed: Source of a movement penalty row and a damage row; the only gear entry that acts on another
+    creature.
+  prefix_basis: item_ is an item or item category
+  source_named: true
+  defining_locus: SD page 34, the bolded Caltrops entry
+  source_evidence: page 34, Caltrops, living creatures who step on them take damage and move at reduced
+    speed
+- proposed_id: weapon_bastard_sword
+  proposed_label: Bastard Sword
+  kind: weapon
+  why_needed: Source of a damage-die row and of its property rows. Individual weapon identities are what
+    four earlier class GURs deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Bastard Sword with its cost, type, range, damage and
+    properties
+- proposed_id: weapon_club
+  proposed_label: Club
+  kind: weapon
+  why_needed: Source of a damage-die row. Individual weapon identities are what four earlier class GURs
+    deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Club with its cost, type, range, damage and properties
+- proposed_id: weapon_crossbow
+  proposed_label: Crossbow
+  kind: weapon
+  why_needed: Source of a damage-die row and of its property rows. Individual weapon identities are what
+    four earlier class GURs deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Crossbow with its cost, type, range, damage and properties
+- proposed_id: weapon_dagger
+  proposed_label: Dagger
+  kind: weapon
+  why_needed: Source of a damage-die row and of its property rows. Individual weapon identities are what
+    four earlier class GURs deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Dagger with its cost, type, range, damage and properties
+- proposed_id: weapon_greataxe
+  proposed_label: Greataxe
+  kind: weapon
+  why_needed: Source of a damage-die row and of its property rows. Individual weapon identities are what
+    four earlier class GURs deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Greataxe with its cost, type, range, damage and properties
+- proposed_id: weapon_greatsword
+  proposed_label: Greatsword
+  kind: weapon
+  why_needed: Source of a damage-die row and of its property rows. Individual weapon identities are what
+    four earlier class GURs deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Greatsword with its cost, type, range, damage and properties
+- proposed_id: weapon_javelin
+  proposed_label: Javelin
+  kind: weapon
+  why_needed: Source of a damage-die row and of its property rows. Individual weapon identities are what
+    four earlier class GURs deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Javelin with its cost, type, range, damage and properties
+- proposed_id: weapon_longbow
+  proposed_label: Longbow
+  kind: weapon
+  why_needed: Source of a damage-die row and of its property rows. Individual weapon identities are what
+    four earlier class GURs deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Longbow with its cost, type, range, damage and properties
+- proposed_id: weapon_longsword
+  proposed_label: Longsword
+  kind: weapon
+  why_needed: Source of a damage-die row. Individual weapon identities are what four earlier class GURs
+    deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Longsword with its cost, type, range, damage and properties
+- proposed_id: weapon_mace
+  proposed_label: Mace
+  kind: weapon
+  why_needed: Source of a damage-die row. Individual weapon identities are what four earlier class GURs
+    deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Mace with its cost, type, range, damage and properties
+- proposed_id: weapon_shortbow
+  proposed_label: Shortbow
+  kind: weapon
+  why_needed: Source of a damage-die row and of its property rows. Individual weapon identities are what
+    four earlier class GURs deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Shortbow with its cost, type, range, damage and properties
+- proposed_id: weapon_shortsword
+  proposed_label: Shortsword
+  kind: weapon
+  why_needed: Source of a damage-die row. Individual weapon identities are what four earlier class GURs
+    deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Shortsword with its cost, type, range, damage and properties
+- proposed_id: weapon_spear
+  proposed_label: Spear
+  kind: weapon
+  why_needed: Source of a damage-die row and of its property rows. Individual weapon identities are what
+    four earlier class GURs deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Spear with its cost, type, range, damage and properties
+- proposed_id: weapon_staff
+  proposed_label: Staff
+  kind: weapon
+  why_needed: Source of a damage-die row and of its property rows. Individual weapon identities are what
+    four earlier class GURs deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Staff with its cost, type, range, damage and properties
+- proposed_id: weapon_warhammer
+  proposed_label: Warhammer
+  kind: weapon
+  why_needed: Source of a damage-die row and of its property rows. Individual weapon identities are what
+    four earlier class GURs deferred to this page.
+  prefix_basis: weapon_ is a weapon identity or weapon family
+  source_named: true
+  defining_locus: SD page 37, WEAPONS TABLE
+  source_evidence: page 37, the WEAPONS TABLE row Warhammer with its cost, type, range, damage and properties
+- proposed_id: rule_finesse
+  proposed_label: Finesse
+  kind: procedure
+  why_needed: Endpoint of every weapon row carrying this property, and source of its own effect row.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 37, its own bolded definition below the WEAPONS TABLE
+  source_evidence: 'page 37, the bolded property name Finesse with its definition: You can use your Strength
+    or Dexterity when attacking with this weapon.'
+- proposed_id: rule_loading
+  proposed_label: Loading
+  kind: procedure
+  why_needed: Endpoint of every weapon row carrying this property, and source of its own effect row.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 37, its own bolded definition below the WEAPONS TABLE
+  source_evidence: 'page 37, the bolded property name Loading with its definition: You must forgo moving
+    to reload this weapon.'
+- proposed_id: rule_thrown
+  proposed_label: Thrown
+  kind: procedure
+  why_needed: Endpoint of every weapon row carrying this property, and source of its own effect row.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 37, its own bolded definition below the WEAPONS TABLE
+  source_evidence: 'page 37, the bolded property name Thrown with its definition: You can throw this weapon
+    to make a ranged attack with it using Strength.'
+- proposed_id: rule_two_handed
+  proposed_label: Two-Handed
+  kind: procedure
+  why_needed: Endpoint of every weapon row carrying this property, and source of its own effect row.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 37, its own bolded definition below the WEAPONS TABLE
+  source_evidence: 'page 37, the bolded property name Two-Handed with its definition: You must use this
+    weapon with two hands.'
+- proposed_id: rule_versatile
+  proposed_label: Versatile
+  kind: procedure
+  why_needed: Endpoint of every weapon row carrying this property, and source of its own effect row.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 37, its own bolded definition below the WEAPONS TABLE
+  source_evidence: 'page 37, the bolded property name Versatile with its definition: You can use this
+    weapon with one or two hands, using the higher damage die with two.'
+
+candidate_edges:
+- ref: M001
+  source_id: abil_dexterity
+  source_label: Dexterity
+  edge_type: FEEDS_INTO
+  target_id: cbt_armor_class
+  target_label: Armor Class
+  aspect: base value
+  condition: ''
+  book: SD
+  page: 33
+  section: ARMOR CLASS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Your armor class is a fixed base plus your Dexterity modifier, so Dexterity supplies
+    an input to the value. The base number is a magnitude and is excluded. This is the calculation the
+    overview packet on printed page 13 named without stating.
+- ref: M002
+  source_id: item_leather_armor
+  source_label: Leather Armor
+  edge_type: MODIFIES
+  target_id: cbt_armor_class
+  target_label: Armor Class
+  aspect: armor rating
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 36
+  section: ARMOR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Wearing this armor changes the armor class value, which is MODIFIES, and every armor
+    in the table raises it, so read aloud as source improves Armor Class; basis read. The rating values
+    are magnitudes and are excluded.
+- ref: M003
+  source_id: item_chainmail
+  source_label: Chainmail
+  edge_type: MODIFIES
+  target_id: cbt_armor_class
+  target_label: Armor Class
+  aspect: armor rating
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 36
+  section: ARMOR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Wearing this armor changes the armor class value, which is MODIFIES, and every armor
+    in the table raises it, so read aloud as source improves Armor Class; basis read. The rating values
+    are magnitudes and are excluded.
+- ref: M004
+  source_id: item_plate_mail
+  source_label: Plate Mail
+  edge_type: MODIFIES
+  target_id: cbt_armor_class
+  target_label: Armor Class
+  aspect: armor rating
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 36
+  section: ARMOR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Wearing this armor changes the armor class value, which is MODIFIES, and every armor
+    in the table raises it, so read aloud as source improves Armor Class; basis read. The rating values
+    are magnitudes and are excluded.
+- ref: M005
+  source_id: item_shield
+  source_label: Shield
+  edge_type: MODIFIES
+  target_id: cbt_armor_class
+  target_label: Armor Class
+  aspect: shield bonus
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 36
+  section: ARMOR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The shield's armor class entry is a bonus rather than a rating, so it is recorded
+    on its own aspect and stacks with a worn armor rather than replacing it. The bonus is a magnitude.
+    Read aloud as Shield improves Armor Class; basis read.
+- ref: M006
+  source_id: item_plate_mail
+  source_label: Plate Mail
+  edge_type: EXCLUDES
+  target_id: abil_dexterity
+  target_label: Dexterity
+  aspect: armor class input
+  condition: ''
+  book: SD
+  page: 36
+  section: ARMOR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Every other armor's armor class entry adds the Dexterity modifier; plate mail's is
+    a flat value with no Dexterity term. The table therefore denies a relationship a reader would otherwise
+    assume, which is the negative dependency responsibility 16 admits. EXCLUDES actively prevents a relation
+    and runs excluder to excluded, which is this direction. Derived polarity negates.
+- ref: M007
+  source_id: item_chainmail
+  source_label: Chainmail
+  edge_type: MODIFIES
+  target_id: rule_check
+  target_label: Check
+  aspect: stealth and swim
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: SD
+  page: 36
+  section: ARMOR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The Properties column reads disadvantage on stealth and swim. This changes how those
+    checks resolve and only ever hinders, so read aloud as Chainmail worsens Check; basis read. The mechanism
+    is disadvantage, whose defining locus is another packet; see OBS-05. Distinct from the plate mail
+    row by source_id.
+- ref: M008
+  source_id: item_plate_mail
+  source_label: Plate Mail
+  edge_type: MODIFIES
+  target_id: rule_check
+  target_label: Check
+  aspect: stealth
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: SD
+  page: 36
+  section: ARMOR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: 'Plate mail''s Properties column reads no swim and disadvantage on stealth. Only
+    the stealth half is recorded here, on its own aspect: the no-swim half is an outright prohibition
+    rather than a check penalty and is dispositioned in OBS-04 because this packet has no swimming identity
+    to target.'
+- ref: M009
+  source_id: item_mithral
+  source_label: Mithral
+  edge_type: MODIFIES
+  target_id: rule_check
+  target_label: Check
+  aspect: stealth and swim
+  condition: when applied to metal armor
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 36
+  section: ARMOR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Mithral's Properties column reads no penalty on stealth or swim, which removes the
+    hindrance chainmail and plate mail otherwise impose, so relative to the armor it is applied to it
+    improves those checks. The condition carries the table's own metal armor only restriction. OVERRIDES
+    was considered and rejected; see IDQ-02. Read aloud as Mithral improves Check; basis read.
+- ref: M010
+  source_id: item_mithral
+  source_label: Mithral
+  edge_type: MODIFIES
+  target_id: rule_gear_capacity
+  target_label: Gear Capacity
+  aspect: slots used
+  condition: when applied to metal armor
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 36
+  section: ARMOR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Mithral's Gear Slots entry is a reduction, so armor made of it occupies less carrying
+    capacity. The value is a magnitude. Read aloud as Mithral improves Gear Capacity; basis read.
+- ref: M011
+  source_id: tbl_basic_gear
+  source_label: Basic Gear Table
+  edge_type: CONSTRAINS
+  target_id: item_gear
+  target_label: Gear
+  aspect: slot quantity
+  condition: ''
+  polarity: governs
+  polarity_basis: read
+  book: SD
+  page: 35
+  section: BASIC GEAR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The table's third column fixes how many of each item occupy one gear slot, bounding
+    what a character may carry without changing any item. All quantities are magnitudes and are excluded.
+    Read aloud as Basic Gear Table governs Gear; basis read.
+- ref: M012
+  source_id: item_backpack
+  source_label: Backpack
+  edge_type: EXCLUDED_FROM
+  target_id: rule_gear_capacity
+  target_label: Gear Capacity
+  aspect: slot occupancy
+  condition: ''
+  book: SD
+  page: 35
+  section: BASIC GEAR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The backpack's table row states that the first one is free to carry, so it is not
+    an input to the carrying calculation that every other item feeds. This is a negative dependency the
+    source states explicitly, structurally identical to the priest's turn undead exclusion. Derived polarity
+    negates. The coin allowance is dispositioned in OBS-03 rather than given a second row.
+- ref: M013
+  source_id: tbl_crawling_kit
+  source_label: Crawling Kit Table
+  edge_type: FEEDS_INTO
+  target_id: rule_gear_capacity
+  target_label: Gear Capacity
+  aspect: kit slot cost
+  condition: ''
+  book: SD
+  page: 36
+  section: CRAWLING KIT TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The kit is a named bundle with a stated total slot cost, so taking it supplies a
+    known load to the carrying calculation. The cost and slot totals are magnitudes and are excluded;
+    what is stored is that the bundle has a capacity consequence.
+- ref: M014
+  source_id: exp_level_zero
+  source_label: 0-Level Character
+  edge_type: FEEDS_INTO
+  target_id: item_gear
+  target_label: Gear
+  aspect: starting items
+  condition: ''
+  book: SD
+  page: 33
+  section: STARTING GEAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: A 0-level character begins with a rolled number of items from the listed twelve,
+    so the starting tier supplies the initial gear. The die expression and the list indices are magnitudes;
+    the twelve items are dispositioned in OBS-02.
+- ref: M015
+  source_id: exp_level_one
+  source_label: 1st-Level Character
+  edge_type: FEEDS_INTO
+  target_id: item_coin
+  target_label: Coin
+  aspect: starting wealth
+  condition: ''
+  book: SD
+  page: 33
+  section: STARTING GEAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: A 1st-level character begins with rolled gold to buy gear rather than with items,
+    which is a genuinely different starting condition from the 0-level tier and is why the two rows have
+    different targets. The die expression and multiplier are magnitudes.
+- ref: M016
+  source_id: tbl_armor
+  source_label: Armor Table
+  edge_type: CONSTRAINS
+  target_id: item_gear
+  target_label: Gear
+  aspect: armor slots
+  condition: ''
+  polarity: governs
+  polarity_basis: read
+  book: SD
+  page: 36
+  section: ARMOR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The armor table carries its own Gear Slots column, so armor's carrying cost is fixed
+    there rather than by the basic gear table. Read aloud as Armor Table governs Gear; basis read. The
+    slot values are magnitudes.
+- ref: M017
+  source_id: item_crowbar
+  source_label: Crowbar
+  edge_type: MODIFIES
+  target_id: rule_check
+  target_label: Check
+  aspect: prying open
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 34
+  section: GEAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The crowbar grants advantage on checks to pry open stuck objects, which changes how
+    those checks resolve and only helps. The aspect records the narrow circumstance the source names.
+    Read aloud as Crowbar improves Check; basis read.
+- ref: M018
+  source_id: item_lantern
+  source_label: Lantern
+  edge_type: CONSUMES
+  target_id: item_oil_flask
+  target_label: Oil Flask
+  aspect: fuel
+  condition: ''
+  book: SD
+  page: 34
+  section: GEAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The lantern requires oil and a flask fuels it for a stated duration, so the lantern
+    expends the flask as a finite resource. CONSUMES runs consumer to resource, which is this direction.
+    The duration is a magnitude. Derived polarity neutral.
+- ref: M019
+  source_id: item_caltrops
+  source_label: Caltrops
+  edge_type: MODIFIES
+  target_id: ex_movement
+  target_label: Movement
+  aspect: reduced speed
+  condition: for a creature that steps on them
+  polarity: worsens
+  polarity_basis: read
+  book: SD
+  page: 34
+  section: GEAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Caltrops halve the speed of a living creature that steps on them for a stated duration.
+    This changes the movement value and only hinders, so read aloud as Caltrops worsens Movement; basis
+    read. The fraction and the duration are magnitudes and are excluded, as is the restriction to living
+    creatures beyond what the condition records qualitatively.
+- ref: M020
+  source_id: item_caltrops
+  source_label: Caltrops
+  edge_type: TRIGGERS
+  target_id: rule_damage
+  target_label: Damage
+  aspect: contact damage
+  condition: for a creature that steps on them
+  polarity: inflicts
+  polarity_basis: read
+  book: SD
+  page: 34
+  section: GEAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Stepping on caltrops causes damage, which is TRIGGERS read cause to effect. The amount
+    is a magnitude. Read aloud as Caltrops inflicts Damage; basis read.
+- ref: M021
+  source_id: item_oil_flask
+  source_label: Oil Flask
+  edge_type: TRIGGERS
+  target_id: rule_damage
+  target_label: Damage
+  aspect: burning area
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: SD
+  page: 34
+  section: GEAR
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: A flask used offensively covers an area and burns for a stated number of rounds,
+    dealing damage each round. The area band, the duration and the damage expression are all magnitudes.
+    Read aloud as Oil Flask inflicts Damage; basis read.
+- ref: M022
+  source_id: weapon_bastard_sword
+  source_label: Bastard Sword
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M023
+  source_id: weapon_club
+  source_label: Club
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M024
+  source_id: weapon_crossbow
+  source_label: Crossbow
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M025
+  source_id: weapon_dagger
+  source_label: Dagger
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M026
+  source_id: weapon_greataxe
+  source_label: Greataxe
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M027
+  source_id: weapon_greatsword
+  source_label: Greatsword
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M028
+  source_id: weapon_javelin
+  source_label: Javelin
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M029
+  source_id: weapon_longbow
+  source_label: Longbow
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M030
+  source_id: weapon_longsword
+  source_label: Longsword
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M031
+  source_id: weapon_mace
+  source_label: Mace
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M032
+  source_id: weapon_shortbow
+  source_label: Shortbow
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M033
+  source_id: weapon_shortsword
+  source_label: Shortsword
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M034
+  source_id: weapon_spear
+  source_label: Spear
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M035
+  source_id: weapon_staff
+  source_label: Staff
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M036
+  source_id: weapon_warhammer
+  source_label: Warhammer
+  edge_type: FEEDS_INTO
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: damage die
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M037
+  source_id: weapon_bastard_sword
+  source_label: Bastard Sword
+  edge_type: GATES
+  target_id: rule_versatile
+  target_label: Versatile
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M038
+  source_id: weapon_crossbow
+  source_label: Crossbow
+  edge_type: GATES
+  target_id: rule_two_handed
+  target_label: Two-Handed
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M039
+  source_id: weapon_crossbow
+  source_label: Crossbow
+  edge_type: GATES
+  target_id: rule_loading
+  target_label: Loading
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M040
+  source_id: weapon_dagger
+  source_label: Dagger
+  edge_type: GATES
+  target_id: rule_finesse
+  target_label: Finesse
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M041
+  source_id: weapon_dagger
+  source_label: Dagger
+  edge_type: GATES
+  target_id: rule_thrown
+  target_label: Thrown
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M042
+  source_id: weapon_greataxe
+  source_label: Greataxe
+  edge_type: GATES
+  target_id: rule_versatile
+  target_label: Versatile
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M043
+  source_id: weapon_greatsword
+  source_label: Greatsword
+  edge_type: GATES
+  target_id: rule_two_handed
+  target_label: Two-Handed
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M044
+  source_id: weapon_javelin
+  source_label: Javelin
+  edge_type: GATES
+  target_id: rule_thrown
+  target_label: Thrown
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M045
+  source_id: weapon_longbow
+  source_label: Longbow
+  edge_type: GATES
+  target_id: rule_two_handed
+  target_label: Two-Handed
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M046
+  source_id: weapon_shortbow
+  source_label: Shortbow
+  edge_type: GATES
+  target_id: rule_two_handed
+  target_label: Two-Handed
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M047
+  source_id: weapon_spear
+  source_label: Spear
+  edge_type: GATES
+  target_id: rule_thrown
+  target_label: Thrown
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M048
+  source_id: weapon_staff
+  source_label: Staff
+  edge_type: GATES
+  target_id: rule_two_handed
+  target_label: Two-Handed
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M049
+  source_id: weapon_warhammer
+  source_label: Warhammer
+  edge_type: GATES
+  target_id: rule_two_handed
+  target_label: Two-Handed
+  aspect: weapon property
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M050
+  source_id: rule_finesse
+  source_label: Finesse
+  edge_type: MODIFIES
+  target_id: cbt_attack_roll
+  target_label: Attack Roll
+  aspect: stat choice
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Finesse lets the attacker use either Strength or Dexterity when attacking, which
+    changes which modifier the attack roll takes. It only widens the choice, so read aloud as Finesse
+    improves Attack Roll; basis read. The two stats are recorded as feeding the property rather than the
+    roll, on the next two rows, so the choice is visible in the graph.
+- ref: M051
+  source_id: abil_strength
+  source_label: Strength
+  edge_type: FEEDS_INTO
+  target_id: rule_finesse
+  target_label: Finesse
+  aspect: attack stat
+  condition: when that stat is chosen
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M052
+  source_id: abil_dexterity
+  source_label: Dexterity
+  edge_type: FEEDS_INTO
+  target_id: rule_finesse
+  target_label: Finesse
+  aspect: attack stat
+  condition: when that stat is chosen
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M053
+  source_id: rule_loading
+  source_label: Loading
+  edge_type: CONSTRAINS
+  target_id: ex_movement
+  target_label: Movement
+  aspect: reload cost
+  condition: ''
+  polarity: governs
+  polarity_basis: read
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Loading requires forgoing movement to reload, bounding what the turn allows without
+    changing the distance. Read aloud as Loading governs Movement; basis read. This is the same bound
+    the introduction packet records between an action and a second move, reached from a different rule
+    and distinct by source_id.
+- ref: M054
+  source_id: rule_thrown
+  source_label: Thrown
+  edge_type: MODIFIES
+  target_id: cbt_attack_roll
+  target_label: Attack Roll
+  aspect: ranged use
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Thrown lets a melee weapon make a ranged attack, which changes how the attack roll
+    may be made and only adds an option. Read aloud as Thrown improves Attack Roll; basis read.
+- ref: M055
+  source_id: abil_strength
+  source_label: Strength
+  edge_type: FEEDS_INTO
+  target_id: rule_thrown
+  target_label: Thrown
+  aspect: throw stat
+  condition: ''
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The property fixes Strength as the stat used for a thrown attack, unlike Finesse
+    which offers a choice. Distinct from the Finesse row by target.
+- ref: M056
+  source_id: rule_two_handed
+  source_label: Two-Handed
+  edge_type: CONSTRAINS
+  target_id: cbt_attack_roll
+  target_label: Attack Roll
+  aspect: hands required
+  condition: ''
+  polarity: governs
+  polarity_basis: read
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Two-handed weapons must be used with two hands, bounding how the weapon may be wielded
+    without changing the roll's value. The shield's one-hand property makes a shield-and-two-handed-weapon
+    combination impossible, but the source never says so and that inference is deliberately not drawn;
+    see OBS-06. Read aloud as Two-Handed governs Attack Roll; basis read.
+- ref: M057
+  source_id: rule_versatile
+  source_label: Versatile
+  edge_type: MODIFIES
+  target_id: cbt_damage_roll
+  target_label: Damage Roll
+  aspect: two handed use
+  condition: when wielded with two hands
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Versatile weapons use the higher of two damage dice when wielded two-handed, which
+    changes the damage value. Both dice are magnitudes and are excluded; what is stored is that wielding
+    choice affects damage. Read aloud as Versatile improves Damage Roll; basis read.
+- ref: M058
+  source_id: tbl_weapons
+  source_label: Weapons Table
+  edge_type: CONSTRAINS
+  target_id: cbt_attack_roll
+  target_label: Attack Roll
+  aspect: weapon range
+  condition: ''
+  polarity: governs
+  polarity_basis: read
+  book: SD
+  page: 37
+  section: WEAPONS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The table's Type and Range columns classify every weapon as melee or ranged and fix
+    the band at which it may be used, bounding when an attack is possible. The bands themselves are defined
+    on a printed page this packet does not claim; see OBS-04. Read aloud as Weapons Table governs Attack
+    Roll; basis read.
+
+authored_polarity_declaration: >-
+  Twenty rows carry authored polarity, all with basis read. The MODIFIES rows are the three armor
+  ratings and the shield bonus, all improves; the chainmail and plate mail check penalties, both
+  worsens; mithral's two rows, both improves; the crowbar, improves; the caltrops movement penalty,
+  worsens; and the finesse, thrown and versatile property effects, all improves. The CONSTRAINS rows
+  are the basic gear table, the armor table, loading, two-handed and the weapons table, all governs.
+  The TRIGGERS rows are the two damage rows, caltrops and oil flask, both inflicts.
+  Each is among the three types constitution section 5 requires to carry source-reviewed authored
+  polarity, and each was read aloud as source polarity target before being recorded. No row uses
+  basis heuristic or unset. No other row carries a polarity or polarity_basis value: the GATES,
+  FEEDS_INTO, CONSUMES, EXCLUDES and EXCLUDED_FROM rows take their derived polarity from the section
+  5 table and the Analyst authors none of them.
+
+domains_touched: []
+candidate_domains:
+  - proposed: equipment
+    basis: >-
+      Gear, carrying capacity, armor and weapons are a coherent cluster occupying five printed pages
+      and given their own chapter by the contents list. This is the strongest single-packet evidence
+      for a domain candidate so far. Recorded as a candidate only; the domain registry is empty and
+      constitution section 8 reserves promotion to an Architect Decision, and the Analyst does not
+      decide a candidate domain is official.
+  - proposed: combat
+    basis: >-
+      Armor class, the attack roll, the damage roll and every weapon property sit in combat rather
+      than in equipment, and this packet supplies most of their inputs. Recorded as a candidate only;
+      now suggested by a fourth packet, and deliberately not treated as promotion.
+
+domain_boundary_questions:
+  - >-
+    An item and its combat effect are inseparable here: a weapon is equipment that exists to feed a
+    damage roll, and an armor is equipment that exists to change armor class. Whether that makes
+    equipment and combat one domain or two cannot be settled from these pages. Deferred; no domain is
+    asserted on any edge in this GUR.
+
+candidate_general_rules:
+  - proposed: every weapon supplies the damage die of an attack made with it
+    establishing_locus: 'SD page 37, WEAPONS TABLE, the Damage column'
+    basis: >-
+      Fifteen rows repeat one shape exactly, which is the largest single repetition in the intake so
+      far. If approved as a general rule those fifteen explicit edges could become derived
+      applications, and any weapon added by a supplement would be covered automatically.
+    not_applied: >-
+      Recorded as a candidate only. Constitution section 5 requires a separate Architect ruling with
+      an establishing locus, scope, counterexamples and affected set before a general rule exists,
+      and the Analyst is prohibited from promoting one. A possible counterexample is already visible
+      and is why the Analyst is not confident it should be promoted: the versatile weapons carry two
+      damage dice rather than one, and mithral shows that the tables admit modifier rows that are not
+      ordinary members. No edge in this GUR sets general_rule_id, and under invariant 19 the
+      establishing edges would leave it empty in any case.
+  - proposed: a weapon carrying a property tag is subject to that property
+    establishing_locus: 'SD page 37, the WEAPONS TABLE Properties column and the five bolded definitions below it'
+    basis: >-
+      Thirteen rows repeat this shape across five properties. The table and the definitions together
+      are exactly the establishing locus a general rule would need.
+    not_applied: >-
+      Recorded as a candidate only, and deliberately not promoted for the same reason. No edge sets
+      general_rule_id.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: three relationships this page states are omitted because sibling GURs already assert them
+    detail: >-
+      All three would collide under the constitution section 4 assertion key, so omitting them is
+      required rather than optional. GEAR SLOTS restates that carrying capacity is the higher of the
+      Strength stat and a fixed floor; GUR-PKT-SD-011-014 already asserts Strength feeding gear
+      capacity on the aspect carry limit, and gear capacity constraining gear on the aspect items
+      carried, both from printed page 13. The ARMOR CLASS subsection restates that a character may
+      wear the armor listed for their class; the same GUR asserts the class axis constraining armor,
+      and the four class GURs assert it per class. The same subsection restates that 0-level
+      characters may wield all armor until 1st level; that GUR asserts it as the beginner's luck
+      override.
+      The Analyst omitted each rather than varying an aspect to make a near-duplicate pass. What this
+      page adds beyond them, the slot quantities, the armor slot costs and the mithral reduction, is
+      asserted on its own rows.
+  - id: OBS-02
+    subject: the twelve starting items and the eighteen gear entries are not all proposed
+    detail: >-
+      Page 33 lists twelve items a 0-level character may start with and page 34 describes eighteen in
+      bolded entries, tabulated on page 35. Only six item identities are proposed: backpack, coin,
+      crowbar, lantern, oil flask and caltrops. Each of those is proposed because it carries a stated
+      mechanical effect that produces an edge.
+      The rest are described without one. Arrows and crossbow bolts are ammunition for named weapons;
+      a mirror is a small polished mirror; a gem is valuable; rations are a day of food; a pole is a
+      length of wood; rope is rope. Flint and steel says routine attempts to light a fire always
+      succeed, which is the closest call among them and was rejected because a routine attempt is not
+      a named mechanic and no check is invoked. Proposing the remainder would create item nodes whose
+      only content is a price and a slot count, both magnitudes, and they would be orphans.
+      This is a deliberate line and it will need revisiting: the gear entries for torch and lantern
+      both point at Light on printed page 84, and once that packet is claimed a torch will have a
+      real dependency and should be proposed there or in a successor revision here.
+  - id: OBS-03
+    subject: the coin carrying allowance is not given its own exclusion row
+    detail: >-
+      The basic gear table gives coin an allowance of a stated number free to carry, in the same
+      shape as the backpack's first one free. The backpack gets an EXCLUDED_FROM row and coin does
+      not, which is a deliberate asymmetry: the backpack's exemption is total and unconditional,
+      while coin's is a threshold above which coins do occupy slots, and the threshold is a magnitude
+      the graph must not store. An unconditional exclusion row for coin would therefore assert
+      something false. The allowance remains in the immutable claimed packet.
+  - id: OBS-04
+    subject: three mechanics this packet depends on are defined on pages it does not claim
+    detail: >-
+      The weapons table classifies every weapon by a range band, close, near or far, and points at
+      Distances on printed page 85. The armor table forbids swimming in plate mail. The gear entries
+      for torch and lantern describe light in terms of those same distance bands and point at Light
+      on printed page 84. None of the three has an identity here: the bands, swimming and light are
+      all defined elsewhere, and printed page 85 is reproduced in this packet's own Supporting Source
+      Context and was deliberately not read.
+      The consequences are recorded rather than forced. The range dependency is carried at table
+      level by the weapons table constraining the attack roll, which is true without naming the
+      bands. The no-swim clause is dropped entirely, because this packet has no swimming identity to
+      target and inventing one from a Properties cell would fix an exploration mechanic from an armor
+      row. The light dependency is dropped for the same reason and flagged in OBS-02.
+  - id: OBS-05
+    subject: advantage and disadvantage remain the unextracted mechanism, now on both sides
+    detail: >-
+      The crowbar grants advantage; chainmail and plate mail impose disadvantage. This is the first
+      packet in the intake where the negative half appears, and it is treated symmetrically with the
+      positive half: the rows assert the effect on the check, improves or worsens, rather than the
+      mechanism. Printed page 9 defines both terms without relating either to another named mechanic,
+      and Rolling the Dice on printed page 78, which is reproduced in this packet's Supporting Source
+      Context and was not read, is the defining locus. This is now the seventh packet to depend on
+      advantage.
+  - id: OBS-06
+    subject: the shield and two-handed interaction is a real inference and is deliberately not drawn
+    detail: >-
+      The shield's Properties cell reads that it occupies one hand, and the two-handed property says
+      a weapon must be used with two hands. Together they imply that a shield cannot be carried with
+      a two-handed weapon, which is a genuine and useful mechanical consequence. No edge asserts it.
+      The source states the two facts separately and never draws the conclusion, and an edge here
+      would be the Analyst's reasoning rather than a reading. Responsibility 16 admits a negative
+      dependency only when the text denies a relationship a reader would assume; this text denies
+      nothing, it merely makes two statements a reader can combine. Recorded so a later reader can
+      see the inference was noticed and declined, and so a Reviewer who wants it asserted can request
+      it explicitly.
+  - id: OBS-07
+    subject: the crawling kit is a bundle rather than an item
+    detail: >-
+      The crawling kit table lists seven items with quantities, slots and costs and states a total
+      cost and slot count for the bundle. It is proposed as a table rather than an item because it is
+      a purchasing convenience assembled from items already described, not a new piece of equipment.
+      Its one edge records that taking it has a carrying consequence. Its component rows restate
+      quantities and costs for items the basic gear table already covers, all magnitudes, and no
+      component edge is drawn.
+  - id: OBS-08
+    subject: magnitudes deliberately excluded
+    detail: >-
+      These pages are denser in magnitudes than any packet so far. Excluded are the starting item
+      die, the starting gold expression and multiplier, the armor class base, every cost in three
+      tables, every quantity per gear slot, every gear slot count, the crawling kit totals, the coin
+      conversion rates, the three armor ratings and the shield bonus, the mithral cost multiplier and
+      slot reduction, all fifteen weapon damage expressions including the paired versatile dice, the
+      caltrops damage and speed fraction and duration, the oil flask duration and damage, the lantern
+      fuel duration, the torch duration, and the rope and pole lengths. All are costs, magnitudes,
+      die expressions, durations or thresholds, excluded by constitution section 1 and invariant 11.
+      They remain in the immutable claimed packet, which is the authority for the values themselves.
+      No aspect in this GUR contains a digit and no condition encodes a numeric value.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: whether this page or printed page 13 is the defining locus for armor class and gear capacity
+    detail: >-
+      This GUR records printed page 13 as the defining locus for cbt_armor_class, item_gear and
+      rule_gear_capacity, because the overview packet proposed them there. Page 13 names armor class
+      and says class determines wearable armor; this page gives the actual calculation. Page 13 says
+      a character carries items equal to the higher of Strength and a floor; this page repeats it and
+      adds the slot mechanics. A reasonable reader could call these pages the defining loci.
+      Nothing turns on it, which is why it is recorded rather than escalated: both pages use the same
+      names with the same grammatical number, so no identity conflict arises under SOURCE_MARKDOWN
+      Source Identity Authority and no rename is proposed.
+      Consequence if wrong: none to the rows, which would be unchanged; only the defining_locus field
+      on three candidate nodes would name a different page. Reviewer may correct it freely.
+  - id: IDQ-02
+    subject: mithral is a material modifier represented as an item
+    detail: >-
+      Mithral is proposed under item_ with the other armors, but its table row is unlike theirs: it
+      has no armor rating, its cost is a multiplier and its slot entry is a reduction, and it is
+      marked metal armor only. It modifies another armor rather than being one.
+      OVERRIDES was considered for its two rows, on the reading that mithral replaces the penalty its
+      base armor imposes, and rejected. OVERRIDES requires a supersession basis from the closed
+      section 7 list, and none of the four fits a material property; the relationship is also not a
+      replacement of one rule by another but a change to a value, which is MODIFIES. The two rows
+      therefore carry the condition that they apply only when mithral is applied to metal armor.
+      Consequence if wrong: if a later Decision prefers a material kind or an OVERRIDES treatment,
+      two rows repoint or change type and the node's kind changes; no source reading changes. The
+      thief class entry names mithral chainmail as a single permitted armor, which is further
+      evidence that the book treats material and armor as combinable rather than separate, and a
+      Reviewer may reasonably want that combination expressed once the class deferrals are revisited.
+  - id: IDQ-03
+    subject: the weapon kind is new and is not stated by the constitution
+    detail: >-
+      Constitution section 2 glosses the weapon_ prefix as a weapon identity or weapon family but
+      does not state a machine kind for it, as section 2.1 does for ancestry. This GUR uses the kind
+      weapon for all fifteen, by analogy with the prefix name and with how class_ and ancestry_
+      behave.
+      Consequence if wrong: fifteen nodes need a kind correction, which is a registry change and not
+      a re-reading of source. This is not an Architect escalation: the prefix itself is approved and
+      unchanged, and ESCALATION_CONTRACT reserves escalation for a new prefix or a changed kind, not
+      for naming the kind a prefix already implies. Recorded so Builder and Reviewer can settle it
+      deterministically rather than each guessing.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Every proposed node uses an approved constitution section 2 prefix with an unchanged
+  kind, every edge uses one of the thirteen legal section 3 types, and no new prefix, edge type,
+  domain promotion or general-rule application is requested. Crucially, unlike the alignment, deity
+  and language packets this Analyst escalated earlier today, every identity this packet needs has an
+  approved prefix: weapon_ for the fifteen weapons, item_ for the armors and gear, tbl_ for the four
+  tables and rule_ for the five weapon properties. ESCALATION_CONTRACT states that a proposed node
+  under an approved prefix and kind which passes identity and duplicate checks is ordinary GUR, GUP
+  and Review work rather than an escalation, which is why this packet proceeds and those are held.
+  IDQ-01 through IDQ-03 are recorded for Reviewer on that basis, and the deferrals in OBS-02, OBS-04
+  and OBS-05 resolve when the relevant defining packets are claimed.
+
+completeness_statement: >-
+  All five printed pages in the declared span are accounted for. Page 33 was read in full: the
+  STARTING GEAR, AC heading, the STARTING GEAR subsection with both tier statements and all twelve
+  listed items, and the ARMOR CLASS subsection, whose calculation supplies the Dexterity row and
+  whose two other sentences are dispositioned in OBS-01. Page 34 was read in full: the GEAR heading
+  and all eighteen bolded entries, of which six supply rows and the rest are dispositioned in OBS-02.
+  Page 35 was read in full: the BASIC GEAR TABLE heading, its three column headings and all eighteen
+  rows, and the GEAR SLOTS subsection, dispositioned in OBS-01 and OBS-03. Page 36 was read in full:
+  the CRAWLING KIT TABLE with its cost and slot statement and all seven rows, and the ARMOR TABLE
+  with its five column headings and all five rows. Page 37 was read in full: the WEAPONS TABLE with
+  its six column headings and all fifteen rows, all five bolded property definitions, and the weapon
+  type and range notes, dispositioned in OBS-04.
+  Every page marker was resolved through the Pandoc AST and the in-scope resolved page set matches
+  the declared span with no gap; the three blocks that inherit their page under the persistence rule
+  are named explicitly in page_attribution_basis. The Supporting Source Context reproducing printed
+  pages 78 through 81 and 85 is out of scope, was deliberately not read as evidence, and contributed
+  nothing. Fifty-eight edges are proposed across forty-seven candidate nodes, twelve of which are
+  also proposed by sibling GURs and are marked as such; this is the largest extraction in the intake
+  so far and pays back the weapon and armor identity deferrals recorded by four earlier class GURs.
+  No node is reused because the Shadowdark graph is empty. Content not converted to an edge is
+  accounted for in OBS-01 through OBS-08, and every identity question the Analyst could not settle is
+  recorded in IDQ-01 through IDQ-03 rather than resolved by picking a plausible answer. No assertion
+  depends on any other ruleset.

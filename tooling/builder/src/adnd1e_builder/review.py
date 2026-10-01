@@ -135,6 +135,19 @@ BUCKET_KEYS = frozenset({"edge_changes"} | {f"edge_changes.{bucket}" for bucket 
 #: Where a Review supplies a complete node-addition entry for the patch to carry.
 NODE_CHANGE_KEY = "node_changes"
 
+#: Fields of a proposed node-registry addition that a Review may correct by
+#: supplying the value directly, written into the proposal verbatim.
+#: `proposed_label` and `why_needed` are read out of the source; `routing_basis`
+#: is not source content but the Builder-generated workflow-authority citation,
+#: which a Reviewer corrects the same way when it names the wrong authority --
+#: e.g. a ruleset-inapplicable Decision ID where the constitution itself is the
+#: correct citation. All three replace verbatim rather than merge.
+NODE_PROPOSAL_FIELDS = frozenset({"proposed_label", "why_needed", "routing_basis"})
+
+#: Keys inside a node `exact_corrections` that instruct rather than supply a
+#: field value, and so are executed by their own code rather than copied in.
+NODE_INSTRUCTION_KEYS = frozenset({"integration_action"})
+
 
 @dataclass(frozen=True)
 class BucketInstruction:
@@ -581,6 +594,31 @@ class NodeDirective:
     def corrected_label(self) -> str:
         return str(self.corrections.get("proposed_label") or "").strip()
 
+    @property
+    def corrected_fields(self) -> dict[str, str]:
+        """Every correction that names a field of the node proposal itself.
+
+        `proposed_label` was the only one applied for a long time, because it
+        was the only one a Review had ever supplied. A Review that also filled
+        in a blank `why_needed` had that half of its ruling parsed and then
+        dropped, which is exactly the silent partial application the row-level
+        path refuses. Keys outside this set are instructions about the
+        proposal rather than values in it, and are handled by their own code.
+        """
+        return {
+            name: value.strip()
+            for name, value in self.corrections.items()
+            if name in NODE_PROPOSAL_FIELDS and value.strip()
+        }
+
+    @property
+    def unapplied_corrections(self) -> tuple[str, ...]:
+        """Correction keys this compiler has no code to execute."""
+        return tuple(sorted(
+            name for name in self.corrections
+            if name not in NODE_PROPOSAL_FIELDS and name not in NODE_INSTRUCTION_KEYS
+        ))
+
 
 def _presented_operations(row: dict) -> tuple[str, ...]:
     """The buckets the reviewed patch put this row in, as the Review records them.
@@ -712,6 +750,37 @@ def _policy_entries(document: dict, directives=None) -> list[dict]:
     ]
 
 
+def _ref_keyed_entries(
+    block: dict, key: str, directives=None
+) -> tuple[list[dict], list[str]]:
+    """Expand a `{<ref>: {disposition: ...}}` decision mapping, per DEC-2026-0091.
+
+    Returns the expanded entries and the reasons any part of the mapping could
+    not be read. Any reason at all discards the whole block: a Review that is
+    half-legible is not a Review two thirds of whose rows may be applied.
+    """
+    entries: list[dict] = []
+    failures: list[str] = []
+    for ref, value in block.items():
+        ref = str(ref)
+        if not isinstance(value, dict):
+            failures.append(
+                f"{key}[{ref!r}] is {type(value).__name__}, not a decision mapping")
+            continue
+        embedded = str(value.get("ref") or "").strip()
+        if embedded and embedded != ref:
+            failures.append(
+                f"{key}[{ref!r}] embeds ref {embedded!r}, which does not match its key")
+            continue
+        if not str(value.get("disposition") or "").strip():
+            failures.append(f"{key}[{ref!r}] states no disposition")
+            continue
+        entries.append({**value, "ref": ref})
+    if failures and directives is not None:
+        directives.unread_decision_keys.extend(failures)
+    return entries, failures
+
+
 def _ruling_entries(document: dict, directives=None) -> list[dict]:
     """Per-row rulings, from every shape a Review uses to state them.
 
@@ -724,6 +793,13 @@ def _ruling_entries(document: dict, directives=None) -> list[dict]:
     Reading only `row_decisions` meant seventeen Reviews loaded no rulings at
     all, so a revision built from one silently kept the rows the Reviewer had
     rejected while looking perfectly clean.
+
+    The bulk form's `approved_refs` key is selected by presence, not by a
+    truthy value: a null-extraction GUP's Review correctly states
+    `approved_refs: []`, zero rows to approve, and that empty list must not
+    fall through to the ref-keyed branch below, which would read the bulk
+    form's own `approved_refs`/`disposition` keys as bogus per-ref entries
+    and fail the whole block.
     """
     # Policy first: an explicit per-row ruling later in the list overwrites
     # it, which is exactly what the 'except where an explicit row decision
@@ -732,16 +808,34 @@ def _ruling_entries(document: dict, directives=None) -> list[dict]:
     for key in ROW_DECISION_KEYS:
         block = document.get(key)
         if isinstance(block, dict):
-            refs = block.get("approved_refs") or block.get("refs") or []
-            if not refs and directives is not None:
-                directives.unread_decision_keys.append(key)
+            # Presence of the bulk key selects this shape, not the truthiness
+            # of its value: an explicit `approved_refs: []` is a Reviewer
+            # correctly stating zero rows to approve (a null-extraction GUP
+            # has none to rule on), and previously fell through to the
+            # ref-keyed branch below, which read the bulk form's own
+            # `approved_refs` and `disposition` keys as bogus refs and failed
+            # the whole block.
+            if "approved_refs" in block or "refs" in block:
+                refs = block.get("approved_refs") or block.get("refs") or []
+                shared = {
+                    name: value
+                    for name, value in block.items()
+                    if name not in ("approved_refs", "refs")
+                }
+                entries.extend({**shared, "ref": str(ref)} for ref in refs)
                 continue
-            shared = {
-                name: value
-                for name, value in block.items()
-                if name not in ("approved_refs", "refs")
-            }
-            entries.extend({**shared, "ref": str(ref)} for ref in refs)
+            # DEC-2026-0091: a mapping whose keys are the exact GUP refs is an
+            # executable form. The key is the ref; an embedded `ref` is
+            # optional but must agree with it. A value that is not a mapping
+            # carrying a disposition is an input error, not a ref this code
+            # may guess at, so the whole key is recorded unread and the rows
+            # stay undecided rather than half-applied.
+            keyed, failed = _ref_keyed_entries(block, key, directives)
+            if failed or not keyed:
+                if directives is not None:
+                    directives.unread_decision_keys.append(key)
+                continue
+            entries.extend(keyed)
             continue
         for entry in block or []:
             if not isinstance(entry, dict):

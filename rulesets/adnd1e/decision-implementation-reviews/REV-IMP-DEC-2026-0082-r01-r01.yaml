@@ -1,0 +1,330 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0082-r01-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+review_date: '2026-09-20'
+overall_disposition: revision_required
+reviewed_implementation:
+  id: IMP-DEC-2026-0082-r01
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0082-r01.yaml
+  checksum: sha256:b7694d88f8581946ce27de2cc00b4fb80fb939b2e2c0b6ce230bb56c3a6cdec2
+decision_input:
+  id: DEC-2026-0082
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml
+  checksum: sha256:13fd6a71489166a6adb10a44bb0dbfe8a4440f9fa89a75c5305a82bb50421f47
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Correct the reproduced relay safety defects and incomplete checksummed
+    coverage, strengthen the tests, then publish IMP-DEC-2026-0082-r02 directly
+    superseding r01. Routine relay use remains unauthorized pending approval.
+  blocking_ids: []
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      Independently read the three current contracts and their declared versions,
+      checked every substantive anchor against its governing section, and
+      verified the exact Decision authorization and checksums. The direct-handoff
+      sections of all five role instructions link HERDR_HANDOFFS and specify
+      their distinct routing duties. Both retired definition files are absent;
+      the live manifest has exactly the five active roles. Missing report pins
+      for other surviving governance files are a test-7 coverage defect, not
+      an absent contract anchor.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0082
+        path: rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml
+        checksum: sha256:13fd6a71489166a6adb10a44bb0dbfe8a4440f9fa89a75c5305a82bb50421f47
+        authorized_acceptance_test_index: 1
+      authorized_acceptance_test_index: 1
+      contracts:
+        - path: contracts/HERDR_HANDOFFS.md
+          checksum: sha256:efdaca2e9d52435cb8bdba3ff38e3ef8caa0d7714f9269ee62a7265a0ea73816
+          observed_version: '1.0'
+          minimum_version: '1.0'
+          anchors_present:
+            - Five roles communicate directly without Dispatcher.
+            - One repository agent processes work at a time, including reloads.
+            - Dependencies determine priority and only one next action is handed off.
+            - Deferred delivery waits for sender idle and never retries ambiguous submission.
+        - path: contracts/ROLE_CONTEXT_LOADING.md
+          checksum: sha256:95f4d7a07529a3828d75abe7cab5943db6c6544c870fe2ccbfaa0e9eed254ec9
+          observed_version: '1.2'
+          minimum_version: '1.2'
+          anchors_present:
+            - Dispatcher is retired and DEC-2026-0081 activation is cancelled.
+            - Five-role scoped receipts and fresh task evidence remain required.
+        - path: contracts/WORK_QUEUES.md
+          checksum: sha256:f04b5b0c911223365515dd94d28d8d5358ee5ab4c70665810b9ce4188b9d2b11
+          observed_version: '1.30'
+          minimum_version: '1.30'
+          anchors_present:
+            - Direct herdr coordination does not change artifact consumption or approval.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      Independently inspected role_context.py and reran its 80 tests, including
+      manifest schema validation, scoped cache hits, checksum and session
+      invalidation, bounded stable inputs, format-1 receipts, and dispatcher
+      refusal without writes. The current five-role manifest validates. Hash-only
+      checks of DEC-2026-0081 and IMP-DEC-2026-0081-r01 match the report's
+      historical pins; neither retired artifact was reviewed or modified.
+  - acceptance_test_index: 3
+    disposition: failed
+    evidence: >-
+      Independent probes accept a request missing endpoint, scope, inputs,
+      prerequisites and ordered_next_steps; accept a traversal-shaped nonexistent
+      scope; and accept an existing sibling path sharing the repository's string
+      prefix. A replaced sender session/role, a wrong recipient role alias, and
+      duplicate recipient aliases still result in a fake prompt. Code checks
+      recipient native session only if supplied, never checks sender identity
+      beyond pane membership, and does not verify inherited endpoint identity.
+      ValidateOnly itself makes no endpoint call or state write, but its guard
+      coverage is insufficient. See F1 and F2.
+  - acceptance_test_index: 4
+    disposition: failed
+    evidence: >-
+      The supplied deterministic working-sender and unexpected-active-peer tests
+      pass. An independent test with two concurrently running fake relays
+      confirms the lock prevents simultaneous prompts. However, a prompt response
+      whose result status is blocked or merely submitted is immediately recorded
+      as settled and the lock is released, without verifying recipient settlement.
+      Exact sender and role-alias binding failures also permit delivery. Thus the
+      lock does not establish the required full-turn serialization. See F2 and F3.
+  - acceptance_test_index: 5
+    disposition: failed
+    evidence: >-
+      Calling ExecuteRequest twice with the identical request sends two prompts.
+      An unrelated uncertain request does not block ExecuteRequest. Killing a
+      fake relay after its prompt begins leaves submitting evidence, but a
+      subsequent execution with the same ID overwrites that evidence as refused
+      when the surviving lock is encountered. A 1000ms request with a delayed
+      fake endpoint took 9.692 seconds and still submitted; Invoke-Herdr has no
+      process-level bound. Existing schedule-only duplicate and prompt-error
+      tests pass but do not cover these bypasses. See F3, F4 and F5.
+  - acceptance_test_index: 6
+    disposition: verified
+    evidence: >-
+      Independently reran the supplied priority, exact-prompt, unchanged-input,
+      local-state-only and reload-only fixtures. Their ordered list distinguishes
+      the blocked dependent GUR from an independent ready GUR. Code transports
+      the worker's prompt without choosing priorities, processing an artifact,
+      or issuing an onward assignment. The reload fixture carries an empty
+      next-step list and an instruction-only prompt. This transport-only judgment
+      does not waive request completeness or identity failures under test 3.
+  - acceptance_test_index: 7
+    disposition: failed
+    evidence: >-
+      The supplied focused run passes all 124 tests (80 context plus 44 relay).
+      The complete common suite passes all 1221 tests in 460.422s.
+      Independent relay acceptance probes run 13 tests with 12 failures and one
+      passing two-relay exclusion test. All ten declared implementation-file
+      checksums and the validation-report checksum match, but nine surviving
+      exact_diff governance paths required by coordination_constraints are not
+      pinned in implementation_files. Published evidence is therefore incomplete,
+      and passing supplied suites cannot establish the failed safety criteria.
+independent_validation:
+  passed: false
+  commands:
+    - command: >-
+        python tooling/common/validate_artifact.py
+        rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0082-r01.yaml
+        --schema schemas/common/decision-implementation.schema.json
+      exit_code: 0
+      result: passed
+      summary: 'Target parses and validates; structural validity is not approval.'
+    - command: >-
+        python tooling/common/validate_artifact.py
+        rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml
+        --schema schemas/common/architect-decision.schema.json
+      exit_code: 0
+      result: passed
+      summary: 'Exact governing Decision parses and validates.'
+    - command: '[cwd tooling/common/tests] python -m unittest test_role_context test_herdr_handoff'
+      exit_code: 0
+      result: passed
+      summary: 'Ran 124 tests in 61.569s; OK.'
+    - command: '[cwd tooling/common/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+      exit_code: 0
+      result: passed
+      summary: 'Ran 1221 tests in 460.422s; OK. Fixture ResourceWarnings were nonfatal.'
+    - command: 'python tooling/reviewer/tests/test_dec0082_relay_acceptance.py'
+      exit_code: 1
+      result: failed
+      summary: >-
+        Ran 13 independent fake-endpoint tests in 20.396s; 12 failures.
+        Two competing relays were excluded correctly; the other safety probes failed.
+    - command: >-
+        python tooling/common/validate_artifact.py
+        .local/reviewer/REV-IMP-DEC-2026-0082-r01-r01.yaml
+        --schema schemas/common/decision-implementation-review.schema.json
+      exit_code: 0
+      result: passed
+      summary: 'Exact staged YAML parses and validates before create-only publication.'
+review_evidence:
+  independent_probes:
+    path: tooling/reviewer/tests/test_dec0082_relay_acceptance.py
+    checksum: sha256:8a331a11cfe9a31393bdfc3c680474ca1c23817d305e265dd203158b61039416
+  builder_validation:
+    path: build/reports/IMP-DEC-2026-0082-r01.validation.json
+    checksum: sha256:ed3dbcaeb9654179fd0f52a4ca656f8e1d485194d541168148bd53e10659f25e
+  history_hashes_only:
+    - path: rulesets/adnd1e/escalations/decisions/DEC-2026-0081.yaml
+      checksum: sha256:98d6c72cf71ec6724474e5d5686f8c41fc4f6749a9b43c9b65c4924dbb6a3bb7
+    - path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0081-r01.yaml
+      checksum: sha256:1efc3f8b1ca8932b9ed71a01406e2895e0b9e0d9e8a2b207738b540c0b1dcf3e
+findings:
+  - id: F1
+    owner: builder
+    acceptance_test_indexes: [3]
+    path: tooling/common/send-agent-handoff.ps1
+    locus: 'Test-HandoffRequest, lines 180-276'
+    defect: >-
+      Required request evidence is optional or unchecked. Inputs can omit paths
+      and checksums; scope and endpoint identity are not validated. StartsWith
+      without a path-separator boundary admits existing prefix siblings.
+    required_correction: >-
+      Enforce the Decision's complete typed request, explicit applicable scope,
+      exact checksummed inputs and prerequisites, nonempty authority/action,
+      inherited endpoint identity and bounded ordered next steps. Resolve paths
+      with real repository containment, not a bare string prefix. Reject missing,
+      malformed, stale and escaping evidence before scheduling. Preserve offline,
+      no-write ValidateOnly behavior; do not invent source IDs for reloads.
+  - id: F2
+    owner: builder
+    acceptance_test_indexes: [3, 4, 5]
+    path: tooling/common/send-agent-handoff.ps1
+    locus: 'Get-BoundAgents and Invoke-Execute identity checks'
+    defect: >-
+      Sender selection trusts a pane alone. Recipient selection takes the first
+      pane match and only optionally compares name/session. Wrong or ambiguous
+      role aliases and a replaced sender can still authorize delivery.
+    required_correction: >-
+      Require and verify both parties' unique role aliases, expected providers,
+      resolved repository roots, panes and native sessions, including inherited
+      endpoint identity. Recheck exact identities immediately before submission
+      and through settlement. Missing, changed, ambiguous, unknown or blocked
+      bindings must fail closed; never select the first ambiguous match.
+  - id: F3
+    owner: builder
+    acceptance_test_indexes: [4, 5]
+    path: tooling/common/send-agent-handoff.ps1
+    locus: 'Invoke-Execute response handling, lines 569-587'
+    defect: >-
+      Any parseable zero-exit response without a top-level error becomes
+      acknowledged and settled, even when result.status is blocked or submitted.
+    required_correction: >-
+      Distinguish delivery acknowledgment from verified recipient completion.
+      Validate the actual response envelope and re-resolved native recipient
+      status. Hold exclusive serialization through confirmed idle/done settlement.
+      Blocked, unknown, malformed, changed or ambiguous results must retain
+      reconciliation-required uncertainty and must not authorize another send.
+  - id: F4
+    owner: builder
+    acceptance_test_indexes: [4, 5]
+    path: tooling/common/send-agent-handoff.ps1
+    locus: 'Invoke-Schedule, Invoke-Execute, Write-State'
+    defect: >-
+      Duplicate and outstanding checks exist only in Schedule and are not
+      atomically claimed there. ExecuteRequest bypasses them. The lock-refusal
+      path overwrites another execution's possible-delivery evidence as refused.
+    required_correction: >-
+      Atomically reserve request identity and enforce single outstanding delivery
+      under the repository lock at every executable entry point. Require an
+      unconsumed scheduled request for execution; bind the queued payload so it
+      cannot change after acknowledgment. Persist crash-safe state without
+      overwriting submitting, acknowledged or uncertain evidence on retries or
+      lock contention. Preserve deduplication for identical/equivalent outstanding
+      work and never steal by age. Support the Decision's deferred continuation
+      without allowing the next request to submit before prior settlement.
+  - id: F5
+    owner: builder
+    acceptance_test_indexes: [5]
+    path: tooling/common/send-agent-handoff.ps1
+    locus: 'Invoke-Herdr and Invoke-Execute deadline handling'
+    defect: >-
+      Native calls run synchronously without a supervisor deadline. Agent-list
+      calls have no timeout, and the code can submit after the request deadline.
+    required_correction: >-
+      Bound every child endpoint call and the whole wait using an enforced
+      monotonic deadline, including agent list and prompt. On deadline or process
+      interruption, stop safely and retain uncertainty if delivery is possible.
+      Never send after the allowed window or trust a child to honor its own flag.
+  - id: F6
+    owner: builder
+    acceptance_test_indexes: [7]
+    path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0082-r01.yaml
+    defect: >-
+      implementation_files omits nine surviving governance paths explicitly
+      covered by the Decision. The validation report checks only Builder-owned
+      path coverage and the smaller declared checksum set.
+    required_correction: >-
+      In a successor report and fresh validation companion, pin all surviving
+      changed or verified exact_diff paths, including the nine paths below.
+      Verify deleted files by absence only. Strengthen tests for the reproduced
+      safety failures, real concurrent relays, interruption and bounded child
+      waits; rerun the focused and complete common suites. Preserve all published
+      reports, Reviews and Decisions; do not repair r01 in place.
+    missing_paths:
+      - AGENTS.md
+      - README.md
+      - REPOSITORY_STRUCTURE.md
+      - agents/architect/INSTRUCTIONS.md
+      - agents/analyst/INSTRUCTIONS.md
+      - agents/builder/INSTRUCTIONS.md
+      - agents/reviewer/INSTRUCTIONS.md
+      - agents/integrator/INSTRUCTIONS.md
+      - contracts/SOURCE_MARKDOWN.md
+required_builder_revision:
+  id: IMP-DEC-2026-0082-r02
+  path: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0082-r02.yaml
+  supersedes: IMP-DEC-2026-0082-r01
+  preservation: >-
+    Preserve the governing Decision and immutable predecessor. Implement only
+    Builder-owned corrections; no canonical, source, governance or retired-0081
+    artifact mutation is authorized by this Review.
+completion_statement: >-
+  All seven acceptance tests were independently dispositioned. Tests 1, 2 and 6
+  are verified; tests 3, 4, 5 and 7 fail. No approval or Approved bundle is emitted.
+  Only Reviewer-owned test evidence and this Review were authored. No real herdr
+  prompt was sent; all execution, crash and race probes used fake endpoints and
+  temporary roots. Ordinary Builder corrections suffice; no Architect ruling is
+  needed to restate the already explicit safety requirements.
+ordered_next_steps:
+  - priority: 1
+    owner: builder
+    input: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0082-r01-r01.yaml
+    action: 'Resolve F1-F6 and publish IMP-DEC-2026-0082-r02 with fresh validation.'
+    prerequisite_ids: [DEC-2026-0082]
+    readiness: ready
+    reason: 'Safety corrections unblock all later routine automated handoffs.'
+  - priority: 2
+    owner: reviewer
+    input: rulesets/adnd1e/decision-implementations/IMP-DEC-2026-0082-r02.yaml
+    action: 'Independently review the successor after Builder publishes it.'
+    prerequisite_ids: [IMP-DEC-2026-0082-r02]
+    readiness: blocked
+    reason: 'Approval must precede routine relay use; the named successor does not yet exist.'
+  - priority: 3
+    owner: builder
+    input: rulesets/basicdnd/decision-implementations/IMP-DEC-2026-0080-r03.yaml
+    action: 'Separately refresh pending DEC-2026-0080 evidence under current governance.'
+    prerequisite_ids: [DEC-2026-0080]
+    readiness: ready
+    reason: >-
+      Independent, lower-priority evidence refresh explicitly retained by 0082.
+      The report still pins SOURCE_MARKDOWN 1.6, while current bytes are 1.7.
+      This is not an 0082 acceptance gate or permission for concurrent work.
+delivery:
+  status: not_sent
+  reason: >-
+    DEC-2026-0082 prohibits routine relay use before independent approval. This
+    revision-required Review does not grant approval. User-mediated serial
+    delivery of priority 1 is required after the Reviewer turn ends.

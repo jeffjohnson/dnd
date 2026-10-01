@@ -51,6 +51,70 @@ def edge(**overrides):
     return row
 
 
+class TestTheSuiteUsesTheActiveRulesetVocabulary(unittest.TestCase):
+    """DEC-2026-0092. Invariant 9 rejected every Shadowdark row.
+
+    `BOOKS` was the AD&D tuple `("PHB", "DMG", "UA", "MM")`, so a correctly
+    cited Shadowdark row reading `SD` was a citation-book finding, and a genesis
+    could not have passed its own invariant suite. The vocabulary now travels
+    with the ruleset; omitting it keeps the AD&D constants exactly as they were.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        from adnd1e_integrator.vocabulary import load_vocabulary
+        cls.shadowdark = load_vocabulary(REPO_ROOT, "shadowdark")
+        cls.adnd = load_vocabulary(REPO_ROOT, RULESET_ID)
+
+    def _sd_edge(self, **overrides):
+        row = edge(source_id="abil_strength", source_label="Strength",
+                   edge_type="DERIVED_FROM", target_id="rule_stat_generation",
+                   target_label="Stat Generation", aspect="initial score",
+                   polarity="neutral", polarity_basis="derived",
+                   book="SD", page="15", section="STATS")
+        row.update(overrides)
+        return row
+
+    SD_NODES = [
+        {"id": "abil_strength", "label": "Strength", "kind": "abil",
+         "degree": "1", "core_degree": "1", "in_degree": "0", "out_degree": "1", "roles": ""},
+        {"id": "rule_stat_generation", "label": "Stat Generation", "kind": "rule",
+         "degree": "1", "core_degree": "1", "in_degree": "1", "out_degree": "0", "roles": ""},
+    ]
+
+    def test_a_shadowdark_row_passes_under_its_own_vocabulary(self):
+        result = check([self._sd_edge()], self.SD_NODES, self.shadowdark.prefixes,
+                       set(), EDGE_COLUMNS, vocabulary=self.shadowdark)
+        self.assertEqual([f.as_dict() for f in result.findings], [])
+
+    def test_the_same_row_is_rejected_under_the_adnd_vocabulary(self):
+        """The falsifying case: without the ruleset, SD is not a legal book."""
+        result = check([self._sd_edge()], self.SD_NODES, self.shadowdark.prefixes,
+                       set(), EDGE_COLUMNS, vocabulary=self.adnd)
+        self.assertIn(9, result.by_invariant())
+
+    def test_an_adnd_book_is_not_citable_from_shadowdark(self):
+        result = check([self._sd_edge(book="PHB")], self.SD_NODES,
+                       self.shadowdark.prefixes, set(), EDGE_COLUMNS,
+                       vocabulary=self.shadowdark)
+        self.assertIn(9, result.by_invariant())
+
+    def test_an_ancestry_prefix_is_approved_only_under_shadowdark(self):
+        nodes = [dict(self.SD_NODES[0], id="ancestry_dwarf", label="Dwarf", kind="ancestry"),
+                 self.SD_NODES[1]]
+        edges = [self._sd_edge(source_id="ancestry_dwarf", source_label="Dwarf")]
+        clean = check(edges, nodes, self.shadowdark.prefixes, set(), EDGE_COLUMNS,
+                      vocabulary=self.shadowdark)
+        self.assertEqual([f.as_dict() for f in clean.findings], [])
+        borrowed = check(edges, nodes, self.adnd.prefixes, set(), EDGE_COLUMNS,
+                         vocabulary=self.shadowdark)
+        self.assertIn(3, borrowed.by_invariant())
+
+    def test_omitting_the_vocabulary_preserves_adnd_behaviour(self):
+        self.assertTrue(run([edge()]).ok)
+        self.assertIn(9, run([edge(book="SD")]).by_invariant())
+
+
 class TestSyntheticInvariants(unittest.TestCase):
     def test_clean_edge_passes(self):
         self.assertTrue(run([edge()]).ok)

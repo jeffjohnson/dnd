@@ -1,0 +1,767 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-136-137-taverns-r02
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-136-137-taverns
+constitution_version: '1.7'
+revision: 2
+supersedes: GUR-PKT-SD-136-137-taverns-r01
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-136-137-taverns
+  source_file: source.md
+  packet_source_checksum: sha256:dda6325337fd70428f7c77a0ea78a3c6cbe45d690cb221f94337e7a85ec161e0
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 056-taverns.md
+  citation_code: SD
+  page_start: 136
+  page_end: 137
+  page_number_basis: packet_page_markers
+units_note: 'Figures name their unit. Measured by the assembling script from the claimed source: 3 quality
+  bullets, 3 named tables and 44 data rows across them, of which 12 are drinks. Of those drink rows 6
+  state a stat change, 3 upward and 3 downward, and 7 state a duration of one hour.'
+page_attribution_basis: 'Both markers sit on headings. p136 ends the TAVERNS heading and p137 ends the
+  TAVERN MENU TABLE heading, and placement rule 1 applies each to its whole heading with the persistence
+  rule carrying it forward. Verified against the claimed source that no marker appears inside a table
+  row.
+
+  So the 3 quality bullets and the tavern generator table are printed page 136, and the menu and drinks
+  tables are printed page 137. Each row is cited to the page of the table it concerns, so 1 row cites
+  136 and 11 cite 137.'
+scope_boundary: 'The bounded scope is the Primary Source Material section, printed pages 136 and 137:
+  3 quality bullets and 3 named tables. The Supporting Source Context section is declared but empty; it
+  states that no passages were appended, so nothing is excluded by it and no row could cite it.'
+source_summary: 'A tavern generator, and the first page in this chapter whose tables state mechanics rather
+  than only flavour. Three bullets fix what a poor, standard or wealthy tavern serves: how many menu entries
+  from which price columns, and how many drinks. The generator table gives a tavern its two-part name
+  and the thing it is known for. The menu table gives food in three price columns. The drinks table gives
+  12 drinks, each with a price and most with a stated game effect: a constitution check with a blinding
+  consequence, temporary stat changes in both directions, hit point recovery per mug, and an experience
+  award for the most expensive bottle. Two entries act on other drinks rather than on the drinker.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled, and every figure here
+  is computed by the assembling script from the canonical files and the claimed source.
+
+  The canonical graph holds 380 registry rows and 752 edges, and 0 rows cite printed pages 136 or 137,
+  so nothing in this span has been extracted before. No tavern, menu or drink identity exists; the registry
+  was searched for all three and returned nothing. The registry holds 94 tbl_ and 19 item_ identities.
+
+  Seven existing identities were read in full first. rule_check carries 53 rows and already has 2 inbound
+  TRIGGERS, from rule_action and rule_improvise, both at polarity neutral. rule_hit_points has 14 inbound
+  MODIFIES rows. exp_xp has 6 inbound rows, one of which is already from a table. The four ability identities
+  this page touches carry 11, 5, 7, 9 rows respectively for constitution, charisma, wisdom and intelligence,
+  and none of them is reached from a generator table in this chapter.'
+table_level_mechanics_note: 'SETTLED at revision 2 against the reading this block argued at revision 1.
+  The r01 text is preserved in the published r01 and is not restated here; what follows is the disposition
+  now in force.
+
+  A source-named game object takes its own identity and carries its own mechanics. A table is the source
+  of a row only where the result it lists has no name of its own, which is what tbl_light_mishaps and
+  tbl_carousing_outcome record and is the whole of what those precedents establish. The twelve drinks
+  on this table are named in boldface and priced individually, so each is an item_ identity and each effect
+  is sourced from the drink that produces it.
+
+  Three consequences follow and all three are improvements. The graph can now say which drink does which
+  thing, which the table-level reading could not. The opposite-direction pairs on charisma and wisdom
+  stop being near-duplicates of one another and become four ordinary rows from four different drinks;
+  see repeated_target_note. And a later page that names one of these drinks has something to point at,
+  which matters because the shop generator is the next packet and the magic item chapter is thirty packets
+  out.
+
+  The test this sets for the rest of the intake: ask whether the source names the result, not whether
+  the result sits in a table. The potions page will meet it with an easier answer than this one had.'
+repeated_target_note: 'Rewritten at revision 2, because the ruling dissolved the problem this block was
+  written to defend.
+
+  At revision 1 the four ability rows in opposite directions all had tbl_tavern_drinks as source, so abil_charisma
+  and abil_wisdom were each reached twice from one source under one type, separated only by aspect. That
+  needed an argument, and the Review''s blocking finding names those near-duplicates as one of the three
+  costs of the table-level reading.
+
+  With the drinks as identities there is nothing left to defend. Vinegary Wine lowers charisma and Halfling
+  Summer Wine raises it; Stale Ale lowers wisdom and Aged Royal Wine raises it. Four rows, four distinct
+  sources, no repeated source and target pair anywhere in the patch. The aspects stat penalty and stat
+  bonus are kept exactly as submitted, because the Review approved every field but the source and because
+  they still name the facet correctly.'
+reused_nodes:
+- id: rule_check
+  label: Check
+  used_by: M004
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. The most connected identity in the graph. It already takes 2 inbound TRIGGERS rows, from rule_action
+    and rule_improvise, both at polarity neutral and basis read, which is the pattern M004 follows.
+- id: abil_constitution
+  label: Constitution
+  used_by: M005
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical with 11 rows. The stat one drink lowers and the stat another drink's check is made
+    against.
+- id: abil_charisma
+  label: Charisma
+  used_by: M006, M007
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical with 5 rows, reached twice here in opposite directions; see repeated_target_note.
+- id: abil_wisdom
+  label: Wisdom
+  used_by: M008, M009
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical with 7 rows, reached twice here in opposite directions; see repeated_target_note.
+- id: abil_intelligence
+  label: Intelligence
+  used_by: M010
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical with 9 rows.
+- id: rule_hit_points
+  label: Hit Points
+  used_by: M011
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical with 14 inbound MODIFIES rows, from resting, damage, levelling, a dwarf ability
+    and six spells. M011 adds a drink to that set, which is a new kind of source for it but the same relation.
+- id: exp_xp
+  label: XP
+  used_by: M012
+  basis: Present in the registry at extraction with this exact label, asserted equal by the assembling
+    script. Canonical with 6 inbound rows, one of which, tbl_carousing_outcome on outcome award, is already
+    from a table, so M012 is the second table to award experience and the two differ in source and aspect.
+candidate_nodes:
+- proposed_id: rule_taverns
+  proposed_label: Taverns
+  kind: procedure
+  why_needed: The named procedure these pages define. The 3 quality bullets state what a tavern of each
+    grade serves, which is a rule rather than a heading, and three tables resolve it. It is also the endpoint
+    printed page 134 points at, which cannot be asserted here but will need this identity to exist.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 136, TAVERNS
+  source_evidence: page 136, the TAVERNS heading and its 3 quality bullets.
+- proposed_id: tbl_tavern_generator
+  proposed_label: Tavern Generator Table
+  kind: table
+  why_needed: Resolves a tavern's two-part name and the thing it is known for. It is the table the procedure
+    rolls to produce the tavern itself.
+  prefix_basis: tbl_ is a named source table; matches the 94 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 136, TAVERN GENERATOR TABLE
+  source_evidence: page 136, the TAVERN GENERATOR TABLE heading and its data rows.
+- proposed_id: tbl_tavern_menu
+  proposed_label: Tavern Menu Table
+  kind: table
+  why_needed: Resolves what food a tavern serves, in three price columns the tavern's quality selects
+    between.
+  prefix_basis: tbl_ is a named source table; matches the 94 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN MENU TABLE
+  source_evidence: page 137, the TAVERN MENU TABLE heading and its data rows.
+- proposed_id: tbl_tavern_drinks
+  proposed_label: Tavern Drinks Table
+  kind: table
+  why_needed: Resolves what a tavern serves to drink. Unlike every other generator table in this chapter
+    its result cells state mechanics, and those mechanics are what most of this packet's rows carry.
+  prefix_basis: tbl_ is a named source table; matches the 94 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the TAVERN DRINKS TABLE heading and its data rows.
+- proposed_id: item_barnacle_grog
+  proposed_label: Barnacle Grog
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell forces a
+    constitution check with a blinding consequence. Registered per the Review's identity-grain ruling,
+    which holds that source-named game objects take item_ identities rather than being carried by the
+    table that lists them. Carries M004, re-sourced from tbl_tavern_drinks by the Review.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+- proposed_id: item_watered_down_swill
+  proposed_label: Watered-Down Swill
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell is toxic
+    and lowers constitution. Registered per the Review's identity-grain ruling, which holds that source-named
+    game objects take item_ identities rather than being carried by the table that lists them. Carries
+    M005, re-sourced from tbl_tavern_drinks by the Review.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+- proposed_id: item_vinegary_wine
+  proposed_label: Vinegary Wine
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell stains the
+    teeth and lowers charisma. Registered per the Review's identity-grain ruling, which holds that source-named
+    game objects take item_ identities rather than being carried by the table that lists them. Carries
+    M006, re-sourced from tbl_tavern_drinks by the Review.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+- proposed_id: item_stale_ale
+  proposed_label: Stale Ale
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell dulls the
+    senses and lowers wisdom. Registered per the Review's identity-grain ruling, which holds that source-named
+    game objects take item_ identities rather than being carried by the table that lists them. Carries
+    M008, re-sourced from tbl_tavern_drinks by the Review.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+- proposed_id: item_clear_spirits
+  proposed_label: Clear Spirits
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell burns, and
+    ends a bad effect of another drink. Registered per the Review's identity-grain ruling, which holds
+    that source-named game objects take item_ identities rather than being carried by the table that lists
+    them.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+  registry_addition_only: true
+  registry_addition_basis: Proposed from its defining locus with no edge, as RF-03 requires. What the
+    cell states is a price, or an effect on another drink rather than on a game concept, and RF-04 and
+    RF-05 forbid inventing a quantity or a generic another-drink or next-drink edge to carry it. Registry
+    additions are isolated from edge insertions and DEC-2026-0003 permits a node change to be approved
+    on its own.
+- proposed_id: item_house_ale
+  proposed_label: House Ale
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell is crisp
+    and clean, and the first mug is free. Registered per the Review's identity-grain ruling, which holds
+    that source-named game objects take item_ identities rather than being carried by the table that lists
+    them.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+  registry_addition_only: true
+  registry_addition_basis: Proposed from its defining locus with no edge, as RF-03 requires. What the
+    cell states is a price, or an effect on another drink rather than on a game concept, and RF-04 and
+    RF-05 forbid inventing a quantity or a generic another-drink or next-drink edge to carry it. Registry
+    additions are isolated from edge insertions and DEC-2026-0003 permits a node change to be approved
+    on its own.
+- proposed_id: item_autumn_mead
+  proposed_label: Autumn Mead
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell is floral,
+    and doubles the effect of the next drink. Registered per the Review's identity-grain ruling, which
+    holds that source-named game objects take item_ identities rather than being carried by the table
+    that lists them.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+  registry_addition_only: true
+  registry_addition_basis: Proposed from its defining locus with no edge, as RF-03 requires. What the
+    cell states is a price, or an effect on another drink rather than on a game concept, and RF-04 and
+    RF-05 forbid inventing a quantity or a generic another-drink or next-drink edge to carry it. Registry
+    additions are isolated from edge insertions and DEC-2026-0003 permits a node change to be approved
+    on its own.
+- proposed_id: item_halfling_summer_wine
+  proposed_label: Halfling Summer Wine
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell is sparkling
+    and raises charisma. Registered per the Review's identity-grain ruling, which holds that source-named
+    game objects take item_ identities rather than being carried by the table that lists them. Carries
+    M007, re-sourced from tbl_tavern_drinks by the Review.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+- proposed_id: item_elvish_brandy
+  proposed_label: Elvish Brandy
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell is spiced
+    and raises intelligence. Registered per the Review's identity-grain ruling, which holds that source-named
+    game objects take item_ identities rather than being carried by the table that lists them. Carries
+    M010, re-sourced from tbl_tavern_drinks by the Review.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+- proposed_id: item_dwarvish_gold_ale
+  proposed_label: Dwarvish Gold Ale
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell is icy cold
+    and restores hit points. Registered per the Review's identity-grain ruling, which holds that source-named
+    game objects take item_ identities rather than being carried by the table that lists them. Carries
+    M011, re-sourced from tbl_tavern_drinks by the Review.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+- proposed_id: item_aged_royal_wine
+  proposed_label: Aged Royal Wine
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell is smooth
+    and rich and raises wisdom. Registered per the Review's identity-grain ruling, which holds that source-named
+    game objects take item_ identities rather than being carried by the table that lists them. Carries
+    M009, re-sourced from tbl_tavern_drinks by the Review.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+- proposed_id: item_van_dinkle_whiskey
+  proposed_label: Van Dinkle Whiskey
+  kind: item
+  why_needed: A source-named, individually priced drink on the TAVERN DRINKS TABLE. The cell is nearly
+    unobtainable and awards experience. Registered per the Review's identity-grain ruling, which holds
+    that source-named game objects take item_ identities rather than being carried by the table that lists
+    them. Carries M012, re-sourced from tbl_tavern_drinks by the Review.
+  prefix_basis: item_ is an individually source-named item; joins the 19 canonical item_ identities
+  source_named: true
+  defining_locus: SD page 137, TAVERN DRINKS TABLE
+  source_evidence: page 137, the boldface name and its cell on the TAVERN DRINKS TABLE, asserted present
+    in the claimed source by the building script.
+candidate_edges:
+- ref: M001
+  source_id: rule_taverns
+  source_label: Taverns
+  edge_type: RESOLVED_BY
+  target_id: tbl_tavern_generator
+  target_label: Tavern Generator Table
+  aspect: tavern identity
+  condition: ''
+  book: SD
+  page: 136
+  section: TAVERN GENERATOR TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_taverns
+  source_label: Taverns
+  edge_type: RESOLVED_BY
+  target_id: tbl_tavern_menu
+  target_label: Tavern Menu Table
+  aspect: menu selection
+  condition: ''
+  book: SD
+  page: 137
+  section: TAVERN MENU TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_taverns
+  source_label: Taverns
+  edge_type: RESOLVED_BY
+  target_id: tbl_tavern_drinks
+  target_label: Tavern Drinks Table
+  aspect: drink selection
+  condition: ''
+  book: SD
+  page: 137
+  section: TAVERN DRINKS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: item_barnacle_grog
+  source_label: Barnacle Grog
+  edge_type: TRIGGERS
+  target_id: rule_check
+  target_label: Check
+  aspect: drink resolution
+  condition: ''
+  book: SD
+  page: 137
+  section: TAVERN DRINKS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: neutral
+  polarity_basis: read
+- ref: M005
+  source_id: item_watered_down_swill
+  source_label: Watered-Down Swill
+  edge_type: MODIFIES
+  target_id: abil_constitution
+  target_label: Constitution
+  aspect: stat penalty
+  condition: ''
+  book: SD
+  page: 137
+  section: TAVERN DRINKS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: worsens
+  polarity_basis: read
+- ref: M006
+  source_id: item_vinegary_wine
+  source_label: Vinegary Wine
+  edge_type: MODIFIES
+  target_id: abil_charisma
+  target_label: Charisma
+  aspect: stat penalty
+  condition: ''
+  book: SD
+  page: 137
+  section: TAVERN DRINKS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: worsens
+  polarity_basis: read
+- ref: M007
+  source_id: item_halfling_summer_wine
+  source_label: Halfling Summer Wine
+  edge_type: MODIFIES
+  target_id: abil_charisma
+  target_label: Charisma
+  aspect: stat bonus
+  condition: ''
+  book: SD
+  page: 137
+  section: TAVERN DRINKS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M008
+  source_id: item_stale_ale
+  source_label: Stale Ale
+  edge_type: MODIFIES
+  target_id: abil_wisdom
+  target_label: Wisdom
+  aspect: stat penalty
+  condition: ''
+  book: SD
+  page: 137
+  section: TAVERN DRINKS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: worsens
+  polarity_basis: read
+- ref: M009
+  source_id: item_aged_royal_wine
+  source_label: Aged Royal Wine
+  edge_type: MODIFIES
+  target_id: abil_wisdom
+  target_label: Wisdom
+  aspect: stat bonus
+  condition: ''
+  book: SD
+  page: 137
+  section: TAVERN DRINKS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M010
+  source_id: item_elvish_brandy
+  source_label: Elvish Brandy
+  edge_type: MODIFIES
+  target_id: abil_intelligence
+  target_label: Intelligence
+  aspect: stat bonus
+  condition: ''
+  book: SD
+  page: 137
+  section: TAVERN DRINKS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M011
+  source_id: item_dwarvish_gold_ale
+  source_label: Dwarvish Gold Ale
+  edge_type: MODIFIES
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: drink recovery
+  condition: ''
+  book: SD
+  page: 137
+  section: TAVERN DRINKS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+- ref: M012
+  source_id: item_van_dinkle_whiskey
+  source_label: Van Dinkle Whiskey
+  edge_type: MODIFIES
+  target_id: exp_xp
+  target_label: XP
+  aspect: drink award
+  condition: ''
+  book: SD
+  page: 137
+  section: TAVERN DRINKS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: improves
+  polarity_basis: read
+authored_polarity_declaration: '9 of the 12 rows carry authored polarity and 3 do not, which is the first
+  authored polarity this chapter''s generator pages have produced.
+
+  Unchanged at revision 2; re-sourcing a row does not touch its polarity, and the building script asserts
+  that no polarity or polarity_basis field differs from r01. The authored rows are the 8 MODIFIES rows
+  and the single TRIGGERS row, both among the three types constitution section 5 reserves, and every one
+  is at basis read because the source states the direction in the cell itself: minus one and plus one
+  for the stats, regain for the hit points, plus one experience for the whiskey. The six ability rows
+  split 3 improves and 3 worsens, matching the 3 upward and 3 downward stat cells the script measured.
+  rule_hit_points and exp_xp take improves. The TRIGGERS row takes neutral, matching both existing inbound
+  TRIGGERS rows on rule_check, because a forced check is not itself a benefit or a harm; its harmful outcome
+  is the blinding, which has no identity and is recorded as OBS-01.
+
+  The remaining 3 rows are RESOLVED_BY, which is not a reserved type, so Builder derives governs on them.'
+status_note: All 12 rows are core, unchanged at revision 2, following the disposition settled as IDQ-01
+  of PKT-SD-124-125 and applied in the four packets since. Nothing here declares itself optional as The
+  Gauntlet and the modes of play do, and the drinks table is not an optional rule merely because a character
+  need not drink.
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: The page generates a location the party arrives at. Recorded as a candidate only; constitution
+    section 8 reserves domain promotion to an Architect Decision. Consistent with the exploration candidate
+    recorded in eight earlier packets.
+- proposed: character
+  basis: Six of the 12 rows write to ability scores, hit points or experience, which is the first time
+    a generator page in this chapter has reached the character sheet. Recorded as a candidate only.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: the blinding consequence of the barnacle grog, p137
+  quoted_gist: a constitution check or the drinker is blinded for an hour
+  why_considered: The outcome of a failed check needs its own row, not just the check, and this is the
+    clearest failure consequence on the page. M004 carries the check itself and no row carries what a
+    failure produces.
+  rejection_reason: There is no identity for blindness and none may be minted from a table result cell.
+    spell_blind_deafen is a spell, not a status, so pointing at it would assert that drinking the grog
+    casts a spell. The condition vocabulary has no term for a status effect either, which is the same
+    gap traps and hazards each lost a page to. Recorded as OBS-01.
+- text_locus: the duration on every stat change, p137
+  quoted_gist: 7 of the 12 drinks state a duration of one hour, and all 6 of the stat changes are among
+    them
+  why_considered: It is the difference between a drink and a permanent injury, and the six ability rows
+    as written do not carry it, so the graph will show a tavern drink as changing a stat the way a talent
+    does.
+  rejection_reason: No field stores a duration, and a condition may never spell a quantity, so one hour
+    cannot be written anywhere. Nothing survives to carry it. This is a real and significant loss rather
+    than a discarded triviality and is recorded as OBS-02.
+- text_locus: the clear spirits and autumn mead entries, p137
+  quoted_gist: one drink ends a bad effect of another drink and one doubles the effect of the next drink
+  why_considered: Both are unhedged mechanical statements, and negation and amplification are exactly
+    what MODIFIES and the negates polarity exist for.
+  rejection_reason: Both relate one drink to another drink, and drinks have no identities. The only available
+    source and target would both be tbl_tavern_drinks, which is a self-edge, and doubling is a magnitude
+    besides. These two entries are the strongest argument for per-drink identities and are named as such
+    in IDQ-01 rather than buried here.
+- text_locus: the three quality bullets, p136
+  quoted_gist: poor, standard and wealthy taverns serve stated numbers of menu entries from stated columns
+    and stated numbers of drinks
+  why_considered: The three grades index the menu table's three price columns, which is the axis-selection
+    shape that earns a FEEDS_INTO row, and they are the same three grades the settlement district tables
+    produce.
+  rejection_reason: The grades are a graded quality band, and graded bands were declined as identities
+    four times in this chapter already, for age, wealth, renown and settlement size. Without identities
+    the bullets reduce to how many of each, which is a magnitude. What survives is that the procedure
+    is resolved by the menu and drinks tables, which M002 and M003 carry.
+- text_locus: the Known For column, p136
+  quoted_gist: twenty things a tavern is known for, including wizard patrons, Thieves Guild spies, City
+    Watch patrons, hostility toward spellcasters, a ban on all weapons and cult rituals in the basement
+  why_considered: Several name identities the graph holds. class_wizard and class_thief are canonical,
+    and a ban on all weapons reads like an EXCLUDES row against the weapon identities.
+  rejection_reason: Each is a description of a place, not a rule that binds anyone. A tavern known for
+    wizard patrons does not relate to class_wizard mechanically, and the weapons ban states no check,
+    no penalty and no enforcement; it is a hook for a GM. Asserting any of them would make the graph claim
+    mechanics the source does not state, which is the same reading that declined the district points of
+    interest one page earlier.
+- text_locus: the menu table's price columns, p137
+  quoted_gist: three columns headed poor, standard and wealthy, each with a coin range
+  why_considered: item_coin is canonical, so a row joining the menu to the money identity looked available.
+  rejection_reason: The columns' whole content is prices, which are magnitudes. Stripped of them the statement
+    is that food costs money, which the graph does not need and which no rule on this page turns on.
+non_edge_observations:
+- id: OBS-01
+  subject: the only stated failure consequence on the page is unexpressible
+  detail: 'The barnacle grog forces a constitution check and blinds the drinker for an hour on a failure.
+    M004 carries the check and nothing carries the blinding, because no status identity exists and the
+    condition vocabulary has no term for one.
+
+    This is the third place this specific gap has cost a row. Traps and hazards each lost the larger part
+    of a page to it, and it will recur at volume in the monster chapter, where sleep, paralysis and petrification
+    are ordinary. Recorded again here so the count is visible: the gap is not an occasional inconvenience,
+    it is systematic, and the monster chapter is thirty-odd packets away.'
+- id: OBS-02
+  subject: six rows say permanent where the source says one hour
+  detail: 'Every one of the 6 stat changes on this table lasts an hour and says so in the cell, as does
+    the blinding, giving 7 timed effects among the 12 drinks. Nothing in the row shape can carry that.
+    So the graph will show tbl_tavern_drinks MODIFIES abil_charisma at improves beside tbl_thief_talents
+    MODIFIES abil_charisma at improves, and a reader will have no way to tell that one is a permanent
+    character advancement and the other wears off before the next crawl.
+
+    This is worse than an omission, because the surviving rows are not merely thin, they read as a stronger
+    claim than the source makes. It is the clearest case yet for a duration facet, and it is a fourth
+    distinct expressiveness gap alongside the condition vocabulary, participant identities and containment.
+    Recorded rather than escalated, because the Analyst records gaps and an Architect decides them, and
+    because no row submitted here is false on its face.'
+- id: OBS-03
+  subject: the page-134 pointer can now be paid
+  detail: 'OBS-01 of PKT-SD-136-137''s predecessor recorded that printed page 134 directs the reader to
+    roll taverns here and that the reach could not be asserted because no tavern identity existed. Proposing
+    rule_taverns removes half that obstacle. The other half stands: the direction is printed on page 134,
+    which is outside this packet''s range, so asserting it from here would put a citation outside the
+    declared span.
+
+    The debt therefore stays where it was, as a bounded successor to PKT-SD-134-135 that can be written
+    once this packet integrates, and printed page 138 will complete it for shops. Recorded so the sequencing
+    is explicit rather than rediscovered: the successor is not blocked on a decision, only on integration.'
+unresolved_identity_questions:
+- id: IDQ-01
+  question: Should the 12 drinks be item_ identities rather than result cells of tbl_tavern_drinks?
+  analyst_reading: 'No, and the rows are written that way. The precedent is direct: tbl_light_mishaps
+    and tbl_carousing_outcome both carry their results'' mechanics at table level and neither minted a
+    per-result identity, and 30 canonical rows in total already have a tbl_ source under an authored type.
+    The 19 existing item_ identities are all gear the rules reach for by name, and no rule reaches for
+    a named drink.'
+  why_it_is_a_question: The counter-argument is stronger here than in either precedent and I do not want
+    it lost. These drinks are priced, purchasable objects with individually distinct effects, which is
+    closer to gear than a light mishap or a carousing outcome is. Two entries relate to other drinks,
+    one ending a bad effect and one doubling the next, and those two are expressible only if drinks are
+    identities; with the table-level reading they vanish entirely. And the six ability rows collapse %d
+    distinct drinks into two directions per stat, so the graph can say a drink may raise or lower charisma
+    but not which one does which.
+  impact_if_overturned: Twelve new item_ identities and roughly 10 additional rows, replacing 9 of the
+    12 submitted rows. The change is additive to the identity set and re-sources the effect rows from
+    the drinks rather than the table, so no submitted row would be wrong, but 9 of them would be superseded.
+    I would rather the Reviewer rule on it now than have it reopened when the potions page is extracted,
+    which faces the same question with a stronger claim to item_ because potions are gear.
+  resolution_at_revision_2: 'SETTLED against my reading. The twelve drinks are item_ identities, the nine
+    effect rows are re-sourced to them, and all twelve are registered.
+
+    What was sound was raising it rather than deciding it quietly, and saying plainly that the counter-argument
+    was stronger here than in either precedent. What was wrong was the conclusion, and the reason it was
+    wrong is worth naming precisely. I reasoned from two precedents about tables carrying their results''
+    mechanics without testing what those precedents actually turn on. They turn on the results being anonymous:
+    a light mishap and a carousing outcome have no name in the source, so there is no identity available
+    to carry them. These drinks are named in boldface and priced individually. Structural similarity is
+    not the test; whether the source names the thing is.
+
+    I also under-weighted my own evidence. I wrote in this question that Clear Spirits and Autumn Mead
+    are expressible only if drinks are identities, and that the six ability rows collapse twelve drinks
+    into two directions per stat. Those are the Reviewer''s first and second grounds. I found them and
+    then did not let them decide anything, which is the same failure as the light-source question at PKT-SD-110-110:
+    setting out the better case and then declining it on something other than its merits.
+
+    The bar is now known and should not be reopened as though still open: ask whether the source names
+    the result. The shop generator on printed page 138 is the next packet and will meet this test immediately.'
+unresolved_identity_questions_note: 'One raised. The structural choices otherwise follow dispositions
+  already settled: the table-as-parent shape from PKT-SD-130-131, the core status from PKT-SD-124-125,
+  and the refusal to propose graded bands as identities from four earlier packets in this chapter.'
+architectural_escalations: []
+architectural_escalation_note: None raised. All 4 identities use an approved prefix, every row uses a
+  legal edge type at status core, no row carries supersession_basis and none is an OVERRIDES, and no CLASSIFIED_AS
+  row appears. OBS-01 and OBS-02 record expressiveness gaps an Architect may want, the status vocabulary
+  and a duration facet, but neither asks for a Decision here and neither makes a submitted row false.
+completeness_statement: 'Revision 2. Both printed pages in scope were read in full at the recorded checksum,
+  which is unchanged; the packet was not reclaimed and the source was not touched.
+
+  The packet now yields 16 new identities and 12 rows. The identities are rule_taverns, three tables and
+  the 12 drinks; the rows are the same 12 rows revision 1 submitted, with nine re-sourced from tbl_tavern_drinks
+  to the drink that produces each effect and everything else preserved. 9 of the 12 drinks carry a row.
+  The other 3, Clear Spirits, House Ale and Autumn Mead, are registered with no edge under DEC-2026-0003,
+  as RF-03 requires: one states only a price, and two state effects on other drinks that RF-04 and RF-05
+  forbid inventing an edge for. So this revision does add registry-only identities, which revision 1 did
+  not, and that is deliberate rather than an oversight.
+
+  Preservation is asserted by the building script against the published r01, not claimed in prose: the
+  ref sequence is identical, exactly the nine refs the Review names differ, each differs in source_id
+  and source_label only, and M001 to M003 are byte-identical. Every required label was matched against
+  a boldface drink name in the claimed source, and every required id was confirmed absent from the registry.
+  Every row was re-checked against the 752 canonical edges for an assertion-key collision and for duplicates
+  within the patch; there are none, and re-sourcing removed the two repeated source-type-target pairs
+  revision 1 had.
+
+  The rejected candidates and observations carry over unchanged, except that the drinks now having identities
+  does not make the blinding, the durations or the cross-drink effects expressible: OBS-01 and OBS-02
+  stand exactly as written, and RF-04 and RF-05 independently forbid inventing rows for them. No assertion
+  depends on any other ruleset.'
+revision_reason: 'Revision 1''s twelve rows were confirmed row by row and every field of them survives
+  here except nine source_id and source_label pairs. No row was withdrawn, no row was added, no aspect,
+  condition, polarity, page, section or status changed, and M001 to M003 are untouched. The building script
+  asserts all of that against the published r01 rather than asserting it in prose.
+
+  Approval was withheld on the one point I asked to have settled, IDQ-01, and the Reviewer settled it
+  against my reading. The twelve drinks are item_ identities. The nine rows that carried their mechanics
+  are re-sourced from tbl_tavern_drinks to the drink that actually produces each effect, and all twelve
+  drinks are registered, including the three whose cells state nothing the vocabulary can express.
+
+  I record without reservation that the Reviewer has the better reading. My error was not that I failed
+  to see the case, IDQ-01 sets it out at length, but that I let two precedents decide a question they
+  do not govern. tbl_light_mishaps and tbl_carousing_outcome carry anonymous outcomes, events that have
+  no name in the source. These drinks are named, and a source name is the thing that makes an identity
+  available. I treated the precedents as controlling because they were structurally similar, when what
+  makes them apply is whether the result is source-named, and it is not.'

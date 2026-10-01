@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-import _bootstrap  # noqa: F401
+import _bootstrap
+from _bootstrap import REPO_ROOT
 
 from adnd1e_builder import polarity
 from adnd1e_builder.vocab import (
@@ -101,6 +102,96 @@ class TestUnknownType(unittest.TestCase):
     def test_unknown_edge_type_cannot_derive(self):
         result = polarity.resolve("RELATED_TO", None, None)
         self.assertTrue(result.blocks_approval)
+
+
+class TestRulesetScopedDerivation(unittest.TestCase):
+    """DEC-2026-0103: which types are derived, and to what, comes from the
+    active ruleset's own vocabulary, not one shared constant.
+
+    Before this Decision `resolve` always consulted the single AD&D
+    1e-transcribed `DERIVED_POLARITY` table, and every ruleset -- including
+    Basic D&D, whose own constitution never enumerates derived types at all
+    -- relied on that sharing. `CLASSIFIED_AS` is the first edge type only
+    one ruleset derives, so these tests pin the resulting three-way split
+    rather than assuming the change was safe.
+    """
+
+    def vocabulary_for(self, ruleset_id):
+        from adnd1e_builder.vocab import RulesetVocabulary
+
+        return RulesetVocabulary.load(REPO_ROOT, ruleset_id)
+
+    def test_omitting_vocabulary_keeps_the_prior_shared_behaviour(self):
+        """No existing caller passes a vocabulary; none may change behaviour."""
+        result = polarity.resolve("GATES", None, None)
+        self.assertEqual(result.polarity, "enables")
+        self.assertEqual(result.polarity_basis, "derived")
+
+    def test_shadowdark_derives_classified_as_as_neutral(self):
+        result = polarity.resolve(
+            "CLASSIFIED_AS", None, None, self.vocabulary_for("shadowdark"))
+        self.assertEqual(result.polarity, "neutral")
+        self.assertEqual(result.polarity_basis, "derived")
+        self.assertFalse(result.blocks_approval)
+
+    def test_adnd1e_does_not_derive_classified_as(self):
+        """CLASSIFIED_AS is not in AD&D 1e's edge vocabulary at all, but the
+        polarity layer is checked independently in case that ever changes."""
+        result = polarity.resolve(
+            "CLASSIFIED_AS", None, None, self.vocabulary_for("adnd1e"))
+        self.assertTrue(result.blocks_approval)
+        self.assertIn("polarity_undeterminable", {f["rule"] for f in result.findings})
+
+    def test_basicdnd_does_not_derive_classified_as(self):
+        result = polarity.resolve(
+            "CLASSIFIED_AS", None, None, self.vocabulary_for("basicdnd"))
+        self.assertTrue(result.blocks_approval)
+
+    def test_basicdnd_still_derives_its_ordinary_types(self):
+        """Basic D&D's own constitution states no derived-polarity table; it
+        must keep falling back to the shared one, not to nothing."""
+        for edge_type, expected in (("GATES", "enables"), ("RESOLVED_BY", "governs"),
+                                    ("FEEDS_INTO", "neutral")):
+            with self.subTest(edge_type=edge_type):
+                result = polarity.resolve(
+                    edge_type, None, None, self.vocabulary_for("basicdnd"))
+                self.assertEqual(result.polarity, expected)
+                self.assertFalse(result.blocks_approval)
+
+    def test_adnd1e_vocabulary_matches_the_shared_constant_exactly(self):
+        vocabulary = self.vocabulary_for("adnd1e")
+        self.assertEqual(dict(vocabulary.derived_polarity), dict(DERIVED_POLARITY))
+
+    def test_shadowdark_still_derives_every_prior_type(self):
+        """Gaining CLASSIFIED_AS must not cost Shadowdark any existing one."""
+        vocabulary = self.vocabulary_for("shadowdark")
+        for edge_type in DERIVED_POLARITY:
+            if edge_type == "ALTERNATIVE_TO":
+                continue  # symmetric-only; still present, checked separately below
+            with self.subTest(edge_type=edge_type):
+                self.assertIn(edge_type, vocabulary.derived_polarity)
+        self.assertIn("ALTERNATIVE_TO", vocabulary.derived_polarity)
+
+    def test_a_malformed_governed_table_falls_back_rather_than_derives_nothing(self):
+        """A constitution with the header but a row the parser cannot read
+        must not silently make every edge type undeterminable."""
+        import tempfile
+        from pathlib import Path as _Path
+
+        from adnd1e_builder.vocab import ruleset_derived_polarity
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _Path(tmp)
+            governance = root / "governance"
+            governance.mkdir(parents=True)
+            (governance / "constitution.md").write_text(
+                "## 5. Polarity and Evidence\n\n"
+                "| Edge type | Derived polarity |\n|---|---|\n"
+                "not a table row at all\n",
+                encoding="utf-8",
+            )
+            derived = ruleset_derived_polarity("fixture_ruleset", root)
+        self.assertEqual(derived, dict(DERIVED_POLARITY))
 
 
 if __name__ == "__main__":

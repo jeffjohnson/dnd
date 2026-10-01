@@ -1,0 +1,178 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-132-133-overland-hex-maps-r01-r01
+artifact_kind: packet_update_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-132-133-overland-hex-maps
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-28'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-132-133-overland-hex-maps-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-132-133-overland-hex-maps-r01.yaml
+  checksum: sha256:c1cc9bb836043b7fb54f5512775c34a3ccc13f76e998989527631e7f5aba441e
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: approved
+approval_ready: true
+edge_decisions:
+  approved_refs: [M001, M002, M003, M004, M005, M006, M007, M008]
+  disposition: approved
+node_registry_decisions:
+  - proposed_id: rule_overland_hex_maps
+    submitted_label: Overland Hex Maps
+    kind: rule
+    disposition: approved
+  - proposed_id: tbl_new_hex
+    submitted_label: New Hex Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_hex_danger_level
+    submitted_label: Hex Danger Level Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_hex_terrain
+    submitted_label: Hex Terrain Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_hex_cataclysm_type
+    submitted_label: Hex Cataclysm Type Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_hex_points_of_interest
+    submitted_label: Hex Points Of Interest Table
+    kind: tbl
+    disposition: approved
+  - proposed_id: tbl_hex_settlement_name
+    submitted_label: Hex Settlement Name Table
+    kind: tbl
+    disposition: approved
+architectural_escalations: []
+blocking_findings: []
+reviewer_findings:
+  - id: RF-01
+    subject: generator_resolution_structure
+    disposition: approved
+    refs: [M001, M002, M003, M004, M006, M007]
+    detail: >-
+      Overland Hex Maps is directly resolved by its terrain, new-hex, danger,
+      and points-of-interest tables. The terrain table conditionally reaches
+      the cataclysm table, and the points-of-interest table reaches the
+      settlement-name table. RESOLVED_BY and FEEDS_INTO preserve that two-tier
+      procedure without flattening table results into unsupported identities.
+  - id: RF-02
+    subject: danger_level_second_resolver
+    disposition: approved
+    refs: [M005]
+    detail: >-
+      Canonical rule_danger_level has four relationships, only one of which is
+      a resolver: the page-130 Map Danger Level Table. The page-132 Hex Danger
+      Level Table is a distinct source-backed procedure that also determines
+      the aggregate rule and is correctly its second RESOLVED_BY target.
+  - id: RF-03
+    subject: danger_level_source_variance
+    disposition: informational_nonblocking
+    detail: >-
+      The Hex Danger Level Table contains Safe, Unsafe, Risky, and Deadly,
+      whereas the rule's defining locus and page-130 map table contain only
+      Unsafe, Risky, and Deadly. This is a genuine source variance. The values
+      are not graph identities and were twice declined at their defining
+      loci, so proposing Safe alone would create inconsistent grain. M005
+      correctly records only that this table resolves rule_danger_level.
+  - id: RF-04
+    subject: cross_chapter_hex_link
+    disposition: approved
+    refs: [M008]
+    detail: >-
+      Canonical rule_hex already supplies Overland Travel's distance unit and
+      gates Navigation timing on page 90. FEEDS_INTO Overland Hex Maps with
+      aspect mapped unit truthfully connects the generator to the same hex
+      identity without depending on an explicit page-number cross-reference.
+  - id: RF-05
+    subject: registry_additions
+    disposition: approved
+    proposed_ids:
+      - rule_overland_hex_maps
+      - tbl_new_hex
+      - tbl_hex_danger_level
+      - tbl_hex_terrain
+      - tbl_hex_cataclysm_type
+      - tbl_hex_points_of_interest
+      - tbl_hex_settlement_name
+    detail: >-
+      All seven proposals are source-named identities at their defining loci,
+      use approved prefixes and matching kinds, carry complete labels and
+      rationales, and are absent from the current registry. Every proposal
+      supports at least one approved relationship.
+  - id: RF-06
+    subject: unrepresented_table_arithmetic_and_results
+    disposition: rejected_candidates_confirmed
+    detail: >-
+      Circular row stepping, die-face triggers, danger-band values, terrain
+      developments, and settlement names are magnitudes or descriptive
+      results rather than supported graph identities. The submitted procedure
+      and table relationships retain the expressible mechanics without
+      inventing row-position or value nodes.
+  - id: RF-07
+    subject: source_structure_count
+    disposition: informational_correction
+    detail: >-
+      The six tables contain 46 data rows, not the 48 stated in the GUR units
+      note: 4 + 4 + 7 + 8 + 15 + 8 = 46. The twenty point-of-interest
+      locations and developments and the twenty-four settlement names are
+      otherwise correctly counted. This prose correction changes no row,
+      identity, attribution, or completeness result.
+completeness_statement: >-
+  Printed pages 132 and 133, all four procedure paragraphs, all six tables,
+  all 46 data rows, all eight submitted relationships, all seven node
+  proposals, all four rejected candidate groups, the Danger Level variance,
+  and the relevant page-90 and page-130 neighborhoods were independently
+  checked against Constitution 1.7, DEC-2026-0003, the registry, and canonical
+  state. All submitted rows and registrations are source-supported, correctly
+  scoped, collision-free, core, and approval-ready.
+reviewer_checklist:
+  source_support: passed
+  node_identity: passed_seven_registrations
+  edge_semantics_and_direction: passed_two_tier_structure
+  grain: passed_aggregate_danger_level
+  polarity: passed_derived
+  page_attribution: passed_heading_markers
+  graph_neighborhood: passed_cross_chapter_and_resolver_precedents
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-132-133-overland-hex-maps/source.md
+    checksum: sha256:83e68296f577790e88126664b8ae6c018da11906d57ef1ca57391dbdb12c52ef
+    pages: ['132', '133']
+    result: independently_read_four_paragraphs_six_tables_and_counted_46_rows
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-132-133-overland-hex-maps-r01.yaml
+    checksum: sha256:0c21101cc173f1d9728aaad4f4dc685b6d05c42e766813426ecebcd16323c4da
+    result: eight_assertions_seven_proposals_rejections_and_observations_independently_dispositioned
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-132-133-overland-hex-maps-r01.validation.json
+    checksum: sha256:4d6cc617cb4ce172a4560c6b87e2d44200542732b0a69a77a70a5a1b85e5a0f0
+    result: zero_errors_warnings_duplicates_conflicts_or_escalations
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:f34504865ab1e932f19397bc2680f174b6bde8c716e3320d4fcd30f817747ec4
+    observed_rows: 361
+    result: all_seven_proposals_fresh_77_table_identities_and_reused_labels_confirmed
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:4496b72eebafa7e642b5c7a7cc7d45492b6ca54393d3487d4f02b8c36727b3d0
+    observed_edges: 730
+    result: no_page_132_or_133_rows_and_danger_level_hex_neighborhoods_confirmed
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Apply the exact Approved bundle containing eight pending core additions
+    and seven approved registrations.
+  blocking_ids: []

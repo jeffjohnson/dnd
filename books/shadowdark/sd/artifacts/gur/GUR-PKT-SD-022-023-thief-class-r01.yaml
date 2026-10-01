@@ -1,0 +1,707 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-022-023-thief-class-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-022-023-thief-class
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.0
+  - rulesets/shadowdark/governance/constitution.md 1.2
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-022-023-thief-class
+  source_file: source.md
+  packet_source_checksum: sha256:3bd8b7dd7628f5d4e657166bcedeb26bea1cf2a6d41f8257a2a94f4fd28c885b
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 008-thief-class.md
+  citation_code: SD
+  page_start: 22
+  page_end: 23
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Two markers resolve in the Primary Source Material, both through the Pandoc AST rather than
+  positionally. {#p22} ends the THIEF CLASS heading, which placement rule 1 applies to the whole
+  heading, and the persistence rule carries page 22 through the benefits, the five-item trained-task
+  list and every row of the talents table. Page 23 is an empty fenced Div carrying the artwork class.
+  Every row below therefore cites page 22. A third page the parser resolves, 15, lies entirely inside
+  the out-of-scope Supporting Source Context.
+
+page_class_treatment: >-
+  Page 23 is classified full-page-artwork by the repository source steward. Under SOURCE_MARKDOWN 1.8
+  and constitution section 6 the class is page-local intake metadata and creates no node, edge,
+  domain, general rule, citation or uncovered-page obligation, and a classified page inside a
+  declared span is not an uncovered page. It is retained in the completeness accounting below. The
+  AST confirms the Div is empty and that page 22 does not inherit the classification.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 22 and 23. The trailing
+  Supporting Source Context reproduces printed page 15, whose primary packet is
+  PKT-SD-015-015-stats-and-stat-modifiers, outside this packet's declared span. No assertion here is
+  drawn from it and no row cites page 15.
+
+source_summary: >-
+  Printed page 22 is the complete thief class entry: a heading, a flavour sentence, three attribute
+  lines giving permitted weapons, permitted armor and a hit point die per level, two separately named
+  benefits of which one lists five trained tasks, and a five-row rollable talents table. Page 23 is
+  artwork. This summary is orientation only; every assertion below cites page 22.
+
+graph_state_at_extraction: >-
+  The Shadowdark canonical graph is still empty; nodes.csv is header-only, the domain registry has no
+  domains, general_rules.json is an empty object, and character_races.yaml is inactive. The three
+  supplied slices named in the packet manifest as missing remain immaterial, re-assessed here rather
+  than carried over from claim. reused_nodes is empty. Ten of the fifteen identities below are
+  already proposed by sibling GURs from their defining loci and are marked as such.
+
+cross_packet_identity_note: >-
+  item_armor, rule_hit_points, cbt_damage_roll, cbt_attack_roll, exp_level, rule_check,
+  rule_talent_roll, abil_strength, abil_dexterity and abil_charisma are proposed by sibling GURs from
+  their defining loci and are proposed again here because this patch uses them as edge endpoints. A
+  GUR must propose every endpoint its edges use: an endpoint present only in a sibling GUR is not
+  canonical, is not proposed by the patch, and fails invariant 1 as endpoint_unresolved. Proposing
+  them is not a competing naming; each records its defining locus and the sibling GUR that also
+  proposes it, and each ID and label is reproduced exactly.
+
+reused_nodes: []
+
+candidate_nodes:
+  - proposed_id: class_thief
+    proposed_label: Thief
+    kind: class
+    why_needed: >-
+      Source of M001 through M004. The class identity this page defines; the armor, hit point and
+      benefit dependencies on the page all originate from it.
+    prefix_basis: 'class_ is a character class'
+    source_named: true
+    defining_locus: 'SD page 22, heading THIEF CLASS'
+    source_evidence: 'page 22, the heading THIEF CLASS, which is this class entry''s defining locus'
+  - proposed_id: abil_backstab
+    proposed_label: Backstab
+    kind: ability
+    why_needed: >-
+      Endpoint of M003, M006 and M010 and source of M005. A separately named thief benefit that adds
+      damage against an unaware target, scales with level and is itself improved by a talents row.
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 22, the bolded benefit name Backstab'
+    source_evidence: 'page 22, Backstab in bold followed by its extra-damage effect; also named by a talents row'
+  - proposed_id: abil_thievery
+    proposed_label: Thievery
+    kind: ability
+    why_needed: >-
+      Endpoint of M004 and source of M007. A separately named thief benefit that improves checks
+      associated with a listed set of trained tasks.
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 22, the bolded benefit name Thievery'
+    source_evidence: 'page 22, Thievery in bold followed by the trained-task list and its advantage clause'
+  - proposed_id: tbl_thief_talents
+    proposed_label: Thief Talents Table
+    kind: table
+    why_needed: >-
+      Endpoint of M008 and source of M009 through M014. The separately headed and separately
+      referenced table that resolves a thief's talent roll; its outcome rows are the source of six
+      distinct dependencies.
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 22, its own heading THIEF TALENTS TABLE'
+    source_evidence: 'page 22, the heading THIEF TALENTS TABLE over a two-column table, satisfying invariant 5'
+  - proposed_id: cbt_initiative
+    proposed_label: Initiative
+    kind: combat mechanic
+    why_needed: >-
+      Endpoint of M009. What one talents row improves; without it that outcome row has no target and
+      the dependency is lost.
+    prefix_basis: 'cbt_ is a combat mechanic'
+    source_named: true
+    defining_locus: 'SD page 83, Turn Order, per the contents listing; not this packet'
+    source_evidence: >-
+      page 22, the talents row granting advantage on initiative rolls. Named here but defined
+      elsewhere; this packet states a relationship to it and so must propose it. See IDQ-02.
+  - proposed_id: item_armor
+    proposed_label: Armor
+    kind: item category
+    why_needed: 'Endpoint of M001. What the class entry''s Armor line permits. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'item_ is an item or item category'
+    source_named: true
+    defining_locus: 'SD page 13, the AC entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 22, the Armor line naming leather armor and mithral chainmail. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: rule_hit_points
+    proposed_label: Hit Points
+    kind: procedure
+    why_needed: 'Endpoint of M002. What the class entry''s Hit Points line supplies a die for. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the HP entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 22, the bolded Hit Points attribute line. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: cbt_damage_roll
+    proposed_label: Damage Roll
+    kind: combat mechanic
+    why_needed: 'Endpoint of M005. What Backstab adds dice to. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'cbt_ is a combat mechanic'
+    source_named: true
+    defining_locus: 'SD page 88, Combat, per the contents listing; not this packet'
+    proposed_also_by: GUR-PKT-SD-016-017-ancestries-r03
+    source_evidence: 'page 22, Backstab deals an extra weapon die of damage. Secondary statement; the ID and label are reproduced from the sibling proposal exactly.'
+  - proposed_id: cbt_attack_roll
+    proposed_label: Attack Roll
+    kind: combat mechanic
+    why_needed: 'Endpoint of M014. What one talents row improves. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'cbt_ is a combat mechanic'
+    source_named: true
+    defining_locus: 'SD page 88, Combat, per the contents listing; not this packet'
+    proposed_also_by: GUR-PKT-SD-016-017-ancestries-r03
+    source_evidence: 'page 22, melee and ranged attacks in a talents row. Secondary statement; the ID and label are reproduced from the sibling proposal exactly.'
+  - proposed_id: exp_level
+    proposed_label: Level
+    kind: advancement mechanic
+    why_needed: 'Source of M006. What the Backstab dice count scales with. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'exp_ is a character advancement mechanic'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the LEVEL entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 22, Backstab adds dice equal to half your level, and the Hit Points line is per level. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: rule_check
+    proposed_label: Check
+    kind: procedure
+    why_needed: 'Endpoint of M007. What the Thievery benefit improves. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 9, CHECKS, and more fully at Making Checks, printed page 81; not this packet'
+    proposed_also_by: GUR-PKT-SD-005-010-introduction-and-the-basics-r01
+    source_evidence: 'page 22, advantage on any associated checks. Secondary statement; the ID and label are reproduced from the sibling proposal exactly.'
+  - proposed_id: rule_talent_roll
+    proposed_label: Talent Roll
+    kind: procedure
+    why_needed: 'Source of M008. The roll this class''s talents table resolves. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD pages 13 and 14; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: 'page 22, the THIEF TALENTS TABLE heading and its rollable column. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: abil_strength
+    proposed_label: Strength
+    kind: ability
+    why_needed: 'Endpoint of M011. One of three stats a talents row can raise. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 15, STATS; not this packet'
+    proposed_also_by: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+    source_evidence: 'page 22, named in the stat-increase talents row. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: abil_dexterity
+    proposed_label: Dexterity
+    kind: ability
+    why_needed: 'Endpoint of M012. One of three stats a talents row can raise. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 15, STATS; not this packet'
+    proposed_also_by: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+    source_evidence: 'page 22, named in the stat-increase talents row. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+  - proposed_id: abil_charisma
+    proposed_label: Charisma
+    kind: ability
+    why_needed: 'Endpoint of M013. One of three stats a talents row can raise. Proposed here because this patch uses it as an endpoint.'
+    prefix_basis: 'abil_ is an ability or derived ability mechanic'
+    source_named: true
+    defining_locus: 'SD page 15, STATS; not this packet'
+    proposed_also_by: GUR-PKT-SD-015-015-stats-and-stat-modifiers-r03
+    source_evidence: 'page 22, named in the stat-increase talents row. Secondary statement; the ID and label are reproduced from the defining locus exactly.'
+
+candidate_edges:
+  - ref: M001
+    source_id: class_thief
+    source_label: Thief
+    edge_type: CONSTRAINS
+    target_id: item_armor
+    target_label: Armor
+    aspect: permitted armor
+    condition: ''
+    polarity: governs
+    polarity_basis: read
+    book: SD
+    page: 22
+    section: THIEF CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The Armor line restricts this class to two named armors, bounding what is available without
+      changing any armor's rating. This is the most restrictive of the three class entries read so
+      far and the clearest instance of the constraint being real rather than nominal. The two named
+      armors are not proposed as identities; see OBS-01. Read aloud as Thief governs Armor; basis read.
+  - ref: M002
+    source_id: class_thief
+    source_label: Thief
+    edge_type: FEEDS_INTO
+    target_id: rule_hit_points
+    target_label: Hit Points
+    aspect: hit dice
+    condition: ''
+    book: SD
+    page: 22
+    section: THIEF CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: 'The Hit Points line gives the die this class rolls per level. The die expression is a magnitude and is excluded.'
+  - ref: M003
+    source_id: class_thief
+    source_label: Thief
+    edge_type: GATES
+    target_id: abil_backstab
+    target_label: Backstab
+    aspect: benefit access
+    condition: ''
+    book: SD
+    page: 22
+    section: THIEF CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: 'The benefit is printed inside the class entry and reached by being that class, which is GATES read gate to gated. Derived polarity enables.'
+  - ref: M004
+    source_id: class_thief
+    source_label: Thief
+    edge_type: GATES
+    target_id: abil_thievery
+    target_label: Thievery
+    aspect: benefit access
+    condition: ''
+    book: SD
+    page: 22
+    section: THIEF CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M005
+    source_id: abil_backstab
+    source_label: Backstab
+    edge_type: MODIFIES
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: extra weapon dice
+    condition: when the target is unaware of the attack
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 22
+    section: THIEF CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Backstab adds weapon dice of damage against an unaware target, which changes the damage value,
+      so MODIFIES. The condition records the qualitative circumstance the source names without
+      encoding any threshold. The dice counts and the level fraction are magnitudes and are excluded;
+      the level dependency is carried separately on M006. Read aloud as Backstab improves Damage
+      Roll; basis read.
+  - ref: M006
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: abil_backstab
+    target_label: Backstab
+    aspect: damage dice
+    condition: ''
+    book: SD
+    page: 22
+    section: THIEF CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The benefit adds further dice equal to a fraction of the character's level, so level supplies
+      an input to how large the benefit is. It passes the core test: if the level mechanic changed,
+      this benefit's size would need review. The fraction and its rounding are magnitudes.
+  - ref: M007
+    source_id: abil_thievery
+    source_label: Thievery
+    edge_type: MODIFIES
+    target_id: rule_check
+    target_label: Check
+    aspect: trained tasks
+    condition: for an associated task
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 22
+    section: THIEF CLASS
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Thievery grants advantage on checks associated with the listed trained tasks, which changes how
+      those checks resolve, so MODIFIES. The condition records that the benefit is task-scoped
+      without enumerating the list into the graph; the five tasks are dispositioned in OBS-02. The
+      mechanism is advantage, whose defining locus is another packet; see OBS-03. Read aloud as
+      Thievery improves Check; basis read.
+  - ref: M008
+    source_id: rule_talent_roll
+    source_label: Talent Roll
+    edge_type: RESOLVED_BY
+    target_id: tbl_thief_talents
+    target_label: Thief Talents Table
+    aspect: thief talents
+    condition: for a thief
+    book: SD
+    page: 22
+    section: THIEF TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table is the procedure that turns a talent roll into an outcome for this class, which is
+      RESOLVED_BY read thing to procedure. The condition records that it resolves the roll only for
+      thieves. Derived polarity governs.
+  - ref: M009
+    source_id: tbl_thief_talents
+    source_label: Thief Talents Table
+    edge_type: MODIFIES
+    target_id: cbt_initiative
+    target_label: Initiative
+    aspect: initiative advantage
+    condition: ''
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 22
+    section: THIEF TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      One outcome row grants advantage on initiative rolls, changing how they resolve. The row's
+      reroll-if-duplicate instruction governs the talent roll itself rather than initiative and is
+      dispositioned in OBS-04. Read aloud as Thief Talents Table improves Initiative; basis read.
+  - ref: M010
+    source_id: tbl_thief_talents
+    source_label: Thief Talents Table
+    edge_type: MODIFIES
+    target_id: abil_backstab
+    target_label: Backstab
+    aspect: damage dice
+    condition: ''
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 22
+    section: THIEF TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      One outcome row increases the dice Backstab deals, so the table changes a value the benefit
+      produces. This targets the benefit rather than the damage roll because the source says your
+      Backstab deals more dice, not that damage rolls improve generally; the effect reaches damage
+      through M005. Distinct from M006 by source_id despite the shared aspect. The dice count is a
+      magnitude. Read aloud as Thief Talents Table improves Backstab; basis read.
+  - ref: M011
+    source_id: tbl_thief_talents
+    source_label: Thief Talents Table
+    edge_type: MODIFIES
+    target_id: abil_strength
+    target_label: Strength
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 22
+    section: THIEF TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      One outcome row raises one of three named stats, chosen by the player, recorded as three rows
+      each carrying the condition that selects it. The increase is a magnitude and is excluded.
+  - ref: M012
+    source_id: tbl_thief_talents
+    source_label: Thief Talents Table
+    edge_type: MODIFIES
+    target_id: abil_dexterity
+    target_label: Dexterity
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 22
+    section: THIEF TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M013
+    source_id: tbl_thief_talents
+    source_label: Thief Talents Table
+    edge_type: MODIFIES
+    target_id: abil_charisma
+    target_label: Charisma
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 22
+    section: THIEF TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M014
+    source_id: tbl_thief_talents
+    source_label: Thief Talents Table
+    edge_type: MODIFIES
+    target_id: cbt_attack_roll
+    target_label: Attack Roll
+    aspect: melee and ranged
+    condition: ''
+    polarity: improves
+    polarity_basis: read
+    book: SD
+    page: 22
+    section: THIEF TALENTS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      One outcome row improves melee and ranged attacks. The bonus is a magnitude and is excluded.
+      Distinct from the fighter and priest rows of the same shape by source_id.
+
+authored_polarity_declaration: >-
+  Ten rows carry authored polarity, all with basis read: M001 CONSTRAINS governs, and M005, M007,
+  M009, M010, M011, M012, M013 and M014 MODIFIES improves. Each is among the three types constitution
+  section 5 requires to carry source-reviewed authored polarity, and each was read aloud as source
+  polarity target before being recorded. No row uses basis heuristic or unset. No other row carries a
+  polarity or polarity_basis value: the two GATES rows, the two FEEDS_INTO rows and the one
+  RESOLVED_BY row take their derived polarity from the section 5 table and the Analyst authors none
+  of them.
+
+domains_touched: []
+candidate_domains:
+  - proposed: character_creation
+    basis: >-
+      A class is chosen at creation and its permissions and benefits are received then. Recorded as a
+      candidate only; now suggested by a fifth packet, which is noted and deliberately not treated as
+      promotion. Constitution section 8 reserves promotion to an Architect Decision.
+  - proposed: combat
+    basis: >-
+      Backstab, initiative, the attack roll and the damage roll all sit in combat. Recorded as a
+      candidate only, and not promoted.
+  - proposed: exploration
+    basis: >-
+      The Thievery trained-task list is climbing, sneaking, hiding, disguises, traps and delicate
+      tasks, which is exploration rather than combat or creation. Recorded as a candidate only, on
+      one list from one page, and not promoted.
+
+domain_boundary_questions:
+  - >-
+    The thief entry reaches combat and exploration about equally, so a class node's domain cannot be
+    settled from it. Deferred; no domain is asserted on any edge in this GUR.
+
+candidate_general_rules:
+  - proposed: every class gates the benefits printed in its own entry
+    establishing_locus: 'SD page 22, the Backstab and Thievery benefits inside the THIEF CLASS entry'
+    basis: >-
+      M003 and M004 repeat the shape recorded from the fighter and priest entries. Three class
+      entries of four now show it, and the ancestries packet recorded a structurally identical
+      candidate for ancestry benefits.
+    not_applied: >-
+      Recorded as a candidate only. Constitution section 5 requires a separate Architect ruling with
+      an establishing locus, scope, counterexamples and affected set, and the wizard entry has not
+      been read. That a third packet now supports it is noted and deliberately not treated as
+      promotion. No edge in this GUR sets general_rule_id.
+  - proposed: every class resolves its talent roll on its own talents table
+    establishing_locus: 'SD page 22, THIEF TALENTS TABLE'
+    basis: >-
+      M008 is the thief instance. Three separately headed and materially different tables are now
+      read, which bears directly on the fighter GUR's IDQ-02 asking whether they are one shared
+      table: they are not.
+    not_applied: 'Recorded as a candidate only, with one class entry still unread. No edge sets general_rule_id.'
+
+non_edge_observations:
+  - id: OBS-01
+    subject: two specific armors are named and not proposed
+    detail: >-
+      The Armor line names leather armor and mithral chainmail. Unlike the fighter's All armor and
+      the priest's All armor and shields, this is an enumerated permission naming two specific items,
+      and mithral chainmail in particular is a distinctive identity. Neither is proposed. The Armor
+      section on printed page 284 and the Gear section on printed page 34 are the defining loci, and
+      SOURCE_MARKDOWN Source Identity Authority names a permission list as exactly the kind of
+      secondary listing that cannot name a concept defined elsewhere. M001 asserts the constraint
+      against the armor category, which is the assertion this page supports without minting two item
+      identities from a class entry. The same reasoning covers the five named weapons.
+  - id: OBS-02
+    subject: the five trained tasks are not proposed as identities
+    detail: >-
+      Thievery lists climbing, sneaking and hiding, applying disguises, finding and disabling traps,
+      and delicate tasks such as picking pockets and opening locks. These are recognisable adventuring
+      activities and several have their own chapters later in the book, notably Stealth and Surprise
+      and Traps. None is proposed here. The list is a scope statement for one class benefit, not a
+      set of defining entries, and minting five identities from it would fix an ontology for
+      exploration activities from a class entry. M007 carries the benefit's effect with the task
+      scoping in its condition.
+      Traps in particular should be expected to recur: the contents list places Traps on printed page
+      114, and a later packet asserting that Thievery helps against traps would be asserting it from
+      the right locus.
+  - id: OBS-03
+    subject: advantage remains the unextracted mechanism, now behind two rows
+    detail: >-
+      Thievery grants advantage on associated checks and a talents row grants advantage on initiative
+      rolls. As with Stout, Grit and the priest's casting talent, M007 and M009 assert the effect
+      rather than the mechanism, because printed page 9 defines advantage without relating it to any
+      other named mechanic. This is now the fifth packet to depend on advantage. Rolling the Dice on
+      printed page 78 is the defining locus and the dependency is accumulating steadily.
+  - id: OBS-04
+    subject: the initiative talent carries a reroll instruction about the talent roll itself
+    detail: >-
+      The initiative row reads in full: gain advantage on initiative rolls, reroll if duplicate. The
+      reroll clause is an instruction about rolling on this talents table, not about initiative: it
+      prevents receiving the same talent twice. It is not extracted as an edge because it would be a
+      self-referential row about the table's own use, and because the source states it as a
+      parenthetical procedure rather than a dependency between two mechanics. M009 carries only the
+      initiative effect. Recorded so the partial extraction of that row is visibly deliberate.
+  - id: OBS-05
+    subject: the tools of the trade are a granted item with a gear-slot statement
+    detail: >-
+      Thievery adds that the thief has the necessary tools secreted on their person and that they
+      take up no gear slots. This is structurally identical to the priest's holy symbol and is
+      deferred for the same reason: no item identity exists, this entry is not its defining locus,
+      and the gear-slot exemption needs that identity as its source to be expressible. The Gear
+      section is the locus that can supply it. Two class entries now carry this shape, which is worth
+      Reviewer's attention when the gear packet is read.
+  - id: OBS-06
+    subject: the final talents row is again a choice with no fixed target
+    detail: >-
+      The highest outcome row reads Choose a talent or points to distribute to stats, identical in
+      shape to the fighter's and the priest's. Neither branch names a determinate target, so no edge
+      can be drawn without the Analyst choosing one. Not extracted, for the reason recorded in the
+      fighter GUR. Three class entries have now repeated this row verbatim, which is itself evidence
+      that it is a standard closing row rather than a class-specific effect.
+  - id: OBS-07
+    subject: flavour carries no mechanics
+    detail: >-
+      The entry opens with a sentence about rooftop assassins, con artists and cat burglars plucking
+      a gem from a sleeping demon. It establishes tone, names no mechanic and states no dependency.
+      The demon it mentions is narrative, not a monster identity.
+  - id: OBS-08
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The page carries the hit point die, the extra weapon die and the level fraction with its
+      rounding in Backstab, the talents table's die expression and all five row ranges, the added
+      Backstab dice, the stat increase, the attack bonus and the distributable points. All are die
+      expressions, numeric bonuses or thresholds, excluded by constitution section 1 and invariant
+      11. They remain in the immutable claimed packet. No aspect in this GUR contains a digit and no
+      condition encodes a numeric value.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: whether Backstab targets the damage roll or a weapon die
+    detail: >-
+      M005 targets cbt_damage_roll. The source says Backstab deals an extra weapon die of damage,
+      which names the die rather than the roll. Whether a weapon die is a separate mechanic from the
+      damage roll cannot be settled here: no weapon identity exists in this packet, and the Combat
+      chapter on printed page 88 defines how damage is rolled.
+      Consequence if wrong: if a weapon die is a distinct mechanic, M005 repoints from the damage
+      roll to it and the assertion becomes more precise; nothing else changes. The Analyst targeted
+      the damage roll because that is the mechanic the extra die demonstrably affects and because the
+      alternative would require minting an identity from a phrase inside a benefit. This also bears
+      on IDQ-01 in the introduction packet, which asked whether damage and the damage roll are one
+      identity; three packets now touch that question and the Combat packet will settle it.
+  - id: IDQ-02
+    subject: cbt_initiative is minted from a single talents row
+    detail: >-
+      Initiative is named once on this page, in a talents row, and is defined nowhere in this packet.
+      The contents list places Turn Order on printed page 83, which is its defining locus. The node
+      is proposed only because M009 needs an endpoint and a GUR must propose every endpoint its edges
+      use.
+      Consequence if wrong: the Turn Order chapter may name the mechanic differently, for example as
+      part of a turn-order procedure rather than a roll, in which case M009 repoints. Reviewer should
+      de-duplicate against that packet when it is read and should treat this stem as provisional.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Every proposed node uses an approved constitution section 2 prefix with an unchanged
+  kind, every edge uses one of the thirteen legal section 3 types, and no new prefix, edge type,
+  domain promotion or general-rule application is requested. ESCALATION_CONTRACT states that a
+  proposed node under an approved prefix and kind which passes identity and duplicate checks is
+  ordinary GUR, GUP and Review work rather than an escalation. IDQ-01 and IDQ-02 are recorded for
+  Reviewer on that basis, and the deferrals in OBS-01 through OBS-05 resolve when the relevant
+  defining packets are claimed.
+
+completeness_statement: >-
+  Both printed pages in the declared span are accounted for. Page 22 was read in full: the THIEF
+  CLASS heading, the flavour sentence in OBS-07, the Weapons line in OBS-01, the Armor line supplying
+  M001 with its two named armors also in OBS-01, the Hit Points line supplying M002, the Backstab
+  benefit supplying M005 and M006, the Thievery benefit supplying M007 with its tools in OBS-05 and
+  all five trained tasks in OBS-02, the THIEF TALENTS TABLE heading and column headers supplying
+  M008, and all five talents rows of which four supply M009 through M014, with the initiative row's
+  reroll clause in OBS-04 and the fifth row in OBS-06. Page 23 is the steward's full-page-artwork
+  page. Every page marker was resolved through the Pandoc AST and the in-scope resolved page set
+  matches the declared span with no gap. The Supporting Source Context reproducing printed page 15 is
+  out of scope and contributed nothing. Fourteen edges are proposed across fifteen candidate nodes,
+  ten of which are also proposed by sibling GURs from their defining loci and are marked as such. No
+  node is reused because the Shadowdark graph is empty. Content not converted to an edge is accounted
+  for in OBS-01 through OBS-08, and every identity the Analyst could not settle is recorded in IDQ-01
+  and IDQ-02 rather than resolved by picking a plausible ID. No assertion depends on any other
+  ruleset.

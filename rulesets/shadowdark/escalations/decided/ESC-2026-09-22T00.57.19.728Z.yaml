@@ -1,0 +1,267 @@
+schema_version: '1.0'
+id: ESC-2026-09-22T00.57.19.728Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.1'
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-09-22'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The approved direct-handoff relay has now produced three failed or misreported deliveries in one
+    working day, two of them requiring the repository owner to hand-edit relay state before any
+    further handoff could be sent. The defects are in Builder-owned code implementing a universal
+    contract, so neither the Analyst nor the Builder may decide the remedy unilaterally. The Analyst
+    has measured three distinct causes and cites exact lines; the Architect is asked to rule on which
+    to fix and to route implementation to Builder.
+  blocking_ids: []
+
+question: >-
+  How should tooling/common/send-agent-handoff.ps1 report and recover from a delivery whose recipient
+  outlasts the relay budget, and from a refusal caused by a busy peer, given that the current
+  behaviour halts the whole five-role chain and requires a human to edit shared state to restart it?
+
+scope_limits: >-
+  This escalation concerns relay reporting and recovery only. It proposes no change to the
+  single-agent rule, to the one-outstanding-delivery rule, to who selects work, or to any graph,
+  packet, registry or artifact. It asks for no relaxation of a safety property; two of the three
+  findings are that a safety mechanism misreports, not that it is too strict.
+
+evidence:
+  subject:
+    path: tooling/common/send-agent-handoff.ps1
+    checksum: sha256:b3d9c519fee1eb5b4549846a3f661a0edd4d309b9600b606da0c274534d0a53e
+    bytes: 56277
+    lines: 1214
+  authority:
+    - id: DEC-2026-0082
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml
+      checksum: sha256:13fd6a71489166a6adb10a44bb0dbfe8a4440f9fa89a75c5305a82bb50421f47
+      note: assigns the reusable relay to Builder
+    - id: REV-IMP-DEC-2026-0082-r03-r01
+      path: rulesets/adnd1e/decision-implementation-reviews/REV-IMP-DEC-2026-0082-r03-r01.yaml
+      checksum: sha256:1a994c01a6113599d908d4830b0ad64ab087fcb60de37e3127b6707e12f7afe2
+      note: the approval under which the relay became usable
+    - id: HERDR_HANDOFFS
+      path: contracts/HERDR_HANDOFFS.md
+      checksum: sha256:efdaca2e9d52435cb8bdba3ff38e3ef8caa0d7714f9269ee62a7265a0ea73816
+      note: the universal contract the relay implements
+
+  observed_incidents:
+    - id: INC-1
+      request_id: dec0084-analyst-step5-20260921
+      direction: architect to analyst
+      recorded_state: uncertain
+      recorded_reason: delivered but not confirmed settled
+      recorded_problem: the response carried no status
+      what_actually_happened: >-
+        The prompt was delivered. The Analyst received it verbatim and completed DEC-2026-0084 step 5,
+        publishing the claimed packet PKT-SD-322-325-community-credits-and-licensing. Delivery and
+        completion both succeeded; only the relay's confirmation failed.
+      consequence: >-
+        The uncertain record is non-terminal, so it blocked every later handoff repository-wide. The
+        Analyst's own outgoing handoff was refused with the message that another request was
+        outstanding. The repository owner had to hand-edit the state file to settled before the chain
+        could move.
+    - id: INC-2
+      request_id: analyst-builder-stats-gur-20260921
+      direction: analyst to builder
+      recorded_state: uncertain
+      recorded_reason: submission outcome unknown
+      recorded_problem: >-
+        the prompt may or may not have been delivered; the herdr agent prompt call with --wait
+        --timeout 576133 exceeded the 576132ms deadline and was stopped
+      what_actually_happened: >-
+        The prompt was delivered. Builder began a turn, compiled the GUR, and published
+        GUP-PKT-SD-015-015-stats-and-stat-modifiers-r01 with its edges and pending CSV companions.
+        The relay's budget expired while --wait was still holding for Builder's turn to finish.
+      consequence: >-
+        A second non-terminal record, a second repository-wide block, and a second owner hand-edit.
+        The Analyst verified delivery by reading the recipient's terminal and its published artifacts
+        rather than resending, because a resend would have duplicated an assignment Builder already
+        held.
+    - id: INC-3
+      request_id: builder-analyst-stats-gur-evidence-20260921
+      direction: builder to analyst
+      recorded_state: refused
+      recorded_reason: another repository agent is active
+      recorded_busy: w9:p1/analyst=working
+      what_actually_happened: >-
+        Builder finished its turn and tried to hand its result back to the Analyst. The Analyst was
+        working at that moment, precisely because it was investigating the INC-2 failure. The relay
+        refused, wrote a terminal refused state, and exited. Builder then went idle.
+      consequence: >-
+        Builder's message was not delivered and is not queued anywhere. The chain broke silently in
+        the opposite direction, and no artifact records what Builder intended to say. Nothing retried,
+        because refused is terminal.
+
+  measured_defects:
+    - id: D1
+      severity: the most consequential of the three
+      title: the delivery-evidence probe cannot run, so a successful delivery is filed as unknown
+      detail: >-
+        The submit catch block at lines 1030 to 1067 already anticipates this exact situation. Its own
+        comment states that --wait holds the budget for the recipient's entire turn, so a recipient
+        that simply works longer than the budget lands its prompt and then has the waiting call killed
+        out from under it, and that filing this as an unexplained submission outcome unknown is what
+        produced records a human had to reconcile after deliveries that plainly succeeded. Its remedy
+        is to re-read the recipient's state_change_seq and report delivered when the counter advanced.
+        That remedy is unreachable. The probe calls Get-BoundAgents at line 1034, which calls
+        Invoke-Herdr at line 299, which begins at lines 205 to 207 by throwing when Get-RemainingMs is
+        less than or equal to zero. Inside this catch the budget is by definition already exhausted,
+        because budget exhaustion is what produced the catch. The probe therefore always throws, the
+        surrounding try/catch at lines 1033 to 1040 swallows it, observedSeq stays empty, and
+        Test-ObservationAdvanced at line 423 fails closed on a non-numeric input.
+      proof: >-
+        INC-2's record carried reason submission outcome unknown, which is the landed-false branch at
+        line 1052, and contained none of the observation_before, observation_after, delivery_observed
+        or recipient_status keys that the landed-true branch writes. The counter itself was never the
+        problem: state_change_seq is a plain integer, measured live as 210 on the Builder pane, which
+        Test-ObservationAdvanced would have parsed without difficulty had the probe been able to run.
+      effect: >-
+        Every recipient whose turn outlasts the budget is reported as a possible non-delivery rather
+        than an evidenced delivery, which is the difference between a note a human can read and a
+        block a human must clear.
+
+    - id: D2
+      severity: contributing
+      title: the child timeout is always at least the parent deadline, so the parent always kills first
+      detail: >-
+        At line 1016 the child call is given --timeout with the value of Get-RemainingMs evaluated at
+        the call site. Invoke-Herdr then evaluates Get-RemainingMs again at line 205 to set its own
+        supervision window. The second reading is smaller because time has passed between them, so the
+        parent's kill deadline is always shorter than the timeout handed to the child.
+      proof: >-
+        INC-2 recorded --timeout 576133 against a 576132ms deadline: the child was given exactly one
+        millisecond more than the parent would allow it.
+      effect: >-
+        The child can never time out cleanly and return a structured herdr error such as
+        agent_prompt_stalled, which lines 1094 to 1098 are written to interpret. It is always killed
+        instead, forcing the path into the D1 catch. The two defects compound: D2 guarantees the
+        catch is reached and D1 guarantees the catch cannot diagnose it.
+
+    - id: D3
+      severity: independent, and the reason a finished result was lost
+      title: a busy peer is a terminal refusal with no wait and no retry
+      detail: >-
+        The relay waits patiently for its own sender. Lines 931 and following loop while
+        Get-RemainingMs is greater than zero, polling until the sender settles. The peer check at
+        lines 971 to 981 does not loop at all: it reads every bound agent once, and if any is not idle
+        or done it writes a terminal refused state and exits. The asymmetry appears to be unintended
+        rather than designed, since the waiting machinery already exists a few lines above.
+      proof: >-
+        INC-3 refused on w9:p1/analyst=working after a single observation, and wrote a terminal record.
+        Builder went idle immediately afterwards with its message undelivered and unqueued.
+      effect: >-
+        Any handoff attempted while a peer is mid-turn is dropped permanently. Because a worker sends
+        at the end of its own turn, and because the natural time for a peer to be working is right
+        after it received the previous handoff, this is a common rather than an exotic case. It cost
+        the repository one completed Builder result that had to be recovered by the Analyst reading a
+        terminal rather than by receiving a message.
+
+  aggregate_effect: >-
+    Three handoffs were attempted between roles in one day. One was delivered and misreported, one was
+    delivered and misreported, and one was not delivered at all. Two required the repository owner to
+    hand-edit a file in the relay's shared state store before any role could hand off again, which is
+    the opposite of what an automated relay is for, and which puts a human inside the one mechanism
+    whose purpose is to remove the human from message passing. None of the three lost or duplicated an
+    assignment, so the safety properties held; what failed is reporting and recovery.
+
+options_considered:
+  - id: OPT-A
+    summary: fix D1 and D2 so an evidenced delivery is reported as delivered
+    detail: >-
+      Give the post-failure evidence probe its own small budget outside the expired deadline, so
+      Get-BoundAgents can run after the deadline has passed, and derive the child --timeout from a
+      value strictly smaller than the parent window so the child can return a structured error before
+      the parent kills it. Both are contained changes to the existing paths and neither weakens a
+      guard.
+    cost: Builder implementation and independent Review; no contract change.
+    benefit: >-
+      Converts the common case from a repository-wide block into an accurate record stating that
+      delivery is evidenced and only completion is unconfirmed, which the code already knows how to
+      write and already documents as the correct outcome. This alone would have avoided both owner
+      hand-edits.
+  - id: OPT-B
+    summary: make a busy peer a wait rather than a refusal
+    detail: >-
+      Have the peer check reuse the polling loop the sender wait already uses, refusing only when the
+      budget expires with a peer still active.
+    cost: >-
+      Builder implementation and Review. A handoff would occupy its budget waiting instead of failing
+      fast, and the one-outstanding-delivery rule must still hold while it waits.
+    benefit: >-
+      Removes the silent loss in INC-3 without weakening the single-agent rule, since the relay would
+      still deliver only when every peer is settled.
+  - id: OPT-C
+    summary: define a supported reconciliation command
+    detail: >-
+      Add an explicit, audited way to resolve an uncertain record, recording the evidence and the
+      decider, instead of requiring a hand-edit of the state file.
+    cost: Builder implementation and Review; the Architect must decide who may invoke it.
+    benefit: >-
+      Even with OPT-A, some genuine uncertainties will remain, and the only current remedy is
+      hand-editing a shared file. The Analyst attempted that reconciliation and was correctly
+      prevented by the environment's own safeguards, which left the owner as the sole route.
+  - id: OPT-D
+    summary: raise the default budget
+    detail: Increase TimeoutMs so recipients are less likely to outlast it.
+    assessment: >-
+      The Analyst does not recommend this and records it to be rejected explicitly. A fixed budget
+      cannot bound an arbitrary agent turn; the observed Builder turn ran about ten minutes and a
+      larger packet will run longer. It also makes each failure slower without making it rarer, and it
+      leaves D1 and D3 untouched.
+
+recommended_resolution: >-
+  OPT-A first, because it is the smallest change that removes both owner hand-edits and because the
+  code already contains the intended behaviour and the reasoning for it; the fix is to make an
+  existing remedy reachable rather than to invent one. OPT-B next, as the cause of the one genuinely
+  lost message. OPT-C as the residual safety net. The Analyst recommends against OPT-D. The Analyst
+  asks the Architect to rule on which defects are in scope and to route implementation to Builder as
+  the owner of this tool under DEC-2026-0082; the Analyst does not propose to edit Builder-owned code
+  and has changed nothing in it.
+
+expected_migration_impact:
+  graph_data_change: false
+  registry_change: false
+  canonical_data_change: false
+  artifact_invalidation: >-
+    None. No GUR, GUP, Review, Approved bundle or Integration record is affected. Relay state under
+    .local/herdr/ is operational evidence, not provenance, and HERDR_HANDOFFS says so explicitly.
+  tooling_change_required: true
+  tooling_change_detail: >-
+    tooling/common/send-agent-handoff.ps1 and its tests, owned by Builder under DEC-2026-0082. The
+    three findings are independent and can be implemented and reviewed separately.
+
+governance_change_surface:
+  contract_change: >-
+    Probably none. The relevant HERDR_HANDOFFS requirements, that a relay hold an exclusive lock, keep
+    a durable request record, and stop on uncertainty rather than resend, are all satisfied by the
+    current code and by every option above. If the Architect chooses OPT-C, the contract may need to
+    name who may reconcile an uncertain record.
+  constitution_change: No. No ruleset ontology is involved.
+  registry_change: No.
+  schema_change: No.
+
+placement_note: >-
+  Filed under shadowdark because that is the Analyst's resolved scope and both misreported deliveries
+  occurred carrying Shadowdark work. The subject is universal: the relay is shared tooling under
+  contracts/HERDR_HANDOFFS.md, and its authorizing Decision DEC-2026-0082 and approving Review live
+  under adnd1e. A ruling here reaches every ruleset. The Architect may prefer to reissue it in the
+  adnd1e namespace alongside DEC-2026-0082; the Analyst has not done so because its instructions
+  require outputs to remain inside the resolved ruleset namespace.
+
+analyst_position: >-
+  The Analyst did not resend after either uncertain result, because the relay's own note says a
+  resend would duplicate a prompt the recipient already has, and in both cases it would have. Delivery
+  was established instead by reading the recipient's published artifacts and terminal state, which is
+  the reconciliation the note asks for. The Analyst attempted once to reconcile a blocking record and
+  was stopped by the environment's protection of that shared store; that protection is correct, and
+  the owner performed both reconciliations. Nothing in Builder-owned code was modified, and no relay
+  guard was bypassed.

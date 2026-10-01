@@ -1,0 +1,334 @@
+schema_version: '1.0'
+id: GUP-PKT-SD-132-133-overland-hex-maps-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-132-133-overland-hex-maps
+constitution_version: '1.7'
+artifact_kind: packet_update
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 0 edge addition(s), 0 update(s), 8 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-SD-132-133-overland-hex-maps-r01
+  gur_checksum: sha256:0c21101cc173f1d9728aaad4f4dc685b6d05c42e766813426ecebcd16323c4da
+  gur_constitution_version: '1.7'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: false
+    reason: skipped by flag
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: rule_overland_hex_maps
+      proposed_label: Overland Hex Maps
+      kind: rule
+      why_needed: The named procedure these pages define, generating an overland map hex by hex from a
+        starting terrain. Four paragraphs state it as a sequence, so it is a source-defined identity rather
+        than a heading, and four tables resolve it directly.
+      edges_depending_on_it:
+        - M001
+        - M002
+        - M003
+        - M004
+        - M008
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_new_hex
+      proposed_label: New Hex Table
+      kind: tbl
+      why_needed: Resolves what terrain an empty hex has, relative to the current one, when the characters
+        move into it.
+      edges_depending_on_it:
+        - M002
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_hex_danger_level
+      proposed_label: Hex Danger Level Table
+      kind: tbl
+      why_needed: Resolves a hex's danger level. Its results are the values rule_danger_level holds, plus
+        one the canonical rule does not carry; see OBS-02.
+      edges_depending_on_it:
+        - M003
+        - M005
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_hex_terrain
+      proposed_label: Hex Terrain Table
+      kind: tbl
+      why_needed: Resolves a terrain type, read as a circular loop so a step past either end wraps. It
+        is the table the procedure starts from and the one whose cataclysm result reaches further.
+      edges_depending_on_it:
+        - M001
+        - M006
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_hex_cataclysm_type
+      proposed_label: Hex Cataclysm Type Table
+      kind: tbl
+      why_needed: Resolves which cataclysm has struck, reached only when the terrain result is a prior
+        hex plus cataclysm.
+      edges_depending_on_it:
+        - M006
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_hex_points_of_interest
+      proposed_label: Hex Points Of Interest Table
+      kind: tbl
+      why_needed: Resolves a hex's point of interest, giving a location and a development.
+      edges_depending_on_it:
+        - M004
+        - M007
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_hex_settlement_name
+      proposed_label: Hex Settlement Name Table
+      kind: tbl
+      why_needed: Resolves a settlement's name, in three columns indexed by the settlement sizes the points
+        of interest table produces.
+      edges_depending_on_it:
+        - M007
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'DEC-2026-0003: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity; each addition requires an Architect decision.
+edge_changes:
+  additions: []
+  pending_additions:
+    - source_id: rule_danger_level
+      source_label: Danger Level
+      edge_type: RESOLVED_BY
+      target_id: tbl_hex_danger_level
+      target_label: Hex Danger Level Table
+      aspect: hex selection
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '132'
+      section: HEX DANGER LEVEL TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M005
+    - source_id: rule_hex
+      source_label: Hex
+      edge_type: FEEDS_INTO
+      target_id: rule_overland_hex_maps
+      target_label: Overland Hex Maps
+      aspect: mapped unit
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '132'
+      section: OVERLAND HEX MAPS
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M008
+    - source_id: rule_overland_hex_maps
+      source_label: Overland Hex Maps
+      edge_type: RESOLVED_BY
+      target_id: tbl_hex_danger_level
+      target_label: Hex Danger Level Table
+      aspect: hex danger
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '132'
+      section: HEX DANGER LEVEL TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+    - source_id: rule_overland_hex_maps
+      source_label: Overland Hex Maps
+      edge_type: RESOLVED_BY
+      target_id: tbl_hex_points_of_interest
+      target_label: Hex Points Of Interest Table
+      aspect: point of interest
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '133'
+      section: HEX POINTS OF INTEREST TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+    - source_id: rule_overland_hex_maps
+      source_label: Overland Hex Maps
+      edge_type: RESOLVED_BY
+      target_id: tbl_hex_terrain
+      target_label: Hex Terrain Table
+      aspect: starting terrain
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '132'
+      section: HEX TERRAIN TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+    - source_id: rule_overland_hex_maps
+      source_label: Overland Hex Maps
+      edge_type: RESOLVED_BY
+      target_id: tbl_new_hex
+      target_label: New Hex Table
+      aspect: new hex
+      condition: ''
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '132'
+      section: NEW HEX TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: tbl_hex_points_of_interest
+      source_label: Hex Points Of Interest Table
+      edge_type: FEEDS_INTO
+      target_id: tbl_hex_settlement_name
+      target_label: Hex Settlement Name Table
+      aspect: settlement name
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '133'
+      section: HEX SETTLEMENT NAME TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M007
+    - source_id: tbl_hex_terrain
+      source_label: Hex Terrain Table
+      edge_type: FEEDS_INTO
+      target_id: tbl_hex_cataclysm_type
+      target_label: Hex Cataclysm Type Table
+      aspect: cataclysm type
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: SD
+      page: '132'
+      section: HEX CATACLYSM TYPE TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M006
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts: {}
+duplicate_findings: []
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 8
+  edges_compiled: 8
+  edges_rejected: 0
+  edge_additions: 0
+  edge_pending_additions: 8
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 0
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 7
+  cross_packet_dependencies: 0
+  duplicate_findings: 0
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-SD-132-133-overland-hex-maps-r01.validation.json

@@ -2,13 +2,18 @@
 
 A repository-first, multi-agent pipeline for building mechanical relationship graphs from tabletop role-playing game literature.
 
-The five agents are universal and stateless:
+The five graph-processing roles are universal and stateless:
 
 1. **Architect** — governs ontology, registries, and durable contracts.
 2. **Analyst** — extracts mechanically load-bearing relationships from one bounded source packet.
 3. **Builder** — compiles a GUR into a deterministic, schema-valid GUP.
 4. **Reviewer** — independently verifies proposed assertions against source and constitution.
 5. **Integrator** — transactionally applies approved patches to the canonical ruleset graph.
+
+The five roles communicate directly through herdr. There is no Dispatcher.
+`contracts/HERDR_HANDOFFS.md` defines priority-ordered next steps and direct,
+best-effort role notifications. Independent ready work may proceed concurrently.
+Repository artifacts retain their owners and approval rules.
 
 ## Namespace model
 

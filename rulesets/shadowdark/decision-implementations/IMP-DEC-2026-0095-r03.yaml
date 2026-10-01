@@ -1,0 +1,171 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0095-r03
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+constitution_version: '1.4'
+revision: 3
+supersedes: IMP-DEC-2026-0095-r02
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: All six DEC-2026-0095 acceptance tests pass against corrected implementation files. A self-discovered
+    ordering defect in r02 -- the review-checksum precondition was enforced before manifest-lineage
+    resolution, so a stale checksum on an already superseded manifest became a fatal repo-wide lineage
+    error -- is fixed and covered by two new regressions.
+  blocking_ids: []
+revision_reason: 'Builder found this defect itself, before any Reviewer action on r02: immediately
+  after publishing r02, the live repository scan reported LineageErrorCount 1 against APPROVED-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r02,
+  a manifest the Reviewer had already superseded with a corrective r03-r03 carrying the right review_checksum.
+  r02''s approved_review_checksum_mismatch check ran at first Review resolution, before _superseded_approved_ids
+  had classified the manifest, so a stale-but-retired checksum pin was treated as a fatal lineage
+  error rather than the informational history WORK_QUEUES treats a superseded artifact as. The check
+  is now the last gate immediately before a bundle would be offered as INTEGRATOR-APPROVED, after
+  every retirement path -- integrated, GUP-superseded, rejected-and-remediated, manifest-superseded
+  -- has already been checked. Under WORK_QUEUES 1.32 rule 15, before an exact Approved Review exists
+  implementation-file evidence is a strict current precondition and drift restores the Decision to
+  its implementation owner; that is what this report does. r02 is immutable and is not edited or withdrawn.'
+decision_input:
+  id: DEC-2026-0095
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0095.yaml
+  checksum: sha256:68e302182640762f4f1704e9f40523419052561f03d8ab5d18c9aced42e2f20a
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:c0ccf6e26e4551a7bbb3b21314cf1ba0c4ef3c479cafeba1886f524bffc1e649
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:4a241ce661769a352a24078c9d7ed75f59faa6330df8709126e3dc9305ee21cc
+verified_inputs:
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0095.yaml
+  checksum: sha256:68e302182640762f4f1704e9f40523419052561f03d8ab5d18c9aced42e2f20a
+- path: schemas/common/approved-bundle.schema.json
+  checksum: sha256:aadf53d64f98bad0db556fb189be3aa9ae1f15d6967a6e7ef264b1a1271c4455
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:9b3bdf7008913cbb310cf15e9637e077d683718aa9b91cfcb25d50b6e52184c2
+- path: rulesets/shadowdark/escalations/decided/ESC-2026-09-22T19.45.16.421Z.yaml
+  checksum: sha256:513ac0facd5dc9e0ca58a255648d6ad3eff24aa627f41a6caea5bdf56698d2b9
+- path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05.yaml
+  checksum: sha256:0a5e98aabb691ccc9975350c0a9296fc09182d4592a91b8859d1ff50eb1e28a7
+- path: rulesets/shadowdark/manifests/INT-20260922-002.json
+  checksum: sha256:e844ecd72e43812d940b010fbab2b820764b4f09b971f0af9d9cbfae41f442e3
+- path: books/shadowdark/sd/artifacts/integrated/INT-20260922-002-APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05.json
+  checksum: sha256:fe3e3b984454e92b117af83d1acaedf6813b22dfb2ada03868d621c8969890a2
+- path: rulesets/shadowdark/reports/INT-20260922-001.rejected.json
+  checksum: sha256:3e30448416568e961928664865782b46856399cc6e0923490338c48fee299199
+- path: tooling/builder/tests/test_shadowdark_ancestry.py
+  checksum: sha256:5cae1058e050ad1e62d1c32261776b2be5462e5eed3295bf733830080ff05a64
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  checksum: sha256:84bb0394b4c700fbf3570ff60d21b9e1e8262f6fb9df8df1bb0dc4ad084f5c36
+validation_report: build/reports/IMP-DEC-2026-0095-r03.validation.json
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: Unchanged in substance from r02, re-verified against current bytes. contracts/WORK_QUEUES.md
+    declares Version 1.32, at or above the authorized minimum 1.32, and all five authorized anchors
+    are present verbatim. Core Rules 3, 4 and 6 are honoured for manifested Approved bundles exactly
+    as in r02; this revision changes only where in the derivation the review_checksum precondition
+    is enforced, not whether the active-leaf rules are honoured.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0095
+      path: rulesets/shadowdark/escalations/decisions/DEC-2026-0095.yaml
+      checksum: sha256:68e302182640762f4f1704e9f40523419052561f03d8ab5d18c9aced42e2f20a
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:9b3bdf7008913cbb310cf15e9637e077d683718aa9b91cfcb25d50b6e52184c2
+      observed_version: '1.32'
+      minimum_version: '1.32'
+      anchors_present:
+      - Only the active leaf revision of an artifact can create work.
+      - A revision is a leaf when no later artifact of the same kind names its ID in `supersedes`.
+      - Superseded, consumed, reviewed, integrated, failed, and blocked artifacts are not ready work
+        for the ordinary downstream role.
+      - When `supersedes` is absent, infer the latest `rNN` only within one artifact kind and packet.
+      - Never infer order from creation or modification time.
+- acceptance_test_index: 2
+  result: passed
+  evidence: '_approved_review_link is unchanged from r02: approves.review_id is the sole Review identity
+    for a manifested bundle, never overridden by a top-level or provenance field or a filename stem,
+    and a manifestless bundle keeps its reported fallback. What changed is where the optional approves.review_checksum
+    precondition is enforced -- see the revision_reason and the new regression below -- not the identity-resolution
+    rule itself. Eight focused tests, unchanged from r02, still pass, plus two new ones covering the
+    corrected placement.'
+- acceptance_test_index: 3
+  result: passed
+  evidence: '_superseded_approved_ids is unchanged from r02: explicit supersedes decides first, the
+    bounded legacy rNN rule places a member omitting revision metadata, and the placement is reported.
+    Re-measured live: the Stats lineage still resolves to {''APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05'':
+    {''queue'': ''INTEGRATOR-CONSUMED'', ''state'': ''informational'', ''legacy_inference'': False},
+    ''APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04'': {''queue'': ''INTEGRATOR-REJECTED'',
+    ''state'': ''informational'', ''legacy_inference'': False}, ''APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01'':
+    {''queue'': ''INTEGRATOR-SUPERSEDED'', ''state'': ''informational'', ''legacy_inference'': True},
+    ''APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02'': {''queue'': ''INTEGRATOR-SUPERSEDED'',
+    ''state'': ''informational'', ''legacy_inference'': False}, ''APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03'':
+    {''queue'': ''INTEGRATOR-SUPERSEDED'', ''state'': ''informational'', ''legacy_inference'': False}}.
+    The overview lineage now provides a second live example: APPROVED-...-r03-r02 (a manifest whose
+    own pinned review_checksum went stale when its corrective successor APPROVED-...-r03-r03 was published)
+    resolves as INTEGRATOR-SUPERSEDED, exactly as manifest lineage requires, rather than as a fatal
+    error -- which is the defect this revision fixes. Five focused tests, unchanged from r02.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: '_declared_integrated_bundle_ids is unchanged from r02. Re-measured live: INT-20260922-002
+    still consumes only Stats r05-r05, and the overview lineage''s active leaf, APPROVED-...-r03-r03,
+    is correctly INTEGRATOR-CONSUMED. Six focused tests, unchanged from r02.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: 'Unchanged from r02: the rejection-remediation contract is untouched, and the manifest-supersession
+    branch remains placed after the rejection branch so a rejected-and-superseded predecessor (Stats
+    r05-r04) keeps its DEC-2026-0043 routing rather than being silently reclassified as merely superseded.
+    Re-verified live: r05-r04 is INTEGRATOR-REJECTED informational history and no Reviewer remediation
+    item exists anywhere in the current scan. All 17 pre-existing RejectionRemediationRecordCase tests
+    still pass.'
+- acceptance_test_index: 6
+  result: passed
+  evidence: The focused regressions now run 36 tests (34 in r02, plus the two this revision adds),
+    the complete common suite 1318 (1316 plus those same two), and the complete Builder suite 892,
+    all exit 0 with no failures. A live repository-wide scan immediately before this report was generated
+    returns zero error-severity diagnostics; r02's own publication had left the scan at LineageErrorCount
+    1 for the reason this report exists to fix.
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common/tests] python -m unittest test_scan_agent_queues.ApprovedBundleDerivationCase
+      test_scan_agent_queues.LiveStatsApprovedLineageCase'
+    exit_code: 0
+    result: passed
+    summary: Ran 36 tests in 21.181s OK
+  - command: '[cwd tooling/common/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 1318 tests in 540.970s OK
+  - command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 892 tests in 194.369s OK (skipped=38)
+changes_in_this_revision:
+- 'scan_agent_queues.py: moved the approves.review_checksum precondition check from immediately after
+  Review-identity resolution to immediately before a bundle is appended as INTEGRATOR-APPROVED, i.e.
+  after the integrated, GUP-superseded, rejection, and manifest-supersession checks. No other logic
+  changed: identity resolution, leaf selection and integration-consumption derivation are byte-identical
+  to r02''s implementation in substance.'
+- 'test_scan_agent_queues.py: added test_a_superseded_manifests_stale_checksum_is_not_a_lineage_error,
+  which reproduces the exact live shape (a superseded predecessor with a stale checksum pin, corrected
+  by its successor) and asserts no error-severity diagnostic results; and test_a_live_leafs_bad_checksum_is_still_an_error,
+  which confirms the narrowing did not swallow a genuine defect on live work.'
+superseded_report:
+  id: IMP-DEC-2026-0095-r02
+  path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0095-r02.yaml
+  checksum: sha256:6349be0feb8cc53f18461ce50263e069cb00a287b5fdfaa5e5067d7931fdeac0
+  disposition: Immutable history, neither edited nor approved. Its acceptance evidence for tests 1,
+    2 and 4 described behaviour that remains correct in substance; only the checksum-enforcement placement
+    and the pinned file checksums change here.
+not_done:
+- No Stats, canonical, schema, contract, or Integration artifact was touched, and INT-20260922-002
+  was neither re-applied nor reversed.
+- The overview-packet lineage (APPROVED-GUP-PKT-SD-011-014-...) that exposed this defect was not modified;
+  it is Reviewer-published history and is read here only as verification evidence.
+- No basicdnd or rc work of any kind was performed. DEC-2026-0086 remains binding.
+validation_report_checksum: sha256:df0cd6dca91f9be554c80379379d83ae752d7107f28f9fc4592871663755bccb

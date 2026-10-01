@@ -1,0 +1,174 @@
+schema_version: '1.0'
+id: DEC-2026-0094
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-015-015-stats-and-stat-modifiers
+constitution_version: '1.2'
+decision_date: '2026-09-22'
+escalation_id: null
+request_origin:
+  type: repository_owner_directive
+  summary: >-
+    Retire the stale parallel Stats Approved lineage. It must remain immutable
+    history and must not receive another repair.
+question: >-
+  How must queue derivation treat the stale Stats Approved manifests after their
+  resolved successor was integrated, and which manifest fields control Review
+  linkage and active-leaf selection?
+ruling: >-
+  Retire `APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01`
+  through `-r04`, including the rejected `-r04`, as immutable historical
+  packaging artifacts. They are not repair work. The complete `r01` through
+  `r05` same-kind, same-GUP sequence resolves by the established legacy rNN
+  rule to `-r05`; that leaf supersedes `-r04` and was consumed by
+  `INT-20260922-002`. Do not publish another Stats Review, GUP, Approved
+  manifest, rejection, or integration for this stale branch.
+
+  For a manifested Approved bundle, `approves.review_id` is the sole
+  authoritative approving Review link. The scanner must use that value before
+  any filename-derived fallback and must validate the corresponding declared
+  review checksum where present. A top-level or `provenance.review_id` is not
+  an alternate link for a manifest that carries `approves`; it cannot override
+  or silently substitute for the required field. Filename inference remains a
+  reported legacy fallback only for a manifestless bundle.
+
+  The scanner must resolve the Approved manifest's own revision lineage before
+  evaluating its GUP, Review, integration, or rejection state. It uses explicit
+  `supersedes` first; when a complete same-kind, same-GUP rNN sequence has
+  legacy omissions, it uses the existing WORK_QUEUES legacy rNN inference and
+  reports it. A rejection produces Reviewer remediation only for an exact
+  active, unintegrated bundle. A rejected predecessor with an integrated active
+  successor is informational history, not a repair request.
+rationale:
+  - >-
+    The integrated r05 manifest carries the corrected operation index, exact
+    Review and GUP provenance, and all fourteen successfully applied rows. A
+    further repair would duplicate completed graph work.
+  - >-
+    `approves.review_id` is the current approved-bundle schema's required
+    provenance field. Selecting a stem-derived Review when that field names a
+    different Review validates the wrong artifact and is unsafe.
+  - >-
+    WORK_QUEUES already requires active leaves and defines legacy rNN inference.
+    Applying that rule to Approved manifests prevents stale parallel bundle
+    records from creating work without changing published history.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Builder implements the bounded scanner and test changes. Reviewer then
+    independently verifies the implementation report; no Stats artifact repair
+    is a prerequisite or permitted follow-up.
+  blocking_ids: []
+evidence:
+  - path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01.yaml
+    checksum: sha256:fddaefc4fe3793ca11e1cff8c1c9473b4cb74bae197871c15697f116d1317e5a
+    role: stale_legacy_parallel_approved_manifest
+  - path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02.yaml
+    checksum: sha256:219baa8d6955035a2a5308651be591a2baed8cea34793ffa755c88f1f82a9c6c
+    role: stale_legacy_parallel_approved_manifest
+  - path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03.yaml
+    checksum: sha256:37a19b0c94f490db7598c5a58f824196d21b5cb4051c04dcc03efd7a83c38e32
+    role: stale_explicit_successor_manifest
+  - path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04.yaml
+    checksum: sha256:d0aa63fcf62c7c409442d574fd5b4b6eab7aac2bdebb2325f3d458f8ba364af5
+    role: rejected_stale_predecessor_manifest
+  - path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05.yaml
+    checksum: sha256:0a5e98aabb691ccc9975350c0a9296fc09182d4592a91b8859d1ff50eb1e28a7
+    role: integrated_active_approved_leaf
+  - path: rulesets/shadowdark/manifests/INT-20260922-002.json
+    checksum: sha256:e844ecd72e43812d940b010fbab2b820764b4f09b971f0af9d9cbfae41f442e3
+    role: exact_consuming_integration_manifest
+  - path: rulesets/shadowdark/reports/INT-20260922-001.rejected.json
+    checksum: sha256:3e30448416568e961928664865782b46856399cc6e0923490338c48fee299199
+    role: stale_rejection_of_r04
+  - path: schemas/common/approved-bundle.schema.json
+    checksum: sha256:aadf53d64f98bad0db556fb189be3aa9ae1f15d6967a6e7ef264b1a1271c4455
+    role: required_approves_review_link_contract
+migration_required: false
+migration_scope: >-
+  No graph, registry, source, packet, GUR, GUP, Review, Approved manifest,
+  rejection, integration record, or canonical row is changed. The named
+  immutable manifests remain at their paths. This Decision changes only future
+  queue derivation of their existing lineage.
+constitution_version_impact: None. Queue derivation and artifact provenance change; Shadowdark ontology does not.
+affected_contracts: []
+affected_registries: []
+implementation_bounds:
+  - >-
+    Builder edits only tooling/common/scan_agent_queues.py and its focused test
+    module. Do not edit any Stats artifact, integration record, rejection,
+    schema, contract, canonical file, or non-queue tooling.
+  - >-
+    Implement the current required `approves.review_id` link and existing
+    legacy-rNN inference. Do not add a broad retirement field, infer from file
+    times, accept contradictory Review IDs, or suppress an active unintegrated
+    bundle without exact lineage evidence.
+  - >-
+    No basicdnd/rc processing, cleanup, re-review, or Stats artifact repair is
+    authorized.
+acceptance_tests:
+  - >-
+    A manifested Approved bundle resolves its Review solely from
+    `approves.review_id`; a conflicting filename-derived, top-level, or
+    provenance value cannot select another Review. A missing or checksum-
+    mismatched required link is diagnostic and produces no Integrator job.
+  - >-
+    Explicit Approved-manifest supersedes links select one active leaf. A
+    complete same-kind, same-GUP legacy rNN sequence with omitted revision
+    metadata selects its latest revision with a `legacy_revision_inference`
+    diagnostic rather than producing parallel leaves or work.
+  - >-
+    The exact Stats r01 through r05 fixture resolves r05 as the only active
+    manifest, recognizes INT-20260922-002 as its consuming integration, and
+    emits no Integrator item or Reviewer rejection-remediation item for r01
+    through r04 or INT-20260922-001.
+  - >-
+    A valid rejection of an exact active unintegrated bundle still suppresses
+    only that bundle and emits one Reviewer remediation item. An unrelated
+    integrated successor, stale rejection, malformed link, or missing lineage
+    never silently suppresses current work.
+  - >-
+    Focused queue tests and the complete queue-scanner test suite pass with
+    exact commands and outcomes recorded in the implementation report. Existing
+    queue behavior outside the bounded Approved-manifest cases remains covered.
+sequence:
+  - step: 1
+    owner: architect
+    action: Publish and validate this direct retirement and scanner-semantics Decision.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement the bounded scanner derivation and focused regressions. Publish
+      a Decision Implementation Report; do not touch Stats workflow artifacts.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently validate the report and tests. Publish an implementation
+      Review; return only code defects to Builder.
+post_implementation_requirements:
+  - >-
+    Stats r01 through r04 and INT-20260922-001 remain discoverable immutable
+    history only. INT-20260922-002 remains the exact completed Stats integration.
+  - >-
+    Future Approved bundles follow normal schema, active-leaf, Review, and
+    rejection rules. This Decision authorizes no generic suppression outside
+    the exact implementation semantics and named Stats lineage.
+exact_diff:
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0094.yaml: Publish the direct retirement and exact scanner rules.
+  tooling/common/scan_agent_queues.py: Resolve required approves.review_id and manifest active-leaf lineage before queue and rejection derivation.
+  tooling/common/tests/test_scan_agent_queues.py: Cover authoritative Review linkage, legacy manifest leaves, consumed Stats history, and active rejection behavior.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0094.yaml, owner: architect, sequence_step: 1}
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 2}
+follow_up_owners:
+  builder:
+    - Implement DEC-2026-0094 without a Stats artifact repair.
+  reviewer:
+    - Independently review the bounded scanner implementation.

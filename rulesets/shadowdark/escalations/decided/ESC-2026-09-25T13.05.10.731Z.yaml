@@ -1,0 +1,81 @@
+schema_version: '1.0'
+id: ESC-2026-09-25T13.05.10.731Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-084-085-crawling-light-and-movement
+constitution_version: '1.6'
+revision: 1
+supersedes: null
+raised_by: reviewer
+raised_utc: '2026-09-25T13:05:10.731Z'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    DEC-2026-0103 requires a new Architect Decision before any non-spell
+    CLASSIFIED_AS form; this defining locus makes item-to-light-source
+    classification mechanically operative and exposes a concrete query gap.
+  blocking_ids: []
+authority:
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - rulesets/shadowdark/governance/constitution.md 1.6
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+originating_artifacts:
+  packet_id: PKT-SD-084-085-crawling-light-and-movement
+  gur_id: GUR-PKT-SD-084-085-crawling-light-and-movement-r01
+  gup_id: GUP-PKT-SD-084-085-crawling-light-and-movement-r01
+  review_id: REV-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r01
+question: >-
+  May the bounded Shadowdark CLASSIFIED_AS vocabulary be extended so the
+  source-named items Torch, Lantern, and Campfire classify as Light Source, or
+  must this mechanically operative item classification remain outside the graph?
+smallest_relevant_source_excerpt: >-
+  Page 84 states that all characters need light to see, that areas outside a
+  light source's illumination are in total darkness, and that most light
+  sources illuminate a limited area. The same chapter names torches as prepared
+  light; the resting locus identifies a campfire and torch, and Lantern is
+  already canonical from the equipment table.
+local_graph_neighborhood:
+  canonical_ids:
+    - {id: item_lantern, label: Lantern, kind: item}
+    - {id: rule_encounter, label: Encounter, kind: rule}
+  proposed_here:
+    - {id: rule_light_source, label: Light Source, kind: rule}
+    - {id: rule_vision, label: Vision, kind: rule}
+    - {id: rule_total_darkness, label: Total Darkness, kind: rule}
+  proposed_in_sibling_packet:
+    - {id: item_torch, label: Torch, kind: item}
+    - {id: item_campfire, label: Campfire, kind: item}
+  ordinary_rows_under_review:
+    - rule_light_source GATES rule_vision
+    - rule_light_source EXCLUDES rule_total_darkness
+affected_canonical_ids: [item_lantern]
+affected_proposed_ids: [item_torch, item_campfire, rule_light_source]
+options_considered:
+  - id: OPT-A
+    summary: Authorize item-to-Light-Source CLASSIFIED_AS as one new bounded form.
+    consequences: >-
+      Makes providers of light queryable and connects the item identities to
+      the already modelled vision and darkness mechanics. Requires a narrow
+      Constitution and compiler amendment plus ordinary GUR successors.
+  - id: OPT-B
+    summary: Keep light-source membership outside the impact graph.
+    consequences: >-
+      Preserves the DEC-2026-0103 spell-only boundary, but a graph query for
+      what provides mechanically required light returns no result.
+recommended_resolution: >-
+  Recommend OPT-A, restricted to source-explicit item-to-rule_light_source
+  classification with aspect light source. The relationship is mechanically
+  operative rather than taxonomy-only because Light Source gates Vision and
+  excludes Total Darkness in the same defining locus.
+expected_migration_impact: >-
+  No existing canonical row is rewritten. After implementation approval, the
+  Analyst would publish ordinary successors adding at most the source-supported
+  Torch, Lantern, and Campfire classification rows. Current packet rows remain
+  independently correct and need not wait.
+constitution_registry_or_profile_change: >-
+  OPT-A amends Constitution section 2.4 and the Builder's bounded classifier;
+  it needs no new prefix, node kind, registry column, profile, or canonical
+  rewrite. OPT-B requires no change.

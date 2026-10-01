@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "cache_format_version", "common_patterns", "roles"],
   "properties": {
-    "schema_version": {"const": "1.0"},
+    "schema_version": {"enum": ["1.0", "1.1"]},
     "cache_format_version": {"const": 1},
     "common_patterns": {"$ref": "#/$defs/patterns"},
     "roles": {
@@ -18,10 +18,19 @@
         "analyst": {"$ref": "#/$defs/role"},
         "builder": {"$ref": "#/$defs/role"},
         "reviewer": {"$ref": "#/$defs/role"},
-        "integrator": {"$ref": "#/$defs/role"}
+        "integrator": {"$ref": "#/$defs/role"},
+        "dispatcher": {"$ref": "#/$defs/dispatcherRole"}
       }
     }
   },
+  "$comment": "DEC-2026-0081: manifest 1.1 adds Dispatcher and its explicit opt-out. Legacy 1.0 remains a five-role manifest. Receipt format remains 1; both governance files are independently checksummed even when excluded from a role's reading list.",
+  "allOf": [
+    {
+      "if": {"properties": {"schema_version": {"const": "1.1"}}, "required": ["schema_version"]},
+      "then": {"properties": {"roles": {"required": ["dispatcher"]}}},
+      "else": {"properties": {"roles": {"not": {"required": ["dispatcher"]}}}}
+    }
+  ],
   "$defs": {
     "pathPattern": {
       "type": "string",
@@ -39,7 +48,22 @@
       "additionalProperties": false,
       "required": ["stable_patterns"],
       "properties": {
+        "inherit_common_patterns": {"type": "boolean", "const": true, "default": true},
         "stable_patterns": {"$ref": "#/$defs/patterns"}
+      }
+    },
+    "dispatcherRole": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inherit_common_patterns", "stable_patterns"],
+      "properties": {
+        "inherit_common_patterns": {"type": "boolean", "const": false},
+        "stable_patterns": {
+          "allOf": [
+            {"$ref": "#/$defs/patterns"},
+            {"items": {"pattern": "^[A-Za-z0-9_./+-]+$"}}
+          ]
+        }
       }
     }
   }

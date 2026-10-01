@@ -1,0 +1,283 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20260925-006",
+  "ruleset_id": "shadowdark",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-09-25T13:14:04.961Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:ae2631a0e94eca33d74333670df11e4ebc163afc54cbafa2a83b672213d1fad9 actual=sha256:ae2631a0e94eca33d74333670df11e4ebc163afc54cbafa2a83b672213d1fad9"
+        },
+        {
+          "check": "component checksum matches: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:ba578638ccbd3638557a158bb3f8e6f50d92013c6a2c97f4601da19ede169f83 actual=sha256:ba578638ccbd3638557a158bb3f8e6f50d92013c6a2c97f4601da19ede169f83"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-SD-084-085-crawling-light-and-movement-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:7e6201ba2edae8848a099b505f90fc730670f90c472a48cd1a123da9765d9dd6 actual=sha256:7e6201ba2edae8848a099b505f90fc730670f90c472a48cd1a123da9765d9dd6"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-084-085-crawling-light-and-movement-r01.yaml: declared=sha256:99320a0be7cb00d88ddf74658a7ad4465d45f19da12d7ae2161b9cad8e7561c7 actual=sha256:99320a0be7cb00d88ddf74658a7ad4465d45f19da12d7ae2161b9cad8e7561c7"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=16 actual=16"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 0, 'pending_additions': 16, 'updates': 0, 'node_registrations': 10}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 328,
+    "edges_after": 344,
+    "edges_updated_in_place": 0,
+    "nodes_before": 180,
+    "nodes_after": 190,
+    "registry_before": 205,
+    "registry_after": 215,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "rule_crawling_round",
+        "label": "Crawling Round",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "review_id": "REV-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "integration_id": "INT-20260925-006"
+      },
+      {
+        "id": "rule_light_source",
+        "label": "Light Source",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "review_id": "REV-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "integration_id": "INT-20260925-006"
+      },
+      {
+        "id": "rule_vision",
+        "label": "Vision",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "review_id": "REV-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "integration_id": "INT-20260925-006"
+      },
+      {
+        "id": "rule_total_darkness",
+        "label": "Total Darkness",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "review_id": "REV-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "integration_id": "INT-20260925-006"
+      },
+      {
+        "id": "rule_distance",
+        "label": "Distance",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "review_id": "REV-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "integration_id": "INT-20260925-006"
+      },
+      {
+        "id": "rule_climbing",
+        "label": "Climbing",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "review_id": "REV-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "integration_id": "INT-20260925-006"
+      },
+      {
+        "id": "rule_falling",
+        "label": "Falling",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "review_id": "REV-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "integration_id": "INT-20260925-006"
+      },
+      {
+        "id": "rule_swimming",
+        "label": "Swimming",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "review_id": "REV-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "integration_id": "INT-20260925-006"
+      },
+      {
+        "id": "rule_moving_through",
+        "label": "Moving Through",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "review_id": "REV-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "integration_id": "INT-20260925-006"
+      },
+      {
+        "id": "rule_regroup",
+        "label": "Regroup",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "review_id": "REV-GUP-PKT-SD-084-085-crawling-light-and-movement-r01-r02",
+        "integration_id": "INT-20260925-006"
+      }
+    ],
+    "registry_derived_resync": 5,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

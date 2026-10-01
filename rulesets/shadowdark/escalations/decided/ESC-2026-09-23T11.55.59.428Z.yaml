@@ -1,0 +1,180 @@
+schema_version: '1.0'
+id: ESC-2026-09-23T11.55.59.428Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.4'
+revision: 1
+supersedes: null
+raised_by: analyst
+raised_utc: '2026-09-23T11:55:59.428Z'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    four authorities disagree on which historical constitution versions a Shadowdark GUR may
+    declare, and sixteen published GUR leaves are currently uncompilable as a result
+  blocking_ids: []
+
+authority:
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - rulesets/shadowdark/governance/constitution.md 1.4
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0087.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0090.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0093.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0098.yaml
+
+question: >-
+  Which constitution versions may an incoming Shadowdark GUR declare? Four authorities currently give
+  three different answers, and the version-gate constant that decides it in code has not been updated
+  by the last two amendments. Sixteen published GUR leaves, effectively the whole extracted corpus,
+  declare a version the gate now rejects. Should 1.2 and 1.3 join the historical accepted set on the
+  same terms DEC-2026-0087 and DEC-2026-0090 used for 1.0 and 1.1, and should the gate stop being a
+  transcribed list?
+
+why_this_is_architectural: >-
+  ESCALATION_CONTRACT lists as a trigger that the constitution and production data disagree in a way
+  that cannot be fixed mechanically, which is exactly this. It also says not to escalate when a field
+  can be normalized under existing rules; that exception does not apply, because the disagreement is
+  between the authorities themselves and no role may pick a winner. The version-accepted set is a
+  repository-wide input convention: Builder declined to widen it on its own, correctly, and the
+  Analyst equally may not settle it by reissuing artifacts until the gate happens to pass.
+
+how_this_surfaced: >-
+  Builder compiled GUP-PKT-SD-027-029-alignment-and-deities-r01 as blocked with a single
+  constitution_version_mismatch error and routed it to the Analyst, noting that all eleven edges and
+  eleven node proposals compiled cleanly and that this was the only defect. Builder offered two
+  remedies, a version-only successor revision or an Architect ruling, and said it had no basis to
+  prefer one.
+  The Analyst measured the scope before choosing and found the problem is not confined to that one
+  artifact. Builder's report was accurate about the artifact it compiled; it understated the blast
+  radius because it had compiled only one GUR.
+
+measured_evidence:
+  effective_accepted_set:
+    value: ['1.0', '1.1', '1.4']
+    derivation: >-
+      tooling/builder/src/adnd1e_builder/vocab.py builds it as
+      HISTORICAL_ACCEPTED_GUR_CONSTITUTION_VERSIONS['shadowdark'], a hardcoded frozenset of 1.0 and
+      1.1, unioned with the current version read from rulesets/shadowdark/ruleset.yaml, which is 1.4.
+      Confirmed by importing the module and printing both, not by reading the source alone.
+  gur_schema_enum:
+    path: schemas/shadowdark/graph/gur.schema.json
+    value: ['1.0', '1.1', '1.2', '1.3', '1.4']
+    description_text: >-
+      DEC-2026-0098 preserves historical 1.0 through 1.3 artifacts; new GURs declare current 1.4 and
+      undergo current validation.
+  constitution_section_9_text: >-
+    Historical Shadowdark GURs declaring 1.0 or 1.1 remain admissible only with full revalidation
+    under the current constitution. That sentence still names only 1.0 and 1.1 after three
+    amendments, and the same paragraph says not to rewrite immutable GURs merely for an additive bump.
+  affected_artifacts:
+    total_leaves: 16
+    declaring_1_2: 15
+    declaring_1_3: 1
+    note: >-
+      Every active GUR leaf in books/shadowdark/sd/artifacts/gur/ declares either 1.2 or 1.3. Not one
+      declares an accepted version. Measured by parsing each file and selecting the highest revision
+      per packet_id.
+  the_three_disagreements: >-
+    The schema admits 1.2 and 1.3. DEC-2026-0098's own schema description says historical 1.0 through
+    1.3 are preserved. Constitution section 9 names only 1.0 and 1.1. Builder's constant encodes only
+    1.0 and 1.1. So the schema and the Decision description say these sixteen artifacts are
+    admissible, while the constitution prose and the code gate say they are not.
+
+root_cause_analysis: >-
+  The gate is transcribed governance rather than derived governance. The comment above the constant
+  says so explicitly and records the maintenance pattern: DEC-2026-0087 added 1.0 when 1.1 became
+  current, and DEC-2026-0090 added 1.1 once 1.2 became current, each time as a deliberate Decision.
+  That step was not taken when DEC-2026-0093 made 1.3 current, so 1.2 was never added, and it was not
+  taken when DEC-2026-0098 made 1.4 current, so 1.3 was never added. The constant is two amendments
+  behind.
+  This is a structural fault, not an oversight to patch once. Every future amendment will strand the
+  version that was current the day before unless a Decision remembers to add it, and the artifacts
+  stranded are always the ones most recently published and least likely to have been compiled yet.
+  The schema was kept current across the same three amendments, which is why it and the constant now
+  disagree.
+
+options_considered:
+  - id: OPT-A
+    summary: Add 1.2 and 1.3 to the historical accepted set, on the same terms as 1.0 and 1.1.
+    detail: >-
+      A Decision directs Builder to extend HISTORICAL_ACCEPTED_GUR_CONSTITUTION_VERSIONS for
+      shadowdark to 1.0, 1.1, 1.2 and 1.3, matching the DEC-2026-0090 pattern exactly, and updates
+      constitution section 9's sentence to name the same set so the prose stops contradicting the
+      schema. Historical artifacts stay admissible only with full revalidation under the current
+      constitution, unchanged.
+    consequences: >-
+      Unblocks all sixteen leaves with no artifact churn, and restores agreement between the four
+      authorities. It does not fix the structural fault: the next amendment will strand 1.4 the same
+      way unless a Decision remembers again.
+  - id: OPT-B
+    summary: Derive the accepted set instead of transcribing it.
+    detail: >-
+      A Decision directs Builder to read the admissible set from the structural schema enum, or from
+      a governance-owned list in ruleset.yaml, so that amending the constitution updates the gate by
+      construction. The constitution keeps stating the revalidation rule; only the enumeration moves
+      to one place.
+    consequences: >-
+      Fixes the recurrence rather than the instance, and makes the schema and the gate incapable of
+      disagreeing. It is a larger change to Builder-owned code and needs its own implementation and
+      Review. The Analyst would pair it with OPT-A rather than treat it as an alternative, since
+      OPT-A is what unblocks the corpus today.
+  - id: OPT-C
+    summary: Republish all sixteen leaves as version-only successor revisions declaring 1.4.
+    detail: >-
+      Each affected GUR gains a revision whose only change is the declared version, on the pattern of
+      the DEC-2026-0091 field-only successors the Analyst already published.
+    consequences: >-
+      The Analyst recommends against it and would want a Decision before doing it. Constitution
+      section 9 says in the same paragraph not to rewrite immutable GURs merely for an additive bump,
+      and sixteen no-op revisions is the largest possible reading of that prohibition. It also
+      guarantees the same churn at every future amendment, and it would silently resolve a
+      four-way authority disagreement in favour of the two authorities that happen to be strictest,
+      without anyone ruling that they are right.
+  - id: OPT-D
+    summary: Rule that 1.2 and 1.3 were never validly declarable and the sixteen artifacts are defective.
+    detail: >-
+      Treat constitution section 9's prose as the controlling authority throughout, making the schema
+      enum and the DEC-2026-0098 description the errors, and require the corpus to be reissued.
+    consequences: >-
+      The Analyst records this for completeness and argues against it. Each of those artifacts
+      declared the version that was current on the day it was published, which is exactly what
+      section 9's other sentence requires of new output. Declaring them retroactively defective would
+      penalise conformance with the rule in force at publication.
+
+recommended_resolution: >-
+  OPT-A now, so the sixteen leaves compile, paired with OPT-B as follow-up work so this cannot recur.
+  The Analyst's reason for preferring the pairing over OPT-A alone is that the repository has already
+  run this experiment twice: the constant was correctly maintained for two amendments and then missed
+  for the next two, and nothing about the third omission will be different.
+  The Analyst has no preference between reading the set from the schema enum and holding it in
+  ruleset.yaml; either removes the transcription. That choice is Architect's, and the implementation
+  is Builder's under DEC-2026-0082.
+
+expected_migration_impact: >-
+  None to canonical data. Under OPT-A no published artifact changes at all: sixteen immutable GUR
+  leaves become compilable again and proceed through the ordinary Builder, Review and Integration
+  lifecycle they were already queued for. Four packets have already reached canonical state through
+  earlier revisions and are unaffected either way.
+  Under OPT-C sixteen new revisions would be published and every downstream consumer would need to
+  repoint, which is the churn OPT-A avoids.
+
+constitution_registry_or_profile_change: >-
+  OPT-A amends constitution section 9's admissibility sentence to name the full historical set, and
+  changes the Builder constant. OPT-B additionally changes where the set is read from. Neither
+  changes the revalidation requirement, the prefix table, the edge vocabulary, any registry, or any
+  domain. No canonical mutation is sought.
+
+analyst_constraints_observed: >-
+  The Analyst has not reissued any artifact to satisfy the gate, has not edited the Builder constant
+  or the schema, and has not chosen among the disagreeing authorities. The one GUR Builder routed
+  back, GUR-PKT-SD-027-029-alignment-and-deities-r01, is left exactly as published; it is immutable
+  and its only reported defect is the declared version, which was current when it was published.
+  Extraction continues meanwhile on unblocked packets, since a new GUR declaring the current 1.4
+  passes the gate normally and is unaffected by this question.

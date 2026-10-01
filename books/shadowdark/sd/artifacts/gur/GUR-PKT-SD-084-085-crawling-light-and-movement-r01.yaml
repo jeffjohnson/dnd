@@ -1,0 +1,620 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-084-085-crawling-light-and-movement-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-084-085-crawling-light-and-movement
+constitution_version: '1.6'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.2
+  - rulesets/shadowdark/governance/constitution.md 1.6
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0103.yaml
+
+classified_as_gate_note: >-
+  DEC-2026-0103 added the bounded CLASSIFIED_AS edge type at Constitution 1.6 and prohibits any such
+  row until Builder's implementation has terminal Reviewer approval. No implementation report exists
+  at extraction time. The ruling also confines the type to spell casting class and spell tier, so
+  even once open it would not admit the light-source and campfire classifications this packet
+  declines; those are recorded in the observations rather than asserted.
+
+in_flight_identity_note: >-
+  rule_encounter is proposed by a sibling GUR published earlier today
+  and is not yet canonical, so this patch proposes it again to satisfy invariant 1. The ID and label
+  are reproduced exactly and the sibling is named on the node, so Reviewer de-duplicates to one
+  registry addition. This is the ordinary consequence of extracting adjacent packets faster than the
+  pipeline integrates them, not a competing naming.
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-084-085-crawling-light-and-movement
+  source_file: source.md
+  packet_source_checksum: sha256:1a24fd38b99ce5627381997c7641764e2f4c00de83fd5167012957f82df9fbec
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 032-crawling-light-and-movement.md
+  citation_code: SD
+  page_start: 84
+  page_end: 85
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Markers resolve through the Pandoc AST rather than positionally, each a plain marker ending a
+  heading, which placement rule 1 applies to the whole heading. The bolded entries under MOVEMENT and
+  the subsections elsewhere carry no marker of their own and take their page from the persistence
+  rule, so each row is cited to the page of the subsection it is drawn from.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 84 through 85. Any other
+  page the parser resolves lies inside the trailing Supporting Source Context, is claimed by another
+  packet, and contributed nothing here.
+
+source_summary: >-
+  Printed page 84 is CRAWLING: it describes the Shadowdark as a place, defines the crawling round as the unit of exploration play, states that characters need light to see, gives the light-source timer rules, and defines total darkness with its two consequences. Page 85 is MOVEMENT: it fixes the three distance bands and gives rules for climbing, falling, moving through creatures and swimming, then defines regrouping, discusses conditions generally, and lists example crawling actions. This summary is orientation only; every assertion below cites its page.
+
+extraction_posture: >-
+  This packet is the defining locus for light sources and for the three distance bands. Both have been deferred repeatedly: the torch and lantern gear entries on printed page 34 pointed here for light, and the weapons table, several spell entries and the movement allowance all express themselves in close, near and far without those bands existing as an identity. Both are now proposed and given their rows.
+  What the packet does not do is attach individual items to the light-source concept. That is membership, which DEC-2026-0103 confined to spell classifications; see OBS-01.
+
+graph_state_at_extraction: >-
+  The canonical graph holds 175 registry rows, read at extraction rather than recalled, together with
+  the canonical edge set so every proposed row could be checked against the section 4 assertion key
+  before publication. The domain registry is still empty and general_rules.json is still an empty
+  object.
+
+reused_nodes:
+- id: rule_check
+  label: Check
+  used_by: M003, M007, M011, M013
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: rule_damage
+  label: Damage
+  used_by: M010, M015
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: ex_movement
+  label: Movement
+  used_by: M006, M008, M012, M016
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+- id: abil_constitution
+  label: Constitution
+  used_by: M014
+  basis: present in rulesets/shadowdark/registries/nodes.csv at extraction; resolves against the registry,
+    so no proposal is made
+
+candidate_nodes:
+- proposed_id: rule_crawling_round
+  proposed_label: Crawling Round
+  kind: procedure
+  why_needed: Source of M004. The unit of exploration play, and the cadence the encounter check runs on
+    in total darkness.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 84, its own heading CRAWLING ROUNDS
+  source_evidence: page 84, the bolded term crawling rounds and the rule that characters are in them while
+    not in combat
+- proposed_id: rule_light_source
+  proposed_label: Light Source
+  kind: procedure
+  why_needed: Source of M001 and M017. What a character needs to see, and what holds back total darkness.
+    The torch and lantern gear entries deferred to this locus.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 84, its own heading LIGHT SOURCES
+  source_evidence: page 84, the heading and the rules for light-source timers and illuminated area
+- proposed_id: rule_vision
+  proposed_label: Vision
+  kind: procedure
+  why_needed: Endpoint of M001. What light is required for; without it the light requirement has no target.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 84, its own heading VISION
+  source_evidence: page 84, the heading and the rule that all characters need light to see
+- proposed_id: rule_total_darkness
+  proposed_label: Total Darkness
+  kind: procedure
+  why_needed: Endpoint of M017 and source of M002 and M003. The state outside illumination, which hinders
+    sight-based tasks and makes the environment deadly.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 84, its own heading TOTAL DARKNESS
+  source_evidence: page 84, the heading, the disadvantage rule and the deadly-environment rule
+- proposed_id: rule_distance
+  proposed_label: Distance
+  kind: procedure
+  why_needed: Source of M005. The three named bands every range and movement rule in the book is expressed
+    in.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 85, the bolded Distances entry under MOVEMENT
+  source_evidence: page 85, Distances, breaking distance into close, near and far. The weapons table,
+    several spells and the movement allowance all use these bands; this is where they are defined.
+- proposed_id: rule_climbing
+  proposed_label: Climbing
+  kind: procedure
+  why_needed: Source of M006, M007 and M008. A movement mode resolved by a check, bounded in speed, and
+    causing a fall on failure.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 85, the bolded Climbing entry under MOVEMENT
+  source_evidence: page 85, Climbing, its check, its speed fraction and its failure consequence
+- proposed_id: rule_falling
+  proposed_label: Falling
+  kind: procedure
+  why_needed: Endpoint of M008 and source of M009. What a failed climb causes and what deals damage by
+    distance.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 85, the bolded Falling entry under MOVEMENT
+  source_evidence: page 85, Falling, with damage scaled by distance fallen
+- proposed_id: rule_swimming
+  proposed_label: Swimming
+  kind: procedure
+  why_needed: Source of M011, M012 and M014 and endpoint of M013. A movement mode with a speed bound,
+    a check in rough water, and a breath rule that deals damage on failure.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 85, the bolded Swimming entry under MOVEMENT
+  source_evidence: page 85, Swimming, its speed fraction, its rough-water check and its breath-holding
+    rule
+- proposed_id: rule_moving_through
+  proposed_label: Moving Through
+  kind: procedure
+  why_needed: Source of M010. The rule distinguishing passage through allies from passage through enemies.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 85, the bolded Moving Through entry under MOVEMENT
+  source_evidence: page 85, Moving Through, free past allies and check-gated past enemies
+- proposed_id: rule_regroup
+  proposed_label: Regroup
+  kind: procedure
+  why_needed: Source of M015. The out-of-turn repositioning the GM may offer during exploration.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 85, its own heading REGROUP
+  source_evidence: page 85, the heading and the bolded term regroup with its immediate-movement rule
+- proposed_id: rule_encounter
+  proposed_label: Encounter
+  kind: procedure
+  why_needed: Endpoint of M003 and M004. Proposed again here because it is not yet canonical; see in_flight_identity_note.
+  prefix_basis: rule_ is a named rule or procedure
+  source_named: true
+  defining_locus: SD page 83, its own heading ENCOUNTERS; not this packet
+  source_evidence: page 84, the rule that the GM checks for a random encounter every crawling round in
+    total darkness. The ID and label are reproduced from the sibling proposal exactly.
+  proposed_also_by: GUR-PKT-SD-082-083-time-and-turn-order-r01
+
+candidate_edges:
+- ref: M001
+  source_id: rule_light_source
+  source_label: Light Source
+  edge_type: GATES
+  target_id: rule_vision
+  target_label: Vision
+  aspect: sight requirement
+  condition: ''
+  book: SD
+  page: 84
+  section: VISION
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: All characters need light to see, so a light source is the precondition for sight.
+    The exception the page names, darkness-adapted beings, belongs to creatures the Monsters chapter defines
+    and is dispositioned in OBS-02. Derived polarity enables.
+- ref: M002
+  source_id: rule_light_source
+  source_label: Light Source
+  edge_type: EXCLUDES
+  target_id: rule_total_darkness
+  target_label: Total Darkness
+  aspect: illuminated area
+  condition: ''
+  book: SD
+  page: 84
+  section: LIGHT SOURCES
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Any area outside a light source's illumination is in total darkness, so within the
+    illuminated area the light actively prevents that state. EXCLUDES runs excluder to excluded. The illuminated
+    extent and the timer duration are magnitudes and are excluded; the timer-stacking options are procedure
+    about tracking rather than a dependency, and are dispositioned in OBS-03. Derived polarity negates.
+- ref: M003
+  source_id: rule_total_darkness
+  source_label: Total Darkness
+  edge_type: MODIFIES
+  target_id: rule_check
+  target_label: Check
+  aspect: sight tasks
+  condition: ''
+  polarity: worsens
+  polarity_basis: read
+  book: SD
+  page: 84
+  section: TOTAL DARKNESS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: A creature that is not darkness-adapted has disadvantage on tasks requiring sight,
+    which changes how those checks resolve and only hinders. The mechanism is disadvantage, whose defining
+    locus is printed page 78; that identity is proposed by a sibling GUR and is not yet canonical, so
+    this row asserts the effect rather than the mechanism, consistently with how nine earlier rows treat
+    it. Read aloud as Total Darkness worsens Check.
+- ref: M004
+  source_id: rule_total_darkness
+  source_label: Total Darkness
+  edge_type: TRIGGERS
+  target_id: rule_encounter
+  target_label: Encounter
+  aspect: deadly environment
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: SD
+  page: 84
+  section: TOTAL DARKNESS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: In total darkness the environment becomes deadly and the GM checks for a random encounter
+    every crawling round, so the state causes the check. Read aloud as Total Darkness inflicts Encounter;
+    basis read.
+- ref: M005
+  source_id: rule_crawling_round
+  source_label: Crawling Round
+  edge_type: FEEDS_INTO
+  target_id: rule_encounter
+  target_label: Encounter
+  aspect: check cadence
+  condition: ''
+  book: SD
+  page: 84
+  section: TOTAL DARKNESS
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: The crawling round is the interval the darkness encounter check is paced by, so it
+    supplies the cadence. Distinct from the canonical-pending row where the ordinary round paces the encounter,
+    by source_id.
+- ref: M006
+  source_id: rule_distance
+  source_label: Distance
+  edge_type: CONSTRAINS
+  target_id: ex_movement
+  target_label: Movement
+  aspect: distance bands
+  condition: ''
+  polarity: governs
+  polarity_basis: read
+  book: SD
+  page: 85
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Distances are broken into three named bands, and movement allowances, weapon ranges
+    and spell ranges are all expressed in them, so the band system bounds how far movement reaches without
+    changing the allowance. The measurements attached to each band are magnitudes and are excluded; what
+    is stored is that the bands govern. Read aloud as Distance governs Movement; basis read.
+- ref: M007
+  source_id: rule_climbing
+  source_label: Climbing
+  edge_type: RESOLVED_BY
+  target_id: rule_check
+  target_label: Check
+  aspect: climb attempt
+  condition: ''
+  book: SD
+  page: 85
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Climbing is resolved by a Strength or Dexterity check. The either-or stat choice
+    is carried in OBS-04 rather than as two rows, because the page offers the choice without making either
+    stat a separate dependency of climbing. Derived polarity governs.
+- ref: M008
+  source_id: rule_climbing
+  source_label: Climbing
+  edge_type: CONSTRAINS
+  target_id: ex_movement
+  target_label: Movement
+  aspect: climb speed
+  condition: ''
+  polarity: governs
+  polarity_basis: read
+  book: SD
+  page: 85
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Climbing moves at a fraction of normal speed, bounding distance covered. The fraction
+    is a magnitude and is excluded.
+- ref: M009
+  source_id: rule_climbing
+  source_label: Climbing
+  edge_type: TRIGGERS
+  target_id: rule_falling
+  target_label: Falling
+  aspect: failed climb
+  condition: on a sufficiently failed check
+  polarity: inflicts
+  polarity_basis: read
+  book: SD
+  page: 85
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Failing the climb check by enough causes a fall. The margin is a threshold value
+    and is excluded; the condition names the circumstance without restating it. Read aloud as Climbing
+    inflicts Falling; basis read.
+- ref: M010
+  source_id: rule_falling
+  source_label: Falling
+  edge_type: TRIGGERS
+  target_id: rule_damage
+  target_label: Damage
+  aspect: fall damage
+  condition: ''
+  polarity: inflicts
+  polarity_basis: read
+  book: SD
+  page: 85
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Falling deals damage scaled by the distance fallen. Both the die expression and the
+    distance interval are magnitudes and are excluded.
+- ref: M011
+  source_id: rule_moving_through
+  source_label: Moving Through
+  edge_type: RESOLVED_BY
+  target_id: rule_check
+  target_label: Check
+  aspect: past enemies
+  condition: when the creature is an enemy
+  book: SD
+  page: 85
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Passing through allies is free and passing through enemies requires a check, so only
+    the enemy case is resolved by a procedure. The condition carries the distinction the source draws.
+    Derived polarity governs.
+- ref: M012
+  source_id: rule_swimming
+  source_label: Swimming
+  edge_type: CONSTRAINS
+  target_id: ex_movement
+  target_label: Movement
+  aspect: swim speed
+  condition: ''
+  polarity: governs
+  polarity_basis: read
+  book: SD
+  page: 85
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Swimming moves at a fraction of normal speed. The fraction is a magnitude.
+- ref: M013
+  source_id: rule_swimming
+  source_label: Swimming
+  edge_type: RESOLVED_BY
+  target_id: rule_check
+  target_label: Check
+  aspect: rough water
+  condition: in rough water
+  book: SD
+  page: 85
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: A check is required only in rough water, which the condition carries. Derived polarity
+    governs.
+- ref: M014
+  source_id: abil_constitution
+  source_label: Constitution
+  edge_type: FEEDS_INTO
+  target_id: rule_swimming
+  target_label: Swimming
+  aspect: breath check
+  condition: ''
+  book: SD
+  page: 85
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Holding breath while swimming is checked against Constitution each round, so Constitution
+    supplies an input to the swimming procedure. The per-round cadence is procedure rather than a stored
+    magnitude.
+- ref: M015
+  source_id: rule_swimming
+  source_label: Swimming
+  edge_type: TRIGGERS
+  target_id: rule_damage
+  target_label: Damage
+  aspect: drowning
+  condition: on a failed breath check
+  polarity: inflicts
+  polarity_basis: read
+  book: SD
+  page: 85
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: A failed breath check deals damage each round until the character exits the hazard.
+    The die expression is a magnitude. Distinct from the falling row by source_id.
+- ref: M016
+  source_id: rule_regroup
+  source_label: Regroup
+  edge_type: MODIFIES
+  target_id: ex_movement
+  target_label: Movement
+  aspect: immediate repositioning
+  condition: ''
+  polarity: improves
+  polarity_basis: read
+  book: SD
+  page: 85
+  section: REGROUP
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  analyst_rationale: Regrouping lets eligible characters move within a band of each other immediately,
+    outside the ordinary turn allowance, which changes how movement resolves and only helps. The eligibility
+    conditions, being within eyesight or earshot and able to move freely, are circumstances the source
+    states in prose; they are not encoded as a condition because doing so would compress three separate
+    qualifications into one field. Read aloud as Regroup improves Movement; basis read.
+
+authored_polarity_declaration: >-
+  9 rows carry authored polarity, all with basis read: M003, M004, M006, M008, M009, M010, M012, M015, M016. Each is
+  MODIFIES, TRIGGERS or CONSTRAINS, the three types constitution section 5 requires to carry
+  source-reviewed authored polarity, and each was read aloud as source polarity target before being
+  recorded. No row uses basis heuristic or unset. Every other row takes its derived polarity from the
+  section 5 table and the Analyst authors none of it.
+
+domains_touched: []
+candidate_domains:
+  - proposed: exploration
+    basis: >-
+      Crawling, light, distance, the movement modes and resting are a coherent cluster the book gives
+      its own chapter. Recorded as a candidate only; constitution section 8 reserves domain promotion
+      to an Architect Decision and the Analyst does not decide a candidate domain is official.
+
+domain_boundary_questions:
+  - >-
+    Movement and light reach into combat and magic as readily as into exploration, so the boundary
+    cannot be settled here. Deferred; no domain is asserted on any edge in this GUR.
+
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The movement modes repeat a shape, each being resolved by a check and bounding
+  speed, but each states its own distinct rule rather than instancing a general one, and the Analyst
+  is prohibited from promoting a general rule in any case.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: no item is attached to the light-source concept
+    detail: >-
+      A torch, a lantern and a campfire are all light sources, and all three are or will be item identities. No row says so. Saying it would be a membership assertion, and DEC-2026-0103 authorised CLASSIFIED_AS only for spell casting class and spell tier, leaving all other taxonomy outside the graph.
+            The consequence is concrete and worth stating: a query for what provides light returns nothing, even though the rule that light is needed to see is asserted as M001. The individual timers on the torch and lantern entries remain magnitudes in their own packets. This is the clearest case so far of the boundary the Decision drew costing something real, and it is recorded rather than worked around.
+  - id: OBS-02
+    subject: darkness-adapted beings are an exception with no identity
+    detail: >-
+      The VISION subsection says light is needed by all characters but not by the darkness-adapted beings of the Shadowdark, and the TOTAL DARKNESS rule applies its penalty only to a creature that is not darkness-adapted. That exception is mechanical, and it is not asserted: darkness-adapted is a property of creatures the Monsters chapter defines, no creature identity exists, and inventing one from an exception clause would fix a creature category from the wrong locus. M001 and M002 assert the rule as it applies to characters.
+  - id: OBS-03
+    subject: the light-timer stacking options are procedure, not dependency
+    detail: >-
+      Page 84 gives two options when more than one light source is lit, riding along on the current timer or extinguishing the old ones and starting fresh, and adds that the GM may rule otherwise because the point is to keep tracking simple. This is guidance about how to administer a timer rather than a relation between two mechanics, and the timer duration is a magnitude. Not extracted.
+  - id: OBS-04
+    subject: either-or stat choices are not split into two rows here
+    detail: >-
+      Climbing and moving through enemies each call for a Strength or Dexterity check, and swimming calls for a Strength check in rough water and a Constitution check for breath. Only the Constitution one is asserted as a stat dependency, in M013, because the source ties breath specifically to Constitution. The Strength-or-Dexterity choices are recorded as resolution by the ordinary check without naming either stat, because the page offers the choice rather than making either stat a dependency of the movement mode. This differs deliberately from the Farsight and talents rows elsewhere, where the source attaches a distinct effect to each branch.
+  - id: OBS-05
+    subject: conditions and example actions yield nothing
+    detail: >-
+      The CONDITIONS subsection says some effects impose a condition, gives blindness and being webbed as examples, and says advantage, disadvantage and common sense apply. It names no condition mechanic with an identity; blindness and webbing come from effects defined elsewhere. The ACTIONS subsection lists six example crawling actions, from prying a gem to giving a speech; these illustrate what a player might do and state no rule. THE SHADOWDARK subsection is setting description.
+  - id: OBS-06
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The pages carry the light-source duration, the three distance measurements, the climb and swim speed fractions, the climb failure margin, the fall damage expression and its distance interval, and the drowning damage expression. All are durations, distances, fractions, thresholds or die expressions, excluded by constitution section 1 and invariant 11. They remain in the immutable claimed packet. No aspect contains a digit and no condition restates a quantity.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: whether the distance bands should also be individual identities
+    detail: >-
+      rule_distance is proposed as one identity covering the band system. The three bands, close, near and far, are each source-named and each is used by name across the book, so three identities were considered instead.
+            They were not proposed, for two reasons. Each band's content is a measurement, which is a magnitude the graph does not store, so three nodes would carry nothing but their names. And relating a band to the band system would be membership, which is outside the graph. What is mechanically true and assertable is that the band system bounds movement, which M005 carries.
+            Consequence if wrong: if a later Decision makes the individual bands representable, three nodes are added and weapon ranges and spell ranges can point at them; nothing here is retracted, because M005 stays true either way.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised. Every proposed node uses an approved constitution section 2 prefix with an unchanged
+  kind, every edge uses one of the fourteen legal section 3 types, and no new prefix, edge type,
+  domain promotion or general-rule application is requested. The membership questions this packet
+  declines were settled against representation by DEC-2026-0103, which confined CLASSIFIED_AS to
+  spell classifications; they are recorded in the observations rather than re-escalated.
+
+completeness_statement: >-
+  All printed pages in the declared span are accounted for, and every heading, subsection, bolded
+  entry, list and paragraph within them was read. Each produced either an edge or a dispositioning
+  observation; nothing was skipped. Every page marker was resolved through the Pandoc AST and each
+  row is cited to the page of the subsection it is drawn from. Every row was checked against the
+  canonical edge set for an assertion-key collision before publication. Content not converted to an
+  edge is accounted for in the observations above, and the question the Analyst could not settle is
+  recorded rather than resolved silently. No assertion depends on any other ruleset.

@@ -1,0 +1,111 @@
+schema_version: '1.0'
+id: DEC-2026-0086
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: basicdnd
+book_id: rc
+source_id: rc-steward-intake
+packet_id: cross-packet
+constitution_version: '1.0'
+decision_date: '2026-09-21'
+escalation_id: null
+request_origin:
+  type: repository_owner_stop_directive
+  summary: >-
+    NO RC PACKETS. The owner tried deleting them to avoid processing them.
+    Claims and reappearance are not permission to resume. Continue Shadowdark,
+    not Rules Cyclopedia work.
+question: How is the owner's explicit RC stop applied despite existing incoming and claimed packets?
+ruling: >-
+  Suspend all basicdnd/rc packet processing and automatic dispatch immediately.
+  No role may claim, extract, compile, review, integrate, repair or finish RC
+  packets, including the two currently claimed packets. Do not finish them
+  merely because work began. Do not create withdrawal GURs or other RC cleanup
+  artifacts just to satisfy a queue. Preserve existing source and published
+  history untouched. Only a new explicit owner instruction authorizing RC
+  work can resume this scope; uploads, claims, queue readiness, earlier plans
+  and automatic handoffs cannot. Shadowdark is the current processing priority.
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    Direct Architect scope hold, not a new RC implementation or cleanup job.
+    The only follow-up authorized here is sequential stop-notification
+    acknowledgment, never packet processing.
+  blocking_ids: []
+scope:
+  suspended_ruleset_id: basicdnd
+  suspended_book_id: rc
+  includes_existing_claims:
+    - books/basicdnd/rc/packets/claimed/PKT-RC-001-005-front-matter-and-introduction
+    - books/basicdnd/rc/packets/claimed/PKT-RC-006-012-steps-in-character-creation
+  active_processing_priority: shadowdark
+  resume_authority: explicit_new_repository_owner_instruction
+  related_decisions:
+    - DEC-2026-0085 future-intake permission is suspended for RC by this stop directive.
+    - DEC-2026-0080 and DEC-2026-0082 implementation approvals remain historical and valid.
+queue_interpretation: >-
+  This is an explicit user execution-scope hold under HERDR_HANDOFFS priority
+  rule 1, not a change to lineage consumption or scanner semantics. The raw
+  scanner may continue to display RC candidates. Every role must exclude them
+  from executable work and handoffs and label them owner-paused in summaries,
+  never tell the owner to finish or restore them. Do not claim the scanner has
+  removed those rows. No Builder scanner change is assigned by this Decision.
+operational_control:
+  retire_request_id: dec0085-review-imp0080-r04-20260920
+  reason: >-
+    The intended 0080 Review is already published and terminal, while the
+    relay failed to confirm delivery. The owner now explicitly forbids further
+    RC work. Never resend the request. After verifying its process is gone,
+    no handoff lock exists, exact output evidence matches, and other roles are
+    idle, retain the complete uncertain record in reconciliation evidence and
+    close the local request as failed with operator_cancelled_no_retry.
+    Delivery stays unconfirmed; do not relabel it successful.
+  notification: >-
+    Authorize one bounded, sequential stop-only instruction notification batch
+    to Analyst, Builder, Reviewer and Integrator after Architect is idle.
+    Read the new AGENTS scope section and acknowledge only; no source reads,
+    extraction, implementations, Reviews, queue scans, or further handoffs.
+    Pin live identities, hold the repository handoff lock, use unique request
+    IDs and local acknowledgments, and stop without retry on uncertainty.
+affected_contracts: []
+affected_registries: []
+migration_required: false
+migration_scope: No source, published artifact, graph, registry, implementation, or schema migration.
+constitution_version_impact: None.
+acceptance_tests:
+  - AGENTS.md states the explicit all-role RC stop, includes existing claims, and requires new owner authorization to resume.
+  - books/basicdnd/rc/book.yaml records paused status and this Decision as the hold authority.
+  - No RC packet, claim, GUR, GUP, Review, Approved bundle, or Integration is created, altered or deleted by this ruling.
+  - The local uncertain request is never resent; any operator closure preserves uncertainty evidence and does not assert successful delivery.
+  - Notifications are sequential acknowledgment-only operations and never launch work in RC or another ruleset.
+sequence:
+  - step: 1
+    owner: architect
+    action: Publish this Decision and apply the AGENTS scope hold and book-manifest pause.
+  - step: 2
+    owner: architect
+    action: >-
+      Reconcile the obsolete local request under the stated checks and queue
+      the bounded stop-notification batch. Report actual queued/acknowledged/
+      uncertain state, not assumed delivery. End the turn before recipients run.
+follow_up_owners:
+  architect:
+    - Enforce the owner hold; do not dispatch any RC work.
+changelog:
+  - Corrected the mistaken interpretation of reappearing or claimed RC inputs as authorization.
+  - Applied an explicit owner hold across all roles, preserving source and artifact history.
+  - Authorized no RC processing, cleanup chain, or new Builder task.
+exact_diff:
+  AGENTS.md:
+    - Add explicit RC processing hold and Shadowdark priority before startup.
+  books/basicdnd/rc/book.yaml:
+    - Record paused scope and owner-only resumption.
+  rulesets/basicdnd/escalations/decisions/DEC-2026-0086.yaml:
+    - Record the stop directive, exact scope, ownership and bounded notifications.
+exact_diff_ownership:
+  - {path: AGENTS.md, owner: architect, sequence_step: 1}
+  - {path: books/basicdnd/rc/book.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/escalations/decisions/DEC-2026-0086.yaml, owner: architect, sequence_step: 1}

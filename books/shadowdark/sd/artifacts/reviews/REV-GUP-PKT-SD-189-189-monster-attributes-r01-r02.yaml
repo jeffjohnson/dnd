@@ -1,0 +1,139 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-189-189-monster-attributes-r01-r02
+artifact_kind: packet_update_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-189-189-monster-attributes
+constitution_version: '1.8'
+revision: 2
+supersedes: REV-GUP-PKT-SD-189-189-monster-attributes-r01-r01
+review_role: independent_reviewer
+review_date: '2026-09-30'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-189-189-monster-attributes-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-189-189-monster-attributes-r01.yaml
+  checksum: sha256:44747eb207b2098574e2e32ea17d22f114a581fdabdd12d21b09e22ac90609ec
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: approved
+approval_ready: true
+approved_bundle_emitted: APPROVED-GUP-PKT-SD-189-189-monster-attributes-r01-r01
+edge_decisions:
+  approved_refs: [M001, M002, M003]
+  disposition: approved
+node_registry_decisions:
+  - {proposed_id: mstat_monster_level, submitted_label: Monster Level, kind: mstat, disposition: approved}
+  - {proposed_id: abil_dark_adapted, submitted_label: Dark-Adapted, kind: abil, disposition: approved}
+architectural_escalations: []
+resolved_escalation_evidence:
+  escalation:
+    id: ESC-2026-09-30T13.03.10.385Z
+    path: rulesets/shadowdark/escalations/decided/ESC-2026-09-30T13.03.10.385Z.yaml
+    checksum: sha256:524c82967ebb738df60692807dbd647dae5a31586cf4eca81a5dd507208c1b9c
+  decision:
+    id: DEC-2026-0106
+    path: rulesets/shadowdark/escalations/decisions/DEC-2026-0106.yaml
+    checksum: sha256:59a8d42da24673e3e5619c1f58f1998acfb1a50d6afdadbf3f12a0723f6a1d5c
+  effect: >-
+    The corrected production schema admits the already-authorized mstat_ prefix
+    in both endpoint positions. The immutable GUP now validates cleanly and no
+    row, identity, source interpretation, or operation partition changes.
+architectural_escalations_history:
+  - id: ESC-2026-09-30T13.03.10.385Z
+    state: decided
+    resolved_by: DEC-2026-0106
+blocking_findings: []
+reviewer_findings:
+  - id: RF-01
+    subject: monster_level_dependency
+    disposition: approved
+    refs: [M001]
+    detail: >-
+      Page 189 explicitly makes Monster Level an input to monster hit-point
+      value. DEC-2026-0105 authorizes the identity and bounded dependency, and
+      DEC-2026-0106 removes the sole production-schema blocker.
+  - id: RF-02
+    subject: dark_adapted_exclusion
+    disposition: approved
+    refs: [M002]
+    detail: >-
+      The source-named Dark-Adapted ability makes total-darkness penalties
+      inapplicable. EXCLUDES with derived negates correctly captures the
+      expected-but-denied dependency.
+  - id: RF-03
+    subject: monster_tier_inversion
+    disposition: approved
+    refs: [M003]
+    detail: >-
+      For a monster, tier is derived from spellcasting DC. The canonical
+      page-44 row describes the ordinary tier-to-DC relationship; the reverse
+      direction, different type, aspect, and condition make M003 intentional,
+      not duplicate or contradictory.
+  - id: RF-04
+    subject: node_registrations
+    disposition: approved
+    detail: >-
+      Monster Level and Dark-Adapted are source-named, use approved prefixes
+      and kinds, have valid IDs, and remain absent by ID and label from the
+      current 424-row registry.
+completeness_statement: >-
+  This successor preserves r01's independent source, identity, direction,
+  polarity, grain, and neighborhood findings. It independently revalidated the
+  exact immutable GUP under DEC-2026-0106's corrected production schema. All
+  three rows and both proposed identities are approval-ready; no unresolved
+  blocker or architectural question remains.
+reviewer_checklist:
+  source_support: passed_all_three_rows_preserved_from_r01
+  node_identity: passed_two_fresh_registrations
+  edge_semantics_and_direction: passed_all_three_rows
+  grain: passed
+  polarity: passed_three_derived_no_authored_polarity
+  graph_neighborhood: passed_M003_intentional_inverse_formula
+  corrected_production_edge_schema: passed_M001_M002_M003
+  canonical_files_modified: false
+  gup_files_modified: false
+independent_validation:
+  prior_review:
+    id: REV-GUP-PKT-SD-189-189-monster-attributes-r01-r01
+    path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-189-189-monster-attributes-r01-r01.yaml
+    checksum: sha256:275e5affd208ba1d1fd285e73886b41b14cab1d74d055a72114a402415774919
+    result: substantive_findings_preserved_schema_blocker_resolved
+  corrected_schema:
+    path: schemas/shadowdark/graph/edge.schema.json
+    checksum: sha256:f5ca15968536e9b9524b3095b9fbc1115307b5cefcc6b319c42546b293748f24
+    result: >-
+      mstat source and target fixtures accepted; unapproved-prefix source and
+      target fixtures rejected; M001, M002, and M003 each valid.
+  immutable_gup:
+    path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-189-189-monster-attributes-r01.yaml
+    checksum: sha256:44747eb207b2098574e2e32ea17d22f114a581fdabdd12d21b09e22ac90609ec
+    result: valid_against_common_and_shadowdark_gup_schemas
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-189-189-monster-attributes-r01.validation.json
+    checksum: sha256:abf14c682b24737c071c12d936011870578a7c60b09772efb0a317ab0dbc98ef
+    result: zero_errors_warnings_escalations
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-189-189-monster-attributes/source.md
+    checksum: sha256:942230e01400adad5ed80838fc7e5a39e64af9ee551494cad4f82d3e20ee0f28
+    result: r01_source_findings_reconfirmed
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:355986c8ed416450de723583a6d33c653fe242061334fcabd773aa0c4c5b57b3
+    observed_rows: 424
+    result: both_proposals_absent_by_id_and_label
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:d9d353895fd891314043936f3673281d3f96d1144dff27dcc155de9d7f2a2549
+    observed_edges: 851
+    result: no_duplicate_and_M003_same_pair_different_type_confirmed
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Apply the exact first Approved bundle containing M003 as an addition,
+    M002 and M001 as pending additions, and both approved node registrations.
+  blocking_ids: []

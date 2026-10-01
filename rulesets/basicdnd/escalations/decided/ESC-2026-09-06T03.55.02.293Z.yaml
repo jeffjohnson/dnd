@@ -1,0 +1,604 @@
+schema_version: '1.0'
+id: ESC-2026-09-06T03.55.02.293Z
+status: decided
+ruleset_id: basicdnd
+book_id: rc
+constitution_version: none
+raised_by: analyst
+decision_owner: architect
+raised_on: '2026-09-06'
+decision_id: DEC-2026-0080
+decided_on: '2026-09-06'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The queue scanner reports two ready Analyst jobs in books/basicdnd/rc/packets/incoming/, but the
+    ruleset basicdnd does not exist. There is no constitution, no ruleset.yaml, no registries and no
+    schemas, so the Analyst context verifier refuses to start, no source identity can be named, no
+    node prefix can be claimed, and no GUR schema exists to validate against. Separately, the
+    repository source steward has declared a standing intake format for all future packet markdown
+    that contracts/SOURCE_MARKDOWN.md 1.4 does not currently admit. Both are Architect-owned.
+  blocking_ids: []
+
+envelope_note: >-
+  constitution_version is recorded as the literal string none because rulesets/basicdnd/governance/
+  constitution.md does not exist and the artifact envelope requires a non-empty string. The Analyst
+  will not invent a version number for a constitution that has not been authored. Establishing the
+  real value is part of what this escalation requests. source_id is omitted for the same reason:
+  rulesets/basicdnd/registries/sources.yaml does not exist, so no source identity is registered and
+  the Analyst may not mint one.
+
+question: >-
+  Two questions. First, what governance must exist before an Analyst may claim a basicdnd packet,
+  and how is the basicdnd ontology related to the adnd1e ontology it resembles but is not compatible
+  with? Second, does contracts/SOURCE_MARKDOWN.md admit the repository source steward's standing
+  intake format, specifically a YAML metadata block and a page marker carrying a semantic class
+  attribute, and if so with what exact spelling and what class vocabulary?
+
+originating_work:
+  incoming_files:
+    - books/basicdnd/rc/packets/incoming/RC_pages_1-5.md
+    - books/basicdnd/rc/packets/incoming/RC_pages_6-12.md
+  packet_ids: none allocated; claiming is blocked by this escalation
+  gur_ids: none
+  gup_ids: none
+  review_ids: none
+
+blocking_findings:
+  - id: BLK-01
+    subject: the ruleset basicdnd is not initialized
+    severity: blocks all Analyst work in this namespace
+    detail: >-
+      contracts/ROLE_CONTEXT_MANIFEST.yaml lists the Analyst stable authority set as
+      rulesets/{ruleset}/governance/constitution.md, rulesets/{ruleset}/ruleset.yaml,
+      rulesets/{ruleset}/registries/*.yaml, rulesets/{ruleset}/registries/*.json,
+      schemas/{ruleset}/graph/gur.schema.json and schemas/{ruleset}/books/{book}/*.json. For
+      ruleset basicdnd and book rc, every one of those paths is absent. rulesets/basicdnd/ does not
+      exist at all and schemas/basicdnd/ does not exist at all.
+    observed_command: >-
+      python tooling/common/role_context.py verify --role analyst --ruleset basicdnd --book rc
+      --session-id <id>
+    observed_output: >-
+      role context verification failed: pattern 'rulesets/{ruleset}/governance/constitution.md'
+      names rulesets/basicdnd/governance/constitution.md, which does not exist
+    consequence: >-
+      Without the constitution there is no section 3.1 prefix table, so no candidate node ID can be
+      formed; no section 4 edge vocabulary, so no candidate edge type can be chosen; and no
+      constitution_version for a packet manifest or GUR to declare. Without the registries there is
+      no registered source_id and no citation_code. Without schemas/basicdnd/graph/gur.schema.json
+      there is no schema to validate a GUR against. The Analyst is prohibited from minting a prefix
+      or adding a registry entry, so none of this is self-serviceable.
+
+  - id: BLK-02
+    subject: books/basicdnd/rc/book.yaml declares the wrong ruleset and book
+    severity: blocks identity resolution independently of BLK-01
+    detail: >-
+      The file reads ruleset_id adnd1e, book_id dmg, title Dungeon Masters Guide, default_source_id
+      dmg-legacy-unspecified. It is byte-for-byte the shape of an adnd1e book manifest and appears
+      to be an uncorrected copy. The only manifest that exists for this workspace therefore asserts
+      that books/basicdnd/rc/ is the AD&D 1e Dungeon Masters Guide.
+    contract_basis: >-
+      agents/analyst/INSTRUCTIONS.md Runtime scope requires the Analyst to resolve ruleset_id,
+      book_id, source_id and packet_id from repository manifests and states never infer these from
+      conversation history. The Prohibited actions list repeats do not use conversation history as
+      evidence. The repository manifest and the directory path disagree, and the Analyst may not
+      break the tie from chat.
+    consequence: >-
+      Even if BLK-01 were resolved, a packet manifest written now would have to declare an identity
+      the book manifest contradicts. This escalation declares ruleset_id basicdnd and book_id rc
+      from the directory path only, because that is the sole self-consistent reading available, and
+      records the conflict rather than silently preferring it.
+    note: >-
+      REPOSITORY_STRUCTURE.md describes book.yaml as stable work identity and places the book
+      workspace below ruleset governance in the authority hierarchy. The Analyst has not edited it.
+
+  - id: BLK-03
+    subject: the Builder compiler hard-rejects any ruleset other than adnd1e
+    severity: blocks the downstream pipeline even after governance exists
+    detail: >-
+      tooling/builder/src/adnd1e_builder/compiler.py line 357 tests whether the GUR ruleset_id is in
+      the tuple containing only None and the literal adnd1e, and otherwise appends an error-severity
+      finding named gur_wrong_ruleset with the message that the ruleset_id is not adnd1e and that
+      SCOPE_AND_IDENTITY forbids silently moving artifacts between rulesets.
+    consequence: >-
+      A schema-valid basicdnd GUR would fail Builder compilation on ruleset identity alone. Creating
+      the governance files is therefore necessary but not sufficient; a second ruleset requires a
+      Builder tooling change, which is a Decision with migration_required rather than a governance
+      file addition. Raising it now avoids the Analyst producing a GUR that cannot be compiled.
+    related_observation: >-
+      The Builder and Integrator packages are themselves named adnd1e_builder and adnd1e_integrator,
+      and their CLI ruleset arguments default to adnd1e. Those defaults are overridable and are not
+      by themselves blocking; the line 357 gate is not overridable.
+
+steward_format_declaration:
+  declared_by: repository source steward
+  declared_on: '2026-09-06'
+  statement: >-
+    The steward states that all markdown supplied to this repository will follow the structure of
+    the two RC incoming files: a metadata block at the top, and the attribute .full-page-artwork
+    used to indicate a page that is full-page artwork. The steward further directed that new formats
+    be escalated to the Architect.
+  authority_basis: >-
+    contracts/SOURCE_MARKDOWN.md External Source Intake makes the repository source steward
+    responsible for lawful source acquisition and intake and for supplying conforming incoming
+    packets. Recording a steward declaration as steward authority follows the established pattern in
+    which the PHB 108 marker_note and the DEC-2026-0079 coverage exception both record a dated
+    steward confirmation.
+  evidence_status: >-
+    This is a declaration about intake format, not source-read evidence about any rulebook page. It
+    is recorded here so the format question rests on a durable artifact rather than on chat, in
+    keeping with the Analyst prohibition on using conversation history as evidence.
+
+source_format_questions:
+  preamble: >-
+    Because the steward has declared this a standing format rather than a one-off, the two elements
+    below are no longer packet defects to be returned for re-packetization. They are a conflict
+    between a durable intake convention and contracts/SOURCE_MARKDOWN.md 1.4, which only the
+    Architect can resolve. Each finding below was tested against the real Pandoc AST and the real
+    linter rather than reasoned about, and the exact spelling probed is quoted with each result
+    below, so the Architect can repeat every test from this artifact alone.
+  items:
+    - id: FMT-01
+      subject: YAML metadata block at the top of every packet source
+      observed: >-
+        Both RC files open with a YAML block delimited by three hyphens. RC_pages_1-5.md declares
+        source, series, product_line and pages. RC_pages_6-12.md additionally declares chapter and
+        chapter_title.
+      test_performed: >-
+        pandoc -f markdown -t json on RC_pages_6-12.md. The meta object carries keys chapter,
+        chapter_title, pages, product_line, series and source, and the first entry in blocks is the
+        Chapter 1 Header, not the metadata.
+      finding: >-
+        Fully Pandoc-compatible. The block is consumed as document metadata and never reaches the
+        block stream, so it cannot become unattributed leading content and cannot disturb page
+        marker resolution. RC_pages_6-12.md passes the marker linter cleanly with the block present.
+      contract_status: >-
+        contracts/SOURCE_MARKDOWN.md 1.4 neither permits nor forbids it. The Scope section requires
+        Pandoc Markdown and page markers; a metadata block is legal Pandoc Markdown, so nothing is
+        violated. The gap is that the contract does not say the block exists, and says nothing about
+        its authority.
+      question: >-
+        Should the contract acknowledge the metadata block, and what is its authority relative to
+        packet.yaml? Packet manifests already carry page_start, page_end and source identity, and
+        the frontmatter now carries pages and source independently. If the two ever disagree, which
+        governs? The Analyst recommends the manifest govern and the frontmatter be treated as steward
+        intake provenance, matching the existing rule that the claimed packet is authoritative, but
+        the precedence must be stated rather than assumed.
+      recommended_disposition: >-
+        Admit it explicitly, define the key set, and state manifest precedence. This costs no parser
+        change and no linter change.
+
+    - id: FMT-02
+      subject: a page marker carrying a semantic class attribute
+      observed: >-
+        RC_pages_1-5.md line 7 is the standalone token {#p1 .full-page-artwork}, marking printed
+        page 1 as full-page artwork.
+      contract_conflict: >-
+        contracts/SOURCE_MARKDOWN.md 1.4 Page Marker defines the marker as the exact form {#pN} and
+        reserves identifiers matching pN for page markers. A class suffix is outside that form.
+      tests_performed:
+        - spelling: standalone paragraph, as supplied
+          result: >-
+            Fails. The Pandoc AST shows a Para of two Str nodes, the first {#p1 and the second
+            .full-page-artwork}. Pandoc does not attach attributes to a bare paragraph, so no
+            attribute exists and no marker is recognised. Page 1 receives no assignment and the
+            linter reports pages resolved 2-5 with page 1 lost.
+        - spelling: attached to a heading, for example # Full-Page Artwork {#p1 .full-page-artwork}
+          result: >-
+            The marker RESOLVES CORRECTLY. Pandoc produces a Header whose attribute is the
+            identifier p1 with the class full-page-artwork, and pagemarkers._marker_from_attr already
+            reads a pN heading identifier as a page marker, which the contract itself blesses by
+            saying Pandoc may represent a marker at the end of a heading as the heading identifier.
+            A probe file resolved pages 1-2. The class survives intact in the AST, where tooling
+            could read it as structured data.
+        - spelling: fenced div, for example three colons then {#p1 .full-page-artwork}
+          result: >-
+            Fails. pagemarkers._walk recurses into a Div's children but never inspects the Div's own
+            attribute, so the marker is lost. A probe file resolved only page 2. This spelling would
+            require a parser change to support.
+        - spelling: plain {#p1} with the artwork fact moved to the packet manifest
+          result: Passes cleanly. Probe file resolved pages 1-2 with no findings.
+      linter_defect_discovered: >-
+        For the heading spelling the linter reports FAIL even though page attribution succeeded. The
+        cause is that cli.lint_source scans the raw file text with the MALFORMED regex independently
+        of the AST, so it matches the literal string {#p1 .full-page-artwork} and reports a malformed
+        marker although the parser resolved it. This is a false positive against the AST result and
+        is worth correcting whatever is decided about the format, because today a conforming heading
+        marker with any attribute is reported as malformed.
+      significance: >-
+        This is not only a spelling question. DEC-2026-0079 closed PHB 121 as an exact singleton
+        coverage exception and explicitly deferred a reusable coverage-record class until a second
+        qualifying case was escalated, requiring that the second case be escalated before anyone
+        builds a shared ledger. The steward has now proposed a general, machine-readable convention
+        for exactly that problem, expressed in the source itself rather than in a separate ledger. If
+        the Architect admits it, .full-page-artwork becomes the reusable no-graph-content mechanism
+        DEC-2026-0079 anticipated, and it is readable directly from the Pandoc AST.
+      question: >-
+        Does the contract admit a class-bearing page marker; if so must it attach to a block that can
+        carry attributes, which today means a heading; what is the permitted class vocabulary, since
+        an open vocabulary would let source files invent semantics no contract defines; and does a
+        class-marked page still require a corresponding packet manifest entry or does the marker
+        alone suffice?
+
+  options_for_fmt_02:
+    - id: FMTOPT-1
+      summary: keep {#pN} exact and record artwork in the packet manifest
+      detail: >-
+        The steward writes plain {#p1}; the artwork fact goes in packet.yaml page_composition and
+        marker_note at claim, which is the PHB 108 precedent that DEC-2026-0079 reaffirmed as the
+        correct home for an in-span no-content page.
+      cost: >-
+        The steward must change a declared standing format, and the fact stays human-readable prose
+        in a manifest rather than machine-readable data.
+      benefit: No contract change, no parser change, no linter change; precedent already exists.
+
+    - id: FMTOPT-2
+      summary: admit a class-bearing marker on an attribute-carrying block, and fix the linter
+      detail: >-
+        Amend SOURCE_MARKDOWN to permit {#pN .class} where the marker attaches to a heading, define
+        the class vocabulary starting with full-page-artwork, and change cli.lint_source so the
+        malformed-marker check consults the AST rather than scanning raw text.
+      cost: >-
+        A contract revision and a small Builder linter change. RC page 1 currently has no heading to
+        carry the attribute, so the steward would need to supply one or the bare-paragraph form would
+        remain unsupported.
+      benefit: >-
+        Page attribution already works today for this spelling with no parser change. The class
+        becomes structured, queryable data, and it answers the reusable-mechanism question
+        DEC-2026-0079 left open.
+
+    - id: FMTOPT-3
+      summary: admit the standalone form as supplied
+      detail: >-
+        Support {#pN .class} as a bare paragraph, which requires a parser change, most plausibly by
+        reading Div attributes in pagemarkers._walk and asking the steward to use a fenced div.
+      cost: >-
+        The largest change. A bare paragraph cannot carry a Pandoc attribute at all, so the exact
+        supplied spelling can never be made to work as an attribute; only a div or heading can. This
+        option is really a request that the steward move to a fenced div plus a parser change.
+      benefit: Closest to the steward's supplied spelling without requiring a visible heading.
+
+  analyst_recommendation_on_format: >-
+    FMT-01 admit as described. FMT-02 FMTOPT-2, with the linter correction made regardless of the
+    format ruling. FMTOPT-2 is recommended because the heading spelling already produces correct
+    page attribution with the parser exactly as it stands today, so the change is a contract and
+    linter matter rather than a parser rewrite, and because it converts the steward's convention into
+    the reusable no-content mechanism DEC-2026-0079 deferred. The Analyst has no stake in the
+    spelling and defers entirely on the class vocabulary.
+
+page_1_disposition:
+  finding: >-
+    RC printed page 1 is full-page artwork with no rules text, which the steward encoded inline as
+    the attribute .full-page-artwork on the page-1 marker.
+  ruling_consulted: DEC-2026-0079
+  analysis: >-
+    DEC-2026-0079 requires a worker who finds an uncovered printed page to consult approved Decisions
+    for an exact coverage_exceptions tuple, and requires that a second confirmed no-content page
+    OUTSIDE its claimed packet span be escalated before anyone builds a shared ledger. RC page 1 is
+    not that case. It falls INSIDE the declared span of RC_pages_1-5.md, which makes it the PHB 108
+    shape rather than the PHB 121 shape, and DEC-2026-0079 reaffirms that the PHB 108 precedent
+    belongs inside its covering packet, recorded in the intake manifest.
+  conclusion: >-
+    No coverage escalation is owed for RC page 1 as a coverage question, and this escalation does not
+    request one. It is raised here only under FMT-02, as a format question about how the steward's
+    standing convention expresses the fact, not as a question about whether page 1 yields content. It
+    does not. Whichever format option is chosen, the page-1 fact is recorded at claim in the packet
+    manifest page_composition field, and under FMTOPT-2 it would additionally be machine-readable in
+    the source.
+
+packet_intake_analysis:
+  purpose: >-
+    Recorded now so that claiming is a mechanical step once governance exists, and so the Architect
+    can judge the ontology questions against real content rather than a description of it. Both files
+    were read in full. No candidate node, edge, domain or general rule is proposed here.
+  files:
+    - filename: RC_pages_1-5.md
+      bytes: 18266
+      line_endings: LF only, no CRLF present
+      source_checksum: sha256:1ad0585149003975de0d11b695e0fc9db4121e48bf02b5a150cfcf88322cba12
+      source_checksum_basis: lf_normalized
+      declared_frontmatter: source Rules Cyclopedia; series RC; product_line Basic D&D; pages 1-5
+      markers_resolved: 2, 3, 4, 5
+      markers_unresolved: p1, pending FMT-02
+      page_composition: >-
+        p1 full-page artwork with no rules text; p2 and p3 the table of contents for the whole
+        volume; p4 credits, acknowledgements, trademark and copyright notices; p5 the Introduction,
+        What Is Role-Playing, Setting Up, Mapping and Calling, Using the Dice, Cyclopedia
+        Organization and a Pronoun Note.
+      analyst_content_assessment: >-
+        Orientation and front matter. The one candidate mechanical locus is Using the Dice on p5,
+        which defines the dice notation, the d2 coin substitute, the d3 as a halved and rounded-up
+        d6, and percentile reading of two ten-sided rolls. Whether dice notation is a graph mechanic
+        or a reading convention is an ontology question, not a packet question, and is listed under
+        ONT-08. Nothing else on pages 1 through 5 states a mechanical relationship.
+    - filename: RC_pages_6-12.md
+      bytes: 58695
+      line_endings: LF only, no CRLF present
+      source_checksum: sha256:456dde9bd30df37f7311fc9f28a114f1f7351760e4579d313050ec847732d82e
+      source_checksum_basis: lf_normalized
+      declared_frontmatter: >-
+        source Rules Cyclopedia; series RC; product_line Basic D&D; chapter 1; chapter_title Steps in
+        Character Creation; pages 6-12
+      markers_resolved: 6, 7, 8, 9, 10, 11, 12
+      lint_result: clean, 7 markers, no malformed tokens, no unattributed leading content
+      section_span:
+        - 'Chapter 1: Steps in Character Creation'
+        - Roll for Ability Scores
+        - Choose a Character Class
+        - Adjust Ability Scores
+        - Roll for Hit Points
+        - Roll for Money
+        - Buy Equipment
+        - Determine Other Numbers and Rolls
+        - Note Adjustments for Ability Scores
+        - Choose Character Alignment
+        - Select Name, Personality, and Background
+        - Determine Character Height and Weight
+        - Earn Experience
+        - Prime Requisites and Experience Points
+      tables_present:
+        - Character Classes and Ability Requirements
+        - Character Class and Hit Dice Table
+        - Armor Type and Armor Class Table
+        - Bonuses and Penalties for Ability Scores
+        - Abilities and Adjustments Table
+        - Intelligence and Languages Table
+        - Charisma Adjustment Table
+        - Character Height and Weight Table
+        - Experience Bonuses and Penalties Table
+        - an unnamed first-level-fighter attack row on p9
+      analyst_content_assessment: >-
+        Dense and load-bearing. This packet alone establishes the ability set, the nine character
+        classes and their requirements, prime requisites, hit dice by class, armor class and its
+        Dexterity adjustment, attack rolls and THAC0, five saving-throw categories, the unified
+        ability adjustment table and its six targets, three-point alignment and alignment languages,
+        and the prime-requisite experience bonus. It is a viable first packet and its markers are
+        clean. It is blocked only by BLK-01, BLK-02 and BLK-03, none of which are defects in it.
+
+ontology_questions:
+  preamble: >-
+    These are raised because agents/analyst/INSTRUCTIONS.md requires raising architectural questions
+    explicitly rather than improvising ontology, and because each one changes the shape of the first
+    GUR rather than one row inside it. None can be answered by the Analyst. Each cites the packet.
+  items:
+    - id: ONT-01
+      subject: whether basicdnd forks, inherits, or shares the adnd1e ontology
+      source_evidence: >-
+        The volume's own table of contents on p2 lists Appendix 2, AD&D Game Conversions, with
+        subsections Why Convert, Game Differences, Converting Between the Games, Characters,
+        Monsters, Magical Items, Immortals and Deities, and Measurements. The book states that
+        conversion is required to move between the two games.
+      question: >-
+        README.md defines a ruleset as the graph and ontology shared by a compatible body of
+        literature. The source itself documents that Basic D&D and AD&D are not interchangeable,
+        which supports a genuinely separate ruleset. Does basicdnd receive its own constitution with
+        its own section 3.1 prefix table and section 4 edge vocabulary, or does it adopt the adnd1e
+        constitution by reference with a recorded delta? No inheritance or by-reference mechanism
+        exists in the contracts today, so option B below would itself need one.
+
+    - id: ONT-02
+      subject: demihumans are character classes, not races
+      source_evidence: >-
+        p6 states that the names of the demihuman character classes sound more like race or species
+        names than professions, and that because demihumans are more limited in their options than
+        humans, the entire race can be represented by a single character class. The Character Classes
+        and Ability Requirements table lists Dwarf, Elf and Halfling as rows in a column headed
+        Character Class, alongside Cleric, Fighter, Magic-User and Thief.
+      question: >-
+        adnd1e section 3.1 carries both class_ and race_ prefixes on separate axes, and adnd1e has a
+        character_races registry. Basic D&D collapses those axes for demihumans. Is the basicdnd
+        identity class_dwarf with no race_dwarf, are both minted, and does basicdnd get a character
+        race registry at all? This decides whether the first GUR proposes three class nodes or three
+        class nodes plus three race nodes, and it cannot be deferred to Builder normalization.
+
+    - id: ONT-03
+      subject: one unified ability adjustment table feeding six different mechanics
+      source_evidence: >-
+        p10 Bonuses and Penalties for Ability Scores gives a single adjustment ladder used by every
+        ability. The Abilities and Adjustments Table on the same page routes it to Attack Rolls for
+        melee and unarmed, Damage Rolls for melee and thrown, Opening Doors, Languages, General
+        Skills, Saving Throws vs Spells, Attack Rolls for thrown and missile, Armor Class, Hit Points
+        per Experience Level, and Reactions from NPCs.
+      question: >-
+        adnd1e decomposes these into per-ability derived mechanics under the
+        abil_<three-letter>_<rule> convention, for example abil_dex_reaction_adjustment, which
+        DEC-2026-0032 established. Basic D&D has one table and many consumers. Does basicdnd mint a
+        single table identity that MODIFIES each consumer, or per-ability derived identities
+        mirroring adnd1e, or both? The two shapes produce materially different edge counts and
+        different answers to what breaks if the table changes.
+      complication: >-
+        Charisma does not use the unified ladder. The separate Charisma Adjustment Table on p10
+        carries three distinct outputs, Reaction Adjustment, Maximum Number of Retainers and Retainer
+        Morale. Whichever shape is chosen must accommodate that asymmetry rather than assume all six
+        abilities are uniform.
+
+    - id: ONT-04
+      subject: THAC0 and the attack table are two encodings of one mechanic
+      source_evidence: >-
+        p9 presents them under the heading Attack Rolls Tables vs THAC0 and states there are two ways
+        to record the same information, one for beginning players and one for experienced players.
+        THAC0 is defined as the number needed to hit armor class zero, read off the same table.
+      question: >-
+        This is an explicit ESCALATION_CONTRACT trigger, an edge does not fit the closed vocabulary.
+        Two identities encode the same underlying relation, and neither MODIFIES, TRIGGERS nor
+        CONSTRAINS the other. Are they one node with two labels, two nodes joined by an edge type
+        that must be named, or one node with the alternative encoding recorded as a non-edge
+        observation? The Analyst will not improvise an edge type.
+
+    - id: ONT-05
+      subject: prime requisite is a class-to-ability relation that also drives experience
+      source_evidence: >-
+        p6 states each character class requires prowess in one of the abilities and names these prime
+        requisites. p12 Experience Bonuses and Penalties Table converts the prime requisite score
+        into an experience percentage adjustment per class, and gives the elf two prime requisites
+        and the halfling an either-or and an and case.
+      question: >-
+        Which edge type carries prime requisite, given that it is simultaneously a class requirement
+        and an experience modifier, and that two classes have compound prime requisites? This cannot
+        be selected before the basicdnd section 4 vocabulary is fixed by ONT-01.
+
+    - id: ONT-06
+      subject: alignment is three-point and carries a language mechanic
+      source_evidence: >-
+        p10 and p11 give exactly three alignments, Law, Chaos and Neutrality, and state that each
+        alignment has a secret language which characters always know, which has no written form, and
+        which a character forgets and replaces on changing alignment.
+      question: >-
+        adnd1e carries sys_alignment as a subsystem under a nine-point scheme. Separate rulesets
+        cannot collide, but if basicdnd reuses adnd1e prefixes the identical stem sys_alignment would
+        name a structurally different mechanic in each graph. Is that acceptable, or does the
+        Architect want distinguishable stems? The alignment language is a further mechanic that may
+        need its own identity.
+
+    - id: ONT-07
+      subject: retainers
+      source_evidence: >-
+        p10 Charisma Adjustment Table sets a maximum number of retainers and a retainer morale score,
+        and the surrounding text describes hiring bodyguards and assistants.
+      question: >-
+        adnd1e reserves hench_ for hireling and henchman mechanics. Does basicdnd carry the same
+        prefix for retainers, a differently named one, or fold them under campaign_? Prefix parity
+        across rulesets is an Architect choice.
+
+    - id: ONT-08
+      subject: whether dice notation is a graph mechanic
+      source_evidence: >-
+        p5 Using the Dice defines the d notation, percentile reading from two ten-sided rolls, the
+        coin as a d2, and the d3 as a d6 halved and rounded up.
+      question: >-
+        This is a reading convention that many later mechanics presuppose. Applying the core test,
+        changing it would not require review of any specific target mechanic so much as of the
+        notation everywhere. Is it a node, a general rule candidate, or explicitly out of scope?
+        Answering it decides whether the pages 1-5 packet yields any edge at all.
+
+local_graph_neighborhood: >-
+  Empty and not merely unread. rulesets/basicdnd/canonical/ does not exist, there is no nodes.csv and
+  no graph.json, so no node registry slice, local neighborhood or general rule slice can be supplied
+  with a basicdnd packet. The first packet in this ruleset will have no neighborhood to compare
+  candidates against, which is a normal consequence of a new ruleset but should be acknowledged in
+  whatever initializes it, because agents/analyst/INSTRUCTIONS.md lists all three slices as packet
+  inputs and prior adnd1e packets recorded their absence as a material gap.
+
+affected_canonical_ids: >-
+  None. No basicdnd canonical data exists and this escalation proposes no change to any adnd1e
+  canonical row, registry entry, artifact or lineage. The adnd1e graph is untouched by anything
+  requested here. FMT-01 and FMT-02 would change contracts/SOURCE_MARKDOWN.md, which is universal
+  rather than ruleset-scoped, so a ruling there reaches adnd1e packets as well; no existing adnd1e
+  packet uses either construct, so no existing packet becomes nonconforming under any option above.
+
+options_considered:
+  - id: OPT-A
+    summary: initialize basicdnd as a full parallel ruleset with its own governance and schemas
+    detail: >-
+      Author rulesets/basicdnd/ruleset.yaml, rulesets/basicdnd/governance/constitution.md with its
+      own section 3.1 prefix table and section 4 edge vocabulary, the registries books.yaml and
+      sources.yaml at minimum, the canonical and escalation directory structure, and schemas/basicdnd
+      with graph and registry schemas plus schemas/basicdnd/books/rc. Answer ONT-01 through ONT-08
+      inside that constitution.
+    cost: >-
+      The largest amount of Architect authoring, and it duplicates whatever the two rulesets
+      genuinely share.
+    benefit: >-
+      It matches the existing contracts exactly, needs no new inheritance mechanism, and lets the
+      Basic D&D divergences in ONT-02, ONT-03, ONT-04 and ONT-06 be stated directly rather than as
+      exceptions to a foreign document.
+
+  - id: OPT-B
+    summary: basicdnd adopts the adnd1e constitution by reference with a recorded delta
+    detail: >-
+      A short basicdnd constitution incorporates the adnd1e section 3.1 prefix table and section 4
+      edge vocabulary by reference and records only the divergences.
+    cost: >-
+      No contract today defines constitution inheritance, and the Integrator reads the section 3.1
+      table by parsing the pipe-table rows of a single constitution file at
+      tooling/integrator/src/adnd1e_integrator/invariants.py line 57, which raises if it parses fewer
+      than twenty prefixes. A by-reference constitution would fail that parser unless the mechanism
+      and the parser are designed together.
+    benefit: >-
+      Less duplication, and prefix drift between the two rulesets becomes visible in one place.
+
+  - id: OPT-C
+    summary: do not create a ruleset; process the Rules Cyclopedia as a book under adnd1e
+    detail: >-
+      Move the workspace to books/adnd1e/rc/ and register rc in the adnd1e book registry.
+    assessment: >-
+      The Analyst does not recommend this. README.md defines a ruleset as the ontology shared by a
+      COMPATIBLE body of literature, and the source volume itself devotes Appendix 2 to converting
+      between the two games. Merging them would put two incompatible class ontologies, two alignment
+      schemes and two ability-adjustment structures into one graph, and ONT-02 alone would make
+      class_dwarf and race_dwarf contradict each other inside a single namespace. It is recorded
+      because it is the only option that needs no new governance, and it should be rejected on the
+      record rather than left unstated.
+
+recommended_resolution: >-
+  OPT-A, with the eight ontology questions answered in the basicdnd constitution rather than deferred
+  to the first packet, and with BLK-02 and BLK-03 handled as part of the same initialization. For the
+  format questions, FMT-01 admitted with manifest precedence stated, and FMT-02 resolved as FMTOPT-2
+  with the linter false positive corrected regardless of the format ruling. The Analyst further
+  recommends that initialization settle the source identity for this book, since claiming cannot
+  proceed without a registered source_id; the adnd1e convention is <book>-legacy-unspecified for
+  imported data and <book>-steward-intake for steward-supplied packets, and both of these packets are
+  steward-supplied with no legacy dump behind them. The Analyst names that convention as an
+  observation and does not propose an identity, because minting a source identity is a registry
+  addition and is prohibited to this role.
+
+expected_migration_impact:
+  adnd1e_canonical_data_change: false
+  adnd1e_registry_change: false
+  adnd1e_artifact_lineage_change: none
+  basicdnd_canonical_data_change: >-
+    None yet. Initialization creates empty canonical structures; the first rows arrive only through
+    an ordinary GUR, GUP, Review, Approved bundle and Integration cycle after this is decided.
+  tooling_change_required: true
+  tooling_change_detail: >-
+    Two independent changes. BLK-03, the compiler ruleset gate at
+    tooling/builder/src/adnd1e_builder/compiler.py line 357, admits only adnd1e and must admit the
+    registered ruleset set instead; it should be sequenced before the first basicdnd GUR is published
+    so the Analyst does not hand Builder an artifact the compiler must reject on identity alone.
+    Separately, under FMT-02, cli.lint_source reports a malformed marker for any attribute-bearing
+    heading marker even when the AST resolved the page correctly; that check should consult the
+    parsed result rather than scanning raw text. Both are Builder-owned code under a Decision with
+    migration_required rather than governance file edits.
+
+governance_change_surface:
+  constitution_change: >-
+    Yes. A basicdnd constitution must be created; none exists. Whether it is authored in full or by
+    reference is ONT-01.
+  registry_change: >-
+    Yes. rulesets/basicdnd/registries/ must be created, with books.yaml and sources.yaml at minimum.
+    Whether a character race registry is needed is ONT-02.
+  profile_change: >-
+    Undetermined. adnd1e carries profiles and activation_profiles; whether basicdnd needs an
+    equivalent at initialization is an Architect judgement.
+  schema_change: >-
+    Yes. schemas/basicdnd/ must be created, including graph/gur.schema.json, which the Analyst stable
+    authority set requires and against which any basicdnd GUR must validate.
+  contract_change: >-
+    Yes, if FMT-01 or FMT-02 is admitted. contracts/SOURCE_MARKDOWN.md is a universal contract at
+    authority level 1, above every ruleset, so amending it is a repository-wide act and its version
+    would move from 1.4.
+
+analyst_position: >-
+  Both incoming files were read in full before this escalation was written, and RC_pages_6-12.md is a
+  clean, dense and immediately workable first packet. Nothing in either file is the reason work has
+  not started. The Analyst has not claimed either packet, has not written a packet manifest, has not
+  edited books/basicdnd/rc/book.yaml, has not altered the source markdown, and has not created any
+  file under rulesets/basicdnd/ or schemas/basicdnd/ other than this escalation and the pending
+  directory that holds it. Each of those would require minting an identity, authoring source text, or
+  writing governance, and all three are prohibited to this role. Once the ruleset is initialized,
+  BLK-02 is corrected and the format questions are ruled on, claiming both packets and publishing the
+  first GUR is ordinary Analyst work that needs no further escalation, with the ONT items answered.
+
+placement_note: >-
+  contracts/ESCALATION_CONTRACT.md and agents/architect/INSTRUCTIONS.md place a pending escalation at
+  rulesets/<ruleset-id>/escalations/pending/. That directory did not exist for basicdnd and was
+  created to hold this artifact. No other file was added under rulesets/basicdnd/. If the Architect
+  considers even that directory to be governance state the Analyst should not have created, the
+  escalation can be relocated; its ID is immutable across states under contracts/FILE_NAMING.md, so
+  moving it costs nothing. Raising the question inside the correct namespace was judged better than
+  filing it under adnd1e, which agents/analyst/INSTRUCTIONS.md forbids by requiring outputs to remain
+  inside the resolved ruleset namespace. The FMT items concern a universal contract rather than
+  basicdnd governance, but they arose from these packets and are kept with them rather than split
+  across two escalations.

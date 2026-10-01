@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import csv
 import re
+from typing import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -49,9 +50,21 @@ def normalize_label(label: str) -> str:
     return text.strip("_")
 
 
-def prefix_of(node_id: str) -> str | None:
-    """Return the approved prefix a node ID carries, or None."""
-    for prefix in NODE_PREFIXES:
+def prefix_of(node_id: str, prefixes: "Iterable[str] | None" = None) -> str | None:
+    """Return the approved prefix a node ID carries, or None.
+
+    `prefixes` scopes the check to one ruleset's approved set (DEC-2026-0087).
+    Omitting it keeps the AD&D 1e constants, so every existing caller is
+    unchanged; adding `ancestry_` to those constants instead would have
+    authorized the prefix in rulesets that never approved it.
+
+    The longest match wins, and candidates are ordered deterministically: the
+    approved set is a frozenset, whose iteration order is not guaranteed, and a
+    first-match-wins scan over it could otherwise return a different answer for
+    the same ID between runs if two prefixes ever nested.
+    """
+    for prefix in sorted(prefixes if prefixes is not None else NODE_PREFIXES,
+                         key=lambda value: (-len(value), value)):
         if node_id.startswith(prefix):
             return prefix
     return None

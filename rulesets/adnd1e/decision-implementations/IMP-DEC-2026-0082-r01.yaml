@@ -1,0 +1,348 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0082-r01
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: adnd1e
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: >-
+    DEC-2026-0082 step 2 is complete. The context verifier serves five active
+    roles and refuses the retired one by name; the obsolete live six-role
+    expectations are deleted rather than adjusted; and the serialized deferred
+    relay exists at the path the Decision assigns, with 44 tests driving it
+    against a fake herdr endpoint in temporary roots. Only the four
+    Builder-owned files in the exact diff were written. No published Decision or
+    report was rewritten, DEC-2026-0081 is not activated, and the relay remains
+    unauthorized for routine use until this report is independently approved.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0082
+  path: rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml
+  checksum: sha256:13fd6a71489166a6adb10a44bb0dbfe8a4440f9fa89a75c5305a82bb50421f47
+implementation_files:
+- path: tooling/common/role_context.py
+  checksum: sha256:11aadce04390132a729575b421798d9c61865eaa8ceb1b65507654a60e5e216f
+- path: tooling/common/tests/test_role_context.py
+  checksum: sha256:b313f030bd89b149277b0c52eb7dac53b1b726d0d25ecbc2eef5e1281ef3af8d
+- path: tooling/common/send-agent-handoff.ps1
+  checksum: sha256:aac60f492b99f261b648fb5c5cafc3629f4816294df61a1e7f9dc8a5026e7906
+- path: tooling/common/tests/test_herdr_handoff.py
+  checksum: sha256:71485c64dd9e8c4e1fece8f42c9471d396c6103654fac732ba7214a2dc9b7107
+- path: contracts/HERDR_HANDOFFS.md
+  checksum: sha256:efdaca2e9d52435cb8bdba3ff38e3ef8caa0d7714f9269ee62a7265a0ea73816
+- path: contracts/ROLE_CONTEXT_LOADING.md
+  checksum: sha256:95f4d7a07529a3828d75abe7cab5943db6c6544c870fe2ccbfaa0e9eed254ec9
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:f04b5b0c911223365515dd94d28d8d5358ee5ab4c70665810b9ce4188b9d2b11
+- path: contracts/ROLE_CONTEXT_MANIFEST.yaml
+  checksum: sha256:b9871da775c42c801e05569baa87f7211f640376327e3d176a2b8696351ee0d4
+- path: schemas/common/role-context-manifest.schema.json
+  checksum: sha256:53905b3b7b54f3fd118aa562e3417f74f28b7d7f79040db21d1e857cd45b2299
+- path: rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml
+  checksum: sha256:13fd6a71489166a6adb10a44bb0dbfe8a4440f9fa89a75c5305a82bb50421f47
+validation_report: build/reports/IMP-DEC-2026-0082-r01.validation.json
+validation_report_checksum: sha256:ed3dbcaeb9654179fd0f52a4ca656f8e1d485194d541168148bd53e10659f25e
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: >-
+    DEC-2026-0082 declares acceptance_test_semantics kind
+    versioned_contract_content for this index across three contracts, so the
+    structured block below is the record of what was read and the anchors are
+    the Decision's own. All three are at or above their declared floors --
+    HERDR_HANDOFFS 1.0, ROLE_CONTEXT_LOADING 1.2, WORK_QUEUES 1.30 -- and each
+    declared anchor is present in the current bytes pinned there. All five role
+    instruction files reference contracts/HERDR_HANDOFFS.md and state
+    role-specific routing; agents/builder/INSTRUCTIONS.md carries a "Direct
+    Herdr Handoffs" section naming Reviewer for ready GUPs and implementation
+    reports and Architect for a blocking governance issue. The retired role's
+    definition files are absent: agents/dispatcher/INSTRUCTIONS.md and
+    contracts/DISPATCHER.md do not exist, verified by absence and not listed
+    among implementation_files with a fabricated checksum. The manifest carries
+    no dispatcher entry. Governance authorship is the Architect's step 1; this
+    report records the versions and checksums it was built against.
+    TestTheRetiredRoleIsGone asserts the file absences and the manifest's role
+    set mechanically. Those unit tests ran: Ran 80 tests in 1.417s OK.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0082
+      path: rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml
+      checksum: sha256:13fd6a71489166a6adb10a44bb0dbfe8a4440f9fa89a75c5305a82bb50421f47
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/HERDR_HANDOFFS.md
+      checksum: sha256:efdaca2e9d52435cb8bdba3ff38e3ef8caa0d7714f9269ee62a7265a0ea73816
+      observed_version: '1.0'
+      minimum_version: '1.0'
+      anchors_present:
+      - Five roles communicate directly without Dispatcher.
+      - One repository agent processes work at a time, including reloads.
+      - Dependencies determine priority and only one next action is handed off.
+      - Deferred delivery waits for sender idle and never retries ambiguous submission.
+    - path: contracts/ROLE_CONTEXT_LOADING.md
+      checksum: sha256:95f4d7a07529a3828d75abe7cab5943db6c6544c870fe2ccbfaa0e9eed254ec9
+      observed_version: '1.2'
+      minimum_version: '1.2'
+      anchors_present:
+      - Dispatcher is retired and DEC-2026-0081 activation is cancelled.
+      - Five-role scoped receipts and fresh task evidence remain required.
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:f04b5b0c911223365515dd94d28d8d5358ee5ab4c70665810b9ce4188b9d2b11
+      observed_version: '1.30'
+      minimum_version: '1.30'
+      anchors_present:
+      - Direct herdr coordination does not change artifact consumption or approval.
+- acceptance_test_index: 2
+  result: passed
+  evidence: >-
+    Five-role operation. TestTheLiveManifest.test_the_manifest_validates_against_its_schema
+    validates the live manifest against its schema with jsonschema and asserts
+    no errors; TestTheRetiredRoleIsGone.test_the_live_manifest_declares_exactly_the_five_active_roles
+    asserts schema_version 1.0, cache_format_version 1, exactly the five role
+    keys, and no dispatcher key. Every pre-existing five-role guarantee is
+    retained and still tested: scoped verification, bounded current inputs,
+    exact checksum invalidation (fifteen TestInvalidation cases), session
+    isolation, cache-hit behaviour, and format-1 receipts.
+    TestWorkerBehaviourIsUnchanged recomputes the scope-key material and receipt
+    filename by hand for every worker role with and without a book and asserts
+    they match, and TestBothRegisteredRulesetsResolve exercises adnd1e and
+    basicdnd live. Requests for the retired role fail without writes:
+    TestTheRetiredRoleIsGone.test_every_entry_point_refuses_it_and_writes_nothing
+    covers validate_scope, resolve_paths, receipt_path, build_receipt, verify
+    and record, and TestTheRetiredRoleCliIsRefused asserts exit 2 with an empty
+    receipt directory for both CLI commands and that the refusal says "retired
+    by DEC-2026-0082" rather than "unrecognized role" -- the distinction matters
+    because the second reads like a typo and sends an operator looking for a
+    spelling mistake instead of the ruling. The obsolete live six-role tests no
+    longer gate work because they are deleted, not skipped or weakened. No
+    published Decision or report was rewritten: DEC-2026-0081 and
+    IMP-DEC-2026-0081-r01 are untouched on disk. Those unit tests ran: Ran 80
+    tests in 1.417s OK.
+- acceptance_test_index: 3
+  result: passed
+  evidence: >-
+    Request validation, in TestRequestValidation (15 cases). A complete request
+    validates; each of the six required top-level fields is refused when absent,
+    by name; an empty prompt is refused because there is nothing to deliver; a
+    request_id that could escape its store ("../escape", "a/b", "with space",
+    "") is refused, since the ID becomes a filename under .local/herdr/.
+    Addressing the retired role is refused by its own message and explicitly not
+    as an unknown name; an invalid role, a missing recipient pane, and a handoff
+    addressed to the sender's own role are each refused. Paths are bounded to
+    the repository root: an input outside it and a missing prerequisite are
+    refused, and a stale input checksum is refused with the declared and actual
+    digests, because a stale checksum means the worker measured a different file
+    than the recipient would open. A correct checksum passes. An unreadable or
+    absent request file is refused at load. -ValidateOnly launches nothing:
+    test_validate_only_launches_nothing_and_writes_nothing asserts the fake
+    endpoint recorded zero calls, no state record exists, and no lock file was
+    created. Nothing in the relay touches a credential, answers a dialog, or
+    creates an agent -- it calls exactly two herdr subcommands, `agent list` and
+    `agent prompt`, which the fake records for inspection. Those unit tests ran:
+    Ran 44 tests in 48.321s OK.
+- acceptance_test_index: 4
+  result: passed
+  evidence: >-
+    Serialization, in TestSenderSerialization, TestRecipientIdentity and
+    TestTheGlobalLock. With a working sender no recipient is prompted:
+    test_a_working_sender_prompts_nobody asserts exit 1, an empty prompt log and
+    a refused state. The fake endpoint serves a sequence of frames, so "the
+    world changed between polls" is a fact the test states rather than a timing
+    accident: test_delivery_happens_once_the_sender_settles walks working ->
+    working -> idle and asserts exactly one prompt. Every bound repository agent
+    must be settled, not just the sender --
+    test_an_unexpected_third_agent_blocks_delivery introduces a manually
+    launched analyst and asserts nothing is sent, while
+    test_an_agent_in_another_repository_does_not_block confirms the scope is per
+    repository rather than per herdr server. The recipient is re-resolved
+    immediately before delivery and compared with what the worker addressed: a
+    wrong provider, a changed native session, and a vanished pane each fail
+    closed with no prompt. The lock is one exclusive repository-wide file:
+    a held lock refuses a second relay, and it is released after both a
+    successful delivery and a refusal so a refusal cannot strand it. Scheduling
+    returns promptly with a request ID and queued state and prompts nobody
+    itself, which is the whole point -- the sender is still running when it
+    schedules. Those unit tests ran: Ran 44 tests in 48.321s OK.
+- acceptance_test_index: 5
+  result: passed
+  evidence: >-
+    Nothing resubmits work, in TestDuplicateAndUncertainDelivery. A duplicate
+    request ID cannot schedule from any prior state -- queued, submitting,
+    acknowledged, settled or uncertain -- each asserted as its own subtest, so a
+    settled request cannot be re-run into a second delivery. A second
+    outstanding request cannot schedule while one is in flight, and a settled
+    earlier request correctly does not block a new one. A failing prompt and a
+    herdr error response both produce `uncertain`, not `failed`: the submission
+    may have landed, and only a human may decide it did not. An uncertain
+    request cannot be re-run. `submitting` is written before the prompt is sent,
+    so a process that dies mid-send leaves evidence that a send may have
+    occurred; losing that ordering is exactly what turns a crash into a
+    duplicate assignment. An old timestamp never authorizes takeover:
+    test_a_held_lock_is_never_stolen_by_age backdates a lock by a day and
+    asserts it survives and the relay refuses, because a stale-looking lock may
+    belong to a live process whose recipient is mid-turn. Waits are finite by
+    construction: -TimeoutMs is a mandatory parameter with
+    [ValidateRange(1000, 3600000)], and
+    test_a_timeout_outside_the_bounded_range_is_rejected asserts 0, 500 and
+    3600001 are all refused, so there is no unbounded relay holding the global
+    lock. Those unit tests ran: Ran 44 tests in 48.321s OK.
+- acceptance_test_index: 6
+  result: passed
+  evidence: >-
+    The relay transports without deciding, in
+    TestTheRelayTransportsWithoutDeciding. Its priority fixture is the contract's
+    own example shape: a blocking escalation at priority 1, a GUR that waits on
+    that ruling at priority 2 marked blocked, and an independently ready GUR at
+    priority 3 marked ready.
+    test_the_ordered_list_is_carried_verbatim asserts the list survives the
+    relay unchanged, that the blocking ESC precedes its dependent, and that the
+    independent item is still ready -- the mere existence of an ESC does not
+    block unrelated work. The relay reorders nothing and invents no urgency; it
+    has no code path that reads priority at all. The prompt is delivered exactly
+    as written. No artifact is consumed or modified:
+    test_no_artifact_is_written_or_consumed compares every input byte before and
+    after a delivery, and
+    test_relay_records_live_only_under_the_ignored_local_directory asserts every
+    file the relay wrote is under .local/. A reload-only request carries an
+    empty ordered_next_steps and a prompt that authorizes no processing, and
+    validates as such. Those unit tests ran: Ran 44 tests in 48.321s OK.
+- acceptance_test_index: 7
+  result: passed
+  evidence: >-
+    All three commands are recorded below with a working directory, exit code,
+    result and unittest verdict: the focused role-context suite (Ran 80 tests in
+    1.417s OK), the focused relay suite (Ran 44 tests in 48.321s OK), and the
+    complete common-tooling suite (Ran 1221 tests in 429.286s OK). Every implementation
+    and verified governance file is pinned above by exact checksum, and the
+    companion validation report re-derives the load-bearing claims rather than
+    restating them. Approval is not claimed by this report: DEC-2026-0082 step 3
+    requires independent Reviewer verification, and
+    post_implementation_requirements withhold routine use of the relay until
+    that approval exists. Until then a handoff remains user-mediated.
+validation:
+  passed: true
+  commands:
+  - command: '[cwd tooling/common/tests] python -m unittest test_role_context'
+    exit_code: 0
+    result: passed
+    summary: Ran 80 tests in 1.417s OK
+  - command: '[cwd tooling/common/tests] python -m unittest test_herdr_handoff'
+    exit_code: 0
+    result: passed
+    summary: Ran 44 tests in 48.321s OK
+  - command: '[cwd tooling/common/tests] python -m unittest discover -s . -p "test_*.py" -t .'
+    exit_code: 0
+    result: passed
+    summary: Ran 1221 tests in 429.286s OK
+test_coverage_note:
+  why: >-
+    The focused role-context suite goes from 123 tests to 80, which looks like
+    lost coverage and is not. DEC-2026-0081 had added 73 tests asserting an
+    active sixth role; those assertions tested a role governance has since
+    withdrawn, so they are deleted rather than adjusted -- keeping them would
+    mean maintaining proof of something that must not work.
+  five_role_coverage_retained: >-
+    All 50 pre-existing five-role tests remain, with their classes and counts
+    unchanged: TestCli 4, TestColdAndWarm 4, TestFailsClosed 9, TestInvalidation
+    15, TestPathSetIsDeterministic 6, TestReceiptContent 4,
+    TestTheCacheExcludesLiveState 3, TestTheLiveManifest 5. The one edit inside
+    them is TestCli.test_an_unknown_role_is_rejected, which still asserts exit 2
+    but now as a return value rather than an argparse SystemExit, because the
+    role check moved off argparse `choices` so a retired role can name the
+    Decision that retired it.
+  added: >-
+    30 new tests replace the 73 removed: manifest-language parsing at both 1.0
+    and 1.1, the retirement refusals, five-role behaviour pinned explicitly
+    against regression, both registered rulesets resolving, and receipt
+    invalidation across the manifest upgrade. The relay adds 44 more in a new
+    file, so the common suite gains net coverage of the behaviour that is
+    actually in force.
+  legacy_parsing_retained_as_history: >-
+    Manifest language 1.1 still parses. TestManifestVersionsAndInheritance
+    asserts a 1.1 manifest loads, that a trimmed 1.1 manifest without the
+    retired entry also loads, and that a malformed historical entry is still an
+    error -- a manifest is well formed or it is not, and exempting one key would
+    weaken the check for every other. Parsing grants nothing: resolving the
+    retired role from a 1.1 manifest still raises with the Decision named.
+implementation_notes:
+- subject: why the relay runs outside the sender's turn
+  detail: >-
+    Herdr will prompt an agent that is still working and does not correlate a
+    wait to a turn, so sending the prompt as the sender's last tool call is not
+    serialization -- the sender is by definition still running when it sends.
+    Scheduling therefore returns immediately with a queued record, the sender
+    ends its turn, and a detached process waits for the sender to settle before
+    submitting. This is the single design constraint the whole script is shaped
+    around.
+- subject: refusal codes are distinguishable
+  detail: >-
+    Exit 1 means an expected not-yet (a peer is working); exit 2 means the
+    request is invalid or a binding failed closed and nothing was sent; exit 3
+    means the outcome is unknown and a human must reconcile before any resend.
+    Collapsing 3 into 2 would invite an automatic retry of a message that may
+    already have been delivered.
+- subject: two PowerShell hazards the tests caught
+  detail: >-
+    PowerShell unrolls a single-element collection on return, so a validation
+    result of exactly one problem arrived as a bare string and `.Count` threw
+    under StrictMode; the function now returns an explicit array. And `$Args` is
+    an automatic variable that cannot be used as a parameter name, which broke
+    the fake endpoint until it was renamed. Both were found by the suite rather
+    than by reading.
+- subject: the fake endpoint
+  detail: >-
+    Real herdr is never called by the tests. A stub driven by a JSON scenario
+    serves a sequence of `agent list` frames and a configurable `agent prompt`
+    outcome, and logs every invocation. That makes the races deterministic and
+    means a passing run has provably sent nothing to any real agent.
+scope_note: >-
+  Only the four Builder-owned paths in DEC-2026-0082's exact_diff_ownership were
+  written: tooling/common/role_context.py, tooling/common/tests/test_role_context.py,
+  tooling/common/send-agent-handoff.ps1 and tooling/common/tests/test_herdr_handoff.py.
+  The two new files did not exist before this work. The five governance files
+  pinned in implementation_files are Architect step-1 inputs that were read and
+  verified, not written. No canonical data, registry, schema, worker artifact,
+  scanner, or source file was changed. DEC-2026-0081 was not activated and
+  IMP-DEC-2026-0081-r01 was not reopened or edited. No herdr installation,
+  skill, credential, event handler, or agent creation is part of this change,
+  and the relay was not used to send anything: the only herdr calls made during
+  this work were read-only `agent list` and `agent get` inspections.
+defects_for_the_architect:
+- id: empty-retired-role-directory-remains
+  detail: >-
+    agents/dispatcher/ still exists as an empty directory after
+    agents/dispatcher/INSTRUCTIONS.md was deleted. Git does not track empty
+    directories, so it appears in neither git status nor any diff, and the
+    acceptance criterion is satisfied because the definition *file* is absent --
+    the test asserts exactly that. Reported rather than removed: the path is
+    Architect-owned under the Decision's exact_diff_ownership, and a Builder
+    tidying another role's tree is how ownership boundaries erode. Purely
+    cosmetic.
+- id: source-markdown-1-7-has-again-stale-the-dec-2026-0080-report
+  detail: >-
+    contracts/SOURCE_MARKDOWN.md moved to 1.7 and now hashes to
+    sha256:761a8142c0f887171397db205384585ddbaba80c137d93ff1aa9dd505eab6732, so
+    IMP-DEC-2026-0080-r03 records a stale checksum and the scanner has returned
+    DEC-2026-0080 to the Builder queue. DEC-2026-0082's coordination_constraints
+    anticipate exactly this and direct Builder to refresh that report's evidence
+    after all relevant governance edits, explicitly not as an acceptance gate
+    for this work. It is therefore listed as the next Builder job rather than
+    folded into this report. This is the third time that lineage has been
+    overtaken by an edit to a contract it pins but does not own; if the
+    governance edits are now settled a single refresh should hold, and if more
+    are expected it may be worth the Architect deciding whether the report
+    should pin the contract at all given minimum_version already bounds it.
+canonical_state: >-
+  No canonical or registry file was written by this work. This change touches
+  only common operational tooling and its tests; it reads no graph data.
+  rulesets/adnd1e/canonical/edges_master.csv is at
+  sha256:e321666ea303ab65c1303bb1c120ccc8fb80a176c6dc2f45147532495dce549b,
+  basicdnd still has no canonical directory, and shadowdark's canonical paths
+  remain reserved for Integrator creation.

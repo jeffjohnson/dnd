@@ -1,0 +1,347 @@
+schema_version: '1.0'
+id: DEC-2026-0080
+status: approved
+ruleset_id: basicdnd
+book_id: rc
+source_id: rc-steward-intake
+packet_id: cross-packet
+constitution_version: '1.0'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Generalize the Builder compiler and source-marker linter for the initialized
+    basicdnd ruleset and the admitted source format. The governance bootstrap is
+    Architect-owned and precedes this handoff.
+  blocking_ids: []
+
+decision_date: '2026-09-06'
+escalation_id: ESC-2026-09-06T03.55.02.293Z
+decision_authoring_contract_version: '1.1'
+
+question: >-
+  What minimum independent governance and tooling must exist before Basic D&D
+  Rules Cyclopedia packets are claimed, and how does the repository admit the
+  steward's Pandoc frontmatter and full-page-artwork page classification?
+
+ruling: >-
+  basicdnd is a separate ruleset and graph. It does not inherit, share, or
+  merge the adnd1e ontology, registries, canonical data, or artifact lineages.
+  Similar prefixes and edge vocabulary are deliberately parallel vocabulary,
+  not cross-ruleset identity. The Rules Cyclopedia is the initial book rc in
+  the basicdnd system, with source_id rc-steward-intake and citation code RC.
+
+  Basic D&D character entries named Dwarf, Elf, and Halfling in the Rules
+  Cyclopedia are character classes: use class_dwarf, class_elf, and
+  class_halfling when source-supported. Do not mint race_ identities for those
+  classes or establish a playable-race registry from this packet. Keep the
+  race_ prefix reserved for a future source that actually defines a race axis.
+
+  A source ability score directly modifies or gates each mechanic the source
+  states it affects. The fact that the source prints a unified adjustment table
+  does not itself create a table node or a new aggregate adjustment mechanic.
+  A separately addressable table node remains available only when later source
+  text makes the table itself a rule input. Prime requisite uses two ordinary
+  relations when both are stated: an ability GATES the class under the class's
+  requirement, and that ability MODIFIES the experience mechanic under the
+  source's class-specific condition. Compound requirements remain explicit
+  conditions rather than synthetic aggregate identities.
+
+  Attack-roll tables and THAC0 are two presentations of the same attack-roll
+  mechanic. Represent one canonical mechanic, normally cbt_attack_roll; record
+  the alternative presentation as a non-edge observation unless later source
+  gives one presentation independent mechanical consequences. basicdnd may use
+  sys_alignment despite a differently shaped adnd1e alignment system because
+  identities are ruleset-local. Alignment-language and retainer mechanics use
+  ordinary rule_ and hench_ identities only when the source supports an
+  impact-bearing relationship. Dice notation is a reading convention, not a
+  graph node or general rule, unless later source supplies a target-specific
+  dependency.
+
+  SOURCE_MARKDOWN 1.5 admits Pandoc YAML frontmatter as informational steward
+  intake metadata only. It is not graph content, source-read evidence, a packet
+  identity, or authority over packet.yaml; the claimed packet manifest wins any
+  conflict. The only initial page class is full-page-artwork. It denotes a page
+  inside the packet span that the steward declares contains no graph-
+  constitutable content. It creates no graph data and must be carried as intake
+  composition information at claim. A class-bearing marker must live on an
+  attribute-bearing Pandoc block: a native heading or a fenced Div. Do not
+  manufacture a heading for artwork. The Rules Cyclopedia page-1 input must be
+  reissued using the fenced-Div form before claim; the standalone bare token
+  cannot carry a Pandoc class.
+
+  The repository retains books/<ruleset-id>/<book-id>/ as the durable workspace
+  namespace. It is not renamed to systems/: published artifacts name those
+  paths in checksummed provenance and a physical rename would invalidate that
+  history. In repository terminology, the first path component is the system
+  or ruleset and each child workspace is a book. A future namespace migration
+  requires a separate Decision that provides an immutable-path compatibility
+  strategy; this Decision authorizes none.
+
+rationale:
+  - >-
+    The Rules Cyclopedia itself distinguishes Basic D&D from AD&D through an
+    explicit conversion appendix, while its class, alignment, and ability
+    structures differ materially. A parallel ruleset prevents incompatible
+    identities from coexisting in one graph.
+  - >-
+    An empty basicdnd registry and canonical future avoid treating legacy AD&D
+    rows as a baseline for the first Basic D&D packet. The standard GUR, GUP,
+    Review, Approved-bundle, and Integration lifecycle remains unchanged.
+  - >-
+    Pandoc consumes YAML frontmatter before blocks and preserves attributes on
+    headings and Divs. The fenced Div is the source-faithful representation for
+    a page that has artwork but no heading. The bare supplied token is not an
+    AST attribute and cannot be made authoritative by raw-text parsing.
+  - >-
+    `books/` is present in immutable packet, GUR, GUP, Review, bundle,
+    integration, and Decision provenance. Renaming it now has greater blast
+    radius than its terminology benefit and is not required to initialize a new
+    system.
+
+affected_contracts:
+  - path: contracts/SOURCE_MARKDOWN.md
+    previous_checksum: sha256:7fe29e081af8bffd81b51ea72a5233bda0d1b7a1b25198a1b4ab90be8037912b
+    new_version: '1.5'
+affected_registries:
+  - rulesets/basicdnd/registries/books.yaml
+  - rulesets/basicdnd/registries/sources.yaml
+  - rulesets/basicdnd/registries/nodes.csv
+  - rulesets/basicdnd/registries/character_races.yaml
+  - rulesets/basicdnd/registries/domain_registry.yaml
+  - rulesets/basicdnd/registries/general_rules.json
+affected_artifacts:
+  escalation:
+    id: ESC-2026-09-06T03.55.02.293Z
+    path: rulesets/basicdnd/escalations/pending/ESC-2026-09-06T03.55.02.293Z.yaml
+    checksum: sha256:07d1f0d2ac9dffab7bd82133cbea9f6614f159ef7db84a5da94d692704a1f835
+  malformed_book_manifest:
+    path: books/basicdnd/rc/book.yaml
+    checksum: sha256:3c5616c20c33c1f4302fa1f1ca028872c24424d9c0b32b0e928291e21a478bc1
+  incoming_page_1_to_5:
+    path: books/basicdnd/rc/packets/incoming/RC_pages_1-5.md
+    checksum: sha256:1ad0585149003975de0d11b695e0fc9db4121e48bf02b5a150cfcf88322cba12
+  incoming_page_6_to_12:
+    path: books/basicdnd/rc/packets/incoming/RC_pages_6-12.md
+    checksum: sha256:456dde9bd30df37f7311fc9f28a114f1f7351760e4579d313050ec847732d82e
+
+migration_required: false
+migration_scope:
+  canonical_data_change: false
+  registry_change: true
+  source_interpretation_change: false
+  artifact_lineage_change: none
+  direct_implementation: >-
+    Architect initializes only empty basicdnd governance, registries, schemas,
+    and book identity. Builder generalizes its compiler and page-marker tooling
+    through a Decision Implementation Report and independent Review. No
+    existing canonical graph or published artifact is migrated.
+
+acceptance_tests:
+  - >-
+    The basicdnd context verifier succeeds for Architect and Analyst scope
+    basicdnd / rc after the governance bootstrap, and books/basicdnd/rc/book.yaml
+    declares basicdnd, rc, and rc-steward-intake.
+  - >-
+    The basicdnd constitution has its own version 1.0 prefix and edge tables,
+    lists class_dwarf, class_elf, and class_halfling as class-only source
+    identities, and declares no inherited adnd1e registry or canonical input.
+  - >-
+    SOURCE_MARKDOWN 1.5 accepts Pandoc YAML frontmatter as informational only,
+    gives packet.yaml precedence, accepts full-page-artwork only on a heading
+    or fenced Div marker, and rejects the bare standalone marker form.
+  - >-
+    Builder proves a basicdnd / rc synthetic GUR is accepted by its registered
+    ruleset configuration while an unknown ruleset is rejected. The source
+    linter proves YAML frontmatter is not unattributed content, a fenced Div
+    full-page-artwork marker resolves its page and class, and malformed bare
+    marker text fails without raw-text false positives for a valid attributed
+    marker.
+  - >-
+    The generic Builder change passes its focused tests and complete Builder
+    suite, and its Decision Implementation Report records this Decision's
+    checksum plus current SOURCE_MARKDOWN versioned-contract evidence.
+
+acceptance_test_semantics:
+  - acceptance_test_index: 3
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/SOURCE_MARKDOWN.md
+        minimum_version: '1.5'
+        substantive_anchors:
+          - Pandoc YAML frontmatter is informational steward intake metadata only.
+          - packet.yaml governs identity and page metadata when frontmatter conflicts.
+          - full-page-artwork is the only initial page class.
+          - class-bearing page markers require a heading or fenced Div attribute block.
+  - acceptance_test_index: 4
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/SOURCE_MARKDOWN.md
+        minimum_version: '1.5'
+        substantive_anchors:
+          - Pandoc YAML frontmatter is informational steward intake metadata only.
+          - full-page-artwork is the only initial page class.
+          - class-bearing page markers require a heading or fenced Div attribute block.
+
+post_implementation_requirements:
+  - >-
+    The source steward reissues RC_pages_1-5.md before claim, replacing the
+    bare `{#p1 .full-page-artwork}` paragraph with an empty fenced Div carrying
+    `{#p1 .full-page-artwork}`. This unclaimed input is not a published artifact
+    and no pipeline role authors its source text.
+  - >-
+    After Architect bootstrap and steward reissue, Analyst may claim both RC
+    packets and publish ordinary basicdnd GURs. Builder may compile them only
+    after the approved direct implementation required by this Decision.
+  - >-
+    The first basicdnd Approved bundle will require a separate Integrator
+    readiness assessment before integration; this Decision creates no
+    canonical baseline and assigns no Integrator write.
+
+constitution_version_impact:
+  changed: true
+  new_ruleset_version: '1.0'
+  adnd1e_retained: '1.8'
+  rationale: >-
+    basicdnd begins with an independent constitution. No AD&D constitution or
+    graph data is changed.
+
+governance_changelog:
+  - >-
+    DEC-2026-0080 initializes basicdnd as an independent Basic D&D graph,
+    admits informational Pandoc frontmatter and full-page-artwork metadata, and
+    preserves books/ as the immutable workspace namespace.
+
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, move its escalation to decided state, create the
+      listed basicdnd governance and schema bootstrap, correct the RC book
+      manifest, and amend SOURCE_MARKDOWN to 1.5.
+  - step: 2
+    owner: builder
+    action: >-
+      Generalize registered-ruleset compiler admission and implement Pandoc-AST
+      class-bearing marker/linter support. Publish IMP-DEC-2026-0080-r01 with
+      focused and full-suite evidence.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review the Builder report, including the SOURCE_MARKDOWN
+      1.5 content anchors and every Decision acceptance test.
+  - step: 4
+    owner: analyst
+    action: >-
+      After the source steward reissues the unclaimed page-1-to-5 input and
+      Architect bootstrap is present, claim the two RC packets and publish
+      ordinary GURs under basicdnd Constitution 1.0.
+
+exact_diff:
+  contracts/SOURCE_MARKDOWN.md:
+    - Amend the contract to version 1.5 for informational frontmatter and page classes.
+  books/basicdnd/rc/book.yaml:
+    - Correct the copied AD&D identity to the Basic D&D Rules Cyclopedia manifest.
+  rulesets/basicdnd/ruleset.yaml:
+    - Establish the independent ruleset identity and registry locations.
+  rulesets/basicdnd/governance/constitution.md:
+    - Establish Basic D&D Constitution 1.0 and its initial ontology decisions.
+  rulesets/basicdnd/profiles/impact.yaml:
+    - Create the empty-ruleset impact profile.
+  rulesets/basicdnd/profiles/roles.yaml:
+    - Create the empty-ruleset role profile.
+  rulesets/basicdnd/registries/books.yaml:
+    - Register the Rules Cyclopedia book.
+  rulesets/basicdnd/registries/sources.yaml:
+    - Register rc-steward-intake.
+  rulesets/basicdnd/registries/nodes.csv:
+    - Establish the empty approved-node registry.
+  rulesets/basicdnd/registries/character_races.yaml:
+    - Record that the initial ruleset has no playable-race axis.
+  rulesets/basicdnd/registries/domain_registry.yaml:
+    - Establish the empty domain registry.
+  rulesets/basicdnd/registries/general_rules.json:
+    - Establish the empty general-rule registry.
+  schemas/basicdnd/graph/edge.schema.json:
+    - Define the Basic D&D production-edge envelope.
+  schemas/basicdnd/graph/gur.schema.json:
+    - Define the Basic D&D GUR envelope.
+  schemas/basicdnd/graph/gup.schema.json:
+    - Define the Basic D&D GUP envelope.
+  schemas/basicdnd/registries/book.schema.json:
+    - Define the Basic D&D book registry schema.
+  schemas/basicdnd/registries/source.schema.json:
+    - Define the Basic D&D source registry schema.
+  schemas/basicdnd/registries/character-race.schema.json:
+    - Define the no-race-axis registry schema.
+  schemas/basicdnd/registries/domain.schema.json:
+    - Define the Basic D&D domain registry schema.
+  schemas/basicdnd/registries/general-rule.schema.json:
+    - Define the Basic D&D general-rule registry schema.
+  schemas/basicdnd/books/rc/source_metadata.schema.json:
+    - Define Rules Cyclopedia source metadata identity.
+  schemas/basicdnd/books/rc/extraction_profile.yaml:
+    - Define Rules Cyclopedia extraction characteristics.
+  tooling/builder/src/adnd1e_builder/compiler.py:
+    - Replace the hard-coded adnd1e admission gate with registered-ruleset validation.
+  tooling/builder/src/adnd1e_builder/vocab.py:
+    - Supply registered ruleset-specific vocabulary to compilation.
+  tooling/builder/src/adnd1e_builder/pagemarkers.py:
+    - Resolve class-bearing page attributes on Pandoc headers and Divs.
+  tooling/builder/src/adnd1e_builder/cli.py:
+    - Validate marker forms from the Pandoc AST instead of raw-text false positives.
+  tooling/builder/tests/test_compiler.py:
+    - Prove registered basicdnd admission and unknown-ruleset rejection.
+  tooling/builder/tests/test_pagemarkers.py:
+    - Prove frontmatter and class-bearing marker parsing and lint behavior.
+  rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml:
+    - Record the bootstrap and tooling authorization.
+  rulesets/basicdnd/escalations/decided/ESC-2026-09-06T03.55.02.293Z.yaml:
+    - Record DEC-2026-0080 as the escalation resolution.
+
+exact_diff_ownership:
+  - {path: contracts/SOURCE_MARKDOWN.md, owner: architect, sequence_step: 1}
+  - {path: books/basicdnd/rc/book.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/ruleset.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/governance/constitution.md, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/profiles/impact.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/profiles/roles.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/registries/books.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/registries/sources.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/registries/nodes.csv, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/registries/character_races.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/registries/domain_registry.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/registries/general_rules.json, owner: architect, sequence_step: 1}
+  - {path: schemas/basicdnd/graph/edge.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/basicdnd/graph/gur.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/basicdnd/graph/gup.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/basicdnd/registries/book.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/basicdnd/registries/source.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/basicdnd/registries/character-race.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/basicdnd/registries/domain.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/basicdnd/registries/general-rule.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/basicdnd/books/rc/source_metadata.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/basicdnd/books/rc/extraction_profile.yaml, owner: architect, sequence_step: 1}
+  - {path: tooling/builder/src/adnd1e_builder/compiler.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/src/adnd1e_builder/vocab.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/src/adnd1e_builder/pagemarkers.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/src/adnd1e_builder/cli.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_compiler.py, owner: builder, sequence_step: 2}
+  - {path: tooling/builder/tests/test_pagemarkers.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/basicdnd/escalations/decided/ESC-2026-09-06T03.55.02.293Z.yaml, owner: architect, sequence_step: 1}
+
+follow_up_owner: builder
+follow_up_owners:
+  architect:
+    - Complete only the bootstrap files and do not initialize canonical data.
+  analyst:
+    - Claim the RC inputs only after the Architect bootstrap and steward reissue are present.
+  builder:
+    - Implement and report the direct registered-ruleset and marker-tooling change.
+  reviewer:
+    - Review the Builder implementation report before ordinary Basic D&D compilation proceeds.
+  integrator:
+    - Assess basicdnd integration readiness only when an Approved Basic D&D bundle exists.

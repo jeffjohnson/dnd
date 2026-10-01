@@ -1,0 +1,217 @@
+schema_version: '1.0'
+id: DEC-2026-0088
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.1'
+decision_date: '2026-09-21'
+escalation_id: ESC-2026-09-22T00.57.19.728Z
+question: >-
+  When a direct Herdr handoff is demonstrably delivered but its recipient is
+  still working, what ends the relay's transport lifecycle without weakening
+  single-agent execution, and how are busy-peer deferral and genuine uncertainty
+  recovered without editing local relay state by hand?
+ruling: >-
+  Approve OPT-A, OPT-B, and OPT-C with the delivery boundary below; reject
+  OPT-D. Amend HERDR_HANDOFFS to version 1.1. A relay request is transport-
+  complete when the exact recipient binding's state_change_seq advances after
+  submission. Record that state as delivered, release the operational lock, and
+  do not wait for the recipient's full AI turn. Delivered means only that the
+  exact message started a recipient turn; it is not artifact completion,
+  approval, queue consumption, or permission for a second repository agent to
+  work. The existing one-agent rule and peer eligibility check remain binding.
+
+  Builder must replace the settlement wait with a bounded delivery-observation
+  window using the installed Herdr form `agent prompt <pane> <text> --wait
+  --until working --timeout <delivery-window>`. The delivery window is at most
+  5000 milliseconds. The parent supervision limit for that child must be set
+  from one captured value and strictly exceed the child's timeout by a fixed
+  reserve; no second Get-RemainingMs read may make the parent kill the child
+  first. The relay must reserve enough time before submission for that window
+  and otherwise refuse before sending. A bounded, no-send post-failure agent
+  list probe is permitted outside an expired submission budget solely to read
+  the recipient binding. If the sequence advanced, record delivered with the
+  before/after evidence; if it did not, retain uncertain and forbid resend.
+
+  A working peer is a temporary eligibility condition, not a terminal refusal.
+  Under the existing lock, re-list and revalidate every bound agent until all
+  are idle or done or the request deadline expires. Blocked, unknown,
+  disappeared, changed-provider, changed-session, or ambiguous peers still
+  fail closed with no prompt. Expiry while a peer is working records a known
+  no-send refusal, preserving the request as audit evidence; it never becomes
+  uncertain or a claimed delivery.
+
+  Add an operator-only reconciliation parameter set. It may resolve only an
+  existing uncertain record, under the same lock, to delivered or failed with a
+  nonempty evidence statement, timestamp, and repository_owner identity. It
+  must preserve the original uncertain state as embedded audit evidence, send
+  no prompt, and never replay its request ID. Only the repository owner invokes
+  this operation; an Architect may direct it only on the owner's explicit
+  instruction. A resolved failed delivery requires a newly authored request ID
+  if the work still needs delivery. Raising TimeoutMs alone is rejected because
+  no fixed timeout bounds an arbitrary recipient turn.
+rationale:
+  - >-
+    The incident evidence proves a recipient state-change sequence is a stronger
+    delivery fact than a relay process waiting for the recipient's whole turn.
+  - >-
+    Locking transport through recipient settlement transformed normal long work
+    into an operational deadlock and did not enforce the actual single-agent
+    rule, which remains independently checked from live agent state.
+  - >-
+    The current D1 fallback cannot run after expiry, and D2 guarantees that
+    expiry path. A bounded independent observation probe and one captured child
+    limit make the intended evidence reachable without permitting another send.
+  - >-
+    A peer known to be working is neither identity ambiguity nor a failed send;
+    waiting through the already bounded eligibility window preserves the exact
+    request and removes the one-observation message loss.
+  - >-
+    Genuine non-delivery remains uncertain and cannot be retried automatically.
+    Reconciliation must be explicit, auditable, and owner-controlled rather
+    than a hand edit to ignored shared state.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Implement the approved delivery-boundary, busy-peer, and reconciliation
+    behavior in the assigned relay and focused tests. No packet, graph,
+    registry, RC, or artifact lifecycle work is authorized.
+  blocking_ids: []
+evidence:
+  - path: rulesets/shadowdark/escalations/decided/ESC-2026-09-22T00.57.19.728Z.yaml
+    checksum: sha256:24e65826db2ce6e0d15d6a085eef14087bb1a1c47fa9d811075e1938f97a8598
+    role: originating_escalation_preserved_unchanged
+  - path: tooling/common/send-agent-handoff.ps1
+    checksum: sha256:b3d9c519fee1eb5b4549846a3f661a0edd4d309b9600b606da0c274534d0a53e
+    role: measured_subject_before_implementation
+  - path: contracts/HERDR_HANDOFFS.md
+    checksum: sha256:efdaca2e9d52435cb8bdba3ff38e3ef8caa0d7714f9269ee62a7265a0ea73816
+    role: transport_lifecycle_contract_before_amendment
+  - path: rulesets/adnd1e/escalations/decisions/DEC-2026-0082.yaml
+    checksum: sha256:13fd6a71489166a6adb10a44bb0dbfe8a4440f9fa89a75c5305a82bb50421f47
+    role: original_relay_authority
+migration_required: false
+migration_scope: >-
+  No graph, registry, canonical data, source packet, GUR, GUP, Review, Approved
+  bundle, Integration, or role-context receipt is migrated or invalidated.
+  Existing .local/herdr records remain operational history. The approved tool
+  revision applies to future relay execution only.
+constitution_version_impact: None. This is universal delivery tooling, not Shadowdark ontology.
+affected_contracts:
+  - contracts/HERDR_HANDOFFS.md
+affected_registries: []
+implementation_bounds:
+  - >-
+    Change only contracts/HERDR_HANDOFFS.md, tooling/common/send-agent-handoff.ps1,
+    and tooling/common/tests/test_herdr_handoff.py. Do not edit role instructions,
+    queue derivation, graph schemas, canonical data, source material, or ignored
+    historical relay records.
+  - >-
+    Preserve create-only request identity, exact sender/recipient provider and
+    session verification, endpoint checks, one runnable handoff per finishing
+    worker, no automatic resend, and the ban on acting while another repository
+    agent works. Delivered is terminal for relay transport only and must not be
+    interpreted as a worker or artifact terminal state.
+  - >-
+    Implement the reconciliation parameter set as an operational state command,
+    not an artifact, queue, or graph feature. It must not make a new Herdr call,
+    schedule a relay, create agents, or alter any record other than the named
+    uncertain request while the lock is held.
+acceptance_tests:
+  - >-
+    HERDR_HANDOFFS Version 1.1 or later defines the delivery-evidenced terminal
+    state, distinguishes it from recipient settlement and repository work
+    completion, preserves the one-agent execution rule, requires working-peer
+    polling under the operational lock, and limits uncertain reconciliation to
+    the repository owner without request replay.
+  - >-
+    A fake recipient that transitions from idle to working with its exact
+    state_change_seq advanced is recorded delivered with before/after sequence,
+    recipient identity, and delivery-observation evidence. The lock releases;
+    no test treats this transport result as completed recipient work.
+  - >-
+    The long-recipient fallback has a separately bounded no-send observation
+    probe. Even when the original submission window expires, an advanced
+    recipient sequence produces delivered rather than uncertain; an unchanged,
+    unreadable, or identity-mismatched sequence remains uncertain and prevents
+    replay.
+  - >-
+    The child Herdr timeout is derived once and is strictly less than its parent
+    supervision bound. A simulated short child timeout returns a structured
+    timeout or agent_prompt_stalled result for classification instead of being
+    killed by the parent first. No prompt is sent after pre-submission expiry.
+  - >-
+    A working peer is polled until it is idle or done, then the exact prompt is
+    sent once. A blocked, unknown, disappeared, provider/session-changed, or
+    ambiguous peer sends nothing and fails closed. Deadline expiry while a peer
+    is working is recorded as known no-send refusal rather than uncertain or
+    delivered.
+  - >-
+    The reconciliation command accepts only an existing uncertain request and
+    a nonempty owner evidence statement, acquires the lock, preserves the
+    original uncertain JSON, records repository_owner, timestamp, disposition,
+    and evidence, makes no Herdr prompt call, and forbids re-executing that
+    request ID. It refuses every other input state and missing evidence.
+  - >-
+    All existing focused relay tests and the complete Builder suite pass. The
+    report records the exact commands and results; unrelated failures remain
+    visible and do not weaken the relay's identity, endpoint, no-replay, or
+    one-agent guards.
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/HERDR_HANDOFFS.md
+        minimum_version: '1.1'
+        substantive_anchors:
+          - Delivery is terminal for relay transport when the exact recipient state-change sequence advances; it is not recipient work completion.
+          - A working peer is polled under the lock, while blocked, unknown, changed, and ambiguous peers fail closed.
+          - An uncertain request is reconciled only by the repository owner with auditable evidence and never replayed.
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision and amend HERDR_HANDOFFS to 1.1 with the approved
+      delivery boundary, peer-wait, and owner-only reconciliation rules. Do not
+      alter relay code, tests, live requests, or worker artifacts.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement the exact bounded relay behavior and focused tests in the two
+      Builder-owned paths. Publish IMP-DEC-2026-0088-r01 with independent,
+      checksummed evidence for every acceptance test, including current
+      HERDR_HANDOFFS 1.1 anchors. Preserve unrelated dirty work.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review the active implementation report and publish the
+      normal implementation Review. Verify the current contract anchor evidence,
+      the no-send recovery bounds, and the relay tests without editing Builder
+      files or live relay state.
+post_implementation_requirements:
+  - >-
+    Future role handoffs use the independently approved relay revision. This
+    Decision neither delivers a current assignment nor consumes any work item.
+exact_diff:
+  contracts/HERDR_HANDOFFS.md: Define delivery-evidenced transport completion and operator reconciliation.
+  tooling/common/send-agent-handoff.ps1: Implement the bounded delivery, peer-wait, and reconciliation behavior.
+  tooling/common/tests/test_herdr_handoff.py: Prove the amended relay behavior and preserve regressions.
+exact_diff_ownership:
+  - path: contracts/HERDR_HANDOFFS.md
+    owner: architect
+    sequence_step: 1
+  - path: tooling/common/send-agent-handoff.ps1
+    owner: builder
+    sequence_step: 2
+  - path: tooling/common/tests/test_herdr_handoff.py
+    owner: builder
+    sequence_step: 2
+follow_up_owners:
+  - builder
+  - reviewer

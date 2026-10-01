@@ -1,0 +1,154 @@
+schema_version: '1.0'
+id: REV-GUP-PKT-SD-192-193-designing-monsters-r01-r01
+artifact_kind: packet_update_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-192-193-designing-monsters
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+review_role: independent_reviewer
+review_date: '2026-09-30'
+review_contract_version: '1.3'
+reviewed_gup:
+  id: GUP-PKT-SD-192-193-designing-monsters-r01
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-192-193-designing-monsters-r01.yaml
+  checksum: sha256:9e2dd52573dbde280cbfcc05b4df7e787e5e169ecd782ce4e9cbcadcbc0b07a5
+  artifact_kind: packet_update
+  revision: 1
+  supersedes: null
+overall_disposition: approved
+approval_ready: true
+edge_decisions:
+  approved_refs: [M001, M002, M003, M004, M005, M006, M007]
+  disposition: approved
+node_registry_decisions:
+  - {proposed_id: rule_designing_monsters, submitted_label: Designing Monsters, kind: rule, disposition: approved}
+  - {proposed_id: tbl_one_to_one_monsters, submitted_label: '1:1 Monsters Table', kind: tbl, disposition: approved}
+architectural_escalations: []
+blocking_findings: []
+reviewer_findings:
+  - id: RF-01
+    subject: monster_design_procedure
+    disposition: approved
+    refs: [M001]
+    detail: >-
+      The source names the Designing Monsters procedure and directs the reader
+      to the named 1:1 Monsters Table for level selection. RESOLVED_BY correctly
+      relates the procedure to that table.
+  - id: RF-02
+    subject: party_level_input
+    disposition: approved
+    refs: [M002]
+    detail: >-
+      The table's first column is average party level. Reusing character
+      exp_level and directing FEEDS_INTO the table preserves the distinction
+      from creature mstat_monster_level; average is an aggregation, not a new
+      identity.
+  - id: RF-03
+    subject: table_monster_level_output
+    disposition: approved
+    refs: [M003]
+    detail: >-
+      The table maps party level to the monster level used for one monster per
+      character. FEEDS_INTO from the table to mstat_monster_level correctly
+      captures that output without the table's numeric values.
+  - id: RF-04
+    subject: attack_bonus_derivation
+    disposition: approved
+    refs: [M004]
+    detail: >-
+      The source states a monster bases its attack bonus on its relevant stat
+      modifier. DERIVED_FROM runs from cbt_attack_roll to the canonical shared
+      abil_stat_modifier mechanic in the correct direction.
+  - id: RF-05
+    subject: attack_bonus_level_ceiling
+    disposition: approved
+    refs: [M005]
+    detail: >-
+      The source says total attack bonus should rarely exceed monster level.
+      This is a bounded constraint, not an absolute exclusion. The authored
+      governs/read polarity correctly describes the level's role as a ceiling.
+      M004 and M005 touch Attack Roll from different node pairs and assert
+      derivation versus constraint, so they are distinct relationships.
+  - id: RF-06
+    subject: level_bands
+    disposition: approved
+    refs: [M006, M007]
+    detail: >-
+      The level bands organize treasure quality and damage by monster level.
+      The dependency directions are source-supported while all treasure labels,
+      damage dice, attack counts, and other numeric magnitudes stay out of the
+      graph fields.
+  - id: RF-07
+    subject: table_identity_transliteration
+    disposition: approved
+    refs: [M001, M002, M003]
+    detail: >-
+      tbl_one_to_one_monsters is a valid readable transliteration of the source
+      colon and has no ID or label collision. The exact printed label remains
+      1:1 Monsters Table. The digit-based tbl_1_1_monsters alternative would
+      also be syntactically possible, but there is no need to reopen extraction.
+  - id: RF-08
+    subject: declined_taxonomy_and_guidance
+    disposition: approved_omission
+    detail: >-
+      Relative combat roles, stat-modifier and description advice, movement
+      defaults, challenge adjectives, talent counts, party-size guidance, and
+      the appended page-189 context do not add a supported in-scope dependency.
+      Numeric bands are omitted except for the shared-mechanic dependency
+      directions represented by M006 and M007.
+completeness_statement: >-
+  Independently reviewed pages 192 and 193, all seven rows, both proposed
+  identities, nine rejected-candidate loci, and the local neighborhoods for
+  Monster Level, Attack Roll, Stat Modifier, Damage, Treasure, and character
+  Level. Pandoc resolves 11 headings, 23 prose paragraphs and one four-row
+  table with unambiguous p192 and p193 markers. Every row is supported,
+  correctly directed, collision-free, and approval-ready.
+reviewer_checklist:
+  source_support: passed_all_seven_rows_and_nine_rejections
+  node_identity: passed_two_fresh_registrations
+  edge_semantics_and_direction: passed_resolution_party_input_table_output_derivation_constraint_and_bands
+  grain: passed_numeric_magnitudes_excluded
+  polarity: passed_six_derived_one_authored_governs_read
+  page_attribution: passed_p192_p193_heading_markers_and_four_row_table
+  graph_neighborhood: passed_M004_M005_distinct_node_pairs
+  production_edge_schema: passed_all_rows
+  canonical_files_modified: false
+independent_validation:
+  packet_source:
+    path: books/shadowdark/sd/packets/claimed/PKT-SD-192-193-designing-monsters/source.md
+    checksum: sha256:185ec951be7ebd010dddb015277db911483e90e3e143142940083b80e4ddc8cb
+    pages: ['192', '193']
+    result: independently_read_and_pandoc_shape_verified
+  gur:
+    path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-192-193-designing-monsters-r01.yaml
+    checksum: sha256:50358b91f531c47303c11ba1010a68316d7b6d8c746215dcb92e9b1f943310fc
+    result: seven_assertions_two_proposals_and_all_declines_checked
+  gup_validation_report:
+    path: build/reports/GUP-PKT-SD-192-193-designing-monsters-r01.validation.json
+    checksum: sha256:181d1a1930d415e582d8c75a7f3dcb93315895e164f9f4b69fad1dcf1916edaf
+    result: zero_errors_warnings_escalations_duplicates_or_neighbourhood_conflicts
+  production_edge_schema:
+    path: schemas/shadowdark/graph/edge.schema.json
+    checksum: sha256:f5ca15968536e9b9524b3095b9fbc1115307b5cefcc6b319c42546b293748f24
+    result: all_seven_rows_valid
+  current_registry:
+    path: rulesets/shadowdark/registries/nodes.csv
+    checksum: sha256:a7f4b4b7d5e7da617096a95c00c9a03416dbdb92ef339083b2b934b6b24bbcf6
+    observed_rows: 429
+    result: both_proposals_fresh_and_six_reused_labels_confirmed
+  canonical_neighborhood:
+    path: rulesets/shadowdark/canonical/edges_master.csv
+    checksum: sha256:958b62a82279d3f0b2b46b08fdf54f2c8d4254974a8ee9ec806693ec53ed1a8a
+    observed_edges: 859
+    result: zero_assertion_key_collisions_and_no_existing_page_192_or_193_rows
+handoff:
+  next_role: integrator
+  readiness: ready
+  reason: >-
+    Apply the exact Approved bundle containing four direct additions, three
+    pending additions, and two approved node registrations.
+  blocking_ids: []

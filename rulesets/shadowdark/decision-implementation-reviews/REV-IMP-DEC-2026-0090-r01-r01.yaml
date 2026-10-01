@@ -1,0 +1,46 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0090-r01-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: shadowdark
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+review_date: '2026-09-22'
+overall_disposition: approved
+reviewed_implementation:
+  id: IMP-DEC-2026-0090-r01
+  path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0090-r01.yaml
+  checksum: sha256:56db533c94625447c39b24f57330cc52ea1f79d582787d84be97af27d7e1f610
+decision_input:
+  id: DEC-2026-0090
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0090.yaml
+  checksum: sha256:504152c84d06023ff48802273f9562ee82b11448a2b6382c667bd86d1cbcbf72
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: 'Independent review completes DEC-2026-0090 step 3; no graph artifact is created.'
+  blocking_ids: []
+acceptance_dispositions:
+  - {acceptance_test_index: 1, disposition: verified, evidence: 'RulesetVocabulary now admits exactly Shadowdark historical 1.0 and 1.1 plus current manifest 1.2; AD&D and Basic D&D remain unchanged.'}
+  - {acceptance_test_index: 2, disposition: verified, evidence: 'Focused synthetic 1.1 input is admitted with the older-version warning and current-output stamp; below-range, next-minor and 9.9 inputs remain mismatches.'}
+  - {acceptance_test_index: 3, disposition: verified, evidence: 'The immutable 1.0 GUR hashes match their report-pinned bytes; focused test_shadowdark_ancestry passed 55/55 and the report records the complete 850-test suite passing.'}
+independent_validation:
+  passed: true
+  commands:
+    - {command: '[cwd tooling/builder/tests] python -m unittest test_shadowdark_ancestry', exit_code: 0, result: passed, summary: 'Ran 55 tests in 3.580s; OK.'}
+    - {command: '[cwd tooling/builder/tests] python -m unittest discover -s . -p "test_*.py" -t .', exit_code: 0, result: passed, summary: 'Builder report records 850 tests passing, skipped=38.'}
+review_evidence:
+  validation_report: {path: build/reports/IMP-DEC-2026-0090-r01.validation.json, checksum: sha256:4ed17bf4b98e62d78462cca19d1ff47f7193532622fc7d8bba1404527d1676b7}
+  implementation_bounds: 'Only vocab.py and test_shadowdark_ancestry.py changed, matching DEC-2026-0090 exact_diff ownership.'
+  historical_inputs: 'The two immutable 1.0 GURs retain hashes 914f94da5cc99eae4adbe44cfaa0f252b21ce1be62f0250cc38b810d38749726 and 57444a28574d1f810e673ebe7d9bbaac78b40997bfebf223f1157340cde9fabe.'
+completion_statement: 'Approved compatibility alignment; no packet, source, GUR, GUP, registry, canonical, or RC artifact changed.'
+ordered_next_steps:
+  - priority: 1
+    owner: reviewer
+    input: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-015-015-stats-and-stat-modifiers-r02.yaml
+    action: 'Independently review the active Stats packet GUP bundle.'
+    prerequisite_ids: []
+    readiness: ready
+    reason: 'Active GUP is independently Reviewer-ready and may proceed concurrently.'

@@ -1,0 +1,531 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-030-031-titles-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-030-031-titles
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.32
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.0
+  - rulesets/shadowdark/governance/constitution.md 1.2
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-030-031-titles
+  source_file: source.md
+  packet_source_checksum: sha256:5f7487fdd29a5b5ec53ee8b212f786fcbb17b9c5bbf4dbcd2cb61cb7945f1abe
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 012-titles.md
+  citation_code: SD
+  page_start: 30
+  page_end: 31
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Two markers resolve in the Primary Source Material, both through the Pandoc AST rather than
+  positionally. {#p30} ends the TITLES heading and {#p31} ends the THIEF TITLES TABLE heading;
+  placement rule 1 applies each to its whole heading. Under the persistence rule the framing
+  sentences and the fighter and priest tables fall on page 30, and the wizard table, which carries no
+  marker of its own, inherits page 31 from the thief table heading. That inheritance is the one page
+  attribution here a positional reading could get wrong, and it is why the wizard rows below cite
+  page 31. A third page the parser resolves, 15, lies entirely inside the out-of-scope Supporting
+  Source Context.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 30 and 31. The trailing
+  Supporting Source Context reproduces printed page 15, whose primary packet is
+  PKT-SD-015-015-stats-and-stat-modifiers, outside this packet's declared span. No assertion here is
+  drawn from it and no row cites page 15.
+
+source_summary: >-
+  Printed pages 30 and 31 carry the TITLES heading, three sentences framing what a title is and why
+  it matters, and four titles tables, one for each class. Each table is indexed by character level
+  down its rows and by alignment across three columns, and each cell holds a title name. This summary
+  is orientation only; every assertion below cites its page.
+
+graph_state_at_extraction: >-
+  The Shadowdark canonical graph is still empty; nodes.csv is header-only, the domain registry has no
+  domains, general_rules.json is an empty object, and character_races.yaml is inactive. The three
+  supplied slices named in the packet manifest as missing remain immaterial, re-assessed here rather
+  than carried over from claim. reused_nodes is empty. Three of the seven identities below are
+  already proposed by sibling GURs from their defining loci and are marked as such.
+
+cross_packet_identity_note: >-
+  rule_title, exp_level and sys_alignment are proposed by sibling GURs from their defining loci and
+  are proposed again here because this patch uses them as edge endpoints. A GUR must propose every
+  endpoint its edges use: an endpoint present only in a sibling GUR is not canonical, is not proposed
+  by the patch, and fails invariant 1 as endpoint_unresolved. Proposing them is not a competing
+  naming; each records its defining locus and the sibling GUR that also proposes it, and each ID and
+  label is reproduced exactly.
+
+reused_nodes: []
+
+candidate_nodes:
+  - proposed_id: rule_title
+    proposed_label: Title
+    kind: procedure
+    why_needed: >-
+      Source of M001 through M004. The mechanic these four tables resolve; without it the tables have
+      nothing to be the resolution of. Proposed here because this patch uses it as an endpoint.
+    prefix_basis: 'rule_ is a named rule or procedure'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the TITLE entry; this page is its resolution locus'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: >-
+      page 30, the TITLES heading and the framing sentences. The overview packet proposed this
+      identity from printed page 12, which names the concept; this page supplies how it is resolved.
+      The ID and label are reproduced from that proposal exactly.
+  - proposed_id: exp_level
+    proposed_label: Level
+    kind: advancement mechanic
+    why_needed: >-
+      Source of M005 through M008. What indexes the rows of all four titles tables. Proposed here
+      because this patch uses it as an endpoint.
+    prefix_basis: 'exp_ is a character advancement mechanic'
+    source_named: true
+    defining_locus: 'SD page 12, OVERVIEW, the LEVEL entry; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: >-
+      pages 30 and 31, the Level column heading of every titles table, and page 30, As you gain
+      levels your title changes. Secondary statement; the ID and label are reproduced from the
+      defining locus exactly.
+  - proposed_id: sys_alignment
+    proposed_label: Alignment
+    kind: subsystem
+    why_needed: >-
+      Source of M009 through M012. What selects the column of all four titles tables. Proposed here
+      because this patch uses it as an endpoint.
+    prefix_basis: 'sys_ is a whole subsystem'
+    source_named: true
+    defining_locus: 'SD page 27, ALIGNMENT; not this packet'
+    proposed_also_by: GUR-PKT-SD-011-014-character-overview-and-starting-level-r04
+    source_evidence: >-
+      pages 30 and 31, the Lawful, Chaotic and Neutral column headings of every titles table. The ID
+      and label are reproduced from the sibling proposal exactly. The three individual alignments are
+      deliberately not proposed; see OBS-02.
+  - proposed_id: tbl_fighter_titles
+    proposed_label: Fighter Titles Table
+    kind: table
+    why_needed: >-
+      Endpoint of M001, M005 and M009. The separately headed table that resolves a fighter's title
+      from level and alignment.
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 30, its own heading FIGHTER TITLES TABLE'
+    source_evidence: 'page 30, the heading FIGHTER TITLES TABLE over a four-column table, satisfying invariant 5'
+  - proposed_id: tbl_priest_titles
+    proposed_label: Priest Titles Table
+    kind: table
+    why_needed: >-
+      Endpoint of M002, M006 and M010. The separately headed table that resolves a priest's title
+      from level and alignment.
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 30, its own heading PRIEST TITLES TABLE'
+    source_evidence: 'page 30, the heading PRIEST TITLES TABLE over a four-column table, satisfying invariant 5'
+  - proposed_id: tbl_thief_titles
+    proposed_label: Thief Titles Table
+    kind: table
+    why_needed: >-
+      Endpoint of M003, M007 and M011. The separately headed table that resolves a thief's title from
+      level and alignment.
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 31, its own heading THIEF TITLES TABLE'
+    source_evidence: 'page 31, the heading THIEF TITLES TABLE over a four-column table, satisfying invariant 5'
+  - proposed_id: tbl_wizard_titles
+    proposed_label: Wizard Titles Table
+    kind: table
+    why_needed: >-
+      Endpoint of M004, M008 and M012. The separately headed table that resolves a wizard's title
+      from level and alignment.
+    prefix_basis: 'tbl_ is a separately referenced mechanical table'
+    source_named: true
+    defining_locus: 'SD page 31, its own heading WIZARD TITLES TABLE'
+    source_evidence: >-
+      page 31, the heading WIZARD TITLES TABLE over a four-column table, satisfying invariant 5. The
+      table carries no page marker of its own and inherits page 31 under the persistence rule; see
+      page_attribution_basis.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_title
+    source_label: Title
+    edge_type: RESOLVED_BY
+    target_id: tbl_fighter_titles
+    target_label: Fighter Titles Table
+    aspect: title lookup
+    condition: for a fighter
+    book: SD
+    page: 30
+    section: FIGHTER TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table is the procedure that turns a character's level and alignment into a title, which is
+      RESOLVED_BY read thing to procedure. The condition records that this table resolves the title
+      only for fighters, since each class has its own table. This is the same treatment the class
+      GURs gave their talents tables, and it carries the class linkage without proposing four class
+      identities this packet does not otherwise need; see OBS-01. Derived polarity governs.
+  - ref: M002
+    source_id: rule_title
+    source_label: Title
+    edge_type: RESOLVED_BY
+    target_id: tbl_priest_titles
+    target_label: Priest Titles Table
+    aspect: title lookup
+    condition: for a priest
+    book: SD
+    page: 30
+    section: PRIEST TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M003
+    source_id: rule_title
+    source_label: Title
+    edge_type: RESOLVED_BY
+    target_id: tbl_thief_titles
+    target_label: Thief Titles Table
+    aspect: title lookup
+    condition: for a thief
+    book: SD
+    page: 31
+    section: THIEF TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M004
+    source_id: rule_title
+    source_label: Title
+    edge_type: RESOLVED_BY
+    target_id: tbl_wizard_titles
+    target_label: Wizard Titles Table
+    aspect: title lookup
+    condition: for a wizard
+    book: SD
+    page: 31
+    section: WIZARD TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M005
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: tbl_fighter_titles
+    target_label: Fighter Titles Table
+    aspect: title row
+    condition: ''
+    book: SD
+    page: 30
+    section: FIGHTER TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table's rows are indexed by character level, so level is one of the two inputs that select
+      a cell. The level bands in the first column are magnitudes and are excluded; what is stored is
+      that the lookup depends on level. The overview packet already asserts that level feeds the
+      title mechanic in general; this row is distinct under the section 4 assertion key because its
+      target is the table rather than the mechanic, and it records where that dependency is actually
+      resolved.
+  - ref: M006
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: tbl_priest_titles
+    target_label: Priest Titles Table
+    aspect: title row
+    condition: ''
+    book: SD
+    page: 30
+    section: PRIEST TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M007
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: tbl_thief_titles
+    target_label: Thief Titles Table
+    aspect: title row
+    condition: ''
+    book: SD
+    page: 31
+    section: THIEF TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M008
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: tbl_wizard_titles
+    target_label: Wizard Titles Table
+    aspect: title row
+    condition: ''
+    book: SD
+    page: 31
+    section: WIZARD TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M009
+    source_id: sys_alignment
+    source_label: Alignment
+    edge_type: FEEDS_INTO
+    target_id: tbl_fighter_titles
+    target_label: Fighter Titles Table
+    aspect: title column
+    condition: ''
+    book: SD
+    page: 30
+    section: FIGHTER TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The table's three title columns are headed Lawful, Chaotic and Neutral, so alignment is the
+      second input that selects a cell. This is a genuine and easily missed dependency: a character's
+      title changes if their alignment does, which the overview packet's own row asserting that
+      alignment feeds the title mechanic anticipated but could not locate. Distinct from M005 by
+      source_id and aspect.
+  - ref: M010
+    source_id: sys_alignment
+    source_label: Alignment
+    edge_type: FEEDS_INTO
+    target_id: tbl_priest_titles
+    target_label: Priest Titles Table
+    aspect: title column
+    condition: ''
+    book: SD
+    page: 30
+    section: PRIEST TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M011
+    source_id: sys_alignment
+    source_label: Alignment
+    edge_type: FEEDS_INTO
+    target_id: tbl_thief_titles
+    target_label: Thief Titles Table
+    aspect: title column
+    condition: ''
+    book: SD
+    page: 31
+    section: THIEF TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M012
+    source_id: sys_alignment
+    source_label: Alignment
+    edge_type: FEEDS_INTO
+    target_id: tbl_wizard_titles
+    target_label: Wizard Titles Table
+    aspect: title column
+    condition: ''
+    book: SD
+    page: 31
+    section: WIZARD TITLES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+
+authored_polarity_declaration: >-
+  No row carries authored polarity. Constitution section 5 restricts authored polarity to MODIFIES,
+  TRIGGERS and CONSTRAINS, and this packet proposes none of those: every row is either RESOLVED_BY or
+  FEEDS_INTO, which Builder derives as governs and neutral respectively. No polarity or
+  polarity_basis value is set by the Analyst on any row.
+
+domains_touched: []
+candidate_domains:
+  - proposed: character_advancement
+    basis: >-
+      A title is a consequence of gaining levels and changes as advancement proceeds. Recorded as a
+      candidate only; the domain registry is empty and constitution section 8 reserves promotion to
+      an Architect Decision. This is the first packet to suggest this particular candidate, and a
+      lone occurrence does not promote a domain.
+
+domain_boundary_questions:
+  - >-
+    A title depends on level, which is advancement, and on alignment, which is a creation choice, and
+    its only stated effect is social. Whether that places it in an advancement domain, a character
+    domain or neither cannot be settled here. Deferred; no domain is asserted on any edge.
+
+candidate_general_rules:
+  - proposed: every class resolves its title on its own titles table indexed by level and alignment
+    establishing_locus: 'SD pages 30 and 31, the four titles tables'
+    basis: >-
+      M001 through M012 are twelve rows expressing three relationships repeated across four
+      structurally identical tables. If approved as a general rule, eight of the twelve could become
+      derived applications and any later class would be covered automatically.
+    not_applied: >-
+      Recorded as a candidate only. Constitution section 5 requires a separate Architect ruling with
+      an establishing locus, scope, counterexamples and affected set before a general rule exists,
+      and the Analyst is prohibited from promoting one. Unlike the class-benefit candidates recorded
+      in the four class GURs, the complete affected set is visible on these two pages, which makes
+      this the cleanest general-rule candidate in the intake so far. No edge in this GUR sets
+      general_rule_id, and under invariant 19 the establishing edges would leave it empty in any case.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: the four class identities are carried in conditions rather than as edges
+    detail: >-
+      Each table belongs to one class, and the class GURs propose class_fighter, class_priest,
+      class_thief and class_wizard from their own defining loci. This GUR does not propose them and
+      draws no class-to-table edge. The class linkage is carried in the condition of M001 through
+      M004, which is the same treatment the class GURs gave their own talents tables.
+      The alternative, four GATES rows from each class to its titles table, would say the same thing
+      twice and would pull four identities into this patch that no other row here needs. Recorded so
+      the absence of class nodes in a packet plainly about per-class tables is visibly deliberate.
+  - id: OBS-02
+    subject: the three alignments are named as column headings and not proposed
+    detail: >-
+      Every table's columns are headed Lawful, Chaotic and Neutral. These are the three alignments,
+      and their defining locus is printed page 27, which this Analyst has claimed but deliberately
+      not extracted: constitution section 2 provides no prefix under which an individual alignment
+      identity can be formed, and that question is being escalated to the Architect separately.
+      M009 through M012 therefore attach to the alignment subsystem rather than to its three members,
+      which is the assertion these pages support without pre-empting the ruling. If individual
+      alignment identities are later authorised, a successor revision could refine these four rows to
+      name which column each alignment selects; nothing published here would need retracting, because
+      the dependency on alignment is true at the axis level regardless.
+  - id: OBS-03
+    subject: the title names in the table cells are not proposed as identities
+    detail: >-
+      The four tables contain sixty cells holding names such as Squire, Knave, Warrior, Paladin,
+      Chaos Knight, Archmage and Bandit King/Queen. They are source-named and each occupies a bounded
+      cell, which is ordinarily what makes an identity proposable.
+      None is proposed. A title name is the output of the lookup, not a mechanic: not one of the
+      sixty states a dependency, a value, a permission or a procedure, so not one would produce an
+      edge, and sixty orphan nodes would be the worst instance of that error available in this
+      intake. The mechanical content of these pages is entirely in which two inputs select a cell,
+      which M005 through M012 carry. This is the same disposition the background packet gave its
+      twenty named backgrounds, reached independently here.
+      Several cells also collide with identities elsewhere: Barbarian and Acolyte are also
+      backgrounds, Ranger is also a background, and Paladin and Druid are class names in other games
+      but not in this one. Constitution section 2 states that labels do not determine identity, and
+      no merge is invited by a shared word.
+  - id: OBS-04
+    subject: the stated effect of a title is social and is not extracted
+    detail: >-
+      The framing sentences say a character's legend precedes them, that renown grows for good or
+      ill, and that an improved title could present opportunities previously out of reach. The last
+      is the closest this page comes to a mechanical effect, and it is deliberately not extracted:
+      could present opportunities names no second mechanic, no check, no permission and no value, and
+      striking it would require no mechanic to be reviewed. It is a statement about fiction, not a
+      rule. If a later chapter gives titles a mechanical consequence, that chapter is its locus.
+  - id: OBS-05
+    subject: magnitudes deliberately excluded
+    detail: >-
+      The pages carry the level bands in every table's first column, five per table across four
+      tables. All are threshold values, excluded by constitution section 1 and invariant 11. They
+      remain in the immutable claimed packet, which is the authority for which title applies at which
+      level. No aspect in this GUR contains a digit and no condition encodes a numeric value.
+  - id: OBS-06
+    subject: packet wrapper and supporting context
+    detail: >-
+      The supplied file opens with an intake wrapper ahead of the Primary Source Material heading,
+      for which the claim manifest is the independent page locator SOURCE_MARKDOWN Attribution Rules
+      requires; it contains no rulebook prose, heading or marker. The trailing Supporting Source
+      Context reproduces printed page 15 and is orientation only, contributing nothing here.
+
+unresolved_identity_questions:
+  - id: IDQ-01
+    subject: whether four per-class titles tables should be one table
+    detail: >-
+      This GUR proposes four table identities because the source prints four separately headed
+      tables. The alternative, one titles table with a class dimension, is the same question the
+      fighter GUR raised as IDQ-02 about talents tables and which the wizard GUR recorded as settled
+      in the negative once all four talents tables were read.
+      The titles case is weaker than the talents case in one respect and stronger in another: all
+      four titles tables share an identical shape, three alignment columns and five level bands,
+      which a single table could express, but they are printed as four separately headed tables under
+      one section heading, and invariant 5 makes a separately referenced table its own node.
+      Consequence if wrong: four identities would merge into one, which is a v2-style merge
+      migration, and M001 through M012 would collapse to three rows with a class dimension. The
+      Analyst followed the source's own division, as in the talents case, and records the question
+      rather than deciding it.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised by this packet. Every proposed node uses an approved constitution section 2 prefix with
+  an unchanged kind, every edge uses one of the thirteen legal section 3 types, and no new prefix,
+  edge type, domain promotion or general-rule application is requested.
+  This packet does depend on a question being escalated separately: whether an individual alignment
+  can have a node identity, raised from printed page 27 where alignment is defined. That escalation
+  does not block this GUR, because M009 through M012 attach to the alignment subsystem, which is an
+  approved sys_ identity already proposed by a sibling GUR. See OBS-02.
+
+completeness_statement: >-
+  Both printed pages in the declared span are accounted for. Page 30 was read in full: the TITLES
+  heading, all three framing sentences dispositioned in OBS-04, the FIGHTER TITLES TABLE heading, its
+  four column headings and all five rows, and the PRIEST TITLES TABLE heading, its four column
+  headings and all five rows. Page 31 was read in full: the THIEF TITLES TABLE and WIZARD TITLES
+  TABLE with their headings, column headings and all five rows each. All sixty title cells across the
+  four tables were read and are dispositioned in OBS-03, and the twenty level bands in OBS-05. Every
+  page marker was resolved through the Pandoc AST and the in-scope resolved page set matches the
+  declared span with no gap; the wizard table's inheritance of page 31 is stated explicitly in
+  page_attribution_basis. The Supporting Source Context reproducing printed page 15 is out of scope
+  and contributed nothing. Twelve edges are proposed across seven candidate nodes, three of which are
+  also proposed by sibling GURs from their defining loci and are marked as such. No node is reused
+  because the Shadowdark graph is empty. Content not converted to an edge is accounted for in OBS-01
+  through OBS-06, and the one identity question the Analyst could not settle is recorded in IDQ-01
+  rather than resolved by picking a plausible answer. No assertion depends on any other ruleset.

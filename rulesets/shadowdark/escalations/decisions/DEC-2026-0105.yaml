@@ -1,0 +1,219 @@
+schema_version: '1.0'
+id: DEC-2026-0105
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-189-189-monster-attributes
+constitution_version: '1.8'
+decision_date: '2026-09-30'
+escalation_id: ESC-2026-09-30T06.00.29.086Z
+question: >-
+  How does Shadowdark represent the shared monster-level mechanic without
+  conflating it with character advancement or converting per-creature stat-block
+  values into graph data; and how must queue tooling route an active blocked GUR?
+ruling: >-
+  Approve `mstat_` as the Shadowdark-only prefix for a shared creature statistic
+  or rating that is the input to an explicit mechanic. Approve
+  `mstat_monster_level` as the ordinary source-backed proposal for printed
+  monster LV. The page-189 assertion is `mstat_monster_level FEEDS_INTO
+  rule_hit_points` with aspect `hit point value` and condition `for a monster`.
+  It records the stated relationship, not dice, a level number, or an individual
+  monster's hit points.
+
+  Individual creature stat-block values are not graph content merely because a
+  stat block prints them. The existing shared identities remain the only
+  representation for AC, HP, attacks, movement, modifiers, alignment,
+  spellcasting, DC, and tier when an explicit dependency is present. A source
+  statement that only describes a creature's fields or values produces no node,
+  edge, property store, or completeness obligation. A further `mstat_` proposal
+  is ordinary workflow only when it denotes a shared creature statistic or
+  rating participating in an explicit dependency; any broader use requires a
+  new Architect Decision.
+
+  Confirm that a conforming blocked handoff is blocked work, not ordinary ready
+  work, for every artifact kind. The active blocked monster-attributes GUR must
+  not be inferred as `BUILDER-GUR`; its explicit Architect blocker remains the
+  only current routing until this ruling is returned to Analyst.
+rationale:
+  - >-
+    Monster LV is a fixed creature rating, not character advancement. Reusing
+    `exp_level` would falsely connect a monster statistic to character titles,
+    advancement, weapon mastery, and other progression assertions.
+  - >-
+    The page supplies one shared mechanical dependency but the chapter's stat
+    blocks principally supply individual values. Recording those values would
+    violate the graph's impact-analysis grain while adding hundreds of rows
+    that do not identify a dependency affected by a rule change.
+  - >-
+    A dedicated bounded prefix keeps creature identity (`monster_`), character
+    advancement (`exp_`), and a shared creature statistic (`mstat_`) distinct.
+    It also lets ordinary workflow reuse current shared mechanic identities
+    rather than duplicating them on every creature.
+  - >-
+    WORK_QUEUES already excludes blocked artifacts from ready work. Making the
+    routing rule explicit and testing GUR handling prevents a scanner fallback
+    from contradicting the artifact's authoritative handoff.
+evidence:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-30T06.00.29.086Z.yaml, checksum: sha256:e8e64f2b05cfe7ab86cd459a89b5b15043d6f79eeb3283a33ea6ff408dbf69ed, role: complete_monster_statistic_escalation}
+  - {path: books/shadowdark/sd/packets/claimed/PKT-SD-189-189-monster-attributes/source.md, checksum: sha256:942230e01400adad5ed80838fc7e5a39e64af9ee551494cad4f82d3e20ee0f28, role: defining_monster_attributes_locus}
+  - {path: books/shadowdark/sd/artifacts/gur/GUR-PKT-SD-189-189-monster-attributes-r01.yaml, checksum: sha256:606fc728b624154af4ea0189931f33575a627cfac01d373ec5ea8318f06d9c56, role: blocked_originating_gur}
+  - {path: rulesets/shadowdark/governance/constitution.md, checksum: sha256:629e72cde3206228e1d1e569957dfff6aa275728c18ff4890c81cfcdc6e0c93d, role: activated_mstat_boundary}
+  - {path: contracts/WORK_QUEUES.md, checksum: sha256:63248729b9ce5e206ba27f9231473f4f5d8a9b08373d99d252b67ba94be1c391, role: activated_uniform_blocked_handoff_rule}
+migration_required: false
+migration_scope: >-
+  No canonical row, registry row, source packet, GUR, GUP, Review, Approved
+  bundle, or Integration is rewritten or retracted. The Analyst publishes an
+  ordinary successor GUR for this one packet; future creature packets follow
+  the same boundary. No individual stat block is backfilled and no mass
+  migration is authorized.
+constitution_version_impact: >-
+  Shadowdark Constitution advances from 1.7 to 1.8. It adds the bounded
+  `mstat_` kind and the creature-statistic boundary while preserving historical
+  GUR/GUP admission from 1.0 through 1.7.
+affected_contracts:
+  - rulesets/shadowdark/governance/constitution.md
+  - rulesets/shadowdark/ruleset.yaml
+  - schemas/shadowdark/graph/gur.schema.json
+  - schemas/shadowdark/graph/gup.schema.json
+  - contracts/WORK_QUEUES.md
+affected_registries: []
+implementation_bounds:
+  - >-
+    Architect changes only this Decision, the resolved escalation location,
+    Shadowdark governance, its version metadata and schemas, and the shared
+    queue contract.
+  - >-
+    Builder changes only `tooling/common/scan_agent_queues.py` and its focused
+    tests. It routes a conforming active blocked GUR as one blocked item for
+    its declared role and never infers a Builder GUR job. It must make no
+    source, GUR, GUP, Review, registry, canonical, compiler, or basicdnd/rc
+    change.
+  - >-
+    Analyst may publish the ordinary GUR successor after Architect step 1. The
+    scanner repair is not a prerequisite for the source successor: the current
+    explicit GUR blocker, this Decision, and its resulting source boundary are
+    already authoritative.
+acceptance_tests:
+  - >-
+    Constitution Version 1.8 or later defines `mstat_` as a shared creature
+    statistic or rating used by an explicit mechanic, authorizes
+    `mstat_monster_level` for the Monster Attributes reading, and excludes
+    individual creature stat-block values and generic property storage.
+  - >-
+    Shadowdark ruleset metadata and GUR/GUP schemas admit current 1.8 artifacts
+    while preserving historical 1.0 through 1.7 admission. No other ruleset
+    prefix or vocabulary changes.
+  - >-
+    The scanner emits exactly one blocked, non-ReadyCount item for a conforming
+    active blocked GUR, preserves its declared next role and blocking IDs, and
+    emits neither `BUILDER-GUR` nor legacy handoff inference. Existing ready,
+    terminal, malformed, and legacy GUR behavior remains unchanged.
+  - >-
+    Focused scanner regressions and the complete relevant scanner suite pass.
+    The Builder implementation report records exact commands and outcomes, and
+    Reviewer independently reproduces the focused blocked-GUR regressions.
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: rulesets/shadowdark/governance/constitution.md
+        minimum_version: '1.8'
+        substantive_anchors:
+          - mstat_ names a shared creature statistic or rating used by an explicit mechanic.
+          - mstat_monster_level may feed monster hit-point calculation without storing numeric values.
+          - Individual creature stat-block values remain outside graph content and property storage.
+  - acceptance_test_index: 3
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.35'
+        substantive_anchors:
+          - A conforming blocked handoff creates only blocked work for its declared next role.
+          - A blocked active leaf contributes nothing to ReadyCount and never falls through to ordinary or legacy routing.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Builder implements the uniform blocked-GUR scanner routing and publishes
+    IMP-DEC-2026-0105-r01. Analyst may independently resume the originating
+    packet under step 2 because the mstat governance amendment is active.
+  blocking_ids: []
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, activate Constitution 1.8, Shadowdark version
+      metadata and schemas, update WORK_QUEUES 1.35, and relocate the resolved
+      escalation to decided history.
+  - step: 2
+    owner: analyst
+    action: >-
+      Publish GUR-PKT-SD-189-189-monster-attributes-r02, superseding r01. It
+      proposes `mstat_monster_level` and the one source-backed FEEDS_INTO row,
+      preserves the independently supported dark-adapted and tier-inversion
+      work, and does not encode a creature's printed stat-block values.
+  - step: 3
+    owner: builder
+    action: >-
+      Change only the scanner blocked-GUR route and focused regressions; publish
+      IMP-DEC-2026-0105-r01 with focused and relevant-suite evidence.
+  - step: 4
+    owner: builder
+    action: >-
+      After the Analyst's active GUR successor is published, compile it through
+      the normal packet lifecycle and hand the GUP only to Reviewer.
+  - step: 5
+    owner: reviewer
+    action: >-
+      Independently validate IMP-DEC-2026-0105-r01. Separately, review the
+      ordinary packet GUP only after Builder publishes it; do not conflate the
+      two lineages.
+post_implementation_requirements:
+  - >-
+    After step 2, the originating packet resumes its ordinary Analyst -> Builder
+    -> Reviewer -> Integrator relay. The active normal packet remains this one;
+    Analyst does not select another packet while it is in progress.
+  - >-
+    The ordinary packet successor must use `mstat_monster_level` only for the
+    explicit page-189 shared dependency. It must not create per-creature values,
+    rows, or identities. Remaining monster packets apply the same boundary and
+    escalate only a genuinely broader `mstat_` use.
+  - >-
+    Builder, Reviewer, and Integrator process the packet successor through the
+    ordinary lifecycle. The Decision implementation report and the packet GUP
+    are separate artifacts with separate approval paths.
+exact_diff:
+  rulesets/shadowdark/escalations/pending/ESC-2026-09-30T06.00.29.086Z.yaml: Relocate the resolved immutable escalation to decided history.
+  rulesets/shadowdark/escalations/decided/ESC-2026-09-30T06.00.29.086Z.yaml: Preserve the resolved immutable escalation under decided history.
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml: Publish the creature-statistic and blocked-GUR routing ruling.
+  rulesets/shadowdark/governance/constitution.md: Advance to 1.8 and define the mstat_ creature-statistic boundary.
+  rulesets/shadowdark/ruleset.yaml: Declare current 1.8 and historical 1.7 compatibility.
+  schemas/shadowdark/graph/gur.schema.json: Admit historical 1.0 through 1.7 and current 1.8 GURs.
+  schemas/shadowdark/graph/gup.schema.json: Admit historical 1.0 through 1.7 and current 1.8 GUPs.
+  contracts/WORK_QUEUES.md: Advance to 1.35 and require uniform blocked routing for all handoff-bearing artifact kinds.
+  tooling/common/scan_agent_queues.py: Route conforming blocked GUR handoffs as blocked work without Builder fallback.
+  tooling/common/tests/test_scan_agent_queues.py: Cover blocked GUR routing and unchanged ready, terminal, malformed, and legacy behavior.
+  rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0105-r01.yaml: Record Builder implementation and validation evidence.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-09-30T06.00.29.086Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decided/ESC-2026-09-30T06.00.29.086Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/governance/constitution.md, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/ruleset.yaml, owner: architect, sequence_step: 1}
+  - {path: schemas/shadowdark/graph/gur.schema.json, owner: architect, sequence_step: 1}
+  - {path: schemas/shadowdark/graph/gup.schema.json, owner: architect, sequence_step: 1}
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 3}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 3}
+  - {path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0105-r01.yaml, owner: builder, sequence_step: 3}
+follow_up_owners:
+  analyst:
+    - Publish the bounded Monster Attributes GUR successor now that the governing identity and content boundary are active.
+  builder:
+    - Implement the scanner's uniform blocked-GUR route and independently compile the Analyst successor when it is current.
+  reviewer:
+    - Independently review the Decision implementation report and the ordinary packet GUP in their separate lineages.

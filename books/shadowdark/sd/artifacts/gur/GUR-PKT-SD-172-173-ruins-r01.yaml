@@ -1,0 +1,417 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-172-173-ruins-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-172-173-ruins
+constitution_version: '1.7'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.8
+- contracts/WORK_QUEUES.md 1.34
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.7
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0091.yaml
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0100.yaml
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-172-173-ruins
+  source_file: source.md
+  packet_source_checksum: sha256:0c16b04c6b221c6cc45845b56ac86973926f7288df2311a1fc1a77f0941e5c46
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 073-encounters-ruins.md
+  citation_code: SD
+  page_start: 172
+  page_end: 173
+  page_number_basis: packet_page_markers
+units_note: 'Figures name their unit. Measured by the building script from the claimed source: 1 named
+  table, 50 data rows keyed to a hundred-sided roll, 0 sentences of prose, 23 rows on printed page 172
+  and 27 on 173.'
+page_attribution_basis: 'The page break falls inside the table, as it has in every packet of this chapter
+  so far. The p172 marker sits on the RUINS heading under placement rule 1. The p173 marker sits in the
+  last cell of one table row, and acceptance test 3 applies a table-row marker to the whole row, so that
+  row is page 173 and persistence carries 173 to every row after it.
+
+  The script locates the marker by row index rather than by eye and derives each row''s page from it:
+  23 rows are page 172 and 27 are 173. Each submitted row is cited to the page of the cell it rests on,
+  and the script asserts that placement from the located cell index rather than from my reading.'
+scope_boundary: 'The bounded scope is the Primary Source Material section, printed pages 172 and 173:
+  one named table of 50 rows and no prose. The Supporting Source Context appends the random encounter
+  procedure from printed pages 112 and 113 and the monster attributes page from 189. Both are out of scope
+  and no row cites either.
+
+  That exclusion matters here because the appended encounter procedure is the very rule this table resolves.
+  Its content belongs to PKT-SD-112-113, which is already integrated, and re-asserting it would duplicate
+  canonical rows from a repeated passage.'
+source_summary: 'A single hundred-sided encounter table for ruins, 50 rows, with no procedure, no heading
+  prose and no instructions. Most results are dungeon creatures and decay: a gelatinous cube sweeping
+  a corridor, animated armor dragging itself along, rust monsters, an ochre jelly in a sinkhole, a stone
+  golem restacking the same rocks. Four cells state mechanics: a gas leak that puts out all light sources,
+  kobolds sneaking up for a surprise attack, rival crawlers in two separate cells, and a dead crawler''s
+  body holding a magic item.'
+graph_state_at_extraction: 'Read from the repository at extraction, not recalled, and every figure here
+  is computed by the building script from the canonical files and the claimed source.
+
+  The canonical graph holds 417 registry rows and 822 edges, and 0 rows cite printed page 172 or 173,
+  so nothing in this span has been extracted before. The registry holds 117 tbl_ identities and 0 monster_
+  identities, the latter being the figure that governs how much of this table is extractable at all.
+
+  rule_encounter carries 25 rows, of which 17 are RESOLVED_BY. The script asserts that the proposed table
+  id is absent from the registry before using it.'
+chapter_disposition_note: 'The disposition for this chapter was argued in full at PKT-SD-142-143 and is
+  applied here rather than re-argued. In short: no procedure identity, because the table''s own title
+  names rule_encounter and that rule has been canonical since printed page 112, so this table is a further
+  resolver of an existing rule rather than evidence of a new one. No terrain or district identity, because
+  values were declined at their own defining loci for danger level, treasure quality and settlement size.
+  No creatures and no named characters, because the registry holds 0 monster_ identities and a creature''s
+  defining locus is its stat block, not a line in an encounter table.
+
+  What remains is the small set of cells that state a mechanic or name a canonical procedure, and those
+  are found by measurement rather than by reading.'
+name_match_measurement_note: 'The cells were matched against the whole registry by script, not scanned
+  by eye, because a table of 50 prose cells is where a reference gets missed and where a false one gets
+  asserted. Both happened in earlier packets: rule_natural_twenty was missed at PKT-SD-101-109 by keyword-searching
+  instead of reading the registry, and a false absence claim about rule_invisibility reached production
+  from PKT-SD-062-065.
+
+  Two scans are run, because at PKT-SD-148-149 the whole-label scan was shown to fail in both directions:
+  it reports ordinary English that collides with a label, and it misses an inflected mention, since a
+  cell saying bear trap does not recover canonical Traps and a rival crawler does not recover Rival Crawlers.
+  The second scan compares stems, which closes that gap at the cost of widening the first, so both are
+  reported rather than one replacing the other. It was proved against PKT-SD-148-149 and recovers exactly
+  the two cells the label scan missed there.
+
+  Whole-label scan: 16 of the 50 cells match. Stem scan: 22 cells match, adding 3 identities the label
+  scan did not reach (item_lantern, rule_encounter, spell_fly). 4 of all matched identities are real references:
+  rule_light_source, rule_rival_crawlers, rule_surprise, rule_treasure. item_campfire, item_lantern, rule_encounter
+  are real mentions deliberately not given a row of their own, for the reasons in rejected_candidates.
+  The rest are ordinary English colliding with an identity label: ancestry_goblin, item_armor, item_backpack,
+  item_magic_item, lang_giant, lang_goblin, spell_fly, spell_light, spell_web.
+
+  Goblins and giants dominate again, ancestry_goblin and lang_goblin across five cells and lang_giant
+  across five more. spell_light matches twice without either cell being a spell, once on the gas leak
+  that does carry a row and once on bats disturbed by light. item_armor matches animated armor, item_backpack
+  a backpack stuffed with rocks, item_lantern bandits shuttering lanterns, item_campfire a campfire still
+  burning and spell_web an ettercap''s cocoons. Note that the whole-label scan finds rule_surprise here
+  where the stem scan adds nothing, the reverse of the usual case.'
+reused_nodes:
+- id: rule_encounter
+  label: Encounter
+  used_by: M001
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed page 112 with 25 rows and 17 RESOLVED_BY. This table is a further resolver
+    on a distinct aspect.
+- id: rule_light_source
+  label: Light Source
+  used_by: M002
+  basis: 'Present in the registry at extraction with this exact label, asserted equal by the building
+    script. Canonical from printed page 84 with 5 inbound rows, of which 2 are MODIFIES. The precedent
+    is exact: tbl_light_mishaps MODIFIES rule_light_source on extinguishing at worsens and basis read,
+    from printed page 110. This cell states that a gas leak causes all light sources to explode and go
+    out, which is the same effect from a different source, so it takes the same type and polarity on a
+    distinct aspect.'
+- id: rule_surprise
+  label: Surprise
+  used_by: M003
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed pages 87 and 88 with 7 rows, of which 3 are inbound. The cell states that kobolds
+    sneak up behind the characters for a surprise attack, which names the category and states the operation,
+    creatures approaching undetected to strike. See surprise_reach_note for the type and polarity.
+- id: rule_rival_crawlers
+  label: Rival Crawlers
+  used_by: M004
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed pages 126 and 127 with 14 inbound rows. Two cells name it here, more than any
+    page in the chapter has carried, and one row is written because both support the same assertion key;
+    the row is cited to the first.
+- id: rule_treasure
+  label: Treasure
+  used_by: M005
+  basis: Present in the registry at extraction with this exact label, asserted equal by the building script.
+    Canonical from printed page 117 with 8 inbound rows. The hundredth row states that the body of a dead
+    crawler holds a random magic item, which names the canonical category and states availability, the
+    limb of the test the Integrator confirmed is accepted alongside active bestowal.
+candidate_nodes:
+- proposed_id: tbl_ruins_encounters
+  proposed_label: Ruins Encounters Table
+  kind: table
+  why_needed: The one named table on the page, 50 rows keyed to a hundred-sided roll. It resolves rule_encounter
+    for ruins and is the source of every other row this packet carries.
+  prefix_basis: tbl_ is a named source table; joins the 117 canonical tbl_ identities
+  source_named: true
+  defining_locus: SD page 172, RUINS ENCOUNTERS TABLE
+  source_evidence: page 172, the RUINS ENCOUNTERS TABLE heading and its 50 data rows, which continue onto
+    page 173.
+candidate_edges:
+- ref: M001
+  source_id: rule_encounter
+  source_label: Encounter
+  edge_type: RESOLVED_BY
+  target_id: tbl_ruins_encounters
+  target_label: Ruins Encounters Table
+  aspect: ruins selection
+  condition: ''
+  book: SD
+  page: 172
+  section: RUINS ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: tbl_ruins_encounters
+  source_label: Ruins Encounters Table
+  edge_type: MODIFIES
+  target_id: rule_light_source
+  target_label: Light Source
+  aspect: gas extinguishing
+  condition: ''
+  book: SD
+  page: 172
+  section: RUINS ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: worsens
+  polarity_basis: read
+- ref: M003
+  source_id: tbl_ruins_encounters
+  source_label: Ruins Encounters Table
+  edge_type: TRIGGERS
+  target_id: rule_surprise
+  target_label: Surprise
+  aspect: ambush surprise
+  condition: ''
+  book: SD
+  page: 173
+  section: RUINS ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+  polarity: neutral
+  polarity_basis: read
+- ref: M004
+  source_id: tbl_ruins_encounters
+  source_label: Ruins Encounters Table
+  edge_type: FEEDS_INTO
+  target_id: rule_rival_crawlers
+  target_label: Rival Crawlers
+  aspect: encounter result
+  condition: ''
+  book: SD
+  page: 172
+  section: RUINS ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: tbl_ruins_encounters
+  source_label: Ruins Encounters Table
+  edge_type: FEEDS_INTO
+  target_id: rule_treasure
+  target_label: Treasure
+  aspect: encounter treasure
+  condition: ''
+  book: SD
+  page: 173
+  section: RUINS ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: 1
+  status: core
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+authored_polarity_declaration: 2 of the 5 rows carry authored polarity, each on a type constitution section
+  5 reserves and each at basis read because the source states the direction in the cell itself. The magnitudes
+  in those cells are not storable and are not stored; the direction is. The remaining 3 rows are RESOLVED_BY
+  or FEEDS_INTO, neither reserved, so Builder derives governs and neutral respectively.
+status_note: All 5 rows are core, following the disposition settled as IDQ-01 of PKT-SD-124-125 and applied
+  throughout this chapter.
+domains_touched: []
+candidate_domains:
+- proposed: exploration
+  basis: The table resolves encounters during travel and crawling. Recorded as a candidate only; constitution
+    section 8 reserves domain promotion to an Architect Decision.
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: None proposed. The Analyst is prohibited from promoting a general rule.
+rejected_candidates:
+- text_locus: the portcullis and the collapsing wall, pp172 and 172
+  quoted_gist: a rusty portcullis slams down, separating the characters, and a groaning wall collapses
+    at the slightest touch
+  why_considered: This is the closest call on the page and I want it looked at. Both state an operation,
+    which is the element the desert overturn made decisive, and the wall even states a trigger, the slightest
+    touch, which is more than the javelin-shooting statue on printed page 161 offered when it earned a
+    rule_traps row. A portcullis slamming down to separate a party is the archetypal dungeon trap.
+  rejection_reason: 'Every cell that has earned a rule_traps reach describes a device placed to catch
+    someone: bone-barbed nets, a catgut wire operating a net, javelins shot from a statue''s mouth, net
+    traps set for game, a cultist''s trap, a barbed net launching from silt. A rusty portcullis and a
+    groaning wall are architecture failing, not devices set. rule_traps is about finding a trap, disabling
+    it and avoiding its effect, and none of those applies to decay. The word rusty and the word groaning
+    are the source telling you these are ruins collapsing.
+
+    That is a third axis after operation and agency, and I am less sure of it than of either. If the Reviewer
+    holds that a portcullis slamming down is a mechanism regardless of what set it off, the row is a one-line
+    addition and the wall would follow it. Recorded as OBS-02.'
+- text_locus: the hasty ambush with shuttered lanterns, p172
+  quoted_gist: bandits shutter lanterns and set up a hasty ambush
+  why_considered: It is an ambush on a page whose other ambush carries a rule_surprise row, and item_lantern
+    is canonical and is one of the two items classified as a light source under DEC-2026-0104, so a light
+    row looked available too.
+  rejection_reason: 'The cell says ambush and not surprise, and the canonical identity is Surprise with
+    a defined procedure on printed pages 87 and 88; an ambush that names no surprise, no detection and
+    no initiative states no part of it. That is the same qualifier reasoning that separates crawlers from
+    rival crawlers. On the light side, bandits shuttering their own lanterns is preparation, not an effect
+    on the light source rule: no radius, no duration and no fuel. Both halves fail for the ordinary reason.'
+- text_locus: the hazards and decay that state no mechanic, pp172 and 173
+  quoted_gist: the floor collapsing into a pit of stated depth, a dense cloud of sulfuric mist rising
+    from a crack, ancient clay pots vibrating with hypnotizing resonance, a volatile alchemy lab
+  why_considered: The pit states a depth, the mist is sulfuric and the pots hypnotise, all of which sound
+    like they should do something.
+  rejection_reason: A depth is a magnitude and the cell states no fall, no check and no damage, which
+    is the disposition held since the deep tunnels floor on printed page 151. Hypnotising resonance has
+    no status identity to point at, the thirteenth locus to lose a row to that gap. The mist and the lab
+    state nothing at all beyond being present.
+- text_locus: the campfire and the backpack, pp173 and 172
+  quoted_gist: a recent campfire still burning with glowing cinders, and a strangler hiding above a backpack
+    stuffed with rocks
+  why_considered: item_campfire and item_backpack are both canonical and both are matched by the scan.
+  rejection_reason: Neither states a mechanic. The campfire burns and nobody uses it; the backpack is
+    bait and nobody carries it. item_campfire was declined in exactly this form on printed page 149, where
+    dwarves roasted mutton around one, and this is the second instance of that disposition.
+- text_locus: the creature results across the table, pp172 and 173
+  quoted_gist: a cave brute, a gelatinous cube in two cells, an owlbear, rust monsters, animated armor,
+    skeletons, giant dung beetles, an ochre jelly, hobgoblins, beastmen, a giant centipede, a strangler,
+    a ghost, kobolds, gricks, giant wasps, a spider swarm, an ogre, giant bats, an ettercap, cultists,
+    a dryad, bugbears, a deep gnome, a stone golem, darkmantles, cave creepers, a minotaur and the Wandering
+    Merchant
+  why_considered: Two are individually named, Mort the goblin and an ogre named Lud, and one cell gives
+    dwarven miners a creature type in parentheses.
+  rejection_reason: A creature's defining locus is its stat block in the unextracted monster chapter and
+    the registry holds no monster_ identity. Fifteenth packet running for the same disposition.
+- text_locus: the two-encounter instruction, p173
+  quoted_gist: one result instructs the reader to roll twice more and combine the results, rerolling that
+    result if it comes up again
+  why_considered: It is the only instruction on the page, and the stem scan flags it as matching rule_encounter.
+  rejection_reason: The match is on the plain word encounters in the instruction's own text; M001 already
+    carries the table's relation to rule_encounter. The rest is arithmetic on the table's own roll. Declined
+    in the same form in each of the fifteen preceding chapter packets.
+- text_locus: the appended random encounter procedure and monster attributes, out of scope
+  quoted_gist: the printed page 112 and 113 encounter procedure and the printed page 189 monster attributes
+    page
+  why_considered: Both are in the file and the first is the rule this table resolves.
+  rejection_reason: Both are Supporting Source Context, outside the bounded scope. PKT-SD-112-113 is already
+    integrated, so extracting from it would duplicate canonical rows and cite pages outside this packet's
+    range.
+non_edge_observations:
+- id: OBS-01
+  subject: two new targets for the chapter, both on strong precedent
+  detail: 'This packet reaches rule_light_source and rule_surprise, neither of which any encounter table
+    had touched before. Both follow an existing canonical shape rather than inventing one.
+
+    The light row copies tbl_light_mishaps MODIFIES rule_light_source on extinguishing at worsens and
+    basis read, from printed page 110; a gas leak that makes every light source explode and go out is
+    that effect from a different source. The surprise row follows the type and polarity settled for the
+    web casting on printed page 158: the encounter causes the occurrence, and the direction of benefit
+    belongs at the target''s own locus, where rule_surprise already improves the attack roll, initiative
+    and the turn.
+
+    Recorded because sixteen packets in, the chapter is still producing first reaches, and both of these
+    came from cells the scan flagged. The gas leak was flagged as spell_light, which is wrong, and the
+    surprise cell was flagged as rule_surprise, which is right; reading both was what separated them.'
+- id: OBS-02
+  subject: a third axis on the trap boundary, and the one I am least sure of
+  detail: 'A rusty portcullis slams down and separates the characters. A groaning wall collapses at the
+    slightest touch. Both state an operation and the wall states a trigger, which is more than the javelin-shooting
+    statue offered when it earned a row on printed page 161. Neither gets one here.
+
+    The ground is that every qualifying cell so far describes a device placed to catch someone, and these
+    describe architecture failing. rule_traps is about finding a trap, disabling it and avoiding its effect,
+    none of which applies to decay. So the boundary now has three axes: the cell must state an operation,
+    the mechanism must work without a creature choosing to work it, and it must be something set rather
+    than something rotting.
+
+    I am less confident of the third than of the first two and I would rather say so than let it pass
+    as settled. It is the first axis I have added without an overturn or an affirmation behind it, and
+    a portcullis is the single most trap-like object the chapter has produced. If the Reviewer disagrees,
+    both cells move together and the wall comes with the portcullis.'
+- id: OBS-03
+  subject: the qualifier test now has a second word to test it on
+  detail: 'The chapter''s crawler rule is that the qualifier identifies the procedure and the noun does
+    not: rival crawlers earns the reach and crawlers alone does not. This page tests the same shape on
+    a different pair. One cell has bandits set up a hasty ambush and earns nothing; another has kobolds
+    sneak up behind the characters for a surprise attack and carries a row, because surprise is the canonical
+    procedure''s own name and ambush is not.
+
+    The hundredth row also uses the bare noun, holding that the body of a dead crawler holds a magic item,
+    and it earns a treasure row rather than a rival crawler one, which is the same rule applying twice
+    in one cell.
+
+    Recorded because the pattern is now general rather than a quirk of one word. The book uses ordinary
+    English for things it has named procedures for, and the graph records only the named form. That is
+    a real limit on what these tables can contribute, and it is worth stating plainly rather than discovering
+    again in each remaining packet.'
+unresolved_identity_questions: []
+unresolved_identity_questions_note: None. Every structural choice here follows the chapter disposition
+  settled at PKT-SD-142-143 and the dispositions it rests on.
+architectural_escalations: []
+architectural_escalation_note: None raised. The one proposed identity uses an approved prefix, every row
+  uses a legal edge type at status core, no row carries supersession_basis and none is an OVERRIDES, and
+  no CLASSIFIED_AS row appears. The authority list omits the nonexistent Shadowdark DEC-2026-0003; registry
+  authority for this ruleset is constitution section 2, as recorded in GUR-PKT-SD-142-143-arctic-r01.
+completeness_statement: 'Both printed pages in scope were read in full at the recorded checksum: 1 named
+  table, 50 data rows, 0 sentences of prose. The packet yields 1 new identity and 5 rows, reusing 5 canonical
+  identities whose labels the building script asserted equal to the registry. The proposed table carries
+  edges, so nothing is left unattached.
+
+  Every row was checked against the 822 canonical edges for an assertion-key collision, for a shared source,
+  type and target under a different aspect, and for duplicates within the patch; there are none of any,
+  and no canonical row cited either page before. The script locates the supporting cell for each row and
+  asserts its page, which matters because the page break falls inside the table.
+
+  7 candidates were rejected and each is recorded with its reason. The largest deliberate loss is the
+  creature and scene content, which belongs to the unextracted monster chapter or states no mechanic at
+  all. 9 of the 16 apparent registry references in the cells are spurious collisions with ordinary English,
+  measured rather than filtered by eye. No assertion depends on any other ruleset.'
+surprise_reach_note: 'M003 reaches a target no encounter table has touched, so the type and polarity are
+  argued.
+
+  The cell, at row index 25 of 50, states that kobolds sneak up behind the characters for a surprise attack.
+  TRIGGERS is the type because the encounter causes surprise to occur; FEEDS_INTO would say the table
+  supplies an input to the surprise rule and MODIFIES would say it changes how surprise works, both false.
+
+  The polarity is neutral at basis read, following the web casting on printed page 158 and for the same
+  reason. rule_surprise already carries its directed consequences at its own locus, improving the attack
+  roll, initiative and the turn, all from printed pages 87 and 88, and it is gated by hiding and sneaking
+  and negated by keen senses. Writing inflicts here would import that machinery into the trigger row from
+  a page-173 locus. What this cell states is that surprise happens, not whether it is good or bad, and
+  who it is bad for is a fact about the encounter rather than about the rule.'
+measured_figures_note: 'Figures quoted in this artifact''s prose are computed by the building script from
+  the claimed source and the canonical files, and the finished document is checked for unsubstituted format
+  specifiers before it is written. Located cells: the gas leak at index 18, the surprise attack at 25,
+  the hasty ambush at 15, the rival crawlers at [3, 28], the portcullis at 22, the collapsing wall at
+  6, the campfire at 46 and the magic item at 49, of 50 rows. Canonical counts at extraction: 17 resolvers
+  on rule_encounter, 5 inbound on rule_light_source of which 2 are MODIFIES, 7 rows on rule_surprise,
+  8 inbound FEEDS_INTO on rule_traps, 14 inbound on rule_rival_crawlers and 8 inbound on rule_treasure.
+  The hundredth slot names a magic item in 6 of the 16 claimed packets of this chapter.'

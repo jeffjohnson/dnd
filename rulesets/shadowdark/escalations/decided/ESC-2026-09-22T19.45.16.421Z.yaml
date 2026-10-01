@@ -1,0 +1,415 @@
+schema_version: '1.0'
+id: ESC-2026-09-22T19.45.16.421Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-015-015-stats-and-stat-modifiers
+constitution_version: '1.2'
+revision: 1
+supersedes: null
+raised_by: builder
+raised_utc: '2026-09-22T19:45:16.421Z'
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: Three confirmed defects in Builder-owned queue derivation change which artifacts every role
+    is offered, and one of them now offers superseded bundles for a packet that is already integrated.
+  blocking_ids: []
+authority:
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/WORK_QUEUES.md 1.32
+- contracts/HERDR_HANDOFFS.md 2.1
+- schemas/common/approved-bundle.schema.json
+- agents/builder/INSTRUCTIONS.md
+raised_from: An Integrator notification at 2026-09-22 15:29 local reported that scan_agent_queues.py
+  never lists the SD-015-015 Approved-bundle leaf and never mentions its Integration Rejection, while
+  its own queue reports both. It asserted no defect and asked Builder to verify. Builder verified,
+  found two defects rather than the one suspected, reported them, and was directed by the Architect
+  to raise this escalation. While it was being drafted the Reviewer published the packaging repair
+  and the Integrator integrated the result, which exposed a third defect and made the consequences
+  live. Every observation below is re-measured against the current tree.
+urgency: 'This is no longer only a reporting inaccuracy. Shadowdark canonical state now exists: rulesets/shadowdark/canonical
+  was created by INT-20260922-002 and the node registry carries its first ten registrations. The scanner
+  currently offers two superseded Approved bundles for that same already-integrated packet. An Integrator
+  following scan_agent_queues.py rather than its own queue would be handed a batch whose rows are
+  already canonical. Builder recommends that no role integrate any SD-015-015 bundle on the strength
+  of this scanner until the Decision lands.'
+question: Approved-bundle queue derivation has three defects. It does not read the schema-required
+  approves.review_id and guesses a Review from the filename stem instead; it never consults manifest-level
+  supersedes, so superseded bundles stay on offer; and it harvests any APPROVED- string from an Integration
+  manifest, so a bundle merely named as a component path is recorded as integrated. May Builder fix
+  all three as bounded conformance to WORK_QUEUES 1.32 and the approved-bundle schema, scoped to tooling/common/scan_agent_queues.py
+  and focused tests? And is the WORK_QUEUES Legacy Queue Derivation rNN inference the intended placement
+  for the two manifests in this lineage that declare neither revision nor supersedes?
+why_this_is_architectural: 'ESCALATION_CONTRACT says a deterministic validator should decide an issue
+  rather than escalate it, and defects one and three are exactly that: code that does not read what
+  the schema requires, and code that infers an identity from a substring. Builder raises them anyway
+  because queue derivation is the shared coordination substrate for all five roles, so changing it
+  silently changes every role''s work list. That is the same reason Builder refused to alias an unread
+  Review key before DEC-2026-0091 rather than settle a repository-wide convention inside a tool. Defect
+  two additionally cannot be implemented safely without a ruling, because the literal reading of WORK_QUEUES
+  rule 4 produces a forked lineage with two leaves. The Architect directed this escalation after verifying
+  the Builder report.'
+observed_queue_state_now:
+  measured_at_utc: '2026-09-22T19:45:16.421Z'
+  scanner: tooling/common/scan_agent_queues.py
+  scanner_checksum: sha256:2aa0ee46db9c3a1ae83befb00fc814bd90580f3176b3489b08b3405055e8551a
+  rows:
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+    scanner_says: informational INTEGRATOR-CONSUMED
+    truth: not integrated; only its edges.csv path is named by the Integration manifest. Defect 3.
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02
+    scanner_says: ready INTEGRATOR-APPROVED
+    truth: superseded by r05-r03 and the packet is already integrated. Defect 2.
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+    scanner_says: ready INTEGRATOR-APPROVED
+    truth: superseded by r05-r04 and already integrated; additionally validated against the wrong
+      Review. Defects 1 and 2.
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04
+    scanner_says: dropped with approved_review_inferred_or_missing
+    truth: superseded by r05-r05; its declared Review exists and is approved. Defect 1.
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05
+    scanner_says: dropped with approved_review_inferred_or_missing
+    truth: the active leaf, and the bundle INT-20260922-002 actually integrated. Defect 1.
+  - bundle: INT-20260922-001
+    scanner_says: no item and no mention
+    truth: a valid rejection record, read and trusted by the scanner, never consulted because its
+      bundle was discarded first. Defect 1.
+defect_1_manifest_linked_review:
+  summary: The scanner never reads the schema-required approves.review_id and falls back to guessing
+    a Review ID from the APPROVED- filename stem.
+  schema_authority:
+    path: schemas/common/approved-bundle.schema.json
+    checksum: sha256:aadf53d64f98bad0db556fb189be3aa9ae1f15d6967a6e7ef264b1a1271c4455
+    finding: '`approves` is required at the top level and `approves.review_id` is required within
+      it, with pattern ^REV-GUP-.+$. The schema declares no top-level review_id property, and approves.additionalProperties
+      is false, so the location is exact and closed.'
+  observed_code:
+  - path: tooling/common/scan_agent_queues.py
+    line: 4841
+    reads: manifest['review_id'], then manifest['provenance']['review_id']
+  - path: tooling/common/scan_agent_queues.py
+    line: 4846
+    reads: fallback 'REV-' + approved_id[len('APPROVED-'):], a filename-stem guess
+  - path: tooling/common/scan_agent_queues.py
+    line: 4861
+    reads: continue when no Review resolves, before the rejection lookup at 4919
+  measured_on_every_manifest:
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+    checksum: sha256:fddaefc4fe3793ca11e1cff8c1c9473b4cb74bae197871c15697f116d1317e5a
+    top_level_or_provenance_review_id: absent
+    declared_approves_review_id: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+    stem_guess: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+    stem_guess_resolves: true
+    guess_matches_declaration: true
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02
+    checksum: sha256:219baa8d6955035a2a5308651be591a2baed8cea34793ffa755c88f1f82a9c6c
+    top_level_or_provenance_review_id: absent
+    declared_approves_review_id: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+    stem_guess: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02
+    stem_guess_resolves: true
+    guess_matches_declaration: false
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+    checksum: sha256:37a19b0c94f490db7598c5a58f824196d21b5cb4051c04dcc03efd7a83c38e32
+    top_level_or_provenance_review_id: absent
+    declared_approves_review_id: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+    stem_guess: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+    stem_guess_resolves: true
+    guess_matches_declaration: false
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04
+    checksum: sha256:d0aa63fcf62c7c409442d574fd5b4b6eab7aac2bdebb2325f3d458f8ba364af5
+    top_level_or_provenance_review_id: absent
+    declared_approves_review_id: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02
+    stem_guess: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04
+    stem_guess_resolves: false
+    guess_matches_declaration: false
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05
+    checksum: sha256:0a5e98aabb691ccc9975350c0a9296fc09182d4592a91b8859d1ff50eb1e28a7
+    top_level_or_provenance_review_id: absent
+    declared_approves_review_id: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+    stem_guess: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05
+    stem_guess_resolves: false
+    guess_matches_declaration: false
+  the_guess_is_unstable_not_merely_lossy: r05-r03 declares REV-...-r05-r01. Two hours ago its stem
+    guess REV-...-r05-r03 did not exist, so the bundle was dropped. The Reviewer then published REV-...-r05-r03
+    for an unrelated purpose, the packaging repair, and that same unchanged bundle silently started
+    validating against a Review its manifest does not name and is now offered as ready. A byte-identical
+    artifact changed queue state because a different artifact was published. That is the strongest
+    argument that the stem guess must not apply to a manifest that declares its Review.
+  why_it_never_surfaced_before: Every adnd1e Approved manifest writes review_id at the top level as
+    well as inside approves, so the stem fallback was never the only path. These five Shadowdark manifests
+    follow the schema exactly and carry approves.review_id alone.
+  not_the_cause: 'The Integrator suspected the colocated stem-named edges.csv. Builder confirms it
+    is not the cause of defect 1. Component discovery is correct under WORK_QUEUES 1.25: every manifest
+    declares that CSV by repository-relative path and the scanner resolves it from the manifest. The
+    filename stem matters only because the scanner guesses a Review ID from it. The shared CSV does
+    matter to defect 3 below, for a different reason.'
+defect_2_active_leaf_selection:
+  summary: Approved-bundle readiness never consults manifest-level supersedes. It suppresses only
+    when the packaged GUP is superseded.
+  observed_code:
+    path: tooling/common/scan_agent_queues.py
+    line: 4895
+    reads: packaged_gup = _packaged_gup_id(manifest, review); suppressed only if packaged_gup in superseded_gup_ids
+  measured: All five manifests package GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05, which is the
+    current GUP leaf, so no bundle is suppressed by that test and superseded manifests remain on offer.
+    No manifest-level supersedes handling exists anywhere in Approved-bundle discovery.
+  contract: WORK_QUEUES 1.32 rule 3, only the active leaf revision creates work; rule 4, a revision
+    is a leaf when no later artifact of the same kind names its ID in supersedes; rule 6, superseded
+    artifacts are not ready work.
+  independent_of_defect_1: The Integrator suggested both symptoms might be one issue. They are not.
+    Fixing defect 1 alone would resolve the leaf's Review but leave r05-r02 and r05-r03 offered, because
+    nothing in this path consults manifest supersedes.
+defect_3_integrated_id_harvesting:
+  summary: _collect_approved_ids treats any APPROVED- substring found anywhere in an Integration manifest
+    as an integrated bundle ID, including a component path.
+  observed_code:
+  - path: tooling/common/scan_agent_queues.py
+    line: 3785
+    reads: _collect_approved_ids walks the document and regex-matches APPROVED_ID_PATTERN in every
+      string value
+  - path: tooling/common/scan_agent_queues.py
+    line: 4080
+    reads: the integrated directory is scanned only for filenames beginning with 'APPROVED-'
+  measured:
+    integration_manifest: rulesets/shadowdark/manifests/INT-20260922-002.json
+    integration_manifest_checksum: sha256:e844ecd72e43812d940b010fbab2b820764b4f09b971f0af9d9cbfae41f442e3
+    integration_record: books/shadowdark/sd/artifacts/integrated/INT-20260922-002-APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05.json
+    integration_record_checksum: sha256:fe3e3b984454e92b117af83d1acaedf6813b22dfb2ada03868d621c8969890a2
+    record_declares_bundle_id: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05
+    approved_strings_present_in_the_manifest:
+    - APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01.edges.csv
+    - APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05
+    - APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05.yaml
+    ids_the_scanner_derives:
+    - APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+    - APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05
+    - APPROVED-GUP-PKT-SD-016-017-ancestries-r02-r01
+    - APPROVED-GUP-PKT-SD-016-017-ancestries-r02-r02
+    consequence: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01 is recorded as integrated
+      although it never was. The manifest names it only because every manifest in this lineage declares
+      the same shared edges component, which happens to be stem-named after r05-r01.
+  second_half_of_the_same_defect: The integrated directory is scanned only for filenames starting
+    with APPROVED-, but the Integrator writes its record as INT-20260922-002-APPROVED-...-r05-r05.json.
+    That file contributes nothing, so the integration is visible to the scanner only through the separate
+    manifests directory. A correct implementation should read the declared bundle_id from the record
+    rather than infer an identity from a filename or a substring.
+legacy_lineage_question:
+  observed:
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+    revision: null
+    supersedes: null
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02
+    revision: null
+    supersedes: null
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+    revision: 3
+    supersedes: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04
+    revision: 4
+    supersedes: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+  - bundle: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05
+    revision: 5
+    supersedes: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04
+  problem: r05-r01 and r05-r02 declare neither revision nor supersedes, while r05-r03 supersedes r05-r02,
+    r05-r04 supersedes r05-r03 and r05-r05 supersedes r05-r04. By the letter of rule 4 nothing names
+    r05-r01, so it is also a leaf and the chain forks in two.
+  existing_answer_builder_proposes_to_apply: WORK_QUEUES 1.32 Legacy Queue Derivation already answers
+    this and no new rule is needed. Clause 1 prefers explicit supersedes, provenance, Review and Integration
+    links; clause 2 says that when supersedes is absent, infer the latest rNN within one artifact
+    kind and packet and mark the result legacy_revision_inference. Applied here the explicit chain
+    places r05-r02 through r05-r05 and the inference places r05-r01 as an earlier revision of the
+    same kind and packet rather than a second leaf, leaving r05-r05 as the single active leaf. Builder
+    asks the Architect to confirm this reading rather than assume it, because the alternative offers
+    two bundles for one GUP and the two readings differ in what an Integrator is handed.
+  not_a_builder_repair: The manifests are immutable and belong to the Reviewer. Builder is not asking
+    for any of them to be rewritten and would not rewrite them. The question is only how queue derivation
+    places them.
+required_queue_result_after_the_fix:
+  integrator:
+  - No ready INTEGRATOR-APPROVED item anywhere in this lineage. APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05
+    is integrated by INT-20260922-002 and is informational INTEGRATOR-CONSUMED; r05-r01 through r05-r04
+    are superseded within the lineage and are informational history.
+  - APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01 is no longer reported as consumed.
+    It was never integrated, and a component path must not establish integration.
+  - 'The three unrelated Shadowdark bundles keep their current state: APPROVED-GUP-PKT-SD-011-014-character-overview-and-starting-level-r03-r01,
+    APPROVED-GUP-PKT-SD-016-017-ancestries-r02-r01 and APPROVED-GUP-PKT-SD-322-325-community-credits-and-licensing-r01-r01
+    are single-manifest bundles unaffected by all three defects.'
+  reviewer:
+  - No ready REVIEWER-INTEGRATION-REJECTION item. INT-20260922-001 named APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04,
+    and REV-...-r05-r03 records that exact record by ID, path and checksum, which consumes the remediation
+    under WORK_QUEUES acceptance test 43. The record is therefore informational history.
+  - Had that successor Review not existed, the same fix must produce exactly one ready remediation
+    item for the rejected bundle under acceptance test 41. Both directions need a regression, because
+    the rejection path is currently unreachable rather than merely wrong.
+  diagnostics:
+  - 'No approved_review_inferred_or_missing warning for any of the five manifests: each declares approves.review_id
+    and each resolves.'
+  - Each bundle is validated against the Review its own manifest names, so APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+    is checked against REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01 rather than REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03.
+affected_canonical_ids: []
+affected_canonical_ids_note: 'None, in the sense that no canonical row changes. This is no longer
+  the empty-graph situation of earlier escalations: INT-20260922-002 created rulesets/shadowdark/canonical
+  and registered the first ten Shadowdark nodes. Nothing in this escalation edits, revalidates or
+  re-applies that integration, and the fix changes only which items a scan reports. The canonical
+  state is named here because it is what makes an incorrect ready item consequential rather than cosmetic.'
+affected_artifacts:
+- id: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+  path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01.yaml
+  checksum: sha256:fddaefc4fe3793ca11e1cff8c1c9473b4cb74bae197871c15697f116d1317e5a
+  declared_review: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+  role: earliest manifest, no revision or supersedes declared
+- id: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02
+  path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02.yaml
+  checksum: sha256:219baa8d6955035a2a5308651be591a2baed8cea34793ffa755c88f1f82a9c6c
+  declared_review: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+  role: no revision or supersedes declared; superseded by r05-r03
+- id: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+  path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03.yaml
+  checksum: sha256:37a19b0c94f490db7598c5a58f824196d21b5cb4051c04dcc03efd7a83c38e32
+  declared_review: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+  role: superseded by r05-r04; currently validated against the wrong Review
+- id: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04
+  path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04.yaml
+  checksum: sha256:d0aa63fcf62c7c409442d574fd5b4b6eab7aac2bdebb2325f3d458f8ba364af5
+  declared_review: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02
+  role: superseded by r05-r05; the bundle INT-20260922-001 rejected
+- id: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05
+  path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05.yaml
+  checksum: sha256:0a5e98aabb691ccc9975350c0a9296fc09182d4592a91b8859d1ff50eb1e28a7
+  declared_review: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+  role: active leaf; the bundle INT-20260922-002 integrated
+- id: APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01.edges.csv
+  path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01.edges.csv
+  checksum: sha256:8fb598534b73748454186cc3a7975daf8f68fddfcbae5a5576b8ecb24ce2c84d
+  declared_review: n/a
+  role: edge component declared by every manifest in the lineage by repository-relative path; the
+    string defect 3 mistakes for a bundle
+- id: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01
+  path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01.yaml
+  checksum: sha256:3517bc9d521ca65bae0d8320f1c5fee2eb88050344ce7c282c20b6024797d31b
+  declared_review: n/a
+  role: approving Review declared by r05-r01, r05-r02 and r05-r03
+- id: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02
+  path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r02.yaml
+  checksum: sha256:bf0bf655da11bb82e6b18b4a3ce294628a06f5e10504ec809ca341d137240638
+  declared_review: n/a
+  role: approving Review declared by r05-r04
+- id: REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03
+  path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03.yaml
+  checksum: sha256:1c28afc09bfb0f2c5a0939bf3411676b76f7c513d76f73f94861b01df276c913
+  declared_review: n/a
+  role: approving Review declared by the leaf r05-r05; also the successor that records and consumes
+    INT-20260922-001
+- id: GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05
+  path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05.yaml
+  checksum: sha256:2dec645d58b9428e5199dc7a25534a8917639f0d88569cfec48333760cc75996
+  declared_review: n/a
+  role: the GUP every manifest packages; correct and unaffected
+- id: INT-20260922-001
+  path: rulesets/shadowdark/reports/INT-20260922-001.rejected.json
+  checksum: sha256:3e30448416568e961928664865782b46856399cc6e0923490338c48fee299199
+  declared_review: n/a
+  role: rejection record naming r05-r04; valid, currently invisible to the scanner
+- id: INT-20260922-002
+  path: rulesets/shadowdark/manifests/INT-20260922-002.json
+  checksum: sha256:e844ecd72e43812d940b010fbab2b820764b4f09b971f0af9d9cbfae41f442e3
+  declared_review: n/a
+  role: Integration manifest naming r05-r05; the source of the spurious r05-r01 id
+- id: INT-20260922-002-APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05
+  path: books/shadowdark/sd/artifacts/integrated/INT-20260922-002-APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r05.json
+  checksum: sha256:fe3e3b984454e92b117af83d1acaedf6813b22dfb2ada03868d621c8969890a2
+  declared_review: n/a
+  role: Integration record; contributes nothing to the scanner because its filename begins with INT-
+    rather than APPROVED-
+- id: scan_agent_queues.py
+  path: tooling/common/scan_agent_queues.py
+  checksum: sha256:2aa0ee46db9c3a1ae83befb00fc814bd90580f3176b3489b08b3405055e8551a
+  declared_review: n/a
+  role: Builder-owned queue derivation; the only file this escalation would change
+options_considered:
+- id: OPT-A
+  summary: Fix all three defects in scan_agent_queues.py with focused tests, applying the existing
+    WORK_QUEUES legacy rNN inference to place Approved-bundle revisions.
+  detail: Read the approving Review from approves.review_id first, keeping the top-level and provenance
+    spellings for compatibility and retaining the stem guess only for a manifestless legacy bundle,
+    which Legacy Queue Derivation clause 6 still allows. Select the Approved-bundle leaf per lineage
+    from explicit supersedes, falling back to the rNN inference for a manifest that declares none
+    and reporting legacy_revision_inference. Derive integrated bundle IDs from the declared bundle_id
+    of an Integration record or manifest rather than from any APPROVED- substring or filename. No
+    other queue behaviour changes.
+  consequences: Produces the required result above and restores the rejection path. All three are
+    conformance to an existing schema or an existing contract clause; none invents a rule. Risk concentrates
+    in leaf selection, which is why the legacy ruling is requested alongside it.
+- id: OPT-B
+  summary: Fix defects 1 and 3 now, defer leaf selection to a later ruling.
+  detail: Read approves.review_id and stop inferring integration from substrings, leaving supersedes
+    handling untouched.
+  consequences: Removes the two spurious warnings and the false consumed record, and makes the rejection
+    path reachable, but r05-r01 through r05-r04 would then all resolve their Reviews and be offered
+    as ready for an already-integrated packet. That is worse than today, so Builder does not recommend
+    shipping it alone.
+- id: OPT-C
+  summary: Change no code and require manifests to carry a top-level review_id.
+  detail: Treat the adnd1e habit of writing review_id twice as the convention and ask the Reviewer
+    to add the duplicate field.
+  consequences: Builder does not recommend it. It makes a redundant field load-bearing while the schema's
+    own required field stays unread, the schema as written cannot enforce it, every existing Shadowdark
+    manifest is immutable and would need a successor, and it addresses neither leaf selection nor
+    the false integrated ID.
+recommended_resolution: OPT-A, with the legacy_lineage_question answered by confirming the existing
+  Legacy Queue Derivation rNN inference rather than writing a new placement rule. The three defects
+  produce one incoherent queue between them and no role can trust this scanner for an Approved-bundle
+  lineage until all three are fixed.
+proposed_implementation_bounds:
+- Change only tooling/common/scan_agent_queues.py and its focused tests.
+- Do not alter compiler, review-parser, integrator or Herdr code, any schema, any contract, or any
+  published artifact.
+- Do not rewrite, move or supersede any Approved manifest, Review, GUP, rejection record, Integration
+  manifest or Integration record.
+- Do not re-apply, revalidate or reverse INT-20260922-002 or touch rulesets/shadowdark/canonical.
+  The fix changes reporting, not graph state.
+- Preserve current behaviour for adnd1e bundles, manifestless legacy bundles that still rely on filename-stem
+  discovery, decision-migration manifests, and every other queue.
+- NO RC processing, cleanup, compilation or testing is authorized.
+proposed_acceptance_tests:
+- A manifest declaring only approves.review_id resolves its Review, is judged on its own terms and
+  emits no approved_review_inferred_or_missing warning.
+- A manifest whose stem-implied Review ID differs from its declared approves.review_id is validated
+  against the declared one, exercised on APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03,
+  which declares REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r01 while its stem implies REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03.
+- Publishing an unrelated Review whose ID matches a bundle's filename stem does not change that bundle's
+  queue state.
+- A manifestless legacy bundle still resolves by filename stem and a manifest carrying a top-level
+  review_id still resolves, so no adnd1e bundle changes state.
+- 'Within one Approved-bundle lineage only the active leaf is eligible: explicit supersedes places
+  r05-r02 through r05-r05, the rNN inference places r05-r01, the result is reported as legacy_revision_inference,
+  and every superseded manifest is informational rather than ready.'
+- An Integration manifest that names another bundle's file only as a component path does not mark
+  that bundle integrated; the integrated set comes from the declared bundle_id.
+- An Integration record whose filename begins with INT- is recognised, so an integration is visible
+  without a separate manifests directory entry.
+- A valid Integration Rejection naming the active leaf suppresses that bundle's Integrator item and
+  creates exactly one REVIEWER-INTEGRATION-REJECTION item, per acceptance test 41; a Review successor
+  recording the exact record consumes it, per acceptance test 43. Exercised on APPROVED-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r04,
+  INT-20260922-001 and REV-GUP-PKT-SD-015-015-stats-and-stat-modifiers-r05-r03.
+- A rejection that is missing, stale, checksum-mismatched, wrong-ruleset or ambiguous still suppresses
+  nothing, per acceptance test 42.
+- The focused module and the complete Builder and common suites pass, with exact commands and outcomes
+  recorded in the implementation report.
+expected_migration_impact: None. No canonical row, registry entry, packet, source file, GUR, GUP,
+  Review, Approved manifest, rejection record, Integration manifest or Integration record is created,
+  edited or superseded, and INT-20260922-002 is neither re-applied nor reversed. The only observable
+  change is which items a queue scan reports, which WORK_QUEUES defines as derived rather than stored
+  state. No artifact needs republishing for the fix to take effect.
+constitution_registry_or_profile_change: None requested. The approved-bundle schema already declares
+  approves.review_id as required and needs no amendment; the defect is that the scanner does not read
+  it. WORK_QUEUES needs no new clause if the Architect confirms that its existing Legacy Queue Derivation
+  rNN inference places a manifest declaring no revision.
+builder_constraints_observed: 'Builder changed no code, no test and no artifact while raising this
+  and will not implement until a Decision authorizes it. The Integrator was told which of its two
+  hypotheses held, that its rejection record is well formed and not at fault, and to keep using its
+  own queue for this lineage meanwhile. The Reviewer was told the packaging repair was not blocked,
+  and it has since completed it. No other Builder work is blocked: the Builder queue is empty and
+  the eleven GUPs published earlier today are unaffected by all three defects.'

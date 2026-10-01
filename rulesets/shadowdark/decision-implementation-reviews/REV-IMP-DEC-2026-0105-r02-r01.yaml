@@ -1,0 +1,94 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0105-r02-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-189-189-monster-attributes
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+reviewed_implementation:
+  id: IMP-DEC-2026-0105-r02
+  path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0105-r02.yaml
+  checksum: sha256:41d76ab7d301d52ed2368a694cd460bf292211fa91337c94e33b6a7eedce6bdb
+decision_input:
+  id: DEC-2026-0105
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+  checksum: sha256:8c62a5c9e4d0975bd23d88a70ea78b98fecc12d4813fa718ec3b382c69024777
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      Independently rechecked Constitution 1.8 at the report's exact checksum.
+      It retains the three DEC-2026-0105 anchors: mstat_ is a shared creature
+      statistic used by an explicit mechanic; mstat_monster_level may feed
+      monster hit-point calculation without stored values; and individual
+      creature stat-block values remain outside graph content.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0105
+        path: rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+        checksum: sha256:8c62a5c9e4d0975bd23d88a70ea78b98fecc12d4813fa718ec3b382c69024777
+        authorized_acceptance_test_index: 1
+      authorized_acceptance_test_index: 1
+      contracts:
+        - path: rulesets/shadowdark/governance/constitution.md
+          checksum: sha256:629e72cde3206228e1d1e569957dfff6aa275728c18ff4890c81cfcdc6e0c93d
+          observed_version: '1.8'
+          minimum_version: '1.8'
+          anchors_present:
+            - mstat_ names a shared creature statistic or rating used by an explicit mechanic.
+            - mstat_monster_level may feed monster hit-point calculation without storing numeric values.
+            - Individual creature stat-block values remain outside graph content and property storage.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      Independently verified the pinned ruleset metadata and Shadowdark GUR/GUP
+      schemas. Current 1.8 and historical 1.0 through 1.7 remain admitted, and
+      r02 changes only the two Builder-owned scanner code/test paths.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      The conforming blocked-GUR branch now reads the exact authored handoff
+      reason, retains the sorted blocking IDs in a separate "Blocked on" suffix,
+      joins both nonempty parts, routes dynamically by next_role, and returns
+      before the unconditional BUILDER-GUR path. The new focused regression
+      asserts the fixture's exact reason and blocker ID in the same item.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      Independently ran the required focused class. All 37 tests passed in
+      0.522 seconds, including the new authored-reason regression and all prior
+      ready, terminal, malformed, legacy, routing, and blocking-ID coverage.
+independent_validation:
+  passed: true
+  commands:
+    - command: SHA-256 verification of r02, its validation report, implementation files, Decision, predecessor report and Review, and all verified inputs
+      exit_code: 0
+      result: passed
+      summary: All declared checksums match current files; r02 independently hashes to sha256:41d76ab7d301d52ed2368a694cd460bf292211fa91337c94e33b6a7eedce6bdb.
+    - command: Inspect _route_leaf_gur and test_a_blocked_leaf_preserves_its_authored_reason against WORK_QUEUES 1.35 rule 6a and the prior Review correction
+      exit_code: 0
+      result: passed
+      summary: Exact authored reason and all blocker IDs survive together; dynamic routing and the early return are retained.
+    - command: python -m unittest tooling.common.tests.test_scan_agent_queues.GurHandoffRoutingCase -v
+      exit_code: 0
+      result: passed
+      summary: Ran 37 tests in 0.522s; OK.
+overall_disposition: approved
+scope_assessment: >-
+  The successor implements exactly REV-IMP-DEC-2026-0105-r01-r01's two-file
+  correction. No Decision, source, GUR, GUP, packet Review, Approved bundle,
+  registry, canonical graph, compiler, or Basic D&D RC artifact is changed by
+  this implementation Review. The separate DEC-2026-0106 packet lineage is not
+  part of this approval.
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    DEC-2026-0105's scanner implementation is independently approved and
+    terminal; the separate Monster Attributes packet continues with Integrator.
+  blocking_ids: []
