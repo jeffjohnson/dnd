@@ -1,0 +1,183 @@
+schema_version: '1.0'
+id: IMP-DEC-2026-0107-r03
+artifact_kind: decision_implementation
+status: proposed
+ruleset_id: shadowdark
+constitution_version: '1.8'
+revision: 3
+supersedes: IMP-DEC-2026-0107-r02
+approval_ready: true
+implemented_by: builder
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: >-
+    Corrects REV-IMP-DEC-2026-0107-r02-r01's sole required_correction: a
+    documentation/evidence-only fix, no scanner code or test changed since
+    r02. r02's handoff and acceptance-test-3 summary wrongly stated that both
+    `_packet_review_candidates` dicts key on object identity. The accurate
+    description, restated precisely here and in the validation report:
+    `pool` is `dict[str, list[Artifact]]`, keyed by `artifact_id`, appending
+    every matching document to that key's list rather than overwriting it;
+    `combined` is `dict[int, Artifact]`, keyed by `id(review)` -- object
+    identity. The two dicts are keyed differently from each other. The
+    behavioral fix itself, verified by the Reviewer in REV-...-r02-r01
+    acceptance test 3, is unchanged and not reopened by this correction. No
+    source, GUR, GUP, Review, Approved bundle, registry, canonical,
+    compiler, or basicdnd/rc artifact was touched, and Integrator was not
+    notified.
+  blocking_ids: []
+decision_input:
+  id: DEC-2026-0107
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0107.yaml
+  checksum: sha256:f2b46fe0af7ba6f1a59207377fabd718f807c7a0510f5e532b4d84dc80f7c40c
+implementation_files:
+- path: tooling/common/scan_agent_queues.py
+  checksum: sha256:ff1e7fb7a208f4cfc30902c4309a4d560c9c5cfa2da01562f556809f1a5862d0
+- path: tooling/common/tests/test_scan_agent_queues.py
+  checksum: sha256:fae551ddfd72cf7e5132a4d37b3d1325fa34c137cc262ccc16f3018181dcb549
+verified_inputs:
+- path: rulesets/shadowdark/escalations/decisions/DEC-2026-0107.yaml
+  checksum: sha256:f2b46fe0af7ba6f1a59207377fabd718f807c7a0510f5e532b4d84dc80f7c40c
+- path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0107-r02.yaml
+  checksum: sha256:0b25a66accc32ba252d96bdc5e0679e8bd1c0d8617959d386ee2916c3934c519
+- path: rulesets/shadowdark/decision-implementation-reviews/REV-IMP-DEC-2026-0107-r02-r01.yaml
+  checksum: sha256:b4e106e30c5aed199d5b47516faf25dca4043e33a0088618f9e45b2bf39c91b3
+- path: contracts/WORK_QUEUES.md
+  checksum: sha256:7ab4be508e13270ed16f612826e31be26b48d8c73871275e791bb6f220db6de2
+- path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-195-195-monster-family-angels-r03-r02.yaml
+  checksum: sha256:e3bd12b36692715c6d901624650c5a23c4e04c3b974094109d568baaab863ec7
+- path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-195-195-monster-family-angels-r01-r01.yaml
+  checksum: sha256:282fbf01db4e0b7937a1a6bce8bc341f4bcebe50d5d8a55a477eed58b2adcc7d
+- path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-195-195-monster-family-angels-r03.yaml
+  checksum: sha256:c4aefdb41c1ec37eb5c18dd1d269a098769676b4cf110d32f21a5c08572d7ddd
+- path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-195-195-monster-family-angels-r03-r01.yaml
+  checksum: sha256:31cb2083b5c2238b984890b39aa5437fcf773a7b24672e31b7923a3d6e38d53a
+- path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-195-195-monster-family-angels-r03-r01.edges.csv
+  checksum: sha256:0fa94297f85977bb52d120ca01bcd42822b247b77241c1aded19de48c6227f8c
+validation_report: build/reports/IMP-DEC-2026-0107-r03.validation.json
+acceptance_results:
+- acceptance_test_index: 1
+  result: passed
+  evidence: Unchanged from r02 and re-verified live. WORK_QUEUES.md is
+    byte-identical to what r02 verified (same checksum, version 1.36) and
+    still carries all three authorized anchors.
+  versioned_contract_content:
+    authority:
+      id: DEC-2026-0107
+      path: rulesets/shadowdark/escalations/decisions/DEC-2026-0107.yaml
+      checksum: sha256:f2b46fe0af7ba6f1a59207377fabd718f807c7a0510f5e532b4d84dc80f7c40c
+      authorized_acceptance_test_index: 1
+    authorized_acceptance_test_index: 1
+    contracts:
+    - path: contracts/WORK_QUEUES.md
+      checksum: sha256:7ab4be508e13270ed16f612826e31be26b48d8c73871275e791bb6f220db6de2
+      observed_version: '1.36'
+      minimum_version: '1.36'
+      anchors_present:
+      - Packet-update Review supersession may cross GUP revisions only within one validated packet lineage and only to the same or an ancestor GUP.
+      - Review links cannot cross ruleset, book, packet, or unrelated GUP lineage; disconnected roots remain separate.
+      - Decision-migration Review lineages retain their existing grouping rules.
+- acceptance_test_index: 2
+  result: passed
+  evidence: Unchanged from r02; no scanner code was touched by this
+    correction. The 33 focused, integration, and live tests reconfirmed
+    unmodified.
+- acceptance_test_index: 3
+  result: passed
+  evidence: 'REV-IMP-DEC-2026-0107-r02-r01 disposed this test `failed` on
+    documentation grounds only: the Reviewer independently verified the
+    behavioral duplicate-ID fix itself (29 focused tests reproducing the
+    corrected collection path, plus the live isolated projection) and found
+    it correct, but r02''s handoff.reason and this test''s own evidence text
+    said "both internal dicts now key on object identity," which the
+    detailed sentence immediately following it already contradicted.
+
+
+    The precise, non-contradictory description, read directly from the
+    unchanged code: `pool` is `dict[str, list[Artifact]]`. It is keyed by the
+    artifact''s own `artifact_id` string, exactly as r01''s broken version
+    was, but each key now maps to a list, and every Review document sharing
+    that id is appended via `pool.setdefault(review.artifact_id,
+    []).append(review)` rather than overwritten. `combined` is
+    `dict[int, Artifact]`, keyed by `id(review)` -- Python object identity,
+    not the artifact''s own id field -- so two distinct `Artifact` objects
+    that happen to declare the same `id` each occupy their own slot instead
+    of colliding. The two dicts are keyed on two different things: `pool` on
+    the (now list-valued) `artifact_id`, `combined` on object identity. r02''s
+    summary sentence calling both "keyed on object identity" was wrong;
+    r02''s own more detailed sentences two lines later, and its unchanged
+    `changes_in_this_revision` section, already stated the accurate version.
+    This revision aligns the summary with the detail rather than changing
+    either.
+
+
+    No scanner code or test changed to produce this correction;
+    `tooling/common/scan_agent_queues.py` and
+    `tooling/common/tests/test_scan_agent_queues.py` are byte-identical to
+    r02 (same checksums), confirmed by git status showing no further edit and
+    by recomputing both hashes in this same turn.'
+- acceptance_test_index: 4
+  result: passed
+  evidence: 'Unchanged from r02 and reverified: a fresh
+    `scan_agent_queues.py --json` run against the live repository, filtered
+    to `PacketId == "PKT-SD-195-195-monster-family-angels"`, still shows
+    exactly the two Items (`BUILDER-DECISION` for DEC-2026-0107 itself,
+    retired by this report''s eventual approval, and the untouched pinned
+    `INTEGRATOR-APPROVED` bundle), zero diagnostics naming this packet, its
+    GUP, or either Review, and `LineageErrorCount` 0 for this lineage. No
+    `REVIEWER-GUP` item names GUP r03. Integrator was not notified and no
+    packet artifact was read for modification.'
+- acceptance_test_index: 5
+  result: passed
+  evidence: '`python -m unittest tooling.common.tests.test_scan_agent_queues.TestPacketReviewLineageHelpers
+    tooling.common.tests.test_scan_agent_queues.CrossGupReviewLineageCase
+    tooling.common.tests.test_scan_agent_queues.LiveCrossGupReviewLineageCase
+    -v` was rerun in this same turn and still passes: 33 tests, 0 failures.
+    Since no scanner or test file changed, the full named module and complete
+    `tooling/common/tests` results already recorded as passing in r02 remain
+    the current, accurate record for those broader commands; they were not
+    rerun because nothing they exercise changed. Reviewer independently
+    reproduces at minimum the focused command shown here.'
+validation:
+  passed: true
+  commands:
+  - command: python -m unittest tooling.common.tests.test_scan_agent_queues.TestPacketReviewLineageHelpers tooling.common.tests.test_scan_agent_queues.CrossGupReviewLineageCase tooling.common.tests.test_scan_agent_queues.LiveCrossGupReviewLineageCase -v
+    exit_code: 0
+    result: passed
+    summary: Ran 33 tests in 24.113s OK
+changes_in_this_revision:
+- 'rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0107-r03.yaml
+  (this file): corrects only the prose in `handoff.reason` and
+  `acceptance_results[2].evidence` (acceptance_test_index 3) to accurately
+  and consistently describe `pool` (dict[str, list[Artifact]], keyed by
+  artifact_id) and `combined` (dict[int, Artifact], keyed by id(review)) as
+  two differently-keyed structures, removing the inaccurate blanket claim
+  that both key on object identity. No other acceptance result, the
+  `changes_in_this_revision` entries describing the r02 code diff, and the
+  `not_done` entries are otherwise restated unchanged from r02 because they
+  were already accurate.'
+- 'build/reports/IMP-DEC-2026-0107-r03.validation.json: corrects the
+  `measured.correction` field to the same accurate two-structure description
+  in place of r02''s "both ... keyed on object identity" phrasing.'
+- 'tooling/common/scan_agent_queues.py and
+  tooling/common/tests/test_scan_agent_queues.py: unchanged. Checksums are
+  byte-identical to r02, confirmed by recomputing both in this turn.'
+bugs_found_by_the_new_tests: []
+not_done:
+- 'No source, GUR, GUP, Review, Approved bundle, registry, canonical, or
+  compiler artifact was touched. No basicdnd or rc work of any kind was
+  performed; DEC-2026-0086 remains binding. Integrator was not notified.'
+- 'The scanner code''s own docstring on `_packet_review_candidates` (in
+  tooling/common/scan_agent_queues.py, immediately above the function)
+  contains the same imprecise phrasing this report corrects -- it says
+  "`pool` and `combined` key on object identity (`id(review)`)," which is
+  exactly as imprecise for `pool` as the text this report fixes. The
+  Reviewer''s required_corrections named only this report and its validation
+  report, with "no scanner-code change indicated," so the docstring is left
+  as published. Flagged here for the record rather than corrected
+  unilaterally outside the given scope.'
+- 'The exact already-published Approved bundle remains Reviewer''s action
+  after this report reaches terminal Approved status, per the Decision''s own
+  sequence, unchanged from r01/r02.'
+validation_report_checksum: sha256:492a4fccab8a44a1a9f2aae5d846da7d2e86e268b4e3a172798b2ac720a0d0f5

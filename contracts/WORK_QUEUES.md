@@ -1,6 +1,6 @@
 # Agent Work Queue Contract
 
-**Version 1.35.**
+**Version 1.36.**
 
 ## Purpose
 
@@ -124,6 +124,16 @@ Herdr completion is never proof of artifact approval or consumption.
     reviewed GUP alone, or naming an earlier Review, is not consumption.
     Exact Integration consumption of an Approved bundle remains terminal and
     is not reopened by this Review-handoff rule.
+19a. A packet-update Review lineage may cross GUP revisions only through an
+     explicit `supersedes` link to a Review in the same ruleset, book, and
+     packet whose `reviewed_gup` is the same GUP or an ancestor in the current
+     GUP's validated explicit supersession chain. Resolve those linked Reviews
+     as one lineage component and select only its active Review leaf. A Review
+     link never joins different packets, books, rulesets, or unrelated GUP
+     lineages. Disconnected Review roots remain independent; do not infer a
+     cross-GUP link from filenames, revision numbers, or timestamps. Preserve
+     duplicate-ID/revision and fork failures. Decision-migration Review
+     lineages retain their existing `lineage_id` scope and rules.
 20. An active approved Architect Decision may retire one exact historical
     `revision_required` Review handoff only through a validated
     `review_handoff_retirements` record. The record pins the Review, a later
@@ -1152,8 +1162,25 @@ Queue tooling must prove that:
 56. each durable YAML publication is parsed and schema-validated from exact
     staged bytes before its create-only final write; that preflight is
     target-only and does not require a corpus scan.
+57. a packet-update Review that explicitly supersedes a Review for an ancestor
+    GUP in the same validated packet lineage selects the successor as the sole
+    active Review leaf for its exact reviewed GUP and emits no lineage error;
+    no earlier GUP Review handoff is resurrected.
+58. cross-packet, cross-book, cross-ruleset, unrelated-GUP, absent-target,
+    duplicate, revision-collision, and forked Review links remain diagnostics;
+    disconnected Review roots remain separate, and decision-migration Review
+    grouping remains unchanged.
+59. the active Monster Family Angels Review and its exact pinned zero-row
+    Approved bundle are the sole scoped packet Review leaf and Integrator item
+    after the authorized cross-GUP link is resolved; unrelated queue state is
+    unchanged.
 
 ## Version History
+
+- **1.36 - 2026-10-01:** DEC-2026-0107 permits explicit packet-update Review
+  supersession across ancestor GUP revisions within one validated packet
+  lineage, while preserving scope checks, disconnected roots, and migration
+  lineage behavior.
 
 - **1.35 - 2026-09-30:** DEC-2026-0105 made the existing blocked-handoff
   exclusion executable for every artifact kind, including GURs; a blocked

@@ -1,0 +1,236 @@
+schema_version: '1.0'
+id: ESC-2026-10-01T00.19.30.206Z
+status: pending
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-195-195-monster-family-angels
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+raised_by: reviewer
+raised_utc: '2026-10-01T00:19:30.206Z'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The active Review for GUP r03 explicitly supersedes a Review outside the
+    scanner's GUP-r03-scoped Review lineage. The scanner reports two
+    missing_supersedes_target errors and cannot provide a trustworthy result;
+    a Review successor cannot cure this published lineage defect.
+  blocking_ids: []
+
+authority:
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/WORK_QUEUES.md 1.35
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - agents/reviewer/INSTRUCTIONS.md
+  - agents/architect/INSTRUCTIONS.md
+  - schemas/common/artifact-envelope.schema.json
+
+originating_artifacts:
+  packet_id: PKT-SD-195-195-monster-family-angels
+  gur_id: GUR-PKT-SD-195-195-monster-family-angels-r01
+  gup_id: GUP-PKT-SD-195-195-monster-family-angels-r03
+  review_id: REV-GUP-PKT-SD-195-195-monster-family-angels-r03-r02
+
+question: >-
+  What scanner-owned lineage repair should allow the immutable active Review
+  REV-GUP-PKT-SD-195-195-monster-family-angels-r03-r02 to be selected as the
+  valid Review leaf for GUP r03 when its explicit supersedes target
+  REV-GUP-PKT-SD-195-195-monster-family-angels-r01-r01 belongs to an earlier
+  GUP-scoped Review set, without rewriting either Review or the Approved
+  bundle? Specifically, should Review lineage resolution follow explicit
+  supersedes links across GUP-scoped partitions, with packet/ruleset checks
+  and fork protection, or is a different immutable-history/queue interpretation
+  required?
+
+smallest_relevant_source_excerpt: >-
+  Current Review r03-r02: revision: 2; supersedes:
+  REV-GUP-PKT-SD-195-195-monster-family-angels-r01-r01; reviewed_gup.id:
+  GUP-PKT-SD-195-195-monster-family-angels-r03; handoff.next_role: integrator.
+  Its named predecessor is a published Review for GUP r01, not a Review in the
+  GUP-r03-scoped group.
+
+why_this_is_architectural: >-
+  WORK_QUEUES requires active-leaf selection by explicit supersedes lineage and
+  says only an active Review leaf can create work, but the current scanner
+  scopes Reviews by reviewed GUP before resolving that explicit link. For this
+  packet the Review revision crosses GUP revisions: the r03 Review consumes
+  GUP r03 while directly superseding the earlier packet Review. The immutable
+  Review and Approved manifest already exist, so ordinary Reviewer edits or a
+  later Review cannot remove the scanner's missing-target error. Only a
+  governance ruling can define the safe lineage model and authorized owner for
+  changing shared scanner behavior; no packet-content or ontology judgment is
+  requested.
+
+local_graph_neighborhood:
+  canonical_context: none
+  explanation: >-
+    No graph identity or canonical edge is implicated. The affected neighborhood
+    is the immutable packet artifact lineage; all relevant nodes are named
+    below, and the Approved edge component is header-only with zero rows.
+
+affected_canonical_ids: []
+affected_proposed_ids:
+  - monster_archangel
+  - monster_angel_domini
+  - monster_angel_principi
+  - monster_angel_seraph
+
+measured_evidence:
+  scanner_observation:
+    command: python tooling/common/scan_agent_queues.py --json
+    result: >-
+      Exit code 2; LineageErrorCount 2. Both diagnostics are
+      missing_supersedes_target for
+      REV-GUP-PKT-SD-195-195-monster-family-angels-r03-r02, because its
+      supersedes target REV-GUP-PKT-SD-195-195-monster-family-angels-r01-r01
+      is absent from the Review lineage scoped to GUP r03. The same scan emits
+      an INTEGRATOR-APPROVED item from the bundle, but exit 2 makes the overall
+      result untrustworthy; it is not treated as authorization to notify
+      Integrator.
+    scanner_path: tooling/common/scan_agent_queues.py
+    scanner_checksum: sha256:a907d65948eb70ab4cda4995f54728a4c2afe27fc8dde6107e71ebc48efdd60
+    relevant_logic: >-
+      _revision_lineage emits missing_supersedes_target when an explicit target
+      is absent from the artifact list passed to that lineage group; review
+      grouping and leaf selection are in the same scanner module.
+  artifacts:
+    current_review:
+      id: REV-GUP-PKT-SD-195-195-monster-family-angels-r03-r02
+      path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-195-195-monster-family-angels-r03-r02.yaml
+      checksum: sha256:e3bd12b36692715c6d901624650c5a23c4e04c3b974094109d568baaab863ec7
+      reviewed_gup: GUP-PKT-SD-195-195-monster-family-angels-r03
+      supersedes: REV-GUP-PKT-SD-195-195-monster-family-angels-r01-r01
+    superseded_review:
+      id: REV-GUP-PKT-SD-195-195-monster-family-angels-r01-r01
+      path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-195-195-monster-family-angels-r01-r01.yaml
+      checksum: sha256:282fbf01db4e0b7937a1a6bce8bc341f4bcebe50d5d8a55a477eed58b2adcc7d
+    current_gup:
+      id: GUP-PKT-SD-195-195-monster-family-angels-r03
+      path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-195-195-monster-family-angels-r03.yaml
+      checksum: sha256:c4aefdb41c1ec37eb5c18dd1d269a098769676b4cf110d32f21a5c08572d7ddd
+    approved_bundle:
+      id: APPROVED-GUP-PKT-SD-195-195-monster-family-angels-r03-r01
+      path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-195-195-monster-family-angels-r03-r01.yaml
+      checksum: sha256:31cb2083b5c2238b984890b39aa5437fcf773a7b24672e31b7923a3d6e38d53a
+      pins_review_checksum: sha256:e3bd12b36692715c6d901624650c5a23c4e04c3b974094109d568baaab863ec7
+    approved_edge_component:
+      path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-195-195-monster-family-angels-r03-r01.edges.csv
+      checksum: sha256:0fa94297f85977bb52d120ca01bcd42822b247b77241c1aded19de48c6227f8c
+      rows: 0
+    gup_edge_component:
+      path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-195-195-monster-family-angels-r03.edges.csv
+      checksum: sha256:0fa94297f85977bb52d120ca01bcd42822b247b77241c1aded19de48c6227f8c
+      rows: 0
+    validation_report:
+      path: build/reports/GUP-PKT-SD-195-195-monster-family-angels-r03.validation.json
+      checksum: sha256:9bca38292650bd2dcf0fe48fca3124ccc9c80fa3a1c13b4af5deb3e5fa70d218
+      result: approval_ready true; zero errors, warnings, escalations, duplicates, and neighbourhood conflicts
+  scanner_tests:
+    path: tooling/common/tests/test_scan_agent_queues.py
+    checksum: sha256:d62950b98049ff15f5242fb315c3b56c3d40f1dea721a6552be22ed08da45dab
+    current_coverage: >-
+      Existing tests assert missing_supersedes_target behavior and contain
+      malformed/unreadable Review lineage repair cases, but no focused fixture
+      was located for a valid Review r02 on GUP r03 superseding a Review on GUP
+      r01.
+
+options_considered:
+  - id: OPT-A
+    summary: >-
+      Make scanner Review-leaf resolution follow explicit supersedes links
+      across GUP-scoped groups, while validating ruleset, book, packet, unique
+      IDs, revision sequence, direct predecessor, and fork constraints.
+    consequences: >-
+      Preserves all published bytes and treats explicit lineage as the source
+      of leafhood across a packet's changing GUP revisions. Requires focused
+      regression coverage for this crossing shape and safeguards against
+      accidentally merging independent Review streams.
+  - id: OPT-B
+    summary: >-
+      Retain GUP-scoped Review lineages and define an Architect-authorized
+      immutable repair/bridge record for an intentionally cross-GUP Review
+      successor.
+    consequences: >-
+      Preserves current scanner grouping but introduces a new explicit repair
+      record shape and validation contract; requires tests for exact pinned
+      IDs/checksums, scope, and non-suppression of unrelated errors.
+  - id: OPT-C
+    summary: >-
+      Keep current diagnostics and treat the r03 Review/bundle as invalid until
+      a replacement workflow is defined, without manufacturing a Review
+      successor or notifying Integrator.
+    consequences: >-
+      Safest fail-closed behavior but leaves the packet unable to advance and
+      does not repair the false predecessor-link inconsistency already
+      published in the Review.
+
+recommended_resolution: >-
+  Recommend OPT-A as the narrowest repair: scanner ownership belongs to the
+  shared queue implementation in tooling/common/scan_agent_queues.py. Resolve
+  a Review's explicit predecessor by exact ID in the same ruleset/book/packet
+  Review namespace rather than requiring the predecessor to review the same
+  GUP revision. Retain strict identity, revision, supersession, and no-fork
+  validation; do not infer links from filenames or timestamps. Add a focused
+  regression fixture reproducing r02-on-GUP-r03 superseding r01-on-GUP-r01,
+  proving the r02 leaf remains the only Review state for the current GUP and
+  the approved bundle remains the only scoped Integrator item. Add negative
+  fixtures for cross-packet target, absent target, duplicate/forked target,
+  and independent Review roots, then run the complete scanner test module.
+  Preserve both Reviews, the GUP, Approved manifest, and edge component byte
+  for byte. Until that Decision and implementation review complete, keep this
+  packet paused and send no Integrator notification.
+
+desired_post_repair_queue_result: >-
+  For this exact packet only, the bounded queue projection has zero lineage
+  errors attributable to its Review/GUP/Approved lineage; it selects the
+  checksummed current Review r03-r02 as the active Review lineage leaf and
+  recognizes the exact already-approved bundle as the sole eligible
+  INTEGRATOR-APPROVED item. It emits no Reviewer job for GUP r03, no duplicate
+  or fork diagnostic, and no second packet job. This desired state does not
+  authorize Integrator notification before Architect's ruling and required
+  scanner implementation/review are complete. Unrelated repository findings
+  are out of scope.
+
+scanner_ownership_and_tests:
+  owner: Builder
+  implementation_scope:
+    - tooling/common/scan_agent_queues.py
+    - tooling/common/tests/test_scan_agent_queues.py
+  required_tests:
+    - >-
+      Reproduce the exact valid cross-GUP predecessor shape with synthetic
+      fixtures: Review on GUP r03 (revision 2) explicitly supersedes Review on
+      GUP r01; assert no missing_supersedes_target error and correct leaf.
+    - >-
+      Preserve fail-closed behavior for absent targets, cross-packet or
+      cross-book targets, duplicate IDs, revision collisions, and forks.
+    - >-
+      Prove independent Review roots for different GUP streams are not merged
+      absent an explicit valid supersedes link.
+    - >-
+      Assert this packet's scoped projection has no Reviewer job and exactly
+      one Integrator-eligible bundle after repair; verify the bundle continues
+      to pin the exact Review and GUP checksums.
+    - >-
+      Run python -m unittest tooling.common.tests.test_scan_agent_queues -v
+      and require all tests to pass.
+  decision_boundary: >-
+    Architect should authorize exact scanner behavior and acceptance criteria.
+    Builder owns the shared scanner code and tests. Reviewer independently
+    verifies implementation and the scoped queue projection. This escalation
+    does not authorize any artifact rewrite, bundle replacement, canonical
+    mutation, or Integrator handoff.
+
+expected_migration_impact: >-
+  No canonical data, node registry, source packet, GUR, GUP, Review, Approved
+  manifest, or edge component should be rewritten. The change is confined to
+  shared scanner implementation and its tests, unless Architect explicitly
+  selects OPT-B and authorizes a separately specified repair-record contract.
+
+constitution_registry_or_profile_change: >-
+  None recommended. This concerns queue lineage interpretation, not graph
+  ontology, constitution, registry structure, or extraction profile.

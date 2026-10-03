@@ -1,0 +1,199 @@
+schema_version: '1.0'
+id: DEC-2026-0107
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-195-195-monster-family-angels
+constitution_version: '1.8'
+decision_date: '2026-10-01'
+escalation_id: ESC-2026-10-01T00.19.30.206Z
+question: >-
+  How should the scanner resolve an explicit packet-update Review supersedes
+  link when the successor reviews a later GUP revision than its predecessor,
+  while keeping unrelated Review roots and migration Reviews independent?
+ruling: >-
+  Select OPT-A with a bounded packet-update rule. Within one exact
+  ruleset/book/packet, an explicit Review `supersedes` link may cross GUP
+  revisions when the predecessor Review's `reviewed_gup` is the same GUP or an
+  ancestor in the successor Review's validated, explicit GUP supersession
+  chain. Resolve those linked Review artifacts as one Review lineage
+  component, enforce unique IDs and revision numbers, direct predecessor
+  links, and one-successor fork rules, and select the component's active Review
+  leaf. The selected leaf creates Reviewer or Integrator work only for the
+  exact GUP it names.
+
+  Review artifacts with no valid cross-GUP link remain in their existing
+  GUP-scoped Review groups. A link cannot cross ruleset, book, packet, GUP
+  lineage, or a decision-migration lineage. Do not infer cross-GUP links from
+  filenames, revision numbers, timestamps, or proximity. Decision-migration
+  Reviews retain their existing stable `lineage_id` behavior.
+
+  For the pinned Monster Family Angels lineage, the active Review
+  `REV-GUP-PKT-SD-195-195-monster-family-angels-r03-r02` is the valid leaf for
+  `GUP-PKT-SD-195-195-monster-family-angels-r03`; its explicit predecessor
+  `REV-GUP-PKT-SD-195-195-monster-family-angels-r01-r01` reviews ancestor GUP
+  r01 in the same packet lineage. The exact already-published Approved bundle
+  remains eligible for ordinary Integrator verification only after the
+  scanner implementation is independently approved and the scoped projection
+  validates. No published packet artifact is rewritten.
+rationale:
+  - >-
+    Review artifact revisions describe successive review outcomes for a packet.
+    A later GUP revision may preserve the same Review chain while the Review's
+    exact input moves forward. A valid direct supersedes link already expresses
+    this relation; requiring its predecessor to review the identical GUP
+    revision rejects that explicit lineage.
+  - >-
+    Following only validated ancestor relationships retains provenance and
+    prevents a Review from another packet, book, ruleset, independent GUP
+    lineage, or future GUP from being joined by a convenient ID reference.
+    Disconnected roots and strict missing-target/fork errors preserve
+    fail-closed behavior.
+  - >-
+    The exact Review, GUP, Approved manifest, and zero-row edge component are
+    immutable and checksum-consistent. Scanner-owned lineage interpretation
+    is the correct repair surface; no Reviewer replacement, bundle rewrite,
+    or canonical operation is needed.
+evidence:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-10-01T00.19.30.206Z.yaml, checksum: sha256:1929057d2b6af8581223273963bfa1bb2a981630c4140928354839506382c90c, role: complete_cross_gup_review_lineage_escalation}
+  - {path: contracts/WORK_QUEUES.md, checksum: sha256:7ab4be508e13270ed16f612826e31be26b48d8c73871275e791bb6f220db6de2, role: activated_packet_scoped_review_lineage_contract}
+  - {path: tooling/common/scan_agent_queues.py, checksum: sha256:a907d65948eb70ab4cda4995f54728a4c2afe27fc8ddeb6107e71ebc48efdd60, role: scanner_containing_gup_scoped_review_selection}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, checksum: sha256:d62950b98049ff15f5242fb315c3b56c3d40f1dea721a6552be22ed08da45dab, role: current_queue_lineage_regressions}
+  - {path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-195-195-monster-family-angels-r03-r02.yaml, checksum: sha256:e3bd12b36692715c6d901624650c5a23c4e04c3b974094109d568baaab863ec7, role: current_successor_review}
+  - {path: books/shadowdark/sd/artifacts/reviews/REV-GUP-PKT-SD-195-195-monster-family-angels-r01-r01.yaml, checksum: sha256:282fbf01db4e0b7937a1a6bce8bc341f4bcebe50d5d8a55a477eed58b2adcc7d, role: explicit_prior_review}
+  - {path: books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-195-195-monster-family-angels-r03.yaml, checksum: sha256:c4aefdb41c1ec37eb5c18dd1d269a098769676b4cf110d32f21a5c08572d7ddd, role: current_gup_in_packet_revision_chain}
+  - {path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-195-195-monster-family-angels-r03-r01.yaml, checksum: sha256:31cb2083b5c2238b984890b39aa5437fcf773a7b24672e31b7923a3d6e38d53a, role: exact_approved_bundle_pinning_current_review}
+  - {path: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-195-195-monster-family-angels-r03-r01.edges.csv, checksum: sha256:0fa94297f85977bb52d120ca01bcd42822b247b77241c1aded19de48c6227f8c, role: exact_zero_row_bundle_component}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0106.yaml, checksum: sha256:59a8d42da24673e3e5619c1f58f1998acfb1a50d6afdadbf3f12a0723f6a1d5c, role: current_constitution_and_packet_lineage_authority}
+migration_required: false
+migration_scope: >-
+  No source packet, GUR, GUP, Review, Approved manifest, component, registry,
+  canonical row, or Integration is changed. Builder changes only shared queue
+  scanner logic and its tests, and publishes a Decision Implementation Report.
+  Once its exact implementation Review is approved, Reviewer rechecks the
+  scoped packet projection and notifies Integrator about the existing exact
+  Approved bundle.
+constitution_version_impact: >-
+  None. Shadowdark Constitution 1.8 and the graph ontology remain unchanged.
+affected_contracts:
+  - contracts/WORK_QUEUES.md
+affected_registries: []
+implementation_bounds:
+  - >-
+    Architect changes only this Decision, the decided escalation location, and
+    contracts/WORK_QUEUES.md.
+  - >-
+    Builder changes only tooling/common/scan_agent_queues.py and
+    tooling/common/tests/test_scan_agent_queues.py. It implements the bounded
+    packet-update Review-lineage rule and publishes
+    IMP-DEC-2026-0107-r01. It does not modify the packet's GUR, GUP, Review,
+    Approved bundle, edge component, registry, canonical graph, or basicdnd/rc.
+  - >-
+    Reviewer independently reviews the exact implementation report and
+    reproduces the scoped queue projection. It does not create a packet Review
+    successor or repackage the existing Approved bundle.
+  - >-
+    Integrator receives the existing exact Approved bundle only after the
+    implementation Review is terminally approved and Reviewer confirms the
+    scoped projection has zero packet-lineage errors.
+acceptance_tests:
+  - >-
+    WORK_QUEUES Version 1.36 or later allows an explicit packet-update Review
+    successor to supersede a Review of the same or an ancestor GUP in the same
+    validated packet lineage, and retains strict ruleset/book/packet scope,
+    disconnected roots, and existing Decision-migration grouping.
+  - >-
+    The scanner correctly resolves a Review on GUP r03 revision 2 superseding
+    a Review on ancestor GUP r01 revision 1 as one active Review leaf, without
+    `missing_supersedes_target`; the earlier Review creates no second handoff.
+  - >-
+    Missing targets, cross-packet/book/ruleset links, non-ancestor or unrelated
+    GUP links, duplicate IDs/revisions, revision collisions, and forks remain
+    errors. Independent disconnected Review roots remain separate. Existing
+    decision-migration Review routing and consumption are unchanged.
+  - >-
+    The scoped Monster Family Angels projection has no Reviewer job for GUP
+    r03, has no lineage errors attributable to this packet, and has exactly one
+    eligible Integrator item: the pinned Approved bundle whose manifest
+    checksum binds the exact Review, GUP, and zero-row edge component. No other
+    packet state changes because of these artifacts.
+  - >-
+    `python -m unittest tooling.common.tests.test_scan_agent_queues -v` passes;
+    the implementation report records full output and the exact repository
+    scoped projection, and Reviewer independently repeats both checks before
+    approving the implementation report.
+acceptance_test_semantics:
+  - acceptance_test_index: 1
+    kind: versioned_contract_content
+    contracts:
+      - path: contracts/WORK_QUEUES.md
+        minimum_version: '1.36'
+        substantive_anchors:
+          - Packet-update Review supersession may cross GUP revisions only within one validated packet lineage and only to the same or an ancestor GUP.
+          - Review links cannot cross ruleset, book, packet, or unrelated GUP lineage; disconnected roots remain separate.
+          - Decision-migration Review lineages retain their existing grouping rules.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Builder implements packet-scoped cross-GUP Review lineage resolution and
+    publishes IMP-DEC-2026-0107-r01 for independent Reviewer verification.
+  blocking_ids: []
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, activate WORK_QUEUES 1.36, and relocate the
+      resolved immutable escalation to decided history.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement validated cross-GUP explicit Review supersession for packet
+      updates and focused positive/negative regressions; publish
+      IMP-DEC-2026-0107-r01 with the full scanner module result and scoped
+      Monster Family Angels queue projection.
+  - step: 3
+    owner: reviewer
+    action: >-
+      Independently review IMP-DEC-2026-0107-r01 and reproduce the focused
+      cross-GUP lineage tests and scoped projection. If approved, return
+      control to Reviewer for the originating packet, then notify Integrator
+      about the exact existing Approved bundle.
+post_implementation_requirements:
+  - >-
+    The implementation Review must reach terminal Approved status before
+    Reviewer resumes the ordinary packet relay. Reviewer then verifies the
+    current exact Review/GUP/Approved checksums and scoped scanner output; only
+    then is the existing bundle sent to Integrator.
+  - >-
+    Integrator applies the pinned four node registrations and zero-row edge
+    component through the ordinary transaction. It notifies Analyst only after
+    successful terminal integration. No other packet starts before that
+    integration completes.
+exact_diff:
+  rulesets/shadowdark/escalations/pending/ESC-2026-10-01T00.19.30.206Z.yaml: Relocate the resolved immutable escalation to decided history.
+  rulesets/shadowdark/escalations/decided/ESC-2026-10-01T00.19.30.206Z.yaml: Preserve the resolved immutable escalation under decided history.
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0107.yaml: Publish bounded cross-GUP Review lineage authority.
+  contracts/WORK_QUEUES.md: Define packet-update Review links across ancestor GUP revisions within one packet lineage.
+  tooling/common/scan_agent_queues.py: Resolve explicitly linked packet-update Review lineage components across validated ancestor GUP revisions.
+  tooling/common/tests/test_scan_agent_queues.py: Cover the exact cross-GUP successor and scope, identity, fork, and disconnected-root safeguards.
+  rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0107-r01.yaml: Record Builder implementation and validation evidence.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-10-01T00.19.30.206Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decided/ESC-2026-10-01T00.19.30.206Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0107.yaml, owner: architect, sequence_step: 1}
+  - {path: contracts/WORK_QUEUES.md, owner: architect, sequence_step: 1}
+  - {path: tooling/common/scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: tooling/common/tests/test_scan_agent_queues.py, owner: builder, sequence_step: 2}
+  - {path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0107-r01.yaml, owner: builder, sequence_step: 2}
+follow_up_owners:
+  builder:
+    - Implement the explicit packet-update Review lineage component behavior and all focused guard cases.
+  reviewer:
+    - Independently verify the Decision implementation, then resume this exact packet and forward the existing bundle only after the scoped projection passes.
+  integrator:
+    - Integrate the exact pinned Approved bundle only after the Reviewer returns it following approved scanner implementation.

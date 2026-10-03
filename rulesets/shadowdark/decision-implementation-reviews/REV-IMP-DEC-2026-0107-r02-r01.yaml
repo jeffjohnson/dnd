@@ -1,0 +1,160 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0107-r02-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-195-195-monster-family-angels
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Correct the implementation report's inaccurate description of the corrected
+    data structures. `_packet_review_candidates` does not key both maps by
+    object identity: `pool` is `dict[str, list[Artifact]]`, keyed by
+    `artifact_id`, and preserves every matching document by appending it to the
+    list; `combined` is `dict[int, Artifact]`, keyed by `id(review)`. Align the
+    report and validation report's handoff, acceptance-test-3 evidence, and
+    measured-correction summaries with the actual code. The behavioral fix
+    passed the bounded duplicate-path regressions; no scanner-code change is
+    requested. Publish a corrected successor implementation report and
+    validation report with refreshed checksums. Leave the packet GUR/GUP,
+    Reviews, Approved bundle, registries, canonical graph, and RC untouched.
+  blocking_ids: []
+
+reviewed_implementation:
+  id: IMP-DEC-2026-0107-r02
+  path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0107-r02.yaml
+  checksum: sha256:0b25a66accc32ba252d96bdc5e0679e8bd1c0d8617959d386ee2916c3934c519
+
+decision_input:
+  id: DEC-2026-0107
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0107.yaml
+  checksum: sha256:f2b46fe0af7ba6f1a59207377fabd718f807c7a0510f5e532b4d84dc80f7c40c
+
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      Independently verified the authorized DEC-2026-0107 test-1 semantics and
+      current WORK_QUEUES.md checksum/version 1.36. Its three anchors require
+      same-or-ancestor GUP links within one validated packet lineage, strict
+      scope with disconnected roots preserved, and unchanged decision-migration
+      grouping.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0107
+        path: rulesets/shadowdark/escalations/decisions/DEC-2026-0107.yaml
+        checksum: sha256:f2b46fe0af7ba6f1a59207377fabd718f807c7a0510f5e532b4d84dc80f7c40c
+        authorized_acceptance_test_index: 1
+      authorized_acceptance_test_index: 1
+      contracts:
+        - path: contracts/WORK_QUEUES.md
+          checksum: sha256:7ab4be508e13270ed16f612826e31be26b48d8c73871275e791bb6f220db6de2
+          observed_version: '1.36'
+          minimum_version: '1.36'
+          anchors_present:
+            - Packet-update Review supersession may cross GUP revisions only within one validated packet lineage and only to the same or an ancestor GUP.
+            - Review links cannot cross ruleset, book, packet, or unrelated GUP lineage; disconnected roots remain separate.
+            - Decision-migration Review lineages retain their existing grouping rules.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      Inspected the bounded implementation diff: the validated GUP ancestor
+      walk, explicit-link-only component merge, scope restrictions, and
+      newest-first absorption are unchanged. The 29 focused helper and
+      synthetic-pipeline tests pass; the four pinned live tests pass against an
+      isolated Shadowdark-only root.
+  - acceptance_test_index: 3
+    disposition: failed
+    evidence: >-
+      The behavioral defect from the prior Review is corrected: direct focused
+      tests prove two distinct same-ID Reviews survive candidate collection and
+      `_active_leaf` reports `duplicate_artifact_id`; full leaf resolution
+      reports the duplicate, while a disconnected root remains independent.
+      However, IMP r02 and its validation report materially misdescribe the
+      implementation in several evidence fields. Their handoff and
+      acceptance-test-3 summaries say both maps are keyed on object identity.
+      The actual `pool` is `dict[str, list[Artifact]]`, keyed by
+      `artifact_id`, where all objects are appended to a list; only `combined`
+      is `dict[int, Artifact]` keyed by `id(review)`. The report later explains
+      this accurately, making the artifact internally contradictory. Correct
+      the handoff, acceptance-test-3 summary, and measured-correction text in
+      both report and validation report. This is a documentation/evidence
+      correction only; no scanner-code change is indicated.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      Updated the existing isolated Shadowdark-only fixture with the exact r02
+      report and current scanner/test code, then ran
+      LiveCrossGupReviewLineageCase against that fixture. All 4 tests passed.
+      A direct scan of the same isolated root returned exactly 2 items: the
+      unreviewed REVIEWER-DECISION-IMPLEMENTATION report and the pinned
+      INTEGRATOR-APPROVED bundle; it reported LineageErrorCount 0,
+      DiagnosticCount 0, no REVIEWER-GUP item for GUP r03, and no Builder
+      handoff for the predecessor Review. No repository-wide or RC scan was
+      run.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      Independently ran the 29 bounded focused helper and synthetic tests and
+      all 4 live projection tests against the isolated Shadowdark-only fixture;
+      all passed. The Builder's report records the full module (1023 tests) and
+      common suite (1363 tests) as passing; those broad suites were not
+      rerun because they include repository-root live scans outside this
+      no-RC bounded assignment.
+
+independent_validation:
+  passed: false
+  commands:
+    - command: >-
+        python -m unittest tooling.common.tests.test_scan_agent_queues.TestPacketReviewLineageHelpers
+        tooling.common.tests.test_scan_agent_queues.CrossGupReviewLineageCase -v
+      exit_code: 0
+      result: passed
+      summary: Ran 29 focused helper and synthetic-pipeline tests; OK.
+    - command: >-
+        LiveCrossGupReviewLineageCase with REPO_ROOT redirected to the isolated
+        Shadowdark-only projection root
+      exit_code: 0
+      result: passed
+      summary: Ran 4 pinned live tests; OK; isolated projection had zero diagnostics and one eligible Integrator bundle.
+    - command: >-
+        python tooling/common/validate_artifact.py rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0107-r02.yaml
+        --schema schemas/common/decision-implementation.schema.json
+      exit_code: 0
+      result: passed
+      summary: IMP r02 is schema-valid; artifact content still needs the exact report correction described above.
+
+overall_disposition: revision_required
+required_corrections:
+  - path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0107-r02.yaml
+    instruction: >-
+      Correct the handoff.reason, acceptance_test_index 3 evidence, and
+      measured/correction summary to state precisely that `pool` is keyed by
+      `artifact_id` and stores a list preserving all matching objects, while
+      `combined` is keyed by `id(review)`. Remove the blanket claim that both
+      dicts key on object identity. Keep the accurately described code-change
+      details consistent throughout.
+  - path: build/reports/IMP-DEC-2026-0107-r02.validation.json
+    instruction: >-
+      Correct the measured.correction description to match the actual
+      `pool` list and `combined` identity-map behavior. Refresh its checksum
+      in the successor implementation report. No test or implementation change
+      is requested for this finding.
+
+scope_assessment: >-
+  Independently verified the implementation and decision checksums, validated
+  the implementation report schema, reproduced the duplicate-ID correction
+  in 29 focused tests, and passed all four live tests against the isolated
+  Shadowdark-only projection. The code fixes the prior finding. Approval is
+  withheld solely because the report/validation evidence contradicts itself
+  about the data structures. No source, GUR, GUP, packet Review, Approved
+  bundle, registry, canonical, compiler, or RC artifact was modified or
+  scanned.

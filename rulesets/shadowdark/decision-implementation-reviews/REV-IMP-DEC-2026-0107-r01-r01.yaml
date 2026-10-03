@@ -1,0 +1,168 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0107-r01-r01
+artifact_kind: decision_implementation_review
+status: revision_required
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-195-195-monster-family-angels
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+review_date: '2026-09-30'
+reviewed_by: reviewer
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Correct the cross-GUP Review candidate collection so duplicate artifact IDs
+    in the merged component remain visible to `_active_leaf` and produce the
+    required `duplicate_artifact_id` diagnostic. Add a regression that passes
+    through `_packet_review_candidates` or `_packet_review_leaves`; the current
+    duplicate-ID test calls `_active_leaf` directly and therefore misses the
+    collection defect. Publish a successor implementation report with refreshed
+    code/test and validation-report checksums and rerun the focused bounded tests.
+  blocking_ids: []
+
+reviewed_implementation:
+  id: IMP-DEC-2026-0107-r01
+  path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0107-r01.yaml
+  checksum: sha256:79900d929a13be84daab9f23e3de627385ac069bb6d4b144b13a50f303c8d7c0
+
+decision_input:
+  id: DEC-2026-0107
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0107.yaml
+  checksum: sha256:f2b46fe0af7ba6f1a59207377fabd718f807c7a0510f5e532b4d84dc80f7c40c
+
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      Independently verified DEC-2026-0107's authorized test-1 semantics,
+      checksum, current WORK_QUEUES checksum/version 1.36, and all three
+      substantive anchors: same-or-ancestor GUP within the validated packet
+      lineage; strict ruleset/book/packet/unrelated-GUP bounds with disconnected
+      roots preserved; and unchanged decision-migration grouping.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0107
+        path: rulesets/shadowdark/escalations/decisions/DEC-2026-0107.yaml
+        checksum: sha256:f2b46fe0af7ba6f1a59207377fabd718f807c7a0510f5e532b4d84dc80f7c40c
+        authorized_acceptance_test_index: 1
+      authorized_acceptance_test_index: 1
+      contracts:
+        - path: contracts/WORK_QUEUES.md
+          checksum: sha256:7ab4be508e13270ed16f612826e31be26b48d8c73871275e791bb6f220db6de2
+          observed_version: '1.36'
+          minimum_version: '1.36'
+          anchors_present:
+            - Packet-update Review supersession may cross GUP revisions only within one validated packet lineage and only to the same or an ancestor GUP.
+            - Review links cannot cross ruleset, book, packet, or unrelated GUP lineage; disconnected roots remain separate.
+            - Decision-migration Review lineages retain their existing grouping rules.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      Independently inspected the three new scanner functions and both rewired
+      call sites. The validated GUP ancestor walk bounds candidate collection;
+      explicit links pull only reached ancestor Reviews into a component; and
+      newest-first processing prevents a consumed predecessor handoff from
+      reappearing. The 12 helper tests and 14 synthetic full-pipeline tests
+      passed. The defect recorded under acceptance test 3 is a separate
+      duplicate-ID guard regression in candidate collection.
+  - acceptance_test_index: 3
+    disposition: failed
+    evidence: >-
+      Duplicate IDs are silently coalesced before `_active_leaf` can reject
+      them. `_packet_review_candidates` stores both its ancestor pool and
+      combined component in dictionaries keyed by `artifact_id`; the second
+      same-ID Review overwrites or is skipped as already present. I reproduced
+      the boundary with two `REV-DUP` Review artifacts in ancestor/current GUP
+      buckets, where the current Review explicitly supersedes `REV-DUP`:
+      candidate_count was 1, a leaf was returned, and diagnostics contained
+      only `legacy_revision_inference`, not `duplicate_artifact_id`. The new
+      test named `test_duplicate_review_ids_in_the_merged_component_is_an_error`
+      directly passes `[c, a]` to `_active_leaf` and bypasses the new collection
+      function, so it does not test the implementation path that loses the
+      duplicate. This violates DEC-2026-0107's explicit unique-ID and
+      fail-closed acceptance requirement.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      Rebuilt an isolated temporary Shadowdark-only queue root from the exact
+      named packet lineage and Decision inputs, with no RC files or paths. The
+      projection returned LineageErrorCount 0 and no diagnostics; for this
+      packet it emitted exactly REVIEWER-DECISION-IMPLEMENTATION for the
+      unreviewed report and INTEGRATOR-APPROVED for the pinned existing bundle,
+      no REVIEWER-GUP item for GUP r03, and no Builder handoff for the
+      predecessor Review. All four LiveCrossGupReviewLineageCase tests passed
+      against that isolated root. This is the pre-implementation-Review state;
+      it does not authorize sending the bundle to Integrator.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      Reproduced the bounded focused verification requested for this assignment:
+      26 TestPacketReviewLineageHelpers and CrossGupReviewLineageCase tests
+      passed, and the four LiveCrossGupReviewLineageCase tests passed against
+      the isolated Shadowdark-only projection. The full 1020-test module was
+      not run because its live tests scan the repository root, outside the
+      explicit no-RC scope; the Builder's recorded full-module result remains
+      report evidence and was not represented as independently rerun here.
+
+independent_validation:
+  passed: false
+  commands:
+    - command: >-
+        python -m unittest tooling.common.tests.test_scan_agent_queues.TestPacketReviewLineageHelpers
+        tooling.common.tests.test_scan_agent_queues.CrossGupReviewLineageCase -v
+      exit_code: 0
+      result: passed
+      summary: Ran 26 focused helper and synthetic-pipeline tests; OK.
+    - command: >-
+        LiveCrossGupReviewLineageCase with REPO_ROOT redirected to the isolated
+        Shadowdark-only projection root
+      exit_code: 0
+      result: passed
+      summary: Ran 4 pinned live-projection tests; OK; projection had zero diagnostics and one eligible Integrator bundle.
+    - command: >-
+        Direct duplicate-ID check through _packet_review_candidates then
+        _active_leaf, requiring duplicate_artifact_id
+      exit_code: 1
+      result: failed
+      summary: >-
+        Observed candidates 1, leaf REV-DUP, and codes ['legacy_revision_inference'];
+        the required duplicate_artifact_id diagnostic was absent.
+
+overall_disposition: revision_required
+required_corrections:
+  - path: tooling/common/scan_agent_queues.py
+    instruction: >-
+      Preserve duplicate Review artifacts through cross-GUP candidate
+      collection, or emit duplicate_artifact_id before ID-keyed coalescing.
+      Keep deduplication/fork behavior scoped to the exact linked component so
+      disconnected roots remain independent. Ensure `_active_leaf` still
+      receives enough evidence to enforce unique IDs.
+  - path: tooling/common/tests/test_scan_agent_queues.py
+    instruction: >-
+      Replace or supplement the direct `_active_leaf([c, a])` duplicate test
+      with an end-to-end helper-path regression using `_packet_review_candidates`
+      or `_packet_review_leaves`; prove duplicate IDs in the same linked
+      component produce duplicate_artifact_id while disconnected roots remain
+      independent.
+  - path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0107-r01.yaml
+    instruction: >-
+      Publish a successor implementation report with refreshed implementation
+      file and validation-report checksums, exact focused test outcomes, and the
+      corrected isolated scoped projection. Preserve every DEC-2026-0107 scope
+      boundary. Do not touch the packet's GUR/GUP/Reviews/Approved bundle,
+      registries, canonical graph, or RC.
+
+scope_assessment: >-
+  The Decision, implementation report, validation report, scanner, test module,
+  current and predecessor packet Reviews, GUP r03, Approved manifest, and
+  zero-row edge component all match their currently recorded checksums. The
+  code changes are limited to the two Builder-owned scanner/test files named
+  by DEC-2026-0107. The positive cross-GUP behavior passes the bounded tests
+  and isolated Shadowdark-only queue projection; duplicate-ID preservation is
+  not safe to approve. No source, packet artifact, registry, canonical file,
+  compiler, or RC artifact was modified or scanned.

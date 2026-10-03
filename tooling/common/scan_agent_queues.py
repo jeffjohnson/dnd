@@ -495,6 +495,132 @@ def _active_leaf(
     return None, False
 
 
+def _gup_ancestor_ids(start_id: str, gups_by_id: dict[str, Artifact]) -> set[str]:
+    """Every GUP ID in `start_id`'s own packet-local `supersedes` chain.
+
+    Walking stops at a missing or already-seen predecessor rather than raising.
+    The GUP lineage's own `_active_leaf` call already validated this chain for
+    forks and duplicates before any caller consults this function, so a
+    defensive stop here is unreachable in ordinary use, not a silent tolerance
+    of a bad chain.
+    """
+    ancestors: set[str] = set()
+    seen = {start_id}
+    current = gups_by_id.get(start_id)
+    while current is not None:
+        predecessor = current.supersedes
+        if not predecessor or predecessor in seen:
+            break
+        ancestors.add(predecessor)
+        seen.add(predecessor)
+        current = gups_by_id.get(predecessor)
+    return ancestors
+
+
+def _packet_review_candidates(
+    gup_id: str,
+    ancestor_ids: set[str],
+    reviews_by_gup: dict[str, list[Artifact]],
+    absorbed: frozenset[str] = frozenset(),
+) -> list[Artifact]:
+    """DEC-2026-0107 / WORK_QUEUES 19a.
+
+    A packet-update Review lineage may cross GUP revisions only through an
+    explicit `supersedes` link to a Review whose `reviewed_gup` is the same GUP
+    or a validated ancestor in this exact packet's GUP chain. Only Reviews
+    reached this way join the component: an ancestor's whole Review bucket is
+    never pulled in wholesale, so an ancestor Review with no explicit forward
+    link remains its own disconnected root, and a link naming an unrelated,
+    descendant, or out-of-packet GUP is left for `_active_leaf` to report as a
+    missing target exactly as an ordinary absent predecessor would be.
+
+    `pool` and `combined` key on object identity (`id(review)`), never on the
+    artifact's own `artifact_id` string. Two distinct Review documents that
+    declare the same `id` are a duplicate-ID defect `_active_leaf` must reject;
+    an `artifact_id`-keyed dict would let the second one silently overwrite or
+    be skipped as "already present" before `_active_leaf` ever saw both,
+    turning a required `duplicate_artifact_id` error into a quiet coalesce.
+    REV-IMP-DEC-2026-0107-r01-r01 is the review that caught this collecting
+    both ends of a duplicate `supersedes` target this way.
+    """
+    pool: dict[str, list[Artifact]] = {}
+    for candidate_gup_id in ancestor_ids | {gup_id}:
+        for review in reviews_by_gup.get(candidate_gup_id) or ():
+            if review.artifact_id in absorbed:
+                continue
+            pool.setdefault(review.artifact_id, []).append(review)
+
+    combined: dict[int, Artifact] = {
+        id(review): review
+        for review in (reviews_by_gup.get(gup_id) or ())
+        if review.artifact_id not in absorbed
+    }
+    changed = True
+    while changed:
+        changed = False
+        for review in list(combined.values()):
+            target_id = review.supersedes
+            if not target_id:
+                continue
+            for target in pool.get(target_id, ()):
+                if id(target) in combined:
+                    continue
+                combined[id(target)] = target
+                changed = True
+    return list(combined.values())
+
+
+def _packet_review_leaves(
+    root: Path,
+    gups_by_id: dict[str, Artifact],
+    reviews_by_gup: dict[str, list[Artifact]],
+    diagnostics: list[dict[str, Any]],
+    label_prefix: str = "",
+    bridged_predecessors: dict[str, str] | None = None,
+) -> dict[str, tuple[Artifact | None, bool]]:
+    """The active packet-update Review leaf for every GUP revision in one
+    packet, under DEC-2026-0107 / WORK_QUEUES 19a.
+
+    GUP revisions are resolved newest-first so a later GUP's cross-GUP link
+    claims the ancestor Reviews it names before that ancestor is ever asked to
+    resolve its own, now-superseded, bucket in isolation -- which is what let
+    the retired Review on GUP-PKT-SD-195-195-monster-family-angels-r01 still
+    look like its own trivial leaf when its bucket was read alone. A GUP whose
+    entire own Review bucket has already been absorbed by a later GUP's
+    resolution has no entry in the result: it is not a disconnected leaf, it is
+    history inside the later component.
+    """
+    leaves: dict[str, tuple[Artifact | None, bool]] = {}
+    absorbed: set[str] = set()
+    for gup_id in sorted(
+        gups_by_id, key=lambda g: gups_by_id[g].revision or 0, reverse=True
+    ):
+        own = [
+            review for review in (reviews_by_gup.get(gup_id) or ())
+            if review.artifact_id not in absorbed
+        ]
+        if not own:
+            continue
+        ancestor_ids = _gup_ancestor_ids(gup_id, gups_by_id)
+        candidates = _packet_review_candidates(
+            gup_id, ancestor_ids, reviews_by_gup, frozenset(absorbed)
+        )
+        leaf, inferred = _active_leaf(
+            root,
+            candidates,
+            diagnostics,
+            f"{label_prefix}{gup_id} Review",
+            bridged_predecessors,
+        )
+        leaves[gup_id] = (leaf, inferred)
+        if leaf is not None:
+            absorbed.update(
+                review.artifact_id for review in candidates
+                if review.artifact_id != leaf.artifact_id
+            )
+    return leaves
+
+
 def _component_paths(root: Path, gup: Artifact) -> list[str]:
     components = [_relative(root, gup.path)]
     edge_path = gup.path.with_suffix(".edges.csv")
@@ -2171,15 +2297,21 @@ def _consumed_review_ids(artifacts: list[Artifact]) -> set[str]:
 def _pending_revision_reviews(
     root: Path,
     gups: list[Artifact],
-    reviews_by_gup: dict[str, list[Artifact]],
+    review_leaves: dict[str, tuple[Artifact | None, bool]],
     diagnostics: list[dict[str, Any]],
     review_retirements: dict[str, dict[str, Any]] | None = None,
-    bridged_predecessors: dict[str, str] | None = None,
 ) -> list[tuple[Artifact, bool]]:
     """Active revision-required Reviews in this lineage that nothing has answered.
 
     Selection is per reviewed GUP, not over the lineage as a whole: each GUP
-    revision has its own Review chain, and only that chain leaf is active.
+    revision has its own Review chain, and only that chain leaf is active --
+    except where DEC-2026-0107 / WORK_QUEUES 19a resolves an explicit cross-GUP
+    `supersedes` link, in which case `review_leaves` (built once per packet by
+    `_packet_review_leaves`) already folds the linked Reviews into one
+    component and omits any GUP whose bucket was fully absorbed by a later
+    one. `seen_leaf_ids` is still needed here: two GUP revisions in the same
+    merged component both resolve to the same leaf, and that leaf must surface
+    only once.
 
     A Review is consumed when some GUP in the lineage names it exactly in
     `provenance.review_id`. That is the only form of consumption. An earlier
@@ -2194,17 +2326,15 @@ def _pending_revision_reviews(
     pending: list[tuple[Artifact, bool]] = []
     consumed = _consumed_review_ids(gups)
     retirements = review_retirements or {}
+    seen_leaf_ids: set[str] = set()
     for gup in sorted(
         (g for g in gups if g.revision is not None), key=lambda a: a.revision
     ):
-        candidates = reviews_by_gup.get(gup.artifact_id) or []
-        if not candidates:
+        leaf, inferred = review_leaves.get(gup.artifact_id, (None, False))
+        if leaf is None or leaf.artifact_id in seen_leaf_ids:
             continue
-        leaf, inferred = _active_leaf(
-            root, candidates, diagnostics, f"{gup.artifact_id} Review",
-            bridged_predecessors,
-        )
-        if leaf is None or leaf.artifact_id in consumed:
+        seen_leaf_ids.add(leaf.artifact_id)
+        if leaf.artifact_id in consumed:
             continue
         disposition = str(
             leaf.data.get("overall_disposition") or leaf.data.get("status") or ""
@@ -4599,6 +4729,15 @@ def scan_repository(root: Path) -> dict[str, Any]:
             all_packets = sorted(set(gurs_by_packet) | set(gups_by_packet))
             leaf_gur_by_packet: dict[str, tuple[Artifact | None, bool]] = {}
             leaf_gup_by_packet: dict[str, tuple[Artifact | None, bool]] = {}
+            #: DEC-2026-0107 / WORK_QUEUES 19a. Computed once per packet so the
+            #: ordinary REVIEWER-GUP/BUILDER-REVISION routing below and
+            #: `_pending_revision_reviews` see the exact same resolved
+            #: cross-GUP Review components, rather than two independent
+            #: `_active_leaf` calls risking duplicate diagnostics for the same
+            #: defect.
+            packet_review_leaves_by_packet: dict[
+                str, dict[str, tuple[Artifact | None, bool]]
+            ] = {}
             for packet_id in all_packets:
                 _diagnose_gur_handoffs(
                     root,
@@ -4617,6 +4756,14 @@ def scan_repository(root: Path) -> dict[str, Any]:
                     gups_by_packet.get(packet_id, []),
                     diagnostics,
                     f"{ruleset}/{book}/{packet_id} GUP",
+                )
+                packet_review_leaves_by_packet[packet_id] = _packet_review_leaves(
+                    root,
+                    {g.artifact_id: g for g in gups_by_packet.get(packet_id, [])},
+                    reviews_by_gup,
+                    diagnostics,
+                    "",
+                    bridged_predecessors,
                 )
 
             consumed_gur_ids = {
@@ -4772,10 +4919,9 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 for pending_review, pending_inferred in _pending_revision_reviews(
                     root,
                     gups_by_packet.get(packet_id, []),
-                    reviews_by_gup,
+                    packet_review_leaves_by_packet[packet_id],
                     diagnostics,
                     review_retirements_by_ruleset[ruleset],
-                    bridged_predecessors,
                 ):
                     # WORK_QUEUES makes a Builder job "a Review that requests
                     # Builder revision", and handoff.next_role is where a Review
@@ -4866,16 +5012,9 @@ def scan_repository(root: Path) -> dict[str, Any]:
                             )
                         )
 
-                review_leaf = None
-                review_inferred = False
-                if leaf_gup.artifact_id in reviews_by_gup:
-                    review_leaf, review_inferred = _active_leaf(
-                        root,
-                        reviews_by_gup[leaf_gup.artifact_id],
-                        diagnostics,
-                        f"{leaf_gup.artifact_id} Review",
-                        bridged_predecessors,
-                    )
+                review_leaf, review_inferred = packet_review_leaves_by_packet[
+                    packet_id
+                ].get(leaf_gup.artifact_id, (None, False))
 
                 if (
                     status == "proposed"

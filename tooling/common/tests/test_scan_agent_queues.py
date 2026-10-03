@@ -4545,6 +4545,352 @@ class TestExactDiffOwnershipHelpers(unittest.TestCase):
         self.assertEqual(scanner._exact_diff_ownership_errors(document), [])
 
 
+def _lineage_review(review_id, gup_id, *, revision=1, supersedes=None,
+                     disposition="approved", packet_id="PKT-FIX-001-001-fixture"):
+    return scanner.Artifact(
+        path=Path(f"/fixtures/reviews/{review_id}.yaml"),
+        kind="review",
+        ruleset="shadowdark",
+        book="sd",
+        data={
+            "id": review_id,
+            "packet_id": packet_id,
+            "revision": revision,
+            "supersedes": supersedes,
+            "status": disposition,
+            "overall_disposition": disposition,
+            "reviewed_gup": {"id": gup_id},
+        },
+    )
+
+
+def _lineage_gup(gup_id, *, revision, supersedes=None, packet_id="PKT-FIX-001-001-fixture"):
+    return scanner.Artifact(
+        path=Path(f"/fixtures/gup/{gup_id}.yaml"),
+        kind="gup",
+        ruleset="shadowdark",
+        book="sd",
+        data={
+            "id": gup_id,
+            "packet_id": packet_id,
+            "revision": revision,
+            "supersedes": supersedes,
+        },
+    )
+
+
+class TestPacketReviewLineageHelpers(unittest.TestCase):
+    """DEC-2026-0107 / WORK_QUEUES 19a, exercised directly on the three new
+    helpers (`_gup_ancestor_ids`, `_packet_review_candidates`,
+    `_packet_review_leaves`) rather than only through a full file-based scan.
+    The exotic boundary cases -- cross-packet, non-ancestor, forked, collided
+    -- are easiest to construct precisely this way, without first having to
+    keep an unrelated GUP chain independently valid.
+    """
+
+    GUP1 = "GUP-PKT-FIX-001-001-fixture-r01"
+    GUP2 = "GUP-PKT-FIX-001-001-fixture-r02"
+    GUP3 = "GUP-PKT-FIX-001-001-fixture-r03"
+
+    def gups(self):
+        return {
+            self.GUP1: _lineage_gup(self.GUP1, revision=1),
+            self.GUP2: _lineage_gup(self.GUP2, revision=2, supersedes=self.GUP1),
+            self.GUP3: _lineage_gup(self.GUP3, revision=3, supersedes=self.GUP2),
+        }
+
+    # -- _gup_ancestor_ids ----------------------------------------------
+
+    def test_ancestor_ids_walks_the_whole_chain(self):
+        self.assertEqual(
+            scanner._gup_ancestor_ids(self.GUP3, self.gups()),
+            {self.GUP1, self.GUP2},
+        )
+
+    def test_a_root_gup_has_no_ancestors(self):
+        self.assertEqual(scanner._gup_ancestor_ids(self.GUP1, self.gups()), set())
+
+    # -- the Monster Family Angels shape: an explicit ancestor link -----
+
+    def test_an_explicit_ancestor_link_resolves_as_one_leaf(self):
+        """A Review of r03 supersedes a Review of ancestor r01, skipping r02
+        entirely -- the exact live shape."""
+        a = _lineage_review("REV-A", self.GUP1, revision=1,
+                             disposition="revision_required")
+        c = _lineage_review("REV-C", self.GUP3, revision=2, supersedes="REV-A")
+        reviews_by_gup = {self.GUP1: [a], self.GUP3: [c]}
+        diagnostics: list = []
+        leaves = scanner._packet_review_leaves(
+            Path("."), self.gups(), reviews_by_gup, diagnostics
+        )
+        self.assertEqual(leaves[self.GUP3], (c, False))
+        self.assertEqual(diagnostics, [])
+
+    def test_the_predecessor_is_never_a_second_leaf(self):
+        a = _lineage_review("REV-A", self.GUP1, revision=1,
+                             disposition="revision_required")
+        c = _lineage_review("REV-C", self.GUP3, revision=2, supersedes="REV-A")
+        reviews_by_gup = {self.GUP1: [a], self.GUP3: [c]}
+        leaves = scanner._packet_review_leaves(Path("."), self.gups(), reviews_by_gup, [])
+        self.assertNotIn(self.GUP1, leaves)
+
+    # -- negative: absent target -----------------------------------------
+
+    def test_a_supersedes_target_that_exists_nowhere_is_a_missing_target_error(self):
+        c = _lineage_review("REV-C", self.GUP3, revision=2, supersedes="REV-NOWHERE")
+        diagnostics: list = []
+        candidates = scanner._packet_review_candidates(
+            self.GUP3, {self.GUP1, self.GUP2}, {self.GUP3: [c]}
+        )
+        leaf, _ = scanner._active_leaf(Path("."), candidates, diagnostics, "fixture")
+        self.assertIsNone(leaf)
+        self.assertEqual([d["Code"] for d in diagnostics], ["missing_supersedes_target"])
+
+    # -- negative: a non-ancestor GUP's Review is never pulled in --------
+
+    def test_a_link_to_a_non_ancestor_gup_review_is_not_pulled_in(self):
+        """A' reviews r02, which is not an ancestor of r01: r01's own
+        resolution must not reach forward across the chain to it."""
+        a_prime = _lineage_review("REV-A-PRIME", self.GUP2, revision=1)
+        candidates = scanner._packet_review_candidates(
+            self.GUP1,
+            scanner._gup_ancestor_ids(self.GUP1, self.gups()),
+            {self.GUP2: [a_prime]},
+        )
+        self.assertEqual(candidates, [])
+
+    def test_an_unrelated_gup_link_is_a_missing_target_not_a_silent_join(self):
+        """A Review names an existing Review by ID, but that Review belongs to
+        a GUP outside the successor's validated ancestor set -- modelled here
+        by deliberately omitting GUP2 from the ancestor set passed in, so the
+        link is genuinely unrelated rather than merely ancestor-skipping."""
+        unrelated = _lineage_review("REV-UNRELATED", self.GUP2, revision=1)
+        c = _lineage_review("REV-C", self.GUP3, revision=2, supersedes="REV-UNRELATED")
+        candidates = scanner._packet_review_candidates(
+            self.GUP3, {self.GUP1},
+            {self.GUP1: [], self.GUP2: [unrelated], self.GUP3: [c]},
+        )
+        self.assertEqual(candidates, [c])
+        diagnostics: list = []
+        leaf, _ = scanner._active_leaf(Path("."), candidates, diagnostics, "fixture")
+        self.assertIsNone(leaf)
+        self.assertEqual([d["Code"] for d in diagnostics], ["missing_supersedes_target"])
+
+    # -- negative: cross-packet / cross-book / cross-ruleset -------------
+
+    def test_a_cross_packet_review_is_never_in_the_pool(self):
+        """`reviews_by_gup` is already scoped to one book; a review bucketed
+        under a GUP id from a different packet must never be reachable just
+        because the dict happens to contain it."""
+        other_packet_gup = "GUP-PKT-OTHER-999-999-fixture-r01"
+        foreign = _lineage_review(
+            "REV-FOREIGN", other_packet_gup, revision=1,
+            packet_id="PKT-OTHER-999-999-fixture",
+        )
+        c = _lineage_review("REV-C", self.GUP3, revision=2, supersedes="REV-FOREIGN")
+        reviews_by_gup = {self.GUP3: [c], other_packet_gup: [foreign]}
+        ancestor_ids = scanner._gup_ancestor_ids(self.GUP3, self.gups())
+        self.assertNotIn(other_packet_gup, ancestor_ids | {self.GUP3})
+        candidates = scanner._packet_review_candidates(self.GUP3, ancestor_ids, reviews_by_gup)
+        self.assertEqual(candidates, [c])
+
+    # -- negative: duplicate IDs and revision collisions ------------------
+
+    def test_duplicate_review_ids_in_the_merged_component_is_an_error(self):
+        """`_active_leaf`'s own contract, called directly: unaffected by this
+        Decision and must keep rejecting a duplicate ID it is handed."""
+        a = _lineage_review("REV-SAME", self.GUP1, revision=1)
+        c = _lineage_review("REV-SAME", self.GUP3, revision=2, supersedes="REV-SAME")
+        diagnostics: list = []
+        leaf, _ = scanner._active_leaf(Path("."), [c, a], diagnostics, "fixture")
+        self.assertIsNone(leaf)
+        self.assertEqual([d["Code"] for d in diagnostics], ["duplicate_artifact_id"])
+
+    def test_a_duplicate_id_reaching_the_collector_via_an_explicit_link_is_an_error(self):
+        """REV-IMP-DEC-2026-0107-r01-r01's exact finding: two distinct Review
+        documents sharing one `id` sit in the ancestor bucket an explicit
+        `supersedes` link reaches. `_packet_review_candidates` dict-keyed on
+        `artifact_id` silently coalesced them -- the second overwrote the
+        first in `pool`, so only one object ever reached `_active_leaf` and no
+        `duplicate_artifact_id` finding was possible. Both must now survive
+        collection so `_active_leaf` can reject them."""
+        dup1 = _lineage_review("REV-DUP", self.GUP1, revision=1)
+        dup2 = _lineage_review("REV-DUP", self.GUP1, revision=1)
+        c = _lineage_review("REV-C", self.GUP3, revision=2, supersedes="REV-DUP")
+        reviews_by_gup = {self.GUP1: [dup1, dup2], self.GUP3: [c]}
+        candidates = scanner._packet_review_candidates(
+            self.GUP3, {self.GUP1, self.GUP2}, reviews_by_gup
+        )
+        self.assertEqual(len(candidates), 3, "both REV-DUP objects must survive collection")
+        diagnostics: list = []
+        leaf, _ = scanner._active_leaf(Path("."), candidates, diagnostics, "fixture")
+        self.assertIsNone(leaf)
+        self.assertEqual([d["Code"] for d in diagnostics], ["duplicate_artifact_id"])
+
+    def test_a_duplicate_id_through_the_full_leaf_resolution_is_an_error(self):
+        """The same shape through `_packet_review_leaves`, the function the
+        two real call sites actually use."""
+        dup1 = _lineage_review("REV-DUP", self.GUP1, revision=1)
+        dup2 = _lineage_review("REV-DUP", self.GUP1, revision=1)
+        c = _lineage_review("REV-C", self.GUP3, revision=2, supersedes="REV-DUP")
+        reviews_by_gup = {self.GUP1: [dup1, dup2], self.GUP3: [c]}
+        diagnostics: list = []
+        leaves = scanner._packet_review_leaves(
+            Path("."), self.gups(), reviews_by_gup, diagnostics
+        )
+        self.assertEqual(leaves[self.GUP3], (None, False))
+        # GUP1's own bucket genuinely contains the same duplicate on its own
+        # terms, independent of the cross-GUP link, so its isolated resolution
+        # (GUP1 has no ancestor to merge from) reports it a second time; both
+        # reports are correct detections of the one real data defect.
+        self.assertEqual(leaves[self.GUP1], (None, False))
+        self.assertTrue(diagnostics)
+        self.assertTrue(all(d["Code"] == "duplicate_artifact_id" for d in diagnostics))
+
+    def test_a_duplicate_elsewhere_does_not_disturb_a_disconnected_root(self):
+        """A duplicate ID inside one linked component must not poison an
+        unrelated, disconnected Review root in a different GUP bucket with no
+        link to it."""
+        dup1 = _lineage_review("REV-DUP", self.GUP1, revision=1)
+        dup2 = _lineage_review("REV-DUP", self.GUP1, revision=1)
+        c = _lineage_review("REV-C", self.GUP3, revision=2, supersedes="REV-DUP")
+        root = _lineage_review("REV-ROOT", self.GUP2, revision=1)
+        reviews_by_gup = {
+            self.GUP1: [dup1, dup2], self.GUP2: [root], self.GUP3: [c],
+        }
+        diagnostics: list = []
+        leaves = scanner._packet_review_leaves(
+            Path("."), self.gups(), reviews_by_gup, diagnostics
+        )
+        self.assertEqual(leaves[self.GUP3], (None, False))
+        self.assertEqual(leaves[self.GUP2], (root, False))
+
+    def test_a_revision_number_collision_across_the_merged_component_is_an_error(self):
+        a = _lineage_review("REV-A", self.GUP1, revision=1)
+        c = _lineage_review("REV-C", self.GUP3, revision=1, supersedes="REV-A")
+        diagnostics: list = []
+        leaf, _ = scanner._active_leaf(Path("."), [c, a], diagnostics, "fixture")
+        self.assertIsNone(leaf)
+        self.assertEqual([d["Code"] for d in diagnostics], ["duplicate_revision"])
+
+    # -- negative: fork ----------------------------------------------------
+
+    def test_two_reviews_of_the_same_gup_forking_from_one_ancestor_is_an_error(self):
+        a = _lineage_review("REV-A", self.GUP1, revision=1)
+        c1 = _lineage_review("REV-C1", self.GUP3, revision=2, supersedes="REV-A")
+        c2 = _lineage_review("REV-C2", self.GUP3, revision=3, supersedes="REV-A")
+        reviews_by_gup = {self.GUP1: [a], self.GUP3: [c1, c2]}
+        diagnostics: list = []
+        leaves = scanner._packet_review_leaves(
+            Path("."), self.gups(), reviews_by_gup, diagnostics
+        )
+        self.assertIsNone(leaves[self.GUP3][0])
+        self.assertEqual([d["Code"] for d in diagnostics], ["forked_revision_lineage"])
+
+    # -- negative: disconnected roots remain independent --------------------
+
+    def test_two_disconnected_roots_in_different_gups_remain_independent(self):
+        a = _lineage_review("REV-A", self.GUP1, revision=1)
+        c = _lineage_review("REV-C", self.GUP3, revision=1)
+        reviews_by_gup = {self.GUP1: [a], self.GUP3: [c]}
+        diagnostics: list = []
+        leaves = scanner._packet_review_leaves(
+            Path("."), self.gups(), reviews_by_gup, diagnostics
+        )
+        self.assertEqual(leaves[self.GUP1], (a, False))
+        self.assertEqual(leaves[self.GUP3], (c, False))
+        self.assertEqual(diagnostics, [])
+
+
+class CrossGupReviewLineageCase(QueueScannerCase):
+    """DEC-2026-0107 / WORK_QUEUES 19a, through the full `scan()` pipeline.
+
+    Mirrors the live Monster Family Angels shape: GUP r01 (reviewed,
+    revision_required) -> r02 (unreviewed, mistaken revision) -> r03
+    (reviewed; its Review explicitly supersedes r01's Review, skipping r02).
+    Before DEC-2026-0107, the cross-GUP `supersedes` produced
+    `missing_supersedes_target` for the successor Review, and r01's Review
+    independently resurfaced as a `BUILDER-REVISION` job in isolation.
+    """
+
+    PACKET = "PKT-PHB-050-050-fixture"
+
+    def build(self):
+        gur = self.gur(self.PACKET, 1)
+        gup1 = self.gup(self.PACKET, 1, gur)
+        gup2 = self.gup(self.PACKET, 2, gur, supersedes=gup1)
+        gup3 = self.gup(self.PACKET, 3, gur, supersedes=gup2)
+        rev_a = self.review(self.PACKET, gup1, "revision_required", revision=1)
+        rev_c = self.review(self.PACKET, gup3, "approved", revision=2, supersedes=rev_a)
+        return gup1, gup2, gup3, rev_a, rev_c
+
+    def test_no_missing_supersedes_target_for_the_cross_gup_link(self):
+        self.build()
+        result = self.scan()
+        codes = [d["Code"] for d in result["Diagnostics"]]
+        self.assertNotIn("missing_supersedes_target", codes)
+
+    def test_no_lineage_error_at_all(self):
+        self.build()
+        result = self.scan()
+        self.assertEqual(result["LineageErrorCount"], 0)
+
+    def test_the_earlier_review_handoff_is_not_resurrected(self):
+        _, _, _, rev_a, _ = self.build()
+        result = self.scan()
+        builder_ids = [i["InputId"] for i in result["Items"] if i["Role"] == "Builder"]
+        self.assertNotIn(rev_a, builder_ids)
+
+    def test_the_current_gup_still_needs_no_reviewer_job(self):
+        _, _, gup3, _, _ = self.build()
+        result = self.scan()
+        reviewer_gup_ids = [
+            i["InputId"] for i in result["Items"] if i["Queue"] == "REVIEWER-GUP"
+        ]
+        self.assertNotIn(gup3, reviewer_gup_ids)
+
+
+class LiveCrossGupReviewLineageCase(unittest.TestCase):
+    """DEC-2026-0107's own pinned case, against the real repository."""
+
+    PACKET_ID = "PKT-SD-195-195-monster-family-angels"
+    GUP = "GUP-PKT-SD-195-195-monster-family-angels-r03"
+    SUCCESSOR_REVIEW = "REV-GUP-PKT-SD-195-195-monster-family-angels-r03-r02"
+    PREDECESSOR_REVIEW = "REV-GUP-PKT-SD-195-195-monster-family-angels-r01-r01"
+    APPROVED_BUNDLE = "APPROVED-GUP-PKT-SD-195-195-monster-family-angels-r03-r01"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.result = scanner.scan_repository(REPO_ROOT)
+
+    def test_no_error_severity_diagnostic_names_this_lineage(self):
+        errors = [
+            d for d in self.result["Diagnostics"]
+            if d["Severity"] == "error"
+            and d.get("ArtifactId") in (
+                self.GUP, self.SUCCESSOR_REVIEW, self.PREDECESSOR_REVIEW
+            )
+        ]
+        self.assertEqual(errors, [])
+
+    def test_the_packet_gup_has_no_reviewer_job(self):
+        reviewer_gup_ids = [
+            i["InputId"] for i in self.result["Items"] if i["Queue"] == "REVIEWER-GUP"
+        ]
+        self.assertNotIn(self.GUP, reviewer_gup_ids)
+
+    def test_the_predecessor_review_creates_no_builder_job(self):
+        builder_ids = [i["InputId"] for i in self.result["Items"] if i["Role"] == "Builder"]
+        self.assertNotIn(self.PREDECESSOR_REVIEW, builder_ids)
+
+    def test_exactly_one_eligible_integrator_item_for_the_pinned_bundle(self):
+        integrator_items = [
+            i for i in self.result["Items"]
+            if i["Role"] == "Integrator" and i["PacketId"] == self.PACKET_ID
+        ]
+        self.assertEqual(len(integrator_items), 1)
+        self.assertEqual(integrator_items[0]["InputId"], self.APPROVED_BUNDLE)
+
 
 class VersionedContractContentCase(QueueScannerCase):
     """DEC-2026-0048: a mutable contract's version as a floor, not a literal.

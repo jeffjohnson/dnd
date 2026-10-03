@@ -1,0 +1,144 @@
+schema_version: '1.0'
+id: REV-IMP-DEC-2026-0107-r03-r01
+artifact_kind: decision_implementation_review
+status: approved
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-195-195-monster-family-angels
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+reviewed_by: reviewer
+
+reviewed_implementation:
+  id: IMP-DEC-2026-0107-r03
+  path: rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0107-r03.yaml
+  checksum: sha256:3d1f2c43a411caa1a30f2bb2b02e380c732ad20a1519acd4356a2ff62618f47d
+
+decision_input:
+  id: DEC-2026-0107
+  path: rulesets/shadowdark/escalations/decisions/DEC-2026-0107.yaml
+  checksum: sha256:f2b46fe0af7ba6f1a59207377fabd718f807c7a0510f5e532b4d84dc80f7c40c
+
+acceptance_dispositions:
+  - acceptance_test_index: 1
+    disposition: verified_versioned_contract_content
+    evidence: >-
+      Independently verified DEC-2026-0107's authorized acceptance-test-1
+      semantics, current WORK_QUEUES.md checksum/version 1.36, and its anchors
+      for same-or-ancestor packet GUP links, strict scope with disconnected
+      roots preserved, and unchanged decision-migration grouping.
+    verified_versioned_contract_content:
+      authority:
+        id: DEC-2026-0107
+        path: rulesets/shadowdark/escalations/decisions/DEC-2026-0107.yaml
+        checksum: sha256:f2b46fe0af7ba6f1a59207377fabd718f807c7a0510f5e532b4d84dc80f7c40c
+        authorized_acceptance_test_index: 1
+      authorized_acceptance_test_index: 1
+      contracts:
+        - path: contracts/WORK_QUEUES.md
+          checksum: sha256:7ab4be508e13270ed16f612826e31be26b48d8c73871275e791bb6f220db6de2
+          observed_version: '1.36'
+          minimum_version: '1.36'
+          anchors_present:
+            - Packet-update Review supersession may cross GUP revisions only within one validated packet lineage and only to the same or an ancestor GUP.
+            - Review links cannot cross ruleset, book, packet, or unrelated GUP lineage; disconnected roots remain separate.
+            - Decision-migration Review lineages retain their existing grouping rules.
+  - acceptance_test_index: 2
+    disposition: verified
+    evidence: >-
+      Independently checked that the cross-GUP resolution implementation and
+      guard behavior remain unchanged from r02. The focused duplicate-ID
+      collection, full leaf-resolution, disconnected-root, positive ancestor,
+      missing-target, scope, collision, and fork tests pass in the 33-test
+      bounded run.
+  - acceptance_test_index: 3
+    disposition: verified
+    evidence: >-
+      r03 corrects the sole r02-r01 finding. Its handoff and acceptance-test-3
+      evidence now accurately distinguish `pool` (`dict[str, list[Artifact]]`,
+      keyed by `artifact_id`, appending every matching document) from
+      `combined` (`dict[int, Artifact]`, keyed by `id(review)`). The validation
+      report's measured.correction uses the same precise description. I
+      independently inspected both texts against the unchanged scanner code;
+      the report no longer contradicts itself about these structures.
+  - acceptance_test_index: 4
+    disposition: verified
+    evidence: >-
+      Reproduced the bounded packet projection in an isolated Shadowdark-only
+      repository root containing the exact packet lineage and r03 report. The
+      scanner returned exactly the REVIEWER-DECISION-IMPLEMENTATION item for
+      r03 and the pinned INTEGRATOR-APPROVED bundle, with DiagnosticCount 0 and
+      LineageErrorCount 0; no REVIEWER-GUP item names GUP r03. After publishing
+      this terminal Review into the same isolated root, the projection will be
+      rechecked to confirm the implementation item is retired and the existing
+      bundle remains the sole packet relay item. No repository-wide or RC scan
+      was run.
+  - acceptance_test_index: 5
+    disposition: verified
+    evidence: >-
+      Independently ran the 33 named focused helper, synthetic integration,
+      and pinned live-lineage tests against the isolated Shadowdark-only root;
+      all passed. The scanner/test files remain byte-identical to the
+      previously reviewed r02 files. The full named module and common suite
+      results recorded by Builder for r02 remain applicable because no code or
+      test changed; neither broad suite was rerun in this bounded no-RC review.
+
+independent_validation:
+  passed: true
+  commands:
+    - command: >-
+        SHA-256 verification of r03, its validation report, implementation
+        files, Decision, prior implementation Review, and packet inputs
+      exit_code: 0
+      result: passed
+      summary: >-
+        All declared checksums match. r03 is sha256:3d1f2c43a411caa1a30f2bb2b02e380c732ad20a1519acd4356a2ff62618f47d;
+        the implementation and test files match their r02 checksums.
+    - command: >-
+        python tooling/common/validate_artifact.py
+        rulesets/shadowdark/decision-implementations/IMP-DEC-2026-0107-r03.yaml
+        --schema schemas/common/decision-implementation.schema.json
+      exit_code: 0
+      result: passed
+      summary: IMP r03 is valid against decision-implementation.schema.json.
+    - command: >-
+        python -m unittest tooling.common.tests.test_scan_agent_queues.TestPacketReviewLineageHelpers
+        tooling.common.tests.test_scan_agent_queues.CrossGupReviewLineageCase
+        tooling.common.tests.test_scan_agent_queues.LiveCrossGupReviewLineageCase -v
+        with REPO_ROOT redirected to isolated Shadowdark-only fixture
+      exit_code: 0
+      result: passed
+      summary: Ran 33 focused, integration, and isolated-live tests; OK.
+    - command: >-
+        Run scan_agent_queues.py --json against isolated Shadowdark-only fixture
+        containing current GUP/Review/bundle and implementation r03
+      exit_code: 0
+      result: passed
+      summary: >-
+        Exactly two packet items before implementation Review publication;
+        DiagnosticCount 0 and LineageErrorCount 0.
+
+overall_disposition: approved
+scope_assessment: >-
+  The r03 report and validation-report wording exactly correct the prior
+  documentation/evidence finding. The implementation behavior remains
+  validated and no code or tests changed. The scanner function docstring still
+  inaccurately groups `pool` with `combined` as keyed by object identity; this
+  is a non-blocking documentation discrepancy outside the specific report and
+  validation-report correction reviewed here and does not describe the actual
+  data flow accurately. It is recorded for follow-up rather than silently
+  represented as corrected. No packet source, GUR, GUP, Review, Approved
+  bundle, registry, canonical, compiler, or RC artifact was modified or
+  scanned.
+
+handoff:
+  next_role: none
+  readiness: terminal
+  reason: >-
+    DEC-2026-0107 implementation r03 is independently approved and terminal.
+    After rechecking the exact current packet Review, GUP, Approved bundle and
+    component checksums and a clean scoped packet-lineage projection, Reviewer
+    may notify Integrator about the already-published bundle only.
+  blocking_ids: []
