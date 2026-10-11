@@ -1,5 +1,15 @@
 # Builder Agent Instructions
 
+## Candidate Batched Tooling
+
+In the isolated consolidation candidate, follow `tooling/common/BATCH_WORKFLOW.md`.
+Use `agent_task.py prepare --role builder` for the exact GUR and correction
+Reviews; use `finish` for the existing suite gate, compile, staged schema checks
+and create-only publication in one command. Do not run the same suite again as
+a separate routine step or skip it. Registration authority text must use the
+active ruleset; AD&D Decision IDs are not Shadowdark authority. This candidate
+is not live rollout authority; ownership and relay rules below remain in force.
+
 ## Mission
 
 Compile a GUR into a deterministic, schema-valid Graph Update Patch (GUP). You own normalization, validation, canonicalization tooling, and build-time derivation. You do not decide source meaning and do not approve the patch.

@@ -1,0 +1,209 @@
+schema_version: '1.0'
+id: GUP-PKT-SD-286-287-potions-and-mixing-potions-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-286-287-potions-and-mixing-potions
+constitution_version: '1.8'
+artifact_kind: packet_update
+revision: 1
+supersedes: null
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 0 edge addition(s), 0 update(s), 4 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-SD-286-287-potions-and-mixing-potions-r01
+  gur_checksum: sha256:04d7a19f882cae36b4c68e2efcd7c2c27289835707527c3e6d7b6b4cc71fe69c
+  gur_constitution_version: '1.8'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 946
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: tbl_potion_features
+      proposed_label: Potion Features Table
+      kind: tbl
+      why_needed: Registers the d8 potion features table from SD p. 286
+      edges_depending_on_it:
+        - M001
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'Constitution 1.8 section 2: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_mixing_potions
+      proposed_label: Mixing Potions Table
+      kind: tbl
+      why_needed: Registers the d12 mixing potions effects and mishaps table from SD p. 286
+      edges_depending_on_it:
+        - M002
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'Constitution 1.8 section 2: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_potion_benefit
+      proposed_label: Potion Benefit Table
+      kind: tbl
+      why_needed: Registers the d12 potion benefits table from SD p. 287
+      edges_depending_on_it:
+        - M003
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'Constitution 1.8 section 2: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_potion_curse
+      proposed_label: Potion Curse Table
+      kind: tbl
+      why_needed: Registers the d12 potion curses table from SD p. 287
+      edges_depending_on_it:
+        - M004
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'Constitution 1.8 section 2: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity. Ordinary proposals require Reviewer approval; proposals outside the approved identity
+    vocabulary require an Architect decision.
+edge_changes:
+  additions: []
+  pending_additions:
+    - source_id: item_magic_item
+      source_label: Magic Item
+      edge_type: RESOLVED_BY
+      target_id: tbl_mixing_potions
+      target_label: Mixing Potions Table
+      aspect: potion mixing outcome
+      condition: when mixing potions
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '286'
+      section: MIXING POTIONS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+    - source_id: item_magic_item
+      source_label: Magic Item
+      edge_type: RESOLVED_BY
+      target_id: tbl_potion_benefit
+      target_label: Potion Benefit Table
+      aspect: potion benefit selection
+      condition: for potions
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '287'
+      section: POTION BENEFIT TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M003
+    - source_id: item_magic_item
+      source_label: Magic Item
+      edge_type: RESOLVED_BY
+      target_id: tbl_potion_curse
+      target_label: Potion Curse Table
+      aspect: potion curse selection
+      condition: for potions
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '287'
+      section: POTION CURSE TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M004
+    - source_id: item_magic_item
+      source_label: Magic Item
+      edge_type: RESOLVED_BY
+      target_id: tbl_potion_features
+      target_label: Potion Features Table
+      aspect: potion feature selection
+      condition: for potions
+      polarity: governs
+      polarity_basis: derived
+      book: SD
+      page: '286'
+      section: POTION FEATURES TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: core
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts: {}
+duplicate_findings: []
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 4
+  edges_compiled: 4
+  edges_rejected: 0
+  edge_additions: 0
+  edge_pending_additions: 4
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 0
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 4
+  cross_packet_dependencies: 0
+  duplicate_findings: 0
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-SD-286-287-potions-and-mixing-potions-r01.validation.json

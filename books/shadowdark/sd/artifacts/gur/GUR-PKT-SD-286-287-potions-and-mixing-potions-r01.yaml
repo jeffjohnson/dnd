@@ -1,0 +1,239 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-286-287-potions-and-mixing-potions-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-286-287-potions-and-mixing-potions
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-286-287-potions-and-mixing-potions
+  source_file: source.md
+  packet_source_checksum: sha256:b9f12de32696098eb3be216207b3ac8d2a675ebb5bbb973b89388ccb6b50b2a9
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 128-potions-and-mixing-potions.md
+  citation_code: SD
+  page_start: 286
+  page_end: 287
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit and are computed from the claimed source and the canonical files, not recalled.
+  Measured from the Pandoc AST: 5 headings (3 level-2 and 2 level-3 headings), 0 paragraphs, and 4 tables
+  spanning printed pages 286 and 287. 0 lists and 0 blockquotes in Primary Source Material. The supporting
+  source context includes 5 repeated passages (Magic item attributes from page 282, Starting gear and armor
+  from pages 34–37, Resting from page 86, Combat actions from page 88, and Referenced spell ANTIMAGIC SHELL from page 55).
+
+page_attribution_basis: >-
+  Two explicit markers: p286 on POTIONS heading and p287 on POTION BENEFIT TABLE heading. Placement rule 1
+  applies to headings. POTIONS heading, POTION FEATURES TABLE, and MIXING POTIONS TABLE are on printed page 286.
+  Placement rule 1 attributes page 287 to POTION BENEFIT TABLE heading, and persistence carries page 287 through
+  the table and POTION CURSE TABLE. No leading-content derivation needed; the packet opens on its own marker.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 286 and 287. Supporting Source
+  Context appends repeated passages for Magic item attributes (lines 10284–10356, p. 282), Starting gear
+  and armor (lines 856–986, pp. 34–37), Resting (lines 2639–2672, p. 86), Combat actions (lines 2714–2729,
+  p. 88), and Referenced spell ANTIMAGIC SHELL (lines 1516–1529, p. 55). All repeated passages are out of scope;
+  no row here cites pages outside 286–287.
+
+source_summary: >-
+  Pages 286–287 present the Potions and Mixing Potions section, comprising four tables:
+  - POTION FEATURES TABLE (d8) provides three columns of physical and sensory characteristics;
+  - MIXING POTIONS TABLE (d12) determines mishaps, side effects, and bonus benefits when combining potions;
+  - POTION BENEFIT TABLE (d12) provides supernatural benefits and magical effects;
+  - POTION CURSE TABLE (d12) provides drawbacks and curses for cursed potions.
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 695 registry rows and
+  894 edges, and 0 rows cite printed pages 286 or 287.
+
+reused_nodes:
+  - id: item_magic_item
+    label: Magic Item
+    used_by: M001, M002, M003, M004
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 117 with 15 edges. The magic item entity resolved by these potion generation and mixing tables.
+
+candidate_nodes:
+  - proposed_id: tbl_potion_features
+    proposed_label: Potion Features Table
+    kind: tbl
+    why_needed: Registers the d8 potion features table from SD p. 286
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 286, POTION FEATURES TABLE
+    source_evidence: page 286, the POTION FEATURES TABLE heading and its 8 data rows.
+  - proposed_id: tbl_mixing_potions
+    proposed_label: Mixing Potions Table
+    kind: tbl
+    why_needed: Registers the d12 mixing potions effects and mishaps table from SD p. 286
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 286, MIXING POTIONS TABLE
+    source_evidence: page 286, the MIXING POTIONS TABLE heading and its 12 data rows.
+  - proposed_id: tbl_potion_benefit
+    proposed_label: Potion Benefit Table
+    kind: tbl
+    why_needed: Registers the d12 potion benefits table from SD p. 287
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 287, POTION BENEFIT TABLE
+    source_evidence: page 287, the POTION BENEFIT TABLE heading and its 12 data rows.
+  - proposed_id: tbl_potion_curse
+    proposed_label: Potion Curse Table
+    kind: tbl
+    why_needed: Registers the d12 potion curses table from SD p. 287
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 287, POTION CURSE TABLE
+    source_evidence: page 287, the POTION CURSE TABLE heading and its 12 data rows.
+
+candidate_edges:
+  - ref: M001
+    source_id: item_magic_item
+    source_label: Magic Item
+    edge_type: RESOLVED_BY
+    target_id: tbl_potion_features
+    target_label: Potion Features Table
+    aspect: potion feature selection
+    condition: for potions
+    book: SD
+    page: 286
+    section: POTION FEATURES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The d8 POTION FEATURES TABLE on page 286 resolves physical and sensory features for randomly generated potions.
+      item_magic_item is resolved by this table.
+  - ref: M002
+    source_id: item_magic_item
+    source_label: Magic Item
+    edge_type: RESOLVED_BY
+    target_id: tbl_mixing_potions
+    target_label: Mixing Potions Table
+    aspect: potion mixing outcome
+    condition: when mixing potions
+    book: SD
+    page: 286
+    section: MIXING POTIONS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The d12 MIXING POTIONS TABLE on page 286 resolves the effects, bonuses, or mishaps that occur when combining potions.
+      item_magic_item is resolved by this table.
+  - ref: M003
+    source_id: item_magic_item
+    source_label: Magic Item
+    edge_type: RESOLVED_BY
+    target_id: tbl_potion_benefit
+    target_label: Potion Benefit Table
+    aspect: potion benefit selection
+    condition: for potions
+    book: SD
+    page: 287
+    section: POTION BENEFIT TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The d12 POTION BENEFIT TABLE on page 287 resolves supernatural benefits and magical effects granted by potions.
+      item_magic_item is resolved by this table.
+  - ref: M004
+    source_id: item_magic_item
+    source_label: Magic Item
+    edge_type: RESOLVED_BY
+    target_id: tbl_potion_curse
+    target_label: Potion Curse Table
+    aspect: potion curse selection
+    condition: for potions
+    book: SD
+    page: 287
+    section: POTION CURSE TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The d12 POTION CURSE TABLE on page 287 resolves negative curses and harmful side effects for cursed potions.
+      item_magic_item is resolved by this table.
+
+authored_polarity_declaration: >-
+  No polarity is authored for M001, M002, M003, or M004 because edge type RESOLVED_BY has deterministic
+  polarity (governs, derived) assigned by the build system per Constitution section 5 and Graph Invariants
+  invariant 14. Polarity is authored only for MODIFIES, TRIGGERS, and CONSTRAINS.
+
+status_note: 'All proposed candidate edges are core mechanics.'
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: 'None recorded. Tables resolve existing core item generation procedures (item_magic_item).'
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: 'None proposed. The Analyst is prohibited from promoting a general rule.'
+
+rejected_candidates:
+  - text_locus: 'POTION FEATURES TABLE sensory entries, p286'
+    quoted_gist: 'Spicy, Pickled spider inside, Bubbling, Deep blue, Citrus smell, Swirling vortex, Blood red'
+    why_considered: 'Checked for item, creature, or sensory property edges.'
+    rejection_reason: >-
+      Cosmetic sensory descriptors and appearance traits for potions; they introduce no mechanical rules or statistics.
+  - text_locus: 'MIXING POTIONS TABLE specific outcome details, p286'
+    quoted_gist: 'Drinker floats 2 rounds, Fumes: DC 12 CON or 1d4 dmg, Explodes: DC 12 DEX or 1d6 dmg, Drinker -1 to random stat'
+    why_considered: 'Checked for ability check, damage, or condition modifier edges.'
+    rejection_reason: >-
+      Individual roll results on the d12 mixing potions table represent one-off mishap and variation outcomes. Numeric expressions (2 rounds, DC 12, 1d4 damage, -1 to stat) are magnitudes excluded under Invariant 11.
+  - text_locus: 'POTION BENEFIT TABLE individual benefit entries, p287'
+    quoted_gist: 'Immune 5 rounds... Heals, 1d4... Read the minds of all creatures within near for 1 hour... Fly a near distance for 5 rounds... A stat becomes 18 (+4) for 5 rounds... Cures any disease or affliction'
+    why_considered: 'Checked whether individual potion benefits warrant separate spell or ability nodes.'
+    rejection_reason: >-
+      Individual benefits are roll outcomes on a d12 generation table rather than standalone player abilities or spells. Numeric durations (5 rounds, 1 hour), healing dice (1d4 to 4d10), and stat scores (18 (+4)) are magnitudes excluded under Invariant 11.
+  - text_locus: 'POTION CURSE TABLE individual curse entries, p287'
+    quoted_gist: 'DC 15 WIS check or attack nearest creature for 3 rounds... Turn into a 1 HP newt for 3 rounds... DC 15 CON check or take 2d10 damage... You are the source of an antimagic shell spell for 1 hour'
+    why_considered: 'Checked whether curses warrant standalone condition or spell relationship edges.'
+    rejection_reason: >-
+      Individual curses are table roll results for cursed potions. Numeric check DCs (DC 15), durations (3 rounds, 1 hour), HP changes (1 HP), and damage (2d10) are magnitudes excluded under Invariant 11. Reference to antimagic shell describes the nature of a specific curse effect rather than a structural spell relation.
+  - text_locus: 'Proposal of rule_mixing_potions, p286'
+    quoted_gist: 'MIXING POTIONS TABLE'
+    why_considered: 'Evaluated whether mixing potions warrants a dedicated rule node.'
+    rejection_reason: >-
+      The source text contains no standalone rule prose or procedure outside of the table itself; the table is registered as tbl_mixing_potions and attached directly to item_magic_item.
+  - text_locus: 'Supporting source context passages, pp34-37, p55, p86, pp282-283'
+    quoted_gist: 'Magic item attributes, Starting gear, Resting, Combat actions, Referenced spell ANTIMAGIC SHELL'
+    why_considered: 'Checked for edges citing supporting context passages.'
+    rejection_reason: >-
+      Supporting source context is repeated material from earlier packets and is out of scope per Scope Boundary; no row here may cite pages outside 286–287.

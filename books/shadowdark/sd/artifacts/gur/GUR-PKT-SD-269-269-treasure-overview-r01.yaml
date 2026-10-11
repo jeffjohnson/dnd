@@ -1,0 +1,250 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-269-269-treasure-overview-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-269-269-treasure-overview
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-269-269-treasure-overview
+  source_file: source.md
+  packet_source_checksum: sha256:8aee4abacf023529c50c2e5ec906c1a07fb4ebb68a9108d871521b806a98c016
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 119-treasure-overview.md
+  citation_code: SD
+  page_start: 269
+  page_end: 269
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit and are computed from the claimed source and the canonical files, not recalled.
+  Measured from the Pandoc AST: 7 headings (1 level-2 and 6 level-3 headings) and 9 paragraphs across printed
+  page 269. 0 tables, 0 lists. The supporting source context includes 2 repeated passages (Awarding XP from
+  page 117, Level Advancement from page 39).
+
+page_attribution_basis: >-
+  One explicit marker: p269 on TREASURE OVERVIEW. Placement rule 1 applies to the heading. Persistence
+  carries page 269 across all six subsections: Treasure, Fleeting, Treasure Tables, Unguarded, Dealing With
+  Loot, Magic Item Values. No leading-content derivation needed; the packet opens on its own marker.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed page 269. Supporting Source Context
+  appends repeated passages for Awarding XP (lines 3609–3650, p. 117) and Level Advancement (lines 1017–1060,
+  p. 39). Both are out of scope; no row here cites any of their pages.
+
+source_summary: >-
+  Page 269 provides a high-level overview of treasure in Shadowdark, organized into six subsections:
+  - TREASURE: explains treasure's role in character advancement and sets a 50% chance for wandering monsters to carry treasure;
+  - FLEETING: discusses wealth turnover with an explicit cross-reference to Carousing on pg. 92;
+  - TREASURE TABLES: references random loot generation by monster level using the tables on pg. 270;
+  - UNGUARDED: defines generation of unguarded treasure using the discovering character's level;
+  - DEALING WITH LOOT: states that treasure typically occupies one gear slot and coins occupy one slot per 100, subject to GM determination, with advice on selling loot;
+  - MAGIC ITEM VALUES: provides GM guidance on the rare valuation and sale of magic items (1d6 x 100 gp for weak items, 2d6 x 100 gp for powerful items).
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 674 registry rows and
+  866 edges, and 0 rows cite printed page 269.
+
+reused_nodes:
+  - id: exp_level
+    label: Level
+    used_by: M003
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 117 with 28 edges. Represents discovering character level which determines
+      the treasure table for unguarded finds.
+  - id: rule_carousing
+    label: Carousing
+    used_by: M002
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 91 with 7 edges. Explicitly referenced by page number (pg. 92) in the FLEETING subsection.
+  - id: rule_encounter
+    label: Encounter
+    used_by: M001
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 112 with 25 edges. Represents random/wandering encounters which carry a 50% treasure chance.
+  - id: rule_gear_capacity
+    label: Gear Capacity
+    used_by: M004
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 13 with 7 edges. Governs carrying capacity and slot occupancy for treasure.
+  - id: rule_treasure
+    label: Treasure
+    used_by: M001, M002, M003, M004
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 117 with 16 edges. The central treasure rule this overview elaborates.
+
+candidate_nodes: []
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_encounter
+    source_label: Encounter
+    edge_type: CONSTRAINS
+    target_id: rule_treasure
+    target_label: Treasure
+    aspect: treasure chance
+    condition: for wandering monsters
+    book: SD
+    page: 269
+    section: TREASURE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    polarity: governs
+    polarity_basis: read
+    analyst_rationale: >-
+      Wandering monsters have only a 50% chance of carrying treasure. The encounter rule bounds whether
+      treasure is carried. The 50% probability is a numeric magnitude and excluded; the constraint that
+      encounters govern treasure occurrence for wandering monsters is asserted. Read as encounter governs
+      treasure for wandering monsters.
+  - ref: M002
+    source_id: rule_treasure
+    source_label: Treasure
+    edge_type: CROSS_REFERENCES
+    target_id: rule_carousing
+    target_label: Carousing
+    aspect: carousing reference
+    condition: ''
+    book: SD
+    page: 269
+    section: FLEETING
+    evidence: explicit_reference
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The FLEETING subsection explicitly references Carousing on pg. 92, noting wealth's fleeting nature
+      and how carousing expends treasure. Cites page 92 by number.
+  - ref: M003
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: rule_treasure
+    target_label: Treasure
+    aspect: unguarded treasure
+    condition: for unguarded treasure
+    book: SD
+    page: 269
+    section: UNGUARDED
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Unguarded treasure is randomly generated by rolling on the treasure table that matches the
+      discovering character's level. Character level directly feeds into treasure table selection for
+      unguarded finds.
+  - ref: M004
+    source_id: rule_gear_capacity
+    source_label: Gear Capacity
+    edge_type: CONSTRAINS
+    target_id: rule_treasure
+    target_label: Treasure
+    aspect: slot occupancy
+    condition: ''
+    book: SD
+    page: 269
+    section: DEALING WITH LOOT
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    polarity: governs
+    polarity_basis: read
+    analyst_rationale: >-
+      Treasure typically occupies one gear slot unless the GM determines otherwise. Gear capacity limits
+      and governs the carrying of treasure. The one-slot typical allocation is a magnitude; the
+      governing relationship is asserted. Read as gear capacity governs treasure.
+
+authored_polarity_declaration: >-
+  Polarity is authored for M001 and M004 (edge type CONSTRAINS, polarity governs, polarity_basis read),
+  as required by Constitution section 5 and Graph Invariants invariant 15. Polarity is omitted for M002
+  (CROSS_REFERENCES) and M003 (FEEDS_INTO), for which polarity is deterministic and derived by the build system.
+
+status_note: 'All proposed candidate edges are core mechanics.'
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: 'None recorded. Overview rules touch existing established procedures.'
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: 'None proposed. The Analyst is prohibited from promoting a general rule.'
+
+rejected_candidates:
+  - text_locus: 'TREASURE prose, p269'
+    quoted_gist: 'Treasure is the driving force behind character advancement. Claiming treasure grants the characters XP and gives them valuable resources.'
+    why_considered: 'Checked for relationship between rule_treasure, exp_xp, and rule_awarding_xp.'
+    rejection_reason: >-
+      High-level overview summarizing the core advancement rules established on page 117
+      (rule_treasure FEEDS_INTO rule_awarding_xp and rule_awarding_xp MODIFIES exp_xp).
+      Does not define a new mechanical relationship or alter the procedure.
+  - text_locus: 'TREASURE TABLES prose, p269'
+    quoted_gist: 'You can use treasure tables (pg. 270) to randomly determine what loot a monster is carrying. The treasure table the monster uses corresponds to its level.'
+    why_considered: 'Checked for monster level feeding into treasure tables (mstat_monster_level, tbl_treasure_...).'
+    rejection_reason: >-
+      The treasure tables themselves are published on page 270 (packet 120) and are not canonical nodes
+      in the registry at this packet. Invariant 1 prohibits edges referencing non-existent nodes.
+      Furthermore, mstat_monster_level FEEDS_INTO rule_treasure is already canonical from page 192 (LEVEL),
+      and the example contains numeric magnitudes.
+  - text_locus: 'DEALING WITH LOOT coin slot clause, p269'
+    quoted_gist: 'coins occupy one slot per 100'
+    why_considered: 'Checked for rule_gear_capacity CONSTRAINS item_coin or an exclusion relationship.'
+    rejection_reason: >-
+      Already stated on page 35 in the Basic Gear Table (Coins 100, 1 slot, first 100 free) and
+      analyzed in GUR-PKT-SD-033-037 (OBS-03). The 100-coin threshold is a numeric magnitude prohibited
+      from edge aspect/condition by Invariant 11. The parenthetical mention on page 269 is an incidental
+      reminder rather than a new rule.
+  - text_locus: 'DEALING WITH LOOT selling prose, p269'
+    quoted_gist: 'Characters can sell most treasure based on its material value, but they may need to find a curio collector to offload strange or obscure items.'
+    why_considered: 'Checked for selling mechanics, currency conversion, or merchant interaction rules.'
+    rejection_reason: >-
+      Advisory GM guidance and economy flavor; no mechanical formula, DC, or procedure is defined.
+      Selling items according to value is covered under standard equipment and downtime rules.
+  - text_locus: 'MAGIC ITEM VALUES prose, p269'
+    quoted_gist: 'Magic items can rarely be bought or sold. In such a case, weak magic items are worth 1d6 x 100 gp. Powerful ones, if not priceless, are worth 2d6 x 100 gp.'
+    why_considered: 'Checked for item_magic_item valuation or connection to item_coin.'
+    rejection_reason: >-
+      1d6 x 100 gp and 2d6 x 100 gp are dice expressions, multipliers, and numeric monetary magnitudes
+      prohibited on edges by Invariant 11 and Constitution section 5. The rarity of sale and pricing advice
+      are discretionary GM guidance rather than a fixed mechanical modification of magic item rules.
+      item_magic_item is already canonical and feeds into rule_treasure as an XP source from page 117.
+  - text_locus: 'UNGUARDED worked example, p269'
+    quoted_gist: 'For example, a 6th-level wizard finds a treasure chest. The wizard rolls on the Treasure 4-6 table to determine whatʼs inside.'
+    why_considered: 'Mentions wizard class and specific level bands/tables.'
+    rejection_reason: >-
+      Worked illustrative example containing numeric magnitudes; examples do not generate independent edges.

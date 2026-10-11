@@ -16,7 +16,7 @@ from pathlib import Path
 
 from .compiler import Compiler, load_general_rules
 from .duplicates import CanonicalEdges
-from .emit import preflight_create_only, write_all
+from .emit import PublicationError, preflight_create_only, write_all
 from .governance import Governance
 from .registry import NodeRegistry
 from .review import ReviewDirectives
@@ -462,7 +462,7 @@ def verify_pages(packet_dirs: list[Path], gup_dir: Path) -> int:
     return exit_code
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, *, expected_inputs: dict[str, str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="adnd1e_builder")
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -649,8 +649,8 @@ def main(argv: list[str] | None = None) -> int:
         )
         report_dir = root / "build" / "reports"
         try:
-            written = write_all(result, gup_dir, report_dir, test_result)
-        except FileExistsError as clash:
+            written = write_all(result, gup_dir, report_dir, test_result, repo_root=root, expected_inputs=expected_inputs)
+        except (FileExistsError, PublicationError) as clash:
             print(str(clash), file=sys.stderr)
             return 2
 

@@ -1,0 +1,211 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-278-279-mundane-items-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-278-279-mundane-items
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-278-279-mundane-items
+  source_file: source.md
+  packet_source_checksum: sha256:a3cdd8761547b97ed3a0e440d73cf15b1f27bd50b367afc10e13de1b9aab2874
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 124-mundane-items.md
+  citation_code: SD
+  page_start: 278
+  page_end: 279
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit and are computed from the claimed source and the canonical files, not recalled.
+  Measured from the Pandoc AST: 4 headings (1 level-2 and 3 level-3 headings), 4 paragraphs, 3 tables,
+  and 1 blockquote spanning printed pages 278 and 279. 0 lists in Primary Source Material. The supporting
+  source context includes 1 repeated passage (Treasure overview from page 269).
+
+page_attribution_basis: >-
+  Two explicit markers: p278 on MUNDANE ITEMS heading and p279 on LUXURY ITEMS TABLE. Placement rule 1
+  applies to headings. MUNDANE ITEMS heading, the 4 introductory paragraphs, GEMSTONES TABLE, and
+  GEMSTONE UNIQUE FEATURE TABLE are on printed page 278. Placement rule 1 attributes page 279 to the
+  LUXURY ITEMS TABLE heading, and persistence carries page 279 through the table and the closing epigraph quote.
+  No leading-content derivation needed; the packet opens on its own marker.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 278 and 279. Supporting Source
+  Context appends repeated passages for Treasure Overview (lines 9886–9920, p. 269). It is out of scope;
+  no row here cites page 269.
+
+source_summary: >-
+  Pages 278–279 present the Mundane Items section, which covers valuable non-magical treasure:
+  - Introductory prose defines mundane treasure and discusses luxury items and gemstones;
+  - GEMSTONES TABLE lists standard gemstone types (pearl, emerald, ruby, sapphire, diamond) and their base gold piece values, plus a x2 multiplier for giant gems;
+  - GEMSTONE UNIQUE FEATURE TABLE provides a d20 table of distinctive physical details and quirks for gemstones;
+  - LUXURY ITEMS TABLE provides a d20 generator combining features with luxury objects (with 1d4 subtables for specific items);
+  - A closing dwarven proverb is quoted from Jorbin.
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 678 registry rows and
+  874 edges, and 0 rows cite printed pages 278 or 279.
+
+reused_nodes:
+  - id: rule_treasure
+    label: Treasure
+    used_by: M001, M002, M003
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 117 with 24 edges. The central treasure rule these mundane treasure tables resolve.
+
+candidate_nodes:
+  - proposed_id: tbl_gemstones
+    proposed_label: Gemstones Table
+    kind: tbl
+    why_needed: Registers the gemstone types and base values table from SD p. 278
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 278, GEMSTONES TABLE
+    source_evidence: page 278, the GEMSTONES TABLE heading and its data rows.
+  - proposed_id: tbl_gemstone_unique_feature
+    proposed_label: Gemstone Unique Feature Table
+    kind: tbl
+    why_needed: Registers the d20 gemstone unique feature table from SD p. 278
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 278, GEMSTONE UNIQUE FEATURE TABLE
+    source_evidence: page 278, the GEMSTONE UNIQUE FEATURE TABLE heading and its 20 data rows.
+  - proposed_id: tbl_luxury_items
+    proposed_label: Luxury Items Table
+    kind: tbl
+    why_needed: Registers the d20 luxury items and features generator table from SD p. 279
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 279, LUXURY ITEMS TABLE
+    source_evidence: page 279, the LUXURY ITEMS TABLE heading and its 20 data rows.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_treasure
+    source_label: Treasure
+    edge_type: RESOLVED_BY
+    target_id: tbl_gemstones
+    target_label: Gemstones Table
+    aspect: gemstone values
+    condition: ''
+    book: SD
+    page: 278
+    section: GEMSTONES TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The GEMSTONES TABLE on page 278 defines gemstone types and their base values for mundane treasure.
+      rule_treasure is resolved by this table.
+  - ref: M002
+    source_id: rule_treasure
+    source_label: Treasure
+    edge_type: RESOLVED_BY
+    target_id: tbl_gemstone_unique_feature
+    target_label: Gemstone Unique Feature Table
+    aspect: gemstone feature
+    condition: ''
+    book: SD
+    page: 278
+    section: GEMSTONE UNIQUE FEATURE TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The GEMSTONE UNIQUE FEATURE TABLE on page 278 provides unique physical features for gemstones
+      found as treasure. rule_treasure is resolved by this table.
+  - ref: M003
+    source_id: rule_treasure
+    source_label: Treasure
+    edge_type: RESOLVED_BY
+    target_id: tbl_luxury_items
+    target_label: Luxury Items Table
+    aspect: luxury item selection
+    condition: ''
+    book: SD
+    page: 279
+    section: LUXURY ITEMS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The LUXURY ITEMS TABLE on page 279 resolves the generation of mundane luxury treasure items
+      and features. rule_treasure is resolved by this table.
+
+authored_polarity_declaration: >-
+  No polarity is authored for M001, M002, or M003 because edge type RESOLVED_BY has deterministic
+  polarity (governs, derived) assigned by the build system per Constitution section 5 and Graph
+  Invariants invariant 14. Polarity is authored only for MODIFIES, TRIGGERS, and CONSTRAINS.
+
+status_note: 'All proposed candidate edges are core mechanics.'
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: 'None recorded. Tables resolve an existing core procedure (rule_treasure).'
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: 'None proposed. The Analyst is prohibited from promoting a general rule.'
+
+rejected_candidates:
+  - text_locus: 'GEMSTONES TABLE monetary values, p278'
+    quoted_gist: '40 gp, 120 gp, 200 gp, 280 gp, 360 gp, ×2'
+    why_considered: 'Checked for item_coin monetary relationships or price valuations.'
+    rejection_reason: >-
+      Monetary values (40 gp, 120 gp, etc.) and multipliers (×2) are numeric magnitudes prohibited
+      from edge aspect and condition by Invariant 11 and Constitution section 5. They do not generate edges.
+  - text_locus: 'LUXURY ITEMS TABLE entry descriptors and subtables, p279'
+    quoted_gist: '1d4: 1. Memnon, 2. Ord, 3-4. Madeera; 1d4: 1. Chaos, 2. Neutrality, 3-4. Law; 1d4: 1. shield, 2. helm, 3. bracers 4. greaves'
+    why_considered: 'Checked for deity_memnon, deity_ord, deity_madeera_the_covenant, alignment identities, or armor edges.'
+    rejection_reason: >-
+      Table entry descriptors and dice options (1d4 subtables) are generation details and cosmetic
+      variations. Mention of deity names or alignments on icons/altars does not establish mechanical
+      worship or alignment rules (Constitution 2.2, 2.4). Mention of shields or helms as holy relics
+      describes trade goods rather than armor class calculations.
+  - text_locus: 'Luxury Items introductory prose examples, p278'
+    quoted_gist: 'Statues, idols, paintings, tapestries, or even taxidermy... silk, ivory, rare elven wine, silver utensils, jewelry, masterwork weapons, crystal goblets'
+    why_considered: 'Checked for item or trade goods node proposals.'
+    rejection_reason: >-
+      Illustrative examples of valuable trade goods; no specific mechanical rules, statistics, or
+      procedures are defined.
+  - text_locus: 'Epigraph quote from Jorbin, p279'
+    quoted_gist: 'Copper is worth trouble. Silver, suffering. Gold? Death! -Jorbin, dwarf fighter, reciting a dwarven proverb'
+    why_considered: 'Checked for dwarf ancestry, fighter class, or coin identities.'
+    rejection_reason: >-
+      Chapter epigraph and character dialogue; labels do not determine identity (Constitution 2.4);
+      no rule or mechanic is defined.
+  - text_locus: 'Context: Treasure overview passages, p269'
+    quoted_gist: 'Treasure is the driving force behind character advancement...'
+    why_considered: 'Checked for supporting context relationships.'
+    rejection_reason: >-
+      Supporting source context from packet 119 is out of scope per Scope Boundary; no row here may cite page 269.

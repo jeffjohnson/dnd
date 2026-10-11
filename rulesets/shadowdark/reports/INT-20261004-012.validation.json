@@ -1,0 +1,303 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20261004-012",
+  "ruleset_id": "shadowdark",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-10-04T12:15:31.558Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:bb47b333170abc9bb24182311e3b464691f639d2b90ff1b599c17d931b5fab6f actual=sha256:bb47b333170abc9bb24182311e3b464691f639d2b90ff1b599c17d931b5fab6f"
+        },
+        {
+          "check": "component checksum matches: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:0fa94297f85977bb52d120ca01bcd42822b247b77241c1aded19de48c6227f8c actual=sha256:0fa94297f85977bb52d120ca01bcd42822b247b77241c1aded19de48c6227f8c"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:5e7708b11f3827bc6a966d7b21b66915a0d3f0d967c7c2ee0d0f145970baed78 actual=sha256:5e7708b11f3827bc6a966d7b21b66915a0d3f0d967c7c2ee0d0f145970baed78"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01.yaml: declared=sha256:d19f9dbb494140cb1bc90d73fee0593f401257e197dda6fe5646e3cc62a97e19 actual=sha256:d19f9dbb494140cb1bc90d73fee0593f401257e197dda6fe5646e3cc62a97e19"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=0 actual=0"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 0, 'pending_additions': 0, 'updates': 0, 'node_registrations': 12}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 866,
+    "edges_after": 866,
+    "edges_updated_in_place": 0,
+    "nodes_before": 394,
+    "nodes_after": 394,
+    "registry_before": 625,
+    "registry_after": 637,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "monster_scarab_swarm",
+        "label": "Scarab, Swarm",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      },
+      {
+        "id": "monster_scarecrow",
+        "label": "Scarecrow",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      },
+      {
+        "id": "monster_scorpion",
+        "label": "Scorpion",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      },
+      {
+        "id": "monster_scorpion_giant",
+        "label": "Scorpion, Giant",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      },
+      {
+        "id": "monster_shadow",
+        "label": "Shadow",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      },
+      {
+        "id": "monster_shambling_mound",
+        "label": "Shambling Mound",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      },
+      {
+        "id": "monster_shark",
+        "label": "Shark",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      },
+      {
+        "id": "monster_shark_megalodon",
+        "label": "Shark, Megalodon",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      },
+      {
+        "id": "monster_siren",
+        "label": "Siren",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      },
+      {
+        "id": "monster_skeleton",
+        "label": "Skeleton",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      },
+      {
+        "id": "monster_smilodon",
+        "label": "Smilodon",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      },
+      {
+        "id": "monster_snake_cobra",
+        "label": "Snake, Cobra",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-249-252-monsters-scarab-swarm-to-snake-cobra-r01-r01",
+        "integration_id": "INT-20261004-012"
+      }
+    ],
+    "registry_derived_resync": 0,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20261004-026",
+  "ruleset_id": "shadowdark",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-10-04T19:29:03.440Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:17e9c23af5447fd08cfdaec75f41f96800c5d2155cad57429333bdb173cc504e actual=sha256:17e9c23af5447fd08cfdaec75f41f96800c5d2155cad57429333bdb173cc504e"
+        },
+        {
+          "check": "component checksum matches: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:30a79ae7c5cd632d05aa1b6c1d7892b832cd98f9d67b7cd995a8fb5a48cd6846 actual=sha256:30a79ae7c5cd632d05aa1b6c1d7892b832cd98f9d67b7cd995a8fb5a48cd6846"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-SD-282-283-magic-item-attributes-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:64204a1228951f630e301d838868c6d619b52fe2f1a318180cccd0ffa8ee02af actual=sha256:64204a1228951f630e301d838868c6d619b52fe2f1a318180cccd0ffa8ee02af"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-282-283-magic-item-attributes-r01.yaml: declared=sha256:6d54b1f9a9c11dad57ace1bec84e0711f4273fbcdcddff2c619f3a2da268e7ef actual=sha256:6d54b1f9a9c11dad57ace1bec84e0711f4273fbcdcddff2c619f3a2da268e7ef"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=8 actual=8"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 3, 'pending_additions': 5, 'updates': 0, 'node_registrations': 5}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 881,
+    "edges_after": 889,
+    "edges_updated_in_place": 0,
+    "nodes_before": 405,
+    "nodes_after": 410,
+    "registry_before": 685,
+    "registry_after": 690,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "tbl_random_magic_item_type",
+        "label": "Random Magic Item Type Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01",
+        "integration_id": "INT-20261004-026"
+      },
+      {
+        "id": "tbl_random_magic_item_qualities",
+        "label": "Random Magic Item Qualities Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01",
+        "integration_id": "INT-20261004-026"
+      },
+      {
+        "id": "tbl_random_magic_item_personality",
+        "label": "Random Magic Item Personality Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01",
+        "integration_id": "INT-20261004-026"
+      },
+      {
+        "id": "tbl_magic_item_idea_generator",
+        "label": "Magic Item Idea Generator Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01",
+        "integration_id": "INT-20261004-026"
+      },
+      {
+        "id": "rule_consumables",
+        "label": "Consumables",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-282-283-magic-item-attributes-r01-r01",
+        "integration_id": "INT-20261004-026"
+      }
+    ],
+    "registry_derived_resync": 4,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}

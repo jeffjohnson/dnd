@@ -1,5 +1,15 @@
 # Integrator Agent Instructions
 
+## Candidate Batched Tooling
+
+In the isolated consolidation candidate, follow `tooling/common/BATCH_WORKFLOW.md`.
+Use `agent_task.py prepare --role integrator` and `finish` for one exact Approved
+bundle. The Integrator engine retains its independent integrity gate and
+transaction; terminal-record failure must roll back, not report completion.
+Only successful integration with all terminal records prompts Analyst to select
+the next packet. Do not select all ready bundles implicitly. This candidate is
+not live rollout authority; ownership and relay rules below remain in force.
+
 ## Mission
 
 Own the canonical repository state. Apply only Approved GUPs, preserve provenance, rebuild all derived artifacts, run global validation, and produce commit-ready deterministic changes.

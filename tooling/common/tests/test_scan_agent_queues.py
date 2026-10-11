@@ -4888,8 +4888,16 @@ class LiveCrossGupReviewLineageCase(unittest.TestCase):
             i for i in self.result["Items"]
             if i["Role"] == "Integrator" and i["PacketId"] == self.PACKET_ID
         ]
-        self.assertEqual(len(integrator_items), 1)
-        self.assertEqual(integrator_items[0]["InputId"], self.APPROVED_BUNDLE)
+        diagnostics = []
+        integrated = scanner._integrated_approved_ids(
+            REPO_ROOT, "shadowdark", REPO_ROOT / "books/shadowdark/sd", diagnostics)
+        if self.APPROVED_BUNDLE in integrated:
+            # A completed transaction is history, not permanently ready work.
+            self.assertEqual(integrator_items, [])
+        else:
+            self.assertEqual(len(integrator_items), 1)
+            self.assertEqual(integrator_items[0]["InputId"], self.APPROVED_BUNDLE)
+        self.assertFalse([d for d in diagnostics if d["Severity"] == "error"])
 
 
 class VersionedContractContentCase(QueueScannerCase):

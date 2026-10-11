@@ -20,6 +20,7 @@ ruleset that differs is caught by the same check.
 from __future__ import annotations
 
 import re
+import json
 import unittest
 
 import _bootstrap
@@ -134,7 +135,8 @@ class TestTheActiveConstitutionSuppliesTheVocabulary(unittest.TestCase):
 
     def test_each_ruleset_declares_its_own_edge_vocabulary(self):
         for vocabulary in (self.adnd, self.shadowdark):
-            self.assertEqual(len(vocabulary.edge_types), 13, vocabulary.ruleset_id)
+            schema = json.loads((REPO_ROOT / "schemas" / vocabulary.ruleset_id / "graph/edge.schema.json").read_text(encoding="utf-8"))
+            self.assertEqual(set(vocabulary.edge_types), set(schema["properties"]["edge_type"]["enum"]), vocabulary.ruleset_id)
             self.assertNotIn("RELATED_TO", vocabulary.edge_types)
 
     def test_derived_and_authored_types_partition_the_vocabulary(self):
@@ -143,8 +145,12 @@ class TestTheActiveConstitutionSuppliesTheVocabulary(unittest.TestCase):
             authored = set(vocabulary.authored_types)
             self.assertEqual(derived | authored, set(vocabulary.edge_types))
             self.assertEqual(derived & authored, set())
-            self.assertEqual(len(derived), 10, vocabulary.ruleset_id)
             self.assertEqual(authored, {"MODIFIES", "TRIGGERS", "CONSTRAINS"})
+
+    def test_classification_is_derived_only_in_the_ruleset_that_admits_it(self):
+        self.assertEqual(self.shadowdark.polarity_for("CLASSIFIED_AS"), ("neutral", "derived"))
+        self.assertNotIn("CLASSIFIED_AS", self.adnd.edge_types)
+        self.assertIsNone(self.adnd.polarity_for("CLASSIFIED_AS"))
 
     def test_the_authored_table_is_not_read_as_a_derivation(self):
         """AD&D states its authored types in a second table of the same shape.

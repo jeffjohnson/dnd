@@ -10,12 +10,18 @@ from __future__ import annotations
 import csv
 import io
 import json
+import os
 from pathlib import Path
+import sys
 
 import yaml
 
 from .compiler import TOOL_NAME, TOOL_VERSION, CompileResult, edge_row
 from .vocab import COLUMNS
+
+_REPOSITORY = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(_REPOSITORY / "tooling" / "common"))
+from artifact_io import Output, PublicationError, artifact_schemas, publish, validate_content
 
 
 class _Dumper(yaml.SafeDumper):
@@ -147,7 +153,8 @@ def gup_document(result: CompileResult, test_result: dict) -> dict:
             ),
             "note": (
                 "Registry changes are isolated from edge insertions (Builder instruction 13). "
-                "Builder may not mint node identity; each addition requires an Architect decision."
+                "Builder may not mint node identity. Ordinary proposals require Reviewer approval; "
+                "proposals outside the approved identity vocabulary require an Architect decision."
             ),
         },
         "edge_changes": {
@@ -302,6 +309,8 @@ def write_all(
     gup_dir: Path,
     report_dir: Path,
     test_result: dict,
+    repo_root: Path | None = None,
+    expected_inputs: dict[str, str] | None = None,
 ) -> list[Path]:
     """Publish a GUP. Create-only across every output it will write.
 
@@ -314,9 +323,6 @@ def write_all(
     So the whole output set is checked first, companions included. A run that
     would clobber even one file writes none of them.
     """
-    gup_dir.mkdir(parents=True, exist_ok=True)
-    report_dir.mkdir(parents=True, exist_ok=True)
-
     gup_path = gup_dir / f"{result.gup_id}.yaml"
     csv_path = gup_dir / f"{result.gup_id}.edges.csv"
     report_path = report_dir / f"{result.gup_id}.validation.json"
@@ -327,27 +333,29 @@ def write_all(
     # write. A leftover `.pending.csv` from an earlier compile of the same ID
     # would otherwise survive beside a fresh patch that no longer holds pending
     # rows, and read as current.
+    document = gup_document(result, test_result)
+    content = _dump(document).encode("utf-8")
+    schema_root = (repo_root or _REPOSITORY).resolve()
+    problems = validate_content(content, artifact_schemas(schema_root, "gup", document["ruleset_id"]))
+    if problems:
+        raise PublicationError("GUP staged validation failed:\n" + "\n".join(problems))
     preflight_create_only(
         [gup_path, csv_path, report_path, pending_path, blocked_path], result.gup_id
     )
-
-    gup_path.write_text(_dump(gup_document(result, test_result)), encoding="utf-8", newline="\n")
-    csv_path.write_text(edges_csv(result), encoding="utf-8", newline="\n")
-    report_path.write_text(
-        json.dumps(validation_report(result, test_result), indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-        newline="\n",
-    )
-    written = [gup_path, csv_path, report_path]
+    outputs = [
+        Output(gup_path.resolve(), content),
+        Output(csv_path.resolve(), edges_csv(result).encode("utf-8")),
+        Output(report_path.resolve(), (json.dumps(validation_report(result, test_result), indent=2, ensure_ascii=False) + "\n").encode("utf-8")),
+    ]
 
     # Written only when there is something to hold, so its presence is itself
     # the signal that `.edges.csv` is short by design rather than by accident.
     if result.batch_satisfiable_additions:
-        pending_path.write_text(pending_csv(result), encoding="utf-8", newline="\n")
-        written.append(pending_path)
+        outputs.append(Output(pending_path.resolve(), pending_csv(result).encode("utf-8")))
     # Its presence is the signal that this patch cannot integrate on its own,
     # however complete it otherwise looks.
     if result.blocked_additions:
-        blocked_path.write_text(blocked_csv(result), encoding="utf-8", newline="\n")
-        written.append(blocked_path)
-    return written
+        outputs.append(Output(blocked_path.resolve(), blocked_csv(result).encode("utf-8")))
+    publication_root = (repo_root or Path(os.path.commonpath([gup_dir.resolve(), report_dir.resolve()]))).resolve()
+    publish(publication_root, outputs, companions=[gup_path.resolve(), csv_path.resolve(), report_path.resolve(), pending_path.resolve(), blocked_path.resolve()], expected_inputs=expected_inputs)
+    return [output.path for output in outputs]

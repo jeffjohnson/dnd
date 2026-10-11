@@ -149,10 +149,16 @@ def cmd_integrate(args) -> int:
         print("no ready Approved bundle; nothing to integrate")
         return 0
 
+    written = {}
+    def publish_records(batch):
+        written.update(write_records(batch, root, args.ruleset_id,
+                                     _constitution_version(root, args.ruleset_id), schema_root=root))
+
     try:
         batch = integrate(root, args.ruleset_id, selected,
-                          integration_id=args.integration_id, dry_run=args.dry_run)
-    except IntegrationError as exc:
+                          integration_id=args.integration_id, dry_run=args.dry_run,
+                          record_writer=publish_records)
+    except (IntegrationError, OSError, ValueError) as exc:
         print(f"REJECTED: {exc}", file=sys.stderr)
         return 1
 
@@ -167,8 +173,6 @@ def cmd_integrate(args) -> int:
         }, indent=2))
         return 0
 
-    written = write_records(batch, root, args.ruleset_id,
-                            _constitution_version(root, args.ruleset_id))
     print(json.dumps({
         "integration_id": batch.integration_id,
         "bundles": [v.bundle.bundle_id for v in batch.verifications],

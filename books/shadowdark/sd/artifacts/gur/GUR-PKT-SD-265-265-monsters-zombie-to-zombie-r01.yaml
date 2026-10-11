@@ -1,0 +1,162 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-265-265-monsters-zombie-to-zombie-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-265-265-monsters-zombie-to-zombie
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-265-265-monsters-zombie-to-zombie
+  source_file: source.md
+  packet_source_checksum: sha256:1d1c566df8ba8911d9879e6e82779db6da23582dc0727e18be842dbc738e70bd
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 117-monsters-zombie-to-zombie.md
+  citation_code: SD
+  page_start: 265
+  page_end: 265
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit and are computed from the claimed source and the canonical files, not
+  recalled. Measured from the Pandoc AST: 1 heading, 1 creature stat block, 1 artwork div, no table,
+  across one primary printed page (265). 2 distinct named-trait descriptions were scanned against
+  the whole registry.
+
+page_attribution_basis: >-
+  Two explicit markers: p265 on ZOMBIE and p266 on full-page-artwork div. Placement rule 1 applies
+  to the heading. Persistence carries page 265 across the ZOMBIE stat block. No leading-content
+  derivation needed; the packet opens on its own marker.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed page 265. The Supporting
+  Source Context appends monster attributes, movement, distances, and conditions, and morale, all
+  integrated from their own primary packets. No row here cites any of their pages.
+
+source_summary: >-
+  One creature stat block: Zombie (lurching decomposed undead, slam, Undead morale check immunity,
+  Relentless non-magical 0 HP survival check to 1 HP).
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 673 registry
+  rows and 866 edges, and 0 rows cite printed page 265. The registry holds 242 monster_
+  identities. The proposed id in this packet is asserted absent from the registry before use.
+
+stat_block_boundary_note: >-
+  The test settled at PKT-SD-194-194 and confirmed across subsequent packets is applied without
+  modification: a stat-block description is excluded under constitution 2.5 regardless of what it
+  references, because the exclusion is about each instance's own locus.
+
+creature_identity_note: >-
+  The proposed node carries no edge in this GUR, for the reason settled at PKT-SD-194-194:
+  the creature's defining locus is its stat block, and this packet is that locus. Under Invariant 4,
+  labels do not determine identity; the monster identity maintains integrity at its defining locus.
+
+candidate_nodes:
+  - proposed_id: monster_zombie
+    proposed_label: 'Zombie'
+    kind: monster
+    why_needed: 'Its defining locus, a printed stat block on this page. See creature_identity_note; no edge in this GUR uses it.'
+    prefix_basis: 'monster_ is a creature or creature family.'
+    source_named: true
+    defining_locus: 'SD page 265, ZOMBIE'
+    source_evidence: 'page 265, the ZOMBIE heading and its complete stat block.'
+    id_transliteration_note: 'Exact match.'
+
+reused_nodes: []
+candidate_edges: []
+
+authored_polarity_declaration: >-
+  No polarity is authored, because no candidate edge is published.
+
+status_note: 'Not applicable. No edge is proposed.'
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: 'None recorded. A stat block resolves nothing in play and touches no domain.'
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: >-
+  None proposed. The Analyst is prohibited from promoting a general rule.
+
+rejected_candidates:
+  - text_locus: 'Undead (Zombie), p265'
+    quoted_gist: 'Immune to morale checks.'
+    why_considered: 'Checked for undead creature type traits and morale immunity.'
+    rejection_reason: >-
+      Stat-block creature type trait on creature locus; morale immunity operates on creature defense locus;
+      constitution 2.5.
+  - text_locus: 'Relentless (Zombie), p265'
+    quoted_gist: 'If zombie reduced to 0 HP by a non-magical source, DC 15 CON to go to 1 HP instead.'
+    why_considered: 'Checked for drop-to-zero survival mechanics.'
+    rejection_reason: >-
+      Stat-block combat trait on creature locus; conditional DC 15 CON survival check against non-magical lethal
+      damage operates on creature defense/recovery locus; constitution 2.5.
+  - text_locus: 'Full-page artwork div, p266'
+    quoted_gist: '::: {#p266 .full-page-artwork} :::'
+    why_considered: 'Div block in Pandoc AST.'
+    rejection_reason: 'Visual presentation element, non-mechanical; constitution 2.4.'
+  - text_locus: 'the flavour text for Zombie, p265'
+    quoted_gist: 'lurching and decomposed undead that hunt in mobs'
+    why_considered: 'Read for completeness across in-scope block.'
+    rejection_reason: 'Narrative description throughout; constitution 2.4.'
+  - text_locus: 'the stat-block fields on Zombie, p265'
+    quoted_gist: 'armor class, hit points, attack, movement, the six stat modifiers, alignment and level'
+    why_considered: 'Every field names a canonical shared identity directly.'
+    rejection_reason: 'Excluded under constitution 2.5 (locus test). 8 field values excluded.'
+  - text_locus: 'the appended shared-system context, out of scope'
+    quoted_gist: 'the monster attributes, movement, distances, and conditions, and morale pages'
+    why_considered: 'Appended in the source file.'
+    rejection_reason: >-
+      Supporting Source Context, outside the bounded scope, each integrated from its primary packet.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: Zombie Undead and Relentless traits operate on creature defense and combat recovery loci
+    detail: >-
+      Zombie possesses Undead (morale check immunity) and Relentless (DC 15 CON to drop to 1 HP instead of 0 HP
+      from a non-magical source). Both operate on creature defense and recovery loci under Constitution 2.5.
+
+unresolved_identity_questions: []
+unresolved_identity_questions_note: >-
+  None. Every ability on this page is answered by the locus test and established precedents.
+
+architectural_escalations: []
+architectural_escalation_note: >-
+  None raised for graph ontology. The proposed identity uses an approved prefix and kind and
+  passes identity and duplicate checks, ordinary Builder and Reviewer work under ESCALATION_CONTRACT.
+
+completeness_statement: >-
+  Printed page 265 was read in full at the recorded checksum: 1 heading, 1 stat block, 1 artwork div, 0 tables.
+  The block is dispositioned: one creature identity registered at its defining locus, and
+  six candidate entries declined with reasons, covering the flavour text as one entry, the full-page artwork div
+  on p266 as one entry, the complete stat-block field set as one entry, and the distinct traits individually.
+  The packet yields 1 new identity and 0 rows. The proposed id was asserted absent from
+  the registry before use. No canonical row cited page 265 before. 6 candidates were rejected
+  and each is recorded with its reason.
+
+measured_figures_note: >-
+  Figures quoted in this artifact's prose are computed from the claimed source and the canonical
+  files at extraction, not recalled. Measured here: 1 heading and 1 artwork div across printed pages 265–266;
+  2 distinct named-trait descriptions scanned. Canonical counts at extraction:
+  673 registry rows, 866 edges, 0 rows citing page 265, 242 monster_ identities before this packet.

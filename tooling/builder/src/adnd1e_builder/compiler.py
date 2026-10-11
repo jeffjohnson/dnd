@@ -416,6 +416,22 @@ class Compiler:
         # default, which is why every existing caller and fixture is unaffected.
         self.vocabulary = vocabulary or RulesetVocabulary.for_adnd1e()
 
+    @property
+    def registration_authority(self) -> str:
+        """Name the authority in this ruleset, never a foreign Decision ID."""
+        if self.vocabulary.ruleset_id == "adnd1e":
+            return "DEC-2026-0003"
+        if self.vocabulary.ruleset_id == "shadowdark":
+            return f"Constitution {self.vocabulary.constitution_version} section 2"
+        return (
+            f"rulesets/{self.vocabulary.ruleset_id}/governance/constitution.md "
+            "and contracts/ESCALATION_CONTRACT.md"
+        )
+
+    @property
+    def registration_basis(self) -> str:
+        return f"{self.registration_authority}: approved prefix and kind, valid ID, no duplicate"
+
     # -- envelope ------------------------------------------------------------
     def _check_envelope(self, gur: dict, result: CompileResult) -> None:
         for field_name in REQUIRED_GUR_FIELDS:
@@ -974,7 +990,7 @@ class Compiler:
                             "info",
                             f"{directives.review_id} repoints {ref} at {node_id!r}, which is not yet "
                             f"canonical. Proposed as a node addition; the row waits on it and the "
-                            f"Integrator applies the registry change first (DEC-2026-0003).",
+                            f"Integrator applies the registry change first ({self.registration_authority}).",
                             ref=ref,
                             field_name=field_name,
                         )
@@ -1148,7 +1164,7 @@ class Compiler:
                         "The proposal needs an Architect decision, so this edge cannot proceed."
                         if architect_required
                         else "The Reviewer may approve the node change and this edge together "
-                        "(DEC-2026-0003); the Integrator applies the registry change first."
+                        f"({self.registration_authority}); the Integrator applies the registry change first."
                     ),
                     ref=ref,
                     field_name=f"{role}_id",
@@ -1378,7 +1394,7 @@ class Compiler:
                         else f"returned to normal workflow by "
                         f"{self.governance.nodes_returned_to_workflow[node_id]}"
                         if self.governance.is_returned_to_workflow(node_id)
-                        else "DEC-2026-0003: approved prefix and kind, valid ID, no duplicate"
+                        else self.registration_basis
                         if not architect_required
                         else "fails an identity or ontology precondition"
                     ),
@@ -1391,7 +1407,7 @@ class Compiler:
                         "info",
                         f"proposed node {node_id!r}, carried forward from "
                         f"{carried.get('first_proposed_in')}, is isolated in node_changes for "
-                        f"Reviewer approval per DEC-2026-0003.",
+                        f"Reviewer approval per {self.registration_authority}.",
                     )
                 )
                 continue
@@ -1524,7 +1540,7 @@ class Compiler:
                 f"held by {held['reserved_escalation_id']} ({held['topic']}), owner "
                 f"{held['package_owner']}, per {held['decision_id']}"
                 if held
-                else "DEC-2026-0003: approved prefix and kind, valid ID, no duplicate"
+                else self.registration_basis
                 if not architect_required
                 else "fails an identity or ontology precondition"
             )
@@ -1578,7 +1594,7 @@ class Compiler:
                         "info",
                         f"proposed node {proposed_id!r} is isolated in node_changes for Reviewer "
                         f"approval. Prefix and kind are approved and identity checks are clear, so "
-                        f"per DEC-2026-0003 this is not an Architect escalation.",
+                        f"per {self.registration_authority} this is not an Architect escalation.",
                     )
                 )
                 continue
@@ -1610,7 +1626,7 @@ class Compiler:
                     "question": (
                         f"Should {proposed_id!r} be added to the canonical node registry? "
                         f"It fails an identity or ontology precondition, so it is not an "
-                        f"ordinary registry addition under DEC-2026-0003."
+                        f"ordinary registry addition under {self.registration_authority}."
                     ),
                     "edges_depending_on_it": entry["edges_depending_on_it"],
                     "why_needed": entry["why_needed"],

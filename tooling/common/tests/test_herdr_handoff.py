@@ -1165,9 +1165,12 @@ class TestFullyTypedEvidence(RelayCase):
 
     def test_a_socket_other_than_the_inherited_one_is_refused(self):
         """The binary identifies the client; the socket identifies the server."""
-        code, payload, _ = self.run_relay(self.request(endpoint={
-            "herdr_bin": str(self.fake), "socket_path": "some-other-server",
-        }), 4000, "-ValidateOnly")
+        import os
+        from unittest.mock import patch
+        with patch.dict(os.environ, {"HERDR_SOCKET_PATH": "fixture-inherited-server"}):
+            code, payload, _ = self.run_relay(self.request(endpoint={
+                "herdr_bin": str(self.fake), "socket_path": "some-other-server",
+            }), 4000, "-ValidateOnly")
         self.assertEqual(code, INVALID, payload)
         self.assertIn("is not the inherited socket", " ".join(payload["problems"]))
 

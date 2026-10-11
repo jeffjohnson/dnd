@@ -17,11 +17,16 @@ from __future__ import annotations
 import datetime as _dt
 import json
 from pathlib import Path
+import sys
 
 from . import TOOL_NAME, __version__
 from .canonical import GRAPH_SCHEMA_VERSION, CanonicalPaths
 from .checksums import checksum_file
 from .integrate import Batch
+
+_REPOSITORY = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(_REPOSITORY / "tooling" / "common"))
+from artifact_io import Output, PublicationError, publish, validate_content
 
 
 def _utc_now() -> str:
@@ -492,7 +497,7 @@ def render_diff(batch: Batch, ruleset_id: str) -> str:
     return "\n".join(lines) + "\n"
 
 
-def write_records(batch: Batch, root: Path, ruleset_id: str, constitution_version: str) -> dict[str, Path]:
+def write_records(batch: Batch, root: Path, ruleset_id: str, constitution_version: str, schema_root: Path | None = None) -> dict[str, Path]:
     paths = CanonicalPaths(root=root, ruleset_id=ruleset_id)
     paths.manifests_dir.mkdir(parents=True, exist_ok=True)
     paths.reports_dir.mkdir(parents=True, exist_ok=True)
@@ -502,18 +507,20 @@ def write_records(batch: Batch, root: Path, ruleset_id: str, constitution_versio
     diff_path = paths.reports_dir / f"{batch.integration_id}.diff.md"
 
     manifest = build_manifest(batch, root, ruleset_id, constitution_version)
-    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    validation_path.write_text(
-        json.dumps(build_validation_report(batch, ruleset_id), indent=2) + "\n", encoding="utf-8")
-    diff_path.write_text(render_diff(batch, ruleset_id), encoding="utf-8")
+    schema = (schema_root or _REPOSITORY) / "schemas/common/integration-record.schema.json"
+    manifest_bytes = (json.dumps(manifest, indent=2) + "\n").encode("utf-8")
+    problems = validate_content(manifest_bytes, (schema,))
+    outputs = [
+        Output(manifest_path, manifest_bytes),
+        Output(validation_path, (json.dumps(build_validation_report(batch, ruleset_id), indent=2) + "\n").encode("utf-8")),
+        Output(diff_path, render_diff(batch, ruleset_id).encode("utf-8")),
+    ]
 
     written = {"manifest": manifest_path, "validation": validation_path, "diff": diff_path}
 
     # Book-scoped integration copies (contracts/FILE_NAMING.md).
     for v in batch.verifications:
         book_dir = root / "books" / ruleset_id / v.bundle.book_id / "artifacts" / "integrated"
-        if not book_dir.exists():
-            continue
         record = {
             "schema_version": "1.0",
             "id": f"{batch.integration_id}-{v.bundle.bundle_id}",
@@ -540,7 +547,12 @@ def write_records(batch: Batch, root: Path, ruleset_id: str, constitution_versio
             "components": v.bundle.component_records(root),
         }
         path = book_dir / f"{batch.integration_id}-{v.bundle.bundle_id}.json"
-        path.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+        content = (json.dumps(record, indent=2) + "\n").encode("utf-8")
+        problems.extend(validate_content(content, (schema,)))
+        outputs.append(Output(path, content))
         written[f"integrated:{v.bundle.bundle_id}"] = path
 
+    if problems:
+        raise PublicationError("invalid terminal Integration record:\n" + "\n".join(problems))
+    publish(root, outputs)
     return written

@@ -1,5 +1,14 @@
 # Analyst Agent Instructions
 
+## Candidate Batched Tooling
+
+In the isolated consolidation candidate, follow `tooling/common/BATCH_WORKFLOW.md`.
+Use `agent_task.py prepare --role analyst` for one exact packet and its complete
+Pandoc source context. Author the GUR or ESC yourself, then use `finish` with the
+same-session preparation file for staged validation and create-only publication.
+Never start another packet while one is active. This candidate is not live
+rollout authority; all ownership and relay rules below remain in force.
+
 ## Mission
 
 Read one bounded source packet and identify every mechanically load-bearing relationship supported by that packet. Produce a Graph Update Recommendation (GUR). You interpret source text; you do not mutate the graph or normalize against the entire repository.

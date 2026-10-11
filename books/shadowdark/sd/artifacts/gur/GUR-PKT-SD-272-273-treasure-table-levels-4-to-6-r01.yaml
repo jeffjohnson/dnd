@@ -1,0 +1,178 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-272-273-treasure-table-levels-4-to-6-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-272-273-treasure-table-levels-4-to-6
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-272-273-treasure-table-levels-4-to-6
+  source_file: source.md
+  packet_source_checksum: sha256:045d7376dabb41585c1a5912ce9bdd2151c973b7688bb2b9ca69198cef6ed635
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 121-treasure-table-levels-4-to-6.md
+  citation_code: SD
+  page_start: 272
+  page_end: 273
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit and are computed from the claimed source and the canonical files, not recalled.
+  Measured from the Pandoc AST: 2 headings (1 level-2 and 1 level-3 heading) and 1 table of 50 entry rows
+  spanning printed pages 272 and 273. 0 paragraphs, 0 lists in Primary Source Material. The supporting source
+  context includes 1 repeated passage (Treasure overview from page 269).
+
+page_attribution_basis: >-
+  Two explicit markers: p272 on TREASURE 4-6 heading and p273 on entry 46-47 in the table. Placement rule 1
+  applies to the heading. Table entries 01 through 44-45 are on printed page 272. Trailing marker {#p273} on
+  entry 46-47 attributes page 273 to that entry, and persistence carries page 273 through the remaining
+  entries (48-49 through 00). No leading-content derivation needed; the packet opens on its own marker.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 272 and 273. Supporting Source
+  Context appends repeated passages for Treasure Overview (lines 9886–9920, p. 269). It is out of scope;
+  no row here cites page 269.
+
+source_summary: >-
+  Pages 272–273 present the Treasure 4-6 section, consisting of a d100 random treasure table (TREASURE TABLE 4-6)
+  containing 50 roll entries. The table determines loot carried by 4th- to 6th-level monsters or found as
+  unguarded treasure by 4th- to 6th-level characters. Entries include coins, mundane and ornate gear (shield,
+  necklace, marbles, greatsword, javelins, pipe, dice, flask, eyepatch, bandoleer, warhammer, ring, chainmail,
+  mace, candles, crossbow, plate mail, mirror, lute), trade goods, art objects, and curios (rare spices, painting
+  of elf woman, opalescent pearl, tapestry of unicorn, clockwork dragon doll, Myrkhosian vase, incense repulsive
+  to undead, minotaur hoof, crystal statuette of Memnon, holy symbol of Ramlaat, chunk of meteorite, amber scarab,
+  carved ivory tusk, griffon eggs), and moderate magic items (2nd-tier spell scroll, Potion of Healing, 3rd-tier
+  spell scroll, Potion of Flying, Potion of Giant Strength, 3rd-tier magic wand, Ring of Feather Falling, +2 magic
+  armor, Kytherian Cog, and +2 magic weapon).
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 675 registry rows and
+  871 edges, and 0 rows cite printed pages 272 or 273.
+
+reused_nodes:
+  - id: rule_treasure
+    label: Treasure
+    used_by: M001
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 117 with 21 edges. The central treasure rule this table resolves.
+
+candidate_nodes:
+  - proposed_id: tbl_treasure_4_6
+    proposed_label: Treasure 4-6 Table
+    kind: tbl
+    why_needed: Registers the d100 treasure table for level 4-6 creatures and unguarded finds from SD p. 272
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 272, TREASURE TABLE 4-6
+    source_evidence: page 272, the TREASURE TABLE 4-6 heading and its 50 data rows, which continue onto page 273.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_treasure
+    source_label: Treasure
+    edge_type: RESOLVED_BY
+    target_id: tbl_treasure_4_6
+    target_label: Treasure 4-6 Table
+    aspect: treasure selection
+    condition: ''
+    book: SD
+    page: 272
+    section: TREASURE TABLE 4-6
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The TREASURE TABLE 4-6 on printed pages 272–273 resolves random treasure determination
+      for 4th- to 6th-level monsters and encounters. rule_treasure is resolved by this table.
+
+authored_polarity_declaration: >-
+  No polarity is authored for M001 because edge type RESOLVED_BY has deterministic polarity
+  (governs, derived) assigned by the build system per Constitution section 5 and Graph Invariants invariant 14.
+  Polarity is authored only for MODIFIES, TRIGGERS, and CONSTRAINS.
+
+status_note: 'All proposed candidate edges are core mechanics.'
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: 'None recorded. Table resolves an existing core procedure (rule_treasure).'
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: 'None proposed. The Analyst is prohibited from promoting a general rule.'
+
+rejected_candidates:
+  - text_locus: 'TREASURE TABLE 4-6 monetary values, pp272–273'
+    quoted_gist: '3 cp, 5 cp, 1 sp, 10 gp, 12 gp, 4 gp each, 15 gp, 25 gp, 30 gp, 35 gp, 40 gp, 45 gp, 50 gp, 55 gp, 60 gp, 65 gp, 70 gp, 75 gp, 80 gp, 130 gp, 140 gp, 150 gp, 200 gp, 250 gp, 300 gp, 500 gp'
+    why_considered: 'Checked for item_coin monetary relationships or price valuations.'
+    rejection_reason: >-
+      Monetary values and prices are numeric magnitudes prohibited from edge aspect and condition
+      by Invariant 11 and Constitution section 5. They do not generate edges.
+  - text_locus: 'TREASURE TABLE 4-6 mundane gear items, pp272–273'
+    quoted_gist: 'shield, greatsword, javelins, warhammer, chainmail, mace, longsword, crossbow, plate mail'
+    why_considered: 'Checked for table edges to canonical weapons, armor, and gear items.'
+    rejection_reason: >-
+      Mundane equipment items listed as loot are roll outcomes rather than definitions or modifications
+      of equipment rules. Equipment definitions have their defining loci on pages 33–37 (Basic Gear, Weapons, Armor).
+      Random encounter, shop, and treasure tables do not link to mundane gear outcomes unless a specific
+      mechanical modification is introduced.
+  - text_locus: 'TREASURE TABLE 4-6 art objects, curios, and deity mentions, pp272–273'
+    quoted_gist: 'Green crystal statuette of Memnon; Crimson holy symbol of Ramlaat; delicate ancient vase of Myrkhosian make; rare incense repulsive to undead'
+    why_considered: 'Checked for deity_memnon, deity_ramlaat, or special item proposals.'
+    rejection_reason: >-
+      The crystal statuette and holy symbol are decorative trade curios / art objects sold for coin value.
+      They do not define or alter worship, spells, or rules for deity_memnon or deity_ramlaat. The incense
+      repulsive to undead is flavor description without mechanical DC or range. Minting identities from
+      incidental descriptive curios is prohibited.
+  - text_locus: 'TREASURE TABLE 4-6 ancestry and craftsmanship descriptors, pp272–273'
+    quoted_gist: 'painting of an elf woman; Goblin-made clockwork dragon doll; Suit of dwarf-made chainmail'
+    why_considered: 'Checked for edges to ancestry_elf, ancestry_goblin, or ancestry_dwarf.'
+    rejection_reason: >-
+      Aesthetic craftsmanship descriptors and subject matter of artwork. Constitution section 2.4
+      prohibits ancestry membership or property edges without mechanical rules.
+  - text_locus: 'TREASURE TABLE 4-6 magic items and special loot, p273'
+    quoted_gist: '2nd-tier spell scroll; Potion of Healing; 3rd-tier spell scroll; Potion of Flying; Potion of Giant Strength; Magic wand, 3rd-tier spell; Ring of Feather Falling; +2 magic armor; Kytherian Cog; +2 magic weapon'
+    why_considered: 'Checked for candidate magic item nodes (item_kytherian_cog, item_ring_of_feather_falling, etc.) or edges to item_magic_item, item_spell_scroll, item_wand.'
+    rejection_reason: >-
+      Specific magic items, magic armor generation, magic weapon benefits, virtues, flaws, and curses
+      have their defining loci in the magic item chapters (pages 276+, packets 124–130+). Individual table
+      results on random treasure tables do not mint new item identities ahead of their defining loci,
+      and Invariant 1 prohibits edges referencing non-existent nodes. Nor do loot tables feed into item categories;
+      rather, item_magic_item and item_coin feed into rule_treasure as advancement inputs (page 117).
+  - text_locus: 'TREASURE TABLE 4-6 Potion of Healing healing value, p273'
+    quoted_gist: 'Potion of Healing (heals 2d6 hit points)'
+    why_considered: 'Checked for edge from tbl_treasure_4_6 to rule_hit_points.'
+    rejection_reason: >-
+      The 2d6 hit points expression is a die expression and numeric magnitude prohibited under Invariant 11.
+      Furthermore, the healing mechanic belongs to the potion item definition in packet 128 (Potions),
+      not to this loot table roll entry.
+  - text_locus: 'Context: Treasure overview passages, p269'
+    quoted_gist: 'The treasure table the monster uses corresponds to its level... For example, a 6th-level wizard finds a treasure chest. The wizard rolls on the Treasure 4-6 table to determine whatʼs inside.'
+    why_considered: 'Checked for exp_level or mstat_monster_level feeding into tbl_treasure_4_6.'
+    rejection_reason: >-
+      Supporting source context from packet 119 is out of scope per Scope Boundary; no row here may cite page 269.
+      Both exp_level and mstat_monster_level feeding into rule_treasure are already canonical from pages 269 and 192,
+      and rule_treasure is resolved by tbl_treasure_4_6 on page 272.

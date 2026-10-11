@@ -1,0 +1,237 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-280-281-boons-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-280-281-boons
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-280-281-boons
+  source_file: source.md
+  packet_source_checksum: sha256:dcf6cabeccf6547b5de0ee219a65d72dd19ec4e38e3e79d08cb5da30ff034be3
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 125-boons.md
+  citation_code: SD
+  page_start: 280
+  page_end: 281
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit and are computed from the claimed source and the canonical files, not recalled.
+  Measured from the Pandoc AST: 5 headings (1 level-2 and 4 level-3 headings), 5 paragraphs, and 3 tables
+  spanning printed pages 280 and 281. 0 lists and 0 blockquotes in Primary Source Material. The supporting
+  source context includes 3 repeated passages (Awarding XP from page 117, Level advancement from page 39,
+  and Treasure overview from page 269).
+
+page_attribution_basis: >-
+  Two explicit markers: p280 on BOONS heading and p281 on SECRETS TABLE. Placement rule 1 applies to
+  headings. BOONS heading, introductory text, XP VALUE subsection, and OATHS TABLE are on printed page 280.
+  Placement rule 1 attributes page 281 to SECRETS TABLE heading, and persistence carries page 281 through
+  the table and BLESSINGS TABLE. No leading-content derivation needed; the packet opens on its own marker.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 280 and 281. Supporting Source
+  Context appends repeated passages for Awarding XP (lines 3609–3650, p. 117), Level advancement (lines
+  1017–1060, p. 39), and Treasure overview (lines 9886–9920, p. 269). All repeated passages are out of scope;
+  no row here cites pages outside 280–281.
+
+source_summary: >-
+  Pages 280–281 present the Boons section, which covers non-monetary sources of value or benefit:
+  - Introductory prose defines boons and introduces three categories: Oaths, Secrets, and Blessings;
+  - XP VALUE defines that a boon's XP value is based on its utility (ranging from normal to legendary treasure);
+  - OATHS TABLE provides a d8 table of favors, titles, and promises;
+  - SECRETS TABLE provides a d12 two-part generator table for valuable secrets;
+  - BLESSINGS TABLE provides a d12 table of magical gifts and enchantments.
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 681 registry rows and
+  877 edges, and 0 rows cite printed pages 280 or 281.
+
+reused_nodes:
+  - id: rule_treasure
+    label: Treasure
+    used_by: M001
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 117 with 27 edges. The central treasure rule that boons feed into
+      as non-monetary value for XP purposes.
+
+candidate_nodes:
+  - proposed_id: rule_boons
+    proposed_label: Boons
+    kind: rule
+    why_needed: Defines boons as non-monetary sources of value or benefit whose XP value is determined by utility from SD p. 280
+    prefix_basis: rule_ is a mechanical rule definition; joins the canonical rule_ identities
+    source_named: true
+    defining_locus: SD page 280, BOONS
+    source_evidence: page 280, the BOONS heading and XP VALUE subsection.
+  - proposed_id: tbl_oaths
+    proposed_label: Oaths Table
+    kind: tbl
+    why_needed: Registers the d8 oaths table from SD p. 280
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 280, OATHS TABLE
+    source_evidence: page 280, the OATHS TABLE heading and its 8 data rows.
+  - proposed_id: tbl_secrets
+    proposed_label: Secrets Table
+    kind: tbl
+    why_needed: Registers the d12 secrets table from SD p. 281
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 281, SECRETS TABLE
+    source_evidence: page 281, the SECRETS TABLE heading and its 12 data rows.
+  - proposed_id: tbl_blessings
+    proposed_label: Blessings Table
+    kind: tbl
+    why_needed: Registers the d12 blessings table from SD p. 281
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 281, BLESSINGS TABLE
+    source_evidence: page 281, the BLESSINGS TABLE heading and its 12 data rows.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_boons
+    source_label: Boons
+    edge_type: FEEDS_INTO
+    target_id: rule_treasure
+    target_label: Treasure
+    aspect: boon utility
+    condition: ''
+    book: SD
+    page: 280
+    section: XP VALUE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      Page 280 explicitly defines boons as non-monetary sources of value whose XP value is based on
+      their utility (e.g., normal treasure for a guild favor, legendary treasure for a god's blessing),
+      supplying input into the treasure valuation system for character advancement.
+  - ref: M002
+    source_id: rule_boons
+    source_label: Boons
+    edge_type: RESOLVED_BY
+    target_id: tbl_oaths
+    target_label: Oaths Table
+    aspect: oath selection
+    condition: ''
+    book: SD
+    page: 280
+    section: OATHS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The OATHS TABLE on page 280 resolves the selection and generation of oath boons.
+      rule_boons is resolved by this table.
+  - ref: M003
+    source_id: rule_boons
+    source_label: Boons
+    edge_type: RESOLVED_BY
+    target_id: tbl_secrets
+    target_label: Secrets Table
+    aspect: secret selection
+    condition: ''
+    book: SD
+    page: 281
+    section: SECRETS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The SECRETS TABLE on page 281 resolves the selection and generation of secret boons.
+      rule_boons is resolved by this table.
+  - ref: M004
+    source_id: rule_boons
+    source_label: Boons
+    edge_type: RESOLVED_BY
+    target_id: tbl_blessings
+    target_label: Blessings Table
+    aspect: blessing selection
+    condition: ''
+    book: SD
+    page: 281
+    section: BLESSINGS TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The BLESSINGS TABLE on page 281 resolves the selection and generation of blessing boons.
+      rule_boons is resolved by this table.
+
+authored_polarity_declaration: >-
+  No polarity is authored for M001, M002, M003, or M004 because edge types FEEDS_INTO and RESOLVED_BY
+  have deterministic polarity (neutral and governs, derived) assigned by the build system per
+  Constitution section 5 and Graph Invariants invariant 14. Polarity is authored only for MODIFIES,
+  TRIGGERS, and CONSTRAINS.
+
+status_note: 'All proposed candidate edges are core mechanics.'
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: 'None recorded. Tables resolve an existing core procedure (rule_treasure).'
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: 'None proposed. The Analyst is prohibited from promoting a general rule.'
+
+rejected_candidates:
+  - text_locus: 'OATHS TABLE entries, p280'
+    quoted_gist: 'The duke will procure you an audience with the queen; The City Watch will pardon a crime...; The Circle of Mages will magically teleport you anywhere'
+    why_considered: 'Checked whether individual oath outcomes warrant discrete rule or encounter nodes.'
+    rejection_reason: >-
+      Individual oath results are specific narrative outcomes and table generation details; they do not establish independent mechanical rules or procedures.
+  - text_locus: 'SECRETS TABLE entries, p281'
+    quoted_gist: 'The True Name of The king; The one manipulating A powerful demon; Proof of the crimes by A revered knight of St. Terragnis'
+    why_considered: 'Checked for monster/demon, title, or NPC relationship edges.'
+    rejection_reason: >-
+      Table entries provide narrative prompt combinations for secrets. Mention of demons, kings, or knights provides illustrative examples and plot hooks rather than mechanical rule interactions (Constitution 1, 2.4).
+  - text_locus: 'BLESSINGS TABLE individual blessings, p281'
+    quoted_gist: 'Wraithsight... Nine Lives... Demonskin... Spiderwalk... Merfolkʼs Kiss... Gedeʼs Blessing... Arcane Eye... Shuneʼs Mark... Ghostwalk... Deathʼs Sting... Rite of Rage... Divine Halo'
+    why_considered: 'Checked whether blessings constitute individual spell, talent, or rule nodes, or connect to deities Gede and Shune.'
+    rejection_reason: >-
+      Blessings are table outcome benefits from a d12 table rather than spells, items, or general rules. Mention of deities (Gede, Shune) in blessing names represents flavor naming rather than clerical worship mechanics (Constitution 2.4). Specific numeric values (1d6 hit points, 1d4 rounds, DC 15) are magnitudes excluded under Invariant 11.
+  - text_locus: 'Introductory prose boon examples, p280'
+    quoted_gist: 'A favor owed by a unicorn, a title granted by a baron, or the promise of safe harbor by a dryad you helped... The identity of a murderer...'
+    why_considered: 'Checked for monster or social rule nodes.'
+    rejection_reason: >-
+      Illustrative narrative examples defining the concept of boons; no discrete rules or mechanics are introduced.
+  - text_locus: 'Supporting source context passages, p39, p117, p269'
+    quoted_gist: 'Awarding XP (lines 3609–3650), Level advancement (lines 1017–1060), Treasure overview (lines 9886–9920)'
+    why_considered: 'Checked for supporting context relationships.'
+    rejection_reason: >-
+      Supporting source context from earlier packets is out of scope per Scope Boundary; no row here may cite pages outside 280–281.

@@ -1,0 +1,236 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-290-291-utility-item-generator-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-290-291-utility-item-generator
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-290-291-utility-item-generator
+  source_file: source.md
+  packet_source_checksum: sha256:48bbbf199b7b42035b786b0af6a9ef168637aa298e6356a9b6640ff697bea581
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 130-utility-item-generator.md
+  citation_code: SD
+  page_start: 290
+  page_end: 291
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit and are computed from the claimed source and the canonical files, not recalled.
+  Measured from the Pandoc AST: 5 headings (1 level-2 and 4 level-3 headings), 0 paragraphs, 1 blockquote,
+  and 4 tables spanning printed pages 290 and 291. 0 lists in Primary Source Material. The supporting source
+  context includes repeated passages for magic item attributes (lines 10284–10356, p. 282).
+
+page_attribution_basis: >-
+  Two explicit markers: p290 on UTILITY heading and p291 on UTILITY BENEFIT TABLE heading. Placement rule 1
+  applies to headings. UTILITY heading, UTILITY TYPE TABLE, UTILITY FEATURE TABLE, and Creeg quotation are on
+  printed page 290. Placement rule 1 attributes page 291 to UTILITY BENEFIT TABLE heading, and persistence carries
+  page 291 through UTILITY CURSE TABLE. No leading-content derivation needed; the packet opens on its own marker.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 290 and 291. Supporting Source
+  Context appends repeated passages for Magic item attributes (lines 10284–10356, p. 282). All repeated passages
+  are out of scope; no row here cites pages outside 290–291.
+
+source_summary: >-
+  Pages 290–291 present the Utility Item Generator section, comprising four tables for randomly generating utility items:
+  - UTILITY TYPE TABLE (d20) determines base item type (Brooch, Ring, Boots, Cloak, Amulet, Flask, Tome, Circlet, etc.);
+  - UTILITY FEATURE TABLE (d20) provides distinctive visual, thematic, and physical features;
+  - UTILITY BENEFIT TABLE (d12) provides supernatural benefits and magical capabilities;
+  - UTILITY CURSE TABLE (d12) provides drawbacks and curses for cursed utility items.
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 708 registry rows and
+  907 edges, and 0 rows cite printed pages 290 or 291.
+
+reused_nodes:
+  - id: item_magic_item
+    label: Magic Item
+    used_by: M001, M002, M003, M004
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 117 with 28 edges. The magic item entity resolved by these utility item generation tables.
+
+candidate_nodes:
+  - proposed_id: tbl_utility_type
+    proposed_label: Utility Type Table
+    kind: tbl
+    why_needed: Registers the d20 utility item type table from SD p. 290
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 290, UTILITY TYPE TABLE
+    source_evidence: page 290, the UTILITY TYPE TABLE heading and its 20 data rows.
+  - proposed_id: tbl_utility_feature
+    proposed_label: Utility Feature Table
+    kind: tbl
+    why_needed: Registers the d20 utility item aesthetic feature table from SD p. 290
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 290, UTILITY FEATURE TABLE
+    source_evidence: page 290, the UTILITY FEATURE TABLE heading and its 20 data rows.
+  - proposed_id: tbl_utility_benefit
+    proposed_label: Utility Benefit Table
+    kind: tbl
+    why_needed: Registers the d12 utility item supernatural benefit table from SD p. 291
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 291, UTILITY BENEFIT TABLE
+    source_evidence: page 291, the UTILITY BENEFIT TABLE heading and its 12 data rows.
+  - proposed_id: tbl_utility_curse
+    proposed_label: Utility Curse Table
+    kind: tbl
+    why_needed: Registers the d12 utility item curse table from SD p. 291
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 291, UTILITY CURSE TABLE
+    source_evidence: page 291, the UTILITY CURSE TABLE heading and its 12 data rows.
+
+candidate_edges:
+  - ref: M001
+    source_id: item_magic_item
+    source_label: Magic Item
+    edge_type: RESOLVED_BY
+    target_id: tbl_utility_type
+    target_label: Utility Type Table
+    aspect: utility type selection
+    condition: for utility items
+    book: SD
+    page: 290
+    section: UTILITY TYPE TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The d20 UTILITY TYPE TABLE on page 290 resolves the base physical item type for randomly generated utility magic items.
+      item_magic_item is resolved by this table.
+  - ref: M002
+    source_id: item_magic_item
+    source_label: Magic Item
+    edge_type: RESOLVED_BY
+    target_id: tbl_utility_feature
+    target_label: Utility Feature Table
+    aspect: utility feature selection
+    condition: for utility items
+    book: SD
+    page: 290
+    section: UTILITY FEATURE TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The d20 UTILITY FEATURE TABLE on page 290 resolves physical and aesthetic features for randomly generated utility magic items.
+      item_magic_item is resolved by this table.
+  - ref: M003
+    source_id: item_magic_item
+    source_label: Magic Item
+    edge_type: RESOLVED_BY
+    target_id: tbl_utility_benefit
+    target_label: Utility Benefit Table
+    aspect: utility benefit selection
+    condition: for utility items
+    book: SD
+    page: 291
+    section: UTILITY BENEFIT TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The d12 UTILITY BENEFIT TABLE on page 291 resolves supernatural benefits for randomly generated utility magic items.
+      item_magic_item is resolved by this table.
+  - ref: M004
+    source_id: item_magic_item
+    source_label: Magic Item
+    edge_type: RESOLVED_BY
+    target_id: tbl_utility_curse
+    target_label: Utility Curse Table
+    aspect: utility curse selection
+    condition: for utility items
+    book: SD
+    page: 291
+    section: UTILITY CURSE TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The d12 UTILITY CURSE TABLE on page 291 resolves curses for randomly generated utility magic items.
+      item_magic_item is resolved by this table.
+
+authored_polarity_declaration: >-
+  No polarity is authored for M001, M002, M003, or M004 because edge type RESOLVED_BY
+  has deterministic polarity (governs, derived) assigned by the build system per Constitution
+  section 5 and Graph Invariants invariant 14. Polarity is authored only for MODIFIES, TRIGGERS, and CONSTRAINS.
+
+status_note: 'All proposed candidate edges are core mechanics.'
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: 'None recorded. Tables resolve existing core item generation procedures (item_magic_item).'
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: 'None proposed. The Analyst is prohibited from promoting a general rule.'
+
+rejected_candidates:
+  - text_locus: 'Creeg character quote, p290'
+    quoted_gist: 'That rock with wings really was quite useful after all. -Creeg, human wizard, triggering a magical trap from afar'
+    why_considered: 'Checked for wizard class, trap triggering, or magic item flavour connections.'
+    rejection_reason: >-
+      Illustrative flavour narrative and character dialogue; quotes do not define mechanical rules or character identities (Constitution 2.4).
+  - text_locus: 'UTILITY TYPE TABLE specific item entries, p290'
+    quoted_gist: 'Brooch, Ring, Boots, Cloak, Amulet, Flask, Tome, Circlet, Eyepatch, Gauntlets, Holy symbol, Hat, Goblet, Helm, Statuette, Goggles, Bag, Rock, Surcoat, Mask'
+    why_considered: 'Checked for independent item node additions.'
+    rejection_reason: >-
+      Entries on the d20 type table represent random generation roll outcomes indicating physical item form rather than distinct mechanical rules or item statistics.
+  - text_locus: 'UTILITY FEATURE TABLE aesthetic entries, p290'
+    quoted_gist: 'Shaped like a raven... Iridescent... Made of basilisk hide... Possessed by a spirit... Made of shaped smoke... Throbs like a heart'
+    why_considered: 'Checked for monster part, material, or sensory quality relationship edges.'
+    rejection_reason: >-
+      Cosmetic aesthetic motifs and physical descriptions for utility items; they introduce no independent mechanical rules or combat statistics.
+  - text_locus: 'UTILITY BENEFIT TABLE specific benefit mechanics, p291'
+    quoted_gist: 'Connects to an interdimensional pocket with 5 gear slots... A stat becomes 18 (+4)... Harmful spells that target you are DC 15... immune to 1d4...'
+    why_considered: 'Checked for edges connecting to gear capacity, stats, spell DCs, or damage immunities.'
+    rejection_reason: >-
+      Specific entries on the d12 benefit table represent random generation roll outcomes. They contain numeric values (5 gear slots, 18 (+4), DC 15, 1 hour, 2 rounds) and dice expressions (1d4) prohibited on edges under Graph Invariant 11.
+  - text_locus: 'UTILITY CURSE TABLE specific curse mechanics, p291'
+    quoted_gist: 'Deals 1d4 damage... Cannot be healed by magic; only by resting... Disadvantage on CON checks... Must drink blood... Must eat 1d10 gp...'
+    why_considered: 'Checked for edges connecting to damage, healing, ability checks, or currency.'
+    rejection_reason: >-
+      Specific entries on the d12 curse table represent random generation roll outcomes. They contain damage expressions (1d4, 1d8), monetary amounts (1d10 gp), and dice mechanics prohibited on edges under Graph Invariant 11.
+  - text_locus: 'Supporting source context passages, p282'
+    quoted_gist: 'Magic item attributes: Qualities, Random Magic Item Type Table, Qualities Table, Personality Table'
+    why_considered: 'Checked for edges citing supporting context passages.'
+    rejection_reason: >-
+      Supporting source context is repeated material from packet 126 (PKT-SD-282-283-magic-item-attributes) and is out of scope per Scope Boundary; no row here may cite pages outside 290–291.

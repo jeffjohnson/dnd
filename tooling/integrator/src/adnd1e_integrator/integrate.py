@@ -807,6 +807,7 @@ def integrate(
     bundles: list[Bundle],
     integration_id: str | None = None,
     dry_run: bool = False,
+    record_writer=None,
 ) -> Batch:
     """Apply a batch. Raises IntegrationError -- and rolls back -- on any failure."""
     paths = CanonicalPaths(root=root, ruleset_id=ruleset_id)
@@ -1216,5 +1217,9 @@ def integrate(
             "registry_checksum": pre_checksum(paths.registry) if not dry_run else None,
         }
         batch.snapshot = transaction.snapshot.as_dict(root)
+        if not dry_run and record_writer is not None:
+            # Terminal records are part of successful completion. A failed
+            # publisher must raise while canonical rollback is still possible.
+            record_writer(batch)
 
     return batch

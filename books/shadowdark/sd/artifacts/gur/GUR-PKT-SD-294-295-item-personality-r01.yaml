@@ -1,0 +1,207 @@
+schema_version: '1.0'
+id: GUR-PKT-SD-294-295-item-personality-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: PKT-SD-294-295-item-personality
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0083.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0097.yaml
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0105.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/sd/packets/claimed/PKT-SD-294-295-item-personality
+  source_file: source.md
+  packet_source_checksum: sha256:ec196a93f142b9796ce3da20c7b8ae57bd5f5be979a985c4cb262410cee6319a
+  packet_source_checksum_basis: lf_normalized
+  original_filename: 132-item-personality.md
+  citation_code: SD
+  page_start: 294
+  page_end: 295
+  page_number_basis: packet_page_markers
+
+units_note: >-
+  Figures name their unit and are computed from the claimed source and the canonical files, not recalled.
+  Measured from the Pandoc AST: 4 headings (1 level-2 and 3 level-3 headings), 2 paragraphs, 0 blockquotes,
+  and 3 tables spanning printed pages 294 and 295. 0 lists in Primary Source Material. The supporting source
+  context includes repeated passages for magic item attributes (lines 10284–10356, p. 282), starting gear / armor class / weapon properties (lines 856–986, pp. 34–37), resting (lines 2639–2672, p. 86), and combat turns (lines 2714–2729, p. 88).
+
+page_attribution_basis: >-
+  Two explicit markers: p294 on ITEM PERSONALITY heading and p295 on ITEM FLAW TABLE heading. Placement rule 1
+  applies to headings. ITEM PERSONALITY heading, alignment and contested check paragraphs, and ITEM VIRTUE TABLE
+  are on printed page 294. Placement rule 1 attributes page 295 to ITEM FLAW TABLE heading, and persistence carries
+  page 295 through ITEM PERSONALITY TRAIT TABLE. No leading-content derivation needed; the packet opens on its own marker.
+
+scope_boundary: >-
+  The bounded scope is the Primary Source Material section, printed pages 294 and 295. Supporting Source
+  Context appends repeated passages for Magic item attributes (lines 10284–10356, p. 282), starting gear / armor class / weapon properties (lines 856–986, pp. 34–37), resting (lines 2639–2672, p. 86), and combat turns (lines 2714–2729, p. 88). All repeated passages are out of scope; no row here cites pages outside 294–295.
+
+source_summary: >-
+  Pages 294–295 present the Item Personality section, governing conscious magic items:
+  - ITEM PERSONALITY establishes that the GM determines a conscious magic item's alignment, and that a conscious item may make a contested CHA check (+2) to resist or insist on how it is used;
+  - ITEM VIRTUE TABLE (d20) provides distinctive virtues and positive behavioral traits or minor supernatural capabilities;
+  - ITEM FLAW TABLE (d20) provides quirks, drawbacks, phobias, and behavioral flaws;
+  - ITEM PERSONALITY TRAIT TABLE (d4, d4) provides overarching personality demeanor and disposition traits (16 personality combinations).
+
+graph_state_at_extraction: >-
+  Read from the repository at extraction, not recalled. The canonical graph holds 717 registry rows and
+  916 edges, and 0 rows cite printed pages 294 or 295.
+
+reused_nodes:
+  - id: item_magic_item
+    label: Magic Item
+    used_by: M001, M002, M003
+    basis: >-
+      Present in the registry at extraction with this exact label, asserted equal by the script.
+      Canonical from printed page 117 with 37 edges. The magic item entity resolved by these item personality tables.
+
+candidate_nodes:
+  - proposed_id: tbl_item_virtue
+    proposed_label: Item Virtue Table
+    kind: tbl
+    why_needed: Registers the d20 conscious magic item virtue table from SD p. 294
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 294, ITEM VIRTUE TABLE
+    source_evidence: page 294, the ITEM VIRTUE TABLE heading and its 20 data rows.
+  - proposed_id: tbl_item_flaw
+    proposed_label: Item Flaw Table
+    kind: tbl
+    why_needed: Registers the d20 conscious magic item flaw table from SD p. 295
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 295, ITEM FLAW TABLE
+    source_evidence: page 295, the ITEM FLAW TABLE heading and its 20 data rows.
+  - proposed_id: tbl_item_personality_trait
+    proposed_label: Item Personality Trait Table
+    kind: tbl
+    why_needed: Registers the d4, d4 conscious magic item personality trait table from SD p. 295
+    prefix_basis: tbl_ is a named source table; joins the canonical tbl_ identities
+    source_named: true
+    defining_locus: SD page 295, ITEM PERSONALITY TRAIT TABLE
+    source_evidence: page 295, the ITEM PERSONALITY TRAIT TABLE heading and its 4 data rows.
+
+candidate_edges:
+  - ref: M001
+    source_id: item_magic_item
+    source_label: Magic Item
+    edge_type: RESOLVED_BY
+    target_id: tbl_item_virtue
+    target_label: Item Virtue Table
+    aspect: item virtue selection
+    condition: for conscious magic items
+    book: SD
+    page: 294
+    section: ITEM VIRTUE TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The d20 ITEM VIRTUE TABLE on page 294 resolves virtues for conscious magic items.
+      item_magic_item is resolved by this table.
+  - ref: M002
+    source_id: item_magic_item
+    source_label: Magic Item
+    edge_type: RESOLVED_BY
+    target_id: tbl_item_flaw
+    target_label: Item Flaw Table
+    aspect: item flaw selection
+    condition: for conscious magic items
+    book: SD
+    page: 295
+    section: ITEM FLAW TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The d20 ITEM FLAW TABLE on page 295 resolves flaws for conscious magic items.
+      item_magic_item is resolved by this table.
+  - ref: M003
+    source_id: item_magic_item
+    source_label: Magic Item
+    edge_type: RESOLVED_BY
+    target_id: tbl_item_personality_trait
+    target_label: Item Personality Trait Table
+    aspect: personality trait selection
+    condition: for conscious magic items
+    book: SD
+    page: 295
+    section: ITEM PERSONALITY TRAIT TABLE
+    evidence: explicit_rule
+    pass: 1
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: >-
+      The d4, d4 ITEM PERSONALITY TRAIT TABLE on page 295 resolves personality traits for conscious magic items.
+      item_magic_item is resolved by this table.
+
+authored_polarity_declaration: >-
+  No polarity is authored for M001, M002, or M003 because edge type RESOLVED_BY
+  has deterministic polarity (governs, derived) assigned by the build system per Constitution
+  section 5 and Graph Invariants invariant 14. Polarity is authored only for MODIFIES, TRIGGERS, and CONSTRAINS.
+
+status_note: 'All proposed candidate edges are core mechanics.'
+domains_touched: []
+candidate_domains: []
+candidate_domains_note: 'None recorded. Tables resolve existing core item generation procedures (item_magic_item).'
+domain_boundary_questions: []
+candidate_general_rules: []
+candidate_general_rules_note: 'None proposed. The Analyst is prohibited from promoting a general rule.'
+
+rejected_candidates:
+  - text_locus: 'ITEM PERSONALITY alignment determination, p294'
+    quoted_gist: 'The GM determines a conscious magic itemʼs alignment unless otherwise noted.'
+    why_considered: 'sys_alignment is canonical and the sentence explicitly mentions a conscious magic item''s alignment.'
+    rejection_reason: >-
+      The sentence delegates alignment selection to GM/referee discretion rather than defining a mechanical rule dependency between entities (there is no GM node in the graph). Furthermore, per Constitution sections 2.2 and 2.4, taxonomy-only alignment membership is excluded from the graph and sys_alignment may not be targeted by classification or item edges. The sentence establishes no mechanical impact on character or item statistics.
+  - text_locus: 'ITEM PERSONALITY contested Charisma check, p294'
+    quoted_gist: 'A conscious item may make a contested CHA check (+2) to resist or insist on how itʼs used.'
+    why_considered: 'abil_charisma is canonical and the sentence mentions a conscious magic item making a contested CHA check.'
+    rejection_reason: >-
+      The item invokes the existing general contested check procedure (rule_contested_check on SD p. 81) using Charisma. The (+2) value is a specific roll modifier / bonus number excluded under Graph Invariant 11. The conscious item does not possess an independent ability score that modifies abil_charisma, nor does it alter the core Charisma mechanic. No legal edge type connects an item to an ability score node for an ad-hoc check bonus.
+  - text_locus: 'ITEM VIRTUE TABLE specific entries and mechanics, p294'
+    quoted_gist: 'translates Primordial... Senses hiding creatures within near... Owed a favor by a 1d4: 1-2. unicorn, 3. dragon, 4. noble... Calming presence to 1d4... Lawful, intimidating to chaotic creatures... Can undo a great 1d4...'
+    why_considered: 'Checked for edges connecting to languages (Primordial), detection, creature types, alignments, or spell undoing.'
+    rejection_reason: >-
+      Specific entries on the d20 virtue table represent random generation roll outcomes. They contain dice expressions (1d4), creature categories, and narrative benefits prohibited on edges under Graph Invariant 11.
+  - text_locus: 'ITEM FLAW TABLE specific entries and mechanics, p295'
+    quoted_gist: 'Afraid of 1d4: 1. the dark, 2. vermin, 3. heights, 4. water... Dislikes 1d4: 1. elves, 2. dwarves, 3. humans, 4. goblins... Objects to 1d4: 1. gambling, 2. carousing, 3. stealth, 4. theft... Wonʼt harm 1d4: 1-2. lawful, 3. neutral, 4. chaotic... Objects to 1d4: 1. negotiating, 2-3. fighting, 4. planning'
+    why_considered: 'Checked for edges connecting to ancestries, carousing, stealth, or combat actions.'
+    rejection_reason: >-
+      Specific entries on the d20 flaw table represent random generation roll outcomes. They contain dice expressions (1d4), narrative quirks, and behavioral restrictions prohibited on edges under Graph Invariant 11.
+  - text_locus: 'ITEM PERSONALITY TRAIT TABLE specific personality entries, p295'
+    quoted_gist: 'Imperious, Polite, Puritanical, Charming, Anxious, Righteous, Critical, Theatrical, Bossy, Noble, Greedy, Protective, Impulsive, Brave, Vicious, Loyal'
+    why_considered: 'Checked for independent trait node additions or edges.'
+    rejection_reason: >-
+      The 16 entries on the d4, d4 grid represent random roll outcomes providing roleplaying personality descriptors. They introduce no distinct mechanical rules or combat statistics.
+  - text_locus: 'Supporting source context passages, pp282, 34-37, 86, 88'
+    quoted_gist: 'Magic item attributes (p282); Armor class, gear, basic gear table, armor table, weapons table (pp34-37); Resting (p86); Combat turns, actions (p88)'
+    why_considered: 'Checked for edges citing supporting context passages.'
+    rejection_reason: >-
+      Supporting source context is repeated material from earlier packets (014-starting-gear-armor-class-and-equipment, 033-resting, 034-stealth-surprise-and-combat, 126-magic-item-attributes) and is out of scope per Scope Boundary; no row here may cite pages outside 294–295.

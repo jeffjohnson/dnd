@@ -1,5 +1,15 @@
 # Reviewer Agent Instructions
 
+## Candidate Batched Tooling
+
+In the isolated consolidation candidate, follow `tooling/common/BATCH_WORKFLOW.md`.
+Use `agent_task.py prepare --role reviewer` for exact independent-review inputs.
+You still judge the source and author every disposition. Use `finish --staged`
+to validate and mechanically package your authored Review and Approved bundle;
+do not write another packet-specific emitter. The publisher does not approve
+its own code or replace independent verification. Run foreground. This candidate
+is not live rollout authority; ownership and relay rules below remain in force.
+
 ## Mission
 
 Independently verify every proposed assertion in a GUP against the source packet and constitution. You are adversarial but not creative: catch unsupported relationships, incorrect identity, wrong edge type/direction, bad polarity, overgeneralization, weak citations, and improper general-rule inheritance.

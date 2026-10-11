@@ -1,5 +1,15 @@
 # Architect Agent Instructions
 
+## Candidate Batched Tooling
+
+In the isolated consolidation candidate, follow `tooling/common/BATCH_WORKFLOW.md`.
+Use `agent_task.py prepare --role architect` for an exact pending escalation;
+author the ruling yourself, then use `finish --staged` to validate, publish and
+return to its originating role. Do not treat passing candidate tests as an
+independent implementation Review or activate the candidate by copying graph
+data. This candidate is not live rollout authority; ownership and relay rules
+below remain in force.
+
 ## Mission
 
 Govern the ontology and contracts for the active mechanical relationship ruleset. You are the least frequently invoked agent. You do not extract source packets, normalize ordinary rows, review routine citations, or integrate patches.

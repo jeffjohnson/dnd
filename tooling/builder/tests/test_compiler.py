@@ -610,6 +610,7 @@ class TestAPublishedRevisionIsImmutable(CompilerCase):
             gup_dir, reports = Path(tmp) / "gup", Path(tmp) / "reports"
             self.publish(gup_dir, reports)
             other = self.compile_gur(candidate_edges=[dict(BASE_EDGE)], revision=2)
+            other.supersedes = other.gup_id.rsplit("-r", 1)[0] + "-r01"
             from adnd1e_builder.emit import write_all
 
             written = write_all(other, gup_dir, reports, {"ran": False})
@@ -2985,6 +2986,7 @@ class BasicdndCliCompileCase(unittest.TestCase):
             shutil.copytree(
                 REPO_ROOT / "rulesets" / "basicdnd", root / "rulesets" / "basicdnd"
             )
+            shutil.copytree(REPO_ROOT / "schemas", root / "schemas")
             canonical = root / "rulesets" / "basicdnd" / "canonical"
             self.assertFalse(canonical.exists(), "the fixture must start with none")
 

@@ -1,0 +1,213 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20261004-024",
+  "ruleset_id": "shadowdark",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-10-04T18:53:43.850Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-SD-278-279-mundane-items-r01-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:29532e42321a70b8546fcabf9d67790380c7152c471a9aa8308e177f182de917 actual=sha256:29532e42321a70b8546fcabf9d67790380c7152c471a9aa8308e177f182de917"
+        },
+        {
+          "check": "component checksum matches: books/shadowdark/sd/artifacts/approved/APPROVED-GUP-PKT-SD-278-279-mundane-items-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:eb98d5480f2f03a915bec6517635cc5b01d2b065d6e77bfcd1964151145ec5b8 actual=sha256:eb98d5480f2f03a915bec6517635cc5b01d2b065d6e77bfcd1964151145ec5b8"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-SD-278-279-mundane-items-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:4e78b8765f6a1aa56fa25d389dd10850c437e71c3e067a6e54e5b9211284986e actual=sha256:4e78b8765f6a1aa56fa25d389dd10850c437e71c3e067a6e54e5b9211284986e"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/shadowdark/sd/artifacts/gup/GUP-PKT-SD-278-279-mundane-items-r01.yaml: declared=sha256:02ddfababbf1be7fcea266ab34a544d5f5a647f7dc38856c61aa70dc02d6ade1 actual=sha256:02ddfababbf1be7fcea266ab34a544d5f5a647f7dc38856c61aa70dc02d6ade1"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=3 actual=3"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 0, 'pending_additions': 3, 'updates': 0, 'node_registrations': 3}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 874,
+    "edges_after": 877,
+    "edges_updated_in_place": 0,
+    "nodes_before": 398,
+    "nodes_after": 401,
+    "registry_before": 678,
+    "registry_after": 681,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "tbl_gemstones",
+        "label": "Gemstones Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-278-279-mundane-items-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-278-279-mundane-items-r01-r01",
+        "integration_id": "INT-20261004-024"
+      },
+      {
+        "id": "tbl_gemstone_unique_feature",
+        "label": "Gemstone Unique Feature Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-278-279-mundane-items-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-278-279-mundane-items-r01-r01",
+        "integration_id": "INT-20261004-024"
+      },
+      {
+        "id": "tbl_luxury_items",
+        "label": "Luxury Items Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-SD-278-279-mundane-items-r01-r01",
+        "review_id": "REV-GUP-PKT-SD-278-279-mundane-items-r01-r01",
+        "integration_id": "INT-20261004-024"
+      }
+    ],
+    "registry_derived_resync": 1,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}
