@@ -779,3 +779,50 @@ The Shadowdark book-title edits were already present and uncommitted when this r
 **Sequential IDs or hashes?** Use deterministic, governed assertion IDs for reproducibility. A hash is appropriate once the codec is settled. Do not introduce sequential row IDs or random-per-import UUIDs. At this scale, solve correctness and adjacency access first; measure before adding sharding.
 
 **Two stored directions for `ALTERNATIVE_TO`?** No. Store one assertion and use a type-restricted undirected query. Any doubled traversal representation must be explicitly derived, preserve the originating assertion ID, and never double-count facts.
+
+## 14. Peer Architect Appraisal and Owner Resolutions (2026-10-12)
+
+**Author:** Architect (Gemini)  
+**Date:** 2026-10-12, America/New_York  
+**Status:** Architecture consensus and owner-approved scope  
+
+### 14.1 Peer Review & Architectural Endorsement
+
+Codex's review in Sections 1–13 is endorsed in full. The empirical verification against the repository's canonical artifacts identified vital architectural boundaries that were absent or oversimplified in the initial assessment:
+
+1. **Identity Completeness (`registries/nodes.csv` vs. `canonical/nodes_master.csv` - F01):**
+   - The initial proposal's plan to import `nodes_master.csv` would have dropped **265 registered identities** (leaving only the 552 incident nodes).
+   - Ingestion must populate `Nodes` from `registries/nodes.csv` (all 817 concepts) and left-join `nodes_master.csv` solely for incident metrics (degree, core degree, roles). Zero-edge identities (e.g. languages, reference tables) are intentional registry citizens.
+2. **Mechanical Impact Directionality (F02):**
+   - Unrestricted forward graph traversal (`MATCH (a)-[r]->*(b)`) is not rules impact analysis.
+   - Certain edge types flow opposite to dependency propagation: `DERIVED_FROM` points from derived value to source (`abil_charisma --DERIVED_FROM--> rule_stat_generation`), meaning a stat generation change impacts charisma *in reverse*. `CONSUMES` and `RESOLVED_BY` also require reverse dependency discovery.
+   - The projection query layer must implement an edge-type-aware traversal policy rather than raw topological reachability.
+3. **Exact Cloud Spanner GQL / SQL Syntax (F06):**
+   - Spanner's `GRAPH_TABLE` implementation conforms to ISO GQL: scalar outputs require `RETURN` (with explicit aliases for outer SQL), path repetition uses quantified syntax (`-[r:Relationship]->{1,3}` rather than Cypher-style `*1..3`), and client batching uses `database.batch()`.
+4. **Namespace and Release Isolation (F04, F08):**
+   - With 118 shared concept IDs across rulesets, all compound keys and queries must strictly enforce `(ruleset_id, release_id)`.
+   - Release management uses immutable snapshots (`ProjectionReleases`) and atomic pointer activation (`ActiveProjections`), preventing dirty or partial loads from being queried.
+5. **Multi-Tenant Layering & Copy-on-Write Setting Forks (Section 12):**
+   - The 4-layer precedence model (`Campaign > Setting > Selected Optional > Core`) and the four explicit operations (`Add`, `Replace`, `Suppress`, `Inherit`) provide a robust conceptual model.
+   - The "copy setting" user action is modeled as a versioned copy-on-write fork (`SettingVersions` with `parent_version_id` and local diffs), avoiding massive redundant graph cloning while pinning versions so upstream changes never break live campaigns.
+
+---
+
+### 14.2 Owner Decisions and Resolution of Open Questions
+
+On 2026-10-12, the owner provided direct decisions resolving key questions from Sections 11 and 12.7:
+
+| Open Question | Owner Decision | Architectural Consequence |
+|---|---|---|
+| **1. Campaign-scoped setting access** (Section 12.7, Question 1) | **Players have access for free.** They will not be querying the raw rules graph directly, but they have access to the active rules in the campaign. | Access to setting rules is inherited via `CampaignMembers` and the campaign's active profile. Players do not require independent setting licenses to consume rules during play. Out-of-campaign customization and forking remain bounded by tenant/setting ownership. |
+| **2. Initial release corpus** (Section 11, Question 3) | **Focus first on Shadowdark. No AD&D right now.** | Phase 1 is strictly scoped to Shadowdark (817 concepts, 1,159 edges, 0 invariant findings). AD&D 1e (1,691 historical invariant findings) and Rules Cyclopedia (paused under DEC-2026-0086) are completely excluded from initial export tooling. |
+
+---
+
+### 14.3 Next Step: Phase 1 Local Shadowdark Exporter
+
+Per the agreed sequence in Section 10:
+1. Construct a deterministic Python exporter/validator (`tooling/spanner/`) operating strictly on a frozen local Shadowdark snapshot.
+2. Ingest 100% of registry concepts (817) and canonical edges (1,159) lossless across all 18 columns.
+3. Compute governed assertion hashes and output release manifests with row-set digests.
+4. Run 100% locally with zero billable cloud infrastructure until local verification is complete.
