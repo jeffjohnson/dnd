@@ -343,7 +343,7 @@ The jungle thins a little, and you find the ruins of a village choked by trees a
 
 This village was abandoned long ago by the kara-kara, and the ruins of the wooden huts contain nothing of interest or value. The stone tower is about 50 feet square in plan and originally had three floors, but these have collapsed. It stands with its eastern wall against the mountain.
 
-There is a magical portal into the chambers under Ki-ata (see area K15) at ground level in the eastern wall of the tower, but the adventurers will not be able to find it from this side (see page 18). The entrance to the tower is through an open doorway on the western side. Just inside the doorway on the right hand side, stone steps lead down 20 feet to a 20-foot-square cellar. This is the lair of three white apes which will attack any intruders.
+There is a magical portal into the chambers under Ki-ata (see area **K15**) at ground level in the eastern wall of the tower, but the adventurers will not be able to find it from this side (see page 18). The entrance to the tower is through an open doorway on the western side. Just inside the doorway on the right hand side, stone steps lead down 20 feet to a 20-foot-square cellar. This is the lair of three white apes which will attack any intruders.
 
 **white ape (3):** AC 6; HD 4; hp 24, 20, 17; MV 120ʹ(40ʹ); #AT 2 claws; D 1-4/1-4; Save F2; ML 7; AL N; XP 75 each; THACO 16; B25.
 
@@ -351,11 +351,11 @@ Concealed by the rubbish on the floor is a gold and ivory sword hilt (value - 12
 
 ### SOUTHERN SWAMP
 
-Once this area was a bay which the kara-kara used as a harbour for their old village (area T3). When the village was abandoned, the bay silted up and is now covered by a swamp of knee-deep, murky water. The swamp itself is not dangerous, but it is overgrown by mangrove trees whose roots form a tangled mass beneath the water.
+Once this area was a bay which the kara-kara used as a harbour for their old village (area **T3**). When the village was abandoned, the bay silted up and is now covered by a swamp of knee-deep, murky water. The swamp itself is not dangerous, but it is overgrown by mangrove trees whose roots form a tangled mass beneath the water.
 
 ### TRAIL OF THE DEAD
 
-An old path runs along a gulley between the two volcanoes Ni-malowa and Ki-ata. From the kara-kara guard post (area T4) at the south-western end, the path climbs up to where two side valleys (areas T7 and T6) branch off, and then runs down to the causeway into the northern swamp (areas T12 and T13).
+An old path runs along a gulley between the two volcanoes Ni-malowa and Ki-ata. From the kara-kara guard post (area **T4**) at the south-western end, the path climbs up to where two side valleys (areas **T7** and **T6**) branch off, and then runs down to the causeway into the northern swamp (areas **T12** and **T13**).
 
 #### Fixed encounters
 
@@ -383,7 +383,7 @@ A trail runs along the floor of the gulley, marked by huge, worn paving slabs an
 
 The statues line both sides of the trail from one end of it to the other, but there is only {#p7} one pair of undamaged statues. This pair is at the point marked **T5** on **Map 2**.
 
-These two intact statues are magically trapped and will fire one lightning bolt each round at one of the characters (chosen at random) passing between them during that round. Each lightning bolt will inflict 4d6 points of damage (halved if the character makes a saving throw vs. Spells).
+These two intact statues are magically trapped and will fire one *lightning bolt* each round at one of the characters (chosen at random) passing between them during that round. Each *lightning bolt* will inflict 4d6 points of damage (halved if the character makes a saving throw vs. Spells).
 
 ##### T6. South-eastern Side Valley
 
@@ -393,19 +393,25 @@ This side valley is the home of a rock python. It will attack the party if distu
 
 If the python’s bite is successful, it coils around the victim and constricts in the same round, doing a further 2d4 points of damage. Constriction damage will be automatic in subsequent rounds once the bite has hit.
 
-The adventurers will not be able to find the magical portal (see page 18) into the chambers under Ki-ata (see area K4) at the end of this side valley.
+The adventurers will not be able to find the magical portal (see page 18) into the chambers under Ki-ata (see area **K4**) at the end of this side valley.
 
 ##### T7. North-western Side Valley
-> At the far end of this dusty side valley you see a dark opening leading into the mountainside. The opening is blocked by a gate of brightly painted bamboo poles adorned with bones.
+
+:::boxed
+At the far end of this dusty side valley you see a dark opening leading into the mountainside. The opening is blocked by a gate of brightly painted bamboo poles adorned with bones.
+:::
+
 The gate can be opened easily.
 
-Tunnel (Diagram 3)
+#### Tunnel (Diagram 3)
 
-If the adventurers enter this tunnel at the south-eastern end, they will see what appears to be light at the other end — 160 feet away. This is actually the result of a hallucinatory terrain spell (see area T10).
+If the adventurers enter this tunnel at the south-eastern end, they will see what appears to be light at the other end — 160 feet away. This is actually the result of a *hallucinatory terrain* spell (see area **T10**).
 
 ##### T8. Iron Gates
 
-> Two thick, iron gates block your way, lashed together with an intri cately knotted rope.
+::: boxed
+Two thick, iron gates block your way, lashed together with an intri cately knotted rope.
+:::
 
 The gates have hinges set into the walls of the tunnel. The knot is magical; a thief has the same chance of untying it as of picking a lock. Any other character will automatically fail. Any unsuccessful attempt to untie the knot will tighten it and make it impossible to untie, even if the thief makes a successful pick locks roll.
 
@@ -421,19 +427,19 @@ Each spike inflicts 1 point of damage when it is trodden on. The poison causes a
 
 ##### T10. Illusion and Spider’s Lair
 
-The light at the end of the tunnel is caused by a hallucinatory terrain spell which will be broken as soon as the adventurers reach it:
+The light at the end of the tunnel is caused by a *hallucinatory terrain* spell which will be broken as soon as the adventurers reach it:
 
-> You press on towards the distant light at the end of the tunnel. Suddenly, your vision wavers... the light vanishes and instead you see a mass of dusty webs blocking your way.
+::: boxed
+You press on towards the distant light at the end of the tunnel. Suddenly, your vision wavers... the light vanishes and instead you see a mass of dusty webs blocking your way.
+:::
 
-The web is the home of an old, giant black widow spider. She will attack the adventurers as soon as they walk through the illusion. Her poison causes 18 points of damage (negated if the victim makes a
-
-successful saving throw vs. Poison). Entangled in her web are 20 gems (value - 100gp each).
+The web is the home of an old, giant black widow spider. She will attack the adventurers as soon as they walk through the illusion. Her poison causes 18 points of damage (negated if the victim makes a successful saving throw vs. Poison). Entangled in her web are 20 gems (value - 100gp each).
 
 **giant black widow spider:** AC 6; HD 3\*; hp 16; MV 60ʹ(20ʹ) or 120ʹ(40ʹ) in web; #AT 1 bite; D 2-12 + poison (18 hp); Save F2; ML 8; AL N; XP 50; THACO 17; B38.
 
 ##### T11. Exit to the Valley of Tombs
 
-If the adventurers go through the secret door near the iron gates (area T8) the tunnel beyond will lead them to the valley where they will find the entrances to the tombs of the manwu-papas. The DM should refer to the MANWU-PAPAS’ TOMBS on page 9.
+If the adventurers go through the secret door near the iron gates (area T8) the tunnel beyond will lead them to the valley where they will find the entrances to the tombs of the manwu-papas. The DM should refer to the **MANWU-PAPAS’ TOMBS** on page 9.
 
 ### NORTHERN SWAMP
 
@@ -445,11 +451,11 @@ The swamp is an area of muddy pools overgrown by trees and other plants. Visibil
 
 An old, 10-foot-wide wooden causeway runs into the swamp from the north eastern end of the Trail of the Dead. It is solid and safe, but blocked at many points by trees and other plants which spread across it from either side. It ends at a 20-foot-square platform, surrounded by swamp.
 
-If they have not already encountered the hydra which lives in the swamp (see area T13), the adventurers will be attacked by it when they reach the platform.
+If they have not already encountered the hydra which lives in the swamp (see area **T13**), the adventurers will be attacked by it when they reach the platform.
 
 ##### T13. Hydra
 
-When the adventurers reach the platform at the end of the wooden causeway (area T12) or 3 turns after they enter the swamp (whichever is sooner) they will be attacked by an eight-headed hydra.
+When the adventurers reach the platform at the end of the wooden causeway (area **T12**) or 3 turns after they enter the swamp (whichever is sooner) they will be attacked by an eight-headed hydra.
 
 **eight-headed hydra:** AC 5; HD 8; hp 64; MV 120ʹ(40ʹ); #AT 8 bites; D 1-10 (x8); Save F8; ML 11; AL N; XP 650; THACO 12; E52.
 
@@ -459,9 +465,9 @@ For every 8 points of damage taken by the hydra, one head is destroyed. The crea
 
 ### SLOPES OF NI-MALOWA
 
-The slopes of Ni-malowa are covered in the same kind of dense jungle as the eastern part of the island. The volcano is dormant, and the crater is plugged with hardened lava (see area T15).
+The slopes of Ni-malowa are covered in the same kind of dense jungle as the eastern part of the island. The volcano is dormant, and the crater is plugged with hardened lava (see area **T15**).
 
-If the party comes to the edge of the valley containing the entrances to the tombs of the manwu-papas, the DM should refer to THE MANWU-PAPAS’ TOMBS on page 9. The slopes down into the valley are steep but can be climbed safely.
+If the party comes to the edge of the valley containing the entrances to the tombs of the manwu-papas, the DM should refer to **THE MANWU-PAPAS’ TOMBS** on page 9. The slopes down into the valley are steep but can be climbed safely.
 
 #### Fixed Encounters
 
@@ -469,23 +475,25 @@ If the party comes to the edge of the valley containing the entrances to the tom
 
 Whatever route is taken across the slopes of Ni-malowa, the party will be attacked by a group of topis after 2 turns:
 
-> There is a movement in the undergrowth behind you... then another in front... and on either side... In an instant you are beset from all sides by a horde of tiny, silent humanoids, leaping towards you with outstretched claws.
+::: boxed
+There is a movement in the undergrowth behind you... then another in front... and on either side... In an instant you are beset from all sides by a horde of tiny, silent humanoids, leaping towards you with outstretched claws.
+:::
 
 These topis are in addition to any encountered as wandering monsters.
 
 **topi (10):** AC 6; HD 3\*; hp 18,16,15,14,13 (x3), 11,9,8; MV 120ʹ(40ʹ); #AT 2 claws; D 1-6/ 1-6 + Special; Save F2; ML 12; AL C; XP 50 each; THACO 17; New monster.
 
-Characters hit by a topi must make a saving throw vs. Poison or be affected by the equivalent of a slow spell for 1-2 turns. Topis are immune to spells such as sleep and charm, and turn as wights. Non-edged weapons do only half damage to them but knock them off-balance for 1 round.
+Characters hit by a topi must make a saving throw vs. Poison or be affected by the equivalent of a *slow* spell for 1-2 turns. Topis are immune to spells such as *sleep* and *charm*, and turn as wights. Non-edged weapons do only half damage to them but knock them off-balance for 1 round.
 
 ##### T15. Crater at the Summit
 
-> The jungle comes to a sudden end and you find that you have reached the top of the mountain. At your feet the ground drops away into a steep sided crater with a still, emerald green pool at the bottom.
+::: boxed
+The jungle comes to a sudden end and you find that you have reached the top of the mountain. At your feet the ground drops away into a steep sided crater with a still, emerald green pool at the bottom.
+:::
 
-The pool is roughly circular and about 30 feet across. It is warmed and enriched with
+The pool is roughly circular and about 30 feet across. It is warmed and enriched with minerals by the volcano below, and an unusual, outdoor variety of green slime has grown in a thin layer across its surface. It looks like a layer of weed or algae but is otherwise identical to the underground variety. It will attack any characters who come down to its pool. Because of the water in the pool, non-magical fire will only inflict half damage on the slime. Characters hit by the monster will turn to green slime in 1-4 rounds unless the slime is burned off or a *cure disease* spell is used.
 
-minerals by the volcano below, and an unusual, outdoor variety of green slime has grown in a thin layer across its surface. It looks like a layer of weed or algae but is otherwise identical to the underground variety. It will attack any characters who come down to its pool. Because of the water in the pool, non-magical fire will only inflict half damage on the slime. Characters hit by the monster will turn to green slime in 1-4 rounds unless the slime is burned off or a cure disease spell is used.
-
-**green slime:** AC Always hit; HD 2**; hp 16; MV 3' (1'); #AT 1 touch; D Turns flesh into slime; Save F1; ML 7; AL L; XP 30; THACO 18; B31.
+**green slime:** AC Always hit; HD 2\*\*; hp 16; MV 3' (1'); #AT 1 touch; D Turns flesh into slime; Save F1; ML 7; AL L; XP 30; THACO 18; B31.
 
 The pool is 20 feet deep. At the bottom is a large gold amulet bearing a star sapphire (value - 3000gp), three gems (value - 540gp each), and a pair of matching silver armbands (value - 335gp each).
 
@@ -493,9 +501,11 @@ The pool is 20 feet deep. At the bottom is a large gold amulet bearing a star sa
 
 The adventurers should be discouraged from attacking the kara-kara village, since there are so many of these humanoids here and in the underground chambers (areas N15 and N16) that they are likely to overcome the party in a straight fight. When the adventurers can first see into the village, the DM should read out the following description:
 
-> Cradled between two jungle-covered arms of the mountain is a village of long, wooden huts with scores of kara-kara dancing in the open space between them. At the back of the village is the mouth of a large cave, filled with the flickering light of torches. From the depths of the cave comes the echoing beat of drums and raucous chanting. One glance is enough to convince you that Rollo Bargmannn’s warning about the dangers of attacking the tribe openly was no exaggeration.
+::: boxed
+Cradled between two jungle-covered arms of the mountain is a village of long, wooden huts with scores of kara-kara dancing in the open space between them. At the back of the village is the mouth of a large cave, filled with the flickering light of torches. From the depths of the cave comes the echoing beat of drums and raucous chanting. One glance is enough to convince you that Rollo Bargmannn’s warning about the dangers of attacking the tribe openly was no exaggeration.
 
-> In front of the village is a small bay, where five large outrigger canoes lie drawn up on the beach.
+In front of the village is a small bay, where five large outrigger canoes lie drawn up on the beach.
+:::
 
 ##### T16. Village
 
@@ -507,7 +517,7 @@ There are 180 kara-kara in the village during the ceremony (the others are in ar
 
 **kara-kara young (20):** AC 9; HD 1+1; hp 3 each; MV 120ʹ(40ʹ); #AT 0; D 0; Save F1; ML 2; AL C; XP 0; New monster.
 
-The warriors all have shields and are armed with two wooden spears and either a wooden pick or a stone-headed mace (see NEW MONSTERS, Kara-kara - page 27). They will attack the party on sight and begin their chant in order to improve their hit points, saving throws and morale. The females have stone daggers, and will only fight in self-defence. The young will not fight. The warriors each have 10gp in crude coral jewellery.
+The warriors all have shields and are armed with two wooden spears and either a wooden pick or a stone-headed mace (see **NEW MONSTERS, Kara-kara** - page 27). They will attack the party on sight and begin their chant in order to improve their hit points, saving throws and morale. The females have stone daggers, and will only fight in self-defence. The young will not fight. The warriors each have 10gp in crude coral jewellery.
 
 Every 2 rounds after the adventurers begin to fight the warriors in the village, 10 more chanting kara-kara (nine warriors and a 9-hit-point leader) will emerge from the caverns behind the village (areas N15 and N16). There will be a total of 190 male kara-kara (171 warriors and 19 leaders) in these caverns, minus any previously killed as wandering monsters.
 
@@ -523,7 +533,7 @@ There are five ornately carved war canoes with outriggers pulled up on the beach
 
 | Statistic    | Value                       |
 | ------------ | --------------------------- |
-| Movement     | 18 miles/day; 90 feet/round |
+| Movement     | 18 miles/day, 90 feet/round |
 | Crew         | 40 (all rowers)             |
 | Hull Points  | 41–50                       |
 | Armour Class | 8                           |
@@ -532,6 +542,8 @@ There are five ornately carved war canoes with outriggers pulled up on the beach
 {#p9}
 
 ### UNDER NI-MALOWA
+
+Encounter areas N1-N32: Map 3
 
 These chambers under the volcano Ni-malowa were originally dug by the “Ancestors” — the race which inhabited Teki-nura-ria before the kara-kara. They can now be divided into three areas:
 
@@ -551,15 +563,17 @@ The drums in the volcano temple (area N15) cannot be heard in areas N4–N7.
 
 The entrances to the tombs of the manwu-papas are in a dusty valley on the north-eastern side of the volcano Ni-malowa:
 
-> Before you is a short, steep-sided valley, which looks out over the ocean to the north-east. Jungle trees grow right up to the sides of the valley but there seems to be no life amid the dusty rocks on the valley floor. At the head of the valley, three, stark stone structures complete the sense of desolation.
+::: boxed
+Before you is a short, steep-sided valley, which looks out over the ocean to the north-east. Jungle trees grow right up to the sides of the valley but there seems to be no life amid the dusty rocks on the valley floor. At the head of the valley, three, stark stone structures complete the sense of desolation.
+:::
 
-After reading this description, the DM should show the players Illustration 1 from the Pull-out Sheet.
+After reading this description, the DM should show the players **Illustration 1** from the **Pull-out Sheet**.
 
 Each structure has a rectangular platform extending out from the valley wall, with steps leading up to it at the front. The platforms and steps are built of massive stone slabs. The platforms are about 6 feet high, 32 feet long and 20 feet wide. The tops of the upper slabs are about 15 feet above the platforms.
 
 At the back of each platform is a pair of rectangular pillars, which support one or more large horizontal stone slabs. Between each pair of pillars is a magical portal which leads through the 10-foot-thick, solid rock wall to one of the tombs of the manwu-papas.
 
-Inscriptions on the stones give clues as to how each of the magical portals can be opened. When the party performs the correct actions, a passage (created by a *pass-wall*) will appear through the rock face between the pillars. The portals can be opened from the inside by touching the place where the passage will appear. The portals remain open for 1 turn, and can be reopened any number of times.
+Inscriptions on the stones give clues as to how each of the magical portals can be opened. When the party performs the correct actions, a passage (created by a *passwall*) will appear through the rock face between the pillars. The portals can be opened from the inside by touching the place where the passage will appear. The portals remain open for 1 turn, and can be reopened any number of times.
 
 The sources of the portals are yellow, painted circles on the end walls of the corridors behind the entrances. These are the only parts of the portals which have a magical aura.
 
@@ -567,81 +581,93 @@ The sources of the portals are yellow, painted circles on the end walls of the c
 
 #### N1. Entrance to the Tomb of Su-hana-ko
 
-The DM should show the players Illustration 2 from the Pull-out Sheet.
+The DM should show the players **Illustration 2** from the **Pull-out Sheet**.
 
 The three niches in the slabs above the portal each contain a jaw-bone from a large pig. They have value only to the kara-kara.
 
-The horizontal lines with jagged lines between them are kara-kara writing. The writing above the portal reads “Su-hana-ko”, a name which means “dancer”. The name can be read and its meaning understood by the use of a read languages spell or similar means.
+The horizontal lines with jagged lines between them are kara-kara writing. The writing above the portal reads “Su-hana-ko”, a name which means “dancer”. The name can be read and its meaning understood by the use of a *read languages* spell or similar means.
 
-The pass-wall portal will open if any character performs (even approximately) the dance shown by the six carved panels on the stones beside the opening. The DM may even insist that the player concerned performs the dance!
+The *passwall* portal will open if any character performs (even approximately) the dance shown by the six carved panels on the stones beside the opening. The DM may even insist that the player concerned performs the dance!
 
 #### N2. Entrance to the Tomb of Kono-ti
 
-The DM should show the players Illustration 3 from the Pull-out Sheet.
+The DM should show the players **Illustration 3** from the **Pull-out Sheet**.
 
 There are three sets of inscriptions on the entrance. These can be read by means of a read languages spell, and a thief (4th level or above) has an 80% chance of understanding each inscription. They read as follows:
 
 — on the horizontal slab: “Na-ho-kono-ti” meaning “Tomb of Kono-ti”. On reading the inscription it will be clear that “Kono-ti” is a name meaning “wise one”.
-
-*— on the left-hand pillar: “Lowa-nek” meaning “Order in...”.
-
+— on the left-hand pillar: “Lowa-nek” meaning “Order in...”.
 — on the right-hand pillar: “Set-ato” meaning “... all things”.
 
 The three panels in the centre of the top slab represent (from left to right) a spider, a bird and a fish. They can be pushed in about half an inch and slide back out again when released.
 
-These panels, and the similar ones on the pillars, are arranged in five of the six possible orders in which the three symbols can be put. If the adventurers realise this and push the panels of the top stone in the remaining order, that is: bird-fish-spider, the pass-wall will open through to the passage beyond. The inscriptions on the pillars should serve the party as clues to how the tomb is entered.
+These panels, and the similar ones on the pillars, are arranged in five of the six possible orders in which the three symbols can be put. If the adventurers realise this and push the panels of the top stone in the remaining order, that is: bird-fish-spider, the *passwall* will open through to the passage beyond. The inscriptions on the pillars should serve the party as clues to how the tomb is entered.
 
-If the panels are pressed in any other order, the hidden trap-door in the platform in front of the portal will open, dropping anybody on it into a 20-foot-deep pit (2d6 points of damage each). This trap cannot be disarmed, but it can be avoided. Setting off the trap will not prevent the pass-wall from opening if the panels are pressed in the correct order afterwards.
+If the panels are pressed in any other order, the hidden trap-door in the platform in front of the portal will open, dropping anybody on it into a 20-foot-deep pit (2d6 points of damage each). This trap cannot be disarmed, but it can be avoided. Setting off the trap will not prevent the *passwall* from opening if the panels are pressed in the correct order afterwards.
 
 The carved “faces” on the portal and at each end of the top slab are only decoration.
 
 #### N3. Entrance to the Tomb of Kota-ef-nitek
 
-The DM should show the players Illustration 4 from the Pull-out Sheet.
+The DM should show the players *Illustration 4* from the *Pull-out Sheet*.
 
-The inscription on the top slab reads “Kota-ef-nitek”, a name meaning “the twin”. This can be read and understood by the use of a read languages spell or similar means, and a thief (4th level or above) has an 80% chance of understanding it.
+The inscription on the top slab reads “Kota-ef-nitek”, a name meaning “the twin”. This can be read and understood by the use of a *read languages* spell or similar means, and a thief (4th level or above) has an 80% chance of understanding it.
 
-The face on the figure between the pillars and the one on the bottom right-hand panel of the right-hand pillar are very similar. The inscription is a clue to this and, if they are touched at the same time or within 1 round, the pass-wall will open.
+The face on the figure between the pillars and the one on the bottom right-hand panel of the right-hand pillar are very similar. The inscription is a clue to this and, if they are touched at the same time or within 1 round, the *passwall* will open.
 
 The panel with the design:
 
-is magically trapped. If it is touched, a blast of magical fire will gush out and inflict 10 points of damage (5 if a successful saving throw vs. Spells is made) on all characters within 15 feet. The design is the kara-kara’s death symbol. It cannot be read by means of a read languages spell.
+⡏⢉⣉⣉⣉⡉⢩⣭⢩⣭⣭⣭⣭⣭⣭⣭⢩⣭⣭⣭⣭⣭⣭⣭⢹
+⡇⢸⣿⣿⡿⠁⣼⣿⣌⡛⠿⠿⠿⠿⣿⡿⢸⣿⣿⣿⣿⣿⣿⣿⢸
+⡇⠸⠿⠟⢁⣼⡟⣩⣭⣭⣙⣛⣛⣛⢶⣶⣿⣿⣿⣿⣿⡿⠿⢿⢸
+⡇⣶⣶⣿⣿⠟⣛⠢⣙⠻⣿⣿⣿⣿⡗⣸⣿⣿⣿⣿⡏⢰⣿⡆⢸
+⡇⣶⣶⡎⣿⡎⣿⣷⣌⠳⣬⡙⢿⡟⣸⠋⣴⣶⡆⢸⡇⢸⣿⡇⢸
+⡇⣿⣿⡇⣿⣧⢻⣿⣿⣷⣌⠻⣷⣶⣿⣦⠈⣿⡇⢸⡇⢸⣿⡇⢸
+⡇⣿⣿⣧⢻⣿⡎⣿⣿⡿⢋⣴⠟⣩⢙⣿⠀⣿⡇⢸⡇⢸⣿⡇⢸
+⡇⣿⣿⣿⢸⣿⣿⣬⣥⣾⣿⣿⣌⣋⣼⣿⠀⣿⡇⢸⡇⢸⣿⡇⢸
+⣇⣙⣛⣋⣘⣛⣛⣛⣛⣛⣛⣛⣛⣛⣛⣛⣀⣛⣃⣘⣃⣘⣛⣃⣸
+
+is magically trapped. If it is touched, a blast of magical fire will gush out and inflict 10 points of damage (5 if a successful saving throw vs. Spells is made) on all characters within 15 feet. The design is the kara-kara’s death symbol. It cannot be read by means of a *read languages* spell.
 
 #### N4. Crypt of Su-hana-ko
 
+::: boxed
 The passage opens into a musty chamber. Before you is a small, stone casket, flanked by a pair of plain, stoppered jars. To right and left, half-hidden by shadows, two statues maintain a silent vigil.
+:::
 
-The jars are stoppered and sealed with wax. Each contains an ochre jelly which will attack if the lid is removed or if the jar is
-
-broken, gaining surprise on a roll of 1-4 on 1d6. The jellies are only harmed by fire or cold and can dissolve wood, leather and cloth. Attacks by weapons or lightning divide them into smaller jellies.
+The jars are stoppered and sealed with wax. Each contains an ochre jelly which will attack if the lid is removed or if the jar is broken, gaining surprise on a roll of 1-4 on 1d6. The jellies are only harmed by fire or cold and can dissolve wood, leather and cloth. Attacks by weapons or lightning divide them into smaller jellies.
 
 **ochre jelly (2):** AC 8; HD 5#; hp 20, 23; MV 30ʹ(10ʹ); #AT 1 touch; D 2-12; Save F3; ML 12; AL N; XP 300 each; THACO 15; B35.
 
 The casket is not locked, but is trapped (normal chances of detection). The trap works by firing two crossbow bolts sideways, which will smash the jars unless these have been moved. This will release the ochre jellies, but will not harm them. Any character in the line of fire will take 1-6 points of damage (automatic hit) but will prevent the jar on that side from breaking.
 
-The casket contains a small, sealed ceramic jar, a finely made jade axe-head (value - 170gp) and a pair of matching, gold bracelets (value - 560gp each). The jar (which has no value) contains the cremated remains of Su-hana-ko, a long-departed manwu-papa of the kara-kara.
+The casket contains a small, sealed ceramic jar, a finely made jade axe-head (value - 170 gp) and a pair of matching, gold bracelets (value - 560 gp each). The jar (which has no value) contains the cremated remains of Su-hana-ko, a long-departed manwu-papa of the kara-kara.
 
 The statues represent one of the kara-kara’s gods; a creature with the body of a kara-kara and the head of a boar. They have no value.
 
 #### N5. Crypt of Kono-ti
 
+::: boxed
 This place has the still, dead air of a crypt. Its rough-hewn walls and floor are bare, and a veil of cobwebs covers the ceiling. In the darkness at the far end, you can make out four shadowy alcoves, two on each side. The first two are empty, but from those beyond comes the enticing glint of gold.
+:::
 
 The cobwebs were woven by hundreds of small, harmless spiders which live on the ceiling. The two nearest alcoves are filled by two gelatinous cubes. They are difficult to see, and will attack anyone who moves between them, as well as in self-defence. Characters hit must make a saving throw vs. Paralysis or be paralysed for 2-8 turns. Gelatinous cubes are unaffected by cold or lightning.
 
 **gelatinous cube (2):** AC 8; HD 4\*; hp 19, 12; MV 60ʹ(20ʹ); #AT 1 touch; D 2-8 + paralysis; Save F2; ML 12; AL N; XP 125 each; THACO 16; B30.
 
-Each of the farther alcoves contains the skeleton of a kara-kara wearing two gold ankle bracelets (value - 575gp each).
-
-The door of the secret compartment at the end of the crypt is trapped. If the trap is not disarmed, a cloud of poisonous gas is released when the door is opened. Any victim within 10 feet of the door must make a saving throw vs. Poison or be paralysed for 1d12+3 turns. A cure light wounds spell will remove the paralysis.
-
-Inside the secret compartment is a kara-kara skeleton and a small, sealed jar. The skeleton is that of Kono-ti (a manwu-papa from long ago) and is wearing an exquisite ivory necklace inlaid with mother-of-pearl (value - 750gp). The jar contains 12 ivory figurines (value - 105gp each).
-
 {#p11}
+
+Each of the farther alcoves contains the skeleton of a kara-kara wearing two gold ankle bracelets (value - 575 gp each).
+
+The door of the secret compartment at the end of the crypt is trapped. If the trap is not disarmed, a cloud of poisonous gas is released when the door is opened. Any victim within 10 feet of the door must make a saving throw vs. Poison or be paralysed for 1d12+3 turns. A *cure light wounds* spell will remove the paralysis.
+
+Inside the secret compartment is a kara-kara skeleton and a small, sealed jar. The skeleton is that of Kono-ti (a manwu-papa from long ago) and is wearing an exquisite ivory necklace inlaid with mother-of-pearl (value - 750 gp). The jar contains 12 ivory figurines (value - 105 gp each).
 
 #### N6. Crypt of Kota-ef-nitek
 
-> Opening the door, you find a musty chamber — a tomb for the haggard corpse lying on a central slab, and its long dead attendants slumped against the walls. Suddenly their lifeless eyes turn on you and they spring forwards; bony fingers reaching out and jaws agape.
+::: boxed
+Opening the door, you find a musty chamber — a tomb for the haggard corpse lying on a central slab, and its long dead attendants slumped against the walls. Suddenly their lifeless eyes turn on you and they spring forwards; bony fingers reaching out and jaws agape.
+:::
 
 The creature on the slab and four of those against the walls are ghouls. The other two are agarats. They will attack the party on sight. They are controlled by KalnaKaa and the manwu-papas who use them to guard this secret entrance to the chambers under the mountain.
 
@@ -651,93 +677,108 @@ The creature on the slab and four of those against the walls are ghouls. The oth
 
 Any character hit by a ghoul must make a saving throw vs. Paralysis or be paralysed for 2-8 turns. Agarats can scream once per turn. All characters within 20 feet must make a saving throw vs. Spells or suffer a 1 level energy drain for 1-4 turns.
 
-The ghoul lying on the stone slab was once Kota-ef-nitek, a manwu-papa. Its sandals are inlaid with turquoise (value - 310gp each) and it wears a necklace of coral and jade beads (value - 760gp).
+The ghoul lying on the stone slab was once Kota-ef-nitek, a manwu-papa. Its sandals are inlaid with turquoise (value - 310 gp each) and it wears a necklace of coral and jade beads (value - 760 gp).
 
 #### N7. Kota-ef-nitek’s Treasure Room
 
-> The air here is dull and silent, seeming to swallow up any sounds you make. The room is in the shape of a T, with narrow branches to either side and a wider part ahead, from which a life-sized crystal skull glares at you from a stone plinth. To your left and right, similar plinths bear large crystal vials.
+::: boxed
+The air here is dull and silent, seeming to swallow up any sounds you make. The room is in the shape of a T, with narrow branches to either side and a wider part ahead, from which a life-sized crystal skull glares at you from a stone plinth. To your left and right, similar plinths bear large crystal vials.
+:::
 
 The room is trapped in an unusual way. If any of the three crystal items is lifted from its stone plinth the room will be filled with a loud whistling sound. This will rise in pitch as the object is moved away from the plinth, going beyond the range of characters’ hearing when it is 10 feet away. It will drop in pitch if the object is moved back towards its plinth and will stop if it is replaced, but will start again if the object is removed once more. If the object is moved 20 feet or more from the plinth, the sound will reach a pitch where every non-magical object inside the room which is made of glass, crystal or ceramic (including the skull, vials and any similar items carried by the adventurers) has a 50% chance of shattering.
 
-The whistle is magical and the whole room has a magical aura. The magic may be removed permanently by a dispel magic spell (the whistling magic was created by a level 14 magic-user) or nullified for the duration of a silence 15ʹ radius spell cast anywhere in the room. The whistle cannot be heard outside the room and only affects objects and creatures inside it.
+The whistle is magical and the whole room has a magical aura. The magic may be removed permanently by a *dispel magic* spell (the whistling magic was created by a level 14 magic-user) or nullified for the duration of a *silence 15ʹ radius* spell cast anywhere in the room. The whistle cannot be heard outside the room and only affects objects and creatures inside it.
 
-The crystal skull is very finely made and is worth 2500gp. The vials contain potions. The vial on the eastern plinth holds four potions of healing (a colourless, bitter liquid) and the western vial contains two potions of gaseous form (colourless and sweet).
+The crystal skull is very finely made and is worth 2500 gp. The vials contain potions. The vial on the eastern plinth holds four *potions of healing* (a colourless, bitter liquid) and the western vial contains two *potions of gaseous form* (colourless and sweet).
 
 #### N8. Long Corridor
 
-> A rock-hewn passage stretches before you, filled with the faint but persistent rhythm of beating drums.
+::: boxed
+A rock-hewn passage stretches before you, filled with the faint but persistent rhythm of beating drums.
+:::
 
 This passage is 1800 feet long. The air and the walls are noticeably warmer towards its south-western end because of the heat from the mountain’s volcanic core.
+
+### KARA-KARA CHAMBERS
 
 The drums in the volcano temple (room N15) may be heard in rooms N8-N16.
 
 #### N9. Room with Statues
 
+::: boxed
 To your relief, you find that this room is unoccupied. The plastered walls bear faded horizontal bands of red and green. Four wooden, boar headed statues with humanoid bodies face inwards from the corners. The wood is old and worn but the eyes and tusks of the statues are bright with inlaid mother-of-pearl.
+:::
 
-The statues are actually wood golems which will attack anyone entering the room. If attacked with fire, the golems will take the normal extra damage (saving at -2), but will also give off clouds of thick smoke which will obscure characters’ vision for a -2 penalty on hit rolls. The golems have a -1 penalty on initiative rolls. They are immune to cold, missiles and sleep, charm and hold spells.
+The statues are actually wood golems which will attack anyone entering the room. If attacked with fire, the golems will take the normal extra damage (saving at -2), but will also give off clouds of thick smoke which will obscure characters’ vision for a -2 penalty on hit rolls. The golems have a -1 penalty on initiative rolls. They are immune to cold, missiles and *sleep*, *charm* and *hold* spells.
 
 **wood golem (4)\*:** AC 7; HD 2+2\*; hp 14 each; MV 120ʹ(40ʹ); #AT 1 fist; D 1-8; Save F1; ML 12; AL N; XP 35 each; THACO 17; E50.
 
-The eyes and tusks are worth a total of 245gp per golem, but the use of fire on a golem will ruin them.
+The eyes and tusks are worth a total of 245 gp per golem, but the use of fire on a golem will ruin them.
 
 #### N10. The Great Manwu-papa
 
-> Glaring at you from the centre of the room is a kara-kara, resplendent in a head-dress and long robe of brightly coloured feathers. Gathered around him are eight other kara-kara, wearing loin-cloths and body paint and wielding short, tooth-edged swords.
+::: boxed
+Glaring at you from the centre of the room is a kara-kara, resplendent in a head-dress and long robe of brightly coloured feathers. Gathered around him are eight other kara-kara, wearing loin-cloths and body paint and wielding short, tooth-edged swords.
+:::
 
-The creature in the robes is the kara-kara’s chief manwu-papa. He has a shield and is wearing wooden armour under the robes. He is armed with an iron mace +1 and has the following spells: cause fear, cure light wounds, curse, hold person and silence 15ʹ radius. The manwu-papa’s curse spell causes cowardice. An affected character must make a saving throw vs. Spells at the beginning of every combat, or flee for 2 turns (as if affected by a cause fear spell).
-
+The creature in the robes is the kara-kara’s chief manwu-papa. He has a shield and is wearing wooden armour under the robes. He is armed with an iron *mace +1* and has the following spells: *cause fear*, *cure light wounds*, *curse*, *hold person* and *silence 15ʹ radius*. The manwu-papa’s *curse* spell causes cowardice. An affected character must make a saving throw vs. Spells at the beginning of every combat, or flee for 2 turns (as if affected by a *cause fear* spell).
 
 {#p12}
 
-His attendants are ordinary kara-kara warriors armed with shark’s-tooth swords (treat as short swords). When they see the party, the kara-kara will begin to chant (see NEW MONSTERS, Kara-kara - page 27). If the kara-kara fail a morale check during combat, they will surrender.
+His attendants are ordinary kara-kara warriors armed with shark’s-tooth swords (treat as short swords). When they see the party, the kara-kara will begin to chant (see **NEW MONSTERS, Kara-kara** - page 27). If the kara-kara fail a morale check during combat, they will surrender.
 
-**kara-kara manwu-papa:** AC 6; HD 6; hp 28; MV 120ʹ(40ʹ); #AT 1 mace +1; D 2-7; Save C6; ML 9 (11); AL C; XP 500; THACO 14; New monster.
+**kara-kara manwu-papa:** AC 6; HD 6; hp 28; MV 120ʹ(40ʹ); #AT 1 *mace +1*; D 2-7; Save C6; ML 9 (11); AL C; XP 500; THACO 14; New monster.
 
-**kara-kara warrior (8):** AC 9; HD 1 + 1 (1+4); hp 5(8) each; MV 120ʹ(40ʹ); #AT 1 short sword; D 1-6; Save F 1 (F2); ML 9 (11); AL C; XP 15 each; THACO 18; New monster.
+**kara-kara warrior (8):** AC 9; HD 1+1 (1+4); hp 5(8) each; MV 120ʹ(40ʹ); #AT 1 short sword; D 1-6; Save F 1 (F2); ML 9 (11); AL C; XP 15 each; THACO 18; New monster.
 
-The manwu-papa’s robe and head-dress are worth a total of 350gp. He is also wearing a very fine jade amulet inlaid with mother-of-pearl (value - 750gp) and a pair of jade earrings (value - 75gp each). Each of the warriors has only 10gp worth of crude coral jewellery.
+The manwu-papa’s robe and head-dress are worth a total of 350 gp. He is also wearing a very fine jade amulet inlaid with mother-of-pearl (value - 750 gp) and a pair of jade earrings (value - 75 gp each). Each of the warriors has only 10 gp worth of crude coral jewellery.
 
 This is the manwu-papas’ robing room. Its walls were once plastered, but most of this has fallen off and the kara-kara have painted patterns on the wall in bright green, red and yellow. Three wooden pegs have been fixed into the eastern wall. A sack hangs from one of the pegs, along with five human skulls lashed together with twine.
 
-The sack contains a copper bracelet, 27 iron nails and a small, sealed bottle filled with a fierce chilli sauce. One of the skulls contains a small ivory box inlaid with coral and mother-of-pearl (value - 350gp), in which is a large pearl (value - 500gp).
+The sack contains a copper bracelet, 27 iron nails and a small, sealed bottle filled with a fierce chilli sauce. One of the skulls contains a small ivory box inlaid with coral and mother-of-pearl (value - 350 gp), in which is a large pearl (value - 500 gp).
 
 
 #### N11. Manwu-papas’ Quarters
 
-> A hurried glance around this luridly decorated chamber assures you that it is unoccupied. It seems to be a bedroom for three people; people with a liking for bright red, green and yellow paint!
+::: boxed
+A hurried glance around this luridly decorated chamber assures you that it is unoccupied. It seems to be a bedroom for three people; people with a liking for bright red, green and yellow paint!
+:::
 
 This is the bedroom for the three manwu-papas of the kara-kara tribe. They have painted the plastered walls with patterns in their favorite colours.
 
 Three wooden beds with mattresses of palm leaves stand against the western wall, each with a wooden peg hammered into the wall above it. Two of the pegs have sacks hanging from them.
 
-The left-hand sack contains the skull of a halfling, a pebble with a natural hole through it, 23 rusty nails and the dried tail of a lizard. The right-hand sack contains a rusty iron knife, several pieces of scrap iron and some cremated animal bones wrapped in palm leaves. Mingled with the bones are 20 small pearls (value - 25gp each).
+The left-hand sack contains the skull of a halfling, a pebble with a natural hole through it, 23 rusty nails and the dried tail of a lizard. The right-hand sack contains a rusty iron knife, several pieces of scrap iron and some cremated animal bones wrapped in palm leaves. Mingled with the bones are 20 small pearls (value - 25 gp each).
 
 To the left of the beds is a low table with a ceramic jug, six beakers and four wooden bowls arranged on it. The bowls hold tasty, exotic fruits, and the jug contains a thick, sickly, alcoholic drink.
 
 #### N12. Prison Pits
 
-> A noxious stench like a dung heap assails you as you open the door to this lofty natural cavern. The floor drops away into two yawning pits, leaving only a ledge and a narrow rock causeway to link this door with the other two entrances.
+::: boxed
+A noxious stench like a dung heap assails you as you open the door to this lofty natural cavern. The floor drops away into two yawning pits, leaving only a ledge and a narrow rock causeway to link this door with the other two entrances.
+:::
 
 The prison pits are 30 feet deep, and downward-pointing bamboo spikes have been set into the sides just below the level of the causeway, in order to prevent prisoners from escaping.
 
 There are three kara-kara prisoners in the eastern pit, captives from a tribe which lives on another kara-kara island. They have no weapons or possessions and will cower at the far side of the pit, even if the party attempts to release them. If they are forced out of the pit they will flee towards room N13.
 
-**kara-kara prisoner (3):** AC 9; HD 1 + 1; hp 4,2,2; MV 120ʹ(40ʹ); #AT 0; D 0; Save F1; ML 2; AL C; XP 0; New monster.
+**kara-kara prisoner (3):** AC 9; HD 1+1; hp 4, 2, 2; MV 120ʹ(40ʹ); #AT 0; D 0; Save F1; ML 2; AL C; XP 0; New monster.
 
 If the prisoners get through the door, the guards will be alerted and will rush into this room to attack, chanting as they run.
 
-The other pit contains the body of an elf and three human skeletons. Also in the pit is an engraved platinum belt (value - 1500gp) which the kara-kara have ignored.
+The other pit contains the body of an elf and three human skeletons. Also in the pit is an engraved platinum belt (value - 1500 gp) which the kara-kara have ignored.
 
 #### N13. Guardroom
 
 The guards in this room will rush into room N12 if they are alerted by the prisoners, or into room N15 if the beat of the drums stops. This description assumes that the party encounters them here:
 
-> Facing you across the room are five kara-kara, chanting in time to the beat of the drums and waving their clubs and spears in a strange dance.
+::: boxed
+Facing you across the room are five kara-kara, chanting in time to the beat of the drums and waving their clubs and spears in a strange dance.
+:::
 
-The guards will attack the party on sight. They are already chanting and so have improved hit points, saving throws and morale (see NEW MONSTERS, Kara-kara - page 27). If they fail a morale check during combat, they will surrender rather than flee. Each of the guards has 10gp worth of coral and amber jewellery.
+The guards will attack the party on sight. They are already chanting and so have improved hit points, saving throws and morale (see **NEW MONSTERS, Kara-kara** - page 27). If they fail a morale check during combat, they will surrender rather than flee. Each of the guards has 10 gp worth of coral and amber jewellery.
 
-**kara-kara warrior (5):** AC 8; HD (1 + 1) 1+4; hp (5)8 each; MV 120ʹ(40ʹ); #AT 1 stone mace or wooden spear; D 1-6; Save (F1) F2; ML (9) 11; AL C; XP 15 each; THACO 18; New monster.
+**kara-kara warrior (5):** AC 8; HD (1+1) 1+4; hp (5)8 each; MV 120ʹ(40ʹ); #AT 1 stone mace or wooden spear; D 1-6; Save (F1) F2; ML (9) 11; AL C; XP 15 each; THACO 18; New monster.
 
 The room has plain rock walls, floor and ceiling. On the lower parts of the walls the guards have scratched meaningless primitive designs.
 
@@ -745,9 +786,11 @@ On the floor against the southern wall, extending along its entire length, is a 
 
 #### N14. Armoury
 
-> This storeroom is unoccupied. Against the far wall, an untidy heap of primitive weapons has been dumped next to three large, unstoppered jars.
+::: boxed
+This storeroom is unoccupied. Against the far wall, an untidy heap of primitive weapons has been dumped next to three large, unstoppered jars.
+:::
 
-The stack of weapons consists of 50 spears, 15 stone-headed maces, 40 wooden picks, five swords edged with sharks’ teeth, and 12 shields (see NEW MONSTERS, Kara-kara - page 27, for details of these weapons). One of the spears is a spear +2. It is indistinguishable from the other spears except for its magical aura.
+The stack of weapons consists of 50 spears, 15 stone-headed maces, 40 wooden picks, five swords edged with sharks’ teeth, and 12 shields (see **NEW MONSTERS, Kara-kara** - page 27, for details of these weapons). One of the spears is a *spear +2*. It is indistinguishable from the other spears except for its magical aura.
 
 One of the jars holds water. The other two contain a mixture of rotting fruits used to feed the prisoners in the pits (room N12).
 
@@ -757,29 +800,29 @@ The following description assumes that the party will enter this chamber through
 
 {#p13}
 
-> Opening the door, you are confronted by a blast of hot air and the deafening roar of drums. This huge, natural chamber is dominated by a gaping pit, filled with a fiery red glow and spanned by a slender rope bridge. On the far side is a crowd of spear-waving kara-kara.
+::: boxed
+Opening the door, you are confronted by a blast of hot air and the deafening roar of drums. This huge, natural chamber is dominated by a gaping pit, filled with a fiery red glow and spanned by a slender rope bridge. On the far side is a crowd of spear-waving kara-kara.
 
 Next to you are the drums, each pounded by three sweating kara-kara, but your eyes are drawn to a corner of the cavern beyond them. There, you see a pair of brightly-robed kara-kara and, lounging in a throne on a platform above, a gross, pig-like creature.
 
 Barely a heart-beat passes before the drums stop. The beaters hurl themselves towards you followed by the robed kara-kara. There is a battle-cry from the far side of the pit, and the horde of kara-kara starts to swarm across the swaying rope bridge. Then, with a squeal of anger and fear which shatters the sudden quiet, the pig-beast steps from its throne and vanishes before your eyes!
+:::
 
-The pig-like beast in the throne is an image of KalnaKaa, projected from his laboratory (area N3 1). The throne is large and made of bronze. The platform it is on is 10 feet above the ground. The image cannot be harmed; spells and physical attacks will pass straight through it. KalnaKaa can see and speak through the image, but cannot cast spells or attack in any way (see area N31). Realising that his stronghold is under serious attack, KalnaKaa will make preparations to flee, (see KALNAKAA’S ROOMS - below) and cease sending his projected image.
+The pig-like beast in the throne is an image of KalnaKaa, projected from his laboratory (area N3 1). The throne is large and made of bronze. The platform it is on is 10 feet above the ground. The image cannot be harmed; spells and physical attacks will pass straight through it. KalnaKaa can see and speak through the image, but cannot cast spells or attack in any way (see area N31). Realising that his stronghold is under serious attack, KalnaKaa will make preparations to flee, (see **KALNAKAA’S ROOMS** - below) and cease sending his projected image.
 
 All the kara-kara will chant if possible (see NEW MONSTERS, Kara-kara - page 27) The nine kara-kara drum-beaters will attack the adventurers on sight, using the heavy drum-sticks as clubs.
 
-**kara-kara warrior (9):** AC 9; HD 1 + 1 (1+4); hp 5(8) each; MV 120ʹ(40ʹ); #AT 1 club; D 1-4; Save F1 (F2); ML 9(11); AL C; XP 15 each; THACO 18; New monster.
+**kara-kara warrior (9):** AC 9; HD 1+1(1+4); hp 5(8) each; MV 120ʹ(40ʹ); #AT 1 club; D 1-4; Save F1 (F2); ML 9(11); AL C; XP 15 each; THACO 18; New monster.
 
-They will be followed by the two robed figures who are manwu-papas armed with metal war hammers. They have shields and are wearing wooden armour under their feathered robes. They can each cast the following spells: cause fear, hold person
+They will be followed by the two robed figures who are manwu-papas armed with metal war hammers. They have shields and are wearing wooden armour under their feathered robes. They can each cast the following spells: *cause fear*, *hold person* and *cause light wounds*. If they use *hold person*, they will cast it at single targets. Each of the manwu-papas has 200 gp worth of coral and mother-of-pearl jewellery.
 
-and cause light wounds. If they use hold person, they will cast it at single targets. Each of the manwu-papas has 200gp worth of coral and mother-of-pearl jewellery.
+**kara-kara manwu-papa (2):** AC 5; HD 4; hp 19, 15; MV 120ʹ(40ʹ); #AT 1 war hammer; D 1-6; Save C4; ML 9(11); AL C; XP 125 each; THACO 16; New monster.
 
-**kara-kara manwu-papa (2):** AC 5; HD 4; hp 19,15; MV 120ʹ(40ʹ); #AT 1 war hammer; D 1-6; Save C4; ML 9(11); AL C; XP 125 each; THACO 16; New monster.
-
-There are 30 kara-kara (three leaders and 27 warriors) on the south-western side of the cavern. They each have a shield, two spears and a stone-headed club, a wooden pick or a sharks’-tooth sword. They each have 10gp worth of ivory jewellery. There are also 20 young, but these will not fight. The warriors and leaders will cross the rope bridge to attack the party but they can only cross in single file and it will take 2 rounds for the first ones to arrive. Unless they are stopped, five kara-kara will reach the northern end of the bridge each round after that. Any character with an edged weapon can automatically cut the rope bridge in 1 round. Any creatures on the bridge will fall into the fiery pit and be killed. The kara-kara will be unable to cross the pit once the bridge is cut.
+There are 30 kara-kara (three leaders and 27 warriors) on the south-western side of the cavern. They each have a shield, two spears and a stone-headed club, a wooden pick or a sharks’-tooth sword. They each have 10 gp worth of ivory jewellery. There are also 20 young, but these will not fight. The warriors and leaders will cross the rope bridge to attack the party but they can only cross in single file and it will take 2 rounds for the first ones to arrive. Unless they are stopped, five kara-kara will reach the northern end of the bridge each round after that. Any character with an edged weapon can automatically cut the rope bridge in 1 round. Any creatures on the bridge will fall into the fiery pit and be killed. The kara-kara will be unable to cross the pit once the bridge is cut.
 
 The kara-kara on the south-western side will throw spears at the party even though maximum spear range (60 feet) is only just greater than the width of the pit. No more than 10 spears will be thrown each round.
 
-**kara-kara leader/warrior (30):** AC 8; HD 1 + 1 (1+4); hp 3x 9(12), 27x 5(8); MV 120ʹ(40ʹ); #AT 1 weapon; D 1-6; Save F1 (F2); ML 9 (11); AL C; XP 15 each; THACO 18; New monster.
+**kara-kara leader/warrior (30):** AC 8; HD 1+1 (1+4); hp 3× 9(12), 27× 5(8); MV 120ʹ(40ʹ); #AT 1 weapon; D 1-6; Save F1 (F2); ML 9 (11); AL C; XP 15 each; THACO 18; New monster.
 
 **kara-kara young (20):** AC 9; HD 1+1; hp 3 each; MV 120ʹ(40ʹ); #AT 0; D 0; Save F1; ML 2; AL C; XP 0; New monster.
 
@@ -791,27 +834,29 @@ The roof of this cavern is 300 feet above the floor level. It is the plug of sol
 
 At any given time during the ceremony, this 60-foot-high, natural cavern will con tain the bulk of the kara-kara tribe,
 
-dancing in time to the drums. Any kara-kara killed on patrol (see Wandering Monsters - page 5) should be deducted from the numbers given below.
+dancing in time to the drums. Any kara-kara killed on patrol (see **Wandering Monsters** - page 5) should be deducted from the numbers given below.
 
 Kara-kara from this chamber will go into the village or the volcano temple in the event of an attack. Details are given in the descriptions of areas,T16 and N15.
 
-**kara-kara leader/warrior (160):** AC 8; HD 1 + 1 (1+4); hp 16x9(12), 144x5(8); MV 120ʹ(40ʹ); #AT 1 weapon; D 1-6; Save F1 (F2); ML 9 (11); AL C; XP 15 each; THACO 18; New monster.
+**kara-kara leader/warrior (160):** AC 8; HD 1+1 (1+4); hp 16× 9(12), 144× 5(8); MV 120ʹ(40ʹ); #AT 1 weapon; D 1-6; Save F1 (F2); ML 9 (11); AL C; XP 15 each; THACO 18; New monster.
 
-**kara-kara female (40):** AC 9; HD 1 + 1; hp 5 each; MV 120ʹ(40ʹ); #AT 1 weapon; D 1-4; Save F1; ML 9; AL C; XP 15 each; THACO 18; New monster.
+**kara-kara female (40):** AC 9; HD 1+1; hp 5 each; MV 120ʹ(40ʹ); #AT 1 weapon; D 1-4; Save F1; ML 9; AL C; XP 15 each; THACO 18; New monster.
 
-**kara-kara young (40):** AC 9; HD 1 + 1; hp 3 each; MV 120ʹ(40ʹ); #AT 0; D 0; Save F1; ML 2; AL C; XP 0; New monster.
+**kara-kara young (40):** AC 9; HD 1+1; hp 3 each; MV 120ʹ(40ʹ); #AT 0; D 0; Save F1; ML 2; AL C; XP 0; New monster.
 
-Each of the warriors and leaders has a shield and two spears, plus a stone-headed mace, a wooden pick or a sharks’-tooth sword. They each have 10gp worth of mother-of-pearl and ivory jewellery. The females have stone daggers.
+Each of the warriors and leaders has a shield and two spears, plus a stone-headed mace, a wooden pick or a sharks’-tooth sword. They each have 10 gp worth of mother-of-pearl and ivory jewellery. The females have stone daggers.
 
-## KALNAKAA’S ROOMS
+### KALNAKAA’S ROOMS
 
-KalnaKaa, his daughter Maerie and his charmed companions Bezel, Rufus and Geldered have taken over chambers behind the volcano temple (area N15) built by the original inhabitants of Teki-nura-ria. The kara-kara will not enter these chambers since they are terrified of the room of hanging crystals (area N17).
+KalnaKaa, his daughter Maerie and his *charmed* companions Bezel, Rufus and Geldered have taken over chambers behind the volcano temple (area N15) built by the original inhabitants of Teki-nura-ria. The kara-kara will not enter these chambers since they are terrified of the room of hanging crystals (area N17).
 
 When KalnaKaa discovers that his lair is under attack (see area N 15) he will warn his henchmen (area N21) and Maerie (room N29), then gather up his most treasured belongings and flee into the chambers under Ki-ata (see page 17).
 
 #### N17. Hanging Crystals
 
-> A mass of glittering crystals, suspended by gently swaying strings from the ceiling, fills the circular room before you. At first sight, the room appears to be quite simple, with plain white walls and five other doors, but as you look more closely you notice that everything seems to switch around depending on exactly how you look at it.
+::: boxed
+A mass of glittering crystals, suspended by gently swaying strings from the ceiling, fills the circular room before you. At first sight, the room appears to be quite simple, with plain white walls and five other doors, but as you look more closely you notice that everything seems to switch around depending on exactly how you look at it.
+:::
 
 {#p14}
 
@@ -819,7 +864,7 @@ The crystals are magical, and act like a maze. By tangling together and distorti
 
 Characters will be able to reach (or avoid) a particular door if it is marked or left open, but unless they have some special means of sensing direction, characters will not be able to tell in which direction doors lead from the room.
 
-The magic of the crystals may be destroyed by a dispel magic (it was created by a 20th level magic-user). A dimension door, find the path or teleport spell will allow characters to cross it easily. A knock spell will not affect the crystals. Casting a light spell here will be so dazzling as to cause confusion in everyone inside the room.
+The magic of the crystals may be destroyed by a *dispel magic* (it was created by a 20th level magic-user). A *dimension door*, *find the path* or *teleport* spell will allow characters to cross it easily. A *knock* spell will not affect the crystals. Casting a *light* spell here will be so dazzling as to cause *confusion* in everyone inside the room.
 
 The crystals can be damaged by magical weapons (automatic hit) or spells and will lose their magic after taking 80 points of damage. Each time they are damaged, however, the crystals will fire two magic missiles at their attacker. Non-magical weapons and spells which do not cause damage will not affect the crystals.
 
@@ -827,51 +872,50 @@ KalnaKaa and his companions know the room well and can move across it to any doo
 
 #### N18. Storeroom
 
-> This is a general storeroom containing:
+This is a general storeroom containing:
 
 — 33 bottles of wine in a rack, and three large casks of wine
-
 — 40 jars of preserved fruit, meat and fish
-
 — four chests of clothes (male and female, various sizes) with six bales of cloth
-
 — five chairs (three broken), a copper cauldron, an anvil and an old carpet.
 
-These items were plundered from ships
-
-and are obviously from a number of
-
-different origins.
+These items were plundered from ships and are obviously from a number of different origins.
 
 #### N19. Hall of Glass
 
+::: boxed
 Everything in this brightly-lit room seems to be made of glass. Every thing, that is, except for a pair of slinky, black panthers... panthers with long tentacles and six legs!
+::
 
 The occupants of the room are displacer beasts. They will attack the party on sight. Because the displacer beasts can bend light, all attacks against them are at -2 to hit and they save at +2.
 
-**displacer beast (2):** AC 4; HD 6\*; hp 40,36; MV 150ʹ(50ʹ); #AT 2 tentacles; D 2-8/2-8; Save F6; ML 8; AL N; XP 500 each; THACO 14; E48.
+**displacer beast (2):** AC 4; HD 6\*; hp 40, 36; MV 150ʹ(50ʹ); #AT 2 tentacles; D 2-8/2-8; Save F6; ML 8; AL N; XP 500 each; THACO 14; E48.
 
-Each of the displacer beasts has a collar studded with 10 gems (value - 100gp per gem).
+Each of the displacer beasts has a collar studded with 10 gems (value - 100 gp per gem).
 
-The glass furniture consists of a statue of a robed woman, a table, five chairs, four candlesticks, and a chandelier (with a continual light spell cast on it) hanging from the ceiling.
+The glass furniture consists of a statue of a robed woman, a table, five chairs, four candlesticks, and a chandelier (with a *continual light* spell cast on it) hanging from the ceiling.
 
 #### N20. Darkroom
 
-> As you open the door you see... nothing! A thick, inky blackness fills the space ahead.
+::: boxed
+As you open the door you see... nothing! A thick, inky blackness fills the space ahead.
+:::
 
-The room has a continual darkness spell cast within it. It is completely empty.
+The room has a *continual darkness* spell cast within it. It is completely empty.
 
 #### N21. Hall of Shadows
 
-Bezel, Rufus and Geldered are standing in the centre of this room with an invisibility 10* radius spell cast on them. If the adventurers can see invisible creatures, the DM should change the following description to include these NPCs:
+Bezel, Rufus and Geldered are standing in the centre of this room with an *invisibility 10ʹ radius* spell cast on them. If the adventurers can see invisible creatures, the DM should change the following description to include these NPCs:
 
-> Every corner of this grand hall is brightly lit by glowing gems dotted across the ceiling and walls. The ceiling is supported by four crystal pillars, each with a writhing, shadowy shape within. Silently, the shapes glide out from the pillars and move towards you.
+::: boxed
+Every corner of this grand hall is brightly lit by glowing gems dotted across the ceiling and walls. The ceiling is supported by four crystal pillars, each with a writhing, shadowy shape within. Silently, the shapes glide out from the pillars and move towards you.
+:::
 
 The creatures in the pillars are shadows. Because they are so visible, they will only surprise the party on a roll of 1 on 1d6. Bezel, Rufus and Geldered will attack at once if they know that they have been seen. Otherwise, they will wait until three of the shadows have been destroyed. During this time they will work out the weaknesses of the adventurers and exploit these when they attack them.
 
 **shadow\* (4):** AC 7; HD 2+2\*; hp 16, 14, 13,9; MV 90ʹ(30ʹ); #AT 1 touch; D 1-4 + drain 1 point of strength for 8 turns; Save F2; ML 12; AL C; XP 35 each; THACO 17; B36.
 
-**BEZEL (cleric):** AC 1; C5; hp 20; MV 90ʹ(30ʹ); #AT 1; D By weapon; SaveC5; ML 11; AL C; XP 300; THACO 17; S 9, I 9, W 14, D 9, C 11, CH 13.
+**Bezel (cleric):** AC 1; C5; hp 20; MV 90ʹ(30ʹ); #AT 1; D By weapon; SaveC5; ML 11; AL C; XP 300; THACO 17; S 9, I 9, W 14, D 9, C 11, CH 13.
 
 **Spells Memorised:**
 First Level - *cure light wounds*, *darkness*  
@@ -879,16 +923,16 @@ Second Level - *hold person*, *silence 15ʹ radius*
 
 **Weapons:** Mace.
 **Clothing/Protection:** Plate mail; shield +1; blue cloak.
-**Personal Treasure:** 25pp in a belt pouch; gold holy symbol encrusted with gems (value - 780gp).
+**Personal Treasure:** 25 pp in a belt pouch; gold holy symbol encrusted with gems (value - 780 gp).
 
-**RUFUS (fighter):** AC 2; F5; hp 35; MV 90ʹ(30ʹ); #AT 1; D By weapon; Save F5; ML 11; AL C; XP 175; THACO 15/14; S 15, I 9, W 8, D10, C17, CH 10.
+**Rufus (fighter):** AC 2; F5; hp 35; MV 90ʹ(30ʹ); #AT 1; D By weapon; Save F5; ML 11; AL C; XP 175; THACO 15/14; S 15, I 9, W 8, D10, C17, CH 10.
 
 **Weapons:** *Sword +1, +3 vs. regenerating monsters*, *dagger +2*  
 **Clothing/Protection:** Plate mail, shield, red cloak.
 
-**Personal Treasure:** Belt pouch with 30pp; sapphire-studded scabbard with silver inlay (value - 1730gp); golden belt with silver buckle (value - 520gp); sapphire pendant (value - 370gp).
+**Personal Treasure:** Belt pouch with 30 pp; sapphire-studded scabbard with silver inlay (value - 1730 gp); golden belt with silver buckle (value - 520 gp); sapphire pendant (value - 370 gp).
 
-**GELDERED (elf):** AC 4; E6; hp 17; MV 120ʹ(40ʹ); #AT 1; D By weapon; Save E6; ML 11; AL N; XP 500; THACO 14/16; S 15, I 15, W5, D9, C8, CH 14.
+**Geldered (elf):** AC 4; E6; hp 17; MV 120ʹ(40ʹ); #AT 1; D By weapon; Save E6; ML 11; AL N; XP 500; THACO 14/16; S 15, I 15, W5, D9, C8, CH 14.
 
 **Spells Memorised:**
 
@@ -897,29 +941,30 @@ Second Level - *ESP*, *mirror image*
 Third Level - *invisibility 10ʹ radius* (already cast), *slow*
 
 **Weapons:** *Short sword +2*, dagger (hidden inside the handle is a fine gold key for his spell book in room N22).  
-**Clothing/Protection:** Chain mail +1, green robe.  
-**Personal Treasure:** Belt pouch with 50pp; silver, emerald-studded snuff-box (value - 1100gp); three matching gold rings set with emeralds (value - 290gp each).
+**Clothing/Protection:** *Chain mail +1*, green robe.  
+**Personal Treasure:** Belt pouch with 50 pp; silver, emerald-studded snuff-box (value - 1100 gp); three matching gold rings set with emeralds (value - 290 gp each).
 
-The three henchmen have been charmed by KalnaKaa, but even if the charm is broken, they will still fight the party. They know nothing about the chambers under Ki-ata, and believe that KalnaKaa uses a polymorph self spell to assume pig form in order to impress the kara-kara.
+The three henchmen have been *charmed* by KalnaKaa, but even if the charm is broken, they will still fight the party. They know nothing about the chambers under Ki-ata, and believe that KalnaKaa uses a *polymorph self* spell to assume pig form in order to impress the kara-kara.
 
-### MAERIE {#pullout-i}
+{#pull-out-sheet-i}
 
-*Thief*
+### MAERIE
+
+**(Thief)**
 
 **Armour Class:** 4  
 **Hit Dice:** Thief 7  
 **Hit Points:** 22  
 **Move:** 120′ (40′)
+**Attacks:** *dagger of concealment +2*
+**Damage:** 3–6 (1d4+2)
+**Save As:** Thief 7 (at +2)
+**Morale:** 11
+**Alignment:** Neutral
+**XP Value:** 850
+**THACO:** 15 (dagger +2)
 
-Attacks: dagger of concealment +2
-
-Damage: 3–6 (1d4+2)
-
-Save As: Thief 7 (at +2)
-
-Morale: 11 Alignment: Neutral XP Value: 850 THACO: 15 (dagger +2)
-
-S 10, I 15, W 9, D 18, C 12, CH 16
+S 10, I 15, W 9, D 18, C 12, Ch 16
 
 Appearance: Maerie is an attractive, auburn haired, slender young woman with brown eyes.
 
@@ -927,58 +972,70 @@ Personality: Outwardly pleasant, she is ruthlessly devoted to her father and his
 
 Clothing/Protection: Long, white robe, white belt, dagger of concealment +2 in the form of a plain, gold ring (see below).
 
-Weapons: Dagger of concealment +2 in the form of a plain, gold ring (see below).
+Weapons: *Dagger of concealment +2* in the form of a plain, gold ring (see below).
 
 Thief Abilities: open locks 55%, find/ remove traps 50%, pick pockets 55%, move silently 55%, climb sheer surfaces 93%, hide in shadows 45%, hear noise 1-4.
 
-Other Personal Treasure: Three cheap (1gp each) ornamented hair pins.
+Other Personal Treasure: Three cheap (1 gp each) ornamented hair pins.
 
-Dagger of Concealment
+#### Dagger of Concealment
 
 This magical item takes the form of a plain, gold ring and has the properties of a ring of protection. However, the wearer can make the ring change instantly into a magical dagger or back into a ring. The ring can be changed into a dagger, used to make an attack, and changed back into a ring all in 1 round. Typical daggers of concealment give bonuses of +1 or +2 on hit rolls, damage, armour class and saving throws, although daggers of concealment +3 are rumoured to exist.
 
-From his time as an apprentice magic-user, KalnaKaa had been fascinated by the idea of shape-changing, polymorphing and lycanthropy. In later life, he became infamous for his experiments on werecreatures. Even so, he was tolerated by the local community until, one night, he was badly injured by one of his captives; a devil
+### Background of KalnaKaa & Maerie
 
-Soon KalnaKaa began to show the signs of lycanthropy and was driven from his home. His only companions were his daughter Maerie and three adventurers
+From his time as an apprentice magic-user, KalnaKaa had been fascinated by the idea of shape-changing, polymorphing and lycanthropy. In later life, he became infamous for his experiments on werecreatures. Even so, he was tolerated by the local community until, one night, he was badly injured by one of his captives; a devil swine.
 
-Pull Out Sheet ©TSR Inc., All rights reserved
-
-Background of KalnaKaa & Maerie
-
-whom he had charmed: Bezel, Geldered and Rufus (see room N21).
+Soon KalnaKaa began to show the signs of lycanthropy and was driven from his home. His only companions were his daughter Maerie and three adventurers whom he had *charmed*: Bezel, Geldered and Rufus (see room N21).
 
 KalnaKaa fled from place to place, always driven onwards once his affliction became known. Eventually, he and his companions arrived on Teki-nura-ria where KalnaKaa was mistaken by the kara-kara for their god of pigs, Tapu.
 
-KalnaKaa revels in his new position of absolute power, ruthlessly using the kara-kara and the kal-murus as the instruments of his revenge on the society that rejected
-
-him. He is cunning and cruel, but not a coward. Although he will flee when he first sees the party, his main aim is to prepare the best defence possible (even if it costs the lives of his daughter and henchmen). In the final encounter (room K43), he will defiantly fight to the death.
+KalnaKaa revels in his new position of absolute power, ruthlessly using the kara-kara and the kal-murus as the instruments of his revenge on the society that rejected him. He is cunning and cruel, but not a coward. Although he will flee when he first sees the party, his main aim is to prepare the best defence possible (even if it costs the lives of his daughter and henchmen). In the final encounter (room K43), he will defiantly fight to the death.
 
 Maerie’s mother died when Maerie was still quite young but, even so, the girl is of far better character than her father and is much more loyal to him than he is to her. She will do anything to further her father’s interests, at the risk of her own life.
 
-### KALNAKAA {#pullout-ii}
+{#pullout-sheet-ii}
 
-*Magic-user / devil swine*
+### KALNAKAA
 
-| Statistic    | As magic-user                            | As devil swine*   |
-| ------------ | ---------------------------------------- | ----------------- |
-| Armour Class | 3                                        | 0                 |
-| Hit Dice     | Magic-user 9                             | 9                 |
-| Hit Points   | 44                                       | 44                |
-| Move         | 120′ (40′)                               | 180′ (60′)        |
-| Attacks      | Staff of striking or throwing dagger     | 1 gore            |
-| Damage       | 2–12 or 1–4                              | 2–12              |
-| Save As      | Magic-user 9 (at +3)                     | Fighter 9 (at +3) |
-| Morale       | 11                                       | 10                |
-| Alignment    | Chaotic                                  | Chaotic           |
-| XP Value     | 3,000                                    | 3,000             |
-| THACO        | 15 (normal weapons), 12 (thrown weapons) | 11                |
+**(Magic-user/devil swine)**
+
+#### As Magic-User
+
+**Armour  Class:** 3
+**Hit Dice:** 9
+**Hit Points:** 44
+**Move:** 120′(40′)
+**Attacks:** Staff of striking or throwing dagger
+**Damage:** 2–12 or 1–4
+**Save As:** Magic-user 9 (at +3)
+**Morale:** 11
+**Alignment:** Chaotic
+**XP Value:** 3,000
+**THACO:** 15 (normal weapons), 12 (thrown weapons)
+
+#### As Devil Swine*
+
+**Armour Class:** 0
+**Hit Dice:** 9
+**Hit Points:** 44
+**Move:** 180′(60′)
+**Attacks:** 1 gore
+**Damage:**  2–12
+**Save As:** Fighter 9 (at +3)
+**Morale:** 10
+**Alignment:** Chaotic
+**XP Value:** 3,000
+**THACO:** 11
 
 S 10, I 17, W 11, D 18, C 16, CH 5
 
 **Appearance:** In his human form, KalnaKaa is a middle-aged, fat, swarthy man with small, piggy eyes, black, bristly hair and a matching beard and moustache.  
 **Personality:** Evil, cruel, cunning, bitter and vengeful, but not a coward.  
-**Clothing/Protection:** Black robe, long black cloak (see below), *amulet of protection +3* (see below).  
-**Weapons:** Staff of striking (22 charges), five throwing daggers.  
+**Clothing/Protection:** Black robe, long *black cloak* (see below), *amulet of protection +3* (see below).
+
+**Weapons:** *Staff of striking* (22 charges), five throwing daggers.
+
 **Other Personal Treasure:** None.
 
 **Spells Memorised**  
@@ -989,32 +1046,28 @@ Fourth Level: *charm monster*, *polymorph self*
 Fifth Level: *animate dead*
 
 **Special Abilities:**
-
-- can use charm person three times per day (victims have -2 saving throw penalty);
-- can change shape freely at night but must keep one shape during the day (this is normally human and he uses polymorph self to assume pig shape if necessary);
+- can use *charm person* three times per day (victims have -2 saving throw penalty);
+- can change shape freely at night but must keep one shape during the day (this is normally human and he uses *polymorph self* to assume pig shape if necessary);
 - only hit by magical or silver weapons while in pig form;
 - can summon 1-2 boars which will arrive in 1-4 rounds.
 
 **boar (1-2):** AC 7; HD 3; hp 13 each; MV 90ʹ(30ʹ); #AT 1 tusk; D 2-8; Save F2; ML 9; AL N; XP 35 each; THACO 17; B27.
 
-KalnaKaa’s Black Cloak
+#### KalnaKaa’s Black Cloak
 
 KalnaKaa found this cloak during his explorations of the Ancestors’ chambers. Any person wearing the cloak can open any of the magical portals under Ki-ata (see page 18) from either side simply by touching the part of the wall where the portal will appear.
 
-Amulet of Protection +3
+#### Amulet of Protection +3
 
 This amulet in the form of a distorted boar’s head on a fine gold chain has been specially enchanted by KalnaKaa. It has the properties of a ring of protection +3 but also protects any lycanthrope wearing it from the effects of wolfsbane. KalnaKaa can wear it in both pig and human form.
-
-Pull-out Sheet © 1984 TSR Inc. All rights reserved
-
-Pull-out Sheet © TSR, Inc. All rights reserved.
-
-Pull-out Sheet © TSR, Inc. All l ights reserved.
 
 {#p15}
 
 #### N22. Geldered’s Room
-> As you open the door, a jet-black crow caws loudly from its perch on a slender, black lectern in the centre of the room. Against the side walls are a table, bed and chair; all black and finely made like the lectern.
+
+::: boxed
+As you open the door, a jet-black crow caws loudly from its perch on a slender, black lectern in the centre of the room. Against the side walls are a table, bed and chair; all black and finely made like the lectern.
+::
 
 The crow is Geldered’s pet. It cannot harm the party. Geldered’s spell book is on the lectern. It is held closed by a gold-plated hasp which is locked (the key is inside the elf’s dagger - see area N21) and trapped with a poison needle. Anyone picking the lock without removing the needle, or failing in an attempt to remove it will be injected with the poison. This will kill the victim in 1 turn unless the character makes a successful saving throw vs. Poison. Using Geldered’s key will not activate the trap.
 
@@ -1024,27 +1077,27 @@ First Level - **hold portal**, **sleep**, **magic missile**, **read languages**,
 Second Level - **continual light\***, **detect invisible**, **ESP**, **mirror image**  
 Third Level - **dispel magic**, **invisibility 10ʹ radius**, **haste\***
 
-A coverlet of rare furs on the bed is worth 1500gp.
+A coverlet of rare furs on the bed is worth 1500 gp.
 
 #### N23. Bezel’s Room
 
+::: boxed
 This small chamber contains only a bed, a chair, a small table and a tall, flat cupboard like a wardrobe. The smooth white walls are covered with a bewildering mass of tiny notes and symbols in black ink.
+:::
 
-There is a silver box (value - 535gp) on the table containing a dozen quills, a bottle of ink and two vials of holy water.
+There is a silver box (value - 535 gp) on the table containing a dozen quills, a bottle of ink and two vials of *holy water*.
 
 The wardrobe is not locked but is trapped. Unless the trap is found and disarmed, a strong spring will make the wardrobe tip forwards suddenly when it is opened. Any character in front of the wardrobe as it falls will suffer dl2+3 points of crushing damage (this damage may be negated by a successful saving throw vs. Wands).
 
-The wardrobe contains Bezel’s best robe and a staff of healing. The collar and cuffs of the robe are studded with hundreds of tiny gem stones (total value - 2000gp).
+The wardrobe contains Bezel’s best robe and a *staff of healing*. The collar and cuffs of the robe are studded with hundreds of tiny gem stones (total value - 2000 gp).
 
-The notes and symbols on the walls are the result of Bezel’s philosophical ponderings. They will be meaningless to the party.
-
-of curse depends on the colour of the room at the time. Unless otherwise stated, the curses will last for 1 year or until negated by a remove curse spell.
+The notes and symbols on the walls are the result of Bezel’s philosophical ponderings. They will be meaningless to the party. 
 
 #### N24. Rufus’ Room
 
-r.. ' " " " 11 1
-
+::: boxed
 This is apparently an armoury, well- stocked with weapons and armour. There are also two battered, wooden dummies and a grindstone. Hanging in one corner, and looking somewhat out of place, is a hammock.
+:::
 
 Rufus disdains comfort and sleeps surrounded by his favourite objects; weapons and armour. In all, the room contains:
 
@@ -1056,28 +1109,30 @@ The grindstone is for sharpening weapons, and the dummies are targets.
 
 #### N25. Colour Room
 
-> As you open the door, you are bathed in a soft, green light coming from the walls, floor and ceiling of the room beyond. After a few moments, the green light changes to blue, but the door you have opened, and the other two doors into the room remain plain white.
+::: boxed
+As you open the door, you are bathed in a soft, green light coming from the walls, floor and ceiling of the room beyond. After a few moments, the green light changes to blue, but the door you have opened, and the other two doors into the room remain plain white.
+:::
 
 The colour of the room changes each round, starting at green when the party enters then going on to blue, purple, red, orange and yellow. After yellow it starts again at green.
 
-The northern and southern doors may be opened safely if a darkness or continual darkness spell is in effect anywhere in the room. Otherwise, when either of the doors is opened, all characters inside the room must make a saving throw vs. Spells (at +1) or suffer a curse. Characters opening the northern or southern door from outside this room (i.e. from inside room N26 or the secret corridor) will not be cursed. The type of curse depends on the colour of the room at the time. Unless otherwise stated, the curses will last for 1 year or until negated by a remove curse spell.
+The northern and southern doors may be opened safely if a darkness or continual darkness spell is in effect anywhere in the room. Otherwise, when either of the doors is opened, all characters inside the room must make a saving throw vs. Spells (at +1) or suffer a curse. Characters opening the northern or southern door from outside this room (i.e. from inside room N26 or the secret corridor) will not be cursed. The type of *curse* depends on the colour of the room at the time. Unless otherwise stated, the *curses* will last for 1 year or until negated by a *remove curse* spell.
 
-- **Green:** Character is paralysed (also removed by cure light wounds spell).
-- **Blue:** Character is blinded (also removed by cure blindness spell).
+- **Green:** Character is paralysed (also removed by *cure light wounds* spell).
+- **Blue:** Character is blinded (also removed by *cure blindness* spell).
 - **Purple:** Character is deafened.
 - **Red:** Character is struck dumb.
-- **Orange:** Character is confused for 12 rounds (as if affected by a confusion spell except that all attacks by an affected character will be against other party members).
-- **Yellow:** Character is terrified for 2 turns (as if affected by a cause fear spell).
+- **Orange:** Character is confused for 12 rounds (as if affected by a *confusion* spell except that all attacks by an affected character will be against other party members).
+- **Yellow:** Character is terrified for 2 turns (as if affected by a *cause fear* spell).
 
 #### N26. Treasure Room
 
 This room contains some of the treasure taken by the kara-kara from wrecked ships. It comprises:
 
-- a large trunk crammed with exotic silks (total value - 5000gp).
-- a small casket containing 320 gems, (value - 5x 1000gp; 15x 500gp; 100x 100gp; 200x 50gp).
-- a chest containing 5000gp and exquisite jewellery to the value of 15000gp.
-- three sacks; each containing 2000gp (one of the sacks is a bag of holding).
-- eight kegs of rare spices (total value - 8000gp).
+- a large trunk crammed with exotic silks (total value - 5000 gp).
+- a small casket containing 320 gems, (value - 5× 1000 gp; 15× 500 gp; 100× 100 gp; 200× 50 gp).
+- a chest containing 5000 gp and exquisite jewellery to the value of 15000 gp.
+- three sacks; each containing 2000 gp (one of the sacks is a *bag of holding*).
+- eight kegs of rare spices (total value - 8000 gp).
 
 The trunk, casket and chest are locked but none is trapped.
 
@@ -1085,42 +1140,47 @@ The trunk, casket and chest are locked but none is trapped.
 
 These five rooms are almost identical in appearance:
 
-> The room is small and square. Ahead, is a blank wall, but the walls to left and right are mirrors. Reflected back and forth by the mirrors, the room seems to extend infinitely in both directions.
+::: boxed
+The room is small and square. Ahead, is a blank wall, but the walls to left and right are mirrors. Reflected back and forth by the mirrors, the room seems to extend infinitely in both directions.
+:::
 
 The “mirrors” are actually magical barriers which reflect not only light, but also magical spells. Any spells cast against a mirror will be reflected back against the caster! Noise will not pass through them.
 
+{#p16}
 
 The mirrors are flexible and if a character touches one it will feel and act like a sheet of rubber. If a character pushes hard against a mirror it will yield until most of the character’s body is pressed against it. Then the character will be suddenly drawn through the mirror into the next room and the mirror will return to being flat.
 
 The eastern mirror in room N27e will take characters to room N27a, and the western mirror in N27a will take them to N27e.
 
-{#p16}
-
 #### N28. Baths
 
-> This elegantly appointed room is deserted. The only sound to be heard is the gentle splash of water from a fountain at the far end which empties into a pair of sunken baths.
+::: boxed
+This elegantly appointed room is deserted. The only sound to be heard is the gentle splash of water from a fountain at the far end which empties into a pair of sunken baths.
+:::
 
 The walls, floor and ceiling of this room are of pink-veined marble, the same colour as the warm, scented water.
 
-The room contains four comfortable couches, two small tables and a rack of towels. One of the tables bears a gold dish (value - 280gp) full of tasty fruit and the other has a crystal decanter (value - 175gp) of wine with six matching goblets (value - 75gp each).
+The room contains four comfortable couches, two small tables and a rack of towels. One of the tables bears a gold dish (value - 280 gp) full of tasty fruit and the other has a crystal decanter (value - 175 gp) of wine with six matching goblets (value - 75 gp each).
 
 #### N29. Maerie’s Room
 
 Both doors into this room are locked:
 
-> You see a young woman lying on the floor, tied fast to a toppled chair. A look of fear on her face fades to relief as she sees you.
+::: boxed
+You see a young woman lying on the floor, tied fast to a toppled chair. A look of fear on her face fades to relief as she sees you.
+:::
 
-The woman is Maerie, KalnaKaa’s daughter. Her abilities, equipment and so on are detailed on the Pull-out Sheet. When she sees the adventurers, she will plead with them to be released.
+The woman is Maerie, KalnaKaa’s daughter. Her abilities, equipment and so on are detailed on the **Pull-out Sheet**. When she sees the adventurers, she will plead with them to be released.
 
 After KalnaKaa saw the party in the volcano temple (area N15) he came into Maerie’s room to warn her. He persuaded her to let him tie her up in order to deceive the party. Her aim is to be taken along with the adventurers so that she can hinder them in their pursuit of her father. If not, she will follow them with the same goal in mind. Her ropes are tied in such a way that she could release herself in 1 round if necessary.
 
 She knows the locks on the doors well, and could automatically pick either of them.
 
-If the party question her, she will tell them that she is the daughter of Milo Straaks, a merchant in Thyatis, and that she was captured by kara-kara from a shipwreck two weeks ago and brought, unconscious, to this room. She will say that the kara-kara are ruled by an evil magician called KalnaKaa, who wears a pig costume to frighten her and to impress the tribesmen. She will claim that she has never been allowed out of this room and that, a short while ago, KalnaKaa came in, tied her to the chair and hurried out. She is lying, of course, but even if the party discovers who she really is, she will tell them no more about her father. She is not charmed.
+If the party question her, she will tell them that she is the daughter of Milo Straaks, a merchant in Thyatis, and that she was captured by kara-kara from a shipwreck two weeks ago and brought, unconscious, to this room. She will say that the kara-kara are ruled by an evil magician called KalnaKaa, who wears a pig costume to frighten her and to impress the tribesmen. She will claim that she has never been allowed out of this room and that, a short while ago, KalnaKaa came in, tied her to the chair and hurried out. She is lying, of course, but even if the party discovers who she really is, she will tell them no more about her father. She is not *charmed*.
 
-If the adventurers discover that her ring is magical, she will tell them that it is a ring of protection (it is actually a dagger of concealment - see Pull-out Sheet).
+If the adventurers discover that her ring is magical, she will tell them that it is a *ring of protection* (it is actually a *dagger of concealment* - see **Pull-out Sheet**).
 
-Maerie will be very careful to conceal the fact that she is a thief and will not attack the party openly until the adventurers catch up with KalnaKaa (see area K43). Until then it is up to the DM to decide how she can best use her thief’s skills to make the party’s progress as difficult and dangerous as possible. Maerie is a very convincing liar, but there are some flaws in her story (for example; why does she still have her ring? how would she know that KalnaKaa impresses the natives by looking like a Pig?)
+Maerie will be very careful to conceal the fact that she is a thief and will not attack the party openly until the adventurers catch up with KalnaKaa (see area K43). Until then it is up to the DM to decide how she can best use her thief’s skills to make the party’s progress as difficult and dangerous as possible. Maerie is a very convincing liar, but there are some flaws in her story (for example; why does she still have her ring? how would she know that KalnaKaa impresses the natives by looking like a pig?)
 
 Apart from the chair to which Maerie is tied, the room contains a table, a bed and a chest. On the table are a mirror, some cosmetics and a comb. The chest is neither locked nor trapped. It contains several sets of female clothes in a wide variety of styles and sizes (looted from many ships).
 
@@ -1128,19 +1188,21 @@ Apart from the chair to which Maerie is tied, the room contains a table, a bed a
 
 The western door into this room is locked:
 
+::: boxed
 This is a very ordinary-looking bedroom, with solid wooden furniture and plain walls.
+:::
 
 The furniture consists of a table, a bed, and a chest. The table, bed and chair are very strong and made to suit a large person.
 
-The chest is locked, but not trapped. It contains a pig costume which KalnaKaa
-
-uses when he wishes to look like a pig during the day, but does not have a polymorph self spell available.
+The chest is locked, but not trapped. It contains a pig costume which KalnaKaa uses when he wishes to look like a pig during the day, but does not have a *polymorph self* spell available.
 
 #### N31. KalnaKaa’s Laboratory
 
+::: boxed
 As the door swings into the room, it grates noisily over shattered fragments of intricate glassware which litter the floor. On a wooden bench to one side, dozens of boxes have been opened and their powdered contents mixed in heaps. Between the heaps, puddles of bubbling liquid form into rivulets and drip, hissing, to the floor. In one corner is a brazier, with fragments of smouldering parch ment lying amongst its glowing coals, and in another corner, clothes are strewn around an open chest.
 
 In the middle of it all, untouched by the mayhem, is a large, bronze throne, and before it an empty lectern.
+:::
 
 Before fleeing with his most treasured possessions (see areas K43 and K44) KalnaKaa destroyed all of his laboratory equipment, notes, and so on. Magic users or elves in the party will recognise the debris as the remains of a magician’s workshop, but will be unable to find anything of use amongst what remains.
 
@@ -1154,27 +1216,29 @@ The thrones are fixed to the floor and will stop working if either one is remove
 
 This is the other end of tunnel K1. It is a level, plain rock-hewn passage, I mile long, and leads to area K2 at the Valley Gate under Ki-ata.
 
-{#p18}
+{#p17}
 
 ## UNDER KI-ATA
 
-Like the chambers undfcr Ni-malowa (areas N1-N32), the chambers under the volcano Ki-ata (see Maps 4a-d) were built by the “Ancestors” before the kara-kara came to Teki-nura-ria, and reflect the strange and decadent tastes of this long-vanished race.
+***(Encounter areas K1-K46: Maps 4a-4d)***
 
-There are four entrances to these chambers. Three of these are magical portals (see below) emerging at different points around the island: the VALLEY GATE, the VILLAGE GATE and the SEA GATE. Each gate has a group of chambers behind it (K1-K8, see Map 4a; K9-K16, see Map 4b; and K39-K46, see Map 4d, respectively). The fourth entrance is the tunnel (area N32/K1) which leads from Ni-malowa to room K2 behind the Valley Gate.
+{#p18}
 
-The largest group of chambers were built around two volcanic shafts at the HEART OF THE MOUNTAIN (areas K17-K38, see Map 4c). There are long tunnels which link the chambers at the gates and the Heart of the Mountain. These are shown in Diagram 1 on the module folder.
+Like the chambers undfcr Ni-malowa (areas N1-N32), the chambers under the volcano Ki-ata (see Maps **4a-d**) were built by the “Ancestors” before the kara-kara came to Teki-nura-ria, and reflect the strange and decadent tastes of this long-vanished race.
+
+There are four entrances to these chambers. Three of these are magical portals (see below) emerging at different points around the island: the **VALLEY GATE**, the **VILLAGE GATE** and the **SEA GATE**. Each gate has a group of chambers behind it (K1-K8, see **Map 4a**; K9-K16, see **Map 4b**; and K39-K46, see **Map 4d**, respectively). The fourth entrance is the tunnel (area N32/K1) which leads from Ni-malowa to room K2 behind the Valley Gate.
+
+The largest group of chambers were built around two volcanic shafts at the **HEART OF THE MOUNTAIN** (areas K17-K38, see Map **4c**). There are long tunnels which link the chambers at the gates and the Heart of the Mountain. These are shown in **Diagram 1** on the module folder.
 
 Many monsters inhabit the Ancestors' chambers. Some of the Ancestors themselves are still here (in the form of shadows) as are many of the magical creatures they created, and beings drawn from the elemen tal planes. Most of the inhabitants, how ever, are mortal beasts which never venture onto the surface of the island.
 
-After settling in the chambers under Ni-malowa, KalnaKaa found the tunnel (area N32/K1) leading to Ki-ata. First, he cleared the chambers at the Valley Gate which he now uses as a secret workshop. Next, he ventured towards the centre of the volcano but was nearly killed by a purple worm (area K18) and never returned there. Final ly, using a magical cloak that he had found (see the Pull-out Sheet), he by-passed the worm and made his way to the Sea Gate. Here he gained control of the kal-murus (see area K42) which now attack ships so that the kara-kara can plunder them.
+After settling in the chambers under Ni-malowa, KalnaKaa found the tunnel (area N32/K1) leading to Ki-ata. First, he cleared the chambers at the Valley Gate which he now uses as a secret workshop. Next, he ventured towards the centre of the volcano but was nearly killed by a purple worm (area K18) and never returned there. Final ly, using a magical cloak that he had found (see the **Pull-out Sheet**), he by-passed the worm and made his way to the Sea Gate. Here he gained control of the kal-murus (see area K42) which now attack ships so that the kara-kara can plunder them.
 
 ### PURSUING KALNAKAA
 
 When KalnaKaa flees after seeing the party in the volcano temple (area N15), he will make his way to the Sea Gate chambers via the tunnel from Ni-malowa (area N32/K1), the magical portal between rooms K5 and K6, and tunnel K6/K40.
 
-
-
-Since they do not have KalnaKaa’s black cloak (see Pull-out Sheet), the party will not be able to use the magical portal between K5 and K6 and will have to explore the Heart of the Mountain and, perhaps, the Village Gate before reaching the Sea Gate.
+Since they do not have KalnaKaa’s black cloak (see **Pull-out Sheet**), the party will not be able to use the magical portal between K5 and K6 and will have to explore the Heart of the Mountain and, perhaps, the Village Gate before reaching the Sea Gate.
 
 The DM should keep careful track of time, since it is important to know what time of day it is when the party catch up with KalnaKaa (area K43).
 
@@ -1184,32 +1248,30 @@ The kara-kara will not enter the chambers under Ki-ata, nor will Bezel, Rufus or
 
 Unless otherwise stated, all corridors under Ki-ata are 15 feet high, all rooms are 20 feet high and all doors are made of tropical hardwood. The boxed descriptions assume that the adventurers have a light source and that they can be seen by the inhabitants of the chambers. If not, the DM must change some of the descriptions accordingly.
 
-### Magical Portals
+#### Magical Portals
 
-At four places in the chambers under Ki-ata there are magical portals similar to those in the entrances to the tombs of the manwu-papas (areas N1-3). When these are acti vated, they create a pass-wall through a 10-foot-thick rock wall. Details of how to open each portal are given in the individual room descriptions (areas K4, K5/K6, K15 and K45).
+At four places in the chambers under Ki-ata there are magical portals similar to those in the entrances to the tombs of the manwu-papas (areas N1-3). When these are acti vated, they create a *passwall* through a 10-foot-thick rock wall. Details of how to open each portal are given in the individual room descriptions (areas K4, K5/K6, K15 and K45).
 
-The source of each portal is a disc painted on one side of the wall through which the pass-wall appears. The walls are solid rock and unexceptional, and the discs are the only parts of the portals which have a magical aura. This means that magical portals cannot be detected as secret doors (by characters or magical items) and that detect magic (spell or magical items) will only reveal a magical portal on the side with the painted disc. Find traps will not reveal a magical portal.
+The source of each portal is a disc painted on one side of the wall through which the *passwall* appears. The walls are solid rock and unexceptional, and the discs are the only parts of the portals which have a magical aura. This means that magical portals cannot be detected as secret doors (by characters or magical items) and that *detect magic* (spell or magical items) will only reveal a magical portal on the side with the painted disc. *Find traps* will not reveal a magical portal.
 
 KalnaKaa’s black cloak (see the Pull-out Sheet) will enable its wearer to open any of the portals under Ki-ata, if their positions are known.
 
 ### Wandering Monsters
 
-The DM should check for wandering monsters every 6 turns (1 hour). A roll of 1 on 1d8 indicates that a wandering monster has appeared. The type of monster is found by rolling 1d20 and checking the score against Table 3.
+The DM should check for wandering monsters every 6 turns (1 hour). A roll of 1 on 1d8 indicates that a wandering monster has appeared. The type of monster is found by rolling 1d20 and checking the score against **Table 3**.
 
 #### TABLE 3 — WANDERING MONSTERS UNDER KI-ATA
 
 | Die Roll | Monster                                                                                                                                                                 |
 | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1–5      | **Giant centipede (3–6):** AC 9; HD ½; hp 2 each; MV 60′ (20′); #AT 1 bite; D poison (illness for 10 days); Save NM; ML 7; AL N; XP 6 each; THACO 19; B28.             |
-| 6–11     | **Insect swarm (1):** AC 7; HD 4*; hp 18; MV (crawling) 30′ (10′); #AT 10′×10′×30′ area effect; D 2 or 4; Save NM; ML 11; AL N; XP 125; THACO automatic hit; E52.       |
-| 12–16    | **Shadow (1–6):** AC 7; HD 2+2*; hp 11 each; MV 90′ (30′); #AT 1 touch; D 1–4 + drain 1 point of Strength for 8 turns; Save F2; ML 12; AL C; XP35 each; THACO 17; B36. |
-| 17–20    | **Ochre jelly (1):** AC 8; HD 5*; hp 27; MV 30′ (10′); #AT 1 touch; D 2–12; Save F3; ML 12; AL N; XP 300; THACO 15; B35.                                                |
-
-
+| 1–5      | **Giant centipede (3–6):** AC 9; HD ½; hp 2 each; MV 60′(20′); #AT 1 bite; D poison (illness for 10 days); Save NM; ML 7; AL N; XP 6 each; THACO 19; B28.             |
+| 6–11     | **Insect swarm (1):** AC 7; HD 4*; hp 18; MV (crawling) 30′(10′); #AT 10′×10′×30′ area effect; D 2 or 4; Save NM; ML 11; AL N; XP 125; THACO automatic hit; E52.       |
+| 12–16    | **Shadow (1–6):** AC 7; HD 2+2*; hp 11 each; MV 90′(30′); #AT 1 touch; D 1–4 + drain 1 point of Strength for 8 turns; Save F2; ML 12; AL C; XP 35 each; THACO 17; B36. |
+| 17–20    | **Ochre jelly (1):** AC 8; HD 5*; hp 27; MV 30′(10′); #AT 1 touch; D 2–12; Save F3; ML 12; AL N; XP 300; THACO 15; B35.                                                |
 
 {#p19}
 
-VALLEY GATE (Map 4a)
+### VALLEY GATE (Map 4a)
 
 KalnaKaa cleared the inhabitants of this part of the Ancestors’ chambers soon after he discovered the tunnel from Ni-malowa (areas N32/K1). He now uses it for his experiments with topis (area K5) and uses displacer beasts as guards (area K2).
 
@@ -1219,13 +1281,15 @@ This is the other end of tunnel N32. It is a level, plain, rock-hewn passage, 1 
 
 #### K2. Displacer Beasts
 
+::: boxed
 Amid the bones of past victims, four large, cat-like beasts crouch — sinewy muscles taut — ready to pounce.
+:::
 
 The displacer beasts are a female and her three cubs. They act as guards for KalnaKaa, and the bones are the remains of the food which he brings for them. The displacer beasts will attack any intruders on sight. Because of their ability to bend light, all attacks on them will be at -2 to hit and they have a +2 bonus on saving throws. The 36-hit-point female has a morale of 12 as long as she is defending her cubs.
 
 **displacer beast (4):** AC 4; HD 6*; hp 36, 18, 17, 15; MV 150ʹ(50ʹ); #AT 2 tentacles; D 2-8/2-8; Save F6; ML 12 or 8 - see above; AL N; XP 500 each; THACO 14; E48.
 
-Each of the displacer beasts wears a velvet collar studded with 10 gems (value - 100gp per gem). Most of the bones are of animals, but there are some from kara-kara and humans. The displacer beasts’ bedding includes 50 old cloaks, all dyed with bright colours in swirling patterns. All but three cloaks are damaged in some way. These three have a faint magical aura and allow anyone wearing them to pass through the magical portals in areas K4, K15 and K45.
+Each of the displacer beasts wears a velvet collar studded with 10 gems (value - 100 gp per gem). Most of the bones are of animals, but there are some from kara-kara and humans. The displacer beasts’ bedding includes 50 old cloaks, all dyed with bright colours in swirling patterns. All but three cloaks are damaged in some way. These *three have a faint magical aura* and allow anyone wearing them to pass through the magical portals in areas K4, K15 and K45.
 
 #### K3. Dead End Trap
 
@@ -1233,31 +1297,35 @@ The end wall of this passage is a trapped stone slab. It appears to be a secret 
 
 #### K4. Magical Portal
 
-A silent hall stretches away before you. The walls are plain, save for a vivid red disc painted in the centre of the far wall, flanked by a pair of statues in the same bright hue. Running along the centre of the floor is a strip of mosaic whose pattern of bright swirling colours seems to lead towards the disc.
+::: broken
+A silent hall stretches away before you. The walls are plain, save for a vivid red disc painted in the centre of the far wall, flanked by a pair of statues in the same bright hue. Running along the centre of the floor is a strip of mosaic whose pattern of bright swirling colours seems to lead towards the disc
+:::
 
-The red, painted disc on the wall is the source of a magical portal (see page 18) between this room and area T6 at the head of the south-eastern side-valley of the Trail of the Dead. The pass-wall portal will open as soon as any character steps onto the mosaic between the statues and will remain open so long as there is somebody on the mosaic. The pass-wall will close after 10 minutes if there is nobody on the mosaic.
+The red, painted disc on the wall is the source of a magical portal (see page 18) between this room and area T6 at the head of the south-eastern side-valley of the Trail of the Dead. The *passwall* portal will open as soon as any character steps onto the mosaic between the statues and will remain open so long as there is somebody on the mosaic. The *passwall* will close after 10 minutes if there is nobody on the mosaic.
 
-The portal can only be opened from outside (area T6) by characters wearing one of the undamaged cloaks from area K2 or KalnaKaa’s black cloak (see the Pull-out Sheet). If a character wearing one of these cloaks touches the valley wall at the exact position of the portal, the pass-wall will open for 10 minutes. During this time anyone can pass through, whether or not they have a cloak. None of the damaged cloaks from areas K2 or K16 can be used to open the portal.
+The portal can only be opened from outside (area T6) by characters wearing one of the undamaged cloaks from area K2 or KalnaKaa’s black cloak (see the **Pull-out Sheet**). If a character wearing one of these cloaks touches the valley wall at the exact position of the portal, the *passwall* will open for 10 minutes. During this time anyone can pass through, whether or not they have a cloak. None of the damaged cloaks from areas K2 or K16 can be used to open the portal.
 
 The patterns on the cloaks from rooms K2 and K16 are the same as that on the mosaic.
 
-The statues on either side of the portal are made of stone covered with a layer of red-painted plaster. They depict humanoids with long chins, high foreheads and long, dangling ears. Hidden under the plaster (which can be chipped away easily) the statues have diamond-studded, engraved gold earrings (value - 5000gp each pair).
+The statues on either side of the portal are made of stone covered with a layer of red-painted plaster. They depict humanoids with long chins, high foreheads and long, dangling ears. Hidden under the plaster (which can be chipped away easily) the statues have diamond-studded, engraved gold earrings (value - 5000 gp each pair).
 
 #### K5. Living Dead
 
-> A terrible scene of carnage is laid out before you. Shelves, benches and large areas of the floor are covered with the shrunken, withered corpses and mangled remains of beasts, men and half-men. As you watch, some of the bestial forms slowly drag themselves from the mass and lurch towards you.
+::: boxed
+A terrible scene of carnage is laid out before you. Shelves, benches and large areas of the floor are covered with the shrunken, withered corpses and mangled remains of beasts, men and half-men. As you watch, some of the bestial forms slowly drag themselves from the mass and lurch towards you.
+:::
 
 This is the laboratory where KalnaKaa animates topis, and contains the remains of some of his unsuccessful experiments. Also here are the results of KalnaKaa’s attempts to produce topis from other creatures — pigs, lizards, apes, etc. He has been unable to improve on the usual humanoid variety, however, and these undead have the same characteristics as normal topis. They will attack the party on sight.
 
-**topi (11):** AC 6; HD 3*; hp 23, 17,16 (x2), 13, 11, 9, 8 (x2), 5, 4; MV 120ʹ(40ʹ); #AT 2 claws; D 1-6/1-6 + special; Save F2; ML 12; AL C; XP 50 each; THACO 17; New monster.
+**topi (11):** AC 6; HD 3\*; hp 23, 17,16 (×2), 13, 11, 9, 8 (×2), 5, 4; MV 120ʹ(40ʹ); #AT 2 claws; D 1-6/1-6 + special; Save F2; ML 12; AL C; XP 50 each; THACO 17; New monster.
 
-The poison of a topi slows characters for 1-2 turns unless they make a saving throw vs. Poison; blunt weapons do half damage to them (but stun them for 1 round); clerics have the same chance of turning topis as of turning wights.
+The poison of a topi *slows* characters for 1-2 turns unless they make a saving throw vs. Poison; blunt weapons do half damage to them (but stun them for 1 round); clerics have the same chance of turning topis as of turning wights.
 
-The magical portal (see page 18) which leads into room K6 from this laboratory is not marked on this side in any way. It can only be opened by somebody wearing KalnaKaa’s black cloak (see the Pull-out Sheet). The portal’s source is in area K6.
+The magical portal (see page 18) which leads into room K6 from this laboratory is not marked on this side in any way. It can only be opened by somebody wearing KalnaKaa’s black cloak (see the **Pull-out Sheet**). The portal’s source is in area K6.
 
 #### K6. Hidden Portal
 
-There is a black square painted in the centre of the southern wall of this plain room. This is the source of a magical portal (see page 18) between this room and area K5. The pass-wall can only be opened by somebody wearing KalnaKaa’s black cloak (see the Pull-out Sheet).
+There is a black square painted in the centre of the southern wall of this plain room. This is the source of a magical portal (see page 18) between this room and area K5. The *passwall* can only be opened by somebody wearing KalnaKaa’s black cloak (see the **Pull-out Sheet**).
 
 The passage running north-east from this room is the other end of tunnel K40 at the Sea Gate. It runs north-east for 1 mile and then turns east for another ¼ mile. It slopes gently downwards towards the Sea Gate.
 
