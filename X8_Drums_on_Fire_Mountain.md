@@ -9,32 +9,32 @@ page_total: 38
 pages: 1-38
 ---
 
-{#p1 .front-cover}
+{#p0 .front-cover}
 
 |     |                                         |      |
 | :-- | :-------------------------------------: | ---: |
 | X8  | Adventure for 5–8 Characters Levels 5–8 | 9127 |
 
-![Dungeons & Dragons®](assets/dnd-logo.png)
+# Dungeons & Dragons®
 
-## Expert Game Adventure
+### Expert Game Adventure
 
 ---
 
-# Drums on Fire Mountain
+## Drums on Fire Mountain
 
 ### by Graeme Morris and Tom Kirby
 
 ---
 
-![Dungeons & Dragons®](assets/tsr-logo-2.png)
+## TSR
 
 **TSR, Inc.**  
 **PRODUCTS OF YOUR IMAGINATION™**
 
 DUNGEONS & DRAGONS, D&D, and PRODUCTS OF YOUR IMAGINATION are registered trademarks owned by TSR, Inc.
 
-
+{#p1}
 
 # DRUMS ON FIRE MOUNTAIN
 
@@ -655,7 +655,7 @@ The face on the figure between the pillars and the one on the bottom right-hand 
 
 The panel with the design:
 
-![Intricate Panel](assets/x8-trapped-panel-p10.png)
+![Intricate Panel](assets/basicdnd/x8-trapped-panel-p10.png)
 
 is magically trapped. If it is touched, a blast of magical fire will gush out and inflict 10 points of damage (5 if a successful saving throw vs. Spells is made) on all characters within 15 feet. The design is the kara-kara’s death symbol. It cannot be read by means of a **read languages** spell.
 
@@ -2042,13 +2042,13 @@ Agarats are immune to sleep, charm and hold spells, and can only be hit by silve
 
 {#p33 .back-cover}
 
-D&D®
+# D&D®
 
-Expert Game Adventure
+### Expert Game Adventure
 
-Drums on Fire Mountain
+## Drums on Fire Mountain
 
-by Graeme Morris and Tom Kirby
+### by Graeme Morris and Tom Kirby
 
 In a dark cell, Rollo Bargmann, merchant of Thyatis, turns away in disgust from his evil, green-skinned prisoner; capturing this wretch cost a ship and sixty gallant men. Then his heart hardens once more, and he resumes the interrogation. Here, perhaps, he may find an answer to the question that haunts him.
 
