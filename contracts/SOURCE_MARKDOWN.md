@@ -1,6 +1,6 @@
 # Pandoc Source Markdown Contract
 
-**Version 1.8.**
+**Version 1.9.**
 
 ## Scope
 
@@ -107,6 +107,13 @@ attribute-bearing block. The closed vocabulary contains exactly:
   or a reader's write-in list. This records exclusion, not emptiness or artwork.
 - `.blank-page`: the source steward declares that the identified printed page
   is blank and supplies no source content for graph extraction.
+- `.front-cover`: the source steward declares that the identified printed page
+  is the front cover of the publication. Where no printed game mechanics or rules
+  are present, it supplies no source content for graph extraction.
+- `.back-cover`: the source steward declares that the identified printed page
+  is the back cover of the publication. Where printed game content or tables appear
+  on the back cover, that content remains eligible for graph extraction; otherwise,
+  it supplies no source content for graph extraction.
 
 These classes are page-local intake metadata, never graph nodes, edges, domains,
 general rules, source citations, or evidence of mechanics. Only the source
@@ -305,6 +312,11 @@ Any programmatic packet parser must demonstrate that it:
    later plain page by inheritance.
 
 ## Version History
+
+- **1.9 - 2026-10-20:** DEC-2026-0108 admitted `front-cover` and `back-cover`
+  as steward-authored, page-local intake metadata without creating graph nodes
+  or excluding valid game content on covers (such as the Dead Bandit Treasure
+  Table on page 68).
 
 - **1.8 - 2026-09-21:** DEC-2026-0084 admitted
   `page-intentionally-ignored` and `blank-page` after independent implementation

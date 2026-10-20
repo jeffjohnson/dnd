@@ -1,0 +1,100 @@
+schema_version: '1.0'
+id: ESC-2026-10-20T22.29.26.068Z
+status: pending
+ruleset_id: shadowdark
+book_id: cs2
+source_id: cs2-steward-intake
+packet_id: cross-packet
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+raised_by: analyst
+raised_utc: '2026-10-20T22:29:26.068Z'
+
+handoff:
+  next_role: architect
+  readiness: ready
+  reason: >-
+    The repository source steward has supplied incoming Shadowdark CS2 packets
+    containing page markers with classes .front-cover and .back-cover.
+    contracts/SOURCE_MARKDOWN.md declares the page class vocabulary closed,
+    containing only full-page-artwork, page-intentionally-ignored, and blank-page.
+    Only an Architect Decision can expand this closed contract vocabulary.
+  blocking_ids: []
+
+authority:
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/SOURCE_MARKDOWN.md 1.8
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - agents/analyst/INSTRUCTIONS.md
+  - agents/architect/INSTRUCTIONS.md
+
+originating_artifacts:
+  packet_id: cross-packet
+  source_files:
+    - books/shadowdark/cs2/packets/incoming/cs2_01-08.md
+    - books/shadowdark/cs2/packets/incoming/cs2_45-68.md
+
+question: >-
+  Should the closed page-class vocabulary in contracts/SOURCE_MARKDOWN.md be widened from
+  three classes to five by admitting front-cover and back-cover as steward-declared
+  page-local intake metadata, and if so with what exact definitions and extraction semantics
+  (specifically ensuring printed game content on back covers remains extractable)?
+
+smallest_relevant_source_excerpt: >-
+  From books/shadowdark/cs2/packets/incoming/cs2_01-08.md page 1:
+  ::: {#p1 .front-cover}
+  :::
+  From books/shadowdark/cs2/packets/incoming/cs2_45-68.md page 68:
+  ::: {#p68 .back-cover}
+  :::
+  ### IN A DEAD BANDIT'S HAND, YOU FIND...
+  #### DEAD BANDIT TREASURE TABLE
+
+local_graph_neighborhood:
+  canonical_context: none
+  explanation: >-
+    Page classes are intake metadata, not ontology nodes, edges, or domains. No
+    graph identity or canonical edge is implicated.
+
+affected_canonical_ids: []
+
+evidence:
+  - path: books/shadowdark/cs2/packets/incoming/cs2_01-08.md
+    checksum: sha256:6ddb883be93e625a0c18463e661b0ab28393bffb2e59df27a6ae853954c202f9
+    role: incoming_packet_with_front_cover_marker
+  - path: books/shadowdark/cs2/packets/incoming/cs2_45-68.md
+    checksum: sha256:cc1503981ba65f5a64781aabccd184c5b96ed4730d564cda85ae8b4d0a34535d
+    role: incoming_packet_with_back_cover_marker
+  - path: contracts/SOURCE_MARKDOWN.md
+    checksum: sha256:289ffb058e3b6f74884d6ebb30f39422aa4835e6955ec6b648114265d0dc5b03
+    role: governing_source_markdown_contract
+
+options_considered:
+  - id: OPT-A
+    summary: widen the closed vocabulary to include front-cover and back-cover
+    detail: >-
+      Amend contracts/SOURCE_MARKDOWN.md to admit front-cover and back-cover alongside
+      full-page-artwork, page-intentionally-ignored, and blank-page, keeping the vocabulary
+      closed. Define front-cover as declaring the front cover of the publication (supplying
+      no graph content unless mechanics are present). Define back-cover as declaring the
+      back cover of the publication while retaining ordinary graph extraction eligibility
+      for printed game content/tables appearing on the cover. Update pagemarkers.py and
+      test_pagemarkers.py accordingly.
+  - id: OPT-B
+    summary: reject new classes and require steward removal or relabeling
+    detail: >-
+      Require the source steward to strip cover markers or substitute them with existing
+      classes. This loses accurate publication structure metadata and records false
+      statements about cover pages.
+
+recommended_resolution: >-
+  OPT-A. The steward has explicitly supplied these markers for publication covers.
+  Widening the closed vocabulary to five classes preserves typo detection, provides clear
+  definitions, and allows extraction of back-cover game tables like the Dead Bandit
+  Treasure Table on page 68.
+
+expected_migration_impact: >-
+  None. No existing canonical graph nodes, edges, or published artifacts in any ruleset
+  are changed.

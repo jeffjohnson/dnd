@@ -85,6 +85,16 @@ PAGE_CLASS_MEANINGS: dict[str, str] = {
         "the steward declares this printed page is blank and supplies no source "
         "content for graph extraction"
     ),
+    "front-cover": (
+        "the steward declares this printed page is the front cover of the "
+        "publication; where no game mechanics are present, it supplies no "
+        "source content for graph extraction"
+    ),
+    "back-cover": (
+        "the steward declares this printed page is the back cover of the "
+        "publication; where printed game content or tables appear on the back "
+        "cover, that content remains eligible for graph extraction"
+    ),
 }
 
 #: Closed page-class vocabulary (contract 1.5 "Page classes", extended by the

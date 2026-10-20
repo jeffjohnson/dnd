@@ -383,7 +383,13 @@ class TestPageClassLint(unittest.TestCase):
         self.assertNotIn("classified", output)
 
 
-PROSPECTIVE_CLASSES = ("full-page-artwork", "page-intentionally-ignored", "blank-page")
+PROSPECTIVE_CLASSES = (
+    "full-page-artwork",
+    "page-intentionally-ignored",
+    "blank-page",
+    "front-cover",
+    "back-cover",
+)
 
 
 def lint_text(**files):
@@ -406,19 +412,19 @@ def lint_text(**files):
 
 
 class TestClosedPageClassVocabulary(unittest.TestCase):
-    """DEC-2026-0084 acceptance test 1: exactly three classes, closed."""
+    """DEC-2026-0084 / DEC-2026-0108 acceptance test 1: exactly five classes, closed."""
 
-    def test_the_vocabulary_is_exactly_the_three_ruled_classes(self):
+    def test_the_vocabulary_is_exactly_the_five_ruled_classes(self):
         self.assertEqual(pagemarkers.PAGE_CLASSES, frozenset(PROSPECTIVE_CLASSES))
 
     def test_the_set_and_its_documentation_cannot_drift_apart(self):
         self.assertEqual(
             set(pagemarkers.PAGE_CLASS_MEANINGS), set(pagemarkers.PAGE_CLASSES))
 
-    def test_no_fourth_class_is_admitted(self):
+    def test_no_outsider_class_is_admitted(self):
         """Membership is the only test, so there is nothing to fall through."""
         for outsider in ("full-page-diagram", "page-ignored", "blank",
-                         "blank-pages", "full-page-artwork-2", ""):
+                         "blank-pages", "full-page-artwork-2", "cover", "frontcover", ""):
             with self.subTest(name=outsider):
                 self.assertNotIn(outsider, pagemarkers.PAGE_CLASSES)
 

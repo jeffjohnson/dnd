@@ -1,0 +1,124 @@
+schema_version: '1.0'
+id: DEC-2026-0108
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: cs2
+source_id: cs2-steward-intake
+packet_id: cross-packet
+constitution_version: '1.8'
+decision_date: '2026-10-20'
+escalation_id: ESC-2026-10-20T22.29.26.068Z
+question: >-
+  Admit front-cover and back-cover into the closed page-class vocabulary as steward-authored,
+  page-local intake metadata without creating graph nodes or excluding valid game content on covers
+  (such as the Dead Bandit Treasure Table on CS2 page 68).
+ruling: >-
+  Approve OPT-A. The closed page-class vocabulary in contracts/SOURCE_MARKDOWN.md is expanded
+  from three classes to five: full-page-artwork, page-intentionally-ignored, blank-page,
+  front-cover, and back-cover. All five are page-local intake metadata with existing attachment,
+  provenance, and in-span coverage rules. The front-cover class declares the front cover of the
+  publication; where no game mechanics are present, it supplies no source content for graph
+  extraction. The back-cover class declares the back cover of the publication; where printed game
+  content or tables appear on the back cover (such as the Dead Bandit Treasure Table on CS2 page 68),
+  that content remains eligible for ordinary graph extraction. Builder tooling and test suites
+  are updated to recognize the five-class vocabulary.
+rationale:
+  - >-
+    The repository source steward explicitly supplied front-cover and back-cover markers on incoming
+    CS2 supplement packets.
+  - >-
+    A closed vocabulary preserves typo detection and auditable reasons for omitted graph content while
+    accommodating standard publication cover structure.
+  - >-
+    Classification belongs to intake metadata, not to the ruleset ontology or canonical graph.
+  - >-
+    Game mechanics or tables printed on a back cover remain eligible for extraction according to source
+    text and extraction profiles; cover classification does not suppress content extraction.
+handoff:
+  next_role: analyst
+  readiness: ready
+  reason: >-
+    Architect has approved DEC-2026-0108 and updated contracts/SOURCE_MARKDOWN.md, pagemarkers.py,
+    and test_pagemarkers.py. Analyst may now proceed with packet intake for cs2_01-08.md.
+  blocking_ids: []
+evidence:
+  - path: contracts/SOURCE_MARKDOWN.md
+    checksum: sha256:289ffb058e3b6f74884d6ebb30f39422aa4835e6955ec6b648114265d0dc5b03
+    role: activated_contract_version_1_9
+  - path: books/shadowdark/cs2/packets/incoming/cs2_01-08.md
+    checksum: sha256:6ddb883be93e625a0c18463e661b0ab28393bffb2e59df27a6ae853954c202f9
+    role: front_cover_source_occurrence
+  - path: books/shadowdark/cs2/packets/incoming/cs2_45-68.md
+    checksum: sha256:cc1503981ba65f5a64781aabccd184c5b96ed4730d564cda85ae8b4d0a34535d
+    role: back_cover_source_occurrence
+definitions:
+  front-cover: >-
+    The source steward declares that the identified printed page is the front cover of the
+    publication. Where no printed game mechanics or rules are present, it supplies no source content
+    for graph extraction.
+  back-cover: >-
+    The source steward declares that the identified printed page is the back cover of the
+    publication. Where printed game content or tables appear on the back cover, that content remains
+    eligible for graph extraction; otherwise, it supplies no source content.
+semantic_bounds:
+  - >-
+    Only the source steward declares the classification. Pipeline roles preserve it; they do not invent
+    cover markers to conceal unread, missing, uncertain, or mechanically difficult source material.
+  - >-
+    Use a genuine existing heading or an empty fenced Div with a reserved pN identifier. Bare
+    class-bearing paragraph tokens remain invalid; arbitrary unknown classes on a page marker remain
+    errors.
+  - >-
+    Retain the exact page number and class in packet.yaml composition metadata at claim under the
+    existing manifest convention. The page stays in the packet's actual declared span and completeness
+    accounting.
+  - >-
+    A classified front-cover page inside the declared span owes no graph-content or uncovered-page
+    remediation unless mechanics are present. A back-cover page containing rules or tables (such as the
+    CS2 Dead Bandit Treasure Table) remains subject to normal extraction profiles.
+migration_required: false
+migration_scope: >-
+  No canonical graph node, edge, or existing published artifact is rewritten.
+constitution_version_impact: >-
+  None. Shadowdark Constitution 1.8 remains unchanged.
+affected_contracts:
+  - contracts/SOURCE_MARKDOWN.md
+affected_registries: []
+implementation_bounds:
+  - >-
+    Architect publishes this Decision and activates contracts/SOURCE_MARKDOWN.md v1.9.
+  - >-
+    Builder updates pagemarkers.py and test_pagemarkers.py to support the expanded five-class vocabulary.
+  - >-
+    Analyst claims and processes CS2 packets using the updated contract and parser.
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish this Decision, activate contracts/SOURCE_MARKDOWN.md v1.9, update pagemarkers.py
+      and test_pagemarkers.py, and return control to Analyst.
+  - step: 2
+    owner: analyst
+    action: >-
+      Claim books/shadowdark/cs2/packets/incoming/cs2_01-08.md, preserving page 1 as front-cover,
+      and begin packet rotation with status: optional on all candidate edges.
+exact_diff:
+  rulesets/shadowdark/escalations/pending/ESC-2026-10-20T22.29.26.068Z.yaml: Relocate the resolved immutable escalation to decided history.
+  rulesets/shadowdark/escalations/decided/ESC-2026-10-20T22.29.26.068Z.yaml: Preserve the resolved immutable escalation under decided history.
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml: Publish five-class page-marker vocabulary authority.
+  contracts/SOURCE_MARKDOWN.md: Activate Version 1.9 defining front-cover and back-cover.
+  tooling/builder/src/adnd1e_builder/pagemarkers.py: Expand PAGE_CLASS_MEANINGS and PAGE_CLASSES to include front-cover and back-cover.
+  tooling/builder/tests/test_pagemarkers.py: Update PROSPECTIVE_CLASSES and acceptance tests for five classes.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/pending/ESC-2026-10-20T22.29.26.068Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decided/ESC-2026-10-20T22.29.26.068Z.yaml, owner: architect, sequence_step: 1}
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml, owner: architect, sequence_step: 1}
+  - {path: contracts/SOURCE_MARKDOWN.md, owner: architect, sequence_step: 1}
+  - {path: tooling/builder/src/adnd1e_builder/pagemarkers.py, owner: architect, sequence_step: 1}
+  - {path: tooling/builder/tests/test_pagemarkers.py, owner: architect, sequence_step: 1}
+follow_up_owners:
+  analyst:
+    - Claim and extract CS2 packets with status: optional.
