@@ -1,15 +1,19 @@
 ---
 title: Drums on Fire Mountain
+type: module
+rules_type: optional
 module code: X8
 stock_number: 9127
 publisher: TSR
 year: 1984
 series: basicdnd
 page_total: 38
-pages: 1-38
+pages: 0-37
+authors: Graeme Morris, Tom Kirby
 ---
 
-{#p0 .front-cover}
+::: {#p0 .front-cover}
+:::
 
 |     |                                         |      |
 | :-- | :-------------------------------------: | ---: |
@@ -34,7 +38,8 @@ pages: 1-38
 
 DUNGEONS & DRAGONS, D&D, and PRODUCTS OF YOUR IMAGINATION are registered trademarks owned by TSR, Inc.
 
-{#p1}
+::: {#p1}
+:::
 
 # DRUMS ON FIRE MOUNTAIN
 
@@ -133,7 +138,8 @@ Printed in the USA
 | Diagrams 1–2                  | Inside cover  |
 | Diagram 3                     | Outside cover |
 
-{#p2}
+::: {#p2}
+:::
 
 ## INTRODUCTION
 
@@ -163,7 +169,7 @@ Printed in the USA
 > 
 > Though pirates are, sadly, a common scourge upon the high seas, it is our purpose here to record such as is known of a stranger threat reported by those bold enough to seek their fortune in these waters.
 >
-> These reports, some from seafarers of high repute, concern a fog which moves against the strongest wind and which is filled with forms to drive men insane and lead ships to their doom. By some it is named Ship-bane. Little more of Ship-bane is said, and this guide can offer no set opinion concerning its nature or its existence.
+> These reports, some from seafarers of high repute, concern a fog which moves against the strongest wind and which is filled with forms to drive men insane and lead ships to their doom. By some it is named Ship-Bane. Little more of Ship-Bane is said, and this guide can offer no set opinion concerning its nature or its existence.
 >
 > #### SHIPS’ BISCUITS
 >
@@ -185,7 +191,7 @@ The waters around Teki-nura-ria were not only stormy but also roamed by kal-muru
 
 He had fled with his daughter Maerie and three charmed henchmen, and arrived by chance at the island. At first the kara-kara were hostile, but when they saw KalnaKaa in his swine form, they hailed him as their pig god, Tapu, and accepted him as their master.
 
-Having found a secure base at last, KalnaKaa found and explored parts of the network of the “Ancestors’” chambers, and took up residence in some of them. He also found the kal-murus and bent them to his will. Then he began to coordinate the attacks of the kara-kara and the elementals into a campaign of piracy and revenge against those who had driven him from his home.
+Having found a secure base at last, KalnaKaa found and explored parts of the network of the “Ancestors” chambers, and took up residence in some of them. He also found the kal-murus and bent them to his will. Then he began to coordinate the attacks of the kara-kara and the elementals into a campaign of piracy and revenge against those who had driven him from his home.
 
 ### Rollo Bargmann
 
@@ -201,7 +207,8 @@ If they ask, Malmir will tell the adventurers where the merchant’s house is, b
 
 When the adventurers go to Rollo Bargmann’s house, he will welcome them in and, after the usual introductions, will explain the problem which is crippling the
 
-{#p3}
+::: {#p3}
+:::
 
 ### Extract from the Personal Notes of KalnaKaa
 
@@ -269,7 +276,8 @@ The following abbreviations are used:
 
 **THACO** = To Hit Armour Class Zero. This is the roll on 1d20 needed by a creature to hit an opponent with AC 0. In most cases, the roll needed to hit other armour classes = THACO minus AC.
 
-{#p4}
+::: {#p4}
+:::
 
 ## TEKI-NURA-RIA
 
@@ -303,7 +311,8 @@ If any attacking kara-kara elude the party, the tribe will be warned that there 
 
 The kara-kara will not want to disrupt the ceremony in order to deal with intruders, and will increase the size of their patrols from 9 to 13 warriors. However, if and when the adventurers halt the ceremony in the volcano temple (area N15), the kara-kara will make every attempt to destroy them. If they are unable to follow the party underground, the kara-kara will send out extra patrols over the whole island (see **Wandering Monsters**).
 
-{#p5}
+::: {#p5}
+:::
 
 Apart from this, it is up to the DM to decide exactly how the kara-kara will react, bearing the following in mind:
 
@@ -336,14 +345,15 @@ Except for the kara-kara (see above), slain wandering monsters are not deducted 
 |       —        |  1–6 (A)  |     —     | **Normal crocodile (2–7):** AC 5; HD 2; hp 9 each; MV 90′(30′); #AT 1 bite; D 1–8; Save F1; ML 7; AL N; XP 35 each; THACO 18; E47.                                                                                                                                                                             |
 |    7–8 (N)     |     —     |     —     | **Giant gecko lizard (1–3):** AC 5; HD 3+1; hp 14 each; MV 120′(40′); #AT 1 bite; D 1–8; Save F2; ML 7; AL N; XP 50 each; THACO 16; B32.                                                                                                                                                                       |
 |       —        | 7–10 (D)  |     —     | **Insect swarm (1):** AC 7; HD 4\*; hp 22; MV 60′(20′); #AT 10′×10′×30′ area effect; D 2 or 4; Save NM; ML 11; AL N; XP 125; THACO automatic hit; E52.                                                                                                                                                         |
-|    9–10 (D)    |           |  6–8 (D)  | **Kara-kara patrol (9 or 13):** AC 8; HD 1+1 or 1+4 (chanting); hp 9 or 12 (chanting), 5 or 8 (chanting); MV 120′(40′); #AT 1 weapon; D 1–6; Save F1 or F2 (chanting); ML 9 or 11 (chanting); AL C; XP 15 each; THACO 18; New monster. They chant if possible; each carries 10 gp of coral and jade jewellery. |
+|    9–10 (D)    |     —     |  6–8 (D)  | **Kara-kara patrol (9 or 13):** AC 8; HD 1+1 or 1+4 (chanting); hp 9 or 12 (chanting), 5 or 8 (chanting); MV 120′(40′); #AT 1 weapon; D 1–6; Save F1 or F2 (chanting); ML 9 or 11 (chanting); AL C; XP 15 each; THACO 18; New monster. They chant if possible; each carries 10 gp of coral and jade jewellery. |
 |   11–13 (D)    |     —     |     —     | **Giant racer snake (1–4):** AC 5; HD 2; hp 9 each; MV 120′(40′); #AT 1 bite; D 1–6; Save F1; ML 7; AL N; XP 20 each; THACO 18; B37.                                                                                                                                                                           |
 |   14–17 (N)    | 11–14 (N) | 9–11 (N)  | **Shadow (3):** AC 7; HD 2+2\*; hp 11 each; MV 90′(30′); #AT 1 touch; D 1–4 + drain 1 point of Strength for 8 turns; Save F2; ML 12; AL C; XP 35 each; THACO 17; B36.                                                                                                                                          |
 |       —        | 15–20 (A) | 12–15 (A) | **Stirge (3–6):** AC 7; HD 1\*; hp 4 each; MV 180′(60′); #AT 1 beak; D 1–3 + drain blood; Save F2; ML 9; AL N; XP 13 each; THACO 19 (17 on first attack); B38.                                                                                                                                                 |
 |       —        |     —     | 16–20 (A) | **Topi (5–8):** AC 6; HD 3\*; hp 12 each; MV 120′(40′); #AT 2 claws; D 1–6/1–6 + special; Save F2; ML 12; AL C; XP 50 each; THACO 17; New monster.                                                                                                                                                             |
 |   18–20 (N)    |     —     |     —     | **White ape (1–4):** AC 6; HD 4; hp 19 each; MV 120′(40′); #AT 2 claws; D 1–4/1–4; Save F2; ML 7; AL N; XP 75 each; THACO 16; B25.                                                                                                                                                                             |
 
-{#p6}
+::: {#p6}
+:::
 
 #### Magical Portals
 
@@ -419,7 +429,7 @@ The enclosure has a low wall made of bones lashed together. It is roughly square
 A trail runs along the floor of the gully, marked by huge, worn paving slabs and rounded steps where the path is steepest. At intervals of ten paces, pairs of stone statues face each other across the path. Their shapes were once humanoid but nearly all have lost a head, an arm or both. Some have fallen over completely.
 :::
 
-The statues line both sides of the trail from one end of it to the other, but there is only {#p7} one pair of undamaged statues. This pair is at the point marked **T5** on **Map 2**.
+The statues line both sides of the trail from one end of it to the other, but there is only []{#p7} one pair of undamaged statues. This pair is at the point marked **T5** on **Map 2**.
 
 These two intact statues are magically trapped and will fire one **lightning bolt** each round at one of the characters (chosen at random) passing between them during that round. Each **lightning bolt** will inflict 4d6 points of damage (halved if the character makes a saving throw vs. Spells).
 
@@ -499,7 +509,8 @@ When the adventurers reach the platform at the end of the wooden causeway (area 
 
 For every 8 points of damage taken by the hydra, one head is destroyed. The creature has no treasure.
 
-{#p8}
+::: {#p8}
+:::
 
 ### SLOPES OF NI-MALOWA
 
@@ -577,7 +588,8 @@ There are five ornately carved war canoes with outriggers pulled up on the beach
 | Armour Class | 8                           |
 | Capacity     | 20,000 cn                   |
 
-{#p9}
+::: {#p9}
+:::
 
 ### UNDER NI-MALOWA
 
@@ -615,7 +627,8 @@ Inscriptions on the stones give clues as to how each of the magical portals can 
 
 The sources of the portals are yellow, painted circles on the end walls of the corridors behind the entrances. These are the only parts of the portals which have a magical aura.
 
-{#p10}
+::: {#p10}
+:::
 
 #### N1. Entrance to the Tomb of Su-hana-ko
 
@@ -685,7 +698,8 @@ The cobwebs were woven by hundreds of small, harmless spiders which live on the 
 
 **gelatinous cube (2):** AC 8; HD 4\*; hp 19, 12; MV 60′(20′); #AT 1 touch; D 2–8 + paralysis; Save F2; ML 12; AL N; XP 125 each; THACO 16; B30.
 
-{#p11}
+::: {#p11}
+:::
 
 Each of the farther alcoves contains the skeleton of a kara-kara wearing two gold ankle bracelets (value - 575 gp each).
 
@@ -753,7 +767,8 @@ Glaring at you from the centre of the room is a kara-kara, resplendent in a head
 
 The creature in the robes is the kara-kara’s chief manwu-papa. He has a shield and is wearing wooden armour under the robes. He is armed with an iron **mace +1** and has the following spells: **cause fear**, **cure light wounds**, **curse**, **hold person** and **silence 15′ radius**. The manwu-papa’s **curse** spell causes cowardice. An affected character must make a saving throw vs. Spells at the beginning of every combat, or flee for 2 turns (as if affected by a **cause fear** spell).
 
-{#p12}
+::: {#p12}
+:::
 
 His attendants are ordinary kara-kara warriors armed with shark-toothed swords (treat as short swords). When they see the party, the kara-kara will begin to chant (see **NEW MONSTERS, Kara-kara** - page 27). If the kara-kara fail a morale check during combat, they will surrender.
 
@@ -828,7 +843,8 @@ One of the jars holds water. The other two contain a mixture of rotting fruits u
 
 The following description assumes that the party will enter this chamber through one of the doors in the northern corner. If not, the DM should amend it accordingly:
 
-{#p13}
+::: {#p13}
+:::
 
 ::: boxed
 Opening the door, you are confronted by a blast of hot air and the deafening roar of drums. This huge, natural chamber is dominated by a gaping pit, filled with a fiery red glow and spanned by a slender rope bridge. On the far side is a crowd of spear-waving kara-kara.
@@ -886,7 +902,8 @@ When KalnaKaa discovers that his lair is under attack (see area N15) he will war
 A mass of glittering crystals, suspended by gently swaying strings from the ceiling, fills the circular room before you. At first sight, the room appears to be quite simple, with plain white walls and five other doors, but as you look more closely you notice that everything seems to switch around depending on exactly how you look at it.
 :::
 
-{#p14}
+::: {#p14}
+:::
 
 The crystals are magical, and act like a maze. By tangling together and distorting the characters’ vision, the strings of crystals make the room difficult and confusing to cross. Once a character has started to cross the room, the DM should determine at random which door is reached.
 
@@ -974,7 +991,8 @@ Third Level: **invisibility 10′ radius** (already cast), **slow**
 
 The three henchmen have been **charmed** by KalnaKaa, but even if the charm is broken, they will still fight the party. They know nothing about the chambers under Ki-ata, and believe that KalnaKaa uses a **polymorph self** spell to assume pig form in order to impress the kara-kara.
 
-{#pull-out-sheet-i}
+::: {#i .pull-out-sheet}
+:::
 
 ### MAERIE
 
@@ -1022,7 +1040,8 @@ KalnaKaa revels in his new position of absolute power, ruthlessly using the kara
 
 Maerie’s mother died when Maerie was still quite young but, even so, the girl is of far better character than her father and is much more loyal to him than he is to her. She will do anything to further her father’s interests, at the risk of her own life.
 
-{# .pull-out-sheet-ii}
+::: {#ii .pull-out-sheet}
+:::
 
 ### KALNAKAA
 
@@ -1089,7 +1108,14 @@ KalnaKaa found this cloak during his explorations of the Ancestors’ chambers. 
 
 This amulet in the form of a distorted boar’s head on a fine gold chain has been specially enchanted by KalnaKaa. It has the properties of a ring of protection +3 but also protects any lycanthrope wearing it from the effects of wolfsbane. KalnaKaa can wear it in both pig and human form.
 
-{#p15}
+::: {#iii .pull-out-sheet}
+:::
+
+::: {#iv .pull-out-sheet}
+:::
+
+::: {#p15}
+:::
 
 #### N22. Geldered’s Room
 
@@ -1174,7 +1200,8 @@ The room is small and square. Ahead is a blank wall, but the walls to left and r
 
 The “mirrors” are actually magical barriers which reflect not only light, but also magical spells. Any spells cast against a mirror will be reflected back against the caster! Noise will not pass through them.
 
-{#p16}
+::: {#p16}
+:::
 
 The mirrors are flexible and if a character touches one it will feel and act like a sheet of rubber. If a character pushes hard against a mirror it will yield until most of the character’s body is pressed against it. Then the character will be suddenly drawn through the mirror into the next room and the mirror will return to being flat.
 
@@ -1244,13 +1271,15 @@ The thrones are fixed to the floor and will stop working if either one is remove
 
 This is the other end of tunnel K1. It is a level, plain, rock-hewn passage, 1 mile long, and leads to area K2 at the Valley Gate under Ki-ata.
 
-{#p17}
+::: {#p17}
+:::
 
 ## UNDER KI-ATA
 
 ***(Encounter areas K1–K46: Maps 4a–d)***
 
-{#p18}
+::: {#p18}
+:::
 
 Like the chambers under Ni-malowa (areas N1–N32), the chambers under the volcano Ki-ata (see **Maps 4a–d**) were built by the “Ancestors” before the kara-kara came to Teki-nura-ria, and reflect the strange and decadent tastes of this long-vanished race.
 
@@ -1297,7 +1326,8 @@ The DM should check for wandering monsters every 6 turns (1 hour). A roll of 1 o
 | 12–16    | **Shadow (1–6):** AC 7; HD 2+2\*; hp 11 each; MV 90′(30′); #AT 1 touch; D 1–4 + drain 1 point of Strength for 8 turns; Save F2; ML 12; AL C; XP 35 each; THACO 17; B36. |
 | 17–20    | **Ochre jelly (1):** AC 8; HD 5\*; hp 27; MV 30′(10′); #AT 1 touch; D 2–12; Save F3; ML 12; AL N; XP 300; THACO 15; B35.                                                |
 
-{#p19}
+::: {#p19}
+:::
 
 ### VALLEY GATE (Map 4a)
 
@@ -1365,7 +1395,8 @@ This is the other end of tunnel K17. It is a plain, rock-hewn passage, ¾ mile l
 
 This is the other end of tunnel K9. It is a plain, rock-hewn passage, nearly ½ mile long, and leads to area K10 at the Village Gate. It slopes gently downwards from north to south.
 
-{#p20}
+::: {#p20}
+:::
 
 ### VILLAGE GATE (Map 4b)
 
@@ -1441,7 +1472,8 @@ The females will fight fiercely (morale 11) in self-defence or in defence of the
 
 The infants’ bedding consists of the tattered, dirty remains of 12 cloaks dyed with a swirling pattern of colours. These ruined cloaks will not enable characters to open any magical portals. Hidden amongst the rags are four large diamond-studded, gold earrings (value - 2,500 gp each).
 
-{#p21}
+::: {#p21}
+:::
 
 ### THE HEART OF THE MOUNTAIN (Map 4c)
 
@@ -1509,7 +1541,8 @@ The bridge has no parapet or railing. The flying creatures are fire fundamentals
 
 **fire fundamental\* (15):** AC 5; HD 1+1; hp 5 each; MV 180′(60′); #AT 1 swoop; D 1–6; Save F2; ML 10; AL N; XP 15 each; THACO 18; New monster.
 
-{#p22}
+::: {#p22}
+:::
 
 Fundamentals are immune to mind-affecting spells such as **sleep**, **charm** etc. and can only be hit by magical or silver weapons. They attack by colliding with their victims.
 
@@ -1579,7 +1612,8 @@ The following description serves for either balcony. It assumes that the adventu
 The stairway leads onto a curving platform, separated from a wide recess in the wall by a line of ornate pillars. At the back of the recess is a line of three stone chairs which face towards the centre of the shaft.
 :::
 
-{#p23}
+::: {#p23}
+:::
 
 The pillars are slender and decorated with intricate carved patterns. The stirges in the shaft (area K26) will not fly between them.
 
@@ -1653,7 +1687,8 @@ The doors into this chamber are made of stone and are warm to the touch:
 As the door opens you feel a blast of hot air and see a large chamber bathed in a dull, red light. The light comes from the depths of a gaping pit and reflects from the flame-coloured scales of a long, thin lizard crouched nearby. Swooping around in the air above are some creatures like bat wings wreathed in flame.
 :::
 
-{#p24}
+::: {#p24}
+:::
 
 The thin lizard is a salamander and the flying creatures are fire fundamentals. They will only attack in self-defence or if the party enters the chamber.
 
@@ -1725,7 +1760,7 @@ Any characters foolish enough to drink from the pool will vomit. They will also 
 
 #### K37. Warm Pool
 
-Any characters moving along the strip of cavern floor next to the western pool will be attacked by 10 giant toads hidden amongst the fungi. It is likely (1–3 on 1d6) {#p25} that the toads will surprise the party. On a hit roll of 20, giant toads can drag victims of dwarf-size or smaller into their mouths, automatically causing 1–6 points of damage in each round thereafter.
+Any characters moving along the strip of cavern floor next to the western pool will be attacked by 10 giant toads hidden amongst the fungi. It is likely (1–3 on 1d6) []{#p25} that the toads will surprise the party. On a hit roll of 20, giant toads can drag victims of dwarf-size or smaller into their mouths, automatically causing 1–6 points of damage in each round thereafter.
 
 **giant toad (10):** AC 7; HD 2+2; hp 14, 13, 12 ×2, 11 ×3, 10 ×2, 9; MV 90′(30′); #AT 1 bite; D 2–5; Save F1; ML 6; AL N; XP 25 each; THACO 17; E56.
 
@@ -1799,7 +1834,8 @@ The fat “men” are KalnaKaa and his mirror images, and the small humanoids ar
 
 Any character hit by a topi must make a saving throw vs. Poison or be affected by the equivalent of a **slow** spell. The effects of the topis’ poison and KalnaKaa’s **slow** spell are not cumulative. Topis take only half damage from non-edged weapons (but these will stun them for 1 round) and are immune to mind-affecting spells such as **sleep**, **charm**, etc. Clerics have the same chance of turning topis as of turning wights.
 
-{#p26}
+::: {#p26}
+:::
 
 KalnaKaa’s abilities and other statistics are given on the **Pull-out Sheet**. The details of how he will defend himself will depend on the actions of the party, but the DM should bear the following in mind:
 
@@ -1868,7 +1904,8 @@ The boat is a kara-kara canoe (10 hull points) with an outrigger. If the adventu
 
 Malmir is as good as his word and will wait five days for the party to return. The voyage back to Thyatis will be uneventful but rough. If the party has killed KalnaKaa, the Thyatis Seafaring Merchants’ Guild will honour the contract made by Rollo Bargmann and each party member will receive 5,000 gp. The merchants will accept any reasonable proof (e.g. KalnaKaa’s spell book) or even the word of Malmir, provided that KalnaKaa’s death has been proved to him at the island.
 
-{#p27}
+::: {#p27}
+:::
 
 ## NEW MONSTERS
 
@@ -1964,7 +2001,8 @@ XP Value: 15
 
 Fundamentals are amongst the least powerful of the creatures inhabiting the Elemental Planes of Existence. All fundamentals look like a pair of bat wings without a body. They fly constantly, and attack by colliding with their victims. Earth fundamentals are dull and solid-looking, air fundamentals are almost transparent, fire fundamentals are shrouded in flame and water fundamentals are wet and glistening. They can only be harmed by magic or magical weapons, and are immune to mind-affecting spells such as sleep and charm. They are treated as ‘enchanted creatures’ for the purposes of spells such as protection from evil. Fire fundamentals are immune to fire. Fundamentals usually appear in the normal world at places where the appropriate forces of nature are strongest, and never wander far from them. For example, earth fundamentals may be found in the deepest of natural caverns, air fundamentals near windswept peaks, fire fundamentals in volcanoes and water fundamentals over great oceans. They may also accompany more powerful elemental creatures to the normal world.
 
-{#p28}
+::: {#p28}
+:::
 
 ### TOPI
 
@@ -2040,7 +2078,8 @@ Agarats are immune to sleep, charm and hold spells, and can only be hit by silve
 ::: {#p32 .full-page-artwork}
 :::
 
-{#p33 .back-cover}
+::: {#p33 .back-cover}
+:::
 
 # D&D®
 
