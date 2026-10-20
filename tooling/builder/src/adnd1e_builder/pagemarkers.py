@@ -185,6 +185,10 @@ def _marker_from_inline(node: dict) -> int | None:
         match = MARKER_TEXT.match(node.get("c") or "")
         if match:
             return int(match.group(1))
+    elif node.get("t") == "Span":
+        payload = node.get("c") or [["", [], []], []]
+        attr = payload[0] if payload else ["", [], []]
+        return _marker_from_attr(attr)
     return None
 
 
@@ -286,6 +290,9 @@ def _inline_text(node: dict) -> str:
     if kind in {"Link", "Image"}:
         payload = node.get("c") or [None, [], None]
         return "".join(_inline_text(child) for child in payload[1])
+    if kind == "Span":
+        payload = node.get("c") or [None, []]
+        return "".join(_inline_text(child) for child in payload[1])
     if kind == "Code":
         payload = node.get("c") or [None, ""]
         return payload[1]
@@ -299,7 +306,9 @@ def _inline_text(node: dict) -> str:
     return ""
 
 
-def _split_inlines_on_markers(inlines: list[dict]) -> list[tuple[int | None, str]]:
+def _split_inlines_on_markers(
+    inlines: list[dict], state: dict | None = None
+) -> list[tuple[int | None, str]]:
     """Split one inline sequence at its markers.
 
     Returns ``(marker_or_None, text)`` chunks in document order. ``marker`` is
@@ -315,6 +324,10 @@ def _split_inlines_on_markers(inlines: list[dict]) -> list[tuple[int | None, str
         if page is None:
             buffer.append(_inline_text(node))
             continue
+        if node.get("t") == "Span" and state is not None:
+            payload = node.get("c") or [["", [], []], []]
+            attr = payload[0] if payload else ["", [], []]
+            _record_page_class(attr, page, "span", state)
         chunks.append((pending, "".join(buffer).strip()))
         buffer = []
         pending = page
@@ -327,7 +340,7 @@ def _emit_block(inlines: list[dict], kind: str, state: dict, out: list[PageSpan]
     """Resolve one non-table block and append its spans."""
     chunks = [
         (page, _scrub_marker_shaped(text, state))
-        for page, text in _split_inlines_on_markers(inlines)
+        for page, text in _split_inlines_on_markers(inlines, state)
     ]
     markers = [page for page, _ in chunks if page is not None]
 
@@ -382,7 +395,7 @@ def _emit_table(table: list, state: dict, out: list[PageSpan], warnings: list[st
         for index, inlines in enumerate(per_cell):
             chunks = [
                 (page, _scrub_marker_shaped(text, state))
-                for page, text in _split_inlines_on_markers(inlines)
+                for page, text in _split_inlines_on_markers(inlines, state)
             ]
             markers = [page for page, _ in chunks if page is not None]
             if markers:
@@ -506,4 +519,5 @@ def parse_source(path: str | Path) -> SourcePages:
 
 def strip_markers(text: str) -> str:
     """Remove marker tokens from a string of already-extracted prose."""
+    text = re.sub(r"\s*\[\]\{#p\d+\}", "", text)
     return re.sub(r"\s*\{#p\d+\}", "", text)

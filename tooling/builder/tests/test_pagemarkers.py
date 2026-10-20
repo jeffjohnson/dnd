@@ -706,5 +706,27 @@ class TestImplementationStaysMetadataOnly(unittest.TestCase):
             self.assertEqual(sorted(p.name for p in Path(tmp).iterdir()), ["packet.md"])
 
 
+class TestInlineSpanMarkers(unittest.TestCase):
+    def test_inline_empty_span_marker_splits_paragraph(self):
+        result = parse(
+            "::: {#p36}\n:::\n\n"
+            "Text from page 36 []{#p37} and text from page 37.\n"
+        )
+        paragraphs = [s for s in result.spans if s.kind == "paragraph"]
+        self.assertEqual(len(paragraphs), 2)
+        self.assertEqual(paragraphs[0].page, 36)
+        self.assertEqual(paragraphs[0].text, "Text from page 36")
+        self.assertEqual(paragraphs[1].page, 37)
+        self.assertEqual(paragraphs[1].text, "and text from page 37.")
+        self.assertEqual(result.pages, (36, 37))
+
+    def test_strip_markers_removes_inline_span_markers(self):
+        text = "Some extracted text []{#p15} with following prose."
+        cleaned = pagemarkers.strip_markers(text)
+        self.assertNotIn("{#p15}", cleaned)
+        self.assertNotIn("[]", cleaned)
+        self.assertEqual(cleaned, "Some extracted text with following prose.")
+
+
 if __name__ == "__main__":
     unittest.main()
