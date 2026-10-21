@@ -1,0 +1,576 @@
+schema_version: '1.0'
+id: GUR-PKT-CS3-019-023-gear-boats-oaths-and-reinforcements-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: cs3
+source_id: cs3-steward-intake
+packet_id: PKT-CS3-019-023-gear-boats-oaths-and-reinforcements
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.9
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/cs3/packets/claimed/PKT-CS3-019-023-gear-boats-oaths-and-reinforcements
+  source_file: source.md
+  packet_source_checksum: sha256:93c1e5435d9db021e4fba6c8ecdf44d178eb4d35158319a0e5bba6ef5fe44fb3
+  packet_source_checksum_basis: exact
+  original_filename: cs3.19-23.md
+  citation_code: CS3
+  page_start: 19
+  page_end: 23
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Five pages resolve through Pandoc AST. All five pages (19, 20, 21, 22, 23)
+  carry standard block-level page markers. No malformed page markers exist.
+
+page_class_treatment: >-
+  No page classes are declared in this packet.
+
+scope_boundary: >-
+  The bounded scope covers printed pages 19 through 23 of Cursed Scroll 3: Midnight
+  Sun, comprising gameplay rules, new weapons and armor, boat mechanics and boat
+  statistics, sacred oaths before the Old Gods, and gauntlet 0-level character
+  reinforcements.
+
+source_summary: >-
+  Presents gameplay mechanics for the Isles of Andrik setting: new weapons (handaxe,
+  stave) and armor (round shield) with properties including sundering, boat travel
+  rules and naval vessel statistics table, sacred oaths and consequence tables,
+  and gauntlet replacement arrival table for fallen 0-level characters.
+
+reused_nodes:
+  - id: cbt_attack_roll
+    label: Attack Roll
+    used_by: M001
+    basis: Reused from canonical registry. Constrained by new weapon ranges.
+  - id: cbt_damage_roll
+    label: Damage Roll
+    used_by: M002, M005
+    basis: Reused from canonical registry. Fed by new weapon damage dice.
+  - id: rule_finesse
+    label: Finesse
+    used_by: M003
+    basis: Reused from canonical registry. Gated by Handaxe.
+  - id: rule_thrown
+    label: Thrown
+    used_by: M004
+    basis: Reused from canonical registry. Gated by Handaxe.
+  - id: rule_two_handed
+    label: Two-Handed
+    used_by: M006
+    basis: Reused from canonical registry. Gated by Stave.
+  - id: cbt_armor_class
+    label: Armor Class
+    used_by: M008, M009
+    basis: Reused from canonical registry. Modified by Round Shield and fed by new armor table.
+  - id: rule_gear_capacity
+    label: Gear Capacity
+    used_by: M011, M016
+    basis: Reused from canonical registry. Fed by round shield slot cost and boat hold capacity.
+  - id: rule_damage
+    label: Damage
+    used_by: M012
+    basis: Reused from canonical registry. Negated by sundering property.
+  - id: rule_overland_travel
+    label: Overland Travel
+    used_by: M014, M015
+    basis: Reused from canonical registry. Modified and constrained by boat travel rules.
+  - id: rule_hit_points
+    label: Hit Points
+    used_by: M017, M020
+    basis: Reused from canonical registry. Fed by boat passenger capacity and modified by oath outcomes.
+  - id: exp_level
+    label: Level
+    used_by: M019
+    basis: Reused from canonical registry. Feeds oath swearing cadence.
+  - id: rule_the_gauntlet
+    label: The Gauntlet
+    used_by: M021
+    basis: Reused from canonical registry. Resolved by reinforcements table.
+  - id: rule_death
+    label: Death
+    used_by: M022
+    basis: Reused from canonical registry. Triggers reinforcements table during gauntlet.
+
+candidate_nodes:
+  - proposed_id: tbl_new_weapons
+    proposed_label: New Weapons Table
+    kind: tbl
+    why_needed: Weapons table for new regional weapons on page 20.
+  - proposed_id: tbl_new_armor
+    proposed_label: New Armor Table
+    kind: tbl
+    why_needed: Armor table for new regional armor on page 20.
+  - proposed_id: weapon_handaxe
+    proposed_label: Handaxe
+    kind: weapon
+    why_needed: New regional weapon introduced on page 20.
+  - proposed_id: weapon_stave
+    proposed_label: Stave
+    kind: weapon
+    why_needed: New regional weapon introduced on page 20.
+  - proposed_id: item_round_shield
+    proposed_label: Round Shield
+    kind: item
+    why_needed: New regional armor item introduced on page 20.
+  - proposed_id: rule_sundering
+    proposed_label: Sundering
+    kind: rule
+    why_needed: New weapon and armor property introduced on page 20.
+  - proposed_id: rule_boats
+    proposed_label: Boats
+    kind: rule
+    why_needed: Naval travel and vessel rules introduced on page 21.
+  - proposed_id: tbl_boats
+    proposed_label: Boats Table
+    kind: tbl
+    why_needed: Vessel statistics and costs table on page 21.
+  - proposed_id: rule_oaths
+    proposed_label: Oaths
+    kind: rule
+    why_needed: Sacred ritual oath-swearing mechanic introduced on page 22.
+  - proposed_id: tbl_oaths
+    proposed_label: Oaths Table
+    kind: tbl
+    why_needed: Oath quality and consequence table on page 22.
+  - proposed_id: tbl_reinforcements
+    proposed_label: Reinforcements Table
+    kind: tbl
+    why_needed: 20-row zero-level character arrival table on page 23.
+
+candidate_edges:
+  - ref: M001
+    source_id: tbl_new_weapons
+    source_label: New Weapons Table
+    edge_type: CONSTRAINS
+    target_id: cbt_attack_roll
+    target_label: Attack Roll
+    aspect: weapon range
+    condition: ''
+    polarity: governs
+    polarity_basis: read
+    book: CS3
+    page: 20
+    section: WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M002
+    source_id: weapon_handaxe
+    source_label: Handaxe
+    edge_type: FEEDS_INTO
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: damage die
+    condition: ''
+    polarity: neutral
+    polarity_basis: derived
+    book: CS3
+    page: 20
+    section: WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M003
+    source_id: weapon_handaxe
+    source_label: Handaxe
+    edge_type: GATES
+    target_id: rule_finesse
+    target_label: Finesse
+    aspect: weapon property
+    condition: ''
+    polarity: enables
+    polarity_basis: derived
+    book: CS3
+    page: 20
+    section: WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M004
+    source_id: weapon_handaxe
+    source_label: Handaxe
+    edge_type: GATES
+    target_id: rule_thrown
+    target_label: Thrown
+    aspect: weapon property
+    condition: ''
+    polarity: enables
+    polarity_basis: derived
+    book: CS3
+    page: 20
+    section: WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M005
+    source_id: weapon_stave
+    source_label: Stave
+    edge_type: FEEDS_INTO
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: damage die
+    condition: ''
+    polarity: neutral
+    polarity_basis: derived
+    book: CS3
+    page: 20
+    section: WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M006
+    source_id: weapon_stave
+    source_label: Stave
+    edge_type: GATES
+    target_id: rule_two_handed
+    target_label: Two-Handed
+    aspect: weapon property
+    condition: ''
+    polarity: enables
+    polarity_basis: derived
+    book: CS3
+    page: 20
+    section: WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M007
+    source_id: weapon_stave
+    source_label: Stave
+    edge_type: GATES
+    target_id: rule_sundering
+    target_label: Sundering
+    aspect: weapon property
+    condition: ''
+    polarity: enables
+    polarity_basis: derived
+    book: CS3
+    page: 20
+    section: WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M008
+    source_id: tbl_new_armor
+    source_label: New Armor Table
+    edge_type: FEEDS_INTO
+    target_id: cbt_armor_class
+    target_label: Armor Class
+    aspect: armor rating
+    condition: ''
+    polarity: neutral
+    polarity_basis: derived
+    book: CS3
+    page: 20
+    section: ARMOR TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M009
+    source_id: item_round_shield
+    source_label: Round Shield
+    edge_type: MODIFIES
+    target_id: cbt_armor_class
+    target_label: Armor Class
+    aspect: shield bonus
+    condition: while wielding shield
+    polarity: improves
+    polarity_basis: read
+    book: CS3
+    page: 20
+    section: ARMOR TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M010
+    source_id: item_round_shield
+    source_label: Round Shield
+    edge_type: GATES
+    target_id: rule_sundering
+    target_label: Sundering
+    aspect: armor property
+    condition: ''
+    polarity: enables
+    polarity_basis: derived
+    book: CS3
+    page: 20
+    section: ARMOR TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M011
+    source_id: item_round_shield
+    source_label: Round Shield
+    edge_type: FEEDS_INTO
+    target_id: rule_gear_capacity
+    target_label: Gear Capacity
+    aspect: gear slot cost
+    condition: ''
+    polarity: neutral
+    polarity_basis: derived
+    book: CS3
+    page: 20
+    section: ARMOR TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M012
+    source_id: rule_sundering
+    source_label: Sundering
+    edge_type: MODIFIES
+    target_id: rule_damage
+    target_label: Damage
+    aspect: damage negation
+    condition: when hit with a melee attack
+    polarity: negates
+    polarity_basis: read
+    book: CS3
+    page: 20
+    section: PROPERTIES
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M013
+    source_id: rule_boats
+    source_label: Boats
+    edge_type: RESOLVED_BY
+    target_id: tbl_boats
+    target_label: Boats Table
+    aspect: boat types
+    condition: ''
+    polarity: governs
+    polarity_basis: derived
+    book: CS3
+    page: 21
+    section: BOATS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M014
+    source_id: rule_boats
+    source_label: Boats
+    edge_type: MODIFIES
+    target_id: rule_overland_travel
+    target_label: Overland Travel
+    aspect: waterborne hex travel
+    condition: when traveling by boat
+    polarity: improves
+    polarity_basis: read
+    book: CS3
+    page: 21
+    section: BOAT FEATURES
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M015
+    source_id: rule_boats
+    source_label: Boats
+    edge_type: CONSTRAINS
+    target_id: rule_overland_travel
+    target_label: Overland Travel
+    aspect: capsizing hazard
+    condition: when unseaworthy
+    polarity: governs
+    polarity_basis: read
+    book: CS3
+    page: 21
+    section: BOAT FEATURES
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M016
+    source_id: rule_boats
+    source_label: Boats
+    edge_type: FEEDS_INTO
+    target_id: rule_gear_capacity
+    target_label: Gear Capacity
+    aspect: hold storage calculation
+    condition: ''
+    polarity: neutral
+    polarity_basis: derived
+    book: CS3
+    page: 21
+    section: BOAT FEATURES
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M017
+    source_id: rule_boats
+    source_label: Boats
+    edge_type: FEEDS_INTO
+    target_id: rule_hit_points
+    target_label: Hit Points
+    aspect: passenger capacity
+    condition: ''
+    polarity: neutral
+    polarity_basis: derived
+    book: CS3
+    page: 21
+    section: BOAT FEATURES
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M018
+    source_id: rule_oaths
+    source_label: Oaths
+    edge_type: RESOLVED_BY
+    target_id: tbl_oaths
+    target_label: Oaths Table
+    aspect: oath consequences
+    condition: ''
+    polarity: governs
+    polarity_basis: derived
+    book: CS3
+    page: 22
+    section: OATHS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M019
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: rule_oaths
+    target_label: Oaths
+    aspect: swearing cadence
+    condition: ''
+    polarity: neutral
+    polarity_basis: derived
+    book: CS3
+    page: 22
+    section: SWEARING AN OATH
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M020
+    source_id: tbl_oaths
+    source_label: Oaths Table
+    edge_type: MODIFIES
+    target_id: rule_hit_points
+    target_label: Hit Points
+    aspect: hit point adjustment
+    condition: upon fulfilling or failing oath
+    polarity: improves
+    polarity_basis: read
+    book: CS3
+    page: 22
+    section: OATHS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M021
+    source_id: rule_the_gauntlet
+    source_label: The Gauntlet
+    edge_type: RESOLVED_BY
+    target_id: tbl_reinforcements
+    target_label: Reinforcements Table
+    aspect: reinforcement arrival
+    condition: when a zero-level character dies
+    polarity: governs
+    polarity_basis: derived
+    book: CS3
+    page: 23
+    section: YOUR 0-LEVEL CHARACTER... TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M022
+    source_id: rule_death
+    source_label: Death
+    edge_type: TRIGGERS
+    target_id: tbl_reinforcements
+    target_label: Reinforcements Table
+    aspect: reinforcement arrival
+    condition: when a zero-level character dies during a gauntlet
+    polarity: inflicts
+    polarity_basis: read
+    book: CS3
+    page: 23
+    section: YOUR 0-LEVEL CHARACTER... TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
