@@ -1,0 +1,1070 @@
+schema_version: '1.0'
+id: GUR-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: cs2
+source_id: cs2-steward-intake
+packet_id: PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.9
+- contracts/WORK_QUEUES.md 1.36
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.8
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml
+packet_provenance:
+  packet_path: books/shadowdark/cs2/packets/claimed/PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts
+  source_file: source.md
+  packet_source_checksum: sha256:7a257c0ee3d5bc947596e24b75c585f2ff615d1154b9e2d3b8b07a3594059ad0
+  packet_source_checksum_basis: exact
+  original_filename: cs2_19-30.md
+  citation_code: CS2
+  page_start: 19
+  page_end: 30
+  page_number_basis: packet_page_markers
+page_attribution_basis: Twelve pages resolve through Pandoc AST. Pages 25 and 30 are empty fenced Divs carrying .full-page-artwork
+  under contracts/SOURCE_MARKDOWN.md 1.9 and DEC-2026-0108. Pages 19, 20, 21, 22, 23, 24, 26, 27, 28, and 29 carry standard
+  page markers. No malformed page markers exist.
+page_class_treatment: Pages 25 and 30 carry steward-declared .full-page-artwork classes. Under SOURCE_MARKDOWN 1.9, each class
+  is page-local intake metadata and creates no graph node, edge, or uncovered-page obligation. Both are preserved in packet
+  composition metadata.
+scope_boundary: 'The bounded scope covers printed pages 19 through 30 of Cursed Scroll 2: Red Sands, comprising Gameplay introduction
+  (pg 19), Pit Fighting rules, venue, stakes, and twists (pp 20-21), Pit Fighting Encounters tables (pp 22-23), Thraxis Arena
+  setting and crowd table (pg 24), artwork (pg 25), Enduring Wounds subsystem and table (pg 26), Poisons subsystem and table
+  (pg 27), Mounts rules, slots, travel, morale, and rations (pg 28), Mounts, personality, and gear tables (pg 29), and artwork
+  (pg 30).'
+source_summary: 'Presents regional gameplay subsystems and lookup tables for Cursed Scroll 2: Red Sands: downtime pit fighting
+  with venue, stakes, and encounter generation; severe enduring wounds upon surviving zero HP; poison usage risks and varieties;
+  and comprehensive mount mechanics covering gear capacity, overland push travel, combat morale, and mount equipment.'
+reused_nodes:
+- id: rule_downtime
+  label: Downtime
+  used_by: M001
+  basis: Reused from canonical registry. Gates pit fighting as a downtime activity.
+- id: exp_level
+  label: Level
+  used_by: M005
+  basis: Reused from canonical registry. Average party level feeds pit fighting stakes roll.
+- id: rule_carousing
+  label: Carousing
+  used_by: M010, M011, M012, M013
+  basis: Reused from canonical registry. Carouse rolls modified by pit fighting rewards.
+- id: rule_dying
+  label: Dying
+  used_by: M021
+  basis: Reused from canonical registry. Surviving zero hit points triggers enduring wound check.
+- id: abil_constitution
+  label: Constitution
+  used_by: M022, M026
+  basis: Reused from canonical registry. Feeds enduring wound save and modified by permanent spleen injury.
+- id: abil_strength
+  label: Strength
+  used_by: M024
+  basis: Reused from canonical registry. Modified by torn muscle enduring wound.
+- id: abil_dexterity
+  label: Dexterity
+  used_by: M025, M031
+  basis: Reused from canonical registry. Feeds poison handling check and modified by severed tendon wound.
+- id: rule_hit_points
+  label: Hit Points
+  used_by: M027
+  basis: Reused from canonical registry. Modified by lingering wound permanent HP reduction.
+- id: ex_movement
+  label: Movement
+  used_by: M028, M034, M043
+  basis: Reused from canonical registry. Modified by dizziness, mount travel speed, and wagon hampering.
+- id: cbt_attack_roll
+  label: Attack Roll
+  used_by: M029
+  basis: Reused from canonical registry. Modified by miracle wound outcome advantage.
+- id: mstat_monster_level
+  label: Monster Level
+  used_by: M032
+  basis: Reused from canonical registry. Target level limit constrained by poison efficacy.
+- id: rule_gear_capacity
+  label: Gear Capacity
+  used_by: M033, M044
+  basis: Reused from canonical registry. Fed by mount STR bonus slots and modified by wagon gear capacity.
+- id: rule_overland_travel
+  label: Overland Travel
+  used_by: M035
+  basis: Reused from canonical registry. Modified by pushed mount travel distance.
+- id: rule_damage
+  label: Damage
+  used_by: M036
+  basis: Reused from canonical registry. Triggers mount morale check when wounded.
+- id: rule_morale
+  label: Morale
+  used_by: M036
+  basis: Reused from canonical registry. Mount morale check triggered by damage.
+- id: rule_food_and_water
+  label: Food and Water
+  used_by: M037
+  basis: Reused from canonical registry. Fed by mount daily ration consumption requirements.
+- id: abil_charisma
+  label: Charisma
+  used_by: M040
+  basis: Reused from canonical registry. Feeds mount demeanor roll modifier.
+candidate_nodes:
+- proposed_id: rule_pit_fighting
+  proposed_label: Pit Fighting
+  kind: rule
+  why_needed: Downtime combat subsystem introduced on page 20.
+- proposed_id: rule_enduring_wounds
+  proposed_label: Enduring Wounds
+  kind: rule
+  why_needed: Severe injury subsystem introduced on page 26.
+- proposed_id: rule_poison
+  proposed_label: Poison
+  kind: rule
+  why_needed: Poison usage subsystem introduced on page 27.
+- proposed_id: rule_mounts
+  proposed_label: Mounts
+  kind: rule
+  why_needed: Mount travel and handling subsystem introduced on page 28.
+- proposed_id: tbl_pit_fight_venue
+  proposed_label: Pit Fight Venue Table
+  kind: tbl
+  why_needed: Venue selection table on page 21.
+- proposed_id: tbl_pit_fight_stakes
+  proposed_label: Pit Fight Stakes Table
+  kind: tbl
+  why_needed: Stakes tier selection table on page 21.
+- proposed_id: tbl_pit_fight_twist
+  proposed_label: Pit Fight Twist Table
+  kind: tbl
+  why_needed: Bout complication twist table on page 21.
+- proposed_id: tbl_low_stakes
+  proposed_label: Low Stakes Table
+  kind: tbl
+  why_needed: Low stakes rewards table on page 21.
+- proposed_id: tbl_mid_stakes
+  proposed_label: Mid Stakes Table
+  kind: tbl
+  why_needed: Mid stakes rewards table on page 21.
+- proposed_id: tbl_high_stakes
+  proposed_label: High Stakes Table
+  kind: tbl
+  why_needed: High stakes rewards table on page 21.
+- proposed_id: tbl_epic_stakes
+  proposed_label: Epic Stakes Table
+  kind: tbl
+  why_needed: Epic stakes rewards table on page 21.
+- proposed_id: tbl_low_stakes_pit_fight_solo
+  proposed_label: Low Stakes Pit Fight Table (Solo)
+  kind: tbl
+  why_needed: Solo encounter table for low stakes bouts on page 22.
+- proposed_id: tbl_mid_stakes_pit_fight_solo
+  proposed_label: Mid Stakes Pit Fight Table (Solo)
+  kind: tbl
+  why_needed: Solo encounter table for mid stakes bouts on page 22.
+- proposed_id: tbl_high_epic_stakes_pit_fight_solo
+  proposed_label: High/Epic Stakes Pit Fight Table (Solo)
+  kind: tbl
+  why_needed: Solo encounter table for high/epic stakes bouts on page 22.
+- proposed_id: tbl_low_stakes_pit_fight_group
+  proposed_label: Low Stakes Pit Fight Table (Group)
+  kind: tbl
+  why_needed: Group encounter table for low stakes bouts on page 23.
+- proposed_id: tbl_mid_stakes_pit_fight_group
+  proposed_label: Mid Stakes Pit Fight Table (Group)
+  kind: tbl
+  why_needed: Group encounter table for mid stakes bouts on page 23.
+- proposed_id: tbl_high_epic_stakes_pit_fight_group
+  proposed_label: High/Epic Stakes Pit Fight Table (Group)
+  kind: tbl
+  why_needed: Group encounter table for high/epic stakes bouts on page 23.
+- proposed_id: tbl_tonights_crowd
+  proposed_label: "Tonight\u02BCs Crowd Table"
+  kind: tbl
+  why_needed: Crowd disposition table for Thraxis Arena on page 24.
+- proposed_id: tbl_enduring_wounds
+  proposed_label: Enduring Wounds Table
+  kind: tbl
+  why_needed: Table of enduring wound effects on page 26.
+- proposed_id: tbl_poisons
+  proposed_label: Poisons Table
+  kind: tbl
+  why_needed: Table of poison varieties and effects on page 27.
+- proposed_id: tbl_mounts
+  proposed_label: Mounts Table
+  kind: tbl
+  why_needed: Mount varieties and properties table on page 29.
+- proposed_id: tbl_mount_personality
+  proposed_label: Mount Personality Table
+  kind: tbl
+  why_needed: Mount demeanor and behavior table on page 29.
+- proposed_id: tbl_mount_gear
+  proposed_label: Mount Gear Table
+  kind: tbl
+  why_needed: Mount equipment and barding table on page 29.
+candidate_edges:
+- ref: M001
+  source_id: rule_downtime
+  source_label: Downtime
+  edge_type: GATES
+  target_id: rule_pit_fighting
+  target_label: Pit Fighting
+  aspect: downtime activity
+  condition: ''
+  polarity: enables
+  polarity_basis: derived
+  book: CS2
+  page: 20
+  section: PIT FIGHTING
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_pit_fighting
+  source_label: Pit Fighting
+  edge_type: RESOLVED_BY
+  target_id: tbl_pit_fight_venue
+  target_label: Pit Fight Venue Table
+  aspect: venue determination
+  condition: ''
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 20
+  section: SETTING UP A BOUT
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_pit_fighting
+  source_label: Pit Fighting
+  edge_type: RESOLVED_BY
+  target_id: tbl_pit_fight_stakes
+  target_label: Pit Fight Stakes Table
+  aspect: stakes determination
+  condition: ''
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 20
+  section: SETTING UP A BOUT
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_pit_fighting
+  source_label: Pit Fighting
+  edge_type: RESOLVED_BY
+  target_id: tbl_pit_fight_twist
+  target_label: Pit Fight Twist Table
+  aspect: twist check
+  condition: ''
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 20
+  section: TWIST
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: exp_level
+  source_label: Level
+  edge_type: FEEDS_INTO
+  target_id: tbl_pit_fight_stakes
+  target_label: Pit Fight Stakes Table
+  aspect: party level modifier
+  condition: ''
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 20
+  section: SETTING UP A BOUT
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: tbl_pit_fight_stakes
+  source_label: Pit Fight Stakes Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_low_stakes
+  target_label: Low Stakes Table
+  aspect: bout rewards
+  condition: when low stakes
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 21
+  section: LOW STAKES TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: tbl_pit_fight_stakes
+  source_label: Pit Fight Stakes Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_mid_stakes
+  target_label: Mid Stakes Table
+  aspect: bout rewards
+  condition: when mid stakes
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 21
+  section: MID STAKES TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: tbl_pit_fight_stakes
+  source_label: Pit Fight Stakes Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_high_stakes
+  target_label: High Stakes Table
+  aspect: bout rewards
+  condition: when high stakes
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 21
+  section: HIGH STAKES TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: tbl_pit_fight_stakes
+  source_label: Pit Fight Stakes Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_epic_stakes
+  target_label: Epic Stakes Table
+  aspect: bout rewards
+  condition: when epic stakes
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 21
+  section: EPIC STAKES TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: tbl_low_stakes
+  source_label: Low Stakes Table
+  edge_type: MODIFIES
+  target_id: rule_carousing
+  target_label: Carousing
+  aspect: carouse bonus
+  condition: when won
+  polarity: improves
+  polarity_basis: read
+  book: CS2
+  page: 21
+  section: LOW STAKES TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M011
+  source_id: tbl_mid_stakes
+  source_label: Mid Stakes Table
+  edge_type: MODIFIES
+  target_id: rule_carousing
+  target_label: Carousing
+  aspect: carouse bonus
+  condition: when won
+  polarity: improves
+  polarity_basis: read
+  book: CS2
+  page: 21
+  section: MID STAKES TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M012
+  source_id: tbl_high_stakes
+  source_label: High Stakes Table
+  edge_type: MODIFIES
+  target_id: rule_carousing
+  target_label: Carousing
+  aspect: carouse bonus
+  condition: when won
+  polarity: improves
+  polarity_basis: read
+  book: CS2
+  page: 21
+  section: HIGH STAKES TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M013
+  source_id: tbl_epic_stakes
+  source_label: Epic Stakes Table
+  edge_type: MODIFIES
+  target_id: rule_carousing
+  target_label: Carousing
+  aspect: carouse bonus
+  condition: when won
+  polarity: improves
+  polarity_basis: read
+  book: CS2
+  page: 21
+  section: EPIC STAKES TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M014
+  source_id: rule_pit_fighting
+  source_label: Pit Fighting
+  edge_type: RESOLVED_BY
+  target_id: tbl_low_stakes_pit_fight_solo
+  target_label: Low Stakes Pit Fight Table (Solo)
+  aspect: solo encounter selection
+  condition: for low stakes bout
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 22
+  section: LOW STAKES PIT FIGHT TABLE (SOLO)
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M015
+  source_id: rule_pit_fighting
+  source_label: Pit Fighting
+  edge_type: RESOLVED_BY
+  target_id: tbl_mid_stakes_pit_fight_solo
+  target_label: Mid Stakes Pit Fight Table (Solo)
+  aspect: solo encounter selection
+  condition: for mid stakes bout
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 22
+  section: MID STAKES PIT FIGHT TABLE (SOLO)
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M016
+  source_id: rule_pit_fighting
+  source_label: Pit Fighting
+  edge_type: RESOLVED_BY
+  target_id: tbl_high_epic_stakes_pit_fight_solo
+  target_label: High/Epic Stakes Pit Fight Table (Solo)
+  aspect: solo encounter selection
+  condition: for high or epic stakes bout
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 22
+  section: HIGH/EPIC STAKES PIT FIGHT TABLE (SOLO)
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M017
+  source_id: rule_pit_fighting
+  source_label: Pit Fighting
+  edge_type: RESOLVED_BY
+  target_id: tbl_low_stakes_pit_fight_group
+  target_label: Low Stakes Pit Fight Table (Group)
+  aspect: group encounter selection
+  condition: for low stakes bout
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 23
+  section: LOW STAKES PIT FIGHT TABLE (GROUP)
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M018
+  source_id: rule_pit_fighting
+  source_label: Pit Fighting
+  edge_type: RESOLVED_BY
+  target_id: tbl_mid_stakes_pit_fight_group
+  target_label: Mid Stakes Pit Fight Table (Group)
+  aspect: group encounter selection
+  condition: for mid stakes bout
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 23
+  section: MID STAKES PIT FIGHT TABLE (GROUP)
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M019
+  source_id: rule_pit_fighting
+  source_label: Pit Fighting
+  edge_type: RESOLVED_BY
+  target_id: tbl_high_epic_stakes_pit_fight_group
+  target_label: High/Epic Stakes Pit Fight Table (Group)
+  aspect: group encounter selection
+  condition: for high or epic stakes bout
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 23
+  section: HIGH/EPIC STAKES PIT FIGHT TABLE (GROUP)
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M020
+  source_id: rule_pit_fighting
+  source_label: Pit Fighting
+  edge_type: RESOLVED_BY
+  target_id: tbl_tonights_crowd
+  target_label: "Tonight\u02BCs Crowd Table"
+  aspect: crowd disposition
+  condition: at Thraxis Arena
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 24
+  section: "TONIGHT\u02BCS CROWD TABLE"
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M021
+  source_id: rule_dying
+  source_label: Dying
+  edge_type: TRIGGERS
+  target_id: rule_enduring_wounds
+  target_label: Enduring Wounds
+  aspect: severe injury check
+  condition: when surviving lethal injury
+  polarity: inflicts
+  polarity_basis: read
+  book: CS2
+  page: 26
+  section: ENDURING WOUNDS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M022
+  source_id: abil_constitution
+  source_label: Constitution
+  edge_type: FEEDS_INTO
+  target_id: rule_enduring_wounds
+  target_label: Enduring Wounds
+  aspect: wound check
+  condition: ''
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 26
+  section: ENDURING WOUNDS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M023
+  source_id: rule_enduring_wounds
+  source_label: Enduring Wounds
+  edge_type: RESOLVED_BY
+  target_id: tbl_enduring_wounds
+  target_label: Enduring Wounds Table
+  aspect: wound effect determination
+  condition: on failed check
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 26
+  section: ENDURING WOUNDS TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M024
+  source_id: tbl_enduring_wounds
+  source_label: Enduring Wounds Table
+  edge_type: MODIFIES
+  target_id: abil_strength
+  target_label: Strength
+  aspect: permanent stat reduction
+  condition: when rolled
+  polarity: worsens
+  polarity_basis: read
+  book: CS2
+  page: 26
+  section: ENDURING WOUNDS TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M025
+  source_id: tbl_enduring_wounds
+  source_label: Enduring Wounds Table
+  edge_type: MODIFIES
+  target_id: abil_dexterity
+  target_label: Dexterity
+  aspect: permanent stat reduction
+  condition: when rolled
+  polarity: worsens
+  polarity_basis: read
+  book: CS2
+  page: 26
+  section: ENDURING WOUNDS TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M026
+  source_id: tbl_enduring_wounds
+  source_label: Enduring Wounds Table
+  edge_type: MODIFIES
+  target_id: abil_constitution
+  target_label: Constitution
+  aspect: permanent stat reduction
+  condition: when rolled
+  polarity: worsens
+  polarity_basis: read
+  book: CS2
+  page: 26
+  section: ENDURING WOUNDS TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M027
+  source_id: tbl_enduring_wounds
+  source_label: Enduring Wounds Table
+  edge_type: MODIFIES
+  target_id: rule_hit_points
+  target_label: Hit Points
+  aspect: permanent hit point loss
+  condition: when rolled
+  polarity: worsens
+  polarity_basis: read
+  book: CS2
+  page: 26
+  section: ENDURING WOUNDS TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M028
+  source_id: tbl_enduring_wounds
+  source_label: Enduring Wounds Table
+  edge_type: MODIFIES
+  target_id: ex_movement
+  target_label: Movement
+  aspect: temporary speed limitation
+  condition: when rolled
+  polarity: worsens
+  polarity_basis: read
+  book: CS2
+  page: 26
+  section: ENDURING WOUNDS TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M029
+  source_id: tbl_enduring_wounds
+  source_label: Enduring Wounds Table
+  edge_type: MODIFIES
+  target_id: cbt_attack_roll
+  target_label: Attack Roll
+  aspect: attack advantage
+  condition: when rolled
+  polarity: improves
+  polarity_basis: read
+  book: CS2
+  page: 26
+  section: ENDURING WOUNDS TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M030
+  source_id: rule_poison
+  source_label: Poison
+  edge_type: RESOLVED_BY
+  target_id: tbl_poisons
+  target_label: Poisons Table
+  aspect: poison effect lookup
+  condition: ''
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 27
+  section: POISONS TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M031
+  source_id: abil_dexterity
+  source_label: Dexterity
+  edge_type: FEEDS_INTO
+  target_id: rule_poison
+  target_label: Poison
+  aspect: application check
+  condition: ''
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 27
+  section: POISONS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M032
+  source_id: rule_poison
+  source_label: Poison
+  edge_type: CONSTRAINS
+  target_id: mstat_monster_level
+  target_label: Monster Level
+  aspect: target level limit
+  condition: affecting living creatures
+  polarity: governs
+  polarity_basis: read
+  book: CS2
+  page: 27
+  section: POISONS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M033
+  source_id: rule_mounts
+  source_label: Mounts
+  edge_type: FEEDS_INTO
+  target_id: rule_gear_capacity
+  target_label: Gear Capacity
+  aspect: mount slot calculation
+  condition: ''
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 28
+  section: GEAR SLOTS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M034
+  source_id: rule_mounts
+  source_label: Mounts
+  edge_type: MODIFIES
+  target_id: ex_movement
+  target_label: Movement
+  aspect: rider movement speed
+  condition: while riding mount
+  polarity: governs
+  polarity_basis: read
+  book: CS2
+  page: 28
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M035
+  source_id: rule_mounts
+  source_label: Mounts
+  edge_type: MODIFIES
+  target_id: rule_overland_travel
+  target_label: Overland Travel
+  aspect: overland hex travel
+  condition: when pushing mount
+  polarity: improves
+  polarity_basis: read
+  book: CS2
+  page: 28
+  section: MOVEMENT
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M036
+  source_id: rule_damage
+  source_label: Damage
+  edge_type: TRIGGERS
+  target_id: rule_morale
+  target_label: Morale
+  aspect: mount morale check
+  condition: when mount or rider is wounded
+  polarity: inflicts
+  polarity_basis: read
+  book: CS2
+  page: 28
+  section: COMBAT
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M037
+  source_id: rule_mounts
+  source_label: Mounts
+  edge_type: FEEDS_INTO
+  target_id: rule_food_and_water
+  target_label: Food and Water
+  aspect: mount ration consumption
+  condition: ''
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 28
+  section: FOOD AND WATER
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M038
+  source_id: rule_mounts
+  source_label: Mounts
+  edge_type: RESOLVED_BY
+  target_id: tbl_mounts
+  target_label: Mounts Table
+  aspect: mount types
+  condition: ''
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 29
+  section: MOUNTS TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M039
+  source_id: rule_mounts
+  source_label: Mounts
+  edge_type: RESOLVED_BY
+  target_id: tbl_mount_personality
+  target_label: Mount Personality Table
+  aspect: personality determination
+  condition: ''
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 29
+  section: MOUNT PERSONALITY TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M040
+  source_id: abil_charisma
+  source_label: Charisma
+  edge_type: FEEDS_INTO
+  target_id: tbl_mount_personality
+  target_label: Mount Personality Table
+  aspect: demeanor modifier
+  condition: ''
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 29
+  section: MOUNT PERSONALITY TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M041
+  source_id: rule_mounts
+  source_label: Mounts
+  edge_type: RESOLVED_BY
+  target_id: tbl_mount_gear
+  target_label: Mount Gear Table
+  aspect: mount equipment selection
+  condition: ''
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 29
+  section: MOUNT GEAR TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M042
+  source_id: tbl_mount_gear
+  source_label: Mount Gear Table
+  edge_type: MODIFIES
+  target_id: rule_mounts
+  target_label: Mounts
+  aspect: stay mounted check advantage
+  condition: with saddle equipped
+  polarity: improves
+  polarity_basis: read
+  book: CS2
+  page: 29
+  section: MOUNT GEAR TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M043
+  source_id: tbl_mount_gear
+  source_label: Mount Gear Table
+  edge_type: MODIFIES
+  target_id: ex_movement
+  target_label: Movement
+  aspect: speed reduction
+  condition: with wagon attached
+  polarity: worsens
+  polarity_basis: read
+  book: CS2
+  page: 29
+  section: MOUNT GEAR TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M044
+  source_id: tbl_mount_gear
+  source_label: Mount Gear Table
+  edge_type: MODIFIES
+  target_id: rule_gear_capacity
+  target_label: Gear Capacity
+  aspect: additional gear slots
+  condition: with wagon attached
+  polarity: improves
+  polarity_basis: read
+  book: CS2
+  page: 29
+  section: MOUNT GEAR TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+candidate_general_rules: []
+domains_touched:
+- combat
+- downtime
+- equipment
+- exploration
+- survival
+candidate_domains: []
+domain_boundary_questions: []
+non_edge_observations:
+- id: OBS-01
+  subject: Pit fight death rules
+  detail: Page 20 lethality notes that killing humanoids is forbidden in public venues, but high/epic bouts may be to the
+    death.
+- id: OBS-02
+  subject: Poison training interaction
+  detail: Page 27 notes trained poison users only poison themselves on a natural 1 (connecting with Ras-Godai poison training
+    talent on page 15).
+unresolved_identity_questions: []
+architectural_escalations: []
+completeness_statement: 'All rules, procedures, and tables across pages 19 through 30 of Cursed Scroll 2: Red Sands (pit fighting,
+  enduring wounds, poisons, and mounts) have been extracted. All candidate edges declare status: optional in accordance with
+  owner scope instructions.'

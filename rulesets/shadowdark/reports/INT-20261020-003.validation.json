@@ -1,0 +1,373 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20261020-003",
+  "ruleset_id": "shadowdark",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-10-21T00:56:44.422Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:63a4bf169e01ee9af9a7787a9e62e73ecc8b139a518674c6ccefc212f92a4d8a actual=sha256:63a4bf169e01ee9af9a7787a9e62e73ecc8b139a518674c6ccefc212f92a4d8a"
+        },
+        {
+          "check": "component checksum matches: books/shadowdark/cs2/artifacts/approved/APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:447eb17a6fbf41eee5f8a9cc2e9b6fcaf2dbfdcfd702a270b1d559c4110286ac actual=sha256:447eb17a6fbf41eee5f8a9cc2e9b6fcaf2dbfdcfd702a270b1d559c4110286ac"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:c34dfc8e52b3e963fc7af6f0ee746da0f386c1f3cd4ddb0b41abeb3cd567eeb9 actual=sha256:c34dfc8e52b3e963fc7af6f0ee746da0f386c1f3cd4ddb0b41abeb3cd567eeb9"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/shadowdark/cs2/artifacts/gup/GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01.yaml: declared=sha256:e6f30d3c8a0c15177bf2bb363417617173f0fb1488bbcdacc157cac9a23f41ae actual=sha256:e6f30d3c8a0c15177bf2bb363417617173f0fb1488bbcdacc157cac9a23f41ae"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=44 actual=44"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 5, 'pending_additions': 39, 'updates': 0, 'node_registrations': 19}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 1237,
+    "edges_after": 1281,
+    "edges_updated_in_place": 0,
+    "nodes_before": 584,
+    "nodes_after": 603,
+    "registry_before": 850,
+    "registry_after": 869,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "rule_pit_fighting",
+        "label": "Pit Fighting",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "rule_enduring_wounds",
+        "label": "Enduring Wounds",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "rule_poison",
+        "label": "Poison",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "rule_mounts",
+        "label": "Mounts",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_pit_fight_venue",
+        "label": "Pit Fight Venue Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_pit_fight_stakes",
+        "label": "Pit Fight Stakes Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_pit_fight_twist",
+        "label": "Pit Fight Twist Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_low_stakes_pit_fight_solo",
+        "label": "Low Stakes Pit Fight Table (Solo)",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_mid_stakes_pit_fight_solo",
+        "label": "Mid Stakes Pit Fight Table (Solo)",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_high_epic_stakes_pit_fight_solo",
+        "label": "High/Epic Stakes Pit Fight Table (Solo)",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_low_stakes_pit_fight_group",
+        "label": "Low Stakes Pit Fight Table (Group)",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_mid_stakes_pit_fight_group",
+        "label": "Mid Stakes Pit Fight Table (Group)",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_high_epic_stakes_pit_fight_group",
+        "label": "High/Epic Stakes Pit Fight Table (Group)",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_tonights_crowd",
+        "label": "Tonight\u02bcs Crowd Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_enduring_wounds",
+        "label": "Enduring Wounds Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_poisons",
+        "label": "Poisons Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_mounts",
+        "label": "Mounts Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_mount_personality",
+        "label": "Mount Personality Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      },
+      {
+        "id": "tbl_mount_gear",
+        "label": "Mount Gear Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "review_id": "REV-GUP-PKT-CS2-019-030-pit-fighting-wounds-poisons-and-mounts-r01-r01",
+        "integration_id": "INT-20261020-003"
+      }
+    ],
+    "registry_derived_resync": 21,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}
