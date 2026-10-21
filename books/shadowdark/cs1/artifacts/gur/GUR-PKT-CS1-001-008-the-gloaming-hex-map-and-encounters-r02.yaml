@@ -1,0 +1,164 @@
+schema_version: '1.0'
+id: GUR-PKT-CS1-001-008-the-gloaming-hex-map-and-encounters-r02
+status: proposed
+ruleset_id: shadowdark
+book_id: cs1
+source_id: cs1-steward-intake
+packet_id: PKT-CS1-001-008-the-gloaming-hex-map-and-encounters
+constitution_version: '1.8'
+revision: 2
+supersedes: GUR-PKT-CS1-001-008-the-gloaming-hex-map-and-encounters-r01
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.9
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml
+
+revision_reason: >-
+  Correct polarity on row M002 from governs to neutral to match the derived polarity
+  for FEEDS_INTO under Graph Invariant 14. Edge status remains optional across all rows.
+
+packet_provenance:
+  packet_path: books/shadowdark/cs1/packets/claimed/PKT-CS1-001-008-the-gloaming-hex-map-and-encounters
+  source_file: source.md
+  packet_source_checksum: sha256:0a1bbc51c739a3c7930ac250e34b03a106f8c52e645ddc783f4cf60b51a13898
+  packet_source_checksum_basis: exact
+  original_filename: cs1.01-08.md
+  citation_code: CS1
+  page_start: 1
+  page_end: 8
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Eight pages resolve through Pandoc AST. Page 1 is an empty fenced Div carrying
+  .front-cover, page 4 is an empty fenced Div carrying .blank-page, and page 8 is an empty
+  fenced Div carrying .full-page-artwork, all adhering to contracts/SOURCE_MARKDOWN.md 1.9
+  and DEC-2026-0108. Pages 2, 3, 5, 6, and 7 carry plain page markers.
+
+page_class_treatment: >-
+  Pages 1, 4, and 8 carry steward-declared page classes (.front-cover, .blank-page, and
+  .full-page-artwork respectively). Under SOURCE_MARKDOWN 1.9, each class is page-local
+  intake metadata and creates no graph node, edge, or uncovered-page obligation. All three
+  are preserved in packet composition metadata.
+
+scope_boundary: >-
+  The bounded scope covers printed pages 1 through 8 of Cursed Scroll 1: Diablerie!,
+  comprising the cover, hex map overview, encounter tables, credits, contents, introduction,
+  and frontispiece artwork.
+
+source_summary: >-
+  Opening section of Cursed Scroll 1: Diablerie!. Covers map description and hex layout
+  for The Gloaming forest region, rumor table, and two-stage random encounter determination
+  tables (zone table and encounter table).
+
+reused_nodes:
+  - id: rule_encounter
+    label: Encounter
+    used_by: M001
+    basis: >-
+      Present in rulesets/shadowdark/registries/nodes.csv. Encounter procedure
+      resolves into regional zone selection for The Gloaming.
+
+candidate_nodes:
+  - proposed_id: tbl_gloaming_rumors
+    proposed_label: Gloaming Rumors Table
+    kind: tbl
+    why_needed: D10 rumor table for the Gloaming region on page 3.
+  - proposed_id: tbl_gloaming_encounter_zone
+    proposed_label: Gloaming Encounter Zone Table
+    kind: tbl
+    why_needed: >-
+      D8 encounter zone table on page 3 mapping terrain types (Forest, Marsh, Path,
+      Water) to encounter categories (Demon, Aquatic, Animal, People).
+  - proposed_id: tbl_gloaming_encounters
+    proposed_label: Gloaming Encounters Table
+    kind: tbl
+    why_needed: >-
+      D8 encounter determination table on page 3 specifying creatures and events for each
+      encounter category.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_encounter
+    source_label: Encounter
+    edge_type: RESOLVED_BY
+    target_id: tbl_gloaming_encounter_zone
+    target_label: Gloaming Encounter Zone Table
+    aspect: Gloaming zone selection
+    condition: in The Gloaming
+    polarity: governs
+    polarity_basis: derived
+    book: CS1
+    page: 3
+    section: ENCOUNTER ZONE TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M002
+    source_id: tbl_gloaming_encounter_zone
+    source_label: Gloaming Encounter Zone Table
+    edge_type: FEEDS_INTO
+    target_id: tbl_gloaming_encounters
+    target_label: Gloaming Encounters Table
+    aspect: encounter category routing
+    condition: ''
+    polarity: neutral
+    polarity_basis: derived
+    book: CS1
+    page: 3
+    section: ENCOUNTERS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+
+candidate_general_rules: []
+domains_touched: []
+candidate_domains: []
+domain_boundary_questions: []
+
+authored_polarity_declaration: >-
+  Polarity for M001 is declared as governs (derived) and for M002 as neutral (derived)
+  under Graph Invariants 14 and 15. In accordance with user instructions and CS1 metadata,
+  all candidate edges declare status: optional.
+
+rejected_candidates:
+  - text_locus: The Gloaming hex map description and hex coordinates, p2
+    quoted_gist: Scale 1 hex = 6 miles; Forest, Marsh, Path, Water hex lists
+    why_considered: Overland hex scale and terrain classifications
+    rejection_reason: >-
+      Map scale and specific hex coordinate lists are geographical setting data and
+      cartographic description, not ruleset mechanics or general rules.
+  - text_locus: Encounter table creature entries, p3
+    quoted_gist: Wood trolls, Centaurs, Goblins, Will-o'-wisps, etc.
+    why_considered: Individual monster and NPC names in encounter table rows
+    rejection_reason: >-
+      A creature's defining locus is its stat block in the monsters section. Mention
+      in an encounter table does not define creature identity.
+  - text_locus: Credits, art, fonts, legal, contents, and introduction, pp5-7
+    quoted_gist: Front matter text and table of contents
+    rejection_reason: Informational front matter contains no graph-constitutable mechanics.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: Two-stage encounter generation
+    detail: >-
+      The Gloaming encounters use a two-tier rolling structure: roll d8 on ENCOUNTER ZONE TABLE
+      by terrain to determine creature category (Demon, Aquatic, Animal, People), then roll
+      d8 on ENCOUNTERS TABLE under that category. Captured via FEEDS_INTO edge M002.

@@ -1,0 +1,163 @@
+schema_version: '1.0'
+id: GUP-PKT-CS1-001-008-the-gloaming-hex-map-and-encounters-r01
+status: blocked
+ruleset_id: shadowdark
+book_id: cs1
+source_id: cs1-steward-intake
+packet_id: PKT-CS1-001-008-the-gloaming-hex-map-and-encounters
+constitution_version: '1.8'
+artifact_kind: packet_update
+revision: 1
+supersedes: null
+handoff:
+  next_role: analyst
+  readiness: blocked
+  reason: '1 validation error(s) the Builder will not silently rewrite: polarity_authored_on_derived_type;
+    affected rows M002'
+  blocking_ids:
+    - GUR-PKT-CS1-001-008-the-gloaming-hex-map-and-encounters-r01
+provenance:
+  gur_id: GUR-PKT-CS1-001-008-the-gloaming-hex-map-and-encounters-r01
+  gur_checksum: sha256:e85ac5d0dc904c67e3854c9747b874a995a1f2e0d8787f1d5cee18c732dc55c3
+  gur_constitution_version: '1.8'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 948
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: false
+blocking_reason: 1 validation error(s) and 0 unresolved escalation(s); a schema-valid patch is not an
+  approvable one
+node_changes:
+  additions_proposed:
+    - proposed_id: tbl_gloaming_rumors
+      proposed_label: Gloaming Rumors Table
+      kind: tbl
+      why_needed: D10 rumor table for the Gloaming region on page 3.
+      edges_depending_on_it: []
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'Constitution 1.8 section 2: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_gloaming_encounter_zone
+      proposed_label: Gloaming Encounter Zone Table
+      kind: tbl
+      why_needed: D8 encounter zone table on page 3 mapping terrain types (Forest, Marsh, Path, Water)
+        to encounter categories (Demon, Aquatic, Animal, People).
+      edges_depending_on_it:
+        - M001
+        - M002
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'Constitution 1.8 section 2: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_gloaming_encounters
+      proposed_label: Gloaming Encounters Table
+      kind: tbl
+      why_needed: D8 encounter determination table on page 3 specifying creatures and events for each
+        encounter category.
+      edges_depending_on_it:
+        - M002
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'Constitution 1.8 section 2: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity. Ordinary proposals require Reviewer approval; proposals outside the approved identity
+    vocabulary require an Architect decision.
+edge_changes:
+  additions: []
+  pending_additions:
+    - source_id: rule_encounter
+      source_label: Encounter
+      edge_type: RESOLVED_BY
+      target_id: tbl_gloaming_encounter_zone
+      target_label: Gloaming Encounter Zone Table
+      aspect: Gloaming zone selection
+      condition: in The Gloaming
+      polarity: governs
+      polarity_basis: derived
+      book: CS1
+      page: '3'
+      section: ENCOUNTER ZONE TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+    - source_id: tbl_gloaming_encounter_zone
+      source_label: Gloaming Encounter Zone Table
+      edge_type: FEEDS_INTO
+      target_id: tbl_gloaming_encounters
+      target_label: Gloaming Encounters Table
+      aspect: encounter category routing
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: CS1
+      page: '3'
+      section: ENCOUNTERS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts: {}
+duplicate_findings: []
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 2
+  edges_compiled: 2
+  edges_rejected: 0
+  edge_additions: 0
+  edge_pending_additions: 2
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 1
+  warnings: 1
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 3
+  cross_packet_dependencies: 0
+  duplicate_findings: 0
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-CS1-001-008-the-gloaming-hex-map-and-encounters-r01.validation.json
