@@ -1,0 +1,323 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20261021-005",
+  "ruleset_id": "shadowdark",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-10-21T22:51:55.535Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:de6d41208d78beb499fc46338fa139e507a83a59f3b252f1babaa535a1e00b50 actual=sha256:de6d41208d78beb499fc46338fa139e507a83a59f3b252f1babaa535a1e00b50"
+        },
+        {
+          "check": "component checksum matches: books/shadowdark/cs1/artifacts/approved/APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:0fa94297f85977bb52d120ca01bcd42822b247b77241c1aded19de48c6227f8c actual=sha256:0fa94297f85977bb52d120ca01bcd42822b247b77241c1aded19de48c6227f8c"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-CS1-045-048-monsters-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:8ff0c5a7c26673761631915ca8309fa438663747a854c77d6b38e0780bb3b61c actual=sha256:8ff0c5a7c26673761631915ca8309fa438663747a854c77d6b38e0780bb3b61c"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/shadowdark/cs1/artifacts/gup/GUP-PKT-CS1-045-048-monsters-r01.yaml: declared=sha256:8eed8bc232a29e23e90deab4b217e11490018d47ab08155c8d529861f1d0814f actual=sha256:8eed8bc232a29e23e90deab4b217e11490018d47ab08155c8d529861f1d0814f"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=0 actual=0"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 0, 'pending_additions': 0, 'updates': 0, 'node_registrations': 14}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 1398,
+    "edges_after": 1398,
+    "edges_updated_in_place": 0,
+    "nodes_before": 676,
+    "nodes_after": 676,
+    "registry_before": 954,
+    "registry_after": 968,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "monster_bittermold",
+        "label": "Bittermold",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_bogthorn",
+        "label": "Bogthorn",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_dralech",
+        "label": "Dralech",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_gordock_breeg",
+        "label": "Gordock Breeg",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_hexling",
+        "label": "Hexling",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_howler",
+        "label": "Howler",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_ichor_ooze",
+        "label": "Ichor Ooze",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_marrow_fiend",
+        "label": "Marrow Fiend",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_mugdulblub",
+        "label": "Mugdulblub",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_mutant_catfish",
+        "label": "Mutant Catfish",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_skrell",
+        "label": "Skrell",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_tar_bat",
+        "label": "Tar Bat",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_plogrina_b",
+        "label": "Plogrina B.",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      },
+      {
+        "id": "monster_the_willowman",
+        "label": "The Willowman",
+        "kind": "monster",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "review_id": "REV-GUP-PKT-CS1-045-048-monsters-r01-r01",
+        "integration_id": "INT-20261021-005"
+      }
+    ],
+    "registry_derived_resync": 0,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}
