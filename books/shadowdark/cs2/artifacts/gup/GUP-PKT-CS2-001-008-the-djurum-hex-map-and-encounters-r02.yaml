@@ -1,0 +1,160 @@
+schema_version: '1.0'
+id: GUP-PKT-CS2-001-008-the-djurum-hex-map-and-encounters-r02
+status: proposed
+ruleset_id: shadowdark
+book_id: cs2
+source_id: cs2-steward-intake
+packet_id: PKT-CS2-001-008-the-djurum-hex-map-and-encounters
+constitution_version: '1.8'
+artifact_kind: packet_update
+revision: 2
+supersedes: GUP-PKT-CS2-001-008-the-djurum-hex-map-and-encounters-r01
+handoff:
+  next_role: reviewer
+  readiness: ready
+  reason: 'compiled clean: 0 edge addition(s), 0 update(s), 2 pending a registry addition'
+  blocking_ids: []
+provenance:
+  gur_id: GUR-PKT-CS2-001-008-the-djurum-hex-map-and-encounters-r02
+  gur_checksum: sha256:4a073a9dbe1b38e35616b8202a1657652405352e59cb28005042a40a6d1af260
+  gur_constitution_version: '1.8'
+  review_id: null
+  builder_tool: adnd1e-builder
+  builder_version: 1.0.0
+  test_result:
+    ran: true
+    tests: 948
+    failures: 0
+    errors: 0
+    passed: true
+approval_ready: true
+blocking_reason: null
+node_changes:
+  additions_proposed:
+    - proposed_id: tbl_djurum_rumors
+      proposed_label: Djurum Rumors Table
+      kind: tbl
+      why_needed: D10 rumor table for the Djurum desert region on page 3.
+      edges_depending_on_it: []
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'Constitution 1.8 section 2: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_djurum_encounter_zone
+      proposed_label: Djurum Encounter Zone Table
+      kind: tbl
+      why_needed: D8 encounter zone table on page 3 mapping terrain types (Desert, Canyon, Mountain, Salt
+        Flat) to encounter categories (Flier, Digger, Walker, People).
+      edges_depending_on_it:
+        - M001
+        - M002
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'Constitution 1.8 section 2: approved prefix and kind, valid ID, no duplicate'
+    - proposed_id: tbl_djurum_encounters
+      proposed_label: Djurum Encounters Table
+      kind: tbl
+      why_needed: D8 encounter determination table on page 3 specifying creatures and events for each
+        encounter category.
+      edges_depending_on_it:
+        - M002
+      prefix_approved: true
+      id_format_valid: true
+      already_canonical: false
+      label_collides_with: []
+      disposition: reviewer_may_approve
+      architect_required: false
+      routing_basis: 'Constitution 1.8 section 2: approved prefix and kind, valid ID, no duplicate'
+  proposals_rejected_by_decision: []
+  cross_packet_dependencies: []
+  cross_packet_note: 'Identities another packet minted and this one reuses, as the GUR declares them.
+    They are not proposals: the originating packet owns the registration, and rows reaching them are held
+    pending until it is applied.'
+  note: Registry changes are isolated from edge insertions (Builder instruction 13). Builder may not mint
+    node identity. Ordinary proposals require Reviewer approval; proposals outside the approved identity
+    vocabulary require an Architect decision.
+edge_changes:
+  additions: []
+  pending_additions:
+    - source_id: rule_encounter
+      source_label: Encounter
+      edge_type: RESOLVED_BY
+      target_id: tbl_djurum_encounter_zone
+      target_label: Djurum Encounter Zone Table
+      aspect: Djurum zone selection
+      condition: in the Djurum
+      polarity: governs
+      polarity_basis: derived
+      book: CS2
+      page: '3'
+      section: ENCOUNTER ZONE TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M001
+    - source_id: tbl_djurum_encounter_zone
+      source_label: Djurum Encounter Zone Table
+      edge_type: FEEDS_INTO
+      target_id: tbl_djurum_encounters
+      target_label: Djurum Encounters Table
+      aspect: encounter category routing
+      condition: ''
+      polarity: neutral
+      polarity_basis: derived
+      book: CS2
+      page: '3'
+      section: ENCOUNTERS TABLE
+      evidence: explicit_rule
+      pass: '1'
+      status: optional
+      supersession_basis: ''
+      general_rule_id: ''
+      review_flag: ''
+      ref: M002
+  blocked_additions: []
+  pending_note: These rows reference a node this patch only proposes. They satisfy every other check but
+    violate invariant 1 until the node is registered, so they are held out of the additions set and out
+    of the edges CSV. They are not rejected.
+  updates: []
+  removals: []
+derivations:
+  note: polarity and polarity_basis on the ten deterministic edge types are assigned by the build (constitution
+    6.1, invariants 13-14). Authored polarity on MODIFIES, TRIGGERS and CONSTRAINS is carried through
+    unchanged and validated only.
+  polarity_basis_counts: {}
+duplicate_findings: []
+neighbourhood_conflicts: []
+escalations: []
+escalations_since_decided: []
+architect_dispositions_applied: []
+direction_findings: []
+validation_summary:
+  edges_in: 2
+  edges_compiled: 2
+  edges_rejected: 0
+  edge_additions: 0
+  edge_pending_additions: 2
+  edge_blocked_additions: 0
+  edge_updates: 0
+  errors: 0
+  warnings: 2
+  escalations: 0
+  escalations_since_decided: 0
+  architect_overrides: 0
+  node_proposals_rejected: 0
+  direction_findings: 0
+  node_additions_proposed: 3
+  cross_packet_dependencies: 0
+  duplicate_findings: 0
+  neighbourhood_conflicts: 0
+validation_report: build/reports/GUP-PKT-CS2-001-008-the-djurum-hex-map-and-encounters-r02.validation.json

@@ -1,0 +1,178 @@
+schema_version: '1.0'
+id: GUR-PKT-CS2-001-008-the-djurum-hex-map-and-encounters-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: cs2
+source_id: cs2-steward-intake
+packet_id: PKT-CS2-001-008-the-djurum-hex-map-and-encounters
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.9
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/cs2/packets/claimed/PKT-CS2-001-008-the-djurum-hex-map-and-encounters
+  source_file: source.md
+  packet_source_checksum: sha256:6ddb883be93e625a0c18463e661b0ab28393bffb2e59df27a6ae853954c202f9
+  packet_source_checksum_basis: exact
+  original_filename: cs2_01-08.md
+  citation_code: CS2
+  page_start: 1
+  page_end: 8
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Eight pages resolve through the Pandoc AST. Page 1 is an empty fenced Div carrying
+  .front-cover, page 4 is an empty fenced Div carrying .blank-page, and page 8 is an empty
+  fenced Div carrying .full-page-artwork, all adhering to contracts/SOURCE_MARKDOWN.md 1.9
+  and DEC-2026-0108. Pages 2, 3, 5, 6, and 7 carry plain page markers. No malformed page
+  markers exist.
+
+page_class_treatment: >-
+  Pages 1, 4, and 8 carry steward-declared page classes (.front-cover, .blank-page, and
+  .full-page-artwork respectively). Under SOURCE_MARKDOWN 1.9, each class is page-local
+  intake metadata and creates no graph node, edge, or uncovered-page obligation. All three
+  are preserved in packet composition metadata.
+
+scope_boundary: >-
+  The bounded scope covers printed pages 1 through 8 of Cursed Scroll 2: Red Sands,
+  comprising the cover, hex map overview, encounter tables, credits, contents, introduction,
+  and frontispiece artwork.
+
+source_summary: >-
+  Opening section of Cursed Scroll 2: Red Sands. Covers map description and hex layout
+  for the Djurum desert region, rumor table, and two-stage random encounter determination
+  tables (zone table and encounter table).
+
+reused_nodes:
+  - id: rule_encounter
+    label: Encounter
+    used_by: M001
+    basis: >-
+      Present in rulesets/shadowdark/registries/nodes.csv at extraction with this exact
+      label. Encounter procedure resolves into regional zone selection for the Djurum.
+
+candidate_nodes:
+  - proposed_id: tbl_djurum_rumors
+    proposed_label: Djurum Rumors Table
+    kind: table
+    why_needed: >-
+      D10 rumor table for the Djurum desert region on page 3.
+    prefix_basis: tbl_ is a named source table
+    source_named: true
+    defining_locus: CS2 page 3, RUMORS TABLE
+    source_evidence: page 3, the RUMORS TABLE heading and its 10 rumor rows.
+    registry_addition_only: true
+    registry_addition_basis: >-
+      Proposed from its defining locus with no edge; provides setting lore and adventure
+      hooks without mechanical triggers, checks, or consequences.
+  - proposed_id: tbl_djurum_encounter_zone
+    proposed_label: Djurum Encounter Zone Table
+    kind: table
+    why_needed: >-
+      D8 encounter zone table on page 3 mapping terrain types (Desert, Canyon, Mountain,
+      Salt Flat) to encounter categories (Flier, Digger, Walker, People).
+    prefix_basis: tbl_ is a named source table
+    source_named: true
+    defining_locus: CS2 page 3, ENCOUNTER ZONE TABLE
+    source_evidence: page 3, the ENCOUNTER ZONE TABLE heading and its 8 data rows.
+  - proposed_id: tbl_djurum_encounters
+    proposed_label: Djurum Encounters Table
+    kind: table
+    why_needed: >-
+      D8 encounter determination table on page 3 specifying creatures and events for
+      each encounter category.
+    prefix_basis: tbl_ is a named source table
+    source_named: true
+    defining_locus: CS2 page 3, ENCOUNTERS TABLE
+    source_evidence: page 3, the ENCOUNTERS TABLE heading and its 8 data rows across four columns.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_encounter
+    source_label: Encounter
+    edge_type: RESOLVED_BY
+    target_id: tbl_djurum_encounter_zone
+    target_label: Djurum Encounter Zone Table
+    aspect: Djurum zone selection
+    condition: in the Djurum
+    polarity: governs
+    polarity_basis: derived
+    book: CS2
+    page: 3
+    section: ENCOUNTER ZONE TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M002
+    source_id: tbl_djurum_encounter_zone
+    source_label: Djurum Encounter Zone Table
+    edge_type: FEEDS_INTO
+    target_id: tbl_djurum_encounters
+    target_label: Djurum Encounters Table
+    aspect: encounter category routing
+    condition: ''
+    polarity: governs
+    polarity_basis: derived
+    book: CS2
+    page: 3
+    section: ENCOUNTERS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+
+candidate_general_rules: []
+domains_touched: []
+candidate_domains: []
+domain_boundary_questions: []
+
+authored_polarity_declaration: >-
+  Polarity for M001 and M002 is declared as governs with basis derived under
+  Graph Invariant 15. In accordance with user instructions and CS2 metadata,
+  all candidate edges declare status: optional.
+
+rejected_candidates:
+  - text_locus: Djurum hex map description and hex coordinates, p2
+    quoted_gist: Scale 1 hex = 6 miles; Canyon, Mountain, Salt Flat hex lists
+    why_considered: Overland hex scale and terrain classifications
+    rejection_reason: >-
+      Map scale and specific hex coordinate lists are geographical setting data and
+      cartographic description, not ruleset mechanics or general rules.
+  - text_locus: Encounter table creature entries, p3
+    quoted_gist: Dunefiends, Siruuls, Canyon ape, Ras-Godai, Rakshasa, etc.
+    why_considered: Individual monster and NPC names in encounter table rows
+    rejection_reason: >-
+      A creature's defining locus is its stat block in the monsters section (packet 5,
+      pp39-44). Mention in an encounter table does not define creature identity.
+  - text_locus: Credits, art, fonts, legal, contents, and introduction, pp5-7
+    quoted_gist: Front matter text and table of contents
+    rejection_reason: Informational front matter contains no graph-constitutable mechanics.
+
+non_edge_observations:
+  - id: OBS-01
+    subject: Two-stage encounter generation
+    detail: >-
+      Djurum encounters use a two-tier rolling structure: roll d8 on ENCOUNTER ZONE TABLE
+      by terrain to determine creature category (Flier, Digger, Walker, People), then roll
+      d8 on ENCOUNTERS TABLE under that category. Captured via FEEDS_INTO edge M002.
