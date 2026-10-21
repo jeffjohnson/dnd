@@ -1,0 +1,1414 @@
+schema_version: '1.0'
+id: GUR-PKT-CS2-009-018-classes-and-new-weapons-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: cs2
+source_id: cs2-steward-intake
+packet_id: PKT-CS2-009-018-classes-and-new-weapons
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.9
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/cs2/packets/claimed/PKT-CS2-009-018-classes-and-new-weapons
+  source_file: source.md
+  packet_source_checksum: sha256:58e05f3cefafa170046d06df2ee25ec8758eb18b607743c77f938ca7b1ef91ae
+  packet_source_checksum_basis: exact
+  original_filename: cs2_09-18.md
+  citation_code: CS2
+  page_start: 9
+  page_end: 18
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Ten pages resolve through the Pandoc AST. Pages 11, 13, and 18 are empty fenced
+  Divs carrying .full-page-artwork under contracts/SOURCE_MARKDOWN.md 1.9 and DEC-2026-0108.
+  Pages 9, 10, 12, 14, 15, 16, and 17 carry standard page markers. No malformed page
+  markers exist.
+
+page_class_treatment: >-
+  Pages 11, 13, and 18 carry steward-declared .full-page-artwork classes. Under
+  SOURCE_MARKDOWN 1.9, each class is page-local intake metadata and creates no graph node,
+  edge, or uncovered-page obligation. All three are preserved in packet composition metadata.
+
+scope_boundary: >-
+  The bounded scope covers printed pages 9 through 18 of Cursed Scroll 2: Red Sands,
+  comprising Characters introduction (pg 9), Desert Rider class and talents (pg 10-11),
+  Pit Fighter class and talents (pg 12-13), Ras-Godai class, talents, and Black Lotus
+  talents (pg 14-15), Class Titles tables (pg 16), New Weapons table and properties (pg 17),
+  and full-page artwork (pg 18).
+
+source_summary: >-
+  Presents three character classes suited for the Red Sands desert setting: Desert Rider
+  (mounted combatant), Pit Fighter (arena brawler with survival abilities), and Ras-Godai
+  (sorcerous desert assassin empowered by black lotus), along with their talent tables,
+  alignment titles, and a table of new weapons with specialized weapon properties.
+
+reused_nodes:
+  - id: item_armor
+    label: Armor
+    used_by: M001, M015, M031
+    basis: Reused from canonical registry. Constrained by character class armor proficiencies.
+  - id: rule_hit_points
+    label: Hit Points
+    used_by: M002, M016, M032, M048
+    basis: Reused from canonical registry. Hit dice fed by character class definitions and talent gains.
+  - id: cbt_damage_roll
+    label: Damage Roll
+    used_by: M005, M011, M027, M037, M049, M060, M062, M064, M066, M069, M071, M073, M074
+    basis: Reused from canonical registry. Modified by class features, talents, and weapon damage dice.
+  - id: cbt_armor_class
+    label: Armor Class
+    used_by: M006, M047
+    basis: Reused from canonical registry. Modified by mounted combat and dual-wielding talents.
+  - id: exp_level
+    label: Level
+    used_by: M007, M051, M054, M057
+    basis: Reused from canonical registry. Feeds scaling mount benefits and alignment title lookups.
+  - id: rule_talent_roll
+    label: Talent Roll
+    used_by: M008, M025, M041
+    basis: Reused from canonical registry. Resolved by class-specific talent tables.
+  - id: cbt_attack_roll
+    label: Attack Roll
+    used_by: M010, M059
+    basis: Reused from canonical registry. Modified by talent attack bonuses and constrained by weapon ranges.
+  - id: abil_strength
+    label: Strength
+    used_by: M012, M028, M043
+    basis: Reused from canonical registry. Modified by class talent stat options.
+  - id: abil_dexterity
+    label: Dexterity
+    used_by: M013, M044
+    basis: Reused from canonical registry. Modified by class talent stat options.
+  - id: abil_constitution
+    label: Constitution
+    used_by: M021, M029
+    basis: Reused from canonical registry. Modified by Implacable and class talent stat options.
+  - id: rule_dying
+    label: Dying
+    used_by: M022, M023
+    basis: Reused from canonical registry. Modified by Last Stand and Relentless survival talents.
+  - id: rule_damage
+    label: Damage
+    used_by: M026
+    basis: Reused from canonical registry. Modified by Pit Fighter damage negation talent.
+  - id: lang_diabolic
+    label: Diabolic
+    used_by: M033
+    basis: Reused from canonical registry. Gated by Ras-Godai class language proficiency.
+  - id: rule_surprise
+    label: Surprise
+    used_by: M038
+    basis: Reused from canonical registry. Gates Ras-Godai Assassinate damage multiplier.
+  - id: ex_movement
+    label: Movement
+    used_by: M039, M061, M072
+    basis: Reused from canonical registry. Modified by Smoke Step teleportation and weapon speed reductions.
+  - id: rule_title
+    label: Title
+    used_by: M050, M053, M056
+    basis: Reused from canonical registry. Resolved by class titles tables.
+  - id: sys_alignment
+    label: Alignment
+    used_by: M052, M055, M058
+    basis: Reused from canonical registry. Feeds column selection in class titles tables.
+  - id: rule_versatile
+    label: Versatile
+    used_by: M063
+    basis: Reused from canonical registry. Gated as weapon property for morningstar.
+  - id: rule_two_handed
+    label: Two-Handed
+    used_by: M065
+    basis: Reused from canonical registry. Gated as weapon property for pike.
+  - id: rule_finesse
+    label: Finesse
+    used_by: M067, M070, M075
+    basis: Reused from canonical registry. Gated as weapon property for razor chain, scimitar, and whip.
+
+candidate_nodes:
+  - proposed_id: class_desert_rider
+    proposed_label: Desert Rider
+    kind: class
+    why_needed: Character class introduced on page 10.
+  - proposed_id: class_pit_fighter
+    proposed_label: Pit Fighter
+    kind: class
+    why_needed: Character class introduced on page 12.
+  - proposed_id: class_ras_godai
+    proposed_label: Ras-Godai
+    kind: class
+    why_needed: Character class introduced on page 14.
+  - proposed_id: abil_charge
+    proposed_label: Charge
+    kind: abil
+    why_needed: Desert Rider class feature on page 10.
+  - proposed_id: abil_mount
+    proposed_label: Mount
+    kind: abil
+    why_needed: Desert Rider class feature on page 10.
+  - proposed_id: abil_flourish
+    proposed_label: Flourish
+    kind: abil
+    why_needed: Pit Fighter class feature on page 12.
+  - proposed_id: abil_implacable
+    proposed_label: Implacable
+    kind: abil
+    why_needed: Pit Fighter class feature on page 12.
+  - proposed_id: abil_last_stand
+    proposed_label: Last Stand
+    kind: abil
+    why_needed: Pit Fighter class feature on page 12.
+  - proposed_id: abil_relentless
+    proposed_label: Relentless
+    kind: abil
+    why_needed: Pit Fighter class feature on page 12.
+  - proposed_id: abil_assassinate
+    proposed_label: Assassinate
+    kind: abil
+    why_needed: Ras-Godai class feature on page 14.
+  - proposed_id: abil_smoke_step
+    proposed_label: Smoke Step
+    kind: abil
+    why_needed: Ras-Godai class feature on page 14.
+  - proposed_id: abil_black_lotus
+    proposed_label: Black Lotus
+    kind: abil
+    why_needed: Ras-Godai class feature on page 14.
+  - proposed_id: tbl_desert_rider_talents
+    proposed_label: Desert Rider Talents Table
+    kind: tbl
+    why_needed: Desert Rider talent table on page 10.
+  - proposed_id: tbl_pit_fighter_talents
+    proposed_label: Pit Fighter Talents Table
+    kind: tbl
+    why_needed: Pit Fighter talent table on page 12.
+  - proposed_id: tbl_ras_godai_talents
+    proposed_label: Ras-Godai Talents Table
+    kind: tbl
+    why_needed: Ras-Godai talent table on page 15.
+  - proposed_id: tbl_black_lotus_talents
+    proposed_label: Black Lotus Talents Table
+    kind: tbl
+    why_needed: Black Lotus talent table on page 15.
+  - proposed_id: tbl_desert_rider_titles
+    proposed_label: Desert Rider Titles Table
+    kind: tbl
+    why_needed: Desert Rider titles table on page 16.
+  - proposed_id: tbl_pit_fighter_titles
+    proposed_label: Pit Fighter Titles Table
+    kind: tbl
+    why_needed: Pit Fighter titles table on page 16.
+  - proposed_id: tbl_ras_godai_titles
+    proposed_label: Ras-Godai Titles Table
+    kind: tbl
+    why_needed: Ras-Godai titles table on page 16.
+  - proposed_id: tbl_new_weapons
+    proposed_label: New Weapons Table
+    kind: tbl
+    why_needed: Weapons reference table on page 17.
+  - proposed_id: weapon_blowgun
+    proposed_label: Blowgun
+    kind: weapon
+    why_needed: Weapon option introduced on page 17.
+  - proposed_id: weapon_bolas
+    proposed_label: Bolas
+    kind: weapon
+    why_needed: Weapon option introduced on page 17.
+  - proposed_id: weapon_morningstar
+    proposed_label: Morningstar
+    kind: weapon
+    why_needed: Weapon option introduced on page 17.
+  - proposed_id: weapon_pike
+    proposed_label: Pike
+    kind: weapon
+    why_needed: Weapon option introduced on page 17.
+  - proposed_id: weapon_razor_chain
+    proposed_label: Razor Chain
+    kind: weapon
+    why_needed: Weapon option introduced on page 17.
+  - proposed_id: weapon_scimitar
+    proposed_label: Scimitar
+    kind: weapon
+    why_needed: Weapon option introduced on page 17.
+  - proposed_id: weapon_shuriken
+    proposed_label: Shuriken
+    kind: weapon
+    why_needed: Weapon option introduced on page 17.
+  - proposed_id: weapon_sling
+    proposed_label: Sling
+    kind: weapon
+    why_needed: Weapon option introduced on page 17.
+  - proposed_id: weapon_whip
+    proposed_label: Whip
+    kind: weapon
+    why_needed: Weapon option introduced on page 17.
+  - proposed_id: rule_lash
+    proposed_label: Lash
+    kind: rule
+    why_needed: Weapon property defined on page 17.
+
+candidate_edges:
+  - id: M001
+    source_id: class_desert_rider
+    source_label: Desert Rider
+    edge_type: CONSTRAINS
+    target_id: item_armor
+    target_label: Armor
+    aspect: permitted armor
+    condition: ''
+    polarity: governs
+    polarity_basis: read
+    book: CS2
+    page: '10'
+    section: DESERT RIDER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M002
+    source_id: class_desert_rider
+    source_label: Desert Rider
+    edge_type: FEEDS_INTO
+    target_id: rule_hit_points
+    target_label: Hit Points
+    aspect: hit dice
+    condition: ''
+    book: CS2
+    page: '10'
+    section: DESERT RIDER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M003
+    source_id: class_desert_rider
+    source_label: Desert Rider
+    edge_type: GATES
+    target_id: abil_charge
+    target_label: Charge
+    aspect: benefit access
+    condition: ''
+    book: CS2
+    page: '10'
+    section: DESERT RIDER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M004
+    source_id: class_desert_rider
+    source_label: Desert Rider
+    edge_type: GATES
+    target_id: abil_mount
+    target_label: Mount
+    aspect: benefit access
+    condition: ''
+    book: CS2
+    page: '10'
+    section: DESERT RIDER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M005
+    source_id: abil_charge
+    source_label: Charge
+    edge_type: MODIFIES
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: melee damage multiplier
+    condition: when charging into combat
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '10'
+    section: DESERT RIDER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M006
+    source_id: abil_mount
+    source_label: Mount
+    edge_type: MODIFIES
+    target_id: cbt_armor_class
+    target_label: Armor Class
+    aspect: mounted armor class
+    condition: while riding mount
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '10'
+    section: DESERT RIDER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M007
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: abil_mount
+    target_label: Mount
+    aspect: level scaling bonus
+    condition: ''
+    book: CS2
+    page: '10'
+    section: DESERT RIDER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M008
+    source_id: rule_talent_roll
+    source_label: Talent Roll
+    edge_type: RESOLVED_BY
+    target_id: tbl_desert_rider_talents
+    target_label: Desert Rider Talents Table
+    aspect: desert rider talents
+    condition: for a desert rider
+    book: CS2
+    page: '10'
+    section: DESERT RIDER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M009
+    source_id: tbl_desert_rider_talents
+    source_label: Desert Rider Talents Table
+    edge_type: MODIFIES
+    target_id: abil_mount
+    target_label: Mount
+    aspect: mount creature eligibility
+    condition: when rolled
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '10'
+    section: DESERT RIDER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M010
+    source_id: tbl_desert_rider_talents
+    source_label: Desert Rider Talents Table
+    edge_type: MODIFIES
+    target_id: cbt_attack_roll
+    target_label: Attack Roll
+    aspect: attack bonus
+    condition: when that option is chosen
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '10'
+    section: DESERT RIDER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M011
+    source_id: tbl_desert_rider_talents
+    source_label: Desert Rider Talents Table
+    edge_type: MODIFIES
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: damage bonus
+    condition: when that option is chosen
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '10'
+    section: DESERT RIDER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M012
+    source_id: tbl_desert_rider_talents
+    source_label: Desert Rider Talents Table
+    edge_type: MODIFIES
+    target_id: abil_strength
+    target_label: Strength
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '10'
+    section: DESERT RIDER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M013
+    source_id: tbl_desert_rider_talents
+    source_label: Desert Rider Talents Table
+    edge_type: MODIFIES
+    target_id: abil_dexterity
+    target_label: Dexterity
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '10'
+    section: DESERT RIDER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M014
+    source_id: tbl_desert_rider_talents
+    source_label: Desert Rider Talents Table
+    edge_type: MODIFIES
+    target_id: abil_charge
+    target_label: Charge
+    aspect: daily uses
+    condition: when rolled
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '10'
+    section: DESERT RIDER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M015
+    source_id: class_pit_fighter
+    source_label: Pit Fighter
+    edge_type: CONSTRAINS
+    target_id: item_armor
+    target_label: Armor
+    aspect: permitted armor
+    condition: ''
+    polarity: governs
+    polarity_basis: read
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M016
+    source_id: class_pit_fighter
+    source_label: Pit Fighter
+    edge_type: FEEDS_INTO
+    target_id: rule_hit_points
+    target_label: Hit Points
+    aspect: hit dice
+    condition: ''
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M017
+    source_id: class_pit_fighter
+    source_label: Pit Fighter
+    edge_type: GATES
+    target_id: abil_flourish
+    target_label: Flourish
+    aspect: benefit access
+    condition: ''
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M018
+    source_id: class_pit_fighter
+    source_label: Pit Fighter
+    edge_type: GATES
+    target_id: abil_implacable
+    target_label: Implacable
+    aspect: benefit access
+    condition: ''
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M019
+    source_id: class_pit_fighter
+    source_label: Pit Fighter
+    edge_type: GATES
+    target_id: abil_last_stand
+    target_label: Last Stand
+    aspect: benefit access
+    condition: ''
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M020
+    source_id: class_pit_fighter
+    source_label: Pit Fighter
+    edge_type: GATES
+    target_id: abil_relentless
+    target_label: Relentless
+    aspect: benefit access
+    condition: ''
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M021
+    source_id: abil_implacable
+    source_label: Implacable
+    edge_type: MODIFIES
+    target_id: abil_constitution
+    target_label: Constitution
+    aspect: check advantage
+    condition: to resist injury, poison, or endure extreme environments
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M022
+    source_id: abil_last_stand
+    source_label: Last Stand
+    edge_type: MODIFIES
+    target_id: rule_dying
+    target_label: Dying
+    aspect: recovery threshold
+    condition: on natural roll of eighteen to twenty
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M023
+    source_id: abil_relentless
+    source_label: Relentless
+    edge_type: MODIFIES
+    target_id: rule_dying
+    target_label: Dying
+    aspect: incapacitation prevention
+    condition: when reduced to zero hit points
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M024
+    source_id: abil_implacable
+    source_label: Implacable
+    edge_type: MODIFIES
+    target_id: abil_relentless
+    target_label: Relentless
+    aspect: check advantage
+    condition: on relentless Constitution check
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M025
+    source_id: rule_talent_roll
+    source_label: Talent Roll
+    edge_type: RESOLVED_BY
+    target_id: tbl_pit_fighter_talents
+    target_label: Pit Fighter Talents Table
+    aspect: pit fighter talents
+    condition: for a pit fighter
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M026
+    source_id: tbl_pit_fighter_talents
+    source_label: Pit Fighter Talents Table
+    edge_type: MODIFIES
+    target_id: rule_damage
+    target_label: Damage
+    aspect: damage negation
+    condition: once per day from one attack
+    polarity: negates
+    polarity_basis: read
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M027
+    source_id: tbl_pit_fighter_talents
+    source_label: Pit Fighter Talents Table
+    edge_type: MODIFIES
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: melee weapon damage
+    condition: when rolled
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M028
+    source_id: tbl_pit_fighter_talents
+    source_label: Pit Fighter Talents Table
+    edge_type: MODIFIES
+    target_id: abil_strength
+    target_label: Strength
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M029
+    source_id: tbl_pit_fighter_talents
+    source_label: Pit Fighter Talents Table
+    edge_type: MODIFIES
+    target_id: abil_constitution
+    target_label: Constitution
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M030
+    source_id: tbl_pit_fighter_talents
+    source_label: Pit Fighter Talents Table
+    edge_type: MODIFIES
+    target_id: abil_flourish
+    target_label: Flourish
+    aspect: healing amount
+    condition: when rolled
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '12'
+    section: PIT FIGHTER TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M031
+    source_id: class_ras_godai
+    source_label: Ras-Godai
+    edge_type: CONSTRAINS
+    target_id: item_armor
+    target_label: Armor
+    aspect: permitted armor
+    condition: ''
+    polarity: governs
+    polarity_basis: read
+    book: CS2
+    page: '14'
+    section: RAS-GODAI CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M032
+    source_id: class_ras_godai
+    source_label: Ras-Godai
+    edge_type: FEEDS_INTO
+    target_id: rule_hit_points
+    target_label: Hit Points
+    aspect: hit dice
+    condition: ''
+    book: CS2
+    page: '14'
+    section: RAS-GODAI CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M033
+    source_id: class_ras_godai
+    source_label: Ras-Godai
+    edge_type: GATES
+    target_id: lang_diabolic
+    target_label: Diabolic
+    aspect: known language
+    condition: ''
+    book: CS2
+    page: '14'
+    section: RAS-GODAI CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M034
+    source_id: class_ras_godai
+    source_label: Ras-Godai
+    edge_type: GATES
+    target_id: abil_assassinate
+    target_label: Assassinate
+    aspect: benefit access
+    condition: ''
+    book: CS2
+    page: '14'
+    section: RAS-GODAI CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M035
+    source_id: class_ras_godai
+    source_label: Ras-Godai
+    edge_type: GATES
+    target_id: abil_smoke_step
+    target_label: Smoke Step
+    aspect: benefit access
+    condition: ''
+    book: CS2
+    page: '14'
+    section: RAS-GODAI CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M036
+    source_id: class_ras_godai
+    source_label: Ras-Godai
+    edge_type: GATES
+    target_id: abil_black_lotus
+    target_label: Black Lotus
+    aspect: benefit access
+    condition: ''
+    book: CS2
+    page: '14'
+    section: RAS-GODAI CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M037
+    source_id: abil_assassinate
+    source_label: Assassinate
+    edge_type: MODIFIES
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: surprise damage multiplier
+    condition: when attacking a surprised target
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '14'
+    section: RAS-GODAI CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M038
+    source_id: rule_surprise
+    source_label: Surprise
+    edge_type: GATES
+    target_id: abil_assassinate
+    target_label: Assassinate
+    aspect: target state
+    condition: ''
+    book: CS2
+    page: '14'
+    section: RAS-GODAI CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M039
+    source_id: abil_smoke_step
+    source_label: Smoke Step
+    edge_type: MODIFIES
+    target_id: ex_movement
+    target_label: Movement
+    aspect: teleportation
+    condition: when activated
+    polarity: governs
+    polarity_basis: read
+    book: CS2
+    page: '14'
+    section: RAS-GODAI CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M040
+    source_id: abil_black_lotus
+    source_label: Black Lotus
+    edge_type: RESOLVED_BY
+    target_id: tbl_black_lotus_talents
+    target_label: Black Lotus Talents Table
+    aspect: talent selection
+    condition: ''
+    book: CS2
+    page: '14'
+    section: RAS-GODAI CLASS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M041
+    source_id: rule_talent_roll
+    source_label: Talent Roll
+    edge_type: RESOLVED_BY
+    target_id: tbl_ras_godai_talents
+    target_label: Ras-Godai Talents Table
+    aspect: ras-godai talents
+    condition: for a ras-godai
+    book: CS2
+    page: '15'
+    section: RAS-GODAI TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M042
+    source_id: tbl_ras_godai_talents
+    source_label: Ras-Godai Talents Table
+    edge_type: RESOLVED_BY
+    target_id: tbl_black_lotus_talents
+    target_label: Black Lotus Talents Table
+    aspect: additional talent roll
+    condition: when rolled
+    book: CS2
+    page: '15'
+    section: RAS-GODAI TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M043
+    source_id: tbl_ras_godai_talents
+    source_label: Ras-Godai Talents Table
+    edge_type: MODIFIES
+    target_id: abil_strength
+    target_label: Strength
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '15'
+    section: RAS-GODAI TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M044
+    source_id: tbl_ras_godai_talents
+    source_label: Ras-Godai Talents Table
+    edge_type: MODIFIES
+    target_id: abil_dexterity
+    target_label: Dexterity
+    aspect: stat increase
+    condition: when that stat is chosen
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '15'
+    section: RAS-GODAI TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M045
+    source_id: tbl_ras_godai_talents
+    source_label: Ras-Godai Talents Table
+    edge_type: MODIFIES
+    target_id: abil_smoke_step
+    target_label: Smoke Step
+    aspect: daily uses
+    condition: when rolled
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '15'
+    section: RAS-GODAI TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M046
+    source_id: tbl_black_lotus_talents
+    source_label: Black Lotus Talents Table
+    edge_type: MODIFIES
+    target_id: abil_assassinate
+    target_label: Assassinate
+    aspect: damage multiplier
+    condition: when rolled
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '15'
+    section: BLACK LOTUS TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M047
+    source_id: tbl_black_lotus_talents
+    source_label: Black Lotus Talents Table
+    edge_type: MODIFIES
+    target_id: cbt_armor_class
+    target_label: Armor Class
+    aspect: dual wielding bonus
+    condition: when wielding a melee weapon in each hand
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '15'
+    section: BLACK LOTUS TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M048
+    source_id: tbl_black_lotus_talents
+    source_label: Black Lotus Talents Table
+    edge_type: MODIFIES
+    target_id: rule_hit_points
+    target_label: Hit Points
+    aspect: additional hit die
+    condition: when rolled
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '15'
+    section: BLACK LOTUS TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M049
+    source_id: tbl_black_lotus_talents
+    source_label: Black Lotus Talents Table
+    edge_type: MODIFIES
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: melee weapon damage
+    condition: with melee weapons
+    polarity: improves
+    polarity_basis: read
+    book: CS2
+    page: '15'
+    section: BLACK LOTUS TALENTS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M050
+    source_id: rule_title
+    source_label: Title
+    edge_type: RESOLVED_BY
+    target_id: tbl_desert_rider_titles
+    target_label: Desert Rider Titles Table
+    aspect: title lookup
+    condition: for a desert rider
+    book: CS2
+    page: '16'
+    section: DESERT RIDER TITLES TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M051
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: tbl_desert_rider_titles
+    target_label: Desert Rider Titles Table
+    aspect: title row
+    condition: ''
+    book: CS2
+    page: '16'
+    section: DESERT RIDER TITLES TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M052
+    source_id: sys_alignment
+    source_label: Alignment
+    edge_type: FEEDS_INTO
+    target_id: tbl_desert_rider_titles
+    target_label: Desert Rider Titles Table
+    aspect: title column
+    condition: ''
+    book: CS2
+    page: '16'
+    section: DESERT RIDER TITLES TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M053
+    source_id: rule_title
+    source_label: Title
+    edge_type: RESOLVED_BY
+    target_id: tbl_pit_fighter_titles
+    target_label: Pit Fighter Titles Table
+    aspect: title lookup
+    condition: for a pit fighter
+    book: CS2
+    page: '16'
+    section: PIT FIGHTER TITLES TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M054
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: tbl_pit_fighter_titles
+    target_label: Pit Fighter Titles Table
+    aspect: title row
+    condition: ''
+    book: CS2
+    page: '16'
+    section: PIT FIGHTER TITLES TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M055
+    source_id: sys_alignment
+    source_label: Alignment
+    edge_type: FEEDS_INTO
+    target_id: tbl_pit_fighter_titles
+    target_label: Pit Fighter Titles Table
+    aspect: title column
+    condition: ''
+    book: CS2
+    page: '16'
+    section: PIT FIGHTER TITLES TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M056
+    source_id: rule_title
+    source_label: Title
+    edge_type: RESOLVED_BY
+    target_id: tbl_ras_godai_titles
+    target_label: Ras-Godai Titles Table
+    aspect: title lookup
+    condition: for a ras-godai
+    book: CS2
+    page: '16'
+    section: RAS-GODAI TITLES TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M057
+    source_id: exp_level
+    source_label: Level
+    edge_type: FEEDS_INTO
+    target_id: tbl_ras_godai_titles
+    target_label: Ras-Godai Titles Table
+    aspect: title row
+    condition: ''
+    book: CS2
+    page: '16'
+    section: RAS-GODAI TITLES TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M058
+    source_id: sys_alignment
+    source_label: Alignment
+    edge_type: FEEDS_INTO
+    target_id: tbl_ras_godai_titles
+    target_label: Ras-Godai Titles Table
+    aspect: title column
+    condition: ''
+    book: CS2
+    page: '16'
+    section: RAS-GODAI TITLES TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M059
+    source_id: tbl_new_weapons
+    source_label: New Weapons Table
+    edge_type: CONSTRAINS
+    target_id: cbt_attack_roll
+    target_label: Attack Roll
+    aspect: weapon range
+    condition: ''
+    polarity: governs
+    polarity_basis: read
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M060
+    source_id: weapon_blowgun
+    source_label: Blowgun
+    edge_type: FEEDS_INTO
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: damage die
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M061
+    source_id: weapon_bolas
+    source_label: Bolas
+    edge_type: MODIFIES
+    target_id: ex_movement
+    target_label: Movement
+    aspect: speed reduction
+    condition: on hit against legged creature horse size or smaller
+    polarity: worsens
+    polarity_basis: read
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M062
+    source_id: weapon_morningstar
+    source_label: Morningstar
+    edge_type: FEEDS_INTO
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: damage die
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M063
+    source_id: weapon_morningstar
+    source_label: Morningstar
+    edge_type: GATES
+    target_id: rule_versatile
+    target_label: Versatile
+    aspect: weapon property
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M064
+    source_id: weapon_pike
+    source_label: Pike
+    edge_type: FEEDS_INTO
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: damage die
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M065
+    source_id: weapon_pike
+    source_label: Pike
+    edge_type: GATES
+    target_id: rule_two_handed
+    target_label: Two-Handed
+    aspect: weapon property
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M066
+    source_id: weapon_razor_chain
+    source_label: Razor Chain
+    edge_type: FEEDS_INTO
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: damage die
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M067
+    source_id: weapon_razor_chain
+    source_label: Razor Chain
+    edge_type: GATES
+    target_id: rule_finesse
+    target_label: Finesse
+    aspect: weapon property
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M068
+    source_id: weapon_razor_chain
+    source_label: Razor Chain
+    edge_type: GATES
+    target_id: rule_lash
+    target_label: Lash
+    aspect: weapon property
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M069
+    source_id: weapon_scimitar
+    source_label: Scimitar
+    edge_type: FEEDS_INTO
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: damage die
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M070
+    source_id: weapon_scimitar
+    source_label: Scimitar
+    edge_type: GATES
+    target_id: rule_finesse
+    target_label: Finesse
+    aspect: weapon property
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M071
+    source_id: weapon_shuriken
+    source_label: Shuriken
+    edge_type: FEEDS_INTO
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: damage die
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M072
+    source_id: weapon_shuriken
+    source_label: Shuriken
+    edge_type: MODIFIES
+    target_id: ex_movement
+    target_label: Movement
+    aspect: caltrop speed reduction
+    condition: when stepped on in ground
+    polarity: worsens
+    polarity_basis: read
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M073
+    source_id: weapon_sling
+    source_label: Sling
+    edge_type: FEEDS_INTO
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: damage die
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M074
+    source_id: weapon_whip
+    source_label: Whip
+    edge_type: FEEDS_INTO
+    target_id: cbt_damage_roll
+    target_label: Damage Roll
+    aspect: damage die
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M075
+    source_id: weapon_whip
+    source_label: Whip
+    edge_type: GATES
+    target_id: rule_finesse
+    target_label: Finesse
+    aspect: weapon property
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+  - id: M076
+    source_id: weapon_whip
+    source_label: Whip
+    edge_type: GATES
+    target_id: rule_lash
+    target_label: Lash
+    aspect: weapon property
+    condition: ''
+    book: CS2
+    page: '17'
+    section: NEW WEAPONS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+
+candidate_general_rules: []
+domains_touched:
+  - classes
+  - combat
+  - equipment
+  - talents
+candidate_domains: []
+domain_boundary_questions: []
+non_edge_observations:
+  - Page 15 Ras-Godai talent 2 mentions poison training referencing page 27 ("see pg. 27"), which belongs to incoming packet cs2_19-30.
+  - Page 10 Desert Rider Mount mentions camel or horse demeanor on page 29 ("see pg. 29"), which belongs to incoming packet cs2_19-30.
+  - Page 17 Blowgun firing from hiding doesn't reveal position, reinforcing the stealth profile without requiring a new core override edge.
+unresolved_identity_questions: []
+architectural_escalations: []
+completeness_statement: >-
+  All mechanics, character classes, talent tables, alignment titles, and new weapon properties
+  across pages 9 through 18 of Cursed Scroll 2: Red Sands have been analyzed and extracted.
+  All edges declare optional status conforming to owner scope instructions.
