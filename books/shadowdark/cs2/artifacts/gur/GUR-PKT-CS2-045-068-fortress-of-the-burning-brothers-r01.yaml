@@ -1,0 +1,178 @@
+schema_version: '1.0'
+id: GUR-PKT-CS2-045-068-fortress-of-the-burning-brothers-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: cs2
+source_id: cs2-steward-intake
+packet_id: PKT-CS2-045-068-fortress-of-the-burning-brothers
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.9
+- contracts/WORK_QUEUES.md 1.36
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.8
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml
+packet_provenance:
+  packet_path: books/shadowdark/cs2/packets/claimed/PKT-CS2-045-068-fortress-of-the-burning-brothers
+  source_file: source.md
+  packet_source_checksum: sha256:cc1503981ba65f5a64781aabccd184c5b96ed4730d564cda85ae8b4d0a34535d
+  packet_source_checksum_basis: exact
+  original_filename: cs2_45-68.md
+  citation_code: CS2
+  page_start: 45
+  page_end: 68
+  page_number_basis: packet_page_markers
+page_attribution_basis: Twenty-four pages resolve through Pandoc AST. Page 68 carries
+  .back-cover class. Pages 45-67 carry standard layout elements.
+page_class_treatment: Page 68 carries steward-declared .back-cover class, preserved
+  in packet metadata.
+scope_boundary: 'The bounded scope covers printed pages 45 through 68 of Cursed Scroll
+  2: Red Sands, comprising the adventure module Fortress of the Burning Brothers,
+  including dungeon levels, random encounter tables, NPC rosters, maps, and back-cover
+  dead bandit treasure table.'
+source_summary: Adventure module Fortress of the Burning Brothers featuring Iron Fortress
+  and Mines dungeon levels, dungeon random encounter tables, salamander and duergar
+  NPC tables, and dead bandit treasure table.
+reused_nodes:
+- id: rule_encounter
+  label: Encounter
+  used_by: M001, M003
+  basis: Reused from canonical registry. Resolved by fortress and mine random encounter
+    tables.
+- id: rule_treasure
+  label: Treasure
+  used_by: M005
+  basis: Reused from canonical registry. Resolved by dead bandit treasure table.
+candidate_nodes:
+- proposed_id: tbl_burning_brothers_rumors
+  proposed_label: Burning Brothers Rumors Table
+  kind: tbl
+  why_needed: Rumors table for the Fortress of the Burning Brothers adventure on page
+    47.
+- proposed_id: tbl_iron_fortress_random_encounters
+  proposed_label: Iron Fortress Random Encounters Table
+  kind: tbl
+  why_needed: Random encounter generation table for the Iron Fortress dungeon on page
+    49.
+- proposed_id: tbl_mines_random_encounters
+  proposed_label: Mines Random Encounters Table
+  kind: tbl
+  why_needed: Random encounter generation table for the Mines dungeon on page 57.
+- proposed_id: tbl_salamander_npcs
+  proposed_label: Salamander NPCs Table
+  kind: tbl
+  why_needed: Roster and lookup table for salamander guards on page 63.
+- proposed_id: tbl_duergar_npcs
+  proposed_label: Duergar NPCs Table
+  kind: tbl
+  why_needed: Roster and lookup table for duergar slave encounters on page 64.
+- proposed_id: tbl_dead_bandit_treasure
+  proposed_label: Dead Bandit Treasure Table
+  kind: tbl
+  why_needed: Special treasure table found on dead bandits on page 68.
+candidate_edges:
+- ref: M001
+  source_id: rule_encounter
+  source_label: Encounter
+  edge_type: RESOLVED_BY
+  target_id: tbl_iron_fortress_random_encounters
+  target_label: Iron Fortress Random Encounters Table
+  aspect: fortress encounter determination
+  condition: when random encounter occurs in Iron Fortress
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 49
+  section: RANDOM ENCOUNTERS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: tbl_iron_fortress_random_encounters
+  source_label: Iron Fortress Random Encounters Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_salamander_npcs
+  target_label: Salamander NPCs Table
+  aspect: guard identification
+  condition: when guard identity needed
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 49
+  section: SALAMANDER GUARDS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_encounter
+  source_label: Encounter
+  edge_type: RESOLVED_BY
+  target_id: tbl_mines_random_encounters
+  target_label: Mines Random Encounters Table
+  aspect: mine encounter determination
+  condition: when random encounter occurs in Mines
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 57
+  section: RANDOM ENCOUNTERS TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: tbl_mines_random_encounters
+  source_label: Mines Random Encounters Table
+  edge_type: FEEDS_INTO
+  target_id: tbl_duergar_npcs
+  target_label: Duergar NPCs Table
+  aspect: slave identification
+  condition: when unnamed duergar encountered
+  polarity: neutral
+  polarity_basis: derived
+  book: CS2
+  page: 56
+  section: DUERGAR SLAVES
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: rule_treasure
+  source_label: Treasure
+  edge_type: RESOLVED_BY
+  target_id: tbl_dead_bandit_treasure
+  target_label: Dead Bandit Treasure Table
+  aspect: bandit treasure determination
+  condition: when searching dead bandit
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 68
+  section: DEAD BANDIT TREASURE TABLE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
