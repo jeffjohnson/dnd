@@ -1,0 +1,347 @@
+schema_version: '1.0'
+id: GUR-PKT-CS2-031-038-the-djurum-travel-and-hex-key-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: cs2
+source_id: cs2-steward-intake
+packet_id: PKT-CS2-031-038-the-djurum-travel-and-hex-key
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+authority:
+- contracts/SOURCE_MARKDOWN.md 1.9
+- contracts/WORK_QUEUES.md 1.36
+- contracts/ARTIFACT_LIFECYCLE.md 1.21
+- contracts/GRAPH_INVARIANTS.md 1.1
+- contracts/ESCALATION_CONTRACT.md 1.2
+- contracts/HERDR_HANDOFFS.md 2.4
+- rulesets/shadowdark/governance/constitution.md 1.8
+- rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml
+packet_provenance:
+  packet_path: books/shadowdark/cs2/packets/claimed/PKT-CS2-031-038-the-djurum-travel-and-hex-key
+  source_file: source.md
+  packet_source_checksum: sha256:3d6cdd099e90714f1225566930dc87ebb9d9698557a173a3136cc6337d824bf1
+  packet_source_checksum_basis: exact
+  original_filename: cs2_31-38.md
+  citation_code: CS2
+  page_start: 31
+  page_end: 38
+  page_number_basis: packet_page_markers
+page_attribution_basis: Eight pages resolve through Pandoc AST. Pages 31, 32, 33,
+  34, 35, 36, 37, and 38 carry standard page markers. No malformed page markers exist.
+page_class_treatment: All pages carry standard layout elements. No steward-declared
+  page classes are present.
+scope_boundary: 'The bounded scope covers printed pages 31 through 38 of Cursed Scroll
+  2: Red Sands, comprising The Djurum title page (pg 31), Travel in the Sands subsystem
+  with temperature and wind rules and tables (pg 32), and The Djurum Hex Key adventure
+  sites (pp 33-38).'
+source_summary: 'Presents regional travel subsystem for The Djurum desert: daily rolls
+  for temperature and wind conditions; extra ration consumption from extreme heat
+  and pushed mounts; hourly heat damage in inferno; halved movement and harder navigation
+  checks in driving wind; travel prohibition in sandstorms; and day vs night encounter
+  intervals and visibility.'
+reused_nodes:
+- id: rule_overland_travel
+  label: Overland Travel
+  used_by: M001, M012
+  basis: Reused from canonical registry. Modified by desert travel conditions and
+    sandstorm travel prohibition.
+- id: rule_encounter
+  label: Encounter
+  used_by: M004, M005
+  basis: Reused from canonical registry. Modified by day and night encounter check
+    intervals.
+- id: rule_distance
+  label: Distance
+  used_by: M006, M013
+  basis: Reused from canonical registry. Constrained by night near visibility and
+    sandstorm zero visibility.
+- id: item_rations
+  label: Rations
+  used_by: M007
+  basis: Reused from canonical registry. Modified by hot weather extra daily ration
+    requirement.
+- id: rule_mounts
+  label: Mounts
+  used_by: M008
+  basis: Reused from canonical registry. Modified by extra ration required when pushed
+    in hot weather.
+- id: rule_damage
+  label: Damage
+  used_by: M009
+  basis: Reused from canonical registry. Hourly heat damage inflicted in inferno weather.
+- id: ex_movement
+  label: Movement
+  used_by: M010
+  basis: Reused from canonical registry. Modified by driving wind speed reduction.
+- id: rule_navigation
+  label: Navigation
+  used_by: M011
+  basis: Reused from canonical registry. Modified by driving wind check difficulty.
+candidate_nodes:
+- proposed_id: rule_travel_in_the_sands
+  proposed_label: Travel in the Sands
+  kind: rule
+  why_needed: Subsystem for weather and travel conditions in The Djurum desert introduced
+    on page 32.
+- proposed_id: tbl_temperature
+  proposed_label: Temperature Table
+  kind: tbl
+  why_needed: Daily temperature table for desert travel on page 32.
+- proposed_id: tbl_wind
+  proposed_label: Wind Table
+  kind: tbl
+  why_needed: Daily wind conditions table for desert travel on page 32.
+candidate_edges:
+- ref: M001
+  source_id: rule_travel_in_the_sands
+  source_label: Travel in the Sands
+  edge_type: MODIFIES
+  target_id: rule_overland_travel
+  target_label: Overland Travel
+  aspect: desert travel conditions
+  condition: when traveling in The Djurum
+  polarity: governs
+  polarity_basis: read
+  book: CS2
+  page: 32
+  section: TRAVEL IN THE SANDS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M002
+  source_id: rule_travel_in_the_sands
+  source_label: Travel in the Sands
+  edge_type: RESOLVED_BY
+  target_id: tbl_temperature
+  target_label: Temperature Table
+  aspect: daily temperature condition
+  condition: when traveling in The Djurum
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 32
+  section: TRAVEL IN THE SANDS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M003
+  source_id: rule_travel_in_the_sands
+  source_label: Travel in the Sands
+  edge_type: RESOLVED_BY
+  target_id: tbl_wind
+  target_label: Wind Table
+  aspect: daily wind condition
+  condition: when traveling in The Djurum
+  polarity: governs
+  polarity_basis: derived
+  book: CS2
+  page: 32
+  section: TRAVEL IN THE SANDS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M004
+  source_id: rule_travel_in_the_sands
+  source_label: Travel in the Sands
+  edge_type: MODIFIES
+  target_id: rule_encounter
+  target_label: Encounter
+  aspect: encounter check interval
+  condition: when traveling during day
+  polarity: governs
+  polarity_basis: read
+  book: CS2
+  page: 32
+  section: TRAVEL IN THE SANDS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M005
+  source_id: rule_travel_in_the_sands
+  source_label: Travel in the Sands
+  edge_type: MODIFIES
+  target_id: rule_encounter
+  target_label: Encounter
+  aspect: encounter check interval
+  condition: when traveling at night
+  polarity: governs
+  polarity_basis: read
+  book: CS2
+  page: 32
+  section: TRAVEL IN THE SANDS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M006
+  source_id: rule_travel_in_the_sands
+  source_label: Travel in the Sands
+  edge_type: CONSTRAINS
+  target_id: rule_distance
+  target_label: Distance
+  aspect: visibility reduction
+  condition: when traveling at night
+  polarity: governs
+  polarity_basis: read
+  book: CS2
+  page: 32
+  section: TRAVEL IN THE SANDS
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M007
+  source_id: tbl_temperature
+  source_label: Temperature Table
+  edge_type: MODIFIES
+  target_id: item_rations
+  target_label: Rations
+  aspect: daily ration consumption
+  condition: when traveling in hot or hotter weather
+  polarity: worsens
+  polarity_basis: read
+  book: CS2
+  page: 32
+  section: TEMPERATURE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M008
+  source_id: tbl_temperature
+  source_label: Temperature Table
+  edge_type: MODIFIES
+  target_id: rule_mounts
+  target_label: Mounts
+  aspect: mount ration consumption
+  condition: when pushed in hot or hotter weather
+  polarity: worsens
+  polarity_basis: read
+  book: CS2
+  page: 32
+  section: TEMPERATURE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M009
+  source_id: tbl_temperature
+  source_label: Temperature Table
+  edge_type: MODIFIES
+  target_id: rule_damage
+  target_label: Damage
+  aspect: hourly heat damage
+  condition: when traveling in inferno temperature
+  polarity: inflicts
+  polarity_basis: read
+  book: CS2
+  page: 32
+  section: TEMPERATURE
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M010
+  source_id: tbl_wind
+  source_label: Wind Table
+  edge_type: MODIFIES
+  target_id: ex_movement
+  target_label: Movement
+  aspect: travel speed reduction
+  condition: when traveling in driving wind
+  polarity: worsens
+  polarity_basis: read
+  book: CS2
+  page: 32
+  section: WIND
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M011
+  source_id: tbl_wind
+  source_label: Wind Table
+  edge_type: MODIFIES
+  target_id: rule_navigation
+  target_label: Navigation
+  aspect: navigation check difficulty
+  condition: when traveling in driving wind
+  polarity: worsens
+  polarity_basis: read
+  book: CS2
+  page: 32
+  section: WIND
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M012
+  source_id: tbl_wind
+  source_label: Wind Table
+  edge_type: MODIFIES
+  target_id: rule_overland_travel
+  target_label: Overland Travel
+  aspect: travel prohibition
+  condition: during sandstorm
+  polarity: worsens
+  polarity_basis: read
+  book: CS2
+  page: 32
+  section: WIND
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
+- ref: M013
+  source_id: tbl_wind
+  source_label: Wind Table
+  edge_type: CONSTRAINS
+  target_id: rule_distance
+  target_label: Distance
+  aspect: visibility reduction
+  condition: during sandstorm
+  polarity: governs
+  polarity_basis: read
+  book: CS2
+  page: 32
+  section: WIND
+  evidence: explicit_rule
+  pass: '1'
+  status: optional
+  supersession_basis: ''
+  general_rule_id: ''
+  review_flag: ''
