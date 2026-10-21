@@ -1,0 +1,383 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20261021-002",
+  "ruleset_id": "shadowdark",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-10-21T22:04:04.075Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:d5838754816f7e9a72e954eac9653d72197185846f08a94ef451423d78ca972d actual=sha256:d5838754816f7e9a72e954eac9653d72197185846f08a94ef451423d78ca972d"
+        },
+        {
+          "check": "component checksum matches: books/shadowdark/cs1/artifacts/approved/APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:90bee5406c715740481a81bbe9539d9e2f4f1c26b6559441e75e8091f6392384 actual=sha256:90bee5406c715740481a81bbe9539d9e2f4f1c26b6559441e75e8091f6392384"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:4a96733c59d351dcad2fd984277ce06752b2e942d4fbaa7c8f31f980f2ccc5a5 actual=sha256:4a96733c59d351dcad2fd984277ce06752b2e942d4fbaa7c8f31f980f2ccc5a5"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/shadowdark/cs1/artifacts/gup/GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02.yaml: declared=sha256:865c381ae9295b7a3658860c76cba300fbe86c0e81d525d933aaef425f383463 actual=sha256:865c381ae9295b7a3658860c76cba300fbe86c0e81d525d933aaef425f383463"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=50 actual=50"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 2, 'pending_additions': 48, 'updates': 0, 'node_registrations': 20}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 1301,
+    "edges_after": 1351,
+    "edges_updated_in_place": 0,
+    "nodes_before": 613,
+    "nodes_after": 635,
+    "registry_before": 895,
+    "registry_after": 915,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "class_knight_of_st_ydris",
+        "label": "Knight of St. Ydris",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "class_warlock",
+        "label": "Warlock",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "class_witch",
+        "label": "Witch",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "abil_demonic_possession",
+        "label": "Demonic Possession",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "abil_patron",
+        "label": "Patron",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "abil_patron_boon",
+        "label": "Patron Boon",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "abil_familiar",
+        "label": "Familiar",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_knight_of_st_ydris_talents",
+        "label": "Knight of St. Ydris Talents Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_knight_of_st_ydris_titles",
+        "label": "Knight of St. Ydris Titles Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_warlock_talents",
+        "label": "Warlock Talents Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_warlock_titles",
+        "label": "Warlock Titles Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_witch_talents",
+        "label": "Witch Talents Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_witch_titles",
+        "label": "Witch Titles Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_almazzat_boons",
+        "label": "Almazzat Boons Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_kytheros_boons",
+        "label": "Kytheros Boons Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_shune_the_vile_boons",
+        "label": "Shune the Vile Boons Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_mugdulblub_boons",
+        "label": "Mugdulblub Boons Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_titania_boons",
+        "label": "Titania Boons Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_the_willowman_boons",
+        "label": "The Willowman Boons Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      },
+      {
+        "id": "tbl_diabolical_backgrounds",
+        "label": "Diabolical Backgrounds Table",
+        "kind": "tbl",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "review_id": "REV-GUP-PKT-CS1-009-020-classes-patrons-and-backgrounds-r02-r01",
+        "integration_id": "INT-20261021-002"
+      }
+    ],
+    "registry_derived_resync": 19,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}
