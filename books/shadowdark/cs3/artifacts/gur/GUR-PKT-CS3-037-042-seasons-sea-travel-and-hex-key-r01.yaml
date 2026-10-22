@@ -1,0 +1,295 @@
+schema_version: '1.0'
+id: GUR-PKT-CS3-037-042-seasons-sea-travel-and-hex-key-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: cs3
+source_id: cs3-steward-intake
+packet_id: PKT-CS3-037-042-seasons-sea-travel-and-hex-key
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.9
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/cs3/packets/claimed/PKT-CS3-037-042-seasons-sea-travel-and-hex-key
+  source_file: source.md
+  packet_source_checksum: sha256:31c11b174961b32e3640ac19070d33f3823ca8722a0e904f58dee410e2cc27d0
+  packet_source_checksum_basis: exact
+  original_filename: cs3.37-42.md
+  citation_code: CS3
+  page_start: 37
+  page_end: 42
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Six pages resolve through Pandoc AST. Page 42 is an empty fenced Div carrying
+  .full-page-artwork adhering to contracts/SOURCE_MARKDOWN.md 1.9 and DEC-2026-0108.
+  Pages 37 through 41 carry standard block-level page markers.
+
+page_class_treatment: >-
+  Page 42 carries steward-declared page class .full-page-artwork. Under
+  SOURCE_MARKDOWN 1.9, this class is page-local intake metadata and creates no
+  graph node, edge, or uncovered-page obligation. It is preserved in packet composition metadata.
+
+scope_boundary: >-
+  The bounded scope covers printed pages 37 through 42 of Cursed Scroll 3: Midnight
+  Sun, comprising The Isles of Andrik introduction, Seasons and Sea Travel subsystem
+  (Seasons, Sea Travel, Wind, and Wind Table), the Isles of Andrik Hex Key (Hexes 303
+  through 1509), and full-page artwork.
+
+source_summary: >-
+  Introduces northern regional environmental subsystems for sea travel and seasons
+  in the Isles of Andrik, including daylight variations, sea travel hazard intervals,
+  and wind conditions/effects on boats and navigation, followed by narrative hex key
+  vignettes across the archipelago.
+
+reused_nodes:
+  - id: rule_overland_travel
+    label: Overland Travel
+    used_by: M001
+    basis: Reused canonical overland travel rule modified by sea travel conditions.
+  - id: rule_encounter
+    label: Encounter
+    used_by: M002
+    basis: Reused canonical encounter rule modified by high seas encounter interval.
+  - id: tbl_wind
+    label: Wind Table
+    used_by:
+      - M003
+      - M005
+      - M006
+      - M007
+      - M008
+      - M009
+      - M010
+    basis: Reused canonical wind table governing daily conditions and modifying naval travel.
+  - id: rule_distance
+    label: Distance
+    used_by: M004
+    basis: Reused canonical distance rule constrained by northern seasonal lighting.
+  - id: rule_boats
+    label: Boats
+    used_by:
+      - M005
+      - M007
+      - M008
+      - M009
+      - M010
+    basis: Reused canonical boats rule modified by driving wind, gusty wind, calm wind, and tempest hazards.
+  - id: rule_navigation
+    label: Navigation
+    used_by: M006
+    basis: Reused canonical navigation rule modified by driving wind difficulty.
+
+candidate_nodes:
+  - proposed_id: rule_sea_travel
+    proposed_label: Sea Travel
+    kind: rule
+    why_needed: Subsystem for sea voyages and northern environmental conditions in the Isles of Andrik introduced on page 38.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_sea_travel
+    source_label: Sea Travel
+    edge_type: MODIFIES
+    target_id: rule_overland_travel
+    target_label: Overland Travel
+    aspect: sea travel conditions
+    condition: when traveling at sea
+    polarity: governs
+    polarity_basis: read
+    book: CS3
+    page: 38
+    section: SEA TRAVEL
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M002
+    source_id: rule_sea_travel
+    source_label: Sea Travel
+    edge_type: MODIFIES
+    target_id: rule_encounter
+    target_label: Encounter
+    aspect: encounter check interval
+    condition: on the high seas
+    polarity: governs
+    polarity_basis: read
+    book: CS3
+    page: 38
+    section: SEA TRAVEL
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M003
+    source_id: rule_sea_travel
+    source_label: Sea Travel
+    edge_type: RESOLVED_BY
+    target_id: tbl_wind
+    target_label: Wind Table
+    aspect: daily wind condition
+    condition: ''
+    polarity: governs
+    polarity_basis: derived
+    book: CS3
+    page: 38
+    section: WIND TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M004
+    source_id: rule_sea_travel
+    source_label: Sea Travel
+    edge_type: CONSTRAINS
+    target_id: rule_distance
+    target_label: Distance
+    aspect: visibility conditions
+    condition: based on season
+    polarity: governs
+    polarity_basis: read
+    book: CS3
+    page: 38
+    section: SEASONS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M005
+    source_id: tbl_wind
+    source_label: Wind Table
+    edge_type: MODIFIES
+    target_id: rule_boats
+    target_label: Boats
+    aspect: boat speed reduction
+    condition: when sailing in driving wind
+    polarity: worsens
+    polarity_basis: read
+    book: CS3
+    page: 38
+    section: WIND
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M006
+    source_id: tbl_wind
+    source_label: Wind Table
+    edge_type: MODIFIES
+    target_id: rule_navigation
+    target_label: Navigation
+    aspect: navigation check difficulty
+    condition: when sailing in driving wind
+    polarity: worsens
+    polarity_basis: read
+    book: CS3
+    page: 38
+    section: WIND
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M007
+    source_id: tbl_wind
+    source_label: Wind Table
+    edge_type: MODIFIES
+    target_id: rule_boats
+    target_label: Boats
+    aspect: boat speed bonus
+    condition: when sailing in gusty wind
+    polarity: improves
+    polarity_basis: read
+    book: CS3
+    page: 38
+    section: WIND
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M008
+    source_id: tbl_wind
+    source_label: Wind Table
+    edge_type: MODIFIES
+    target_id: rule_boats
+    target_label: Boats
+    aspect: boat travel restriction
+    condition: without oars in calm wind
+    polarity: worsens
+    polarity_basis: read
+    book: CS3
+    page: 38
+    section: WIND
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M009
+    source_id: tbl_wind
+    source_label: Wind Table
+    edge_type: MODIFIES
+    target_id: rule_boats
+    target_label: Boats
+    aspect: boat sinking hazard
+    condition: when sailing in a tempest
+    polarity: worsens
+    polarity_basis: read
+    book: CS3
+    page: 38
+    section: WIND
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M010
+    source_id: tbl_wind
+    source_label: Wind Table
+    edge_type: MODIFIES
+    target_id: rule_boats
+    target_label: Boats
+    aspect: uncontrolled boat drift
+    condition: when sailing in a tempest
+    polarity: worsens
+    polarity_basis: read
+    book: CS3
+    page: 38
+    section: WIND
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
