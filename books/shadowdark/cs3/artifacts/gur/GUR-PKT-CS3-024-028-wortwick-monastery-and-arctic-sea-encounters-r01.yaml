@@ -1,0 +1,91 @@
+schema_version: '1.0'
+id: GUR-PKT-CS3-024-028-wortwick-monastery-and-arctic-sea-encounters-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: cs3
+source_id: cs3-steward-intake
+packet_id: PKT-CS3-024-028-wortwick-monastery-and-arctic-sea-encounters
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.9
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/cs3/packets/claimed/PKT-CS3-024-028-wortwick-monastery-and-arctic-sea-encounters
+  source_file: source.md
+  packet_source_checksum: sha256:d2a106d26cec8feb26aa0a1607f41fd465dcb52330c0d8fe961c1e2ef69cc63d
+  packet_source_checksum_basis: exact
+  original_filename: cs3.24-28.md
+  citation_code: CS3
+  page_start: 24
+  page_end: 28
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Five pages resolve through Pandoc AST. Page 28 is an empty fenced Div carrying
+  .full-page-artwork adhering to contracts/SOURCE_MARKDOWN.md 1.9 and DEC-2026-0108.
+  Pages 24, 25, and 26 carry standard block-level page markers; page 27 is marked
+  with an inline page anchor within the Arctic Sea Encounters table.
+
+page_class_treatment: >-
+  Page 28 carries steward-declared page class .full-page-artwork. Under
+  SOURCE_MARKDOWN 1.9, this class is page-local intake metadata and creates no
+  graph node, edge, or uncovered-page obligation. It is preserved in packet composition metadata.
+
+scope_boundary: >-
+  The bounded scope covers printed pages 24 through 28 of Cursed Scroll 3: Midnight
+  Sun, comprising the Wortwick Monastery sample raid location and map, the 100-entry
+  Arctic Sea Encounters table, and full-page artwork.
+
+source_summary: >-
+  Presents a sample raid site (Wortwick Monastery) for sea wolf campaigns detailing
+  monastic rooms and defenders, followed by a comprehensive 100-entry random encounter
+  table for voyages across the arctic sea.
+
+reused_nodes:
+  - id: rule_encounter
+    label: Encounter
+    used_by: M001
+    basis: Reused from canonical registry. Encounter procedure resolves into regional arctic sea encounter selection.
+
+candidate_nodes:
+  - proposed_id: tbl_arctic_sea_encounters
+    proposed_label: Arctic Sea Encounters Table
+    kind: tbl
+    why_needed: D100 random encounter table on pages 26-27 for sea travel in the arctic region.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_encounter
+    source_label: Encounter
+    edge_type: RESOLVED_BY
+    target_id: tbl_arctic_sea_encounters
+    target_label: Arctic Sea Encounters Table
+    aspect: arctic sea encounters
+    condition: on the arctic sea
+    polarity: governs
+    polarity_basis: derived
+    book: CS3
+    page: 26
+    section: ARCTIC SEA ENCOUNTERS
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
