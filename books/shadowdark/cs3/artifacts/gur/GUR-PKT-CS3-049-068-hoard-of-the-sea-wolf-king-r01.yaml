@@ -1,0 +1,124 @@
+schema_version: '1.0'
+id: GUR-PKT-CS3-049-068-hoard-of-the-sea-wolf-king-r01
+status: proposed
+ruleset_id: shadowdark
+book_id: cs3
+source_id: cs3-steward-intake
+packet_id: PKT-CS3-049-068-hoard-of-the-sea-wolf-king
+constitution_version: '1.8'
+revision: 1
+supersedes: null
+
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: analyst extraction complete
+  blocking_ids: []
+
+authority:
+  - contracts/SOURCE_MARKDOWN.md 1.9
+  - contracts/WORK_QUEUES.md 1.36
+  - contracts/ARTIFACT_LIFECYCLE.md 1.21
+  - contracts/GRAPH_INVARIANTS.md 1.1
+  - contracts/ESCALATION_CONTRACT.md 1.2
+  - contracts/HERDR_HANDOFFS.md 2.4
+  - rulesets/shadowdark/governance/constitution.md 1.8
+  - rulesets/shadowdark/escalations/decisions/DEC-2026-0108.yaml
+
+packet_provenance:
+  packet_path: books/shadowdark/cs3/packets/claimed/PKT-CS3-049-068-hoard-of-the-sea-wolf-king
+  source_file: source.md
+  packet_source_checksum: sha256:4e53d6c83ed5d78f635ed53e846d912efa914ef5936d446f55a139a1102463a4
+  packet_source_checksum_basis: exact
+  original_filename: cs3.49-68.md
+  citation_code: CS3
+  page_start: 49
+  page_end: 68
+  page_number_basis: packet_page_markers
+
+page_attribution_basis: >-
+  Twenty pages resolve through Pandoc AST. Pages 55 and 62 are empty fenced Divs
+  carrying .full-page-artwork, and page 68 carries .back-cover under
+  contracts/SOURCE_MARKDOWN.md 1.9 and DEC-2026-0108. Pages 49-54, 56-61, and 63-67
+  carry standard block-level page markers.
+
+page_class_treatment: >-
+  Pages 55 and 62 carry steward-declared .full-page-artwork classes and page 68 carries
+  .back-cover class. Under SOURCE_MARKDOWN 1.9, these classes are page-local intake
+  metadata and create no graph node, edge, or uncovered-page obligation. They are
+  preserved in packet composition metadata.
+
+scope_boundary: >-
+  The bounded scope covers printed pages 49 through 68 of Cursed Scroll 3: Midnight
+  Sun, comprising the 0-level Gauntlet adventure Hoard of the Sea Wolf King, dungeon
+  rooms 1-29, rumor and encounter tables, maps, navigation notes, and the back-cover
+  Sea Wolf Plunder from Distant Lands table.
+
+source_summary: >-
+  Adventure module Hoard of the Sea Wolf King featuring Sea Caves and Tombs dungeon
+  levels, dungeon random encounter tables, rumor tables, maps, and the back-cover
+  regional plunder treasure table.
+
+reused_nodes:
+  - id: rule_encounter
+    label: Encounter
+    used_by: M001
+    basis: Reused from canonical registry. Resolved by dungeon random encounters table.
+  - id: rule_treasure
+    label: Treasure
+    used_by: M002
+    basis: Reused from canonical registry. Resolved by plunder treasure table.
+
+candidate_nodes:
+  - proposed_id: tbl_sea_caves_rumors
+    proposed_label: Sea Caves Rumors Table
+    kind: tbl
+    why_needed: Rumors table for the Hoard of the Sea Wolf King adventure on page 51.
+  - proposed_id: tbl_sea_caves_random_encounters
+    proposed_label: Sea Caves Random Encounters Table
+    kind: tbl
+    why_needed: Random encounter generation table for the Sea Caves dungeon on page 52.
+  - proposed_id: tbl_sea_wolf_plunder
+    proposed_label: Sea Wolf Plunder Table
+    kind: tbl
+    why_needed: Special plunder treasure table on page 68.
+
+candidate_edges:
+  - ref: M001
+    source_id: rule_encounter
+    source_label: Encounter
+    edge_type: RESOLVED_BY
+    target_id: tbl_sea_caves_random_encounters
+    target_label: Sea Caves Random Encounters Table
+    aspect: dungeon encounter determination
+    condition: when random encounter occurs in sea caves
+    polarity: governs
+    polarity_basis: derived
+    book: CS3
+    page: 52
+    section: RANDOM ENCOUNTERS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+  - ref: M002
+    source_id: rule_treasure
+    source_label: Treasure
+    edge_type: RESOLVED_BY
+    target_id: tbl_sea_wolf_plunder
+    target_label: Sea Wolf Plunder Table
+    aspect: plunder treasure determination
+    condition: when rolling sea wolf plunder
+    polarity: governs
+    polarity_basis: derived
+    book: CS3
+    page: 68
+    section: SEA WOLF PLUNDER FROM DISTANT LANDS TABLE
+    evidence: explicit_rule
+    pass: '1'
+    status: optional
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
