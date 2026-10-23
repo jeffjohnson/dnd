@@ -1,0 +1,303 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20261023-021",
+  "ruleset_id": "basicdnd",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-10-23T13:45:37.844Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:aa82c34f04df63931ed05a41fce20f805876b7a6f4cbb03ac4e5815c78ab2abe actual=sha256:aa82c34f04df63931ed05a41fce20f805876b7a6f4cbb03ac4e5815c78ab2abe"
+        },
+        {
+          "check": "component checksum matches: books/basicdnd/rc/artifacts/approved/APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:bca339c189ea2f2b5c321f67b20ca0cb66e33632d74212addb54406bf2ba62ea actual=sha256:bca339c189ea2f2b5c321f67b20ca0cb66e33632d74212addb54406bf2ba62ea"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-RC-059-061-magical-spells-level-9-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:955a32282f30fd2805a8164b172b1cd5cc4c62943523f50f44b6adcd9dee39b8 actual=sha256:955a32282f30fd2805a8164b172b1cd5cc4c62943523f50f44b6adcd9dee39b8"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/basicdnd/rc/artifacts/gup/GUP-PKT-RC-059-061-magical-spells-level-9-r01.yaml: declared=sha256:de8a4cda19f429c32fcc2678803885dab282c38a89fd53539c1fba6c8aac0748 actual=sha256:de8a4cda19f429c32fcc2678803885dab282c38a89fd53539c1fba6c8aac0748"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=35 actual=35"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 2, 'pending_additions': 33, 'updates': 0, 'node_registrations': 12}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 719,
+    "edges_after": 754,
+    "edges_updated_in_place": 0,
+    "nodes_before": 261,
+    "nodes_after": 273,
+    "registry_before": 261,
+    "registry_after": 273,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "spell_contingency",
+        "label": "Contingency",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      },
+      {
+        "id": "spell_create_any_monster",
+        "label": "Create Any Monster",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      },
+      {
+        "id": "spell_gate",
+        "label": "Gate",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      },
+      {
+        "id": "spell_close_gate",
+        "label": "Close Gate",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      },
+      {
+        "id": "spell_heal",
+        "label": "Heal",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      },
+      {
+        "id": "spell_immunity",
+        "label": "Immunity",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      },
+      {
+        "id": "spell_maze",
+        "label": "Maze",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      },
+      {
+        "id": "spell_meteor_swarm",
+        "label": "Meteor Swarm",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      },
+      {
+        "id": "spell_power_word_kill",
+        "label": "Power Word Kill",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      },
+      {
+        "id": "spell_prismatic_wall",
+        "label": "Prismatic Wall",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      },
+      {
+        "id": "spell_shapechange",
+        "label": "Shapechange",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      },
+      {
+        "id": "spell_timestop",
+        "label": "Timestop",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-059-061-magical-spells-level-9-r01-r01",
+        "integration_id": "INT-20261023-021"
+      }
+    ],
+    "registry_derived_resync": 12,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}
