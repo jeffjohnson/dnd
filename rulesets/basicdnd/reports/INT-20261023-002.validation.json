@@ -1,0 +1,543 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20261023-002",
+  "ruleset_id": "basicdnd",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-10-23T04:32:55.733Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:4ad595a122b5db92854a7d0ff2d4807aa7f616229386521e6e045dc1553b5560 actual=sha256:4ad595a122b5db92854a7d0ff2d4807aa7f616229386521e6e045dc1553b5560"
+        },
+        {
+          "check": "component checksum matches: books/basicdnd/rc/artifacts/approved/APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:97a40afa34b2f659b3c9501df2c5b9befad5c1f58745e0feff6a965408d7d3a1 actual=sha256:97a40afa34b2f659b3c9501df2c5b9befad5c1f58745e0feff6a965408d7d3a1"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-RC-006-012-steps-in-character-creation-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:49b8a7d7061d6deb75740838054f0296f8ab30607b99c47a55f45e8311bb4a77 actual=sha256:49b8a7d7061d6deb75740838054f0296f8ab30607b99c47a55f45e8311bb4a77"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/basicdnd/rc/artifacts/gup/GUP-PKT-RC-006-012-steps-in-character-creation-r01.yaml: declared=sha256:9fd4bd9e7e869f60accd7bcc4a889b28ca32d75ce91449aa10f61094f3d2b215 actual=sha256:9fd4bd9e7e869f60accd7bcc4a889b28ca32d75ce91449aa10f61094f3d2b215"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=61 actual=61"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 0, 'pending_additions': 61, 'updates': 0, 'node_registrations': 36}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 0,
+    "edges_after": 61,
+    "edges_updated_in_place": 0,
+    "nodes_before": 0,
+    "nodes_after": 36,
+    "registry_before": 0,
+    "registry_after": 36,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "abil_strength",
+        "label": "Strength",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "abil_intelligence",
+        "label": "Intelligence",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "abil_wisdom",
+        "label": "Wisdom",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "abil_dexterity",
+        "label": "Dexterity",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "abil_constitution",
+        "label": "Constitution",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "abil_charisma",
+        "label": "Charisma",
+        "kind": "abil",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "class_cleric",
+        "label": "Cleric",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "class_fighter",
+        "label": "Fighter",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "class_magic_user",
+        "label": "Magic-User",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "class_thief",
+        "label": "Thief",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "class_dwarf",
+        "label": "Dwarf",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "class_elf",
+        "label": "Elf",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "class_halfling",
+        "label": "Halfling",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "class_druid",
+        "label": "Druid",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "class_mystic",
+        "label": "Mystic",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "cbt_hit_points",
+        "label": "Hit Points",
+        "kind": "cbt",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "sys_equipment",
+        "label": "Equipment",
+        "kind": "sys",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "thief_open_locks",
+        "label": "Open Locks",
+        "kind": "thief",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "cbt_armor_class",
+        "label": "Armor Class",
+        "kind": "cbt",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "cbt_attack_roll",
+        "label": "Attack Rolls",
+        "kind": "cbt",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "exp_level",
+        "label": "Experience Level",
+        "kind": "exp",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "save_poison_or_death_ray",
+        "label": "Save vs Poison or Death Ray",
+        "kind": "save",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "save_magic_wand",
+        "label": "Save vs Magic Wand",
+        "kind": "save",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "save_paralysis_or_turn_to_stone",
+        "label": "Save vs Paralysis or Turn to Stone",
+        "kind": "save",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "save_dragon_breath",
+        "label": "Save vs Dragon Breath",
+        "kind": "save",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "save_spells_or_magic_staff",
+        "label": "Save vs Spells or Magic Staff",
+        "kind": "save",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "cbt_damage",
+        "label": "Damage",
+        "kind": "cbt",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "rule_open_doors",
+        "label": "Open Doors",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "rule_languages",
+        "label": "Languages",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "prof_general_skill",
+        "label": "General Skills",
+        "kind": "prof",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "rule_npc_reactions",
+        "label": "NPC Reactions",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "hench_retainers_max",
+        "label": "Maximum Retainers",
+        "kind": "hench",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "hench_retainer_morale",
+        "label": "Retainer Morale",
+        "kind": "hench",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "sys_alignment",
+        "label": "Alignment",
+        "kind": "sys",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "rule_alignment_language",
+        "label": "Alignment Languages",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      },
+      {
+        "id": "exp_points",
+        "label": "Experience Points",
+        "kind": "exp",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-006-012-steps-in-character-creation-r01-r01",
+        "integration_id": "INT-20261023-002"
+      }
+    ],
+    "registry_derived_resync": 0,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}
