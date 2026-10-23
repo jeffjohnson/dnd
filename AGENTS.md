@@ -2,19 +2,12 @@
 
 This repository builds ruleset-specific mechanical relationship graphs.
 
-## Current Owner Scope: NO RC
+## Current Owner Scope: Basic D&D Rules Cyclopedia
 
-**DEC-2026-0086: `basicdnd/rc` is explicitly paused by the owner.**
-Do not claim, extract, build, review, integrate, repair, or finish RC packets.
-This includes existing claims. Do not generate withdrawal GURs or cleanup work
-merely to clear RC queue entries. Preserve source and published history.
+Owner instruction on 2026-10-22 explicitly authorized beginning work on
+Basic D&D Rules Cyclopedia (`basicdnd/rc`), lifting the DEC-2026-0086 pause.
+Rules Cyclopedia is now an active processing priority.
 
-Shadowdark is the current processing priority. Raw scanner RC entries are
-owner-paused candidates, not executable assignments. Exclude RC from every
-next-work selection and herdr handoff. Uploads, reappearing files, claims,
-earlier Decisions, and previous plans do not resume RC. Only a new explicit
-owner instruction authorizing RC work can lift this hold. Stop notifications
-authorize acknowledgment only, not normal processing or a corpus scan.
 
 ## Required startup
 

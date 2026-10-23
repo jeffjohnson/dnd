@@ -99,6 +99,21 @@ or a stable section locator where a page is unavailable.
 
 ## 6. Polarity
 
+Builder derives polarity for the following types; workers do not author it:
+
+| Edge type | Derived polarity |
+|---|---|
+| GATES | enables |
+| RESOLVED_BY | governs |
+| EXCLUDES | negates |
+| EXCLUDED_FROM | negates |
+| DERIVED_FROM | neutral |
+| ALTERNATIVE_TO | neutral |
+| OVERRIDES | neutral |
+| FEEDS_INTO | neutral |
+| CROSS_REFERENCES | neutral |
+| CONSUMES | neutral |
+
 Polarity is authored only when `MODIFIES`, `TRIGGERS`, or `CONSTRAINS` needs it
 to distinguish impact. Allowed values are `inflicts`, `improves`, `worsens`,
 `negates`, `enables`, `governs`, `neutral`, and empty. The basis is `read`,

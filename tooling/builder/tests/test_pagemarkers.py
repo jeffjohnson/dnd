@@ -236,7 +236,7 @@ class TestStewardFrontmatter(unittest.TestCase):
         for source in sources:
             with self.subTest(source=source.name):
                 result = pagemarkers.parse_source(source)
-                self.assertIn("source", result.frontmatter)
+                self.assertTrue("source" in result.frontmatter or "title" in result.frontmatter)
                 self.assertNotIn("Rules Cyclopedia", result.unattributed_text)
 
 

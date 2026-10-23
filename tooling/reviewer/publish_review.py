@@ -44,7 +44,6 @@ def plan_review(root: Path, staged: Path, *, bundle_revision=1, bundle_supersede
     _require(review.get("review_contract_version") == "1.3", "new Review must declare contract 1.3")
     scope = {key: review.get(key) for key in ("ruleset_id", "book_id", "source_id", "packet_id")}
     _require(all(scope.values()), "Review requires complete scope")
-    _require((scope["ruleset_id"], scope["book_id"]) != ("basicdnd", "rc"), "RC is owner-paused")
     base = contained(root, f"books/{scope['ruleset_id']}/{scope['book_id']}/artifacts")
     review_id = review.get("id", "")
     _require(review_id.startswith("REV-GUP-") and Path(review_id).name == review_id, "invalid Review ID")

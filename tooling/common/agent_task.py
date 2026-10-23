@@ -52,13 +52,13 @@ def merge_pins(expected, observed):
 
 def scoped(root: Path, ruleset: str, book: str | None):
     role_context.validate_scope("analyst", ruleset, book)
-    require((ruleset, book) != ("basicdnd", "rc"), "NO RC: basicdnd/rc is owner-paused")
     manifest = load_mapping(contained(root, f"rulesets/{ruleset}/ruleset.yaml"))
     require(manifest.get("ruleset_id") == ruleset, "ruleset manifest mismatch")
     if book:
         book_manifest = load_mapping(contained(root, f"books/{ruleset}/{book}/book.yaml"))
         require(book_manifest.get("ruleset_id") == ruleset and book_manifest.get("book_id") == book,
                 "book manifest mismatch")
+        require(book_manifest.get("status") != "paused", f"{ruleset}/{book} is paused")
     return manifest
 
 
