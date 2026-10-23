@@ -1,0 +1,223 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20261023-004",
+  "ruleset_id": "basicdnd",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-10-23T04:47:06.582Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-RC-016-019-the-character-classes-fighter-r01-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:d5e44c2bffdf44fe9c766a895dc71faa2cd9ad2020f18d76ceb44db4bac770e2 actual=sha256:d5e44c2bffdf44fe9c766a895dc71faa2cd9ad2020f18d76ceb44db4bac770e2"
+        },
+        {
+          "check": "component checksum matches: books/basicdnd/rc/artifacts/approved/APPROVED-GUP-PKT-RC-016-019-the-character-classes-fighter-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:7e0a2ded8a66254bafbb6f7b398dce43634436b88ffcee099f2f81b0159520e0 actual=sha256:7e0a2ded8a66254bafbb6f7b398dce43634436b88ffcee099f2f81b0159520e0"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-RC-016-019-the-character-classes-fighter-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:0e6432aa39c812f862f2110c048a9edf1fc288e6d9e759aea4342596faeffce1 actual=sha256:0e6432aa39c812f862f2110c048a9edf1fc288e6d9e759aea4342596faeffce1"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/basicdnd/rc/artifacts/gup/GUP-PKT-RC-016-019-the-character-classes-fighter-r01.yaml: declared=sha256:bcea98a011b5625825f11ae137b72fdb1dacadd3e1d804eb0dc98e32eb08623c actual=sha256:bcea98a011b5625825f11ae137b72fdb1dacadd3e1d804eb0dc98e32eb08623c"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=29 actual=29"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 12, 'pending_additions': 17, 'updates': 0, 'node_registrations': 4}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 76,
+    "edges_after": 105,
+    "edges_updated_in_place": 0,
+    "nodes_before": 40,
+    "nodes_after": 44,
+    "registry_before": 40,
+    "registry_after": 44,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "class_paladin",
+        "label": "Paladin",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-016-019-the-character-classes-fighter-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-016-019-the-character-classes-fighter-r01-r01",
+        "integration_id": "INT-20261023-004"
+      },
+      {
+        "id": "class_knight",
+        "label": "Knight",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-016-019-the-character-classes-fighter-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-016-019-the-character-classes-fighter-r01-r01",
+        "integration_id": "INT-20261023-004"
+      },
+      {
+        "id": "class_avenger",
+        "label": "Avenger",
+        "kind": "class",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-016-019-the-character-classes-fighter-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-016-019-the-character-classes-fighter-r01-r01",
+        "integration_id": "INT-20261023-004"
+      },
+      {
+        "id": "rule_detect_evil",
+        "label": "Detect Evil",
+        "kind": "rule",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-016-019-the-character-classes-fighter-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-016-019-the-character-classes-fighter-r01-r01",
+        "integration_id": "INT-20261023-004"
+      }
+    ],
+    "registry_derived_resync": 13,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}
