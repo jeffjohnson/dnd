@@ -1,0 +1,374 @@
+schema_version: '1.0'
+id: GUR-PKT-RC-013-016-the-character-classes-cleric-r01
+status: proposed
+ruleset_id: basicdnd
+book_id: rc
+source_id: rc-steward-intake
+packet_id: PKT-RC-013-016-the-character-classes-cleric
+constitution_version: '1.0'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: Analyst extraction complete for Chapter 2 Cleric class (pages 13-16).
+  blocking_ids: []
+authority:
+  - contracts/SOURCE_MARKDOWN.md
+  - contracts/WORK_QUEUES.md
+  - contracts/ARTIFACT_LIFECYCLE.md
+  - contracts/GRAPH_INVARIANTS.md
+  - contracts/ESCALATION_CONTRACT.md
+  - contracts/HERDR_HANDOFFS.md
+  - rulesets/basicdnd/governance/constitution.md 1.0
+  - rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+packet_provenance:
+  packet_path: books/basicdnd/rc/packets/claimed/PKT-RC-013-016-the-character-classes-cleric
+  source_file: source.md
+  packet_source_checksum: sha256:16572065ef93a4fc9fe682b3f401572de6698999c258f5b1c4f56d2672523e3c
+  original_filename: RC_pages_13-16.md
+  citation_code: RC
+  page_start: 13
+  page_end: 16
+  page_number_basis: packet_page_markers
+page_attribution_basis: Four printed page markers (p13 through p16) parsed from source markdown.
+page_class_treatment: Standard content pages with no artwork-only exclusions.
+scope_boundary: Covers Chapter 2, The Character Classes introduction and the Cleric class, including experience progression, spell slots, saving throw tables, weapon/armor restrictions, turning undead, and Name level stronghold options.
+source_summary: Extraction of Cleric class mechanics. Establishes turning undead, cleric spellcasting, stronghold establishment, weapon restrictions, saving throw progression, and hit point ceiling rules.
+candidate_nodes:
+  - proposed_id: rule_turn_undead
+    proposed_label: Turning Undead
+    kind: rule
+    why_needed: Clerical special ability allowing a cleric to force undead monsters to retreat or be destroyed.
+    edges_depending_on_it:
+      - M001
+      - M002
+      - M003
+  - proposed_id: monster_undead
+    proposed_label: Undead
+    kind: monster
+    why_needed: Monster family category subject to the turning undead procedure.
+    edges_depending_on_it:
+      - M003
+  - proposed_id: rule_cleric_spells
+    proposed_label: Cleric Spells
+    kind: rule
+    why_needed: Clerical spellcasting progression and spell power system.
+    edges_depending_on_it:
+      - M004
+      - M005
+      - M006
+  - proposed_id: rule_stronghold
+    proposed_label: Stronghold
+    kind: rule
+    why_needed: Sanctioned clerical stronghold establishment at Name level.
+    edges_depending_on_it:
+      - M014
+      - M015
+reused_nodes:
+  - class_cleric
+  - exp_level
+  - cbt_hit_points
+  - abil_constitution
+  - sys_equipment
+  - save_poison_or_death_ray
+  - save_magic_wand
+  - save_paralysis_or_turn_to_stone
+  - save_dragon_breath
+  - save_spells_or_magic_staff
+cross_packet_candidate_targets: []
+candidate_general_rules: []
+domains_touched:
+  - character classes
+  - combat
+candidate_domains: []
+domain_boundary_questions: []
+candidate_edges:
+  - ref: M001
+    source_id: class_cleric
+    source_label: Cleric
+    edge_type: GATES
+    target_id: rule_turn_undead
+    target_label: Turning Undead
+    aspect: special ability
+    condition: cleric class ability
+    book: RC
+    page: 14
+    section: Turning Undead
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Cleric class grants the special ability to turn undead monsters.
+  - ref: M002
+    source_id: exp_level
+    source_label: Experience Level
+    edge_type: MODIFIES
+    target_id: rule_turn_undead
+    target_label: Turning Undead
+    aspect: turning progression
+    condition: advancing cleric level
+    polarity: improves
+    polarity_basis: read
+    book: RC
+    page: 14
+    section: Turning Undead Table
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Higher experience level improves turning chances and results against undead.
+  - ref: M003
+    source_id: rule_turn_undead
+    source_label: Turning Undead
+    edge_type: TRIGGERS
+    target_id: monster_undead
+    target_label: Undead
+    aspect: turning attempt
+    condition: encountering undead monsters
+    polarity: inflicts
+    polarity_basis: read
+    book: RC
+    page: 14
+    section: Turning Undead
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Turning undead attempt causes undead monsters to flee or be destroyed.
+  - ref: M004
+    source_id: class_cleric
+    source_label: Cleric
+    edge_type: GATES
+    target_id: rule_cleric_spells
+    target_label: Cleric Spells
+    aspect: spellcasting ability
+    condition: cleric class ability
+    book: RC
+    page: 15
+    section: Using Clerical Spells
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Cleric class grants the ability to meditate for and cast clerical spells.
+  - ref: M005
+    source_id: exp_level
+    source_label: Experience Level
+    edge_type: GATES
+    target_id: rule_cleric_spells
+    target_label: Cleric Spells
+    aspect: spellcasting prerequisite
+    condition: minimum level requirement
+    book: RC
+    page: 15
+    section: Using Clerical Spells
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Clerics gain the ability to cast spells starting at second experience level.
+  - ref: M006
+    source_id: exp_level
+    source_label: Experience Level
+    edge_type: MODIFIES
+    target_id: rule_cleric_spells
+    target_label: Cleric Spells
+    aspect: spell slot progression
+    condition: advancing cleric level
+    polarity: improves
+    polarity_basis: read
+    book: RC
+    page: 14
+    section: Cleric Experience Table
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Higher experience level grants additional spell slots and higher spell levels.
+  - ref: M007
+    source_id: class_cleric
+    source_label: Cleric
+    edge_type: MODIFIES
+    target_id: save_poison_or_death_ray
+    target_label: Save vs Poison or Death Ray
+    aspect: saving throw progression
+    condition: cleric save table
+    polarity: improves
+    polarity_basis: read
+    book: RC
+    page: 14
+    section: Cleric Saving Throws
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Cleric saving throw progression table governs saving throw thresholds.
+  - ref: M008
+    source_id: class_cleric
+    source_label: Cleric
+    edge_type: MODIFIES
+    target_id: save_magic_wand
+    target_label: Save vs Magic Wand
+    aspect: saving throw progression
+    condition: cleric save table
+    polarity: improves
+    polarity_basis: read
+    book: RC
+    page: 14
+    section: Cleric Saving Throws
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Cleric saving throw progression table governs saving throw thresholds.
+  - ref: M009
+    source_id: class_cleric
+    source_label: Cleric
+    edge_type: MODIFIES
+    target_id: save_paralysis_or_turn_to_stone
+    target_label: Save vs Paralysis or Turn to Stone
+    aspect: saving throw progression
+    condition: cleric save table
+    polarity: improves
+    polarity_basis: read
+    book: RC
+    page: 14
+    section: Cleric Saving Throws
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Cleric saving throw progression table governs saving throw thresholds.
+  - ref: M010
+    source_id: class_cleric
+    source_label: Cleric
+    edge_type: MODIFIES
+    target_id: save_dragon_breath
+    target_label: Save vs Dragon Breath
+    aspect: saving throw progression
+    condition: cleric save table
+    polarity: improves
+    polarity_basis: read
+    book: RC
+    page: 14
+    section: Cleric Saving Throws
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Cleric saving throw progression table governs saving throw thresholds.
+  - ref: M011
+    source_id: class_cleric
+    source_label: Cleric
+    edge_type: MODIFIES
+    target_id: save_spells_or_magic_staff
+    target_label: Save vs Spells or Magic Staff
+    aspect: saving throw progression
+    condition: cleric save table
+    polarity: improves
+    polarity_basis: read
+    book: RC
+    page: 14
+    section: Cleric Saving Throws
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Cleric saving throw progression table governs saving throw thresholds.
+  - ref: M012
+    source_id: class_cleric
+    source_label: Cleric
+    edge_type: CONSTRAINS
+    target_id: sys_equipment
+    target_label: Equipment
+    aspect: weapon restrictions
+    condition: edged or pointed weapons
+    polarity: worsens
+    polarity_basis: read
+    book: RC
+    page: 14
+    section: Class Details
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Clerics are prohibited by religious belief from using edged or pointed weapons.
+  - ref: M013
+    source_id: abil_constitution
+    source_label: Constitution
+    edge_type: EXCLUDED_FROM
+    target_id: cbt_hit_points
+    target_label: Hit Points
+    aspect: hit point adjustment
+    condition: levels above name level
+    book: RC
+    page: 14
+    section: Class Details
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Constitution adjustment does not apply to fixed hit points gained after name level.
+  - ref: M014
+    source_id: exp_level
+    source_label: Experience Level
+    edge_type: GATES
+    target_id: rule_stronghold
+    target_label: Stronghold
+    aspect: stronghold eligibility
+    condition: reaching name level
+    book: RC
+    page: 15
+    section: Higher Experience Levels
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Reaching name level is a prerequisite to build a sanctioned stronghold.
+  - ref: M015
+    source_id: class_cleric
+    source_label: Cleric
+    edge_type: GATES
+    target_id: rule_stronghold
+    target_label: Stronghold
+    aspect: stronghold establishment
+    condition: clerical order sanction
+    book: RC
+    page: 16
+    section: Becoming a Land Owner
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Clerical order sanction and leadership grant the right to establish an official stronghold.
