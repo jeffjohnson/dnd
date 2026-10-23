@@ -1,0 +1,463 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20261023-015",
+  "ruleset_id": "basicdnd",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-10-23T13:10:16.150Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:c2a641178aadfc2b151e5a516aa4d5b46fd47d3b8e6aa228ef1bd7dce139a671 actual=sha256:c2a641178aadfc2b151e5a516aa4d5b46fd47d3b8e6aa228ef1bd7dce139a671"
+        },
+        {
+          "check": "component checksum matches: books/basicdnd/rc/artifacts/approved/APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:4e29f4256362779cde74d248fd3780370866cfbe6d83793a22f991ea7b2425b1 actual=sha256:4e29f4256362779cde74d248fd3780370866cfbe6d83793a22f991ea7b2425b1"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-RC-041-043-druidic-spells-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:138fdf84eaaa1f2d0e5e5ae126e792f12f039c7686e9f055ae72f470cb4d2f08 actual=sha256:138fdf84eaaa1f2d0e5e5ae126e792f12f039c7686e9f055ae72f470cb4d2f08"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/basicdnd/rc/artifacts/gup/GUP-PKT-RC-041-043-druidic-spells-r01.yaml: declared=sha256:cafc7c3a02d01589136e35ab34587d25d45195e878ad17af69156605efec6022 actual=sha256:cafc7c3a02d01589136e35ab34587d25d45195e878ad17af69156605efec6022"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=62 actual=62"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 0, 'pending_additions': 62, 'updates': 0, 'node_registrations': 28}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 394,
+    "edges_after": 456,
+    "edges_updated_in_place": 0,
+    "nodes_before": 129,
+    "nodes_after": 157,
+    "registry_before": 129,
+    "registry_after": 157,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "spell_detect_danger",
+        "label": "Detect Danger",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_faerie_fire",
+        "label": "Faerie Fire",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_locate",
+        "label": "Locate",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_predict_weather",
+        "label": "Predict Weather",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_heat_metal",
+        "label": "Heat Metal",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_obscure",
+        "label": "Obscure",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_produce_fire",
+        "label": "Produce Fire",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_warp_wood",
+        "label": "Warp Wood",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_call_lightning",
+        "label": "Call Lightning",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_hold_animal",
+        "label": "Hold Animal",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_protection_from_poison",
+        "label": "Protection from Poison",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_water_breathing",
+        "label": "Water Breathing",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_control_temperature_10_radius",
+        "label": "Control Temperature 10' Radius",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_plant_door",
+        "label": "Plant Door",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_protection_from_lightning",
+        "label": "Protection from Lightning",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_summon_animals",
+        "label": "Summon Animals",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_anti_plant_shell",
+        "label": "Anti-Plant Shell",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_control_winds",
+        "label": "Control Winds",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_dissolve",
+        "label": "Dissolve",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_pass_plant",
+        "label": "Pass Plant",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_anti_animal_shell",
+        "label": "Anti-Animal Shell",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_summon_weather",
+        "label": "Summon Weather",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_transport_through_plants",
+        "label": "Transport Through Plants",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_turn_wood",
+        "label": "Turn Wood",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_creeping_doom",
+        "label": "Creeping Doom",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_metal_to_wood",
+        "label": "Metal to Wood",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_summon_elemental",
+        "label": "Summon Elemental",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      },
+      {
+        "id": "spell_weather_control",
+        "label": "Weather Control",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-041-043-druidic-spells-r01-r01",
+        "integration_id": "INT-20261023-015"
+      }
+    ],
+    "registry_derived_resync": 9,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}
