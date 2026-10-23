@@ -1,0 +1,290 @@
+schema_version: '1.0'
+id: GUR-PKT-RC-032-034-spells-and-spellcasting-r01
+status: proposed
+ruleset_id: basicdnd
+book_id: rc
+source_id: rc-steward-intake
+packet_id: PKT-RC-032-034-spells-and-spellcasting
+constitution_version: '1.0'
+revision: 1
+supersedes: null
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: Analyst extraction complete for Chapter 3 Spells and Spellcasting introduction (pages 32-34).
+  blocking_ids: []
+authority:
+  - contracts/SOURCE_MARKDOWN.md
+  - contracts/WORK_QUEUES.md
+  - contracts/ARTIFACT_LIFECYCLE.md
+  - contracts/GRAPH_INVARIANTS.md
+  - contracts/ESCALATION_CONTRACT.md
+  - contracts/HERDR_HANDOFFS.md
+  - rulesets/basicdnd/governance/constitution.md 1.0
+  - rulesets/basicdnd/escalations/decisions/DEC-2026-0080.yaml
+packet_provenance:
+  packet_path: books/basicdnd/rc/packets/claimed/PKT-RC-032-034-spells-and-spellcasting
+  source_file: source.md
+  packet_source_checksum: sha256:13e51711dac996f7856f3099c5424faf677a36d64be41776f0100c32e6eaa728
+  original_filename: RC_pages_32-34.md
+  citation_code: RC
+  page_start: 32
+  page_end: 34
+  page_number_basis: packet_page_markers
+page_attribution_basis: Three printed page markers (p32 through p34) parsed from source markdown.
+page_class_treatment: Standard content pages with no artwork-only exclusions.
+scope_boundary: Covers Chapter 3 Spells and Spellcasting introductory rules, memorization procedures, rest requirements, spell slot capacity, casting procedures, spell disruption from damage, damage caps, saving throw reduction, reversible spells, and spell list structures.
+source_summary: Extraction of general spellcasting mechanics. Establishes spell memorization and rest prerequisites, casting disruption from damage, twenty-die spell damage cap, damage reduction on saving throws, reversible spell rules and alignment tendencies, and integration of clerical, druidic, and magical spell lists into casting.
+candidate_nodes:
+  - proposed_id: rule_spellcasting
+    proposed_label: Spellcasting
+    kind: rule
+    why_needed: General spellcasting procedures, concentration, components, interruption, and limits.
+    edges_depending_on_it:
+      - M001
+      - M002
+      - M003
+      - M004
+      - M005
+      - M011
+  - proposed_id: rule_spell_memorization
+    proposed_label: Spell Memorization
+    kind: rule
+    why_needed: Daily spell preparation process via study of spell books or meditation after rest.
+    edges_depending_on_it:
+      - M003
+      - M006
+      - M007
+      - M008
+  - proposed_id: rule_reversible_spells
+    proposed_label: Reversible Spells
+    kind: rule
+    why_needed: Mechanics and alignment constraints for casting reversible spells.
+    edges_depending_on_it:
+      - M008
+      - M009
+reused_nodes:
+  - cbt_damage
+  - exp_level
+  - sys_equipment
+  - sys_alignment
+  - save_spells_or_magic_staff
+  - rule_cleric_spells
+  - rule_magic_user_spells
+  - rule_druid_spells
+cross_packet_candidate_targets: []
+candidate_general_rules: []
+domains_touched:
+  - magic
+  - combat
+candidate_domains: []
+domain_boundary_questions: []
+candidate_edges:
+  - ref: M001
+    source_id: cbt_damage
+    source_label: Damage
+    edge_type: TRIGGERS
+    target_id: rule_spellcasting
+    target_label: Spellcasting
+    aspect: casting interruption
+    condition: damage taken during casting
+    polarity: worsens
+    polarity_basis: read
+    book: RC
+    page: 32
+    section: Casting Spells
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Taking damage or disturbance while casting ruins the spell and erases it from memory.
+  - ref: M002
+    source_id: rule_spellcasting
+    source_label: Spellcasting
+    edge_type: CONSTRAINS
+    target_id: cbt_damage
+    target_label: Damage
+    aspect: spell damage cap
+    condition: maximum spell damage dice
+    polarity: worsens
+    polarity_basis: read
+    book: RC
+    page: 32
+    section: Casting Spells
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Maximum damage produced by any single spell is capped at twenty dice.
+  - ref: M003
+    source_id: rule_spell_memorization
+    source_label: Spell Memorization
+    edge_type: GATES
+    target_id: rule_spellcasting
+    target_label: Spellcasting
+    aspect: prepared spell requirement
+    condition: memorized or meditated spells
+    book: RC
+    page: 32
+    section: Memorizing Spells
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: A spellcaster can only cast spells that have been currently memorized or prepared.
+  - ref: M004
+    source_id: rule_cleric_spells
+    source_label: Cleric Spells
+    edge_type: FEEDS_INTO
+    target_id: rule_spellcasting
+    target_label: Spellcasting
+    aspect: clerical spellcasting
+    condition: casting clerical spells
+    book: RC
+    page: 32
+    section: Introduction to Spellcasting
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Clerical spells supply spell options and mechanics into the general spellcasting procedure.
+  - ref: M005
+    source_id: rule_magic_user_spells
+    source_label: Magic-User Spells
+    edge_type: FEEDS_INTO
+    target_id: rule_spellcasting
+    target_label: Spellcasting
+    aspect: magical spellcasting
+    condition: casting magical spells
+    book: RC
+    page: 32
+    section: Introduction to Spellcasting
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Magical spells supply spell options and mechanics into the general spellcasting procedure.
+  - ref: M006
+    source_id: exp_level
+    source_label: Experience Level
+    edge_type: MODIFIES
+    target_id: rule_spell_memorization
+    target_label: Spell Memorization
+    aspect: spell slot capacity
+    condition: advancing caster level
+    polarity: improves
+    polarity_basis: read
+    book: RC
+    page: 32
+    section: Number of Spells Known
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Experience level determines how many spells of each spell level a character can memorize at one time.
+  - ref: M007
+    source_id: sys_equipment
+    source_label: Equipment
+    edge_type: GATES
+    target_id: rule_spell_memorization
+    target_label: Spell Memorization
+    aspect: spell book requirement
+    condition: arcane spell preparation
+    book: RC
+    page: 32
+    section: Memorizing Spells
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Magic-users and elves require their spell books to memorize spells after resting.
+  - ref: M008
+    source_id: rule_spell_memorization
+    source_label: Spell Memorization
+    edge_type: GATES
+    target_id: rule_reversible_spells
+    target_label: Reversible Spells
+    aspect: reversed spell preparation
+    condition: arcane reversed memorization
+    book: RC
+    page: 33
+    section: Reversible Spells
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Magic-users must prepare and memorize reversible spells in reversed form to cast them reversed.
+  - ref: M009
+    source_id: sys_alignment
+    source_label: Alignment
+    edge_type: CONSTRAINS
+    target_id: rule_reversible_spells
+    target_label: Reversible Spells
+    aspect: alignment inclination
+    condition: reversed clerical casting
+    polarity: neutral
+    polarity_basis: read
+    book: RC
+    page: 34
+    section: Reversible Spells
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Lawful clerics avoid reversed casting except in extreme need while Chaotic clerics use reversed spells frequently.
+  - ref: M010
+    source_id: save_spells_or_magic_staff
+    source_label: Save vs Spells or Magic Staff
+    edge_type: MODIFIES
+    target_id: cbt_damage
+    target_label: Damage
+    aspect: damage reduction
+    condition: successful spell saving throw
+    polarity: worsens
+    polarity_basis: read
+    book: RC
+    page: 33
+    section: Saving Throws vs. Spells
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Successfully saving against a damaging spell reduces the damage inflicted.
+  - ref: M011
+    source_id: rule_druid_spells
+    source_label: Druid Spells
+    edge_type: FEEDS_INTO
+    target_id: rule_spellcasting
+    target_label: Spellcasting
+    aspect: druidic spellcasting
+    condition: casting druidic spells
+    book: RC
+    page: 32
+    section: Introduction to Spellcasting
+    evidence: explicit_rule
+    pass: page-sweep
+    status: core
+    supersession_basis: ''
+    general_rule_id: ''
+    review_flag: ''
+    analyst_rationale: Druidic spells supply spell options and mechanics into the general spellcasting procedure.
