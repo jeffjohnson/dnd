@@ -1,0 +1,503 @@
+{
+  "schema_version": "1.0",
+  "integration_id": "INT-20261023-013",
+  "ruleset_id": "basicdnd",
+  "tool": {
+    "name": "adnd1e-integrator",
+    "version": "1.0.0"
+  },
+  "generated_at_utc": "2026-10-23T12:49:08.687Z",
+  "preconditions": [
+    {
+      "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+      "checks": [
+        {
+          "check": "review disposition is approved",
+          "result": "pass",
+          "blocking": true,
+          "detail": "overall_disposition='approved'"
+        },
+        {
+          "check": "review status is approved and agrees with the disposition",
+          "result": "pass",
+          "blocking": true,
+          "detail": "status='approved' overall_disposition='approved'"
+        },
+        {
+          "check": "review is approval-ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approval_ready=True"
+        },
+        {
+          "check": "review reports no unresolved architectural escalation",
+          "result": "pass",
+          "blocking": true,
+          "detail": "0 open escalation(s)"
+        },
+        {
+          "check": "review approved no heuristic or unset polarity",
+          "result": "pass",
+          "blocking": true,
+          "detail": "invariant 16"
+        },
+        {
+          "check": "handoff routes to integrator and is ready",
+          "result": "pass",
+          "blocking": true,
+          "detail": "next_role='integrator' readiness='ready'"
+        },
+        {
+          "check": "handoff names no blocking id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "blocking_ids=[]"
+        },
+        {
+          "check": "manifest declares approves.review_id and gup_id",
+          "result": "pass",
+          "blocking": true,
+          "detail": "approved-bundle.schema.json required fields"
+        },
+        {
+          "check": "declared review checksum matches the Review on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:4964f9e1f120af59b8a9c86b059bb52c10dedef88e7d94c0b81696ac0cd0b705 actual=sha256:4964f9e1f120af59b8a9c86b059bb52c10dedef88e7d94c0b81696ac0cd0b705"
+        },
+        {
+          "check": "component checksum matches: books/basicdnd/rc/artifacts/approved/APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01.edges.csv",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:bc0489f09f35d01a1e80e57c0b99b3d869a0b9d846ed03fb431f9ad0a1091968 actual=sha256:bc0489f09f35d01a1e80e57c0b99b3d869a0b9d846ed03fb431f9ad0a1091968"
+        },
+        {
+          "check": "component checksum matches: build/reports/GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01.validation.json",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=sha256:9cd5cb3df5fd4dd8dfd505dfb41f882900d0e3d00b7877e4272d871ae50e4ff8 actual=sha256:9cd5cb3df5fd4dd8dfd505dfb41f882900d0e3d00b7877e4272d871ae50e4ff8"
+        },
+        {
+          "check": "review-pinned GUP YAML still matches on disk",
+          "result": "pass",
+          "blocking": true,
+          "detail": "books/basicdnd/rc/artifacts/gup/GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01.yaml: declared=sha256:c500a69d30799352312118691e4d73ba5517c8d9b5db8f594ed6e58ad10e2962 actual=sha256:c500a69d30799352312118691e4d73ba5517c8d9b5db8f594ed6e58ad10e2962"
+        },
+        {
+          "check": "artifact schema_version is 1.0",
+          "result": "pass",
+          "blocking": true,
+          "detail": "schema_version='1.0'"
+        },
+        {
+          "check": "edge CSV header matches the production columns",
+          "result": "pass",
+          "blocking": true,
+          "detail": "18 columns"
+        },
+        {
+          "check": "declared row count matches the CSV",
+          "result": "pass",
+          "blocking": true,
+          "detail": "declared=66 actual=66"
+        },
+        {
+          "check": "reviewer did not modify canonical files",
+          "result": "pass",
+          "blocking": true,
+          "detail": "canonical_files_modified=False"
+        },
+        {
+          "check": "operation index classifies every CSV row exactly once",
+          "result": "pass",
+          "blocking": true,
+          "detail": "{'additions': 0, 'pending_additions': 66, 'updates': 0, 'node_registrations': 32}"
+        }
+      ],
+      "blocking_failures": 0,
+      "advisories": 0
+    }
+  ],
+  "invariants": {
+    "checked": [
+      "1 endpoints exist",
+      "2 one canonical ID per node",
+      "3 approved prefix and snake_case",
+      "6 exact production columns",
+      "7 legal edge type",
+      "9 citation present",
+      "10 one evidence class",
+      "11 no magnitude in aspect/condition",
+      "12 no duplicate assertion identity",
+      "13/14/17 derived polarity owned by build",
+      "15/16 authored polarity resolved",
+      "18/19 general_rule_id gating",
+      "20 supersession_basis gating",
+      "22 derived roles match recomputation"
+    ],
+    "not_machine_checkable": [
+      "4 labels do not determine identity (advisory; IDs are compared everywhere)",
+      "5 rule/table separation requires source judgement (Reviewer)",
+      "8 direction follows the vocabulary requires source judgement (Reviewer)",
+      "21 provenance retention is checked against the integration manifest, not the CSV",
+      "23/24/25 governance invariants; no severity column exists to violate 25",
+      "26-32 workflow invariants enforced by role tooling and queue lineage"
+    ],
+    "baseline": {
+      "findings": 0,
+      "by_invariant": {},
+      "affected_rows": 0,
+      "note": "Defects already present in canonical state before this batch. They are carried forward, not accepted. DEC-2026-0004 owns the prefix findings; the polarity_basis findings await the legacy migration recorded in canonical/BASELINE.md."
+    },
+    "after_batch": {
+      "findings": 0,
+      "by_invariant": {}
+    },
+    "introduced_by_this_batch": 0,
+    "regressions": {},
+    "result": "pass"
+  },
+  "counts": {
+    "edges_before": 250,
+    "edges_after": 316,
+    "edges_updated_in_place": 0,
+    "nodes_before": 66,
+    "nodes_after": 98,
+    "registry_before": 66,
+    "registry_after": 98,
+    "declared_vs_actual": "match"
+  },
+  "operations": {
+    "compare_and_swap_updates": [],
+    "node_registrations": [
+      {
+        "id": "spell_cure_light_wounds",
+        "label": "Cure Light Wounds",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_detect_evil",
+        "label": "Detect Evil",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_detect_magic",
+        "label": "Detect Magic",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_light",
+        "label": "Light",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_protection_from_evil",
+        "label": "Protection from Evil",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_purify_food_and_water",
+        "label": "Purify Food and Water",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_remove_fear",
+        "label": "Remove Fear",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_resist_cold",
+        "label": "Resist Cold",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_bless",
+        "label": "Bless",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_find_traps",
+        "label": "Find Traps",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_hold_person",
+        "label": "Hold Person",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_know_alignment",
+        "label": "Know Alignment",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_resist_fire",
+        "label": "Resist Fire",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_silence_15_radius",
+        "label": "Silence 15' Radius",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_snake_charm",
+        "label": "Snake Charm",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_speak_with_animals",
+        "label": "Speak with Animals",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_continual_light",
+        "label": "Continual Light",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_cure_blindness",
+        "label": "Cure Blindness",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_cure_disease",
+        "label": "Cure Disease",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_growth_of_animal",
+        "label": "Growth of Animal",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_locate_object",
+        "label": "Locate Object",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_remove_curse",
+        "label": "Remove Curse",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_speak_with_the_dead",
+        "label": "Speak with the Dead",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_striking",
+        "label": "Striking",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_animate_dead",
+        "label": "Animate Dead",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_create_water",
+        "label": "Create Water",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_cure_serious_wounds",
+        "label": "Cure Serious Wounds",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_dispel_magic",
+        "label": "Dispel Magic",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_neutralize_poison",
+        "label": "Neutralize Poison",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_protection_from_evil_10_radius",
+        "label": "Protection from Evil 10' Radius",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_speak_with_plants",
+        "label": "Speak with Plants",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      },
+      {
+        "id": "spell_sticks_to_snakes",
+        "label": "Sticks to Snakes",
+        "kind": "spell",
+        "basis": "",
+        "edges_depending_on_it": [],
+        "bundle_id": "APPROVED-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "review_id": "REV-GUP-PKT-RC-034-037-clerical-spells-levels-1-4-r01-r01",
+        "integration_id": "INT-20261023-013"
+      }
+    ],
+    "registry_derived_resync": 15,
+    "registry_preexisting_drift": []
+  },
+  "derived_artifacts": {
+    "graph_json": "rebuilt from canonical tabular data",
+    "node_degrees": "recomputed for every node",
+    "node_roles": "recomputed for every node under roles-v1",
+    "reproducible": true
+  }
+}
