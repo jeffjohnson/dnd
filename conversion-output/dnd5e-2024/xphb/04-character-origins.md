@@ -1,16 +1,12 @@
+::: {#p176}
+:::
+
 # Chapter 4: Character Origins
-
-
-*[Source Page: 176]*
-
-
-![Not even a white dragon's wrath can chill these heroes of the Forgotten Realms: Laeral Silverhand, Drizzt Do'Urden, and Vajra Safahr](book/XPHB/127-05-001.laeral-drizzt-vajra.webp)
-
-*Image: Not even a white dragon's wrath can chill these heroes of the Forgotten Realms: Laeral Silverhand, Drizzt Do'Urden, and Vajra Safahr*
 
 This chapter describes the two components of an adventurer's origin: background and species. Together, these elements suggest your character's early experience and family origin before taking up the adventuring life and learning the capabilities of a class (described in chapter 3).
 
-*[Page 177]*
+::: {#p177}
+:::
 
 ## Origin Components
 
@@ -18,51 +14,35 @@ Each part of your character's origin reflects facets of your character, their li
 
 If you choose a background or a species from an older book, see the sidebar "Backgrounds and Species from Older Books" in chapter 2 for how to use them with the options here.
 
-*[Page 177]*
-
 ### Character Backgrounds
 
 Your character's background is a collection of characteristics that represent the place and occupation that were most formative before your character embarked on a life of adventure.
 
 Each background includes a brief narrative of what your character's past might have been like. Alter the details of this narrative however you like.
 
-*[Page 177]*
-
 #### Parts of a Background
 
 A background includes the following parts.
-
-*[Page 177]*
 
 ##### Ability Scores
 
 A background lists three of your character's ability scores. Increase one by 2 and another one by 1, or increase all three by 1. None of these increases can raise a score above 20.
 
-*[Page 177]*
-
 ##### Feat
 
 A background gives your character a specified Origin feat (described in chapter 5).
-
-*[Page 177]*
 
 ##### Skill Proficiencies
 
 A background gives your character proficiency in two specified skills.
 
-*[Page 177]*
-
 ##### Tool Proficiency
 
 Each background gives a character proficiency with one tool—either a specific tool or one chosen from the Artisan's Tools category. Tools are detailed in chapter 6.
 
-*[Page 177]*
-
 ##### Equipment
 
 Each background offers a choice between a package of equipment and 50 GP.
-
-*[Page 177]*
 
 ### Character Species
 
@@ -74,37 +54,25 @@ Some species can trace their origin to a single world, plane of existence, or go
 
 Members of most species live for about 80 years, with exceptions noted in the text about the species in this chapter. Regardless of life span, members of all species reach physical maturity at about the same age. Your character can be any age that isn't beyond their species' normal life span.
 
-*[Page 177]*
-
 #### Parts of a Species
 
 A species includes the following parts.
-
-*[Page 177]*
 
 ##### Creature Type
 
 A character's species determines the character's creature type, which is described in the rules glossary. Every species in this chapter is Humanoid; playable non-Humanoid species appear in other D&D books.
 
-*[Page 177]*
-
 ##### Size
 
 Your character's species determines the character's size. Individuals within a species cover a wide range of heights, and some species include such diversity of size that you can choose whether your character is Small or Medium.
-
-*[Page 177]*
 
 ##### Speed
 
 Your character's species determines the character's Speed.
 
-*[Page 177]*
-
 ##### Special Traits
 
 Each species gives a character special traits—unique characteristics based on the species' physiology or magical nature. When you choose a species, your character gets all the special traits listed for it. Some traits involve making a choice from a handful of options.
-
-*[Page 177]*
 
 ## Background Descriptions
 
@@ -127,7 +95,8 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 15. Soldier
 16. Wayfarer
 
-*[Page 178]*
+::: {#p178}
+:::
 
 ### Acolyte
 
@@ -141,7 +110,8 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Calligrapher's Supplies
 5. **Equipment.** Choose A or B: (A) Calligrapher's Supplies, Book (prayers), Holy Symbol, Parchment (10 sheets), Robe, 8 GP; or (B) 50 GP
 
-*[Page 179]*
+::: {#p179}
+:::
 
 ### Artisan
 
@@ -155,7 +125,8 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Choose one kind of Artisan's Tools
 5. **Equipment.** Choose A or B: (A) Artisan's Tools (same as above), 2 Pouches, Traveler's Clothes, 32 GP; or (B) 50 GP
 
-*[Page 180]*
+::: {#p180}
+:::
 
 ### Charlatan
 
@@ -169,8 +140,6 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Forgery Kit
 5. **Equipment.** Choose A or B: (A) Forgery Kit, Costume, Fine Clothes, 15 GP; or (B) 50 GP
 
-*[Page 180]*
-
 ### Criminal
 
 **Ability Scores:** Three of your choice (+2/+1 or +1/+1/+1)
@@ -182,8 +151,6 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 3. **Skill Proficiencies.** Sleight of Hand, Stealth
 4. **Tool Proficiency.** Thieves' Tools
 5. **Equipment.** Choose A or B: (A) 2 Daggers, Thieves' Tools, Crowbar, 2 Pouches, Traveler's Clothes, 16 GP; or (B) 50 GP
-
-*[Page 180]*
 
 ### Entertainer
 
@@ -197,8 +164,6 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Choose one kind of Musical Instrument
 5. **Equipment.** Choose A or B: (A) Musical Instrument (same as above), 2 Costumes, Mirror, Perfume, Traveler's Clothes, 11 GP; or (B) 50 GP
 
-*[Page 180]*
-
 ### Farmer
 
 **Ability Scores:** Three of your choice (+2/+1 or +1/+1/+1)
@@ -211,7 +176,8 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Carpenter's Tools
 5. **Equipment.** Choose A or B: (A) Sickle, Carpenter's Tools, Healer's Kit, Iron Pot, Shovel, Traveler's Clothes, 30 GP; or (B) 50 GP
 
-*[Page 181]*
+::: {#p181}
+:::
 
 ### Guard
 
@@ -225,8 +191,6 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Choose one kind of Gaming Set
 5. **Equipment.** Choose A or B: (A) Spear, Light Crossbow, 20 Bolts, Gaming Set (same as above), Hooded Lantern, Manacles, Quiver, Traveler's Clothes, 12 GP; or (B) 50 GP
 
-*[Page 181]*
-
 ### Guide
 
 **Ability Scores:** Three of your choice (+2/+1 or +1/+1/+1)
@@ -239,7 +203,8 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Cartographer's Tools
 5. **Equipment.** Choose A or B: (A) Shortbow, 20 Arrows, Cartographer's Tools, Bedroll, Quiver, Tent, Traveler's Clothes, 3 GP; or (B) 50 GP
 
-*[Page 182]*
+::: {#p182}
+:::
 
 ### Hermit
 
@@ -253,8 +218,6 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Herbalism Kit
 5. **Equipment.** Choose A or B: (A) Quarterstaff, Herbalism Kit, Bedroll, Book (philosophy), Lamp, Oil (3 flasks), Traveler's Clothes, 16 GP; or (B) 50 GP
 
-*[Page 182]*
-
 ### Merchant
 
 **Ability Scores:** Three of your choice (+2/+1 or +1/+1/+1)
@@ -267,7 +230,8 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Navigator's Tools
 5. **Equipment.** Choose A or B: (A) Navigator's Tools, 2 Pouches, Traveler's Clothes, 22 GP; or (B) 50 GP
 
-*[Page 183]*
+::: {#p183}
+:::
 
 ### Noble
 
@@ -281,8 +245,6 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Choose one kind of Gaming Set
 5. **Equipment.** Choose A or B: (A) Gaming Set (same as above), Fine Clothes, Perfume, 29 GP; or (B) 50 GP
 
-*[Page 183]*
-
 ### Sage
 
 **Ability Scores:** Three of your choice (+2/+1 or +1/+1/+1)
@@ -295,7 +257,8 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Calligrapher's Supplies
 5. **Equipment.** Choose A or B: (A) Quarterstaff, Calligrapher's Supplies, Book (history), Parchment (8 sheets), Robe, 8 GP; or (B) 50 GP
 
-*[Page 184]*
+::: {#p184}
+:::
 
 ### Sailor
 
@@ -309,8 +272,6 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Navigator's Tools
 5. **Equipment.** Choose A or B: (A) Dagger, Navigator's Tools, Rope, Traveler's Clothes, 20 GP; or (B) 50 GP
 
-*[Page 184]*
-
 ### Scribe
 
 **Ability Scores:** Three of your choice (+2/+1 or +1/+1/+1)
@@ -323,7 +284,8 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Calligrapher's Supplies
 5. **Equipment.** Choose A or B: (A) Calligrapher's Supplies, Fine Clothes, Lamp, Oil (3 flasks), Parchment (12 sheets), 23 GP; or (B) 50 GP
 
-*[Page 185]*
+::: {#p185}
+:::
 
 ### Soldier
 
@@ -337,8 +299,6 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Choose one kind of Gaming Set
 5. **Equipment.** Choose A or B: (A) Spear, Shortbow, 20 Arrows, Gaming Set (same as above), Healer's Kit, Quiver, Traveler's Clothes, 14 GP; or (B) 50 GP
 
-*[Page 185]*
-
 ### Wayfarer
 
 **Ability Scores:** Three of your choice (+2/+1 or +1/+1/+1)
@@ -351,15 +311,12 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 4. **Tool Proficiency.** Thieves' Tools
 5. **Equipment.** Choose A or B: (A) 2 Daggers, Thieves' Tools, Gaming Set (any), Bedroll, 2 Pouches, Traveler's Clothes, 16 GP; or (B) 50 GP
 
-*[Page 186]*
+::: {#p186}
+:::
 
 ## Species Descriptions
 
 Ten species are presented in this section in alphabetical order: Aasimar, Dragonborn, Dwarf, Elf, Gnome, Goliath, Halfling, Human, Orc, and Tiefling.
-
-![Illustration](book/XPHB/153-05-027.map-decoration.webp)
-
-*[Page 186]*
 
 ### Aasimar
 
@@ -394,7 +351,8 @@ Here are the transformation options:
 2. **Inner Radiance.** Searing light temporarily radiates from your eyes and mouth. For the duration, you shed Bright Light in a 10-foot radius and Dim Light for an additional 10 feet, and at the end of each of your turns, each creature within 10 feet of you takes Radiant damage equal to your Proficiency Bonus.
 3. **Necrotic Shroud.** Your eyes briefly become pools of darkness, and flightless wings sprout from your back temporarily. Creatures other than your allies within 10 feet of you must succeed on a Charisma saving throw (DC 8 plus your Charisma modifier and Proficiency Bonus) or have the Frightened condition until the end of your next turn.
 
-*[Page 187]*
+::: {#p187}
+:::
 
 ### Dragonborn
 
@@ -405,7 +363,7 @@ Here are the transformation options:
 
 Your lineage stems from a dragon progenitor. Choose the kind of dragon from the Draconic Ancestors table. Your choice affects your Breath Weapon and Damage Resistance traits as well as your appearance.
 
-**Table: Draconic Ancestors**
+##### Table: Draconic Ancestors
 
 | Dragon | Damage Type |
 | --- | --- |
@@ -438,7 +396,8 @@ You have Darkvision with a range of 60 feet.
 
 When you reach character level 5, you can channel draconic magic to give yourself temporary flight. As a Bonus Action, you sprout spectral wings on your back that last for 10 minutes or until you retract the wings (no action required) or have the Incapacitated condition. During that time, you have a Fly Speed equal to your Speed. Your wings appear to be made of the same energy as your Breath Weapon. Once you use this trait, you can't use it again until you finish a Long Rest.
 
-*[Page 188]*
+::: {#p188}
+:::
 
 ### Dwarf
 
@@ -463,7 +422,8 @@ As a Bonus Action, you gain Tremorsense with a range of 60 feet for 10 minutes. 
 
 You can use this Bonus Action a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.
 
-*[Page 189]*
+::: {#p189}
+:::
 
 ### Elf
 
@@ -482,7 +442,7 @@ When you reach character levels 3 and 5, you learn a higher-level spell, as show
 
 Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the lineage).
 
-**Table: Elven Lineages**
+##### Table: Elven Lineages
 
 | Lineage | Level 1 | Level 3 | Level 5 |
 | --- | --- | --- | --- |
@@ -502,7 +462,8 @@ You have proficiency in the Insight, Perception, or Survival skill.
 
 You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours if you spend those hours in a trancelike meditation, during which you retain consciousness.
 
-*[Page 191]*
+::: {#p191}
+:::
 
 ### Gnome
 
@@ -524,7 +485,8 @@ You are part of a lineage that grants you supernatural abilities. Choose one of 
 1. **Forest Gnome.** You know the *Minor Illusion* cantrip. You also always have the *Speak with Animals* spell prepared. You can cast it without a spell slot a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest. You can also use any spell slots you have to cast the spell.
 2. **Rock Gnome.** You know the *Mending* and *Prestidigitation* cantrips. In addition, you can spend 10 minutes casting *Prestidigitation* to create a Tiny clockwork device (AC 5, 1 HP), such as a toy, fire starter, or music box. When you create the device, you determine its function by choosing one effect from *Prestidigitation*; the device produces that effect whenever you or another creature takes a Bonus Action to activate it with a touch. If the chosen effect has options within it, you choose one of those options for the device when you create it. For example, if you choose the spell's ignite-extinguish effect, you determine whether the device ignites or extinguishes fire; the device doesn't do both. You can have three such devices in existence at a time, and each falls apart 8 hours after its creation or when you dismantle it with a touch as a Utilize action.
 
-*[Page 192]*
+::: {#p192}
+:::
 
 ### Goliath
 
@@ -550,7 +512,8 @@ Starting at character level 5, you can change your size to Large as a Bonus Acti
 
 You have Advantage on any ability check you make to end the Grappled condition. You also count as one size larger when determining your carrying capacity.
 
-*[Page 193]*
+::: {#p193}
+:::
 
 ### Halfling
 
@@ -573,7 +536,8 @@ When you roll a 1 on the d20 of a D20 Test, you can reroll the die, and you must
 
 You can take the Hide action even when you are obscured only by a creature that is at least one size larger than you.
 
-*[Page 194]*
+::: {#p194}
+:::
 
 ### Human
 
@@ -592,7 +556,8 @@ You gain proficiency in one skill of your choice.
 
 You gain an Origin feat of your choice.
 
-*[Page 195]*
+::: {#p195}
+:::
 
 ### Orc
 
@@ -613,7 +578,8 @@ You have Darkvision with a range of 120 feet.
 
 When you are reduced to 0 Hit Points but not killed outright, you can drop to 1 Hit Point instead. Once you use this trait, you can't do so again until you finish a Long Rest.
 
-*[Page 197]*
+::: {#p197}
+:::
 
 ### Tiefling
 
@@ -630,7 +596,7 @@ You are the recipient of a legacy that grants you supernatural abilities. Choose
 
 When you reach character levels 3 and 5, you learn a higher-level spell, as shown on the table. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the legacy).
 
-**Table: Fiendish Legacies**
+##### Table: Fiendish Legacies
 
 | Legacy | Level 1 | Level 3 | Level 5 |
 | --- | --- | --- | --- |

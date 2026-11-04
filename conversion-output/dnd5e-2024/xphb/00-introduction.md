@@ -1,6 +1,7 @@
-::: {p4}
-# Introduction: Welcome to Adventure
+::: {#p4}
 :::
+
+# Introduction: Welcome to Adventure
 
 > This story began 50 years ago, and you're part of it. In the 1970s, Gary Gygax and Dave Arneson created a game of make-believe that fused rules with storytelling. There'd never been anything like it: a game in which each player made their own fantasy character and teamed up with their friends to go on quests. One person served as the narrator and referee—the Dungeon Master—and did everything they could to challenge and delight the other players. That game was, of course, the first version of Dungeons & Dragons, and you're now reading its latest version.
 >
@@ -102,5 +103,3 @@ The worlds of D&D glimmer with magic, monsters, and spectacular adventure. Launc
 D&D worlds exist in a multiverse and are connected to one another and to other planes of existence. Some of the worlds have been published as official D&D settings, including the Greyhawk, Forgotten Realms, Dragonlance, Spelljammer, Planescape, Dark Sun, Eberron, and Ravenloft settings. Alongside these worlds are thousands more, created by generations of D&D players for their own games. Amid the richness of the multiverse, you might create a world of your own.
 
 The worlds of the multiverse share characteristics, but each world is set apart by its own history and geography. Your DM might set a campaign on one of these worlds or on a world of their own invention. Because there is so much variety among D&D worlds, check with your DM about the world of your upcoming adventures.
-
-

@@ -1,14 +1,9 @@
+::: {#p344}
+:::
+
 # Appendix A: The Multiverse
 
-
-*[Source Page: 344]*
-
-
 This appendix provides an overview of the multiverse, the overarching reality that encompasses D&D's countless worlds and adventures. These realms are explored in greater detail in the *Dungeon Master's Guide*, along with other planes like the Far Realm, Negative Plane, and Positive Plane.
-
-![Illustration](book/XPHB/231-10-001.the-multiverse.webp)
-
-*[Page 344]*
 
 ## The Material Realms
 
@@ -18,16 +13,12 @@ The philosophical and elemental forces of reality converge to create the followi
 2. **Feywild.** This vibrant, idealized realm brims with life and emotion, which are most intense in the realm's Domains of Delight.
 3. **Shadowfell.** This gloom-haunted realm holds grim wastelands, haunted ruins, and the infamous Domains of Dread.
 
-*[Page 344]*
-
 ## Transitive Planes
 
 The transitive planes serve as paths between planes:
 
 1. **Astral Plane.** This endless, silvery expanse links the Material Plane and the Outer Planes. Whole civilizations have arisen in this glimmering vastness, while others navigate the magical cosmos in spelljamming vessels.
 2. **Ethereal Plane.** This ghostly realm connects the Material Plane and the Inner Planes. The region where the Ethereal Plane overlaps with other planes is called the Border Ethereal, a place where creatures can glimpse visions of planes beyond.
-
-*[Page 344]*
 
 ## The Inner Planes
 
@@ -40,8 +31,6 @@ Elemental forces and the building blocks of reality originate from these Inner P
 5. **Elemental Chaos.** Here on the fringes of the Inner Planes, elemental forces clash unpredictably.
 6. **Para-Elemental Planes.** In these borderlands between the Elemental Planes, elemental forces combine into realms of ash, ice, magma, and ooze.
 
-*[Page 344]*
-
 ## The Outer Planes
 
 Realms where ideas take form and spirits spend their afterlives, the Outer Planes are the homes of immortals. The following locations compose the Outer Planes:
@@ -50,7 +39,7 @@ Realms where ideas take form and spirits spend their afterlives, the Outer Plane
 2. **Outlands.** Influences from the other Outer Planes converge in the Outlands, where portals lead to those planes. At the Outlands' center rises the Spire, a pillar atop which floats Sigil.
 3. **Other Outer Planes.** These planes are listed on the Outer Planes table. Some are paradises, some are nightmare realms, and some are more bizarre. Each is dominated by forces that embody one or more of the alignments described in chapter 2.
 
-**Table: Outer Planes**
+### Table: Outer Planes
 
 | Outer Plane | Alignment |
 | --- | --- |

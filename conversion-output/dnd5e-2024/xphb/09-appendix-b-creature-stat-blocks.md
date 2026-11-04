@@ -1,8 +1,7 @@
+::: {#p346}
+:::
+
 # Appendix B: Creature Stat Blocks
-
-
-*[Source Page: 346]*
-
 
 This appendix provides stat blocks for creatures mentioned elsewhere in the book, particularly in the class, equipment, and spell chapters. See the rules glossary for how to read a stat block, and see the *Monster Manual* for even more creatures.
 
@@ -60,7 +59,9 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 * Wolf
 * Zombie
 
-*[Page 348]*
+::: {#p348}
+:::
+
 ## Ape
 *Medium beast, Unaligned*
 
@@ -80,8 +81,9 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Rock (Recharge 6).** *Ranged Attack:*  +5, range 25/50 ft. *Hit:* 10 (2d6 + 3) Bludgeoning damage.
 
+::: {#p349}
+:::
 
-*[Page 349]*
 ## Badger
 *Tiny beast, Unaligned*
 
@@ -97,8 +99,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +2, reach 5 ft. *Hit:* 1 Piercing damage.
 
-
-*[Page 349]*
 ## Bat
 *Tiny beast, Unaligned*
 
@@ -114,8 +114,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +4 to hit, reach 5 ft. *Hit:* 1 Piercing damage.
 
-
-*[Page 349]*
 ## Black Bear
 *Medium beast, Unaligned*
 
@@ -133,8 +131,9 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Rend.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 5 (1d6 + 2) Slashing damage.
 
+::: {#p350}
+:::
 
-*[Page 350]*
 ## Boar
 *Medium beast, Unaligned*
 
@@ -154,8 +153,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Gore.** *Melee Attack:*  +3, reach 5 ft. *Hit:* 4 (1d6 + 1) Piercing damage. If the target is a Medium or smaller creature and the boar moved 20+ feet straight toward it immediately before the hit, the target takes an extra 3 (1d6) Piercing damage and has the Prone condition.
 
-
-*[Page 350]*
 ## Brown Bear
 *Large beast, Unaligned*
 
@@ -175,8 +172,9 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Claw.** *Melee Attack:*  +5, reach 5 ft. *Hit:* 5 (1d4 + 3) Slashing damage. If the target is a Large or smaller creature, it has the Prone condition.
 
+::: {#p351}
+:::
 
-*[Page 351]*
 ## Camel
 *Large beast, Unaligned*
 
@@ -192,8 +190,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 4 (1d4 + 2) Bludgeoning damage.
 
-
-*[Page 351]*
 ## Cat
 *Tiny beast, Unaligned*
 
@@ -213,8 +209,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Scratch.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 1 Slashing damage.
 
-
-*[Page 351]*
 ## Constrictor Snake
 *Large beast, Unaligned*
 
@@ -232,8 +226,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Constrict.** str saving throw DC 12, one Medium or smaller creature the snake can see within 5 feet. *Failure:*  7 (3d4) Bludgeoning damage, and the target has the Grappled condition (escape DC 12).
 
-
-*[Page 351]*
 ## Crab
 *Tiny beast, Unaligned*
 
@@ -253,8 +245,9 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Claw.** *Melee Attack:*  +2, reach 5 ft. *Hit:* 1 Bludgeoning damage.
 
+::: {#p352}
+:::
 
-*[Page 352]*
 ## Crocodile
 *Large beast, Unaligned*
 
@@ -274,8 +267,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 6 (1d8 + 2) Piercing damage. If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 12). While Grappled, the target has the Restrained condition.
 
-
-*[Page 352]*
 ## Dire Wolf
 *Large beast, Unaligned*
 
@@ -295,8 +286,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +5, reach 5 ft. *Hit:* 8 (1d10 + 3) Piercing damage. If the target is a Large or smaller creature, it has the Prone condition.
 
-
-*[Page 352]*
 ## Draft Horse
 *Large beast, Unaligned*
 
@@ -312,8 +301,9 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Hooves.** *Melee Attack:*  +6, reach 5 ft. *Hit:* 6 (1d4 + 4) Bludgeoning damage.
 
+::: {#p353}
+:::
 
-*[Page 353]*
 ## Elephant
 *Huge beast, Unaligned*
 
@@ -331,8 +321,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Gore.** *Melee Attack:*  +8, reach 5 ft. *Hit:* 15 (2d8 + 6) Piercing damage. If the target is a Huge or smaller creature and the elephant moved 20+ feet straight toward it immediately before the hit, the target has the Prone condition.
 
-
-*[Page 353]*
 ## Elk
 *Large beast, Unaligned*
 
@@ -348,8 +336,9 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Ram.** *Melee Attack:*  +5, reach 5 ft. *Hit:* 6 (1d6 + 3) Bludgeoning damage. If the target is a Large or smaller creature and the elk moved 20+ feet straight toward it immediately before the hit, the target takes an extra 3 (1d6) Bludgeoning damage and has the Prone condition.
 
+::: {#p354}
+:::
 
-*[Page 354]*
 ## Frog
 *Tiny beast, Unaligned*
 
@@ -371,8 +360,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +3, reach 5 ft. *Hit:* 1 Piercing damage.
 
-
-*[Page 354]*
 ## Giant Badger
 *Medium beast, Unaligned*
 
@@ -388,8 +375,9 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +3, reach 5 ft. *Hit:* 6 (2d4 + 1) Piercing damage.
 
+::: {#p356}
+:::
 
-*[Page 356]*
 ## Giant Crab
 *Medium beast, Unaligned*
 
@@ -409,8 +397,9 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Claw.** *Melee Attack:*  +3, reach 5 ft. *Hit:* 4 (1d6 + 1) Bludgeoning damage. If the target is a Medium or smaller creature, it has the Grappled condition (escape DC 11) from one of two claws.
 
+::: {#p357}
+:::
 
-*[Page 357]*
 ## Giant Goat
 *Large beast, Unaligned*
 
@@ -426,8 +415,9 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Ram.** *Melee Attack:*  +5, reach 5 ft. *Hit:* 6 (1d6 + 3) Bludgeoning damage. If the target is a Large or smaller creature and the goat moved 20+ feet straight toward it immediately before the hit, the target takes an extra 5 (2d4) Bludgeoning damage and has the Prone condition.
 
+::: {#p359}
+:::
 
-*[Page 359]*
 ## Giant Seahorse
 *Large beast, Unaligned*
 
@@ -447,8 +437,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Ram.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 9 (2d6 + 2) Bludgeoning damage, or 11 (2d8 + 2) Bludgeoning damage if the seahorse moved 20+ feet straight toward the target immediately before the hit.
 
-
-*[Page 359]*
 ## Giant Spider
 *Large beast, Unaligned*
 
@@ -472,8 +460,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Web (Recharge 5–6).** dex saving throw DC 13, one creature the spider can see within 60 feet. *Failure:*  The target has the Restrained condition until the web is destroyed (AC 10; HP 5; Vulnerability to Fire damage; Immunity to Poison and Psychic damage).
 
-
-*[Page 361]*
 ## Giant Weasel
 *Medium beast, Unaligned*
 
@@ -489,8 +475,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +5, reach 5 ft. *Hit:* 5 (1d4 + 3) Piercing damage.
 
-
-*[Page 362]*
 ## Goat
 *Medium beast, Unaligned*
 
@@ -506,8 +490,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Ram.** *Melee Attack:*  +2, reach 5 ft. *Hit:* 1 Bludgeoning damage, or 2 (1d4) Bludgeoning damage if the goat moved 20+ feet straight toward the target immediately before the hit.
 
-
-*[Page 362]*
 ## Hawk
 *Tiny beast, Unaligned*
 
@@ -523,8 +505,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Talons.** *Melee Attack:*  +5, reach 5 ft. *Hit:* 1 Slashing damage.
 
-
-*[Page 177]*
 ## Imp
 *Tiny fiend, Lawful Evil*
 
@@ -546,8 +526,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Shape-Shift.** The imp shape-shifts to resemble a rat (Speed 20 ft.), a raven (20 ft., Fly 60 ft.), or a spider (20 ft., Climb 20 ft.), or it returns to its true form. Its statistics are the same in each form, except for its Speed. Any equipment it is wearing or carrying isn't transformed.
 
-
-*[Page 364]*
 ## Lion
 *Large beast, Unaligned*
 
@@ -573,8 +551,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Roar.** wis saving throw DC 11, one creature within 15 feet. *Failure:*  The target has the Frightened condition until the start of the lion's next turn.
 
-
-*[Page 364]*
 ## Lizard
 *Tiny beast, Unaligned*
 
@@ -594,8 +570,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +2, reach 5 ft. *Hit:* 1 Piercing damage.
 
-
-*[Page 365]*
 ## Mastiff
 *Medium beast, Unaligned*
 
@@ -611,8 +585,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +3, reach 5 ft. *Hit:* 4 (1d6 + 1) Piercing damage. If the target is a Medium or smaller creature, it has the Prone condition.
 
-
-*[Page 365]*
 ## Mule
 *Medium beast, Unaligned*
 
@@ -632,8 +604,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Hooves.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 4 (1d4 + 2) Bludgeoning damage.
 
-
-*[Page 365]*
 ## Octopus
 *Small beast, Unaligned*
 
@@ -659,8 +629,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Ink Cloud (1/Day).** *Trigger:*  A creature ends its turn within 5 feet of the octopus while underwater. *Response:*  The octopus releases ink that fills a 5-foot Cube centered on itself, and the octopus moves up to its Swim Speed. The Cube is Heavily Obscured for 1 minute or until a strong current or similar effect disperses the ink.
 
-
-*[Page 366]*
 ## Owl
 *Tiny beast, Unaligned*
 
@@ -680,8 +648,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Talons.** *Melee Attack:*  +3, reach 5 ft. *Hit:* 1 Slashing damage.
 
-
-*[Page 366]*
 ## Panther
 *Medium beast, Unaligned*
 
@@ -697,8 +663,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Rend.** *Melee Attack:*  +5, reach 5 ft. *Hit:* 6 (1d6 + 3) Slashing damage.
 
-
-*[Page 367]*
 ## Pony
 *Medium beast, Unaligned*
 
@@ -714,8 +678,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Hooves.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 4 (1d4 + 2) Bludgeoning damage.
 
-
-*[Page 249]*
 ## Pseudodragon
 *Tiny dragon, Neutral Good*
 
@@ -739,8 +701,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Sting.** con saving throw DC 12, one creature the pseudodragon can see within 5 feet. *Failure:*  5 (2d4) Poison damage, and the target has the Poisoned condition for 1 hour. While Poisoned, the target also has the Unconscious condition, which ends early if the target takes damage or a creature within 5 feet of it takes an action to wake it.
 
-
-*[Page 252]*
 ## Quasit
 *Tiny fiend, Chaotic Evil*
 
@@ -764,8 +724,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Shape-Shift.** The quasit shape-shifts to resemble a bat (Speed 10 ft., Fly 40 ft.), a centipede (40 ft., Climb 40 ft.), or a toad (40 ft., Swim 40 ft.), or it returns to its true form. Its game statistics are the same in each form, except for its Speed. Any equipment it is wearing or carrying isn't transformed.
 
-
-*[Page 367]*
 ## Rat
 *Tiny beast, Unaligned*
 
@@ -785,8 +743,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +2, reach 5 ft. *Hit:* 1 Piercing damage.
 
-
-*[Page 368]*
 ## Raven
 *Tiny beast, Unaligned*
 
@@ -806,8 +762,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Beak.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 1 Piercing damage.
 
-
-*[Page 368]*
 ## Reef Shark
 *Medium beast, Unaligned*
 
@@ -829,8 +783,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 7 (2d4 + 2) Piercing damage.
 
-
-*[Page 368]*
 ## Riding Horse
 *Large beast, Unaligned*
 
@@ -846,8 +798,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Hooves.** *Melee Attack:*  +5, reach 5 ft. *Hit:* 7 (1d8 + 3) Bludgeoning damage.
 
-
-*[Page 369]*
 ## Scorpion
 *Tiny beast, Unaligned*
 
@@ -863,8 +813,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Sting.** *Melee Attack:*  +2, reach 5 ft. *Hit:* 1 Piercing damage plus 3 (1d6) Poison damage.
 
-
-*[Page 282]*
 ## Skeleton
 *Medium undead, Lawful Evil*
 
@@ -882,8 +830,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Shortbow.** *Ranged Attack:*  +5, range 80/320 ft. *Hit:* 6 (1d6 + 3) Piercing damage.
 
-
-*[Page 284]*
 ## Slaad Tadpole
 *Tiny aberration, Chaotic Neutral*
 
@@ -903,8 +849,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 5 (1d6 + 2) Piercing damage.
 
-
-*[Page 291]*
 ## Sphinx of Wonder
 *Tiny celestial, Lawful Good*
 
@@ -928,8 +872,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Burst of Ingenuity (2/Day).** *Trigger:*  The sphinx or another creature within 30 feet makes an ability check or a saving throw. *Response:*  The sphinx adds 2 to the roll.
 
-
-*[Page 369]*
 ## Spider
 *Tiny beast, Unaligned*
 
@@ -951,8 +893,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 1 Piercing damage plus 2 (1d4) Poison damage.
 
-
-*[Page 298]*
 ## Sprite
 *Tiny fey, Neutral Good*
 
@@ -972,8 +912,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Heart Sight.** cha saving throw DC 10, one creature within 5 feet the sprite can see (Celestials, Fiends, and Undead automatically fail the save). *Failure:*  The sprite knows the target's emotions and alignment.
 
-
-*[Page 371]*
 ## Tiger
 *Large beast, Unaligned*
 
@@ -989,8 +927,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Rend.** *Melee Attack:*  +5, reach 5 ft. *Hit:* 10 (2d6 + 3) Slashing damage. If the target is a Large or smaller creature, it has the Prone condition.
 
-
-*[Page 372]*
 ## Venomous Snake
 *Tiny beast, Unaligned*
 
@@ -1006,8 +942,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 4 (1d4 + 2) Piercing damage plus 3 (1d6) Poison damage.
 
-
-*[Page 373]*
 ## Warhorse
 *Large beast, Unaligned*
 
@@ -1023,8 +957,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Hooves.** *Melee Attack:*  +6, reach 5 ft. *Hit:* 9 (2d4 + 4) Bludgeoning damage. If the target is a Large or smaller creature and the horse moved 20+ feet straight toward it immediately before the hit, the target takes an extra 5 (2d4) Bludgeoning damage and has the Prone condition.
 
-
-*[Page 372]*
 ## Weasel
 *Tiny beast, Unaligned*
 
@@ -1040,8 +972,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +5, reach 5 ft. *Hit:* 1 Piercing damage.
 
-
-*[Page 373]*
 ## Wolf
 *Medium beast, Unaligned*
 
@@ -1061,8 +991,6 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 
 **Bite.** *Melee Attack:*  +4, reach 5 ft. *Hit:* 5 (1d6 + 2) Piercing damage. If the target is a Medium or smaller creature, it has the Prone condition.
 
-
-*[Page 346]*
 ## Zombie
 *Medium undead, Neutral Evil*
 
@@ -1081,4 +1009,3 @@ The following stat blocks are presented in alphabetical order. When the Dungeon 
 ### Actions
 
 **Slam.** *Melee Attack:*  +3, reach 5 ft. *Hit:* 5 (1d8 + 1) Bludgeoning damage.
-

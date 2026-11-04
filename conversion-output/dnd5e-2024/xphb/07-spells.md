@@ -1,28 +1,19 @@
+::: {#p235}
+:::
+
 # Chapter 7: Spells
 
-
-*[Source Page: 235]*
-
-
-![Archmages of Greyhawk—Jallarzi, Mordenkainen, and Bigby—prepare their magic as they open a gate to another plane](book/XPHB/181-08-001.jallarzi-mordenkainen-bigby.webp)
-
-*Image: Archmages of Greyhawk—Jallarzi, Mordenkainen, and Bigby—prepare their magic as they open a gate to another plane*
-
 This chapter gives rules for casting spells. It also includes descriptions of common spells in the worlds of Dungeons & Dragons. Those spells are used by many class features, magic items, and monsters.
-
-*[Page 235]*
 
 ## Gaining Spells
 
 Before you can cast a spell, you must have the spell prepared in your mind or have access to the spell from a magic item, such as a Spell Scroll. Your features specify which spells you have access to, if any; whether you always have certain spells prepared; and whether you can change the list of spells you have prepared.
 
-*[Page 235]*
-
 ### Preparing Spells
 
 If you have a list of level 1+ spells you prepare, your spellcasting feature specifies when you can change the list and the number of spells you can change, as summarized in the Spell Preparation by Class table.
 
-**Table: Spell Preparation by Class**
+#### Table: Spell Preparation by Class
 
 | Class | Change When You... | Number of Spells |
 | --- | --- | --- |
@@ -37,31 +28,24 @@ If you have a list of level 1+ spells you prepare, your spellcasting feature spe
 
 Most spellcasting monsters don't change their lists of prepared spells, but the DM is free to alter them.
 
-*[Page 235]*
-
 ### Always-Prepared Spells
 
 Certain features might give you a spell that you always have prepared. If you also have a list of prepared spells that you can change, a spell that you always have prepared doesn't count against the number of spells on that list.
 
-> *[Page 235]*
->
-> ### Casting in Armor
->
-> You must have training with any armor you are wearing to cast spells while wearing it. You are otherwise too hampered by the armor for spellcasting.
+::: inset
 
-*[Page 235]*
+### Casting in Armor
+
+You must have training with any armor you are wearing to cast spells while wearing it. You are otherwise too hampered by the armor for spellcasting.
+:::
 
 ## Casting Spells
 
 Each spell description has a series of entries that provide the details needed to cast the spell. The following sections explain each of those entries, which follow a spell's name.
 
-*[Page 235]*
-
 ### Spell Level
 
 Every spell has a level from 0 to 9, which is indicated in a spell's description. A spell's level is an indicator of how powerful it is. Cantrips—simple spells that can be cast almost by rote—are level 0. The rules for each spellcasting class say when its members gain access to spells of certain levels.
-
-*[Page 235]*
 
 #### Spell Slots
 
@@ -70,8 +54,6 @@ Spellcasting is taxing, so a spellcaster can cast only a limited number of level
 When you cast a spell, you expend a slot of that spell's level or higher, effectively "filling" a slot with the spell. Imagine a spell slot is a groove of a certain size—small for a level 1 slot and larger for a higher-level spell. A level 1 spell fits into a slot of any size, but a level 2 spell fits only into a slot that's at least level 2. So when a level 3 Wizard casts *Magic Missile*, a level 1 spell, that Wizard spends one of four level 1 slots and has three remaining.
 
 Finishing a Long Rest restores any expended spell slots.
-
-*[Page 235]*
 
 #### Casting without Slots
 
@@ -82,7 +64,8 @@ There are several ways to cast a spell without expending a spell slot:
 3. **Special Abilities.** Some characters and monsters have special abilities that allow them to cast specific spells without a spell slot. This casting is usually limited in another way, such as being able to cast the spell a limited number of times per day.
 4. **Magic Items.** Spell Scrolls and some other magic items contain spells that can be cast without a spell slot. The description of such an item specifies how many times a spell can be cast from it.
 
-*[Page 236]*
+::: {#p236}
+:::
 
 #### Using a Higher-Level Spell Slot
 
@@ -90,13 +73,11 @@ When a spellcaster casts a spell using a slot that is of a higher level than the
 
 Some spells, such as *Magic Missile* and *Cure Wounds*, have more powerful effects when cast at a higher level, as detailed in a spell's description.
 
-*[Page 236]*
-
 ### School of Magic
 
 Each spell belongs to a school of magic. The schools are listed in the Schools of Magic table. These categories help describe spells but have no rules of their own, although some other rules refer to them.
 
-**Table: Schools of Magic**
+#### Table: Schools of Magic
 
 | School | Typical Effects |
 | --- | --- |
@@ -109,37 +90,25 @@ Each spell belongs to a school of magic. The schools are listed in the Schools o
 | Necromancy | Manipulates life and death |
 | Transmutation | Transforms creatures or objects |
 
-*[Page 236]*
-
 ### Class Spell Lists
 
 If a spell is on a class's spell list, the class's name appears in parentheses after the spell's school of magic. Some features add a spell to a character's spell list even if the character isn't a member of a class in the parentheses.
-
-*[Page 236]*
 
 ### Casting Time
 
 Most spells require the Magic action to cast, but some spells require a Bonus Action, a Reaction, or 1 minute or more. A spell's Casting Time entry specifies which of those is required.
 
-*[Page 236]*
-
 #### One Spell with a Spell Slot per Turn
 
 On a turn, you can expend only one spell slot to cast a spell. This rule means you can't, for example, cast a spell with a spell slot using the Magic action and another one using a Bonus Action on the same turn.
-
-*[Page 236]*
 
 #### Reaction and Bonus Action Triggers
 
 A spell that has a casting time of a Reaction is cast in response to a trigger that is defined in the spell's Casting Time entry. Some spells that have a casting time of a Bonus Action are also cast in response to a trigger defined in the spell.
 
-*[Page 236]*
-
 #### Longer Casting Times
 
 Certain spells—including a spell cast as a Ritual—require more time to cast: minutes or even hours. While you cast a spell with a casting time of 1 minute or more, you must take the Magic action on each of your turns, and you must maintain Concentration while you do so. If your Concentration is broken, the spell fails, but you don't expend a spell slot. To cast the spell again, you must start over.
-
-*[Page 236]*
 
 ### Range
 
@@ -153,43 +122,33 @@ A range usually takes one of the following forms:
 
 If a spell has movable effects, they aren't restricted by its range unless the spell's description says otherwise.
 
-*[Page 236]*
-
 ### Components
 
-![An aasimar Wizard uses a crystal material component to focus the magic of Cone of Cold](book/XPHB/182-08-002.aasimar-wizard.webp)
-
-*Image: An aasimar Wizard uses a crystal material component to focus the magic of Cone of Cold*
-
 A spell's components are physical requirements the spellcaster must meet to cast the spell. Each spell's description indicates whether it requires Verbal (V), Somatic (S), or Material (M) components. If the spellcaster can't provide one or more of a spell's components, the spellcaster can't cast the spell.
-
-*[Page 236]*
 
 #### Verbal (V)
 
 A Verbal component is the chanting of esoteric words that sound like nonsense to the uninitiated. The words must be uttered in a normal speaking voice. The words themselves aren't the source of the spell's power; rather, the particular combination of sounds, with specific pitch and resonance, sets the threads of magic in motion. Thus, a creature who is gagged or in an area of magical silence can't cast a spell with a Verbal component.
 
-> *[Page 236]*
->
-> ### Creating Verbal Components
->
-> If you'd like to say a spell's Verbal component, you may make up the words. However you make them, the goal is to create something that's easy to say and that doesn't mean anything in the real world. Consider this method: take the name of the spell, keep only one instance of each of its letters, and rearrange the remaining letters into words. For example, remove the second *l* from *Fireball* and rearrange the remaining letters to create *Ber Fila* or *Fel Bira*.
+::: inset
 
-*[Page 236]*
+### Creating Verbal Components
+
+If you'd like to say a spell's Verbal component, you may make up the words. However you make them, the goal is to create something that's easy to say and that doesn't mean anything in the real world. Consider this method: take the name of the spell, keep only one instance of each of its letters, and rearrange the remaining letters into words. For example, remove the second *l* from *Fireball* and rearrange the remaining letters to create *Ber Fila* or *Fel Bira*.
+:::
 
 #### Somatic (S)
 
 A Somatic component is a forceful gesticulation or an intricate set of gestures. A spellcaster must use at least one of their hands to perform these movements.
 
-*[Page 237]*
+::: {#p237}
+:::
 
 #### Material (M)
 
 A Material component is a particular material used in a spell's casting, as specified in parentheses in the Components entry. These materials aren't consumed by the spell unless the spell's description states otherwise. The spellcaster must have a hand free to access them, but it can be the same hand used to perform Somatic components, if any.
 
 If a spell doesn't consume its materials and doesn't specify a cost for them, a spellcaster can use a Component Pouch (see chapter 6) instead of providing the materials specified in the spell, or the spellcaster can substitute a Spellcasting Focus if the caster has a feature that allows that substitution. To use a Component Pouch, you must have a hand free to reach into it, and to use a Spellcasting Focus, you must hold it unless its description says otherwise (see chapter 6 for descriptions).
-
-*[Page 237]*
 
 ### Duration
 
@@ -199,45 +158,32 @@ A spell's duration is the length of time the spell persists after it is cast. A 
 2. **Instantaneous.** An instantaneous duration means the spell's magic appears only for a moment and then disappears.
 3. **Time Span.** A duration that provides a time span specifies how long the spell lasts in rounds, minutes, hours, or the like. For example, a Duration entry might say "1 minute," meaning the spell ends after 1 minute has passed. While a time-span spell that you cast is ongoing, you can dismiss it (no action required) if you don't have the Incapacitated condition.
 
-*[Page 237]*
-
 ### Effects
 
 The effects of a spell are detailed after its duration entry. Those details present exactly what the spell does, which ignores mundane physical laws; any outcomes beyond those effects are under the DM's purview. Whatever the effects, they typically deal with targets, saving throws, attack rolls, or all three, each of which is detailed below.
-
-*[Page 237]*
 
 #### Targets
 
 A typical spell requires the caster to pick one or more targets to be affected by the spell's magic. A spell's description says whether the spell targets creatures, objects, or something else.
 
-*[Page 238]*
+::: {#p238}
+:::
 
 ##### A Clear Path to the Target
 
 To target something with a spell, a caster must have a clear path to it, so it can't be behind Total Cover.
 
-*[Page 238]*
-
 ##### Targeting Yourself
 
 If a spell targets a creature of your choice, you can choose yourself unless the creature must be Hostile or specifically a creature other than you.
-
-*[Page 238]*
 
 ##### Areas of Effect
 
 Some spells, such as *Thunderwave*, cover an area called an area of effect, which is defined in the rules glossary. The area determines what the spell targets. The description of a spell specifies whether it has an area of effect, which is typically one of these shapes: Cone, Cube, Cylinder, Emanation, Line, or Sphere.
 
-![Illustration](book/XPHB/183-08-003.areas-of-effect.webp)
-
-*[Page 238]*
-
 ##### Awareness of Being Targeted
 
 Unless a spell has a perceptible effect, a creature doesn't know it was targeted by the spell. An effect like lightning is obvious, but a more subtle effect, such as an attempt to read thoughts, goes unnoticed unless a spell's description says otherwise.
-
-*[Page 238]*
 
 ##### Invalid Targets
 
@@ -245,15 +191,11 @@ If you cast a spell on someone or something that can't be affected by it, nothin
 
 If the spell normally has no effect on a target that succeeds on a saving throw, the invalid target appears to have succeeded on its saving throw, even though it didn't attempt one (giving no hint that the creature is an invalid target). Otherwise, you perceive that the spell did nothing to the target.
 
-*[Page 238]*
-
 #### Saving Throws
 
 Many spells specify that a target makes a saving throw to avoid some or all of a spell's effects. The spell specifies the ability that the target uses for the save and what happens on a success or failure. Here's how to calculate the DC for your spells:
 
 **Spell:** 
-
-*[Page 238]*
 
 #### Attack Rolls
 
@@ -261,19 +203,19 @@ Some spells require the caster to make an attack roll to determine whether the s
 
 **Spell:** 
 
-*[Page 238]*
-
 #### Combining Spell Effects
 
 The effects of different spells add together while their durations overlap. In contrast, the effects of the same spell cast multiple times don't combine. Instead, the most potent effect—such as the highest bonus—from those castings applies while their durations overlap. The most recent effect applies if the castings are equally potent and their durations overlap. For example, if two Clerics cast *Bless* on the same target, that target gains the spell's benefit only once; the target doesn't receive two bonus dice. But if the durations of the spells overlap, the effect continues until the duration of the second *Bless* ends.
 
-> *[Page 238]*
->
-> ### Identifying an Ongoing Spell
->
-> You can try to identify a non-instantaneous spell by its observable effects if its duration is ongoing. To identify it, you must take the Study action and succeed on a DC 15 Intelligence (Arcana) check.
+::: inset
 
-*[Page 239]*
+### Identifying an Ongoing Spell
+
+You can try to identify a non-instantaneous spell by its observable effects if its duration is ongoing. To identify it, you must take the Study action and succeed on a DC 15 Intelligence (Arcana) check.
+:::
+
+::: {#p239}
+:::
 
 ## Spell Descriptions
 
@@ -696,7 +638,6 @@ The spells are presented in alphabetical order.
 
 ## A
 
-*[Page 239]*
 ### Acid Splash
 *Evocation Cantrip*
 
@@ -712,7 +653,6 @@ You create an acidic bubble at a point within range, where it explodes in a 5-fo
 
 The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).
 
-*[Page 239]*
 ### Aid
 *2nd-level Abjuration*
 
@@ -728,7 +668,6 @@ Choose up to three creatures within range. Each target's Hit Point maximum and c
 
 Each target's Hit Points increase by 5 for each spell slot level above 2.
 
-*[Page 239]*
 ### Alarm
 *1st-level Abjuration*
 
@@ -742,7 +681,6 @@ You set an alarm against intrusion. Choose a door, a window, or an area within r
 1. **Audible Alarm.** The alarm produces the sound of a handbell for 10 seconds within 60 feet of the warded area.
 2. **Mental Alarm.** You are alerted by a mental ping if you are within 1 mile of the warded area. This ping awakens you if you're asleep.
 
-*[Page 239]*
 ### Alter Self
 *2nd-level Transmutation*
 
@@ -765,7 +703,6 @@ You alter your appearance. You decide what you look like, including your height,
 
 You grow claws (Slashing), fangs (Piercing), horns (Piercing), or hooves (Bludgeoning). When you use your Unarmed Strike to deal damage with that new growth, it deals 1d6 damage of the type in parentheses instead of dealing the normal damage for your Unarmed Strike, and you use your spellcasting ability modifier for the attack and damage rolls rather than using Strength.
 
-*[Page 239]*
 ### Animal Friendship
 *1st-level Enchantment*
 
@@ -781,7 +718,9 @@ Target a Beast that you can see within range. The target must succeed on a Wisdo
 
 You can target one additional Beast for each spell slot level above 1.
 
-*[Page 240]*
+::: {#p240}
+:::
+
 ### Animal Messenger
 *2nd-level Enchantment*
 
@@ -799,7 +738,6 @@ When the Beast arrives, it delivers your message to the creature that you descri
 
 The spell's duration increases by 48 hours for each spell slot level above 2.
 
-*[Page 240]*
 ### Animal Shapes
 *8th-level Transmutation*
 
@@ -814,7 +752,6 @@ A target's game statistics are replaced by the chosen Beast's statistics, but th
 
 The target gains a number of Temporary Hit Points equal to the Hit Points of the first form into which it shape-shifts. These Temporary Hit Points vanish if any remain when the spell ends. The transformation lasts for the duration or until the target ends it as a Bonus Action.
 
-*[Page 240]*
 ### Animate Dead
 *3rd-level Necromancy*
 
@@ -834,7 +771,6 @@ The creature is under your control for 24 hours, after which it stops obeying an
 
 You animate or reassert control over two additional Undead creatures for each spell slot level above 3. Each of the creatures must come from a different corpse or pile of bones.
 
-*[Page 240]*
 ### Animate Objects
 *5th-level Transmutation*
 
@@ -854,7 +790,9 @@ Until the spell ends, you can take a Bonus Action to mentally command any creatu
 
 The creature's Slam damage increases by 1d4 (Medium or smaller), 1d6 (Large), or 1d12 (Huge) for each spell slot level above 5.
 
-*[Page 241]*
+::: {#p241}
+:::
+
 ### Antilife Shell
 *5th-level Abjuration*
 
@@ -867,7 +805,6 @@ An aura extends from you in a 10-foot Emanation for the duration. The aura preve
 
 If you move so that an affected creature is forced to pass through the barrier, the spell ends.
 
-*[Page 241]*
 ### Antimagic Field
 *8th-level Abjuration*
 
@@ -884,7 +821,9 @@ Ongoing spells, except those cast by an Artifact or a deity, are suppressed in t
 
 *Dispel Magic* has no effect on the aura, and the auras created by different *Antimagic Field* spells don't nullify each other.
 
-*[Page 242]*
+::: {#p242}
+:::
+
 ### Antipathy/Sympathy
 *8th-level Enchantment*
 
@@ -902,7 +841,6 @@ As you cast the spell, choose whether it creates antipathy or sympathy, and targ
 
 If the Frightened or Charmed creature ends its turn more than 120 feet away from the target, the creature makes a Wisdom saving throw. On a successful save, the creature is no longer affected by the target. A creature that successfully saves against this effect is immune to it for 1 minute, after which it can be affected again.
 
-*[Page 242]*
 ### Arcane Eye
 *4th-level Divination*
 
@@ -915,7 +853,6 @@ You create an Invisible, invulnerable eye within range that hovers for the durat
 
 As a Bonus Action, you can move the eye up to 30 feet in any direction. A solid barrier blocks the eye's movement, but the eye can pass through an opening as small as 1 inch in diameter.
 
-*[Page 242]*
 ### Arcane Gate
 *6th-level Conjuration*
 
@@ -930,7 +867,6 @@ The portals are two-dimensional glowing rings filled with mist that blocks sight
 
 A portal is open on only one side (you choose which). Anything entering the open side of a portal exits from the open side of the other portal as if the two were adjacent to each other. As a Bonus Action, you can change the facing of the open sides.
 
-*[Page 242]*
 ### Arcane Lock
 *2nd-level Abjuration*
 
@@ -941,7 +877,6 @@ A portal is open on only one side (you choose which). Anything entering the open
 
 You touch a closed door, window, gate, container, or hatch and magically lock it for the duration. This lock can't be unlocked by any nonmagical means. You and any creatures you designate when you cast the spell can open and close the object despite the lock. You can also set a password that, when spoken within 5 feet of the object, unlocks it for 1 minute.
 
-*[Page 242]*
 ### Arcane Vigor
 *2nd-level Abjuration*
 
@@ -957,7 +892,9 @@ You tap into your life force to heal yourself. Roll one or two of your unexpende
 
 The number of unexpended Hit Dice you can roll increases by one for each spell slot level above 2.
 
-*[Page 243]*
+::: {#p243}
+:::
+
 ### Armor of Agathys
 *1st-level Abjuration*
 
@@ -973,7 +910,6 @@ Protective magical frost surrounds you. You gain 5 Temporary Hit Points. If a cr
 
 The Temporary Hit Points and the Cold damage both increase by 5 for each spell slot level above 1.
 
-*[Page 243]*
 ### Arms of Hadar
 *1st-level Conjuration*
 
@@ -989,7 +925,6 @@ Invoking Hadar, you cause tendrils to erupt from yourself. Each creature in a 10
 
 The damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 243]*
 ### Astral Projection
 *9th-level Necromancy*
 
@@ -1008,7 +943,9 @@ Any damage or other effects that apply to an astral form have no effect on the t
 
 When the spell ends for a target who isn't dead, the target reappears in its body and exits the state of suspended animation.
 
-*[Page 244]*
+::: {#p244}
+:::
+
 ### Augury
 *2nd-level Divination*
 
@@ -1019,7 +956,7 @@ When the spell ends for a target who isn't dead, the target reappears in its bod
 
 You receive an omen from an otherworldly entity about the results of a course of action that you plan to take within the next 30 minutes. The DM chooses the omen from the Omens table.
 
-**Table: Omens**
+#### Table: Omens
 
 | Omen | For Results That Will Be... |
 | --- | --- |
@@ -1032,7 +969,6 @@ The spell doesn't account for circumstances, such as other spells, that might ch
 
 If you cast the spell more than once before finishing a Long Rest, there is a cumulative 25 percent chance for each casting after the first that you get no answer.
 
-*[Page 244]*
 ### Aura of Life
 *4th-level Abjuration*
 
@@ -1043,7 +979,6 @@ If you cast the spell more than once before finishing a Long Rest, there is a cu
 
 An aura radiates from you in a 30-foot Emanation for the duration. While in the aura, you and your allies have Resistance to Necrotic damage, and your Hit Point maximums can't be reduced. If an ally with 0 Hit Points starts its turn in the aura, that ally regains 1 Hit Point.
 
-*[Page 244]*
 ### Aura of Purity
 *4th-level Abjuration*
 
@@ -1054,7 +989,6 @@ An aura radiates from you in a 30-foot Emanation for the duration. While in the 
 
 An aura radiates from you in a 30-foot Emanation for the duration. While in the aura, you and your allies have Resistance to Poison damage and Advantage on saving throws to avoid or end effects that include the Blinded, Charmed, Deafened, Frightened, Paralyzed, Poisoned, or Stunned condition.
 
-*[Page 244]*
 ### Aura of Vitality
 *3rd-level Abjuration*
 
@@ -1065,7 +999,6 @@ An aura radiates from you in a 30-foot Emanation for the duration. While in the 
 
 An aura radiates from you in a 30-foot Emanation for the duration. When you create the aura and at the start of each of your turns while it persists, you can restore 2d6 Hit Points to one creature in it.
 
-*[Page 244]*
 ### Awaken
 *5th-level Transmutation*
 
@@ -1080,7 +1013,9 @@ The awakened target has the Charmed condition for 30 days or until you or your a
 
 ## B
 
-*[Page 245]*
+::: {#p245}
+:::
+
 ### Bane
 *1st-level Enchantment*
 
@@ -1096,7 +1031,6 @@ Up to three creatures of your choice that you can see within range must each mak
 
 You can target one additional creature for each spell slot level above 1.
 
-*[Page 245]*
 ### Banishing Smite
 *5th-level Conjuration*
 
@@ -1107,7 +1041,6 @@ You can target one additional creature for each spell slot level above 1.
 
 The target hit by the attack roll takes an extra 5d10 Force damage from the attack. If the attack reduces the target to 50 Hit Points or fewer, the target must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration. While there, the target has the Incapacitated condition. When the spell ends, the target reappears in the space it left or in the nearest unoccupied space if that space is occupied.
 
-*[Page 245]*
 ### Banishment
 *4th-level Abjuration*
 
@@ -1125,7 +1058,6 @@ If the target is an Aberration, a Celestial, an Elemental, a Fey, or a Fiend, th
 
 You can target one additional creature for each spell slot level above 4.
 
-*[Page 245]*
 ### Barkskin
 *2nd-level Transmutation*
 
@@ -1136,7 +1068,6 @@ You can target one additional creature for each spell slot level above 4.
 
 You touch a willing creature. Until the spell ends, the target's skin assumes a bark-like appearance, and the target has an Armor Class of 17 if its AC is lower than that.
 
-*[Page 245]*
 ### Beacon of Hope
 *3rd-level Abjuration*
 
@@ -1147,7 +1078,6 @@ You touch a willing creature. Until the spell ends, the target's skin assumes a 
 
 Choose any number of creatures within range. For the duration, each target has Advantage on Wisdom saving throws and Death Saving Throws and regains the maximum number of Hit Points possible from any healing.
 
-*[Page 245]*
 ### Beast Sense
 *2nd-level Divination*
 
@@ -1158,7 +1088,6 @@ Choose any number of creatures within range. For the duration, each target has A
 
 You touch a willing Beast. For the duration, you can perceive through the Beast's senses as well as your own. When perceiving through the Beast's senses, you benefit from any special senses it has.
 
-*[Page 245]*
 ### Befuddlement
 *8th-level Enchantment*
 
@@ -1173,7 +1102,9 @@ On a failed save, the target takes 10d12 Psychic damage and can't cast spells or
 
 On a successful save, the target takes half as much damage only.
 
-*[Page 246]*
+::: {#p246}
+:::
+
 ### Bestow Curse
 *3rd-level Necromancy*
 
@@ -1194,7 +1125,6 @@ You touch a creature, which must succeed on a Wisdom saving throw or become curs
 
 If you cast this spell using a level 4 spell slot, you can maintain Concentration on it for up to 10 minutes. If you use a level 5+ spell slot, the spell doesn't require Concentration, and the duration becomes 8 hours (level 5-6 slot) or 24 hours (level 7-8 slot). If you use a level 9 spell slot, the spell lasts until dispelled.
 
-*[Page 246]*
 ### Bigby's Hand
 *5th-level Evocation*
 
@@ -1219,7 +1149,9 @@ When you cast the spell and as a Bonus Action on your later turns, you can move 
 
 The damage of the Clenched Fist increases by 5-9 and the damage of the Grasping Hand increases by 5-9 for each spell slot level above 5.
 
-*[Page 247]*
+::: {#p247}
+:::
+
 ### Blade Barrier
 *6th-level Evocation*
 
@@ -1232,7 +1164,6 @@ You create a wall of whirling blades made of magical energy. The wall appears wi
 
 Any creature in the wall's space makes a Dexterity saving throw, taking 6d10 Force damage on a failed save or half as much damage on a successful one. A creature also makes that save if it enters the wall's space or ends its turn there. A creature makes that save only once per turn.
 
-*[Page 247]*
 ### Blade Ward
 *Abjuration Cantrip*
 
@@ -1243,7 +1174,6 @@ Any creature in the wall's space makes a Dexterity saving throw, taking 6d10 For
 
 Whenever a creature makes an attack roll against you before the spell ends, the attacker subtracts 1d4 from the attack roll.
 
-*[Page 247]*
 ### Bless
 *1st-level Enchantment*
 
@@ -1259,7 +1189,6 @@ You bless up to three creatures within range. Whenever a target makes an attack 
 
 You can target one additional creature for each spell slot level above 1.
 
-*[Page 247]*
 ### Blight
 *4th-level Necromancy*
 
@@ -1277,7 +1206,6 @@ Alternatively, target a nonmagical plant that isn't a creature, such as a tree o
 
 The damage increases by 4-9 for each spell slot level above 4.
 
-*[Page 247]*
 ### Blinding Smite
 *3rd-level Evocation*
 
@@ -1293,7 +1221,9 @@ The target hit by the strike takes an extra 3d8 Radiant damage from the attack, 
 
 The extra damage increases by 3-9 for each spell slot level above 3.
 
-*[Page 248]*
+::: {#p248}
+:::
+
 ### Blindness/Deafness
 *2nd-level Transmutation*
 
@@ -1309,7 +1239,6 @@ One creature that you can see within range must succeed on a Constitution saving
 
 You can target one additional creature for each spell slot level above 2.
 
-*[Page 248]*
 ### Blink
 *3rd-level Transmutation*
 
@@ -1322,7 +1251,6 @@ Roll 1d6 at the end of each of your turns for the duration. On a roll of 4-6, yo
 
 You return to the other plane at the start of your next turn and when the spell ends if you are on the Ethereal Plane. You return to an unoccupied space of your choice that you can see within 10 feet of the space you left. If no unoccupied space is available within that range, you appear in the nearest unoccupied space.
 
-*[Page 248]*
 ### Blur
 *2nd-level Illusion*
 
@@ -1333,7 +1261,6 @@ You return to the other plane at the start of your next turn and when the spell 
 
 Your body becomes blurred. For the duration, any creature has Disadvantage on attack rolls against you. An attacker is immune to this effect if it perceives you with Blindsight or Truesight.
 
-*[Page 248]*
 ### Burning Hands
 *1st-level Evocation*
 
@@ -1353,7 +1280,6 @@ The damage increases by 1-9 for each spell slot level above 1.
 
 ## C
 
-*[Page 248]*
 ### Call Lightning
 *3rd-level Conjuration*
 
@@ -1375,7 +1301,9 @@ If you're outdoors in a storm when you cast this spell, the spell gives you cont
 
 The damage increases by 3-9 for each spell slot level above 3.
 
-*[Page 249]*
+::: {#p249}
+:::
+
 ### Calm Emotions
 *2nd-level Enchantment*
 
@@ -1389,7 +1317,6 @@ Each Humanoid in a 20-foot-radius Sphere centered on a point you choose within r
 * The creature has Immunity to the Charmed and Frightened conditions until the spell ends. If the creature was already Charmed or Frightened, those conditions are suppressed for the duration.
 * The creature becomes Indifferent about creatures of your choice that it's Hostile toward. This indifference ends if the target takes damage or witnesses its allies taking damage. When the spell ends, the creature's attitude returns to normal.
 
-*[Page 249]*
 ### Chain Lightning
 *6th-level Evocation*
 
@@ -1407,7 +1334,6 @@ Each target makes a Dexterity saving throw, taking 10d8 Lightning damage on a fa
 
 One additional bolt leaps from the first target to another target for each spell slot level above 6.
 
-*[Page 249]*
 ### Charm Monster
 *4th-level Enchantment*
 
@@ -1423,7 +1349,6 @@ One creature you can see within range makes a Wisdom saving throw. It does so wi
 
 You can target one additional creature for each spell slot level above 4.
 
-*[Page 249]*
 ### Charm Person
 *1st-level Enchantment*
 
@@ -1439,7 +1364,6 @@ One Humanoid you can see within range makes a Wisdom saving throw. It does so wi
 
 You can target one additional creature for each spell slot level above 1.
 
-*[Page 249]*
 ### Chill Touch
 *Necromancy Cantrip*
 
@@ -1455,7 +1379,6 @@ Channeling the chill of the grave, make a melee spell attack against a target wi
 
 The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10).
 
-*[Page 249]*
 ### Chromatic Orb
 *1st-level Evocation*
 
@@ -1473,7 +1396,9 @@ If you roll the same number on two or more of the d8s, the orb leaps to a differ
 
 The damage increases by 1-9 for each spell slot level above 1. The orb can leap a maximum number of times equal to the level of the slot expended, and a creature can be targeted only once by each casting of this spell.
 
-*[Page 250]*
+::: {#p250}
+:::
+
 ### Circle of Death
 *6th-level Necromancy*
 
@@ -1489,7 +1414,6 @@ Negative energy ripples out in a 60-foot-radius Sphere from a point you choose w
 
 The damage increases by 6-9 for each spell slot level above 6.
 
-*[Page 250]*
 ### Circle of Power
 *5th-level Abjuration*
 
@@ -1500,7 +1424,6 @@ The damage increases by 6-9 for each spell slot level above 6.
 
 An aura radiates from you in a 30-foot Emanation for the duration. While in the aura, you and your allies have Advantage on saving throws against spells and other magical effects. When an affected creature makes a saving throw against a spell or magical effect that allows a save to take only half damage, it takes no damage if it succeeds on the save.
 
-*[Page 250]*
 ### Clairvoyance
 *3rd-level Divination*
 
@@ -1515,7 +1438,9 @@ When you cast the spell, choose seeing or hearing. You can use the chosen sense 
 
 A creature that sees the sensor (such as a creature benefiting from *See Invisibility* or Truesight) sees a luminous orb about the size of your fist.
 
-*[Page 251]*
+::: {#p251}
+:::
+
 ### Clone
 *8th-level Necromancy*
 
@@ -1528,7 +1453,6 @@ You touch a creature or at least 1 cubic inch of its flesh. An inert duplicate o
 
 If the original creature dies after the clone finishes forming, the creature's soul transfers to the clone if the soul is free and willing to return. The clone is physically identical to the original and has the same personality, memories, and abilities, but none of the original's equipment. The creature's original remains, if any, become inert and can't be revived, since the creature's soul is elsewhere.
 
-*[Page 251]*
 ### Cloud of Daggers
 *2nd-level Conjuration*
 
@@ -1546,7 +1470,6 @@ On your later turns, you can take a Magic action to teleport the Cube up to 30 f
 
 The damage increases by 2-9 for each spell slot level above 2.
 
-*[Page 251]*
 ### Cloudkill
 *5th-level Conjuration*
 
@@ -1566,7 +1489,6 @@ The Sphere moves 10 feet away from you at the start of each of your turns.
 
 The damage increases by 5-9 for each spell slot level above 5.
 
-*[Page 251]*
 ### Color Spray
 *1st-level Illusion*
 
@@ -1577,7 +1499,6 @@ The damage increases by 5-9 for each spell slot level above 5.
 
 You launch a dazzling array of flashing, colorful light. Each creature in a 15-foot Cone originating from you must succeed on a Constitution saving throw or have the Blinded condition until the end of your next turn.
 
-*[Page 251]*
 ### Command
 *1st-level Enchantment*
 
@@ -1599,7 +1520,6 @@ You speak a one-word command to a creature you can see within range. The target 
 
 You can affect one additional creature for each spell slot level above 1.
 
-*[Page 251]*
 ### Commune
 *5th-level Divination*
 
@@ -1614,7 +1534,9 @@ Divine beings aren't necessarily omniscient, so you might receive "unclear" as a
 
 If you cast the spell more than once before finishing a Long Rest, there is a cumulative 25 percent chance for each casting after the first that you get no answer.
 
-*[Page 252]*
+::: {#p252}
+:::
+
 ### Commune with Nature
 *5th-level Divination*
 
@@ -1635,7 +1557,6 @@ Choose three of the following facts; you learn those facts as they pertain to th
 
 For example, you could determine the location of a powerful monster in the area, the locations of bodies of water, and the locations of any towns.
 
-*[Page 252]*
 ### Compelled Duel
 *1st-level Enchantment*
 
@@ -1648,7 +1569,6 @@ You try to compel a creature into a duel. One creature that you can see within r
 
 The spell ends if you make an attack roll against a creature other than the target, if you cast a spell on an enemy other than the target, if an ally of yours damages the target, or if you end your turn more than 30 feet away from the target.
 
-*[Page 252]*
 ### Comprehend Languages
 *1st-level Divination*
 
@@ -1659,7 +1579,6 @@ The spell ends if you make an attack roll against a creature other than the targ
 
 For the duration, you understand the literal meaning of any language that you hear or see signed. You also understand any written language that you see, but you must be touching the surface on which the words are written. It takes about 1 minute to read one page of text. This spell doesn't decode symbols or secret messages.
 
-*[Page 252]*
 ### Compulsion
 *4th-level Enchantment*
 
@@ -1672,7 +1591,9 @@ Each creature of your choice that you can see within range must succeed on a Wis
 
 For the duration, you can take a Bonus Action to designate a direction that is horizontal to you. Each Charmed target must use as much of its movement as possible to move in that direction on its next turn, taking the safest route. After moving in this way, a target repeats the save, ending the spell on itself on a success.
 
-*[Page 253]*
+::: {#p253}
+:::
+
 ### Cone of Cold
 *5th-level Evocation*
 
@@ -1688,7 +1609,6 @@ You unleash a blast of cold air. Each creature in a 60-foot Cone originating fro
 
 The damage increases by 5-9 for each spell slot level above 5.
 
-*[Page 253]*
 ### Confusion
 *4th-level Enchantment*
 
@@ -1713,7 +1633,9 @@ At the end of each of its turns, an affected target repeats the save, ending the
 
 The Sphere's radius increases by 5 feet for each spell slot level above 4.
 
-*[Page 254]*
+::: {#p254}
+:::
+
 ### Conjure Animals
 *3rd-level Conjuration*
 
@@ -1733,7 +1655,6 @@ Whenever the pack moves within 10 feet of a creature you can see and whenever a 
 
 The damage increases by 3-9 for each spell slot level above 3.
 
-*[Page 254]*
 ### Conjure Barrage
 *3rd-level Conjuration*
 
@@ -1749,7 +1670,6 @@ You brandish the weapon used to cast the spell and conjure similar spectral weap
 
 The damage increases by 3-9 for each spell slot level above 3.
 
-*[Page 254]*
 ### Conjure Celestial
 *7th-level Conjuration*
 
@@ -1772,7 +1692,6 @@ Whenever the Cylinder moves into the space of a creature you can see and wheneve
 
 The healing and damage increase by 7-9 for each spell slot level above 7.
 
-*[Page 254]*
 ### Conjure Elemental
 *5th-level Conjuration*
 
@@ -1790,7 +1709,9 @@ Whenever a creature you can see enters the spirit's space or starts its turn wit
 
 The damage increases by 5-9 for each spell slot level above 5.
 
-*[Page 255]*
+::: {#p255}
+:::
+
 ### Conjure Fey
 *6th-level Conjuration*
 
@@ -1808,7 +1729,6 @@ As a Bonus Action on your later turns, you can teleport the spirit to an unoccup
 
 The damage increases by 6-9 for each spell slot level above 6.
 
-*[Page 255]*
 ### Conjure Minor Elementals
 *4th-level Conjuration*
 
@@ -1826,7 +1746,6 @@ In addition, the ground in the Emanation is Difficult Terrain for your enemies.
 
 The damage increases by 4-9 for each spell slot level above 4.
 
-*[Page 255]*
 ### Conjure Volley
 *5th-level Conjuration*
 
@@ -1837,7 +1756,6 @@ The damage increases by 4-9 for each spell slot level above 4.
 
 You brandish the weapon used to cast the spell and choose a point within range. Hundreds of similar spectral weapons (or ammunition appropriate to the weapon) fall in a volley and then disappear. Each creature of your choice that you can see in a 40-foot-radius, 20-foot-high Cylinder centered on that point makes a Dexterity saving throw. A creature takes 8d8 Force damage on a failed save or half as much damage on a successful one.
 
-*[Page 255]*
 ### Conjure Woodland Beings
 *4th-level Conjuration*
 
@@ -1855,7 +1773,6 @@ In addition, you can take the Disengage action as a Bonus Action for the spell's
 
 The damage increases by 4-9 for each spell slot level above 4.
 
-*[Page 255]*
 ### Contact Other Plane
 *5th-level Divination*
 
@@ -1868,7 +1785,9 @@ You mentally contact a demigod, the spirit of a long-dead sage, or some other kn
 
 On a failed save, you take 6d6 Psychic damage and have the Incapacitated condition until you finish a Long Rest. A *Greater Restoration* spell cast on you ends this effect.
 
-*[Page 256]*
+::: {#p256}
+:::
+
 ### Contagion
 *5th-level Necromancy*
 
@@ -1883,7 +1802,6 @@ The target must repeat the saving throw at the end of each of its turns until it
 
 Whenever the Poisoned target receives an effect that would end the Poisoned condition, the target must succeed on a Constitution saving throw, or the Poisoned condition doesn't end on it.
 
-*[Page 256]*
 ### Contingency
 *6th-level Abjuration*
 
@@ -1898,7 +1816,6 @@ The contingent spell takes effect immediately after the trigger occurs for the f
 
 The contingent spell takes effect only on you, even if it can normally target others. You can use only one Contingency spell at a time. If you cast this spell again, the effect of another Contingency spell on you ends. Also, Contingency ends on you if its material component is ever not on your person.
 
-*[Page 256]*
 ### Continual Flame
 *2nd-level Evocation*
 
@@ -1909,7 +1826,6 @@ The contingent spell takes effect only on you, even if it can normally target ot
 
 A flame springs from an object that you touch. The effect casts Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. It looks like a regular flame, but it creates no heat and consumes no fuel. The flame can be covered or hidden but not smothered or quenched.
 
-*[Page 256]*
 ### Control Water
 *4th-level Transmutation*
 
@@ -1938,7 +1854,9 @@ You cause flowing water in the area to move in a direction you choose, even if t
 
 You cause a whirlpool to form in the center of the area, which must be at least 50 feet square and 25 feet deep. The whirlpool lasts until you choose a different effect or the spell ends. The whirlpool is 5 feet wide at the base, up to 50 feet wide at the top, and 25 feet tall. Any creature in the water and within 25 feet of the whirlpool is pulled 10 feet toward it. When a creature enters the whirlpool for the first time on a turn or ends its turn there, it makes a Strength saving throw. On a failed save, the creature takes 2d8 Bludgeoning damage. On a successful save, the creature takes half as much damage. A creature can swim away from the whirlpool only if it first takes an action to pull away and succeeds on a Strength (Athletics) check against your spell save DC.
 
-*[Page 257]*
+::: {#p257}
+:::
+
 ### Control Weather
 *8th-level Transmutation*
 
@@ -1953,7 +1871,7 @@ When you cast the spell, you change the current weather conditions, which are de
 
 When you change the weather conditions, find a current condition on the following tables and change its stage by one, up or down. When changing the wind, you can change its direction.
 
-**Table: Precipitation**
+#### Table: Precipitation
 
 | Stage | Condition |
 | --- | --- |
@@ -1963,7 +1881,7 @@ When you change the weather conditions, find a current condition on the followin
 | 4 | Rain, hail, or snow |
 | 5 | Torrential rain, driving hail, or blizzard |
 
-**Table: Temperature**
+#### Table: Temperature
 
 | Stage | Condition |
 | --- | --- |
@@ -1974,7 +1892,7 @@ When you change the weather conditions, find a current condition on the followin
 | 5 | Cold |
 | 6 | Freezing |
 
-**Table: Wind**
+#### Table: Wind
 
 | Stage | Condition |
 | --- | --- |
@@ -1984,7 +1902,9 @@ When you change the weather conditions, find a current condition on the followin
 | 4 | Gale |
 | 5 | Storm |
 
-*[Page 258]*
+::: {#p258}
+:::
+
 ### Cordon of Arrows
 *2nd-level Transmutation*
 
@@ -2002,7 +1922,6 @@ When you cast this spell, you can designate any creatures you choose, and the sp
 
 The amount of ammunition that can be affected increases by two for each spell slot level above 2.
 
-*[Page 258]*
 ### Counterspell
 *3rd-level Abjuration*
 
@@ -2013,7 +1932,6 @@ The amount of ammunition that can be affected increases by two for each spell sl
 
 You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted. If that spell was cast with a spell slot, the slot isn't expended.
 
-*[Page 258]*
 ### Create Food and Water
 *3rd-level Conjuration*
 
@@ -2024,7 +1942,6 @@ You attempt to interrupt a creature in the process of casting a spell. The creat
 
 You create 45 pounds of food and 30 gallons of fresh water on the ground or in containers within range—both useful in fending off the hazards of malnutrition and dehydration. The food is bland but nourishing and looks like a food of your choice, and the water is clean. The food spoils after 24 hours if uneaten.
 
-*[Page 258]*
 ### Create or Destroy Water
 *1st-level Transmutation*
 
@@ -2043,7 +1960,6 @@ You do one of the following:
 
 You create or destroy 10 additional gallons of water, or the size of the Cube increases by 5 feet, for each spell slot level above 1.
 
-*[Page 258]*
 ### Create Undead
 *6th-level Necromancy*
 
@@ -2063,7 +1979,9 @@ The creature is under your control for 24 hours, after which it stops obeying an
 
 If you use a level 7 spell slot, you can animate or reassert control over four Ghouls. If you use a level 8 spell slot, you can animate or reassert control over five Ghouls or two Ghasts or Wights. If you use a level 9 spell slot, you can animate or reassert control over six Ghouls, three Ghasts or Wights, or two Mummies. See the Monster Manual for these stat blocks.
 
-*[Page 259]*
+::: {#p259}
+:::
+
 ### Creation
 *5th-level Illusion*
 
@@ -2076,7 +1994,7 @@ You pull wisps of shadow material from the Shadowfell to create an object within
 
 The spell's duration depends on the object's material, as shown in the Materials table. If the object is composed of multiple materials, use the shortest duration. Using any object created by this spell as another spell's Material component causes the other spell to fail.
 
-**Table: Materials**
+#### Table: Materials
 
 | Material | Duration |
 | --- | --- |
@@ -2091,7 +2009,6 @@ The spell's duration depends on the object's material, as shown in the Materials
 
 The Cube increases by 5 feet for each spell slot level above 5.
 
-*[Page 259]*
 ### Crown of Madness
 *2nd-level Enchantment*
 
@@ -2106,7 +2023,6 @@ A spectral crown appears on the Charmed target's head, and it must use its actio
 
 On your later turns, you must take the Magic action to maintain control of the target, or the spell ends.
 
-*[Page 259]*
 ### Crusader's Mantle
 *3rd-level Evocation*
 
@@ -2117,7 +2033,6 @@ On your later turns, you must take the Magic action to maintain control of the t
 
 You radiate a magical aura in a 30-foot Emanation. While in the aura, you and your allies each deal an extra 1d4 Radiant damage when hitting with a weapon or an Unarmed Strike.
 
-*[Page 259]*
 ### Cure Wounds
 *1st-level Abjuration*
 
@@ -2135,7 +2050,6 @@ The healing increases by 1-9 for each spell slot level above 1.
 
 ## D
 
-*[Page 259]*
 ### Dancing Lights
 *Illusion Cantrip*
 
@@ -2148,7 +2062,9 @@ You create up to four torch-size lights within range, making them appear as torc
 
 As a Bonus Action, you can move the lights up to 60 feet to a space within range. A light must be within 20 feet of another light created by this spell, and a light vanishes if it exceeds the spell's range.
 
-*[Page 260]*
+::: {#p260}
+:::
+
 ### Darkness
 *2nd-level Evocation*
 
@@ -2163,7 +2079,6 @@ Alternatively, you cast the spell on an object that isn't being worn or carried,
 
 If any of this spell's area overlaps with an area of Bright Light or Dim Light created by a spell of level 2 or lower, that other spell is dispelled.
 
-*[Page 260]*
 ### Darkvision
 *2nd-level Transmutation*
 
@@ -2174,7 +2089,6 @@ If any of this spell's area overlaps with an area of Bright Light or Dim Light c
 
 For the duration, a willing creature you touch has Darkvision with a range of 150 feet.
 
-*[Page 260]*
 ### Daylight
 *3rd-level Evocation*
 
@@ -2189,7 +2103,9 @@ Alternatively, you cast the spell on an object that isn't being worn or carried,
 
 If any of this spell's area overlaps with an area of Darkness created by a spell of level 3 or lower, that other spell is dispelled.
 
-*[Page 261]*
+::: {#p261}
+:::
+
 ### Death Ward
 *4th-level Abjuration*
 
@@ -2202,7 +2118,6 @@ You touch a creature and grant it a measure of protection from death. The first 
 
 If the spell is still in effect when the target is subjected to an effect that would kill it instantly without dealing damage, that effect is negated against the target, and the spell ends.
 
-*[Page 261]*
 ### Delayed Blast Fireball
 *7th-level Evocation*
 
@@ -2224,7 +2139,6 @@ When the bead explodes, flammable objects in the explosion that aren't being wor
 
 The base damage increases by 7-9 for each spell slot level above 7.
 
-*[Page 261]*
 ### Demiplane
 *8th-level Conjuration*
 
@@ -2239,7 +2153,6 @@ When the spell ends, the door vanishes, and any objects inside the demiplane rem
 
 Each time you cast this spell, you can create a new demiplane or connect the shadowy door to a demiplane you created with a previous casting of this spell. Additionally, if you know the nature and contents of a demiplane created by a casting of this spell by another creature, you can connect the shadowy door to that demiplane instead.
 
-*[Page 261]*
 ### Destructive Wave
 *5th-level Evocation*
 
@@ -2250,7 +2163,6 @@ Each time you cast this spell, you can create a new demiplane or connect the sha
 
 Destructive energy ripples outward from you in a 30-foot Emanation. Each creature you choose in the Emanation makes a Constitution saving throw. On a failed save, a target takes 5d6 Thunder damage and 5d6 Radiant or Necrotic damage (your choice) and has the Prone condition. On a successful save, a target takes half as much damage only.
 
-*[Page 261]*
 ### Detect Evil and Good
 *1st-level Divination*
 
@@ -2263,7 +2175,9 @@ For the duration, you sense the location of any Aberration, Celestial, Elemental
 
 The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead.
 
-*[Page 262]*
+::: {#p262}
+:::
+
 ### Detect Magic
 *1st-level Divination*
 
@@ -2276,7 +2190,6 @@ For the duration, you sense the presence of magical effects within 30 feet of yo
 
 The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead.
 
-*[Page 262]*
 ### Detect Poison and Disease
 *1st-level Divination*
 
@@ -2289,7 +2202,6 @@ For the duration, you sense the location of poisons, poisonous or venomous creat
 
 The spell is blocked by 1 foot of stone, dirt, or wood; 1 inch of metal; or a thin sheet of lead.
 
-*[Page 262]*
 ### Detect Thoughts
 *2nd-level Divination*
 
@@ -2312,7 +2224,6 @@ Target one creature you can see within 30 feet of yourself or one creature withi
 
 As a Magic action on your next turn, you can try to probe deeper into the target's mind. If you probe deeper, the target makes a Wisdom saving throw. On a failed save, you discern the target's reasoning, emotions, and something that looms large in its mind (such as a worry, love, or hate). On a successful save, the spell ends. Either way, the target knows that you are probing into its mind, and until you shift your attention away from the target's mind, the target can take an action on its turn to make an Intelligence (Arcana) check against your spell save DC, ending the spell on a success.
 
-*[Page 262]*
 ### Dimension Door
 *4th-level Conjuration*
 
@@ -2327,7 +2238,6 @@ You can also teleport one willing creature. The creature must be within 5 feet o
 
 If you, the other creature, or both would arrive in a space occupied by a creature or completely filled by one or more objects, you and any creature traveling with you each take 4d6 Force damage, and the teleportation fails.
 
-*[Page 262]*
 ### Disguise Self
 *1st-level Illusion*
 
@@ -2342,7 +2252,9 @@ The changes wrought by this spell fail to hold up to physical inspection. For ex
 
 To discern that you are disguised, a creature must take the Study action to inspect your appearance and succeed on an Intelligence (Investigation) check against your spell save DC.
 
-*[Page 263]*
+::: {#p263}
+:::
+
 ### Disintegrate
 *6th-level Transmutation*
 
@@ -2362,7 +2274,6 @@ This spell automatically disintegrates a Large or smaller nonmagical object or a
 
 The damage increases by 6-9 for each spell slot level above 6.
 
-*[Page 263]*
 ### Dispel Evil and Good
 *5th-level Abjuration*
 
@@ -2381,7 +2292,9 @@ As a Magic action, you touch a creature that is possessed by or has the Charmed 
 
 As a Magic action, you target one creature you can see within 5 feet of you that has one of the creature types above. The target must succeed on a Charisma saving throw or be sent back to its home plane if it isn't there already. If they aren't on their home plane, Undead are sent to the Shadowfell, and Fey are sent to the Feywild.
 
-*[Page 264]*
+::: {#p264}
+:::
+
 ### Dispel Magic
 *3rd-level Abjuration*
 
@@ -2397,7 +2310,6 @@ Choose one creature, object, or magical effect within range. Any ongoing spell o
 
 You automatically end a spell on the target if the spell's level is equal to or less than the level of the spell slot you use.
 
-*[Page 264]*
 ### Dissonant Whispers
 *1st-level Enchantment*
 
@@ -2413,7 +2325,6 @@ One creature of your choice that you can see within range hears a discordant mel
 
 The damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 264]*
 ### Divination
 *4th-level Divination*
 
@@ -2426,7 +2337,9 @@ This spell puts you in contact with a god or a god's servants. You ask one quest
 
 If you cast the spell more than once before finishing a Long Rest, there is a cumulative 25 percent chance for each casting after the first that you get no answer.
 
-*[Page 265]*
+::: {#p265}
+:::
+
 ### Divine Favor
 *1st-level Transmutation*
 
@@ -2437,7 +2350,6 @@ If you cast the spell more than once before finishing a Long Rest, there is a cu
 
 Until the spell ends, your attacks with weapons deal an extra 1d4 Radiant damage on a hit.
 
-*[Page 265]*
 ### Divine Smite
 *1st-level Evocation*
 
@@ -2453,7 +2365,6 @@ The target takes an extra 2d8 Radiant damage from the attack. The damage increas
 
 The damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 265]*
 ### Divine Word
 *7th-level Evocation*
 
@@ -2464,7 +2375,7 @@ The damage increases by 1-9 for each spell slot level above 1.
 
 You utter a word imbued with power from the Upper Planes. Each creature of your choice in range makes a Charisma saving throw. On a failed save, a target that has 50 Hit Points or fewer suffers an effect based on its current Hit Points, as shown in the Divine Word Effects table. Regardless of its Hit Points, a Celestial, an Elemental, a Fey, or a Fiend target that fails its save is forced back to its plane of origin (if it isn't there already) and can't return to the current plane for 24 hours by any means short of a *Wish* spell.
 
-**Table: Divine Word Effects**
+#### Table: Divine Word Effects
 
 | Hit Points | Effect |
 | --- | --- |
@@ -2473,7 +2384,6 @@ You utter a word imbued with power from the Upper Planes. Each creature of your 
 | 31-40 | The target has the Blinded and Deafened conditions for 10 minutes. |
 | 41-50 | The target has the Deafened condition for 1 minute. |
 
-*[Page 265]*
 ### Dominate Beast
 *4th-level Enchantment*
 
@@ -2493,7 +2403,6 @@ You can command the target to take a Reaction but must take your own Reaction to
 
 Your Concentration can last longer with a spell slot of level 5 (up to 10 minutes), 6 (up to 1 hour), or 7+ (up to 8 hours).
 
-*[Page 265]*
 ### Dominate Monster
 *8th-level Enchantment*
 
@@ -2513,7 +2422,9 @@ You can command the target to take a Reaction but must take your own Reaction to
 
 Your Concentration can last longer with a level 9 spell slot (up to 8 hours).
 
-*[Page 266]*
+::: {#p266}
+:::
+
 ### Dominate Person
 *5th-level Enchantment*
 
@@ -2533,7 +2444,6 @@ You can command the target to take a Reaction but must take your own Reaction to
 
 Your Concentration can last longer with a spell slot of level 6 (up to 10 minutes), 7 (up to 1 hour), or 8+ (up to 8 hours).
 
-*[Page 266]*
 ### Dragon's Breath
 *2nd-level Transmutation*
 
@@ -2549,7 +2459,6 @@ You touch one willing creature, and choose Acid, Cold, Fire, Lightning, or Poiso
 
 The damage increases by 2-9 for each spell slot level above 2.
 
-*[Page 266]*
 ### Drawmij's Instant Summons
 *6th-level Conjuration*
 
@@ -2564,7 +2473,6 @@ Thereafter, you can take a Magic action to speak the object's name and crush the
 
 If another creature is holding or carrying the object, crushing the sapphire doesn't transport it, but instead you learn who that creature is and where that creature is currently located.
 
-*[Page 266]*
 ### Dream
 *5th-level Illusion*
 
@@ -2581,7 +2489,6 @@ If the target is awake when you cast the spell, the messenger knows it and can e
 
 You can make the messenger terrifying to the target. If you do so, the messenger can deliver a message of no more than ten words, and then the target makes a Wisdom saving throw. On a failed save, the target gains no benefit from its rest, and it takes 3d6 Psychic damage when it wakes up.
 
-*[Page 266]*
 ### Druidcraft
 *Transmutation Cantrip*
 
@@ -2610,7 +2517,9 @@ You light or snuff out a candle, a torch, or a campfire.
 
 ## E
 
-*[Page 267]*
+::: {#p267}
+:::
+
 ### Earthquake
 *8th-level Transmutation*
 
@@ -2635,7 +2544,6 @@ The tremor deals 50 Bludgeoning damage to any structure in contact with the grou
 
 A creature within a distance from a collapsing structure equal to half the structure's height makes a Dexterity saving throw. On a failed save, the creature takes 12d6 Bludgeoning damage, has the Prone condition, and is buried in the rubble, requiring a DC 20 Strength (Athletics) check as an action to escape. On a successful save, the creature takes half as much damage only.
 
-*[Page 267]*
 ### Eldritch Blast
 *Evocation Cantrip*
 
@@ -2651,7 +2559,6 @@ You hurl a beam of crackling energy. Make a ranged spell attack against one crea
 
 The spell creates two beams at level 5, three beams at level 11, and four beams at level 17. You can direct the beams at the same target or at different ones. Make a separate attack roll for each beam.
 
-*[Page 267]*
 ### Elemental Weapon
 *3rd-level Transmutation*
 
@@ -2667,7 +2574,6 @@ A nonmagical weapon you touch becomes a magic weapon. Choose one of the followin
 
 If you use a level 5-6 spell slot, the bonus to attack rolls increases to +2, and the extra damage increases to 2d4. If you use a level 7+ spell slot, the bonus increases to +3, and the extra damage increases to 3d4.
 
-*[Page 267]*
 ### Elementalism
 *Transmutation Cantrip*
 
@@ -2698,7 +2604,9 @@ You create a spray of cool mist that lightly dampens creatures and objects in a 
 
 You cause dirt, sand, fire, smoke, mist, or water that can fit in a 1-foot Cube to assume a crude shape (such as that of a creature) for 1 hour.
 
-*[Page 268]*
+::: {#p268}
+:::
+
 ### Enhance Ability
 *2nd-level Transmutation*
 
@@ -2714,7 +2622,6 @@ You touch a creature and choose Strength, Dexterity, Intelligence, Wisdom, or Ch
 
 You can target one additional creature for each spell slot level above 2. You can choose a different ability for each target.
 
-*[Page 268]*
 ### Enlarge/Reduce
 *2nd-level Transmutation*
 
@@ -2735,7 +2642,6 @@ The target's size increases by one category—from Medium to Large, for example.
 
 The target's size decreases by one category—from Medium to Small, for example. The target also has Disadvantage on Strength checks and Strength saving throws. The target's attacks with its reduced weapons or Unarmed Strikes deal 1d4 less damage on a hit (this can't reduce the damage below 1).
 
-*[Page 268]*
 ### Ensnaring Strike
 *1st-level Conjuration*
 
@@ -2753,7 +2659,6 @@ While Restrained, the target takes 1d6 Piercing damage at the start of each of i
 
 The damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 268]*
 ### Entangle
 *1st-level Conjuration*
 
@@ -2766,7 +2671,9 @@ Grasping plants sprout from the ground in a 20-foot square within range. For the
 
 Each creature (other than you) in the area when you cast the spell must succeed on a Strength saving throw or have the Restrained condition until the spell ends. A Restrained creature can take an action to make a Strength (Athletics) check against your spell save DC. On a success, it frees itself from the grasping plants and is no longer Restrained by them.
 
-*[Page 269]*
+::: {#p269}
+:::
+
 ### Enthrall
 *2nd-level Enchantment*
 
@@ -2777,7 +2684,6 @@ Each creature (other than you) in the area when you cast the spell must succeed 
 
 You weave a distracting string of words, causing creatures of your choice that you can see within range to make a Wisdom saving throw. Any creature you or your companions are fighting automatically succeeds on this save. On a failed save, a target has a -10 penalty to Wisdom (Perception) checks and Passive Perception until the spell ends.
 
-*[Page 269]*
 ### Etherealness
 *7th-level Conjuration*
 
@@ -2799,7 +2705,9 @@ This spell ends instantly if you cast it while you are on the Ethereal Plane or 
 
 You can target up to three willing creatures (including yourself) for each spell slot level above 7. The creatures must be within 10 feet of you when you cast the spell.
 
-*[Page 270]*
+::: {#p270}
+:::
+
 ### Evard's Black Tentacles
 *4th-level Conjuration*
 
@@ -2814,7 +2722,6 @@ Each creature in that area makes a Strength saving throw. On a failed save, it t
 
 A Restrained creature can take an action to make a Strength (Athletics) check against your spell save DC, ending the condition on itself on a success.
 
-*[Page 270]*
 ### Expeditious Retreat
 *1st-level Transmutation*
 
@@ -2825,7 +2732,6 @@ A Restrained creature can take an action to make a Strength (Athletics) check ag
 
 You take the Dash action, and until the spell ends, you can take that action again as a Bonus Action.
 
-*[Page 270]*
 ### Eyebite
 *6th-level Necromancy*
 
@@ -2852,7 +2758,9 @@ The target has the Poisoned condition.
 
 ## F
 
-*[Page 271]*
+::: {#p271}
+:::
+
 ### Fabricate
 *4th-level Transmutation*
 
@@ -2867,7 +2775,6 @@ Choose raw materials that you can see within range. You can fabricate a Large or
 
 Creatures and magic items can't be created by this spell. You also can't use it to create items that require a high degree of skill—such as weapons and armor—unless you have proficiency with the type of Artisan's Tools used to craft such objects.
 
-*[Page 271]*
 ### Faerie Fire
 *1st-level Evocation*
 
@@ -2880,7 +2787,6 @@ Objects in a 20-foot Cube within range are outlined in blue, green, or violet li
 
 Attack rolls against an affected creature or object have Advantage if the attacker can see it.
 
-*[Page 271]*
 ### False Life
 *1st-level Necromancy*
 
@@ -2896,7 +2802,6 @@ You gain 2d4 + 4 Temporary Hit Points.
 
 You gain 5 additional Temporary Hit Points for each spell slot level above 1.
 
-*[Page 271]*
 ### Fear
 *3rd-level Illusion*
 
@@ -2909,7 +2814,6 @@ Each creature in a 30-foot Cone must succeed on a Wisdom saving throw or drop wh
 
 A Frightened creature takes the Dash action and moves away from you by the safest route on each of its turns unless there is nowhere to move. If the creature ends its turn in a space where it doesn't have line of sight to you, the creature makes a Wisdom saving throw. On a successful save, the spell ends on that creature.
 
-*[Page 271]*
 ### Feather Fall
 *1st-level Transmutation*
 
@@ -2920,7 +2824,6 @@ A Frightened creature takes the Dash action and moves away from you by the safes
 
 Choose up to five falling creatures within range. A falling creature's rate of descent slows to 60 feet per round until the spell ends. If a creature lands before the spell ends, the creature takes no damage from the fall, and the spell ends for that creature.
 
-*[Page 271]*
 ### Feign Death
 *3rd-level Necromancy*
 
@@ -2935,7 +2838,9 @@ For the duration, the target appears dead to outward inspection and to spells us
 
 The target also has Resistance to all damage except Psychic damage, and it has Immunity to the Poisoned condition.
 
-*[Page 272]*
+::: {#p272}
+:::
+
 ### Find Familiar
 *1st-level Conjuration*
 
@@ -2964,7 +2869,6 @@ When the familiar drops to 0 Hit Points, it disappears. It reappears after you c
 
 You can't have more than one familiar at a time. If you cast this spell while you have a familiar, you instead cause it to adopt a new eligible form.
 
-*[Page 272]*
 ### Find Steed
 *2nd-level Conjuration*
 
@@ -2990,7 +2894,9 @@ The steed disappears if it drops to 0 Hit Points or if you die. When it disappea
 
 Use the spell slot's level for the spell's level in the stat block.
 
-*[Page 273]*
+::: {#p273}
+:::
+
 ### Find the Path
 *6th-level Divination*
 
@@ -3003,7 +2909,6 @@ You magically sense the most direct physical route to a location you name. You m
 
 For the duration, as long as you are on the same plane of existence as the destination, you know how far it is and in what direction it lies. Whenever you face a choice of paths along the way there, you know which path is the most direct.
 
-*[Page 273]*
 ### Find Traps
 *2nd-level Divination*
 
@@ -3016,7 +2921,6 @@ You sense any trap within range that is within line of sight. A trap, for the pu
 
 This spell reveals that a trap is present but not its location. You do learn the general nature of the danger posed by a trap you sense.
 
-*[Page 273]*
 ### Finger of Death
 *7th-level Necromancy*
 
@@ -3029,7 +2933,9 @@ You unleash negative energy toward a creature you can see within range. The targ
 
 A Humanoid killed by this spell rises at the start of your next turn as a Zombie that follows your verbal orders.
 
-*[Page 274]*
+::: {#p274}
+:::
+
 ### Fire Bolt
 *Evocation Cantrip*
 
@@ -3045,7 +2951,6 @@ You hurl a mote of fire at a creature or an object within range. Make a ranged s
 
 The damage increases by 1d10 when you reach levels 5 (2d10), 11 (3d10), and 17 (4d10).
 
-*[Page 274]*
 ### Fire Shield
 *4th-level Evocation*
 
@@ -3060,7 +2965,9 @@ The flames provide you with a warm shield or a chill shield, as you choose. The 
 
 In addition, whenever a creature within 5 feet of you hits you with a melee attack roll, the shield erupts with flame. The attacker takes 2d8 Fire damage from a warm shield or 2d8 Cold damage from a chill shield.
 
-*[Page 275]*
+::: {#p275}
+:::
+
 ### Fire Storm
 *7th-level Evocation*
 
@@ -3073,7 +2980,6 @@ A storm of fire appears within range. The area of the storm consists of up to te
 
 Flammable objects in the area that aren't being worn or carried start burning.
 
-*[Page 274]*
 ### Fireball
 *3rd-level Evocation*
 
@@ -3091,7 +2997,6 @@ Flammable objects in the area that aren't being worn or carried start burning.
 
 The damage increases by 3-9 for each spell slot level above 3.
 
-*[Page 275]*
 ### Flame Blade
 *2nd-level Evocation*
 
@@ -3111,7 +3016,6 @@ The flaming blade sheds Bright Light in a 10-foot radius and Dim Light for an ad
 
 The damage increases by 2-9 for each spell slot level above 2.
 
-*[Page 275]*
 ### Flame Strike
 *5th-level Evocation*
 
@@ -3127,7 +3031,6 @@ A vertical column of brilliant fire roars down from above. Each creature in a 10
 
 The Fire damage and the Radiant damage increase by 5-9 for each spell slot level above 5.
 
-*[Page 275]*
 ### Flaming Sphere
 *2nd-level Evocation*
 
@@ -3147,7 +3050,6 @@ When you move the sphere, you can direct it over barriers up to 5 feet tall and 
 
 The damage increases by 2-9 for each spell slot level above 2.
 
-*[Page 275]*
 ### Flesh to Stone
 *6th-level Transmutation*
 
@@ -3162,7 +3064,9 @@ A Restrained target makes another Constitution saving throw at the end of each o
 
 If you maintain your Concentration on this spell for the entire possible duration, the target is Petrified until the condition is ended by *Greater Restoration* or similar magic.
 
-*[Page 276]*
+::: {#p276}
+:::
+
 ### Fly
 *3rd-level Transmutation*
 
@@ -3178,7 +3082,6 @@ You touch a willing creature. For the duration, the target gains a Fly Speed of 
 
 You can target one additional creature for each spell slot level above 3.
 
-*[Page 276]*
 ### Fog Cloud
 *1st-level Conjuration*
 
@@ -3194,7 +3097,6 @@ You create a 20-foot-radius Sphere of fog centered on a point within range. The 
 
 The fog's radius increases by 20 feet for each spell slot level above 1.
 
-*[Page 276]*
 ### Forbiddance
 *6th-level Abjuration*
 
@@ -3211,7 +3113,6 @@ You can designate a password when you cast the spell. A creature that speaks the
 
 The spell's area can't overlap with the area of another Forbiddance spell. If you cast *Forbiddance* every day for 30 days in the same location, the spell lasts until it is dispelled, and the Material components are consumed on the last casting.
 
-*[Page 276]*
 ### Forcecage
 *7th-level Evocation*
 
@@ -3230,7 +3131,6 @@ A creature inside the cage can't leave it by nonmagical means. If the creature t
 
 This spell can't be dispelled by *Dispel Magic*.
 
-*[Page 276]*
 ### Foresight
 *9th-level Divination*
 
@@ -3241,7 +3141,9 @@ This spell can't be dispelled by *Dispel Magic*.
 
 You touch a willing creature and bestow a limited ability to see into the immediate future. For the duration, the target has Advantage on D20 Tests, and other creatures have Disadvantage on attack rolls against it. The spell ends early if you cast it again.
 
-*[Page 277]*
+::: {#p277}
+:::
+
 ### Fount of Moonlight
 *4th-level Evocation*
 
@@ -3256,7 +3158,6 @@ Until the spell ends, you have Resistance to Radiant damage, and your melee atta
 
 In addition, immediately after you take damage from a creature you can see within 60 feet of yourself, you can take a Reaction to force the creature to make a Constitution saving throw. On a failed save, the creature has the Blinded condition until the end of your next turn.
 
-*[Page 277]*
 ### Freedom of Movement
 *4th-level Abjuration*
 
@@ -3274,7 +3175,6 @@ In addition, the target can spend 5 feet of movement to automatically escape fro
 
 You can target one additional creature for each spell slot level above 4.
 
-*[Page 277]*
 ### Friends
 *Enchantment Cantrip*
 
@@ -3289,7 +3189,6 @@ The spell ends early if the target takes damage or if you make an attack roll, d
 
 ## G
 
-*[Page 277]*
 ### Gaseous Form
 *3rd-level Transmutation*
 
@@ -3309,7 +3208,6 @@ The target can't talk or manipulate objects, and any objects it was carrying or 
 
 You can target one additional creature for each spell slot level above 3.
 
-*[Page 277]*
 ### Gate
 *9th-level Conjuration*
 
@@ -3326,7 +3224,9 @@ Deities and other planar rulers can prevent portals created by this spell from o
 
 When you cast this spell, you can speak the name of a specific creature (a pseudonym, title, or nickname doesn't work). If that creature is on a plane other than the one you are on, the portal opens next to the named creature and transports it to the nearest unoccupied space on your side of the portal. You gain no special power over the creature, and it is free to act as the DM deems appropriate. It might leave, attack you, or help you.
 
-*[Page 278]*
+::: {#p278}
+:::
+
 ### Geas
 *5th-level Enchantment*
 
@@ -3348,7 +3248,6 @@ A *Remove Curse*, *Greater Restoration*, or *Wish* spell ends this spell.
 
 If you use a level 7 or 8 spell slot, the duration is 365 days. If you use a level 9 spell slot, the spell lasts until it is ended by one of the spells mentioned above.
 
-*[Page 278]*
 ### Gentle Repose
 *2nd-level Necromancy*
 
@@ -3361,7 +3260,9 @@ You touch a corpse or other remains. For the duration, the target is protected f
 
 The spell also effectively extends the time limit on raising the target from the dead, since days spent under the influence of this spell don't count against the time limit of spells such as *Raise Dead*.
 
-*[Page 279]*
+::: {#p279}
+:::
+
 ### Giant Insect
 *4th-level Conjuration*
 
@@ -3379,7 +3280,6 @@ The creature is an ally to you and your allies. In combat, the creature shares y
 
 Use the spell slot's level for the spell's level in the stat block.
 
-*[Page 279]*
 ### Glibness
 *8th-level Enchantment*
 
@@ -3390,7 +3290,6 @@ Use the spell slot's level for the spell's level in the stat block.
 
 Until the spell ends, when you make a Charisma check, you can replace the number you roll with a 15. Additionally, no matter what you say, magic that would determine if you are telling the truth indicates that you are being truthful.
 
-*[Page 279]*
 ### Globe of Invulnerability
 *6th-level Abjuration*
 
@@ -3408,7 +3307,6 @@ Any spell of level 5 or lower cast from outside the barrier can't affect anythin
 
 The barrier blocks spells of 1 level higher for each spell slot level above 6.
 
-*[Page 279]*
 ### Glyph of Warding
 *3rd-level Abjuration*
 
@@ -3444,7 +3342,9 @@ When the glyph is triggered, the stored spell takes effect. If the spell has a t
 
 The damage of an explosive rune increases by 3-9 for each spell slot level above 3. If you create a spell glyph, you can store any spell of up to the same level as the spell slot you use for the Glyph of Warding.
 
-*[Page 280]*
+::: {#p280}
+:::
+
 ### Goodberry
 *1st-level Conjuration*
 
@@ -3457,7 +3357,6 @@ Ten berries appear in your hand and are infused with magic for the duration. A c
 
 Uneaten berries disappear when the spell ends.
 
-*[Page 280]*
 ### Grasping Vine
 *4th-level Conjuration*
 
@@ -3477,7 +3376,6 @@ As a Bonus Action on your later turns, you can repeat the attack against a creat
 
 The number of creatures the vine can grapple increases by one for each spell slot level above 4.
 
-*[Page 280]*
 ### Grease
 *1st-level Conjuration*
 
@@ -3490,7 +3388,9 @@ Nonflammable grease covers the ground in a 10-foot square centered on a point wi
 
 When the grease appears, each creature standing in its area must succeed on a Dexterity saving throw or have the Prone condition. A creature that enters the area or ends its turn there must also succeed on that save or fall Prone.
 
-*[Page 281]*
+::: {#p281}
+:::
+
 ### Greater Invisibility
 *4th-level Illusion*
 
@@ -3501,7 +3401,6 @@ When the grease appears, each creature standing in its area must succeed on a De
 
 A creature you touch has the Invisible condition until the spell ends.
 
-*[Page 281]*
 ### Greater Restoration
 *5th-level Abjuration*
 
@@ -3518,7 +3417,6 @@ You touch a creature and magically remove one of the following effects from it:
 * Any reduction to one of the target's ability scores
 * Any reduction to the target's Hit Point maximum
 
-*[Page 281]*
 ### Guardian of Faith
 *4th-level Conjuration*
 
@@ -3531,7 +3429,9 @@ A Large spectral guardian appears and hovers for the duration in an unoccupied s
 
 Any enemy that moves to a space within 10 feet of the guardian for the first time on a turn or starts its turn there makes a Dexterity saving throw, taking 20 Radiant damage on a failed save or half as much damage on a successful one. The guardian vanishes when it has dealt a total of 60 damage.
 
-*[Page 282]*
+::: {#p282}
+:::
+
 ### Guards and Wards
 *6th-level Abjuration*
 
@@ -3568,7 +3468,6 @@ Place one of the following magical effects within the warded area:
 * *Gust of Wind* in one corridor or room (the wind blows continuously while the spell lasts)
 * *Suggestion* in one 5-foot square; any creature that enters that square receives the suggestion mentally
 
-*[Page 282]*
 ### Guidance
 *Divination Cantrip*
 
@@ -3579,7 +3478,6 @@ Place one of the following magical effects within the warded area:
 
 You touch a willing creature and choose a skill. Until the spell ends, the creature adds 1d4 to any ability check using the chosen skill.
 
-*[Page 282]*
 ### Guiding Bolt
 *1st-level Evocation*
 
@@ -3595,7 +3493,6 @@ You hurl a bolt of light toward a creature within range. Make a ranged spell att
 
 The damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 282]*
 ### Gust of Wind
 *2nd-level Evocation*
 
@@ -3614,7 +3511,9 @@ As a Bonus Action on your later turns, you can change the direction in which the
 
 ## H
 
-*[Page 283]*
+::: {#p283}
+:::
+
 ### Hail of Thorns
 *1st-level Conjuration*
 
@@ -3630,7 +3529,6 @@ As you hit the creature, this spell creates a rain of thorns that sprouts from y
 
 The damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 283]*
 ### Hallow
 *5th-level Abjuration*
 
@@ -3660,7 +3558,6 @@ You bind an extra effect to the area from the list below:
 9. **Tongues.** Creatures of any types you choose can communicate with any other creature in the area even if they don't share a common language.
 10. **Vulnerability.** Creatures of any types you choose have Vulnerability to one damage type of your choice while in the area.
 
-*[Page 283]*
 ### Hallucinatory Terrain
 *4th-level Illusion*
 
@@ -3673,7 +3570,6 @@ You make natural terrain in a 150-foot Cube in range look, sound, and smell like
 
 The tactile characteristics of the terrain are unchanged, so creatures entering the area are likely to notice the illusion. If the difference isn't obvious by touch, a creature examining the illusion can take the Study action to make an Intelligence (Investigation) check against your spell save DC to disbelieve it. If a creature discerns that the terrain is illusory, the creature sees a vague image superimposed on the real terrain.
 
-*[Page 283]*
 ### Harm
 *6th-level Necromancy*
 
@@ -3684,7 +3580,9 @@ The tactile characteristics of the terrain are unchanged, so creatures entering 
 
 You unleash virulent magic on a creature you can see within range. The target makes a Constitution saving throw. On a failed save, it takes 14d6 Necrotic damage, and its Hit Point maximum is reduced by an amount equal to the Necrotic damage it took. On a successful save, it takes half as much damage only. This spell can't reduce a target's Hit Point maximum below 1.
 
-*[Page 284]*
+::: {#p284}
+:::
+
 ### Haste
 *3rd-level Transmutation*
 
@@ -3697,7 +3595,6 @@ Choose a willing creature that you can see within range. Until the spell ends, t
 
 When the spell ends, the target is Incapacitated and has a Speed of 0 until the end of its next turn, as a wave of lethargy washes over it.
 
-*[Page 284]*
 ### Heal
 *6th-level Abjuration*
 
@@ -3713,7 +3610,6 @@ Choose a creature that you can see within range. Positive energy washes through 
 
 The healing increases by 6-9 for each spell slot level above 6.
 
-*[Page 284]*
 ### Healing Word
 *1st-level Abjuration*
 
@@ -3729,7 +3625,6 @@ A creature of your choice that you can see within range regains Hit Points equal
 
 The healing increases by 1-9 for each spell slot level above 1.
 
-*[Page 284]*
 ### Heat Metal
 *2nd-level Transmutation*
 
@@ -3747,7 +3642,6 @@ If a creature is holding or wearing the object and takes the damage from it, the
 
 The damage increases by 2-9 for each spell slot level above 2.
 
-*[Page 284]*
 ### Hellish Rebuke
 *1st-level Evocation*
 
@@ -3763,7 +3657,6 @@ The creature that damaged you is momentarily surrounded by green flames. It make
 
 The damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 284]*
 ### Heroes' Feast
 *6th-level Conjuration*
 
@@ -3776,7 +3669,9 @@ You conjure a feast that appears on a surface in an unoccupied 10-foot Cube next
 
 A creature that partakes gains several benefits, which last for 24 hours. The creature has Resistance to Poison damage, and it has Immunity to the Frightened and Poisoned conditions. Its Hit Point maximum also increases by 2d10, and it gains the same number of Hit Points.
 
-*[Page 285]*
+::: {#p285}
+:::
+
 ### Heroism
 *1st-level Enchantment*
 
@@ -3792,7 +3687,6 @@ A willing creature you touch is imbued with bravery. Until the spell ends, the c
 
 You can target one additional creature for each spell slot level above 1.
 
-*[Page 285]*
 ### Hex
 *1st-level Enchantment*
 
@@ -3810,7 +3704,6 @@ If the target drops to 0 Hit Points before this spell ends, you can take a Bonus
 
 Your Concentration can last longer with a spell slot of level 2 (up to 4 hours), 3-4 (up to 8 hours), or 5+ (24 hours).
 
-*[Page 285]*
 ### Hold Monster
 *5th-level Enchantment*
 
@@ -3826,7 +3719,9 @@ Choose a creature that you can see within range. The target must succeed on a Wi
 
 You can target one additional creature for each spell slot level above 5.
 
-*[Page 286]*
+::: {#p286}
+:::
+
 ### Hold Person
 *2nd-level Enchantment*
 
@@ -3842,7 +3737,6 @@ Choose a Humanoid that you can see within range. The target must succeed on a Wi
 
 You can target one additional Humanoid for each spell slot level above 2.
 
-*[Page 286]*
 ### Holy Aura
 *8th-level Abjuration*
 
@@ -3853,7 +3747,6 @@ You can target one additional Humanoid for each spell slot level above 2.
 
 For the duration, you emit an aura in a 30-foot Emanation. While in the aura, creatures of your choice have Advantage on all saving throws, and other creatures have Disadvantage on attack rolls against them. In addition, when a Fiend or an Undead hits an affected creature with a melee attack roll, the attacker must succeed on a Constitution saving throw or have the Blinded condition until the end of its next turn.
 
-*[Page 286]*
 ### Hunger of Hadar
 *3rd-level Conjuration*
 
@@ -3871,7 +3764,9 @@ Any creature that starts its turn in the area takes 2d6 Cold damage. Any creatur
 
 The Cold or Acid damage (your choice) increases by 3-9 for each spell slot level above 3.
 
-*[Page 287]*
+::: {#p287}
+:::
+
 ### Hunter's Mark
 *1st-level Divination*
 
@@ -3889,7 +3784,6 @@ If the target drops to 0 Hit Points before this spell ends, you can take a Bonus
 
 Your Concentration can last longer with a spell slot of level 3-4 (up to 8 hours) or 5+ (up to 24 hours).
 
-*[Page 287]*
 ### Hypnotic Pattern
 *3rd-level Illusion*
 
@@ -3904,7 +3798,6 @@ The spell ends for an affected creature if it takes any damage or if someone els
 
 ## I
 
-*[Page 287]*
 ### Ice Knife
 *1st-level Conjuration*
 
@@ -3920,7 +3813,6 @@ You create a shard of ice and fling it at one creature within range. Make a rang
 
 The Cold damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 287]*
 ### Ice Storm
 *4th-level Evocation*
 
@@ -3938,7 +3830,6 @@ Hailstones turn ground in the Cylinder into Difficult Terrain until the end of y
 
 The Bludgeoning damage increases by 4-9 for each spell slot level above 4.
 
-*[Page 287]*
 ### Identify
 *1st-level Divination*
 
@@ -3951,7 +3842,9 @@ You touch an object throughout the spell's casting. If the object is a magic ite
 
 If you instead touch a creature throughout the casting, you learn which ongoing spells, if any, are currently affecting it.
 
-*[Page 288]*
+::: {#p288}
+:::
+
 ### Illusory Script
 *1st-level Illusion*
 
@@ -3966,7 +3859,6 @@ If the spell is dispelled, the original script and the illusion both disappear.
 
 A creature that has Truesight can read the hidden message.
 
-*[Page 288]*
 ### Imprisonment
 *9th-level Abjuration*
 
@@ -3991,7 +3883,6 @@ When you cast the spell, specify a trigger that will end it. The trigger can be 
 
 A *Dispel Magic* spell can end the spell only if it is cast with a level 9 spell slot, targeting either the prison or the component used to create it.
 
-*[Page 288]*
 ### Incendiary Cloud
 *8th-level Conjuration*
 
@@ -4006,7 +3897,6 @@ When the cloud appears, each creature in it makes a Dexterity saving throw, taki
 
 The cloud moves 10 feet away from you in a direction you choose at the start of each of your turns.
 
-*[Page 288]*
 ### Inflict Wounds
 *1st-level Necromancy*
 
@@ -4022,7 +3912,9 @@ A creature you touch makes a Constitution saving throw, taking 2d10 Necrotic dam
 
 The damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 289]*
+::: {#p289}
+:::
+
 ### Insect Plague
 *5th-level Conjuration*
 
@@ -4040,7 +3932,6 @@ When the swarm appears, each creature in it makes a Constitution saving throw, t
 
 The damage increases by 5-9 for each spell slot level above 5.
 
-*[Page 289]*
 ### Invisibility
 *2nd-level Illusion*
 
@@ -4058,7 +3949,6 @@ You can target one additional creature for each spell slot level above 2.
 
 ## J
 
-*[Page 289]*
 ### Jallarzi's Storm of Radiance
 *5th-level Evocation*
 
@@ -4076,7 +3966,9 @@ When the storm appears, each creature in it makes a Constitution saving throw, t
 
 The Radiant and Thunder damage increase by 5-9 for each spell slot level above 5.
 
-*[Page 290]*
+::: {#p290}
+:::
+
 ### Jump
 *1st-level Transmutation*
 
@@ -4094,7 +3986,6 @@ You can target one additional creature for each spell slot level above 1.
 
 ## K
 
-*[Page 290]*
 ### Knock
 *2nd-level Transmutation*
 
@@ -4113,7 +4004,6 @@ When you cast the spell, a loud knock, audible up to 300 feet away, emanates fro
 
 ## L
 
-*[Page 290]*
 ### Legend Lore
 *5th-level Divination*
 
@@ -4128,7 +4018,6 @@ The lore might consist of important details, amusing revelations, or even secret
 
 If the famous thing you chose isn't actually famous, you hear sad musical notes played on a trombone, and the spell fails.
 
-*[Page 290]*
 ### Leomund's Secret Chest
 *4th-level Conjuration*
 
@@ -4143,7 +4032,9 @@ While the chest remains on the Ethereal Plane, you can take a Magic action and t
 
 After 60 days, there is a cumulative 5 percent chance at the end of each day that the spell ends. The spell also ends if you cast this spell again or if the Tiny replica chest is destroyed. If the spell ends and the larger chest is on the Ethereal Plane, the chest remains there for you or someone else to find.
 
-*[Page 291]*
+::: {#p291}
+:::
+
 ### Leomund's Tiny Hut
 *3rd-level Evocation*
 
@@ -4160,7 +4051,6 @@ The atmosphere inside the Emanation is comfortable and dry, regardless of the we
 
 The spell ends early if you leave the Emanation or if you cast it again.
 
-*[Page 291]*
 ### Lesser Restoration
 *2nd-level Abjuration*
 
@@ -4171,7 +4061,6 @@ The spell ends early if you leave the Emanation or if you cast it again.
 
 You touch a creature and end one condition on it: Blinded, Deafened, Paralyzed, or Poisoned.
 
-*[Page 291]*
 ### Levitate
 *2nd-level Transmutation*
 
@@ -4186,7 +4075,9 @@ The target can move only by pushing or pulling against a fixed object or surface
 
 When the spell ends, the target floats gently to the ground if it is still aloft.
 
-*[Page 292]*
+::: {#p292}
+:::
+
 ### Light
 *Evocation Cantrip*
 
@@ -4199,7 +4090,6 @@ You touch one Large or smaller object that isn't being worn or carried by someon
 
 Covering the object with something opaque blocks the light. The spell ends if you cast it again.
 
-*[Page 292]*
 ### Lightning Arrow
 *3rd-level Transmutation*
 
@@ -4217,7 +4107,6 @@ The weapon or ammunition then returns to its normal form.
 
 The damage for both effects of the spell increases by 3-9 for each spell slot level above 3.
 
-*[Page 292]*
 ### Lightning Bolt
 *3rd-level Evocation*
 
@@ -4233,7 +4122,6 @@ A stroke of lightning forming a 100-foot-long, 5-foot-wide Line blasts out from 
 
 The damage increases by 3-9 for each spell slot level above 3.
 
-*[Page 292]*
 ### Locate Animals or Plants
 *2nd-level Divination*
 
@@ -4244,7 +4132,6 @@ The damage increases by 3-9 for each spell slot level above 3.
 
 Describe or name a specific kind of Beast, Plant creature, or nonmagical plant. You learn the direction and distance to the closest creature or plant of that kind within 5 miles, if any are present.
 
-*[Page 292]*
 ### Locate Creature
 *4th-level Divination*
 
@@ -4259,7 +4146,9 @@ The spell can locate a specific creature known to you or the nearest creature of
 
 This spell can't locate a creature if any thickness of lead blocks a direct path between you and the creature.
 
-*[Page 293]*
+::: {#p293}
+:::
+
 ### Locate Object
 *2nd-level Divination*
 
@@ -4274,7 +4163,6 @@ The spell can locate a specific object known to you if you have seen it up close
 
 This spell can't locate an object if any thickness of lead blocks a direct path between you and the object.
 
-*[Page 293]*
 ### Longstrider
 *1st-level Transmutation*
 
@@ -4292,7 +4180,6 @@ You can target one additional creature for each spell slot level above 1.
 
 ## M
 
-*[Page 293]*
 ### Mage Armor
 *1st-level Abjuration*
 
@@ -4303,7 +4190,6 @@ You can target one additional creature for each spell slot level above 1.
 
 You touch a willing creature who isn't wearing armor. Until the spell ends, the target's base AC becomes 13 plus its Dexterity modifier. The spell ends early if the target dons armor.
 
-*[Page 293]*
 ### Mage Hand
 *Conjuration Cantrip*
 
@@ -4320,7 +4206,6 @@ As a Magic action on your later turns, you can control the hand thus again. As p
 
 The hand can't attack, activate magic items, or carry more than 10 pounds.
 
-*[Page 293]*
 ### Magic Circle
 *3rd-level Abjuration*
 
@@ -4344,7 +4229,9 @@ Each time you cast this spell, you can cause its magic to operate in the reverse
 
 The duration increases by 1 hour for each spell slot level above 3.
 
-*[Page 294]*
+::: {#p294}
+:::
+
 ### Magic Jar
 *6th-level Necromancy*
 
@@ -4367,7 +4254,9 @@ If the container is destroyed or the spell ends, your soul returns to your body.
 
 When the spell ends, the container is destroyed.
 
-*[Page 295]*
+::: {#p295}
+:::
+
 ### Magic Missile
 *1st-level Evocation*
 
@@ -4383,7 +4272,6 @@ You create three glowing darts of magical force. Each dart strikes a creature of
 
 The spell creates one more dart for each spell slot level above 1.
 
-*[Page 295]*
 ### Magic Mouth
 *2nd-level Illusion*
 
@@ -4398,7 +4286,6 @@ When that trigger occurs, a magical mouth appears on the object and recites the 
 
 The trigger can be as general or as detailed as you like, though it must be based on visual or audible conditions that occur within 30 feet of the object. For example, you could instruct the mouth to speak when any creature moves within 30 feet of the object or when a silver bell rings within 30 feet of it.
 
-*[Page 295]*
 ### Magic Weapon
 *2nd-level Transmutation*
 
@@ -4414,7 +4301,6 @@ You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic
 
 The bonus increases to +2 with a level 3-5 spell slot. The bonus increases to +3 with a level 6+ spell slot.
 
-*[Page 295]*
 ### Major Image
 *3rd-level Illusion*
 
@@ -4434,7 +4320,9 @@ Physical interaction with the image reveals it to be an illusion, for things can
 
 The spell lasts until dispelled, without requiring Concentration, if cast with a level 4+ spell slot.
 
-*[Page 296]*
+::: {#p296}
+:::
+
 ### Mass Cure Wounds
 *5th-level Abjuration*
 
@@ -4450,7 +4338,6 @@ A wave of healing energy washes out from a point you can see within range. Choos
 
 The healing increases by 5-9 for each spell slot level above 5.
 
-*[Page 296]*
 ### Mass Heal
 *9th-level Abjuration*
 
@@ -4461,7 +4348,6 @@ The healing increases by 5-9 for each spell slot level above 5.
 
 A flood of healing energy flows from you into creatures around you. You restore up to 700 Hit Points, divided as you choose among any number of creatures that you can see within range. Creatures healed by this spell also have the Blinded, Deafened, and Poisoned conditions removed from them.
 
-*[Page 296]*
 ### Mass Healing Word
 *3rd-level Abjuration*
 
@@ -4477,7 +4363,6 @@ Up to six creatures of your choice that you can see within range regain Hit Poin
 
 The healing increases by 3-9 for each spell slot level above 3.
 
-*[Page 296]*
 ### Mass Suggestion
 *6th-level Enchantment*
 
@@ -4495,7 +4380,6 @@ Each target must succeed on a Wisdom saving throw or have the Charmed condition 
 
 The duration is longer with a spell slot of level 7 (10 days), 8 (30 days), or 9 (366 days).
 
-*[Page 296]*
 ### Maze
 *8th-level Conjuration*
 
@@ -4510,7 +4394,6 @@ The target can take a Study action to try to escape. When it does so, it makes a
 
 When the spell ends, the target reappears in the space it left or, if that space is occupied, in the nearest unoccupied space.
 
-*[Page 296]*
 ### Meld into Stone
 *3rd-level Transmutation*
 
@@ -4525,7 +4408,9 @@ While merged with the stone, you can't see what occurs outside it, and any Wisdo
 
 Minor physical damage to the stone doesn't harm you, but its partial destruction or a change in its shape (to the extent that you no longer fit within it) expels you and deals 6d6 Force damage to you. The stone's complete destruction (or transmutation into a different substance) expels you and deals 50 Force damage to you. If expelled, you move into an unoccupied space closest to where you first entered and have the Prone condition.
 
-*[Page 297]*
+::: {#p297}
+:::
+
 ### Melf's Acid Arrow
 *2nd-level Evocation*
 
@@ -4541,7 +4426,6 @@ A shimmering green arrow streaks toward a target within range and bursts in a sp
 
 The damage (both initial and later) increases by 2-9 for each spell slot level above 2.
 
-*[Page 297]*
 ### Mending
 *Transmutation Cantrip*
 
@@ -4554,7 +4438,9 @@ This spell repairs a single break or tear in an object you touch, such as a brok
 
 This spell can physically repair a magic item, but it can't restore magic to such an object.
 
-*[Page 298]*
+::: {#p298}
+:::
+
 ### Message
 *Transmutation Cantrip*
 
@@ -4567,7 +4453,6 @@ You point toward a creature within range and whisper a message. The target (and 
 
 You can cast this spell through solid objects if you are familiar with the target and know it is beyond the barrier. Magical silence; 1 foot of stone, metal, or wood; or a thin sheet of lead blocks the spell.
 
-*[Page 298]*
 ### Meteor Swarm
 *9th-level Evocation*
 
@@ -4580,7 +4465,6 @@ Blazing orbs of fire plummet to the ground at four different points you can see 
 
 A nonmagical object that isn't being worn or carried also takes the damage if it's in the spell's area, and the object starts burning if it's flammable.
 
-*[Page 298]*
 ### Mind Blank
 *8th-level Abjuration*
 
@@ -4591,7 +4475,6 @@ A nonmagical object that isn't being worn or carried also takes the damage if it
 
 Until the spell ends, one willing creature you touch has Immunity to Psychic damage and the Charmed condition. The target is also unaffected by anything that would sense its emotions or alignment, read its thoughts, or magically detect its location, and no spell—not even *Wish*—can gather information about the target, observe it remotely, or control its mind.
 
-*[Page 298]*
 ### Mind Sliver
 *Enchantment Cantrip*
 
@@ -4607,7 +4490,6 @@ You try to temporarily sliver the mind of one creature you can see within range.
 
 The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).
 
-*[Page 298]*
 ### Mind Spike
 *2nd-level Divination*
 
@@ -4623,7 +4505,6 @@ You drive a spike of psionic energy into the mind of one creature you can see wi
 
 The damage increases by 2-9 for each spell slot level above 2.
 
-*[Page 298]*
 ### Minor Illusion
 *Illusion Cantrip*
 
@@ -4644,7 +4525,9 @@ If you create a sound, its volume can range from a whisper to a scream. It can b
 
 If you create an image of an object—such as a chair, muddy footprints, or a small chest—it must be no larger than a 5-foot Cube. The image can't create sound, light, smell, or any other sensory effect. Physical interaction with the image reveals it to be an illusion, since things can pass through it.
 
-*[Page 299]*
+::: {#p299}
+:::
+
 ### Mirage Arcane
 *7th-level Illusion*
 
@@ -4661,7 +4544,6 @@ The illusion includes audible, visual, tactile, and olfactory elements, so it ca
 
 Creatures with Truesight can see through the illusion to the terrain's true form; however, all other elements of the illusion remain, so while the creature is aware of the illusion's presence, the creature can still physically interact with the illusion.
 
-*[Page 299]*
 ### Mirror Image
 *2nd-level Illusion*
 
@@ -4676,7 +4558,6 @@ Each time a creature hits you with an attack roll during the spell's duration, r
 
 A creature is unaffected by this spell if it has the Blinded condition, Blindsight, or Truesight.
 
-*[Page 299]*
 ### Mislead
 *5th-level Illusion*
 
@@ -4691,7 +4572,6 @@ As a Magic action, you can move the illusory double up to twice your Speed and m
 
 You can see through its eyes and hear through its ears as if you were located where it is.
 
-*[Page 299]*
 ### Misty Step
 *2nd-level Conjuration*
 
@@ -4702,7 +4582,6 @@ You can see through its eyes and hear through its ears as if you were located wh
 
 Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see.
 
-*[Page 299]*
 ### Modify Memory
 *5th-level Enchantment*
 
@@ -4726,7 +4605,9 @@ A *Remove Curse* or *Greater Restoration* spell cast on the target restores the 
 
 You can alter the target's memories of an event that took place up to 7 days ago (level 6 spell slot), 30 days ago (level 7 spell slot), 365 days ago (level 8 spell slot), or any time in the creature's past (level 9 spell slot).
 
-*[Page 300]*
+::: {#p300}
+:::
+
 ### Moonbeam
 *2nd-level Evocation*
 
@@ -4744,7 +4625,6 @@ When the Cylinder appears, each creature in it makes a Constitution saving throw
 
 The damage increases by 2-9 for each spell slot level above 2.
 
-*[Page 300]*
 ### Mordenkainen's Faithful Hound
 *4th-level Conjuration*
 
@@ -4761,7 +4641,6 @@ At the start of each of your turns, the hound attempts to bite one enemy within 
 
 On your later turns, you can take a Magic action to move the hound up to 30 feet.
 
-*[Page 300]*
 ### Mordenkainen's Magnificent Mansion
 *7th-level Conjuration*
 
@@ -4780,7 +4659,9 @@ A staff of 100 near-transparent servants attends all who enter. You determine th
 
 When the spell ends, any creatures or objects left inside the extradimensional space are expelled into the unoccupied spaces nearest to the entrance.
 
-*[Page 301]*
+::: {#p301}
+:::
+
 ### Mordenkainen's Private Sanctum
 *4th-level Abjuration*
 
@@ -4807,7 +4688,9 @@ Casting this spell on the same spot every day for 365 days makes the spell last 
 
 You can increase the size of the Cube by 100 feet for each spell slot level above 4.
 
-*[Page 302]*
+::: {#p302}
+:::
+
 ### Mordenkainen's Sword
 *7th-level Evocation*
 
@@ -4822,7 +4705,6 @@ When the sword appears, you make a melee spell attack against a target within 5 
 
 On your later turns, you can take a Bonus Action to move the sword up to 30 feet to a spot you can see and repeat the attack against the same target or a different one.
 
-*[Page 302]*
 ### Move Earth
 *6th-level Transmutation*
 
@@ -4841,7 +4723,6 @@ Similarly, this spell doesn't directly affect plant growth. The moved earth carr
 
 ## N
 
-*[Page 302]*
 ### Nondetection
 *3rd-level Abjuration*
 
@@ -4852,7 +4733,6 @@ Similarly, this spell doesn't directly affect plant growth. The moved earth carr
 
 For the duration, you hide a target that you touch from Divination spells. The target can be a willing creature, or it can be a place or an object no larger than 10 feet in any dimension. The target can't be targeted by any Divination spell or perceived through magical scrying sensors.
 
-*[Page 302]*
 ### Nystul's Magic Aura
 *2nd-level Illusion*
 
@@ -4873,7 +4753,6 @@ You change the way the target appears to spells and magical effects that detect 
 
 ## O
 
-*[Page 302]*
 ### Otiluke's Freezing Sphere
 *6th-level Evocation*
 
@@ -4893,7 +4772,9 @@ You can refrain from firing the globe after completing the spell's casting. If y
 
 The damage increases by 6-9 for each spell slot level above 6.
 
-*[Page 303]*
+::: {#p303}
+:::
+
 ### Otiluke's Resilient Sphere
 *4th-level Abjuration*
 
@@ -4910,7 +4791,6 @@ The sphere is weightless and just large enough to contain the creature or object
 
 A *Disintegrate* spell targeting the globe destroys it without harming anything inside.
 
-*[Page 303]*
 ### Otto's Irresistible Dance
 *6th-level Enchantment*
 
@@ -4925,7 +4805,6 @@ On a failed save, the target has the Charmed condition for the duration. While C
 
 ## P
 
-*[Page 303]*
 ### Pass without Trace
 *2nd-level Abjuration*
 
@@ -4936,7 +4815,9 @@ On a failed save, the target has the Charmed condition for the duration. While C
 
 You radiate a concealing aura in a 30-foot Emanation for the duration. While in the aura, you and each creature you choose have a +10 bonus to Dexterity (Stealth) checks and leave no tracks.
 
-*[Page 304]*
+::: {#p304}
+:::
+
 ### Passwall
 *5th-level Transmutation*
 
@@ -4949,7 +4830,6 @@ A passage appears at a point that you can see on a wooden, plaster, or stone sur
 
 When the opening disappears, any creatures or objects still in the passage created by the spell are safely ejected to an unoccupied space nearest to the surface on which you cast the spell.
 
-*[Page 304]*
 ### Phantasmal Force
 *2nd-level Illusion*
 
@@ -4966,7 +4846,6 @@ While affected by the spell, the target treats the phantasm as if it were real a
 
 An affected target can even take damage from the illusion if the phantasm represents a dangerous creature or hazard. On each of your turns, such a phantasm can deal 2d8 Psychic damage to the target if it is in the phantasm's area or within 5 feet of the phantasm. The target perceives the damage as a type appropriate to the illusion.
 
-*[Page 304]*
 ### Phantasmal Killer
 *4th-level Illusion*
 
@@ -4984,7 +4863,6 @@ For the duration, the target makes a Wisdom saving throw at the end of each of i
 
 The damage increases by 4-9 for each spell slot level above 4.
 
-*[Page 304]*
 ### Phantom Steed
 *3rd-level Illusion*
 
@@ -4997,7 +4875,6 @@ A Large, quasi-real, horselike creature appears on the ground in an unoccupied s
 
 For the duration, you or a creature you choose can ride the steed. The steed uses the Riding Horse stat block, except it has a Speed of 100 feet and can travel 13 miles in an hour. When the spell ends, the steed gradually fades, giving the rider 1 minute to dismount. The spell ends early if the steed takes any damage.
 
-*[Page 304]*
 ### Planar Ally
 *6th-level Conjuration*
 
@@ -5016,7 +4893,9 @@ A task that can be measured in minutes requires a payment worth 100 GP per minut
 
 After the creature completes the task, or when the agreed-upon duration of service expires, the creature returns to its home plane after reporting back to you if possible. If you are unable to agree on a price for the creature's service, the creature immediately returns to its home plane.
 
-*[Page 305]*
+::: {#p305}
+:::
+
 ### Planar Binding
 *5th-level Abjuration*
 
@@ -5034,7 +4913,6 @@ A bound creature must follow your commands to the best of its ability. You might
 
 The duration increases with a spell slot of level 6 (10 days), 7 (30 days), 8 (180 days), and 9 (366 days).
 
-*[Page 305]*
 ### Plane Shift
 *7th-level Conjuration*
 
@@ -5047,7 +4925,6 @@ You and up to eight willing creatures who link hands in a circle are transported
 
 Alternatively, if you know the sigil sequence of a teleportation circle on another plane of existence, this spell can take you to that circle. If the teleportation circle is too small to hold all the creatures you transported, they appear in the closest unoccupied spaces next to the circle.
 
-*[Page 305]*
 ### Plant Growth
 *3rd-level Transmutation*
 
@@ -5066,7 +4943,9 @@ Choose a point within range. All normal plants in a 100-foot-radius Sphere cente
 
 All plants in a half-mile radius centered on a point within range become enriched for 365 days. The plants yield twice the normal amount of food when harvested. They can benefit from only one Plant Growth per year.
 
-*[Page 306]*
+::: {#p306}
+:::
+
 ### Poison Spray
 *Necromancy Cantrip*
 
@@ -5082,7 +4961,6 @@ You spray toxic mist at a creature within range. Make a ranged spell attack agai
 
 The damage increases by 1d12 when you reach levels 5 (2d12), 11 (3d12), and 17 (4d12).
 
-*[Page 306]*
 ### Polymorph
 *4th-level Transmutation*
 
@@ -5099,7 +4977,6 @@ The target is limited in the actions it can perform by the anatomy of its new fo
 
 The target's gear melds into the new form. The creature can't use or otherwise benefit from any of that equipment.
 
-*[Page 306]*
 ### Power Word Fortify
 *7th-level Enchantment*
 
@@ -5110,7 +4987,6 @@ The target's gear melds into the new form. The creature can't use or otherwise b
 
 You fortify up to six creatures you can see within range. The spell bestows 120 Temporary Hit Points, which you divide among the spell's recipients.
 
-*[Page 306]*
 ### Power Word Heal
 *9th-level Enchantment*
 
@@ -5121,7 +4997,6 @@ You fortify up to six creatures you can see within range. The spell bestows 120 
 
 A wave of healing energy washes over one creature you can see within range. The target regains all its Hit Points. If the creature has the Charmed, Frightened, Paralyzed, Poisoned, or Stunned condition, the condition ends. If the creature has the Prone condition, it can use its Reaction to stand up.
 
-*[Page 306]*
 ### Power Word Kill
 *9th-level Enchantment*
 
@@ -5132,7 +5007,6 @@ A wave of healing energy washes over one creature you can see within range. The 
 
 You compel one creature you can see within range to die. If the target has 100 Hit Points or fewer, it dies. Otherwise, it takes 12d12 Psychic damage.
 
-*[Page 306]*
 ### Power Word Stun
 *8th-level Enchantment*
 
@@ -5145,7 +5019,9 @@ You overwhelm the mind of one creature you can see within range. If the target h
 
 The Stunned target makes a Constitution saving throw at the end of each of its turns, ending the condition on itself on a success.
 
-*[Page 307]*
+::: {#p307}
+:::
+
 ### Prayer of Healing
 *2nd-level Abjuration*
 
@@ -5161,7 +5037,6 @@ Up to five creatures of your choice who remain within range for the spell's enti
 
 The healing increases by 2-9 for each spell slot level above 2.
 
-*[Page 307]*
 ### Prestidigitation
 *Transmutation Cantrip*
 
@@ -5196,7 +5071,6 @@ You make a color, a small mark, or a symbol appear on an object or a surface for
 
 You create a nonmagical trinket or an illusory image that can fit in your hand. It lasts until the end of your next turn. A trinket can deal no damage and has no monetary worth.
 
-*[Page 307]*
 ### Prismatic Spray
 *7th-level Evocation*
 
@@ -5207,7 +5081,7 @@ You create a nonmagical trinket or an illusory image that can fit in your hand. 
 
 Eight rays of light flash from you in a 60-foot Cone. Each creature in the Cone makes a Dexterity saving throw. For each target, roll 1d8 to determine which color ray affects it, consulting the Prismatic Rays table.
 
-**Table: Prismatic Rays**
+#### Table: Prismatic Rays
 
 | 1d8 | Ray |
 | --- | --- |
@@ -5220,7 +5094,9 @@ Eight rays of light flash from you in a 60-foot Cone. Each creature in the Cone 
 | 7 | **Violet.** *Failed Save:* The target has the Blinded condition and makes a Wisdom saving throw at the start of your next turn. On a successful save, the condition ends. On a failed save, the condition ends, and the creature teleports to another plane of existence (DM's choice). |
 | 8 | **Special.** The target is struck by two rays. Roll twice, rerolling any 8. |
 
-*[Page 308]*
+::: {#p308}
+:::
+
 ### Prismatic Wall
 *9th-level Abjuration*
 
@@ -5237,7 +5113,7 @@ The wall consists of seven layers, each with a different color. When a creature 
 
 The wall, which has AC 10, can be destroyed one layer at a time, in order from red to violet, by means specific to each layer. If a layer is destroyed, it is gone for the duration. *Antimagic Field* has no effect on the wall, and *Dispel Magic* can affect only the violet layer.
 
-**Table: Prismatic Layers**
+#### Table: Prismatic Layers
 
 | Order | Effects |
 | --- | --- |
@@ -5249,7 +5125,6 @@ The wall, which has AC 10, can be destroyed one layer at a time, in order from r
 | 6 | **Indigo.** *Failed Save:* The target has the Restrained condition and makes a Constitution saving throw at the end of each of its turns. If it successfully saves three times, the condition ends. If it fails three times, it has the Petrified condition until it is freed by an effect like the *Greater Restoration* spell. The successes and failures needn't be consecutive; keep track of both until the target collects three of a kind. *Additional Effects:* Spells can't be cast through this layer, which is destroyed by Bright Light shed by the *Daylight* spell. |
 | 7 | **Violet.** *Failed Save:* The target has the Blinded condition and makes a Wisdom saving throw at the start of your next turn. On a successful save, the condition ends. On a failed save, the condition ends, and the creature teleports to another plane of existence (DM's choice). *Additional Effects:* This layer is destroyed by *Dispel Magic*. |
 
-*[Page 308]*
 ### Produce Flame
 *Conjuration Cantrip*
 
@@ -5267,7 +5142,9 @@ Until the spell ends, you can take a Magic action to hurl fire at a creature or 
 
 The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).
 
-*[Page 309]*
+::: {#p309}
+:::
+
 ### Programmed Illusion
 *6th-level Illusion*
 
@@ -5284,7 +5161,6 @@ The trigger can be as general or as detailed as you like, though it must be base
 
 Physical interaction with the image reveals it to be illusory, since things can pass through it. A creature that takes the Study action to examine the image can determine that it is an illusion with a successful Intelligence (Investigation) check against your spell save DC. If a creature discerns the illusion for what it is, the creature can see through the image, and any noise it makes sounds hollow to the creature.
 
-*[Page 309]*
 ### Project Image
 *7th-level Illusion*
 
@@ -5299,7 +5175,6 @@ You can see through the illusion's eyes and hear through its ears as if you were
 
 Physical interaction with the image reveals it to be illusory, since things can pass through it. A creature that takes the Study action to examine the image can determine that it is an illusion with a successful Intelligence (Investigation) check against your spell save DC. If a creature discerns the illusion for what it is, the creature can see through the image, and any noise it makes sounds hollow to the creature.
 
-*[Page 309]*
 ### Protection from Energy
 *3rd-level Abjuration*
 
@@ -5310,7 +5185,6 @@ Physical interaction with the image reveals it to be illusory, since things can 
 
 For the duration, the willing creature you touch has Resistance to one damage type of your choice: Acid, Cold, Fire, Lightning, or Thunder.
 
-*[Page 309]*
 ### Protection from Evil and Good
 *1st-level Abjuration*
 
@@ -5321,7 +5195,9 @@ For the duration, the willing creature you touch has Resistance to one damage ty
 
 Until the spell ends, one willing creature you touch is protected against creatures that are Aberrations, Celestials, Elementals, Fey, Fiends, or Undead. The protection grants several benefits. Creatures of those types have Disadvantage on attack rolls against the target. The target also can't be possessed by or gain the Charmed or Frightened conditions from them. If the target is already possessed, Charmed, or Frightened by such a creature, the target has Advantage on any new saving throw against the relevant effect.
 
-*[Page 310]*
+::: {#p310}
+:::
+
 ### Protection from Poison
 *2nd-level Abjuration*
 
@@ -5332,7 +5208,6 @@ Until the spell ends, one willing creature you touch is protected against creatu
 
 You touch a creature and end the Poisoned condition on it. For the duration, the target has Advantage on saving throws to avoid or end the Poisoned condition, and it has Resistance to Poison damage.
 
-*[Page 310]*
 ### Purify Food and Drink
 *1st-level Transmutation*
 
@@ -5345,7 +5220,6 @@ You remove poison and rot from nonmagical food and drink in a 5-foot-radius Sphe
 
 ## R
 
-*[Page 310]*
 ### Raise Dead
 *5th-level Necromancy*
 
@@ -5362,7 +5236,9 @@ This spell closes all mortal wounds, but it doesn't restore missing body parts. 
 
 Coming back from the dead is an ordeal. The target takes a -4 penalty to D20 Tests. Every time the target finishes a Long Rest, the penalty is reduced by 1 until it becomes 0.
 
-*[Page 311]*
+::: {#p311}
+:::
+
 ### Rary's Telepathic Bond
 *5th-level Divination*
 
@@ -5375,7 +5251,6 @@ You forge a telepathic link among up to eight willing creatures of your choice w
 
 Until the spell ends, the targets can communicate telepathically through the bond whether or not they share a language. The communication is possible over any distance, though it can't extend to other planes of existence.
 
-*[Page 311]*
 ### Ray of Enfeeblement
 *2nd-level Necromancy*
 
@@ -5388,7 +5263,6 @@ A beam of enervating energy shoots from you toward a creature within range. The 
 
 On a failed save, the target has Disadvantage on Strength-based D20 Tests for the duration. During that time, it also subtracts 1d8 from all its damage rolls. The target repeats the save at the end of each of its turns, ending the spell on a success.
 
-*[Page 311]*
 ### Ray of Frost
 *Evocation Cantrip*
 
@@ -5404,7 +5278,6 @@ A frigid beam of blue-white light streaks toward a creature within range. Make a
 
 The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).
 
-*[Page 311]*
 ### Ray of Sickness
 *1st-level Necromancy*
 
@@ -5420,7 +5293,6 @@ You shoot a greenish ray at a creature within range. Make a ranged spell attack 
 
 The damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 311]*
 ### Regenerate
 *7th-level Transmutation*
 
@@ -5431,7 +5303,6 @@ The damage increases by 1-9 for each spell slot level above 1.
 
 A creature you touch regains 4d8 + 15 Hit Points. For the duration, the target regains 1 Hit Point at the start of each of its turns, and any severed body parts regrow after 2 minutes.
 
-*[Page 311]*
 ### Reincarnate
 *5th-level Necromancy*
 
@@ -5457,7 +5328,9 @@ You touch a dead Humanoid or a piece of one. If the creature has been dead no lo
 
 The reincarnated creature makes any choices that a species' description offers, and the creature recalls its former life. It retains the capabilities it had in its original form, except it loses the traits of its previous species and gains the traits of its new one.
 
-*[Page 312]*
+::: {#p312}
+:::
+
 ### Remove Curse
 *3rd-level Abjuration*
 
@@ -5468,7 +5341,6 @@ The reincarnated creature makes any choices that a species' description offers, 
 
 At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner's Attunement to the object so it can be removed or discarded.
 
-*[Page 312]*
 ### Resistance
 *Abjuration Cantrip*
 
@@ -5479,7 +5351,6 @@ At your touch, all curses affecting one creature or object end. If the object is
 
 You touch a willing creature and choose a damage type: Acid, Bludgeoning, Cold, Fire, Lightning, Necrotic, Piercing, Poison, Radiant, Slashing, or Thunder. When the creature takes damage of the chosen type before the spell ends, the creature reduces the total damage taken by 1d4. A creature can benefit from this spell only once per turn.
 
-*[Page 312]*
 ### Resurrection
 *7th-level Necromancy*
 
@@ -5496,7 +5367,6 @@ Coming back from the dead is an ordeal. The target takes a -4 penalty to D20 Tes
 
 Casting this spell to revive a creature that has been dead for 365 days or longer taxes you. Until you finish a Long Rest, you can't cast spells again, and you have Disadvantage on D20 Tests.
 
-*[Page 312]*
 ### Reverse Gravity
 *7th-level Transmutation*
 
@@ -5509,7 +5379,6 @@ This spell reverses gravity in a 50-foot-radius, 100-foot high Cylinder centered
 
 If a ceiling or an anchored object is encountered in this upward fall, creatures and objects strike it just as they would during a downward fall. If an affected creature or object reaches the Cylinder's top without striking anything, it hovers there for the duration. When the spell ends, affected objects and creatures fall downward.
 
-*[Page 312]*
 ### Revivify
 *3rd-level Necromancy*
 
@@ -5520,7 +5389,6 @@ If a ceiling or an anchored object is encountered in this upward fall, creatures
 
 You touch a creature that has died within the last minute. That creature revives with 1 Hit Point. This spell can't revive a creature that has died of old age, nor does it restore any missing body parts.
 
-*[Page 312]*
 ### Rope Trick
 *2nd-level Transmutation*
 
@@ -5535,7 +5403,9 @@ The space can hold up to eight Medium or smaller creatures. Attacks, spells, and
 
 ## S
 
-*[Page 313]*
+::: {#p313}
+:::
+
 ### Sacred Flame
 *Evocation Cantrip*
 
@@ -5551,7 +5421,6 @@ Flame-like radiance descends on a creature that you can see within range. The ta
 
 The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).
 
-*[Page 313]*
 ### Sanctuary
 *1st-level Abjuration*
 
@@ -5564,7 +5433,6 @@ You ward a creature within range. Until the spell ends, any creature who targets
 
 The spell ends if the warded creature makes an attack roll, casts a spell, or deals damage.
 
-*[Page 313]*
 ### Scorching Ray
 *2nd-level Evocation*
 
@@ -5580,7 +5448,6 @@ You hurl three fiery rays. You can hurl them at one target within range or at se
 
 You create one additional ray for each spell slot level above 2.
 
-*[Page 313]*
 ### Scrying
 *5th-level Divination*
 
@@ -5609,7 +5476,9 @@ On a failed save, the spell creates an Invisible, intangible sensor within 10 fe
 
 Instead of targeting a creature, you can target a location you have seen. When you do so, the sensor appears at that location and doesn't move.
 
-*[Page 314]*
+::: {#p314}
+:::
+
 ### Searing Smite
 *1st-level Evocation*
 
@@ -5625,7 +5494,6 @@ As you hit the target, it takes an extra 1d6 Fire damage from the attack. At the
 
 All the damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 314]*
 ### See Invisibility
 *2nd-level Divination*
 
@@ -5636,7 +5504,6 @@ All the damage increases by 1-9 for each spell slot level above 1.
 
 For the duration, you see creatures and objects that have the Invisible condition as if they were visible, and you can see into the Ethereal Plane. Creatures and objects there appear ghostly.
 
-*[Page 314]*
 ### Seeming
 *5th-level Illusion*
 
@@ -5653,7 +5520,6 @@ The changes wrought by this spell fail to hold up to physical inspection. For ex
 
 A creature that takes the Study action to examine a target can make an Intelligence (Investigation) check against your spell save DC. If it succeeds, it becomes aware that the target is disguised.
 
-*[Page 314]*
 ### Sending
 *3rd-level Divination*
 
@@ -5668,7 +5534,9 @@ You can send the message across any distance and even to other planes of existen
 
 Upon receiving your message, a creature can block your ability to reach it again with this spell for 8 hours. If you try to send another message during that time, you learn that you are blocked, and the spell fails.
 
-*[Page 315]*
+::: {#p315}
+:::
+
 ### Sequester
 *7th-level Transmutation*
 
@@ -5683,7 +5551,6 @@ If the target is a creature, it enters a state of suspended animation; it has th
 
 You can set a condition for the spell to end early. The condition can be anything you choose, but it must occur or be visible within 1 mile of the target. Examples include "after 1,000 years" or "when the tarrasque awakens." This spell also ends if the target takes any damage.
 
-*[Page 315]*
 ### Shapechange
 *9th-level Transmutation*
 
@@ -5700,7 +5567,9 @@ Your game statistics are replaced by the stat block of the chosen form, but you 
 
 Upon shape-shifting, you determine whether your equipment drops to the ground or changes in size and shape to fit the new form while you're in it.
 
-*[Page 316]*
+::: {#p316}
+:::
+
 ### Shatter
 *2nd-level Evocation*
 
@@ -5718,7 +5587,6 @@ A nonmagical object that isn't being worn or carried also takes the damage if it
 
 The damage increases by 2-9 for each spell slot level above 2.
 
-*[Page 316]*
 ### Shield
 *1st-level Abjuration*
 
@@ -5729,7 +5597,6 @@ The damage increases by 2-9 for each spell slot level above 2.
 
 An imperceptible barrier of magical force protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from *Magic Missile*.
 
-*[Page 316]*
 ### Shield of Faith
 *1st-level Abjuration*
 
@@ -5740,7 +5607,6 @@ An imperceptible barrier of magical force protects you. Until the start of your 
 
 A shimmering field surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration.
 
-*[Page 316]*
 ### Shillelagh
 *Transmutation Cantrip*
 
@@ -5758,7 +5624,6 @@ The spell ends early if you cast it again or if you let go of the weapon.
 
 The damage die changes when you reach levels 5 (d10), 11 (d12), and 17 (2d6).
 
-*[Page 316]*
 ### Shining Smite
 *2nd-level Transmutation*
 
@@ -5774,7 +5639,6 @@ The target hit by the strike takes an extra 2d6 Radiant damage from the attack. 
 
 The damage increases by 2-9 for each spell slot level above 2.
 
-*[Page 316]*
 ### Shocking Grasp
 *Evocation Cantrip*
 
@@ -5790,7 +5654,6 @@ Lightning springs from you to a creature that you try to touch. Make a melee spe
 
 The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).
 
-*[Page 316]*
 ### Silence
 *2nd-level Illusion*
 
@@ -5801,7 +5664,9 @@ The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8
 
 For the duration, no sound can be created within or pass through a 20-foot-radius Sphere centered on a point you choose within range. Any creature or object entirely inside the Sphere has Immunity to Thunder damage, and creatures have the Deafened condition while entirely inside it. Casting a spell that includes a Verbal component is impossible there.
 
-*[Page 317]*
+::: {#p317}
+:::
+
 ### Silent Image
 *1st-level Illusion*
 
@@ -5816,7 +5681,6 @@ As a Magic action, you can cause the image to move to any spot within range. As 
 
 Physical interaction with the image reveals it to be an illusion, since things can pass through it. A creature that takes a Study action to examine the image can determine that it is an illusion with a successful Intelligence (Investigation) check against your spell save DC. If a creature discerns the illusion for what it is, the creature can see through the image.
 
-*[Page 317]*
 ### Simulacrum
 *7th-level Illusion*
 
@@ -5833,7 +5697,6 @@ If the simulacrum takes damage, the only way to restore its Hit Points is to rep
 
 The simulacrum lasts until it drops to 0 Hit Points, at which point it reverts to snow and melts away. If you cast this spell again, any simulacrum you created with this spell is instantly destroyed.
 
-*[Page 317]*
 ### Sleep
 *1st-level Enchantment*
 
@@ -5846,7 +5709,6 @@ Each creature of your choice in a 5-foot-radius Sphere centered on a point withi
 
 Creatures that don't sleep, such as elves, or that have Immunity to the Exhaustion condition automatically succeed on saves against this spell.
 
-*[Page 317]*
 ### Sleet Storm
 *3rd-level Conjuration*
 
@@ -5859,7 +5721,9 @@ Until the spell ends, sleet falls in a 40-foot-tall, 20-foot-radius Cylinder cen
 
 Ground in the Cylinder is Difficult Terrain. When a creature enters the Cylinder for the first time on a turn or starts its turn there, it must succeed on a Dexterity saving throw or have the Prone condition and lose Concentration.
 
-*[Page 318]*
+::: {#p318}
+:::
+
 ### Slow
 *3rd-level Transmutation*
 
@@ -5874,7 +5738,6 @@ An affected target's Speed is halved, it takes a -2 penalty to AC and Dexterity 
 
 An affected target repeats the save at the end of each of its turns, ending the spell on itself on a success.
 
-*[Page 318]*
 ### Sorcerous Burst
 *Evocation Cantrip*
 
@@ -5892,7 +5755,6 @@ If you roll an 8 on a d8 for this spell, you can roll another d8, and add it to 
 
 The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).
 
-*[Page 318]*
 ### Spare the Dying
 *Necromancy Cantrip*
 
@@ -5908,7 +5770,6 @@ Choose a creature within range that has 0 Hit Points and isn't dead. The creatur
 
 The range doubles when you reach levels 5 (30 feet), 11 (60 feet), and 17 (120 feet).
 
-*[Page 318]*
 ### Speak with Animals
 *1st-level Divination*
 
@@ -5921,7 +5782,6 @@ For the duration, you can comprehend and verbally communicate with Beasts, and y
 
 Most Beasts have little to say about topics that don't pertain to survival or companionship, but at minimum, a Beast can give you information about nearby locations and monsters, including whatever it has perceived within the past day.
 
-*[Page 318]*
 ### Speak with Dead
 *3rd-level Necromancy*
 
@@ -5934,7 +5794,9 @@ You grant the semblance of life to a corpse of your choice within range, allowin
 
 Until the spell ends, you can ask the corpse up to five questions. The corpse knows only what it knew in life, including the languages it knew. Answers are usually brief, cryptic, or repetitive, and the corpse is under no compulsion to offer a truthful answer if you are antagonistic toward it or it recognizes you as an enemy. This spell doesn't return the creature's soul to its body, only its animating spirit. Thus, the corpse can't learn new information, doesn't comprehend anything that has happened since it died, and can't speculate about future events.
 
-*[Page 319]*
+::: {#p319}
+:::
+
 ### Speak with Plants
 *3rd-level Transmutation*
 
@@ -5951,7 +5813,6 @@ The spell doesn't enable plants to uproot themselves and move about, but they ca
 
 If a Plant creature is in the area, you can communicate with it as if you shared a common language.
 
-*[Page 319]*
 ### Spider Climb
 *2nd-level Transmutation*
 
@@ -5967,7 +5828,6 @@ Until the spell ends, one willing creature you touch gains the ability to move u
 
 You can target one additional creature for each spell slot level above 2.
 
-*[Page 319]*
 ### Spike Growth
 *2nd-level Transmutation*
 
@@ -5980,7 +5840,6 @@ The ground in a 20-foot-radius Sphere centered on a point within range sprouts h
 
 The transformation of the ground is camouflaged to look natural. Any creature that can't see the area when the spell is cast must take a Search action and succeed on a Wisdom (Perception or Survival) check against your spell save DC to recognize the terrain as hazardous before entering it.
 
-*[Page 319]*
 ### Spirit Guardians
 *3rd-level Conjuration*
 
@@ -5998,7 +5857,6 @@ When you cast this spell, you can designate creatures to be unaffected by it. An
 
 The damage increases by 3-9 for each spell slot level above 3.
 
-*[Page 319]*
 ### Spiritual Weapon
 *2nd-level Evocation*
 
@@ -6016,7 +5874,9 @@ As a Bonus Action on your later turns, you can move the force up to 20 feet and 
 
 The damage increases by 2-9 for every slot level above 2.
 
-*[Page 320]*
+::: {#p320}
+:::
+
 ### Staggering Smite
 *4th-level Enchantment*
 
@@ -6032,7 +5892,6 @@ The target takes an extra 4d6 Psychic damage from the attack, and the target mus
 
 The extra damage increases by 4-9 for each spell slot level above 4.
 
-*[Page 320]*
 ### Starry Wisp
 *Evocation Cantrip*
 
@@ -6048,7 +5907,6 @@ You launch a mote of light at one creature or object within range. Make a ranged
 
 The damage increases by 1d8 when you reach levels 5 (2d8), 11 (3d8), and 17 (4d8).
 
-*[Page 320]*
 ### Steel Wind Strike
 *5th-level Conjuration*
 
@@ -6061,7 +5919,9 @@ You flourish the weapon used in the casting and then vanish to strike like the w
 
 You then teleport to an unoccupied space you can see within 5 feet of one of the targets.
 
-*[Page 321]*
+::: {#p321}
+:::
+
 ### Stinking Cloud
 *3rd-level Conjuration*
 
@@ -6074,7 +5934,6 @@ You create a 20-foot-radius Sphere of yellow, nauseating gas centered on a point
 
 Each creature that starts its turn in the Sphere must succeed on a Constitution saving throw or have the Poisoned condition until the end of the current turn. While Poisoned in this way, the creature can't take an action or a Bonus Action.
 
-*[Page 321]*
 ### Stone Shape
 *4th-level Transmutation*
 
@@ -6085,7 +5944,6 @@ Each creature that starts its turn in the Sphere must succeed on a Constitution 
 
 You touch a stone object of Medium size or smaller or a section of stone no more than 5 feet in any dimension and form it into any shape you like. For example, you could shape a large rock into a weapon, statue, or coffer, or you could make a small passage through a wall that is 5 feet thick. You could also shape a stone door or its frame to seal the door shut. The object you create can have up to two hinges and a latch, but finer mechanical detail isn't possible.
 
-*[Page 321]*
 ### Stoneskin
 *4th-level Transmutation*
 
@@ -6096,7 +5954,6 @@ You touch a stone object of Medium size or smaller or a section of stone no more
 
 Until the spell ends, one willing creature you touch has Resistance to Bludgeoning, Piercing, and Slashing damage.
 
-*[Page 321]*
 ### Storm of Vengeance
 *9th-level Conjuration*
 
@@ -6125,7 +5982,6 @@ Hailstones rain down. Each creature under the cloud takes 2d6 Bludgeoning damage
 
 Gusts and freezing rain assail the area under the cloud. Each creature there takes 1d6 Cold damage. Until the spell ends, the area is Difficult Terrain and Heavily Obscured, ranged attacks with weapons are impossible there, and strong wind blows through the area.
 
-*[Page 321]*
 ### Suggestion
 *2nd-level Enchantment*
 
@@ -6138,7 +5994,9 @@ You suggest a course of activity—described in no more than 25 words—to one c
 
 The target must succeed on a Wisdom saving throw or have the Charmed condition for the duration or until you or your allies deal damage to the target. The Charmed target pursues the suggestion to the best of its ability. The suggested activity can continue for the entire duration, but if the suggested activity can be completed in a shorter time, the spell ends for the target upon completing it.
 
-*[Page 322]*
+::: {#p322}
+:::
+
 ### Summon Aberration
 *4th-level Conjuration*
 
@@ -6156,7 +6014,6 @@ The creature is an ally to you and your allies. In combat, it shares your Initia
 
 Use the spell slot's level for the spell's level in the stat block.
 
-*[Page 322]*
 ### Summon Beast
 *2nd-level Conjuration*
 
@@ -6174,7 +6031,9 @@ The creature is an ally to you and your allies. In combat, the creature shares y
 
 Use the spell slot's level for the spell's level in the stat block.
 
-*[Page 323]*
+::: {#p323}
+:::
+
 ### Summon Celestial
 *5th-level Conjuration*
 
@@ -6192,7 +6051,9 @@ The creature is an ally to you and your allies. In combat, the creature shares y
 
 Use the spell slot's level for the spell's level in the stat block.
 
-*[Page 324]*
+::: {#p324}
+:::
+
 ### Summon Construct
 *4th-level Conjuration*
 
@@ -6210,7 +6071,6 @@ The creature is an ally to you and your allies. In combat, the creature shares y
 
 Use the spell slot's level for the spell's level in the stat block.
 
-*[Page 324]*
 ### Summon Dragon
 *5th-level Conjuration*
 
@@ -6228,7 +6088,9 @@ The creature is an ally to you and your allies. In combat, the creature shares y
 
 Use the spell slot's level for the spell's level in the stat block.
 
-*[Page 325]*
+::: {#p325}
+:::
+
 ### Summon Elemental
 *4th-level Conjuration*
 
@@ -6246,7 +6108,9 @@ The creature is an ally to you and your allies. In combat, the creature shares y
 
 Use the spell slot's level for the spell's level in the stat block.
 
-*[Page 326]*
+::: {#p326}
+:::
+
 ### Summon Fey
 *3rd-level Conjuration*
 
@@ -6264,7 +6128,6 @@ The creature is an ally to you and your allies. In combat, the creature shares y
 
 Use the spell slot's level for the spell's level in the stat block.
 
-*[Page 326]*
 ### Summon Fiend
 *6th-level Conjuration*
 
@@ -6282,7 +6145,9 @@ The creature is an ally to you and your allies. In combat, the creature shares y
 
 Use the spell slot's level for the spell's level in the stat block.
 
-*[Page 328]*
+::: {#p328}
+:::
+
 ### Summon Undead
 *3rd-level Necromancy*
 
@@ -6300,7 +6165,9 @@ The creature is an ally to you and your allies. In combat, the creature shares y
 
 Use the spell slot's level for the spell's level in the stat block.
 
-*[Page 329]*
+::: {#p329}
+:::
+
 ### Sunbeam
 *6th-level Evocation*
 
@@ -6315,7 +6182,6 @@ Until the spell ends, you can take a Magic action to create a new Line of radian
 
 For the duration, a mote of brilliant radiance shines above you. It sheds Bright Light in a 30-foot radius and Dim Light for an additional 30 feet. This light is sunlight.
 
-*[Page 329]*
 ### Sunburst
 *8th-level Evocation*
 
@@ -6330,7 +6196,6 @@ A creature Blinded by this spell makes another Constitution saving throw at the 
 
 This spell dispels Darkness in its area that was created by any spell.
 
-*[Page 329]*
 ### Swift Quiver
 *5th-level Transmutation*
 
@@ -6341,7 +6206,6 @@ This spell dispels Darkness in its area that was created by any spell.
 
 When you cast the spell and as a Bonus Action until it ends, you can make two attacks with a weapon that fires Arrows or Bolts, such as a Longbow or a Light Crossbow. The spell magically creates the ammunition needed for each attack. Each Arrow or Bolt created by the spell deals damage like a nonmagical piece of ammunition of its kind and disintegrates immediately after it hits or misses.
 
-*[Page 329]*
 ### Symbol
 *7th-level Abjuration*
 
@@ -6388,7 +6252,9 @@ Each target must succeed on a Wisdom saving throw or have the Unconscious condit
 
 Each target must succeed on a Wisdom saving throw or have the Stunned condition for 1 minute.
 
-*[Page 330]*
+::: {#p330}
+:::
+
 ### Synaptic Static
 *5th-level Enchantment*
 
@@ -6403,7 +6269,6 @@ On a failed save, a target also has muddled thoughts for 1 minute. During that t
 
 ## T
 
-*[Page 330]*
 ### Tasha's Bubbling Cauldron
 *6th-level Conjuration*
 
@@ -6418,7 +6283,9 @@ The liquid in the cauldron duplicates the properties of a rarity=common;uncommon
 
 Potions obtained from the cauldron that aren't consumed disappear when you cast this spell again.
 
-*[Page 331]*
+::: {#p331}
+:::
+
 ### Tasha's Hideous Laughter
 *1st-level Enchantment*
 
@@ -6436,7 +6303,6 @@ At the end of each of its turns and each time it takes damage, it makes another 
 
 You can target one additional creature for each spell slot level above 1.
 
-*[Page 331]*
 ### Telekinesis
 *5th-level Transmutation*
 
@@ -6459,7 +6325,6 @@ If the object is worn or carried by a creature, that creature must succeed on a 
 
 You can exert fine control on objects with your telekinetic grip, such as manipulating a simple tool, opening a door or a container, stowing or retrieving an item from an open container, or pouring the contents from a vial.
 
-*[Page 331]*
 ### Telepathy
 *8th-level Divination*
 
@@ -6472,7 +6337,6 @@ You create a telepathic link between yourself and a willing creature with which 
 
 Until the spell ends, you and the target can instantly share words, images, sounds, and other sensory messages with each other through the link, and the target recognizes you as the creature it is communicating with. The spell enables a creature to understand the meaning of your words and any sensory messages you send to it.
 
-*[Page 331]*
 ### Teleport
 *7th-level Conjuration*
 
@@ -6485,7 +6349,7 @@ This spell instantly transports you and up to eight willing creatures that you c
 
 The destination you choose must be known to you, and it must be on the same plane of existence as you. Your familiarity with the destination determines whether you arrive there successfully. The DM rolls 1d100 and consults the Teleportation Outcome table and the explanations after it.
 
-**Table: Teleportation Outcome**
+#### Table: Teleportation Outcome
 
 | Familiarity | Mishap | Similar Area | Off Target | On Target |
 | --- | --- | --- | --- | --- |
@@ -6523,7 +6387,9 @@ You and your group (or the target object) appear 2d12 miles away from the destin
 
 You and your group (or the target object) appear where you intended.
 
-*[Page 332]*
+::: {#p332}
+:::
+
 ### Teleportation Circle
 *5th-level Conjuration*
 
@@ -6540,7 +6406,6 @@ When you first gain the ability to cast this spell, you learn the sigil sequence
 
 You can create a permanent teleportation circle by casting this spell in the same location every day for 365 days.
 
-*[Page 332]*
 ### Tenser's Floating Disk
 *1st-level Conjuration*
 
@@ -6555,7 +6420,9 @@ The disk is immobile while you are within 20 feet of it. If you move more than 2
 
 If you move more than 100 feet from the disk (typically because it can't move around an obstacle to follow you), the spell ends.
 
-*[Page 333]*
+::: {#p333}
+:::
+
 ### Thaumaturgy
 *Transmutation Cantrip*
 
@@ -6590,7 +6457,6 @@ You create an instantaneous sound that originates from a point of your choice wi
 
 You cause harmless tremors in the ground for 1 minute.
 
-*[Page 333]*
 ### Thorn Whip
 *Transmutation Cantrip*
 
@@ -6606,7 +6472,6 @@ You create a vine-like whip covered in thorns that lashes out at your command to
 
 The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).
 
-*[Page 333]*
 ### Thunderclap
 *Evocation Cantrip*
 
@@ -6622,7 +6487,9 @@ Each creature in a 5-foot Emanation originating from you must succeed on a Const
 
 The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).
 
-*[Page 334]*
+::: {#p334}
+:::
+
 ### Thunderous Smite
 *1st-level Evocation*
 
@@ -6638,7 +6505,6 @@ Your strike rings with thunder that is audible within 300 feet of you, and the t
 
 The damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 334]*
 ### Thunderwave
 *1st-level Evocation*
 
@@ -6656,7 +6522,6 @@ In addition, unsecured objects that are entirely within the Cube are pushed 10 f
 
 The damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 334]*
 ### Time Stop
 *9th-level Transmutation*
 
@@ -6669,7 +6534,6 @@ You briefly stop the flow of time for everyone but yourself. No time passes for 
 
 This spell ends if one of the actions you use during this period, or any effects that you create during it, affects a creature other than you or an object being worn or carried by someone other than you. In addition, the spell ends if you move to a place more than 1,000 feet from the location where you cast it.
 
-*[Page 334]*
 ### Toll the Dead
 *Necromancy Cantrip*
 
@@ -6685,7 +6549,6 @@ You point at one creature you can see within range, and the single chime of a do
 
 The damage increases by one die when you reach levels 5 (2d8 or 2d12), 11 (3d8 or 3d12), and 17 (4d8 or 4d12).
 
-*[Page 334]*
 ### Tongues
 *3rd-level Divination*
 
@@ -6696,7 +6559,6 @@ The damage increases by one die when you reach levels 5 (2d8 or 2d12), 11 (3d8 o
 
 This spell grants the creature you touch the ability to understand any spoken or signed language that it hears or sees. Moreover, when the target communicates by speaking or signing, any creature that knows at least one language can understand it if that creature can hear the speech or see the signing.
 
-*[Page 334]*
 ### Transport via Plants
 *6th-level Conjuration*
 
@@ -6707,7 +6569,9 @@ This spell grants the creature you touch the ability to understand any spoken or
 
 This spell creates a magical link between a Large or larger inanimate plant within range and another plant, at any distance, on the same plane of existence. You must have seen or touched the destination plant at least once before. For the duration, any creature can step into the target plant and exit from the destination plant by using 5 feet of movement.
 
-*[Page 335]*
+::: {#p335}
+:::
+
 ### Tree Stride
 *5th-level Conjuration*
 
@@ -6720,7 +6584,6 @@ You gain the ability to enter a tree and move from inside it to inside another t
 
 You can use this transportation ability only once on each of your turns. You must end each turn outside a tree.
 
-*[Page 335]*
 ### True Polymorph
 *9th-level Transmutation*
 
@@ -6753,7 +6616,9 @@ If the spell lasts more than an hour, you no longer control the creature. It mig
 
 If you turn a creature into an object, it transforms along with whatever it is wearing and carrying into that form, as long as the object's size is no larger than the creature's size. The creature's statistics become those of the object, and the creature has no memory of time spent in this form after the spell ends and it returns to normal.
 
-*[Page 336]*
+::: {#p336}
+:::
+
 ### True Resurrection
 *9th-level Necromancy*
 
@@ -6768,7 +6633,6 @@ This spell closes all wounds, neutralizes any poison, cures all magical contagio
 
 The spell can provide a new body if the original no longer exists, in which case you must speak the creature's name. The creature then appears in an unoccupied space you choose within 10 feet of you.
 
-*[Page 336]*
 ### True Seeing
 *6th-level Divination*
 
@@ -6779,7 +6643,6 @@ The spell can provide a new body if the original no longer exists, in which case
 
 For the duration, the willing creature you touch has Truesight with a range of 120 feet.
 
-*[Page 336]*
 ### True Strike
 *Divination Cantrip*
 
@@ -6795,7 +6658,6 @@ Guided by a flash of magical insight, you make one attack with the weapon used i
 
 Whether you deal Radiant damage or the weapon's normal damage type, the attack deals extra Radiant damage when you reach levels 5 (1d6), 11 (2d6), and 17 (3d6).
 
-*[Page 336]*
 ### Tsunami
 *8th-level Conjuration*
 
@@ -6814,7 +6676,6 @@ A creature caught in the wall can move by swimming. Because of the wave's force,
 
 ## U
 
-*[Page 336]*
 ### Unseen Servant
 *1st-level Conjuration*
 
@@ -6831,7 +6692,9 @@ If you command the servant to perform a task that would move it more than 60 fee
 
 ## V
 
-*[Page 337]*
+::: {#p337}
+:::
+
 ### Vampiric Touch
 *3rd-level Necromancy*
 
@@ -6849,7 +6712,6 @@ Until the spell ends, you can make the attack again on each of your turns as a M
 
 The damage increases by 3-9 for each spell slot level above 3.
 
-*[Page 337]*
 ### Vicious Mockery
 *Enchantment Cantrip*
 
@@ -6865,7 +6727,6 @@ You unleash a string of insults laced with subtle enchantments at one creature y
 
 The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).
 
-*[Page 337]*
 ### Vitriolic Sphere
 *4th-level Evocation*
 
@@ -6883,7 +6744,9 @@ The initial damage increases by 4-9 for each spell slot level above 4.
 
 ## W
 
-*[Page 338]*
+::: {#p338}
+:::
+
 ### Wall of Fire
 *4th-level Evocation*
 
@@ -6903,7 +6766,6 @@ One side of the wall, selected by you when you cast this spell, deals 5d8 Fire d
 
 The damage increases by 4-9 for each spell slot level above 4.
 
-*[Page 338]*
 ### Wall of Force
 *5th-level Evocation*
 
@@ -6916,7 +6778,9 @@ An Invisible wall of force springs into existence at a point you choose within r
 
 Nothing can physically pass through the wall. It is immune to all damage and can't be dispelled by *Dispel Magic*. A *Disintegrate* spell destroys the wall instantly, however. The wall also extends into the Ethereal Plane and blocks ethereal travel through the wall.
 
-*[Page 339]*
+::: {#p339}
+:::
+
 ### Wall of Ice
 *6th-level Evocation*
 
@@ -6938,7 +6802,6 @@ A creature moving through the sheet of frigid air for the first time on a turn m
 
 The damage the wall deals when it appears increases by 6-9 and the damage from passing through the sheet of frigid air increases by 6-9 for each spell slot level above 6.
 
-*[Page 339]*
 ### Wall of Stone
 *5th-level Evocation*
 
@@ -6959,7 +6822,6 @@ The wall is an object made of stone that can be damaged and thus breached. Each 
 
 If you maintain your Concentration on this spell for its full duration, the wall becomes permanent and can't be dispelled. Otherwise, the wall disappears when the spell ends.
 
-*[Page 339]*
 ### Wall of Thorns
 *6th-level Conjuration*
 
@@ -6979,7 +6841,9 @@ A creature can move through the wall, albeit slowly and painfully. For every 1 f
 
 Both types of damage increase by 6-9 for each spell slot level above 6.
 
-*[Page 340]*
+::: {#p340}
+:::
+
 ### Warding Bond
 *2nd-level Abjuration*
 
@@ -6992,7 +6856,6 @@ You touch another creature that is willing and create a mystic connection betwee
 
 The spell ends if you drop to 0 Hit Points or if you and the target become separated by more than 60 feet. It also ends if the spell is cast again on either of the connected creatures.
 
-*[Page 340]*
 ### Water Breathing
 *3rd-level Transmutation*
 
@@ -7003,7 +6866,6 @@ The spell ends if you drop to 0 Hit Points or if you and the target become separ
 
 This spell grants up to ten willing creatures of your choice within range the ability to breathe underwater until the spell ends. Affected creatures also retain their normal mode of respiration.
 
-*[Page 340]*
 ### Water Walk
 *3rd-level Transmutation*
 
@@ -7016,7 +6878,6 @@ This spell grants the ability to move across any liquid surface—such as water,
 
 An affected target must take a Bonus Action to pass from the liquid's surface into the liquid itself and vice versa, but if the target falls into the liquid, the target passes through the surface into the liquid below.
 
-*[Page 340]*
 ### Web
 *2nd-level Conjuration*
 
@@ -7035,7 +6896,9 @@ A creature Restrained by the webs can take an action to make a Strength (Athleti
 
 The webs are flammable. Any 5-foot Cube of webs exposed to fire burns away in 1 round, dealing 2d4 Fire damage to any creature that starts its turn in the fire.
 
-*[Page 341]*
+::: {#p341}
+:::
+
 ### Weird
 *9th-level Illusion*
 
@@ -7048,7 +6911,6 @@ You try to create illusory terrors in others' minds. Each creature of your choic
 
 A Frightened target makes a Wisdom saving throw at the end of each of its turns. On a failed save, it takes 5d10 Psychic damage. On a successful save, the spell ends on that target.
 
-*[Page 341]*
 ### Wind Walk
 *6th-level Transmutation*
 
@@ -7061,7 +6923,6 @@ You and up to ten willing creatures of your choice within range assume gaseous f
 
 If a target is in cloud form and flying when the effect ends, the target descends 60 feet per round for 1 minute until it lands, which it does safely. If it can't land after 1 minute, it falls the remaining distance.
 
-*[Page 341]*
 ### Wind Wall
 *3rd-level Evocation*
 
@@ -7076,7 +6937,6 @@ When the wall appears, each creature in its area makes a Strength saving throw, 
 
 The strong wind keeps fog, smoke, and other gases at bay. Small or smaller flying creatures or objects can't pass through the wall. Loose, lightweight materials brought into the wall fly upward. Arrows, bolts, and other ordinary projectiles launched at targets behind the wall are deflected upward and miss automatically. Boulders hurled by Giants or siege engines, and similar projectiles, are unaffected. Creatures in *gaseous form* can't pass through it.
 
-*[Page 341]*
 ### Wish
 *9th-level Conjuration*
 
@@ -7101,7 +6961,9 @@ Alternatively, you can create one of the following effects of your choice:
 
 The stress of casting Wish to produce any effect other than duplicating another spell weakens you. After enduring that stress, each time you cast a spell until you finish a Long Rest, you take 1d10 Necrotic damage per level of that spell. This damage can't be reduced or prevented in any way. In addition, your Strength score becomes 3 for 2d4 days. For each of those days that you spend resting and doing nothing more than light activity, your remaining recovery time decreases by 2 days. Finally, there is a 33 percent chance that you are unable to cast *Wish* ever again if you suffer this stress.
 
-*[Page 343]*
+::: {#p343}
+:::
+
 ### Witch Bolt
 *1st-level Evocation*
 
@@ -7121,7 +6983,6 @@ The spell ends if the target is ever outside the spell's range or if it has Tota
 
 The initial damage increases by 1-9 for each spell slot level above 1.
 
-*[Page 343]*
 ### Word of Radiance
 *Evocation Cantrip*
 
@@ -7137,7 +6998,6 @@ Burning radiance erupts from you in a 5-foot Emanation. Each creature of your ch
 
 The damage increases by 1d6 when you reach levels 5 (2d6), 11 (3d6), and 17 (4d6).
 
-*[Page 343]*
 ### Word of Recall
 *6th-level Conjuration*
 
@@ -7150,7 +7010,6 @@ You and up to five willing creatures within 5 feet of you instantly teleport to 
 
 You must designate a location, such as a temple, as a sanctuary by casting this spell there.
 
-*[Page 343]*
 ### Wrathful Smite
 *1st-level Necromancy*
 
@@ -7168,7 +7027,6 @@ The damage increases by 1-9 for each spell slot level above 1.
 
 ## Y
 
-*[Page 343]*
 ### Yolande's Regal Presence
 *5th-level Enchantment*
 
@@ -7181,7 +7039,6 @@ You surround yourself with unearthly majesty in a 10-foot Emanation. Whenever th
 
 ## Z
 
-*[Page 343]*
 ### Zone of Truth
 *2nd-level Enchantment*
 
