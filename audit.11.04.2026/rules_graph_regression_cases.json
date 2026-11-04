@@ -1,0 +1,175 @@
+{
+  "description": "Acceptance criteria for graph generator; assertions are specifications, not executed test results",
+  "cases": [
+    {
+      "id": "SD-INV-01",
+      "ruleset": "Shadowdark",
+      "mode": "manifest",
+      "input": "Core spell list inventory",
+      "assertions": [
+        "alarm, bless, fixed_object, fabricate present as defined entries",
+        "control_water exists under correct identity",
+        "no phantom control_weather entry for SD core",
+        "source spans resolved"
+      ]
+    },
+    {
+      "id": "SD-SPL-02",
+      "ruleset": "Shadowdark",
+      "mode": "graph",
+      "input": "Sending, Shapechange, Shield of Faith on SD p70",
+      "assertions": [
+        "Sending Wizard tier 3",
+        "Shapechange Wizard tier 5",
+        "Shield of Faith Priest tier 1",
+        "Scrying Wizard tier 5 unchanged",
+        "each class/tier assertion tied to correct entry span"
+      ]
+    },
+    {
+      "id": "SD-SPL-03",
+      "ruleset": "Shadowdark",
+      "mode": "graph",
+      "input": "Control Water",
+      "assertions": [
+        "One canonical spell_control_water",
+        "Priest and Wizard tier 4",
+        "references SD p57/p319 linked",
+        "old control_weather ID resolves via migration redirect, not duplicate rule"
+      ]
+    },
+    {
+      "id": "SD-SPL-04",
+      "ruleset": "Shadowdark",
+      "mode": "retrieval",
+      "input": "Can a wizard cast Sleep while wearing plate mail?",
+      "assertions": [
+        "class_wizard, spell_sleep, item_plate_mail resolved",
+        "armor classification and wizard armor permission retrieved with text",
+        "answer cites authoritative exact passages",
+        "no conclusion solely from CONSTRAINS edge"
+      ]
+    },
+    {
+      "id": "SD-ITEM-05",
+      "ruleset": "Shadowdark",
+      "mode": "retrieval",
+      "input": "Can a wizard use a greatsword?",
+      "assertions": [
+        "greatsword to weapon category link",
+        "wizard permitted-weapon source retrieved",
+        "answer distinguishes class rule from weapon category"
+      ]
+    },
+    {
+      "id": "SD-REL-06",
+      "ruleset": "Shadowdark",
+      "mode": "retrieval",
+      "input": "Focus spellcaster takes damage",
+      "assertions": [
+        "focus check and damage-trigger relationships found",
+        "unmentioned unrelated spells excluded",
+        "source citation present"
+      ]
+    },
+    {
+      "id": "SD-VAR-07",
+      "ruleset": "Shadowdark",
+      "mode": "applicability",
+      "input": "Dying, Fatality Mode disabled, SD book enabled",
+      "assertions": [
+        "SD default rule applied",
+        "Fatality Mode searchable but not active"
+      ]
+    },
+    {
+      "id": "SD-VAR-08",
+      "ruleset": "Shadowdark",
+      "mode": "applicability",
+      "input": "Dying, Fatality Mode enabled, SD book enabled",
+      "assertions": [
+        "specific active override retrieved",
+        "general rule and override both sourced",
+        "variant condition satisfied"
+      ]
+    },
+    {
+      "id": "SD-SPL-09",
+      "ruleset": "Shadowdark",
+      "mode": "retrieval",
+      "input": "Can a priest cast Burning Hands?",
+      "assertions": [
+        "spell membership looked up from authoritative list",
+        "no inference from lack of graph edge",
+        "explicit answer or documented unavailable evidence"
+      ]
+    },
+    {
+      "id": "SD-QUAL-10",
+      "ruleset": "Shadowdark",
+      "mode": "quality",
+      "input": "Reprocess the same SD p70 packet twice",
+      "assertions": [
+        "stable node/claim IDs",
+        "idempotent no duplicates",
+        "correct preserved p70 classifications",
+        "content diff empty on second run"
+      ]
+    },
+    {
+      "id": "UNIV-SRC-11",
+      "ruleset": "any",
+      "mode": "quality",
+      "input": "Deliberately delete a required inventory entry from packet output",
+      "assertions": [
+        "packet fails completeness gate",
+        "missing expected entity named",
+        "source location preserved"
+      ]
+    },
+    {
+      "id": "UNIV-TBL-12",
+      "ruleset": "any",
+      "mode": "quality",
+      "input": "Two-column page and a multi-row table",
+      "assertions": [
+        "no cross-column claim swaps",
+        "table header and row context preserved",
+        "source spans distinct"
+      ]
+    },
+    {
+      "id": "D5-ED-13",
+      "ruleset": "D&D 5e",
+      "mode": "retrieval",
+      "input": "Same-named spell/rule in 2014 and 2024",
+      "assertions": [
+        "2014 and 2024 data isolated",
+        "source revision and errata identified",
+        "no silent cross-version merge"
+      ]
+    },
+    {
+      "id": "D5-PROF-14",
+      "ruleset": "D&D 5e",
+      "mode": "rules",
+      "input": "Character wields weapon without proficiency",
+      "assertions": [
+        "unproficient weapon use not treated as blanket prohibition",
+        "attack roll bonus determined by proficiency state",
+        "edition-appropriate citation"
+      ]
+    },
+    {
+      "id": "UNIV-REF-15",
+      "ruleset": "any",
+      "mode": "quality",
+      "input": "An item references a spell not defined in the loaded corpus",
+      "assertions": [
+        "reference-only node marked as such",
+        "no invented rule definition or fake tier",
+        "search may return referenced spell but answer notes no authorized definition"
+      ]
+    }
+  ]
+}
