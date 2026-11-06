@@ -1,0 +1,73 @@
+ruleset: shadowdark
+generated_at: 2026-11-04T20:28:30-05:00
+role: builder
+report_type: component_map
+entry_points:
+  compilation_and_normalization:
+    compiler:
+      path: tooling/builder/src/adnd1e_builder/compiler.py
+      function: "GUR to GUP compilation; relation normalization; predicate validation"
+      relevance: "SD-006, SD-007, SD-008, SD-009, SD-010, SD-011, SD-013"
+    emit:
+      path: tooling/builder/src/adnd1e_builder/emit.py
+      function: "GUP companion CSV & YAML serialization"
+      relevance: "SD-010, SD-012"
+    pagemarkers:
+      path: tooling/builder/src/adnd1e_builder/pagemarkers.py
+      function: "Source page and span tracking"
+      relevance: "SD-010 (stable passage_id and span bindings)"
+    registry:
+      path: tooling/builder/src/adnd1e_builder/registry.py
+      function: "Domain and entity validation against registries"
+      relevance: "SD-007, SD-008, SD-012"
+  integration_and_canonical:
+    integrate:
+      path: tooling/integrator/src/adnd1e_integrator/integrate.py
+      function: "Approved bundle application to canonical graph"
+      relevance: "SD-002, SD-015, UNIV-016"
+    canonical:
+      path: tooling/integrator/src/adnd1e_integrator/canonical.py
+      function: "Canonical graph mutation, identity updates, and index regeneration"
+      relevance: "SD-002 (Control Water migration and redirect index)"
+    derive:
+      path: tooling/integrator/src/adnd1e_integrator/derive.py
+      function: "Generation of nodes_master.csv and edges_master.csv"
+      relevance: "Deterministic export regeneration"
+    snapshot:
+      path: tooling/integrator/src/adnd1e_integrator/snapshot.py
+      function: "Pre-integration snapshotting and rollback restore"
+      relevance: "Transaction rollback requirement"
+    invariants:
+      path: tooling/integrator/src/adnd1e_integrator/invariants.py
+      function: "Hard invariant verification before canonical commit"
+      relevance: "UNIV-016 (QA publication gates)"
+  validation_and_gates:
+    artifact_io:
+      path: tooling/common/artifact_io.py
+      function: "Envelope validation and checksum verification"
+      relevance: "Lineage and checksum enforcement"
+    validate_artifact:
+      path: tooling/common/validate_artifact.py
+      function: "JSON schema verification utility"
+      relevance: "Schema preflight"
+existing_pipeline_checks:
+  - schema_conformance: "JSON schema validation for GUR, GUP, Review, Approved Bundle"
+  - graph_invariants: "Cycle detection where disallowed, duplicate edge rejection, dangling pointer checks"
+  - foreign_key_checks: "Source ID, book ID, domain registry verification"
+missing_or_deficient_gates_to_implement:
+  - pre_extraction_source_manifest_gate:
+      defect_id: SD-015
+      specification: UNIV-COV-05 / UNIV-SRC-11
+      required_behavior: "Verify all entities declared in SourceEntityManifest exist in packet output before approval"
+  - exact_passage_and_span_gate:
+      defect_id: SD-010
+      specification: UNIV-TBL-04 / UNIV-TBL-12
+      required_behavior: "Every authoritative claim must bind to a validated passage_id and source text span"
+  - optional_variant_applicability_gate:
+      defect_id: SD-011
+      specification: SD-VAR-08 / UNIV-SCOPE-06
+      required_behavior: "Fatality Mode and variant rules must have explicit opt-in conditions; default false"
+  - identity_redirect_gate:
+      defect_id: SD-002
+      specification: SD-SPL-03
+      required_behavior: "Renamed entities must resolve via redirects without phantom duplicate nodes or broken incoming edges"

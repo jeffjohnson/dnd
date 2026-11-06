@@ -1,0 +1,214 @@
+ruleset: shadowdark
+generated_at: 2026-11-04T20:28:45-05:00
+role: reviewer
+report_type: regression_crosswalk
+cases:
+  - spec_id: spec:SD-INV-01
+    json_id: json:SD-INV-01
+    name: "Core Spell List Inventory Completeness"
+    ruleset: shadowdark
+    mode: manifest
+    input: "Core spell list inventory pp. 54-62 and descriptions pp. 63-95"
+    assertions:
+      - "alarm, bless, fixed_object, fabricate present as defined entries"
+      - "control_water exists under correct identity"
+      - "no phantom control_weather entry for SD core"
+      - "source spans resolved"
+    pinned_fixtures:
+      expected_spell_nodes:
+        - spell_alarm
+        - spell_bless
+        - spell_fixed_object
+        - spell_fabricate
+        - spell_control_water
+      disallowed_nodes:
+        - spell_control_weather
+
+  - spec_id: spec:SD-SPL-02
+    json_id: json:SD-SPL-02
+    name: "SD Page 70 Class and Tier Attribution"
+    ruleset: shadowdark
+    mode: graph
+    input: "Sending, Shapechange, Shield of Faith on SD p.70"
+    assertions:
+      - "Sending Wizard tier 3"
+      - "Shapechange Wizard tier 5"
+      - "Shield of Faith Priest tier 1"
+      - "Scrying Wizard tier 5 unchanged"
+      - "each class/tier assertion tied to correct entry span"
+    pinned_fixtures:
+      page_70_spells:
+        spell_sending: { class: class_wizard, tier: 3 }
+        spell_shapechange: { class: class_wizard, tier: 5 }
+        spell_shield_of_faith: { class: class_priest, tier: 1 }
+        spell_scrying: { class: class_wizard, tier: 5 }
+
+  - spec_id: spec:SD-SPL-03
+    json_id: json:SD-SPL-03
+    name: "Control Water Identity Migration and Redirect"
+    ruleset: shadowdark
+    mode: graph
+    input: "Control Water"
+    assertions:
+      - "One canonical spell_control_water"
+      - "Priest and Wizard tier 4"
+      - "references SD p.57 / p.319 linked"
+      - "old control_weather ID resolves via migration redirect, not duplicate rule"
+    pinned_fixtures:
+      redirect:
+        from: spell_control_weather
+        to: spell_control_water
+      offerings:
+        - { class: class_priest, tier: 4 }
+        - { class: class_wizard, tier: 4 }
+
+  - spec_id: spec:SD-SPL-04
+    json_id: json:SD-SPL-04
+    name: "Wizard Casting Sleep in Plate Mail Retrieval"
+    ruleset: shadowdark
+    mode: retrieval
+    input: "Can a wizard cast Sleep while wearing plate mail?"
+    assertions:
+      - "class_wizard, spell_sleep, item_plate_mail resolved"
+      - "armor classification and wizard armor permission retrieved with text"
+      - "answer cites authoritative exact passages"
+      - "no conclusion solely from CONSTRAINS edge"
+
+  - spec_id: spec:SD-ITEM-05
+    json_id: json:SD-ITEM-05
+    name: "Wizard Greatsword Permitted Usability"
+    ruleset: shadowdark
+    mode: retrieval
+    input: "Can a wizard use a greatsword?"
+    assertions:
+      - "greatsword to weapon category link"
+      - "wizard permitted-weapon source retrieved"
+      - "answer distinguishes class rule from weapon category"
+
+  - spec_id: spec:SD-ITEM-06
+    json_id: null
+    name: "Magic Weapon and Armor Functional Taxonomy"
+    ruleset: shadowdark
+    mode: graph
+    input: "Trident of the Seas and magical gear"
+    assertions:
+      - "magical weapon inherits base weapon taxonomy while retaining magical property"
+      - "multiple functional classifications allowed"
+
+  - spec_id: spec:SD-REL-07
+    json_id: json:SD-REL-06
+    name: "Focus Spellcaster Taking Damage Trigger"
+    ruleset: shadowdark
+    mode: retrieval
+    input: "Focus spellcaster takes damage"
+    assertions:
+      - "focus check and damage-trigger relationships found"
+      - "unmentioned unrelated spells excluded"
+      - "source citation present"
+
+  - spec_id: spec:SD-VAR-08
+    json_id: json:SD-VAR-07_and_08
+    name: "Fatality Mode Variant Applicability Separation"
+    ruleset: shadowdark
+    mode: applicability
+    input: "Dying condition with Fatality Mode disabled vs enabled"
+    assertions:
+      - "SD default dying rule applied when Fatality Mode disabled"
+      - "Fatality Mode searchable but not active by default"
+      - "specific active override retrieved only when Fatality Mode explicitly enabled"
+
+  - spec_id: spec:SD-QA-09
+    json_id: json:SD-SPL-09
+    name: "Priest Casting Burning Hands & Absence of Edge Inference"
+    ruleset: shadowdark
+    mode: retrieval
+    input: "Can a priest cast Burning Hands?"
+    assertions:
+      - "spell membership looked up from authoritative list"
+      - "no inference from lack of graph edge"
+      - "explicit answer or documented unavailable evidence"
+
+  - spec_id: spec:SD-QA-10
+    json_id: json:SD-QUAL-10
+    name: "Deterministic Replay and Idempotency"
+    ruleset: shadowdark
+    mode: quality
+    input: "Reprocess the same SD p.70 packet twice"
+    assertions:
+      - "stable node/claim IDs"
+      - "idempotent no duplicates"
+      - "correct preserved p.70 classifications"
+      - "content diff empty on second run"
+
+  - spec_id: spec:UNIV-COV-05
+    json_id: json:UNIV-SRC-11
+    name: "Omitted Inventory Manifest Publication Gate"
+    ruleset: any
+    mode: quality
+    input: "Deliberately delete a required inventory entry from packet output"
+    assertions:
+      - "packet fails completeness gate"
+      - "missing expected entity named"
+      - "source location preserved"
+
+  - spec_id: spec:UNIV-TBL-04
+    json_id: json:UNIV-TBL-12
+    name: "Two-Column & Table Context Preservation"
+    ruleset: any
+    mode: quality
+    input: "Two-column page and multi-row table"
+    assertions:
+      - "no cross-column claim swaps"
+      - "table header and row context preserved"
+      - "source spans distinct"
+
+  - spec_id: spec:D5-ED-01
+    json_id: json:D5-ED-13
+    name: "Cross-Edition Isolation (2014 vs 2024)"
+    ruleset: dnd5e
+    mode: retrieval
+    input: "Same-named spell/rule in 2014 and 2024"
+    assertions:
+      - "2014 and 2024 data isolated"
+      - "source revision and errata identified"
+      - "no silent cross-version merge"
+
+  - spec_id: spec:D5-PROF-02
+    json_id: json:D5-PROF-14
+    name: "Weapon Usability vs Proficiency"
+    ruleset: dnd5e
+    mode: rules
+    input: "Character wields weapon without proficiency"
+    assertions:
+      - "unproficient weapon use not treated as blanket prohibition"
+      - "attack roll bonus determined by proficiency state"
+      - "edition-appropriate citation"
+
+  - spec_id: spec:D5-MULTI-03
+    json_id: null
+    name: "Multiclass / Prerequisite Exception Coverage"
+    ruleset: dnd5e
+    mode: rules
+    input: "Multiclass spell slots and prerequisites"
+    assertions:
+      - "prerequisite rules and exceptions evaluated from source text"
+
+  - spec_id: spec:UNIV-SCOPE-06
+    json_id: null
+    name: "Entity Absent & Predicate Unknown Handling"
+    ruleset: any
+    mode: applicability
+    input: "Query with unknown predicate or absent entity"
+    assertions:
+      - "unknown predicate handled as false/unknown, never inferred true"
+
+  - spec_id: null
+    json_id: json:UNIV-REF-15
+    name: "Reference-Only Mentions"
+    ruleset: any
+    mode: quality
+    input: "An item references a spell not defined in loaded corpus"
+    assertions:
+      - "reference-only node marked as such"
+      - "no invented rule definition or fake tier"
+      - "search notes no authorized definition"

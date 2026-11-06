@@ -1,0 +1,63 @@
+audit_id: AUD-INT-20261104-001
+ruleset: shadowdark
+role: integrator
+audit_date: 2026-11-04T21:01:00-05:00
+baseline_snapshot:
+  snapshot_id: INT-20261104-BASE
+  manifest_path: rulesets/shadowdark/reports/remediation_baseline_snapshot.yaml
+  verification_status: PASSED
+  artifacts:
+    graph.json:
+      expected_sha256: dbf6ea1c45009cd220700846d4fc7c64a870dadc74789d35598426d7454e27a7
+      actual_sha256: dbf6ea1c45009cd220700846d4fc7c64a870dadc74789d35598426d7454e27a7
+      bytes: 927411
+      match: true
+    nodes_master.csv:
+      expected_sha256: d06f7162b5fb88aa0c043358d4c56ac21ad5857db82ed8d87ed9b7b570eb9cc0
+      actual_sha256: d06f7162b5fb88aa0c043358d4c56ac21ad5857db82ed8d87ed9b7b570eb9cc0
+      bytes: 37077
+      match: true
+    edges_master.csv:
+      expected_sha256: f15e192ab104d545904a3b5a8d9311c99b4c0307ba90f3756059687353a9a3c6
+      actual_sha256: f15e192ab104d545904a3b5a8d9311c99b4c0307ba90f3756059687353a9a3c6
+      bytes: 242390
+      match: true
+    classification_gaps.csv:
+      expected_sha256: a515b10ad78ae39caf9a2ce35f9d8d8f16616af025d0f50edf397b96f7007bcf
+      actual_sha256: a515b10ad78ae39caf9a2ce35f9d8d8f16616af025d0f50edf397b96f7007bcf
+      bytes: 9149
+      match: true
+
+rollback_procedure_test:
+  methodology: isolated_tempdir_simulation
+  steps_executed:
+    - copy snapshot graph.json to canonical path
+    - copy snapshot nodes_master.csv to canonical path
+    - copy snapshot edges_master.csv to canonical path
+    - verify restored artifacts match baseline SHA256 hashes
+  status: PASSED
+  verdict: functional_and_safe
+
+canonical_integrity:
+  canonical_directory: rulesets/shadowdark/canonical
+  metrics:
+    nodes_csv_count: 737
+    nodes_json_count: 737
+    edges_csv_count: 1745
+    edges_json_count: 1745
+    dangling_sources_count: 0
+    dangling_targets_count: 0
+    core_edges_count: 1359
+    optional_edges_count: 386
+  degree_distribution_consistency:
+    nodes_master_csv:
+      degree_mismatches: 0
+      core_degree_mismatches: 0
+      in_degree_mismatches: 0
+      out_degree_mismatches: 0
+    graph_json:
+      degree_mismatches: 0
+      core_degree_mismatches: 0
+      in_degree_mismatches: 0
+      out_degree_mismatches: 0
+  status: VERIFIED_CLEAN

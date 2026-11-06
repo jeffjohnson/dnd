@@ -2460,41 +2460,36 @@ While in your Starry Form, you become partially incorporeal, giving you Resistan
 ::: {#p91}
 :::
 
-**Primary Ability:** STR or DEX
-**Hit Point Die:** D10 per Fighter level
-**Saving Throw Proficiencies:** STR, CON
+### Table: Core Fighter Traits
 
-### Fighter Progression Table
+|                                |                                                                                                                                                                                                                          |
+| :----------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Primary Ability**            | Strength or Dexterity                                                                                                                                                                                                    |
+| **Hit Point Die**              | D10 per Fighter level                                                                                                                                                                                                    |
+| **Saving Throw Proficiencies** | Strength and Constitution                                                                                                                                                                                                |
+| **Skill Proficiencies**        | *Choose 2:* Acrobatics, Animal Handling, Athletics, History, Insight, Intimidation, Persuation, Perception, or Survival                                                                                                  |
+| **Weapon Proficiencies**       | Simple and Martial weapons                                                                                                                                                                                               |
+| **Armor Training**             | Light, Medium, and Heavy armor and Shields                                                                                                                                                                               |
+| **Starting Equipment**         | *Choose A, B or C:* (A) Chain Mail, Greatsword, Flail, 8 Javelins, Dungeoneer's Pack, and 4 GP; (B) Studded Leather Armor, Scimitar, Shortsword, Longbow, 20 Arrows, Quiver, Dungeoneer's Pack, and 11 GP; or (C) 155 GP |
 
-#### Table: Fighter Features
+Fighters rule many battlefields. Questing knights, royal champions, elite soldiers, and hardened mercenaries—as Fighters, they all share an unparalleled prowess with weapons and armor. And they are well acquainted with death, both meting it out and defying it.
 
-| Second Wind | Weapon Mastery |
-| ----------- | -------------- |
-| 2           | 3              |
-| 2           | 3              |
-| 2           | 3              |
-| 3           | 4              |
-| 3           | 4              |
-| 3           | 4              |
-| 3           | 4              |
-| 3           | 4              |
-| 3           | 4              |
-| 4           | 5              |
-| 4           | 5              |
-| 4           | 5              |
-| 4           | 5              |
-| 4           | 5              |
-| 4           | 5              |
-| 4           | 6              |
-| 4           | 6              |
-| 4           | 6              |
-| 4           | 6              |
-| 4           | 6              |
+Fighters master various weapon techniques, and a well-equipped Fighter always has the right tool at hand for any combat situation. Likewise, a Fighter is adept with every form of armor. Beyond that basic degree of familiarity, each Fighter specializes in certain styles of combat. Some concentrate on archery, some on fighting with two weapons at once, and some on augmenting their martial skills with magic. This combination of broad ability and extensive specialization makes Fighters superior combatants.
 
-### Class Features
+### Becoming a Fighter ...
 
-::: {#p91}
-:::
+#### As a Level 1 Character
+
+- Gain all the traits in the Core Fighter Traits table.
+- Gain the Fighter's level 1 features, which are listed in the Fighter Features table.
+
+#### As a Multiclass Character
+
+- Gain the following traits from the Core Fighter Traits table: Hit Point Die, proficiency with Martial weapons, and training with Light and Medium armor and Shields.
+- Gain the Fighter's level 1 features, which are listed in the Fighter Features table.
+
+### Fighter Class Features
+As a Fighter, you gain the following class features when you reach the specified Fighter levels. These features are listed on teh Fighter Features table.
 
 #### Level 1: Fighting Style
 
@@ -2528,6 +2523,32 @@ You have a mind for tactics on and off the battlefield. When you fail an ability
 
 ::: {#p92}
 :::
+
+#### Table: Fighter Features
+
+| Level | Proficiency Bonus | Class Features                                    | Second Wind | Weapon Mastery |
+| :---: | :---------------: | :------------------------------------------------ | :---------: | :------------: |
+|   1   |        +2         | Fighting Style, Second Wind, Weapon Mastery       |      2      |       3        |
+|   2   |        +2         | Action Surge (one use), Tactical Mind             |      2      |       3        |
+|   3   |        +2         | Fighter Subclass                                  |      2      |       3        |
+|   4   |        +2         | Ability Score Improvement                         |      3      |       4        |
+|   5   |        +3         | Extra Attack, Tactical Shift                      |      3      |       4        |
+|   6   |        +3         | Ability Score Improvement                         |      3      |       4        |
+|   7   |        +3         | Subclass feature                                  |      3      |       4        |
+|   8   |        +3         | Ability Score Improvement                         |      3      |       4        |
+|   9   |        +4         | Indomitable (one use), Tactical Master            |      3      |       4        |
+|  10   |        +4         | Subclass feature                                  |      4      |       5        |
+|  11   |        +4         | Two Extra Attacks                                 |      4      |       5        |
+|  12   |        +4         | Ability Score Improvement                         |      4      |       5        |
+|  13   |        +5         | Indomitable (two uses), Studied Attacks           |      4      |       5        |
+|  14   |        +5         | Ability Score Improvement                         |      4      |       5        |
+|  15   |        +5         | Subclass feature                                  |      4      |       5        |
+|  16   |        +5         | Ability Score Improvement                         |      4      |       6        |
+|  17   |        +6         | Action Surge (two uses), Indomitable (three uses) |      4      |       6        |
+|  18   |        +6         | Subclass feature                                  |      4      |       6        |
+|  19   |        +6         | Epic Boon                                         |      4      |       6        |
+|  20   |        +6         | Three Extra Attacks                               |      4      |       6        |
+
 
 #### Level 3: Fighter Subclass
 
@@ -2625,10 +2646,10 @@ You gain an Epic Boon feat or another feat of your choice for which you qualify.
 
 You can attack four times instead of once whenever you take the Attack action on your turn.
 
-### Subclasses
-
 ::: {#p93}
 :::
+
+### Fighter Subclasses
 
 #### Battle Master
 
@@ -2637,12 +2658,6 @@ You can attack four times instead of once whenever you take the Attack action on
 *Master Sophisticated Battle Maneuvers*
 
 Battle Masters are students of the art of battle, learning martial techniques passed down through generations. The most accomplished Battle Masters are well-rounded figures who combine their carefully honed combat skills with academic study in the fields of history, theory, and the arts.
-
-**Combat Superiority**
-
-**Student of War**
-
-**Maneuver Options**
 
 ##### Level 3: Combat Superiority
 
@@ -2664,49 +2679,8 @@ You gain an additional Superiority Die when you reach Fighter levels 7 (five dic
 
 If a maneuver requires a saving throw, the DC equals 8 plus your Strength or Dexterity modifier (your choice) and Proficiency Bonus.
 
-##### Level 3: Maneuver Options
-
-The maneuvers are presented here in alphabetical order.
-
-**Ambush|XPHB**
-
-**Bait and Switch|XPHB**
-
-**Commander's Strike|XPHB**
-
-**Commanding Presence|XPHB**
-
-**Disarming Attack|XPHB**
-
-**Distracting Strike|XPHB**
-
-**Evasive Footwork|XPHB**
-
-**Feinting Attack|XPHB**
-
-**Goading Attack|XPHB**
-
-**Lunging Attack|XPHB**
-
-**Maneuvering Attack|XPHB**
-
-**Menacing Attack|XPHB**
-
-**Parry|XPHB**
-
-**Precision Attack|XPHB**
-
-**Pushing Attack|XPHB**
-
-**Rally|XPHB**
-
-**Riposte|XPHB**
-
-**Sweeping Attack|XPHB**
-
-**Tactical Assessment|XPHB**
-
-**Trip Attack|XPHB**
+::: {#p94}
+:::
 
 ##### Level 3: Student of War
 
@@ -2730,20 +2704,63 @@ Once per turn, when you use a maneuver, you can roll 1d8 and use the number roll
 
 Your Superiority Die becomes a d12.
 
+##### Maneuver Options
+
+The maneuvers are presented here in alphabetical order.
+
+***Ambush.*** When you make a Dexterity (Stealth) check or an Initiative roll, you can expend one Superiority Die and add the die to the roll, unless you have the Incapacitated condition.
+
+***Bait and Switch.*** When you're within 5 feet of a creature on your turn, you can expend one Superiority Die and switch places with that creature, provided you spend at least 5 feet of movement and the creature is willing and doesn't have the Incapacitated condition. This movement doesn't provoke Opportunity Attacks.
+
+Roll the Superiority Die. Until the start of your next turn, you or the other creature (your choice) gains a bonus to AC equal to the number rolled.
+
+***Commander's Strike.*** When you take the Attack action on your turn, you can replace one of your attacks to direct one of your companions to strike. When you do so, choose a willing creature who can see or hear you and expend one Superiority Die. That creature can immediately use its Reaction to make one attack with a weapon or an Unarmed Strike, adding the Superiority Die to the attack's damage roll on a hit.
+
+::: {#p95}
+:::
+
+***Commanding Presence.*** When you make a Charisma (Intimidation, Performance, or Persuasion) check, you can expend one Superiority Die and add that die to the roll.
+
+***Disarming Attack.*** When you hit a creature with an attack roll, you can expend one Superiority Die to attempt to disarm the target. Add the Superiority Die roll to the attack's damage roll. The target must succeed on a Strength saving throw or drop one object of your choice that it's holding, with the object landing in its space.
+
+***Distracting Strike.*** When you hit a creature with an attack roll, you can expend one Superiority Die to distract the target. Add the Superiority Die roll to the attack's damage roll. The next attack roll against the target by an attacker other than you has Advantage if the attack is made before the start of your next turn.
+
+***Evasive Footwork.*** As a Bonus Action, you can expend one Superiority Die and take the Disengage action. You also roll the die and add the number rolled to your AC until the start of your next turn.
+
+***Feinting Attack.*** As a Bonus Action, you can expend one Superiority Die to feint, choosing one creature within 5 feet of yourself as your target. You have Advantage on your next attack roll against that target this turn. If that attack hits, add the Superiority Die to the attack's damage roll.
+
+***Goading Attack.*** When you hit a creature with an attack roll, you can expend one Superiority Die to attempt to goad the target into attacking you. Add the Superiority Die to the attack's damage roll. The target must succeed on a Wisdom saving throw or have Disadvantage on attack rolls against targets other than you until the end of your next turn.
+
+***Lunging Attack.*** As a Bonus Action, you can expend one Superiority Die and take the Dash action. If you move at least 5 feet in a straight line immediately before hitting with a melee attack as part of the Attack action on this turn, you can add the Superiority Die to the attack's damage roll.
+
+***Maneuvering Attack.*** When you hit a creature with an attack roll, you can expend one Superiority Die to maneuver one of your comrades into another position. Add the Superiority Die roll to the attack's damage roll, and choose a willing creature who can see or hear you. That creature can use its Reaction to move up to half its Speed without provoking an Opportunity Attack from the target of your attack.
+
+***Menacing Attack.*** When you hit a creature with an attack roll, you can expend one Superiority Die to attempt to frighten the target. Add the Superiority Die to the attack's damage roll. The target must succeed on a Wisdom saving throw or have the Frightened condition until the end of your next turn.
+
+***Parry.*** When another creature damages you with a melee attack roll, you can take a Reaction and expend one Superiority Die to reduce the damage by the number you roll on your Superiority Die plus your Strength or Dexterity modifier (your choice).
+
+***Precision Attack.*** When you miss with an attack roll, you can expend one Superiority Die, roll that die, and add it to the attack roll, potentially causing the attack to hit.
+
+***Pushing Attack.*** When you hit a creature with an attack roll using a weapon or an Unarmed Strike, you can expend one Superiority Die to attempt to drive the target back. Add the Superiority Die to the attack's damage roll. If the target is Large or smaller, it must succeed on a Strength saving throw or be pushed up to 15 feet directly away from you.
+
+***Rally.*** As a Bonus Action, you can expend one Superiority Die to bolster the resolve of a companion. Choose an ally of yours within 30 feet of yourself who can see or hear you. That creature gains Temporary Hit Points equal to the Superiority Die roll plus half your Fighter level (round down).
+
+***Riposte.*** When a creature misses you with a melee attack roll, you can take a Reaction and expend one Superiority Die to make a melee attack roll with a weapon or an Unarmed Strike against the creature. If you hit, add the Superiority Die to the attack's damage.
+
+***Sweeping Attack.*** When you hit a creature with a melee attack roll using a weapon or an Unarmed Strike, you can expend one Superiority Die to attempt to damage another creature. Choose another creature within 5 feet of the original target and within your reach. If the original attack roll would hit the second creature, it takes damage equal to the number you roll on your Superiority Die. The damage is of the same type dealt by the original attack.
+
+***Tactical Assessment.*** When you make an Intelligence (History or Investigation) check or a Wisdom (Insight) check, you can expend one Superiority Die and add that die to the ability check.
+
+***Trip Attack.*** When you hit a creature with an attack roll using a weapon or an Unarmed Strike, you can expend one Superiority Die and add the die to the attack's damage roll. If the target is Large or smaller, it must succeed on a Strength saving throw or have the Prone condition.
+
 ::: {#p96}
 :::
 
 #### Champion
 
-##### Level 3: Champion
-
 *Pursue Physical Excellence in Combat*
 
 A Champion focuses on the development of martial prowess in a relentless pursuit of victory. Champions combine rigorous training with physical excellence to deal devastating blows, withstand peril, and garner glory. Whether in athletic contests or bloody battle, Champions strive for the crown of the victor.
-
-**Improved Critical**
-
-**Remarkable Athlete**
 
 ##### Level 3: Improved Critical
 
@@ -2781,15 +2798,9 @@ At the start of each of your turns, you regain Hit Points equal to 5 plus your C
 
 #### Eldritch Knight
 
-##### Level 3: Eldritch Knight
-
 *Support Combat Skills with Arcane Magic*
 
 Eldritch Knights combine the martial mastery common to all Fighters with a careful study of magic. Their spells both complement and extend their combat skills, providing additional protection to shore up their armor and also allowing them to engage many foes at once with explosive magic.
-
-**Spellcasting**
-
-**War Bond**
 
 ##### Level 3: Spellcasting
 
@@ -2805,11 +2816,56 @@ When you reach Fighter level 10, you learn another Wizard cantrip of your choice
 
 The Eldritch Knight Spellcasting table shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.
 
+
+#### Eldritch Knight Spellcasting
+
++---------------+-----------------+-------+-------+-------+-------+
+|               |                 | Spell Slots per Spell Level   |
+| Fighter Level | Spells Prepared |   1   |   2   |   3   |   4   |
++:=============:+:===============:+:=====:+:=====:+:=====:+:=====:+
+| 3             | 3               |   2   |   —   |   —   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 4             | 4               |   3   |   —   |   —   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 5             | 4               |   3   |   —   |   —   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 6             | 4               |   3   |   —   |   —   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 7             | 5               |   4   |   2   |   —   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 8             | 6               |   4   |   2   |   —   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 9             | 6               |   4   |   2   |   —   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 10            | 7               |   4   |   3   |   —   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 11            | 8               |   4   |   3   |   —   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 12            | 8               |   4   |   3   |   —   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 13            | 9               |   4   |   3   |   2   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 14            | 10              |   4   |   3   |   2   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 15            | 10              |   4   |   3   |   2   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 16            | 11              |   4   |   3   |   3   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 17            | 11              |   4   |   3   |   3   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 18            | 11              |   4   |   3   |   3   |   —   |
++---------------+-----------------+-------+-------+-------+-------+
+| 19            | 12              |   4   |   3   |   3   |   1   |
++---------------+-----------------+-------+-------+-------+-------+
+| 20            | 13              |   4   |   3   |   3   |   1   |
++---------------+-----------------+-------+-------+-------+-------+
+
+
 ###### Prepared Spells of Level 1+
 
 You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose three level 1 spells from the Wizard spell list. *Burning Hands*, *Jump*, and *Shield* are recommended.
 
-The number of spells on your list increases as you gain Fighter levels, as shown in the Prepared Spells column of the Eldritch Knight Spellcasting table. Whenever that number increases, choose additional spells from the Wizard spell list until the number of spells on your list matches the number on the table. The chosen spells must be of a level for which you have spell slots. For example, if you're a level 7 Fighter, your list of prepared spells can include five Wizard spells of levels 1 and 2 in any combination.
+The number of spells on your list increases as you gain Fighter levels, as shown in the Prepared Spells column of the Eldritch Knight Spellcasting table. Whenever that number increases, choose additional spells from the Wizard spell list until the number of spells on your list matches the number on the table. The chosen spells must be of a level for which you have spell slots. For example, if you're a level 7 []{#p98} Fighter, your list of prepared spells can include five Wizard spells of levels 1 and 2 in any combination.
 
 ###### Changing your Prepared Spells
 
@@ -2847,18 +2903,11 @@ When you use your Action Surge, you can teleport up to 30 feet to an unoccupied 
 
 When you take the Attack action on your turn, you can replace two of the attacks with a casting of one of your level 1 or level 2 Wizard spells that has a casting time of an action.
 
-::: {#p98}
-:::
-
 #### Psi Warrior
-
-##### Level 3: Psi Warrior
 
 *Augment Physical Might with Psionic Power*
 
 Psi Warriors awaken the power of their minds to augment their physical might. They harness this psionic power to infuse their weapon strikes, lash out with telekinetic energy, and create barriers of mental force.
-
-**Psionic Power**
 
 ##### Level 3: Psionic Power
 
@@ -2867,51 +2916,41 @@ You harbor a wellspring of psionic energy within yourself. It is represented by 
 ###### Table: Psi Warrior Energy Dice
 
 | Fighter Level | Die Size | Number |
-| ------------- | -------- | ------ |
-| 3             | D6       | 4      |
-| 5             | D8       | 6      |
-| 9             | D8       | 8      |
-| 11            | D10      | 8      |
-| 13            | D10      | 10     |
-| 17            | D12      | 12     |
+| :-----------: | :------: | :----: |
+|       3       |    D6    |   4    |
+|       5       |    D8    |   6    |
+|       9       |    D8    |   8    |
+|      11       |   D10    |   8    |
+|      13       |   D10    |   10   |
+|      17       |   D12    |   12   |
 
 Any features in this subclass that use a Psionic Energy Die use only the dice from this subclass. Some of your powers expend the Psionic Energy Die, as specified in a power's description, and you can't use a power if it requires you to use a die when all your Psionic Energy Dice are expended.
 
 You regain one of your expended Psionic Energy Dice when you finish a Short Rest, and you regain all of them when you finish a Long Rest.
 
-**Protective Field**
-
-**Psionic Strike**
-
-**Telekinetic Movement**
-
-##### Level 3: Protective Field
+###### Protective Field
 
 When you or another creature you can see within 30 feet of you takes damage, you can take a Reaction to expend one Psionic Energy Die, roll the die, and reduce the damage taken by the number rolled plus your Intelligence modifier (minimum reduction of 1), as you create a momentary shield of telekinetic force.
 
-##### Level 3: Psionic Strike
+###### Psionic Strike
 
 You can propel your weapons with psionic force. Once on each of your turns, immediately after you hit a target within 30 feet of yourself with an attack and deal damage to it with a weapon, you can expend one Psionic Energy Die, rolling it and dealing Force damage to the target equal to the number rolled plus your Intelligence modifier.
 
-##### Level 3: Telekinetic Movement
+###### Telekinetic Movement
 
-You can move an object or a creature with your mind. As a Magic action, choose one target you can see within 30 feet of yourself; the target must be a loose object that is Large or smaller or one willing creature other than you. You transport the target up to 30 feet to an unoccupied space you can see. Alternatively, if the target is a Tiny object, you can transport it to or from your hand.
+You can move an object or a creature with your mind. As a Magic action, choose one target you can see within 30 feet of yourself; the target must be a loose object that is Large or smaller or one willing creature other than you. You transport the target up to 30 feet to an []{#p99} unoccupied space you can see. Alternatively, if the target is a Tiny object, you can transport it to or from your hand.
 
 Once you take this action, you can't do so again until you finish a Short or Long Rest unless you expend a Psionic Energy Die (no action required) to restore your use of it.
-
-##### Level 7: Psi-Powered Leap
-
-As a Bonus Action, you gain a Fly Speed equal to twice your Speed until the end of the current turn. Once you take this Bonus Action, you can't do so again until you finish a Short or Long Rest unless you expend a Psionic Energy Die (no action required) to restore your use of it.
 
 ##### Level 7: Telekinetic Adept
 
 You have mastered new ways to use your telekinetic abilities, detailed below.
 
-**Psi-Powered Leap**
+###### Psi-Powered Leap
 
-**Telekinetic Thrust**
+As a Bonus Action, you gain a Fly Speed equal to twice your Speed until the end of the current turn. Once you take this Bonus Action, you can't do so again until you finish a Short or Long Rest unless you expend a Psionic Energy Die (no action required) to restore your use of it.
 
-##### Level 7: Telekinetic Thrust
+###### Telekinetic Thrust
 
 When you deal damage to a target with your Psionic Strike, you can force the target to make a Strength saving throw (DC 8 plus your Intelligence modifier and Proficiency Bonus). On a failed save, you can give the target the Prone condition or transport it up to 10 feet horizontally.
 
@@ -2936,80 +2975,79 @@ Once you cast the spell with this feature, you can't do so in this way again unt
 
 ## Monk
 
-**Primary Ability:** DEX or WIS
-**Hit Point Die:** D8 per Monk level
-**Saving Throw Proficiencies:** STR, DEX
-
-### Monk Progression Table
-
-#### Table: Monk Features
-
-| Martial Arts | Focus Points | Unarmored Movement                 |
-| ------------ | ------------ | ---------------------------------- |
-| 1d6          | 0            | {'type': 'bonusSpeed', 'value': 0} |
-| 1d6          | 2            | 10                                 |
-| 1d6          | 3            | 10                                 |
-| 1d6          | 4            | 10                                 |
-| 1d8          | 5            | 10                                 |
-| 1d8          | 6            | 15                                 |
-| 1d8          | 7            | 15                                 |
-| 1d8          | 8            | 15                                 |
-| 1d8          | 9            | 15                                 |
-| 1d8          | 10           | 20                                 |
-| 1d10         | 11           | 20                                 |
-| 1d10         | 12           | 20                                 |
-| 1d10         | 13           | 20                                 |
-| 1d10         | 14           | 25                                 |
-| 1d10         | 15           | 25                                 |
-| 1d10         | 16           | 25                                 |
-| 1d12         | 17           | 25                                 |
-| 1d12         | 18           | 30                                 |
-| 1d12         | 19           | 30                                 |
-| 1d12         | 20           | 30                                 |
-
-### Class Features
+> A Martial Artist of Supernatural Forces
 
 ::: {#p101}
 :::
 
-#### Level 1: Bonus Unarmed Strike
+### Table: Core Monk Traits
 
-You can make an Unarmed Strike as a Bonus Action.
+|                                |                                                                                                                        |
+| :----------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| **Primary Ability**            | Dexterity and Wisdom                                                                                                   |
+| **Hit Point Die**              | D8 per Monk level                                                                                                      |
+| **Saving Throw Proficiencies** | Strength and Dexterity                                                                                                 |
+| **Skill Proficiencies**        | *Choose 2:* Acrobatics, Athletics, History, Insight, Religion, or Stealth                                              |
+| **Weapon Proficiencies**       | Simple weapons and Martial weapons that have the Light property                                                        |
+| **Tool Proficiencies**         | *Choose one type of Artisan's Tools or Musical Instrument*                                                             |
+| **Armor Training**             | Light, Medium, and Heavy armor and Shields                                                                             |
+| **Starting Equipment**         | *Choose A or B:* (A) Spear, 5 Daggers, Artisan's Tools or Musical Instrument, Explorer's Pack, and 11 GP; or (B) 50 GP |
 
-#### Level 1: Dexterous Attacks
+Monks use rigorous combat training and mental discipline to align themselves with the multiverse and focus their internal reservoirs of power. Different Monks conceptualize this power in various ways: as breath, energy, life force, essence, or self, for example. Whether channeled as a striking display of martial prowess or as a subtler manifestation of defense and speed, this power infuses all that a Monk does.
 
-You can use your Dexterity modifier instead of your Strength modifier for the attack and damage rolls of your Unarmed Strikes and Monk weapons. In addition, when you use the Grapple or Shove option of your Unarmed Strike, you can use your Dexterity modifier instead of your Strength modifier to determine the save DC.
+Monks focus their internal power to create extraordinary, even supernatural, effects. They channel uncanny speed and strength into their attacks, with or without the use of weapons. In a Monk's hands, even the most basic weapons can become sophisticated implements of combat mastery.
+
+Many Monks find that a structured life of ascetic withdrawal helps them cultivate the physical and mental focus they need to harness their power. Other Monks believe that immersing themselves in the vibrant confusion of life helps to fuel their determination and discipline.
+
+Monks generally view adventures as tests of their physical and mental development. They are driven by a desire to accomplish a greater mission than merely slaying monsters and plundering treasure; they strive to turn themselves into living weapons.
+
+### Becoming a Monk ...
+
+#### As a Level 1 Character
+
+- Gain all the traits in the Core Monk Traits table.
+- Gain the Monk's level 1 features, which are listed in the Monk Features table.
+
+#### As a Multiclass Character
+
+- Gain the Hit Point Die trait from the Core Monk Traits table.
+- Gain the Monk's level 1 features, which are listed in the Monk Features table.
+
+### Monk Class Features
+
+As a Monk, you gain the following class features when you reach the specified Monk levels. These features are listed in the Monk Features table.
 
 #### Level 1: Martial Arts
 
 Your practice of martial arts gives you mastery of combat styles that use your Unarmed Strike and Monk weapons, which are the following:
 
-* Simple Melee Weapons
-* property=light
+- Simple Melee Weapons
+- Martial Melee weapons that have the Light property
 
 You gain the following benefits while you are unarmed or wielding only Monk weapons and you aren't wearing armor or wielding a Shield.
 
-**Bonus Unarmed Strike**
+##### Bonus Unarmed Strike
 
-**Martial Arts Die**
+You can make an Unarmed Strike as a Bonus Action.
 
-**Dexterous Attacks**
-
-#### Level 1: Martial Arts Die
+##### Martial Arts Die
 
 You can roll 1d6 in place of the normal damage of your Unarmed Strike or Monk weapons. This die changes as you gain Monk levels, as shown in the Martial Arts column of the Monk Features table.
+
+##### Dexterous Attacks
+
+You can use your Dexterity modifier instead of your Strength modifier for the attack and damage rolls of your Unarmed Strikes and Monk weapons. In addition, when you use the Grapple or Shove option of your Unarmed Strike, you can use your Dexterity modifier instead of your Strength modifier to determine the save DC.
 
 #### Level 1: Unarmored Defense
 
 While you aren't wearing armor or wielding a Shield, your base Armor Class equals 10 plus your Dexterity and Wisdom modifiers.
 
-#### Level 2: Flurry of Blows
-
-You can expend 1 Focus Point to make two Unarmed Strikes as a Bonus Action.
-
 #### Level 2: Monk's Focus
 
 Your focus and martial training allow you to harness a well of extraordinary energy within yourself. This energy is represented by Focus Points. Your Monk level determines the number of points you have, as shown in the Focus Points column of the Monk Features table.
+
+::: {#p102}
+:::
 
 You can expend these points to enhance or fuel certain Monk features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind, each of which is detailed below.
 
@@ -3017,22 +3055,43 @@ When you expend a Focus Point, it is unavailable until you finish a Short or Lon
 
 Some features that use Focus Points require your target to make a saving throw. The save DC equals 8 plus your Wisdom modifier and Proficiency Bonus.
 
-**Flurry of Blows**
+##### Flurry of Blows
 
-**Patient Defense**
+You can expend 1 Focus Point to make two Unarmed Strikes as a Bonus Action.
 
-**Step of the Wind**
-
-#### Level 2: Patient Defense
+##### Patient Defense
 
 You can take the Disengage action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and the Dodge actions as a Bonus Action.
 
-#### Level 2: Step of the Wind
+##### Step of the Wind
 
 You can take the Dash action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and Dash actions as a Bonus Action, and your jump distance is doubled for the turn.
 
-::: {#p102}
-:::
+#### Table: Monk Features
+
+| Level | Proficiency Bonus | Class Features                                       | Martial Arts | Focus Points | Unarmored Movement |
+| :---: | :---------------: | :--------------------------------------------------- | :----------: | :----------: | :----------------: |
+|   1   |        +2         | Martial Arts, Unarmored Defense                      |     1d6      |      —       |         —          |
+|   2   |        +2         | Monk's Focus, Unarmored Movement, Uncanny Metabolism |     1d6      |      2       |      +10 ft.       |
+|   3   |        +2         | Deflect Attacks, Monk Subclass                       |     1d6      |      3       |      +10 ft.       |
+|   4   |        +2         | Ability Score Improvement, Slow Fall                 |     1d6      |      4       |      +10 ft.       |
+|   5   |        +3         | Extra Attack, Stunning Strike                        |     1d8      |      5       |      +10 ft.       |
+|   6   |        +3         | Empowered Strikes, Subclass feature                  |     1d8      |      6       |      +15 ft.       |
+|   7   |        +3         | Evasion                                              |     1d8      |      7       |      +15 ft.       |
+|   8   |        +3         | Ability Score Improvement                            |     1d8      |      8       |      +15 ft.       |
+|   9   |        +4         | Acrobatic Movement                                   |     1d8      |      9       |      +15 ft.       |
+|  10   |        +4         | Heightened Focus, Self-Restoration                   |     1d8      |      10      |      +20 ft.       |
+|  11   |        +4         | Subclass feature                                     |     1d10     |      11      |      +20 ft.       |
+|  12   |        +4         | Ability Score Improvement                            |     1d10     |      12      |      +20 ft.       |
+|  13   |        +5         | Deflect Energy                                       |     1d10     |      13      |      +20 ft.       |
+|  14   |        +5         | Disciplined Survivor                                 |     1d10     |      14      |      +25 ft.       |
+|  15   |        +5         | Perfect Focus                                        |     1d10     |      15      |      +25 ft.       |
+|  16   |        +5         | Ability Score Improvement                            |     1d10     |      16      |      +25 ft.       |
+|  17   |        +6         | Subclass feature                                     |     1d12     |      17      |      +25 ft.       |
+|  18   |        +6         | Superior Defense                                     |     1d12     |      18      |      +30 ft.       |
+|  19   |        +6         | Epic Boon                                            |     1d12     |      19      |      +30 ft.       |
+|  20   |        +6         | Body and Mind                                        |     1d12     |      20      |      +30 ft.       |
+
 
 #### Level 2: Unarmored Movement
 
@@ -3159,24 +3218,18 @@ You gain an Epic Boon feat or another feat of your choice for which you qualify.
 
 You have developed your body and mind to new heights. Your Dexterity and Wisdom scores increase by 4, to a maximum of 25.
 
-### Subclasses
-
 ::: {#p104}
 :::
 
-#### Warrior of Mercy
+### Monk Subclasses
 
-##### Level 3: Warrior of Mercy
+A Monk subclass is a specialization that grants you features at certain levels, as specified in the subclass. This section presents the Warrior of Mercy, Warrior of Shadow, Warrior of the Elements, and Warrior of the Open Hand subclasses. 
+
+#### Warrior of Mercy
 
 *Manipulate Forces of Life and Death*
 
 Warriors of Mercy manipulate the life force of others. These Monks are wandering physicians, but they bring a swift end to their enemies. They often wear masks, presenting themselves as faceless bringers of life and death.
-
-**Hand of Harm**
-
-**Hand of Healing**
-
-**Implements of Mercy**
 
 ##### Level 3: Hand of Harm
 
@@ -3208,6 +3261,9 @@ When you use Flurry of Blows, you can replace each of the Unarmed Strikes with a
 
 In addition, when you make an Unarmed Strike with Flurry of Blows and deal damage, you can use Hand of Harm with that strike without expending a Focus Point for Hand of Harm. You can still use Hand of Harm only once per turn.
 
+::: {#p105}
+:::
+
 You can use these benefits a total number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a Long Rest.
 
 ##### Level 17: Hand of Ultimate Mercy
@@ -3216,38 +3272,25 @@ Your mastery of life energy opens the door to the ultimate mercy. As a Magic act
 
 Once you use this feature, you can't use it again until you finish a Long Rest.
 
-::: {#p105}
-:::
-
 #### Warrior of Shadow
-
-##### Level 3: Shadow Arts
-
-You have learned to draw on the power of the Shadowfell, gaining the following benefits.
-
-**Darkness**
-
-**Darkvision**
-
-**Shadowy Figments**
-
-##### Level 3: Warrior of Shadow
 
 *Harness Shadow Power for Stealth and Subterfuge*
 
 Warriors of Shadow practice stealth and subterfuge, harnessing the power of the Shadowfell. They are at home in darkness, able to draw gloom around themselves to hide, leap from shadow to shadow, and take on a wraithlike form.
 
-**Shadow Arts**
+##### Level 3: Shadow Arts
 
-##### Level 3: Darkness
+You have learned to draw on the power of the Shadowfell, gaining the following benefits.
+
+###### Darkness
 
 You can expend 1 Focus Point to cast the *Darkness* spell without spell components. You can see within the spell's area when you cast it with this feature. While the spell persists, you can move its area of Darkness to a space within 60 feet of yourself at the start of each of your turns.
 
-##### Level 3: Darkvision
+###### Darkvision
 
 You gain Darkvision with a range of 60 feet. If you already have Darkvision, its range increases by 60 feet.
 
-##### Level 3: Shadowy Figments
+###### Shadowy Figments
 
 You know the *Minor Illusion* spell. Wisdom is your spellcasting ability for it.
 
@@ -3280,6 +3323,10 @@ You can use your Flurry of Blows without expending any Focus Points.
 
 #### Warrior of the Elements
 
+*Wield Strikes and Bursts of Elemental Power*
+
+Warriors of the Elements tap into the power of the Elemental Planes. Harnessing their supernatural focus, these Monks momentarily tame the energy of the Elemental Chaos to empower themselves in and out of battle.
+
 ##### Level 3: Elemental Attunement
 
 At the start of your turn, you can expend 1 Focus Point to imbue yourself with elemental energy. The energy lasts for 10 minutes or until you have the Incapacitated condition. You gain the following benefits while this feature is active.
@@ -3295,16 +3342,6 @@ Whenever you hit with your Unarmed Strike, you can cause it to deal your choice 
 ##### Level 3: Manipulate Elements
 
 You know the *Elementalism* spell. Wisdom is your spellcasting ability for it.
-
-##### Level 3: Warrior of the Elements
-
-*Wield Strikes and Bursts of Elemental Power*
-
-Warriors of the Elements tap into the power of the Elemental Planes. Harnessing their supernatural focus, these Monks momentarily tame the energy of the Elemental Chaos to empower themselves in and out of battle.
-
-**Elemental Attunement**
-
-**Manipulate Elements**
 
 ##### Level 6: Elemental Burst
 
@@ -3326,16 +3363,17 @@ You gain Resistance to one of the following damage types of your choice: Acid, C
 
 ###### Destructive Stride
 
-When you use your Step of the Wind, your Speed increases by 20 feet until the end of the turn. For that duration, any creature of your choice takes damage equal to one roll of your Martial Arts die when you enter a space within 5 feet of it. The damage type is your choice of Acid, Cold, Fire, Lightning, or Thunder. A creature can take this damage only once per turn.
+When you use your Step of the Wind, your Speed increases by 20 feet until the end []{#p107} of the turn. For that duration, any creature of your choice takes damage equal to one roll of your Martial Arts die when you enter a space within 5 feet of it. The damage type is your choice of Acid, Cold, Fire, Lightning, or Thunder. A creature can take this damage only once per turn.
 
 ###### Empowered Strikes
 
 Once on each of your turns, you can deal extra damage to a target equal to one roll of your Martial Arts die when you hit it with an Unarmed Strike. The extra damage is the same type dealt by that strike.
 
-::: {#p107}
-:::
-
 #### Warrior of the Open Hand
+
+*Master Unarmed Combat Techniques*
+
+Warriors of the Open Hand are masters of unarmed combat. They learn techniques to push and trip their opponents and manipulate their own energy to protect themselves from harm.
 
 ##### Level 3: Open Hand Technique
 
@@ -3352,14 +3390,6 @@ The target must succeed on a Strength saving throw or be pushed up to 15 feet aw
 ###### Topple
 
 The target must succeed on a Dexterity saving throw or have the Prone condition.
-
-##### Level 3: Warrior of the Open Hand
-
-*Master Unarmed Combat Techniques*
-
-Warriors of the Open Hand are masters of unarmed combat. They learn techniques to push and trip their opponents and manipulate their own energy to protect themselves from harm.
-
-**Open Hand Technique**
 
 ##### Level 6: Wholeness of Body
 
@@ -3382,41 +3412,45 @@ You can have only one creature under the effect of this feature at a time. You c
 
 ## Paladin
 
-**Primary Ability:** STR or CHA
-**Hit Point Die:** D10 per Paladin level
-**Saving Throw Proficiencies:** WIS, CHA
-
-### Paladin Progression Table
-
-#### Table: Paladin Features
-
-| Channel Divinity | class=Paladin |
-| ---------------- | ------------- |
-| 0                | 2             |
-| 0                | 3             |
-| 2                | 4             |
-| 2                | 5             |
-| 2                | 6             |
-| 2                | 6             |
-| 2                | 7             |
-| 2                | 7             |
-| 2                | 9             |
-| 2                | 9             |
-| 3                | 10            |
-| 3                | 10            |
-| 3                | 11            |
-| 3                | 11            |
-| 3                | 12            |
-| 3                | 12            |
-| 3                | 14            |
-| 3                | 14            |
-| 3                | 15            |
-| 3                | 15            |
-
-### Class Features
+> A Devout Warrior of Sacred Oaths
 
 ::: {#p109}
 :::
+
+#### Core Paladin Traits
+
+|                                |                                                                                                                   |
+| :----------------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| **Primary Ability**            | Strength and Charisma                                                                                             |
+| **Hit Point Die**              | D10 per Paladin level                                                                                             |
+| **Saving Throw Proficiencies** | Wisdom and Charisma                                                                                               |
+| **Skill Proficiencies**        | *Choose 2:* Athletics, Insight, Intimidation, Medicine, Persuasion, or Religion                                     |
+| **Weapon Proficiencies**       | Simple and Martial weapons                                                                                        |
+| **Armor Training**             | Light, Medium, and Heavy armor and Shields                                                                        |
+| **Starting Equipment**         | *Choose A or B:* (A) Chain Mail, Shield, Longsword, 6 Javelins, Holy Symbol, Priest's Pack, and 9 GP; or (B) 150 GP |
+
+
+Paladins are united by their oaths to stand against the forces of annihilation and corruption. Whether sworn before a god's altar, in a sacred glade before nature spirits, or in a moment of desperation and grief with the dead as the only witnesses, a Paladin's oath is a powerful bond. It is a source of power that turns a devout warrior into a blessed champion.
+
+Paladins train to learn the skills of combat, mastering a variety of weapons and armor. Even so, their martial skills are secondary to the magical power they wield: power to heal the injured, smite their foes, and protect the helpless and those who fight at their side.
+
+Almost by definition, the life of a Paladin is an adventuring life, for every Paladin lives on the front lines of the cosmic struggle against annihilation. Fighters are rare enough among the ranks of a world's armies, but even fewer people can claim the calling of a Paladin. When they do receive the call, these blessed folk turn from their former occupations and take up arms and magic.
+
+### Becoming a Paladin ...
+
+#### As a Level 1 Character
+
+- Gain all the traits in the Core Paladin Traits table.
+- Gain the Paladin's level 1 features, which are listed in the Paladin Features table.
+
+#### As a Multiclass Character
+
+- Gain the following traits from the Core Paladin Traits table: Hit Point Die, proficiency with Martial weapons, and training with Light and Medium armor and Shields.
+- Gain the Paladin's level I features, which are listed in the Paladin Features table. See the multiclassing rules in chapter 2 to determine your available spell slots. 
+
+### Paladin Class Features
+
+As a Paladin, you gain the following class features when you reach the specified Paladin levels. These features are listed in the Paladin Features table. 
 
 #### Level 1: Lay on Hands
 
@@ -3442,6 +3476,9 @@ The number of spells on your list increases as you gain Paladin levels, as shown
 
 If another Paladin feature gives you spells that you always have prepared, those spells don't count against the number of spells you can prepare with this feature, but those spells otherwise count as Paladin spells for you.
 
+::: {#p110}
+:::
+
 ###### Changing Your Prepared Spells
 
 Whenever you finish a Long Rest, you can replace one spell on your list with another Paladin spell for which you have spell slots.
@@ -3454,8 +3491,52 @@ Charisma is your spellcasting ability for your Paladin spells.
 
 You can use a Holy Symbol as a Spellcasting Focus for your Paladin spells.
 
-::: {#p110}
-:::
+#### Table: Paladin Features
+
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+|       |                   |                                            |                  |                 | Spell Slots per Spell Level |
+| Level | Proficiency Bonus | Class Features                             | Channel Divinity | Prepared Spells |  1  |  2  |  3  |  4  |  5  |
++:=====:+:=================:+:===========================================+:================:+:===============:+:===:+:===:+:===:+:===:+:===:+
+| 1     | +2                | Lay On Hands, Spellcasting, Weapon Mastery | —        | 2               |  2  |  —  |  —  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 2     | +2                | Fighting Style, Paladin's Smite            | —                | 3               |  2  |  —  |  —  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 3     | +2                | Channel Divinity, Paladin Subclass         | 2                | 4               |  3  |  —  |  —  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 4     | +2                | Ability Score Improvement                  | 2                | 5               |  3  |  —  |  —  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 5     | +3                | Extra Attack, Faithful Steed               | 2                | 6               |  4  |  2  |  —  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 6     | +3                | Aura of Protection                         | 2                | 6               |  4  |  2  |  —  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 7     | +3                | Subclass feature                           | 2                | 7               |  4  |  3  |  —  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 8     | +3                | Ability Score Improvement                  | 2                | 7               |  4  |  3  |  —  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 9     | +4                | Abjure Foes                                | 2                | 9               |  4  |  3  |  2  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 10    | +4                | Aura of Courage                            | 2                | 9               |  4  |  3  |  2  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 11    | +4                | Radiant Strikes                            | 3                | 10              |  4  |  3  |  3  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 12    | +4                | Ability Score Improvement                  | 3                | 10              |  4  |  3  |  3  |  —  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 13    | +5                | —                                          | 3                | 11              |  4  |  3  |  3  |  1  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 14    | +5                | Restoring Touch                            | 3                | 11              |  4  |  3  |  3  |  1  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 15    | +5                | Subclass feature                           | 3                | 12              |  4  |  3  |  3  |  2  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 16    | +5                | Ability Score Improvement                  | 3                | 12              |  4  |  3  |  3  |  2  |  —  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 17    | +6                | —                                          | 3                | 14              |  4  |  3  |  3  |  3  |  1  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 18    | +6                | Aura Expansion                             | 3                | 14              |  4  |  3  |  3  |  3  |  1  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 19    | +6                | Epic Boon                                  | 3                | 15              |  4  |  3  |  3  |  3  |  2  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
+| 20    | +6                | Subclass feature                           | 3                | 15              |  4  |  3  |  3  |  3  |  2  |
++-------+-------------------+--------------------------------------------+------------------+-----------------+-----+-----+-----+-----+-----+
 
 #### Level 1: Weapon Mastery
 
@@ -3467,6 +3548,10 @@ Whenever you finish a Long Rest, you can change the kinds of weapons you chose. 
 
 You gain a Fighting Style feat of your choice. Instead of choosing one of those feats, you can choose the option below.
 
+##### Blessed Warrior
+
+You learn two Cleric cantrips of your choice. *Guidance* and *Sacred Flame* are recommended. The chosen cantrips count as Paladin spells for you, and Charisma is your spellcasting ability for them. Whenever you gain a Paladin level, you can replace one of these cantrips with another Cleric cantrip.
+
 #### Level 2: Paladin's Smite
 
 You always have the *Divine Smite* spell prepared. In addition, you can cast it without expending a spell slot, but you must finish a Long Rest before you can cast it in this way again.
@@ -3477,6 +3562,9 @@ You can channel divine energy directly from the Outer Planes, using it to fuel m
 
 You can use this class's Channel Divinity twice. You regain one of its expended uses when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain an additional use when you reach Paladin level 11.
 
+::: {#p111}
+:::
+
 If a Channel Divinity effect requires a saving throw, the DC equals the spell save DC from this class's Spellcasting feature.
 
 **Divine Sense**
@@ -3485,8 +3573,6 @@ If a Channel Divinity effect requires a saving throw, the DC equals the spell sa
 
 As a Bonus Action, you can open your awareness to detect Celestials, Fiends, and Undead. For the next 10 minutes or until you have the Incapacitated condition, you know the location of any creature of those types within 60 feet of yourself, and you know its creature type. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the *Hallow* spell.
 
-::: {#p111}
-:::
 
 #### Level 3: Paladin Subclass
 

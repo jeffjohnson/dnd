@@ -1,0 +1,129 @@
+schema_version: '1.0'
+id: DEC-2026-0109
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.8'
+decision_date: '2026-11-04'
+escalation_id: ESC-2026-11-04T19.00.00.000Z
+question: >-
+  Approve the minimal shared contracts, entity-role taxonomy, passage-binding semantics,
+  coupled spell-offering model, weapon taxonomy, variant applicability dimensions,
+  and migration authorization for the November 4 rules graph remediation program.
+ruling: >-
+  Approve remediation contracts and authoring standards covering:
+  1. Source Registration and SourceEntityManifest: Every source is registered with explicit
+     edition, printing, and revision. Analysts produce an independent SourceEntityManifest
+     listing all defined entries, table rows, and allowable exclusions prior to packet compilation.
+     Hard publication gates block any packet omitting a declared defined entity.
+  2. Stable Passage IDs and Spans: Every claim must resolve to an immutable passage_id
+     bound to exact text spans, character offsets, source hashes, and column/table context.
+  3. Entity Role Taxonomy: Nodes declare entity_role (e.g., leaf_instance, category_hub,
+     generic_type, reference_only) and definition_status. Generic hubs are never bulk-classified
+     as leaf instances.
+  4. Identity Migration and Redirects: The canonical identifier for Control Water on SD pp. 57/319
+     is spell_control_water. An immutable redirect index routes spell_control_weather to
+     spell_control_water without rewriting historical artifacts.
+  5. Coupled Spell Offerings: Spell availability is modeled per class list with explicit tier,
+     edition, and source version, supporting multi-list and supplement spells.
+  6. Weapon Taxonomy and Permissions: 26 weapon instances are categorized under item_weapon
+     while class usage permissions remain distinct from item category memberships.
+  7. Variant Applicability: Optional rules (such as Fatality Mode) require explicit opt-in
+     activation conditions; book enablement alone does not activate optional rules.
+rationale:
+  - >-
+    The November 4 audit revealed structural gaps (omitted spells, misattributed page-70 tiers,
+    unanchored passages, conflated item/category roles) that require governed ontology and
+    validation gates rather than superficial edge appending.
+  - >-
+    Enforcing pre-extraction manifests and passage joins prevents regression across future
+    source processing while maintaining provenance.
+  - >-
+    Distinguishing class rules from category memberships ensures queries (e.g. wizard greatsword usage)
+    retrieve accurate restrictions rather than categorical errors.
+handoff:
+  next_role: builder
+  readiness: ready
+  reason: >-
+    Architect has published DEC-2026-0109. Builder and Analyst may proceed with Phase 2 pipeline gate
+    implementation and Phase 3 bounded P0 remediation batches.
+  blocking_ids: []
+evidence:
+  - path: audit.11.04.2026/AGY_REMEDIATION_EXECUTION_PLAN.md
+    checksum: sha256:498b8be1e6e0da8dbe39f8f41539fb04bb5dbf4870f44e136b69b6b90715b3c5
+    role: program_execution_plan
+  - path: audit.11.04.2026/rules_graph_defect_register.csv
+    checksum: sha256:d8ff5521b3320f7823e2049d1912953e5fc465b035174304e22340277e96b79c
+    role: defect_register
+  - path: audit.11.04.2026/rules_graph_regression_cases.json
+    checksum: sha256:2d1e233ef522fc2dbe81682f4d1c484fca8b47e889417f7c46927da8b233a0fb
+    role: regression_specifications
+definitions:
+  SourceEntityManifest: >-
+    An independent inventory of all defined entities, tables, and rules in a source section,
+    authored prior to graph extraction and used as a completeness gate.
+  passage_id: >-
+    A deterministic, immutable identifier for an exact textual span or table cell in a source document.
+  entity_role: >-
+    A structural classification distinguishing leaf rule instances, category hubs, generic types,
+    and reference-only placeholders.
+  identity_redirect: >-
+    A durable pointer resolving a legacy or erroneous node identifier to its canonical successor
+    without duplicating graph nodes or mutating immutable history.
+semantic_bounds:
+  - >-
+    Do not infer class permissions from category membership alone; class-specific restrictions
+    must cite exact source passages.
+  - >-
+    Do not infer rule non-existence from graph edge absence.
+  - >-
+    Optional rules must remain inactive unless their variant activation predicate is explicitly satisfied.
+migration_required: true
+migration_scope: >-
+  Identity migration from spell_control_weather to spell_control_water, updating incoming and outgoing
+  canonical references and publishing an identity redirect record.
+constitution_version_impact: >-
+  None. Shadowdark Constitution 1.8 remains unchanged.
+affected_contracts:
+  - contracts/GRAPH_INVARIANTS.md
+  - contracts/SCOPE_AND_IDENTITY.md
+affected_registries:
+  - rulesets/shadowdark/registries/sources.yaml
+implementation_bounds:
+  - >-
+    Builder implements pre-extraction manifest gate, passage span joins, and redirect resolution.
+  - >-
+    Analyst authors source manifests and P0 correction packets.
+  - >-
+    Integrator applies approved bundles and manages snapshot rollback safety.
+sequence:
+  - step: 1
+    owner: architect
+    action: >-
+      Publish DEC-2026-0109, establish execution trackers, and hand off Phase 2 to Builder and Analyst.
+  - step: 2
+    owner: builder
+    action: >-
+      Implement SourceEntityManifest validation gate and regression test harnesses.
+  - step: 3
+    owner: analyst
+    action: >-
+      Author P0 remediation packets for core spell inventory, p.70 attributions, and class listings.
+exact_diff:
+  rulesets/shadowdark/escalations/decisions/DEC-2026-0109.yaml: Publish remediation program contract authority.
+exact_diff_ownership:
+  - {path: rulesets/shadowdark/escalations/decisions/DEC-2026-0109.yaml, owner: architect, sequence_step: 1}
+follow_up_owners:
+  builder:
+    - Implement pre-extraction manifest validation and QA gates.
+  analyst:
+    - Author SourceEntityManifests and execute P0 remediation packets.
+  reviewer:
+    - Independently verify regression fixtures against Phase 3-5 deliverables.
+  integrator:
+    - Verify transactional rollback and apply approved remediation bundles.
