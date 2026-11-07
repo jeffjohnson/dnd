@@ -2,16 +2,24 @@
 Source Entity Manifest Gate.
 
 Enforces pre-extraction source inventory completeness (SD-015, UNIV-SRC-11, spec:UNIV-COV-05).
-Prevents publication if any declared defined entity is omitted from packet output.
+Prevents publication if any declared defined entity is omitted from packet output,
+and provides bidirectional checking to detect unauthorized extra entities.
 """
 
 from typing import Dict, List, Set, Any, Optional
 
 
 class ManifestGateError(Exception):
-    def __init__(self, message: str, missing_entities: List[str], source_span: Optional[str] = None):
+    def __init__(
+        self,
+        message: str,
+        missing_entities: Optional[List[str]] = None,
+        extra_entities: Optional[List[str]] = None,
+        source_span: Optional[str] = None,
+    ):
         super().__init__(message)
-        self.missing_entities = missing_entities
+        self.missing_entities = missing_entities or []
+        self.extra_entities = extra_entities or []
         self.source_span = source_span
 
 
@@ -25,21 +33,33 @@ class SourceEntityManifestGate:
         self,
         extracted_node_ids: Set[str],
         manifest: Optional[Dict[str, Any]] = None,
+        allow_empty_manifest: bool = False,
+        disallow_extra: bool = False,
     ) -> bool:
         """
         Validates that all required entities in the manifest are present in extracted_node_ids.
-        Raises ManifestGateError if any required entity is omitted.
+        If disallow_extra is True, also verifies that extracted_node_ids does not contain
+        entities not declared in the manifest.
+        Raises ManifestGateError if any required entity is omitted or unauthorized extra entity is found.
+        Returns False if the manifest is empty and allow_empty_manifest is False.
         """
         active_manifest = manifest or self.manifest_data
         required_entities = active_manifest.get("required_entities", [])
         source_span = active_manifest.get("source_span", "unknown")
 
-        missing = []
+        if not required_entities:
+            if allow_empty_manifest:
+                return True
+            # Empty manifest cannot validate completeness; fail closed
+            return False
+
+        expected_set = set()
         for entity in required_entities:
             entity_id = entity if isinstance(entity, str) else entity.get("id")
-            if entity_id not in extracted_node_ids:
-                missing.append(entity_id)
+            if entity_id:
+                expected_set.add(entity_id)
 
+        missing = sorted(expected_set - extracted_node_ids)
         if missing:
             raise ManifestGateError(
                 f"Completeness gate failure: {len(missing)} required entity(ies) omitted from packet: {', '.join(missing)}. "
@@ -47,6 +67,16 @@ class SourceEntityManifestGate:
                 missing_entities=missing,
                 source_span=source_span,
             )
+
+        if disallow_extra:
+            extra = sorted(extracted_node_ids - expected_set)
+            if extra:
+                raise ManifestGateError(
+                    f"Completeness gate failure: {len(extra)} unauthorized extra entity(ies) found in packet: {', '.join(extra)}. "
+                    f"Source span: {source_span}",
+                    extra_entities=extra,
+                    source_span=source_span,
+                )
 
         return True
 
@@ -56,6 +86,7 @@ def verify_packet_manifest_completeness(
     expected_ids: List[str],
     extracted_ids: List[str],
     source_file: Optional[str] = None,
+    disallow_extra: bool = False,
 ) -> Dict[str, Any]:
     """Helper to check completeness without necessarily throwing an exception."""
     gate = SourceEntityManifestGate({
@@ -64,11 +95,15 @@ def verify_packet_manifest_completeness(
         "source_span": source_file or "unknown",
     })
     try:
-        gate.validate_packet_entities(set(extracted_ids))
+        valid = gate.validate_packet_entities(
+            set(extracted_ids),
+            disallow_extra=disallow_extra,
+        )
         return {
-            "valid": True,
+            "valid": valid,
             "packet_id": packet_id,
             "missing_ids": [],
+            "extra_ids": [],
             "source_file": source_file,
         }
     except ManifestGateError as e:
@@ -76,5 +111,6 @@ def verify_packet_manifest_completeness(
             "valid": False,
             "packet_id": packet_id,
             "missing_ids": e.missing_entities,
+            "extra_ids": e.extra_entities,
             "source_file": e.source_span,
         }

@@ -276,6 +276,9 @@ If any architectural issue remains, emit an escalation package and mark the GUP 
 - Do not overwrite legacy data.
 - Do not permit `heuristic` in an approval-ready GUP.
 - Do not make nondeterministic output depend on chat history.
+- Do not use canned mock returns, static page literals, or invented mechanics in retrieval engines (R05).
+- Do not bypass SourceEntityManifestGate; compilation must fail closed when manifest data is missing or mismatched (R06).
+- Do not collapse multi-aspect or conditional claims into bare (source, type, target) triples (CLAIM-01).
 - Do not move or rewrite a consumed GUR or prior GUP revision to represent queue
   state.
 - Do not overwrite an unconsumed published GUP, its validation report, or any

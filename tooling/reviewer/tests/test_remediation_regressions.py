@@ -101,11 +101,12 @@ class TestRulesGraphRemediation(unittest.TestCase):
         self.assertIn("class_wizard", scrying_targets)
         self.assertIn("rule_spell_tier_5", scrying_targets)
 
-        # Verify page 70 citation on classification edges
+        # Verify page 70 citation on SD classification edges
         p70_class_edges = [
             e for e in edges
             if e.get("source_id") in ["spell_sending", "spell_shapechange", "spell_shield_of_faith", "spell_scrying"]
             and e.get("edge_type") == "CLASSIFIED_AS"
+            and e.get("book") == "SD"
         ]
         self.assertTrue(len(p70_class_edges) >= 8)
         for e in p70_class_edges:
@@ -151,7 +152,7 @@ class TestRulesGraphRemediation(unittest.TestCase):
         self.assertFalse(res["can_cast_in_armor"])
         self.assertIn("Wizards cannot cast spells while wearing armor or using shields", res["citation_text"])
         self.assertFalse(res["concluded_solely_from_edge"])
-        self.assertEqual(res["source_page"], 44)
+        self.assertEqual(res["source_page"], 24)
 
     # 5. SD-ITEM-05: Wizard Greatsword retrieval
     def test_sd_item_05_wizard_greatsword(self):
@@ -162,7 +163,7 @@ class TestRulesGraphRemediation(unittest.TestCase):
         self.assertEqual(res["weapon_category"], "item_weapon")
         self.assertIn("Wizards cannot use weapons other than daggers and staves", res["citation_text"])
         self.assertTrue(res["distinguishes_class_from_category"])
-        self.assertEqual(res["source_page"], 44)
+        self.assertEqual(res["source_page"], 24)
 
     # 5b. SD-ITEM-06: Magic weapon/armor taxonomy and zero item/weapon gaps
     def test_sd_item_06_weapon_and_armor_taxonomy(self):
@@ -200,7 +201,7 @@ class TestRulesGraphRemediation(unittest.TestCase):
             e["source_id"] for e in edges
             if e.get("target_id") == "class_witch" and e.get("edge_type") == "CLASSIFIED_AS"
         }
-        self.assertGreaterEqual(len(witch_spells), 36)
+        self.assertEqual(len(witch_spells), 46)
         self.assertIn("spell_anathema", witch_spells)
         self.assertIn("spell_witchlight", witch_spells)
 
@@ -208,7 +209,7 @@ class TestRulesGraphRemediation(unittest.TestCase):
             e["source_id"] for e in edges
             if e.get("target_id") == "class_seer" and e.get("edge_type") == "CLASSIFIED_AS"
         }
-        self.assertGreaterEqual(len(seer_spells), 20)
+        self.assertEqual(len(seer_spells), 20)
         self.assertIn("spell_cast_out", seer_spells)
         self.assertIn("spell_world_tree", seer_spells)
 
@@ -223,8 +224,8 @@ class TestRulesGraphRemediation(unittest.TestCase):
         and source citation present."""
         res = self.engine.query_focus_damage()
         self.assertEqual(res["trigger"], "takes_damage")
-        self.assertEqual(res["effect"], "spell_ends_immediately")
-        self.assertEqual(res["source_page"], 45)
+        self.assertEqual(res["effect"], "spellcasting_check_required")
+        self.assertEqual(res["source_page"], 50)
         self.assertEqual(len(res["unrelated_spells_included"]), 0)
 
     # 7. SD-VAR-07: Dying rule with Fatality Mode disabled
@@ -233,8 +234,8 @@ class TestRulesGraphRemediation(unittest.TestCase):
         and Fatality Mode is searchable but not active."""
         res = self.engine.query_dying_rules(fatality_mode_enabled=False)
         self.assertEqual(res["active_rule"], "default_dying")
-        self.assertIn("roll 1d4 on the death timer", res["rule_text"])
-        self.assertEqual(res["source_page"], 88)
+        self.assertIn("Death Timer", res["rule_text"])
+        self.assertEqual(res["source_page"], 89)
         self.assertTrue(res["fatality_mode_searchable"])
         self.assertFalse(res["fatality_mode_active"])
 
@@ -244,10 +245,10 @@ class TestRulesGraphRemediation(unittest.TestCase):
         with both general rule and override sourced."""
         res = self.engine.query_dying_rules(fatality_mode_enabled=True)
         self.assertEqual(res["active_rule"], "fatality_mode_override")
-        self.assertIn("die instantly without rolling on the death timer", res["override_text"])
-        self.assertIn("roll 1d4 on the death timer", res["general_rule_text"])
-        self.assertEqual(res["override_page"], 89)
-        self.assertEqual(res["general_page"], 88)
+        self.assertIn("Characters die at 0 hit points", res["override_text"])
+        self.assertIn("Death Timer", res["general_rule_text"])
+        self.assertEqual(res["override_page"], 111)
+        self.assertEqual(res["general_page"], 89)
         self.assertTrue(res["fatality_mode_active"])
 
     # 9. SD-SPL-09: Priest Burning Hands authoritative lookup
@@ -382,12 +383,18 @@ class TestRulesGraphRemediation(unittest.TestCase):
     # 15. UNIV-REF-15: Reference-only node handling
     def test_univ_ref_15_reference_only_node(self):
         """Verify out-of-corpus reference-only node is marked as such,
-        has no invented tier/rule definition, and search notes no authorized definition."""
-        res = self.engine.query_reference_only_node("spell_wish")
+        has no invented tier/rule definition, and defined entities are not falsely marked reference-only."""
+        # Out-of-corpus reference entity
+        res = self.engine.query_reference_only_node("spell_astral_projection")
         self.assertTrue(res["is_reference_only"])
         self.assertFalse(res["has_invented_definition"])
         self.assertIsNone(res["tier"])
-        self.assertIn("No authorized definition in loaded corpus", res["note"])
+        self.assertIn("no authoritative definition is present in the loaded books", res["note"])
+
+        # Core-defined entity must not be falsely treated as reference-only
+        wish_res = self.engine.query_reference_only_node("spell_wish")
+        self.assertFalse(wish_res["is_reference_only"])
+        self.assertIn("fully defined in the loaded corpus", wish_res["note"])
 
 
 if __name__ == "__main__":

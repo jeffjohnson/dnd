@@ -266,6 +266,8 @@ authorizes that exact record and bundle.
 - Do not permit count drift without explanation.
 - Do not use chat history as provenance.
 - Do not make manual graph changes outside an integration batch.
+- Do not execute direct-write scripts that bypass CanonicalGraph or omit the canonical 'meta' block (R08).
+- Do not collapse or drop valid parallel claims that share subject/type/target but differ in aspect, condition, or provenance (CLAIM-01).
 - Do not move or rewrite an Approved bundle to represent integration state.
 
 ## Completion condition

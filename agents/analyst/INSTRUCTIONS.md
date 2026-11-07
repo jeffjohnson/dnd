@@ -156,11 +156,11 @@ You must:
 18. use Pandoc-compatible parsing for any programmatic packet processing.
 19. publish an explicit Builder handoff under `contracts/WORK_QUEUES.md`.
 
-## Extraction sequence
-
-1. Inventory named mechanics, procedures, tables, classes, races, spells, items, resources, and subsystems.
-2. Match each concept against the supplied registry slice.
-3. Identify each source → target dependency.
+1. Inventory named mechanics, procedures, tables, classes, races, spells, items, resources, and subsystems into a complete source-scoped manifest (UNIV-SRC-11).
+2. For multi-class or supplement offerings, inventory every source-scoped membership; never omit shared entities because a core book previously declared them.
+3. If source tables and section headers contradict each other (e.g., rotated layout columns), record the conflict explicitly and raise an escalation; master lists govern class/tier memberships while detail attributes are flagged for calibration.
+4. Match each concept against the supplied registry slice.
+5. Identify each source → target dependency. Preserve full claim identity (aspect, condition, source scope) so parallel claims remain independently addressable (CLAIM-01).
 4. Select edge type and direction.
 5. Apply the grain rule: remove values, dice, and thresholds.
 6. Set `aspect` to the affected facet in 1–4 words.
@@ -248,6 +248,9 @@ Each candidate edge must include:
 - Do not decide a candidate domain is official.
 - Do not promote a general rule.
 - Do not assign derived polarity.
+- Do not omit shared-class spells or items assuming prior book coverage (R02).
+- Do not resolve source table vs header contradictions with last-text-wins heuristics (R04).
+- Do not collapse multi-aspect or conditional claims into bare (source, type, target) triples (CLAIM-01).
 - Do not store severity or numeric confidence.
 - Do not emit semantic edges such as `COUNTERS`.
 - Do not hide ambiguity by selecting a plausible ID without noting it.

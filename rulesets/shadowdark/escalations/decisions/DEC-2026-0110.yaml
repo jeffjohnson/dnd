@@ -1,0 +1,112 @@
+schema_version: '1.0'
+id: DEC-2026-0110
+decision_authoring_contract_version: '1.1'
+status: approved
+revision: 1
+supersedes: null
+ruleset_id: shadowdark
+book_id: sd
+source_id: sd-steward-intake
+packet_id: cross-packet
+constitution_version: '1.8'
+decision_date: '2026-11-07'
+escalation_id: ESC-2026-11-06T20.00.00.000Z
+question: >-
+  Approve the November 6 source reconciliation findings, authorize the removal of unsupported Priest
+  classifications for Hold Person and Dispel Magic, authorize restoration of 10 shared Witch spell
+  offerings from CS1, govern page-70 list versus detail contradictions, mandate live bidirectional
+  manifest publication gates, replace canned retrieval fixtures with authentic graph/passage lookups,
+  and update agent workflow instructions across all rulesets.
+ruling: >-
+  Approve the following corrective actions and workflow contracts:
+  1. Core Class Scope Correction: Remove the two unsupported CLASSIFIED_AS class_priest edges
+     for spell_hold_person and spell_dispel_magic. Core Rules packet 019 and detail headers in packets 022
+     and 023 independently establish Hold Person (Tier 2) and Dispel Magic (Tier 3) as Wizard-only in Core.
+  2. Complete Witch Offerings Reconciliation: Add the 10 source-supported Witch spell offerings
+     from CS1 pp. 24-25 (Charm Person, Alter Self, Augury, Invisibility, Speak with Dead, Dimension Door,
+     Divination, Polymorph, Scrying, Shapechange) targeting class_witch with book=CS1, section='WITCH SPELLS',
+     and status=optional. The Witch offerings total 46 distinct source offerings.
+  3. Source Contradiction Governance: Establish that when source spell list tables (SD pp. 51-53) contradict
+     subsequent alphabetical detail headers (SD p. 70), the master class spell lists govern class and tier
+     memberships. Detail text attributes (duration, range) remain held pending steward physical page-image calibration.
+  4. Enforced Manifest Gates: Mandate that SourceEntityManifestGate be wired into the live compilation
+     and admission boundaries across all rulesets. The gate must perform bidirectional validation: failing if
+     required entities are omitted OR if unauthorized extra class memberships are generated.
+  5. Text-Grounded Retrieval: Replace prototype canned string fixtures in rules_retrieval.py with real
+     graph-traversal and retained-passage lookups. Capped queries must cite verified passage spans and return
+     explicit failure or unavailable-evidence states when data is absent.
+  6. Universal Agent Workflow Updates: Update agent instructions for Analyst, Builder, Reviewer, and
+     Integrator to enforce bidirectional manifest creation, temporary-copy replay diffing, and export
+     metadata preservation across all current and future rulesets.
+rationale:
+  - >-
+    The November 6 audit confirmed that remediation_migration.py introduced false Priest memberships for
+    Hold Person and Dispel Magic, and that batch_4b_supplement_spells_migration.py omitted 10 shared Witch
+    spells due to gap-file filtering.
+  - >-
+    Independent verification showed existing regression tests passed because they asserted weak lower bounds
+    or relied on static prototype returns in rules_retrieval.py rather than dynamic graph state.
+  - >-
+    True pipeline integrity requires hard gates at the compilation boundary and source-grounded offering
+    reconciliation rather than superficial gap-list counting.
+handoff:
+  next_role: analyst
+  readiness: ready
+  reason: >-
+    Architect has approved DEC-2026-0110. Analyst produces the exact offering manifests for Core (90 offerings,
+    85 identities), CS1 (46 Witch offerings), and CS3 (20 Seer offerings), and prepares the two deletions and
+    ten additions.
+  blocking_ids: []
+evidence:
+  - path: audit.11.06.2026/Shadowdark_Rules_Graph_Source_Reconciliation_Brief.md
+    checksum: sha256:da85d9583fd321ffc5c2daf5e410e6d24474f277a05173743c3453016b71f669
+    role: audit_reconciliation_brief
+  - path: audit.11.06.2026/VALIDATION_AND_AGENT_REMEDIATION.md
+    checksum: sha256:454e2b98dd07feb167bad92e24d676d67bcf9701eba13e8f87c86d3e6f0a2cde
+    role: local_validation_report
+  - path: audit.11.06.2026/remediation_register.json
+    checksum: sha256:116a355f7e162250574364679a83d5d347256a795689d8df109ef853c3657540
+    role: remediation_register
+  - path: audit.11.06.2026/local_validation_results.json
+    checksum: sha256:cf8f0e37bd21e64ede9dc9fc0294b6761ad327f7e4348f3d9e585f70b67da6aa
+    role: local_validation_results
+definitions:
+  bidirectional_manifest_verification: >-
+    A validation procedure that checks both completeness (all declared source entities exist) and
+    soundness (no extraneous or unauthorized relationships are present in the output).
+  source_scoped_offering: >-
+    A reified grant of a rule, spell, or item to a specific class, tier, or archetype within a single,
+    unambiguously identified book and source printing.
+  held_contradiction_disposition: >-
+    An administrative state applied to contradictory source passages where mechanical assertions are paused
+    without modifying source text until authoritative primary calibration is delivered.
+semantic_bounds:
+  - >-
+    Never infer spell offerings across classes without explicit source listing in that book's spell list.
+  - >-
+    Retrieval engines must not fabricate success flags, synthetic passage text, or inaccurate citation page literals.
+  - >-
+    Testing graph replay requires executing the build/migration process twice into an isolated copy, not
+    comparing an in-memory dictionary to itself.
+migration_required: true
+migration_scope: >-
+  Remove two false Priest edges (spell_hold_person, spell_dispel_magic), add 10 shared Witch offerings
+  from CS1 pp. 24-25, and restore versioned meta block in canonical graph.json.
+constitution_version_impact: >-
+  None. Shadowdark Constitution 1.8 remains governing authority.
+affected_contracts:
+  - contracts/GRAPH_INVARIANTS.md
+  - contracts/SCOPE_AND_IDENTITY.md
+  - contracts/HERDR_HANDOFFS.md
+affected_registries:
+  - rulesets/shadowdark/registries/sources.yaml
+  - rulesets/shadowdark/registries/identity_redirects.yaml
+implementation_bounds:
+  - >-
+    Analyst prepares exact source manifests and offering sets.
+  - >-
+    Builder implements bidirectional manifest gate and dynamic graph retrieval with real citations.
+  - >-
+    Integrator performs transactional canonical migration, meta restoration, and CSV derivation.
+  - >-
+    Reviewer implements 16 regression fixtures mapped in VALIDATION_AND_AGENT_REMEDIATION.md.

@@ -82,7 +82,7 @@ CORE_SPELL_OFFERINGS = {
     "spell_alter_self": [("class_wizard", 2)],
     "spell_detect_thoughts": [("class_wizard", 2)],
     "spell_fixed_object": [("class_wizard", 2)],
-    "spell_hold_person": [("class_wizard", 2), ("class_priest", 2)],
+    "spell_hold_person": [("class_wizard", 2)],
     "spell_invisibility": [("class_wizard", 2)],
     "spell_knock": [("class_wizard", 2)],
     "spell_levitate": [("class_wizard", 2)],
@@ -93,7 +93,7 @@ CORE_SPELL_OFFERINGS = {
 
     # WIZARD TIER 3
     "spell_animate_dead": [("class_wizard", 3)],
-    "spell_dispel_magic": [("class_wizard", 3), ("class_priest", 3)],
+    "spell_dispel_magic": [("class_wizard", 3)],
     "spell_fabricate": [("class_wizard", 3)],
     "spell_fireball": [("class_wizard", 3)],
     "spell_fly": [("class_wizard", 3)],

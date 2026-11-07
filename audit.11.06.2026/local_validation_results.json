@@ -1,0 +1,1853 @@
+{
+  "scope_note": "Local packet-list and structural validation only; not full semantic certification.",
+  "empty_graph_matches_live_answers": {
+    "query_wizard_sleep_in_plate": false,
+    "query_wizard_greatsword": false,
+    "query_focus_damage": false,
+    "query_dying_rules": false,
+    "query_priest_burning_hands": false,
+    "query_dnd5e_edition_isolation": false,
+    "query_unproficient_weapon_use": false,
+    "query_reference_only_node": false
+  },
+  "empty_manifest_accepted": false,
+  "existing_tests": {
+    "command": "python -m unittest discover -s tooling/reviewer/tests -p test_remediation_regressions.py -v",
+    "exit_code": 1,
+    "transcript": "test_batch_4b_supplement_spells_and_zero_total_gaps (test_remediation_regressions.TestRulesGraphRemediation.test_batch_4b_supplement_spells_and_zero_total_gaps)\nVerify all 36 Witch spells link to class_witch, all 20 Seer spells link to class_seer, ... ok\ntest_d5_ed_13_edition_isolation (test_remediation_regressions.TestRulesGraphRemediation.test_d5_ed_13_edition_isolation)\nVerify 2014 and 2024 rules data are isolated without cross-version merging. ... ok\ntest_d5_prof_14_unproficient_weapon_use (test_remediation_regressions.TestRulesGraphRemediation.test_d5_prof_14_unproficient_weapon_use)\nVerify unproficient weapon use is not treated as blanket prohibition, ... ok\ntest_sd_012_label_normalization (test_remediation_regressions.TestRulesGraphRemediation.test_sd_012_label_normalization)\nVerify that zero nodes in the canonical graph use their raw ID as label. ... ok\ntest_sd_013_overrides_have_general_rule_id (test_remediation_regressions.TestRulesGraphRemediation.test_sd_013_overrides_have_general_rule_id)\nVerify that all OVERRIDES edges populate general_rule_id. ... ok\ntest_sd_inv_01_core_spell_list_inventory (test_remediation_regressions.TestRulesGraphRemediation.test_sd_inv_01_core_spell_list_inventory)\nVerify alarm, bless, fixed_object, fabricate, control_water exist, ... ok\ntest_sd_item_05_wizard_greatsword (test_remediation_regressions.TestRulesGraphRemediation.test_sd_item_05_wizard_greatsword)\nVerify greatsword to weapon category link, wizard weapon rule source retrieval, ... FAIL\ntest_sd_item_06_weapon_and_armor_taxonomy (test_remediation_regressions.TestRulesGraphRemediation.test_sd_item_06_weapon_and_armor_taxonomy)\nVerify all 26 canonical weapons link to item_weapon, armor links to item_armor, ... ok\ntest_sd_qual_10_p70_idempotency (test_remediation_regressions.TestRulesGraphRemediation.test_sd_qual_10_p70_idempotency)\nVerify reprocessing SD p70 packet produces stable IDs and empty diff. ... ok\ntest_sd_rel_06_focus_damage (test_remediation_regressions.TestRulesGraphRemediation.test_sd_rel_06_focus_damage)\nVerify focus check and damage trigger relationship found, unrelated spells excluded, ... FAIL\ntest_sd_spl_02_p70_layout_class_and_tiers (test_remediation_regressions.TestRulesGraphRemediation.test_sd_spl_02_p70_layout_class_and_tiers)\nVerify Sending (W3), Shapechange (W5), Shield of Faith (P1), Scrying (W5). ... FAIL\ntest_sd_spl_03_control_water_identity_and_redirect (test_remediation_regressions.TestRulesGraphRemediation.test_sd_spl_03_control_water_identity_and_redirect)\nVerify canonical spell_control_water, Priest and Wizard tier 4, ... ok\ntest_sd_spl_04_wizard_sleep_in_plate (test_remediation_regressions.TestRulesGraphRemediation.test_sd_spl_04_wizard_sleep_in_plate)\nVerify retrieval correctly determines wizard armor restriction, cites exact passages, ... FAIL\ntest_sd_spl_09_priest_burning_hands (test_remediation_regressions.TestRulesGraphRemediation.test_sd_spl_09_priest_burning_hands)\nVerify spell membership checked from authoritative list, ... ok\ntest_sd_var_07_dying_fatality_disabled (test_remediation_regressions.TestRulesGraphRemediation.test_sd_var_07_dying_fatality_disabled)\nVerify default dying rule applies when Fatality Mode is disabled, ... FAIL\ntest_sd_var_08_dying_fatality_enabled (test_remediation_regressions.TestRulesGraphRemediation.test_sd_var_08_dying_fatality_enabled)\nVerify active override retrieved when Fatality Mode is enabled, ... FAIL\ntest_univ_ref_15_reference_only_node (test_remediation_regressions.TestRulesGraphRemediation.test_univ_ref_15_reference_only_node)\nVerify out-of-corpus reference-only node is marked as such, ... FAIL\ntest_univ_src_11_completeness_gate (test_remediation_regressions.TestRulesGraphRemediation.test_univ_src_11_completeness_gate)\nVerify packet fails completeness gate when expected inventory entry is deleted, ... ok\ntest_univ_tbl_12_table_span_isolation (test_remediation_regressions.TestRulesGraphRemediation.test_univ_tbl_12_table_span_isolation)\nVerify table header and row context are preserved without cross-column claim swaps. ... ok\n\n======================================================================\nFAIL: test_sd_item_05_wizard_greatsword (test_remediation_regressions.TestRulesGraphRemediation.test_sd_item_05_wizard_greatsword)\nVerify greatsword to weapon category link, wizard weapon rule source retrieval,\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\analysis\\dnd\\tooling\\reviewer\\tests\\test_remediation_regressions.py\", line 165, in test_sd_item_05_wizard_greatsword\n    self.assertEqual(res[\"source_page\"], 44)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 24 != 44\n\n======================================================================\nFAIL: test_sd_rel_06_focus_damage (test_remediation_regressions.TestRulesGraphRemediation.test_sd_rel_06_focus_damage)\nVerify focus check and damage trigger relationship found, unrelated spells excluded,\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\analysis\\dnd\\tooling\\reviewer\\tests\\test_remediation_regressions.py\", line 226, in test_sd_rel_06_focus_damage\n    self.assertEqual(res[\"effect\"], \"spell_ends_immediately\")\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 'spellcasting_check_required' != 'spell_ends_immediately'\n- spellcasting_check_required\n+ spell_ends_immediately\n\n\n======================================================================\nFAIL: test_sd_spl_02_p70_layout_class_and_tiers (test_remediation_regressions.TestRulesGraphRemediation.test_sd_spl_02_p70_layout_class_and_tiers)\nVerify Sending (W3), Shapechange (W5), Shield of Faith (P1), Scrying (W5).\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\analysis\\dnd\\tooling\\reviewer\\tests\\test_remediation_regressions.py\", line 112, in test_sd_spl_02_p70_layout_class_and_tiers\n    self.assertEqual(e.get(\"book\"), \"SD\")\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 'CS1' != 'SD'\n- CS1\n+ SD\n\n\n======================================================================\nFAIL: test_sd_spl_04_wizard_sleep_in_plate (test_remediation_regressions.TestRulesGraphRemediation.test_sd_spl_04_wizard_sleep_in_plate)\nVerify retrieval correctly determines wizard armor restriction, cites exact passages,\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\analysis\\dnd\\tooling\\reviewer\\tests\\test_remediation_regressions.py\", line 154, in test_sd_spl_04_wizard_sleep_in_plate\n    self.assertEqual(res[\"source_page\"], 44)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 24 != 44\n\n======================================================================\nFAIL: test_sd_var_07_dying_fatality_disabled (test_remediation_regressions.TestRulesGraphRemediation.test_sd_var_07_dying_fatality_disabled)\nVerify default dying rule applies when Fatality Mode is disabled,\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\analysis\\dnd\\tooling\\reviewer\\tests\\test_remediation_regressions.py\", line 236, in test_sd_var_07_dying_fatality_disabled\n    self.assertIn(\"roll 1d4 on the death timer\", res[\"rule_text\"])\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 'roll 1d4 on the death timer' not found in 'Death: A character who goes to 0 HP falls unconscious and is dying. Death Timer: A dying character rolls 1d4 + CON mod rounds. They die in that many rounds unless stabilized. (Shadowdark RPG Core Rules p. 89)'\n\n======================================================================\nFAIL: test_sd_var_08_dying_fatality_enabled (test_remediation_regressions.TestRulesGraphRemediation.test_sd_var_08_dying_fatality_enabled)\nVerify active override retrieved when Fatality Mode is enabled,\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\analysis\\dnd\\tooling\\reviewer\\tests\\test_remediation_regressions.py\", line 247, in test_sd_var_08_dying_fatality_enabled\n    self.assertIn(\"die instantly without rolling on the death timer\", res[\"override_text\"])\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 'die instantly without rolling on the death timer' not found in 'Fatality Mode (Optional): Characters die at 0 hit points. (Shadowdark RPG Core Rules p. 111)'\n\n======================================================================\nFAIL: test_univ_ref_15_reference_only_node (test_remediation_regressions.TestRulesGraphRemediation.test_univ_ref_15_reference_only_node)\nVerify out-of-corpus reference-only node is marked as such,\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\analysis\\dnd\\tooling\\reviewer\\tests\\test_remediation_regressions.py\", line 387, in test_univ_ref_15_reference_only_node\n    self.assertTrue(res[\"is_reference_only\"])\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n\n----------------------------------------------------------------------\nRan 19 tests in 0.019s\n\nFAILED (failures=7)\n"
+  },
+  "hashes": {
+    "rulesets/shadowdark/canonical/graph.json": "f001fc57ecca550f9a85dbe474397468e21b5076ba7548dbc676ad3e43111670",
+    "rulesets/shadowdark/canonical/nodes_master.csv": "133c360c8a74ccf2d0d2a9a8e0472b39b75cc10847739160e8f37c331b27a1af",
+    "rulesets/shadowdark/canonical/edges_master.csv": "e3207c25a1bdda1f491d2953f25b15dfc873c005dc76e80187d3e07691e0c51e",
+    "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md": "96f2bc9b42150c9248e0e04e69eadbf76bee02e45c158bab84033e46a31a3474",
+    "books/shadowdark/cs1/packets/incoming/cs1.21-38.md": "d6d0e020c66f3a97e5ca6453c13fd7f917c1cecf3a2fd17e46092b500c6dae34",
+    "books/shadowdark/cs3/packets/incoming/cs3.29-36.md": "4ad4b79c7d8fa27e4ed71e245753ad6be8e711244995e0bd31bb3b3d455604fe"
+  },
+  "graph": {
+    "nodes": 737,
+    "edges": 1809,
+    "top_level_keys": [
+      "meta",
+      "nodes",
+      "edges"
+    ],
+    "csv_node_fields": [
+      "id",
+      "label",
+      "kind",
+      "degree",
+      "core_degree",
+      "in_degree",
+      "out_degree"
+    ],
+    "csv_edge_fields": [
+      "source_id",
+      "source_label",
+      "edge_type",
+      "target_id",
+      "target_label",
+      "aspect",
+      "condition",
+      "polarity",
+      "polarity_basis",
+      "book",
+      "page",
+      "section",
+      "evidence",
+      "pass",
+      "status",
+      "supersession_basis",
+      "general_rule_id",
+      "review_flag"
+    ],
+    "node_csv_parity": true,
+    "edge_csv_parity": true,
+    "dangling_count": 0,
+    "component_sizes": [
+      733,
+      4
+    ],
+    "raw_id_labels": [],
+    "overrides": [
+      {
+        "source_id": "rule_beginners_luck",
+        "source_label": "Beginner's Luck",
+        "edge_type": "OVERRIDES",
+        "target_id": "sys_class",
+        "target_label": "Class",
+        "aspect": "gear restriction",
+        "condition": "before reaching first level",
+        "polarity": "neutral",
+        "polarity_basis": "derived",
+        "book": "SD",
+        "page": "14",
+        "section": "0-LEVEL CHARACTERS",
+        "evidence": "explicit_rule",
+        "pass": "1",
+        "status": "core",
+        "supersession_basis": "explicit_replacement",
+        "general_rule_id": "sys_class",
+        "review_flag": ""
+      },
+      {
+        "source_id": "rule_fatality_mode",
+        "source_label": "Fatality Mode",
+        "edge_type": "OVERRIDES",
+        "target_id": "rule_dying",
+        "target_label": "Dying",
+        "aspect": "immediate death",
+        "condition": "",
+        "polarity": "neutral",
+        "polarity_basis": "derived",
+        "book": "SD",
+        "page": "111",
+        "section": "FATALITY MODE",
+        "evidence": "explicit_rule",
+        "pass": "1",
+        "status": "optional",
+        "supersession_basis": "optional_variant",
+        "general_rule_id": "rule_dying",
+        "review_flag": ""
+      },
+      {
+        "source_id": "rule_knockout",
+        "source_label": "Knockout",
+        "edge_type": "OVERRIDES",
+        "target_id": "rule_death",
+        "target_label": "Death",
+        "aspect": "lethal outcome",
+        "condition": "",
+        "polarity": "neutral",
+        "polarity_basis": "derived",
+        "book": "SD",
+        "page": "89",
+        "section": "DAMAGE",
+        "evidence": "explicit_rule",
+        "pass": "1",
+        "status": "core",
+        "supersession_basis": "explicit_replacement",
+        "general_rule_id": "rule_death",
+        "review_flag": ""
+      },
+      {
+        "source_id": "rule_stat_reroll",
+        "source_label": "Stat Reroll",
+        "edge_type": "OVERRIDES",
+        "target_id": "rule_stat_generation",
+        "target_label": "Stat Generation",
+        "aspect": "generated set",
+        "condition": "when no stat is high enough to meet the reroll threshold",
+        "polarity": "neutral",
+        "polarity_basis": "derived",
+        "book": "SD",
+        "page": "15",
+        "section": "STATS",
+        "evidence": "explicit_rule",
+        "pass": "1",
+        "status": "optional",
+        "supersession_basis": "optional_variant",
+        "general_rule_id": "rule_stat_generation",
+        "review_flag": ""
+      },
+      {
+        "source_id": "rule_the_gauntlet",
+        "source_label": "The Gauntlet",
+        "edge_type": "OVERRIDES",
+        "target_id": "rule_dying",
+        "target_label": "Dying",
+        "aspect": "immediate death",
+        "condition": "",
+        "polarity": "neutral",
+        "polarity_basis": "derived",
+        "book": "SD",
+        "page": "116",
+        "section": "DEADLY!",
+        "evidence": "explicit_rule",
+        "pass": "1",
+        "status": "optional",
+        "supersession_basis": "optional_variant",
+        "general_rule_id": "rule_dying",
+        "review_flag": ""
+      }
+    ],
+    "claim_id_count": 0,
+    "passage_id_count": 0,
+    "entity_role_count": 0,
+    "baseline_keys": [
+      "meta",
+      "nodes",
+      "edges"
+    ],
+    "baseline_counts": [
+      732,
+      1498
+    ]
+  },
+  "inventories": {
+    "SD": {
+      "entry_count": 90,
+      "unique_nodes": 85,
+      "rows": [
+        {
+          "name": "Cure Wounds",
+          "class_id": "class_priest",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 6,
+          "resolved_ids": [
+            "spell_cure_wounds"
+          ]
+        },
+        {
+          "name": "Holy Weapon",
+          "class_id": "class_priest",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 6,
+          "resolved_ids": [
+            "spell_holy_weapon"
+          ]
+        },
+        {
+          "name": "Light",
+          "class_id": "class_priest",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 6,
+          "resolved_ids": [
+            "spell_light"
+          ]
+        },
+        {
+          "name": "Protection from Evil",
+          "class_id": "class_priest",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 6,
+          "resolved_ids": [
+            "spell_protection_from_evil"
+          ]
+        },
+        {
+          "name": "Shield of Faith",
+          "class_id": "class_priest",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 6,
+          "resolved_ids": [
+            "spell_shield_of_faith"
+          ]
+        },
+        {
+          "name": "Turn Undead",
+          "class_id": "class_priest",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 6,
+          "resolved_ids": [
+            "spell_turn_undead"
+          ]
+        },
+        {
+          "name": "Augury",
+          "class_id": "class_priest",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 8,
+          "resolved_ids": [
+            "spell_augury"
+          ]
+        },
+        {
+          "name": "Blind/Deafen",
+          "class_id": "class_priest",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 8,
+          "resolved_ids": [
+            "spell_blind_deafen"
+          ]
+        },
+        {
+          "name": "Bless",
+          "class_id": "class_priest",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 8,
+          "resolved_ids": [
+            "spell_bless"
+          ]
+        },
+        {
+          "name": "Cleansing Weapon",
+          "class_id": "class_priest",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 8,
+          "resolved_ids": [
+            "spell_cleansing_weapon"
+          ]
+        },
+        {
+          "name": "Smite",
+          "class_id": "class_priest",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 8,
+          "resolved_ids": [
+            "spell_smite"
+          ]
+        },
+        {
+          "name": "Zone of Truth",
+          "class_id": "class_priest",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 8,
+          "resolved_ids": [
+            "spell_zone_of_truth"
+          ]
+        },
+        {
+          "name": "Command",
+          "class_id": "class_priest",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 10,
+          "resolved_ids": [
+            "spell_command"
+          ]
+        },
+        {
+          "name": "Lay to Rest",
+          "class_id": "class_priest",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 10,
+          "resolved_ids": [
+            "spell_lay_to_rest"
+          ]
+        },
+        {
+          "name": "Mass Cure",
+          "class_id": "class_priest",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 10,
+          "resolved_ids": [
+            "spell_mass_cure"
+          ]
+        },
+        {
+          "name": "Rebuke Unholy",
+          "class_id": "class_priest",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 10,
+          "resolved_ids": [
+            "spell_rebuke_unholy"
+          ]
+        },
+        {
+          "name": "Restoration",
+          "class_id": "class_priest",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 10,
+          "resolved_ids": [
+            "spell_restoration"
+          ]
+        },
+        {
+          "name": "Speak with Dead",
+          "class_id": "class_priest",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 10,
+          "resolved_ids": [
+            "spell_speak_with_dead"
+          ]
+        },
+        {
+          "name": "Commune",
+          "class_id": "class_priest",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 12,
+          "resolved_ids": [
+            "spell_commune"
+          ]
+        },
+        {
+          "name": "Control Water",
+          "class_id": "class_priest",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 12,
+          "resolved_ids": [
+            "spell_control_water"
+          ]
+        },
+        {
+          "name": "Flame Strike",
+          "class_id": "class_priest",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 12,
+          "resolved_ids": [
+            "spell_flame_strike"
+          ]
+        },
+        {
+          "name": "Pillar of Salt",
+          "class_id": "class_priest",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 12,
+          "resolved_ids": [
+            "spell_pillar_of_salt"
+          ]
+        },
+        {
+          "name": "Regenerate",
+          "class_id": "class_priest",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 12,
+          "resolved_ids": [
+            "spell_regenerate"
+          ]
+        },
+        {
+          "name": "Wrath",
+          "class_id": "class_priest",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 12,
+          "resolved_ids": [
+            "spell_wrath"
+          ]
+        },
+        {
+          "name": "Divine Vengeance",
+          "class_id": "class_priest",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 14,
+          "resolved_ids": [
+            "spell_divine_vengeance"
+          ]
+        },
+        {
+          "name": "Dominion",
+          "class_id": "class_priest",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 14,
+          "resolved_ids": [
+            "spell_dominion"
+          ]
+        },
+        {
+          "name": "Heal",
+          "class_id": "class_priest",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 14,
+          "resolved_ids": [
+            "spell_heal"
+          ]
+        },
+        {
+          "name": "Judgment",
+          "class_id": "class_priest",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 14,
+          "audit_alias": true,
+          "resolved_ids": [
+            "spell_judgement"
+          ]
+        },
+        {
+          "name": "Plane Shift",
+          "class_id": "class_priest",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 14,
+          "resolved_ids": [
+            "spell_plane_shift"
+          ]
+        },
+        {
+          "name": "Prophecy",
+          "class_id": "class_priest",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 14,
+          "resolved_ids": [
+            "spell_prophecy"
+          ]
+        },
+        {
+          "name": "Alarm",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_alarm"
+          ]
+        },
+        {
+          "name": "Burning Hands",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_burning_hands"
+          ]
+        },
+        {
+          "name": "Charm Person",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_charm_person"
+          ]
+        },
+        {
+          "name": "Detect Magic",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_detect_magic"
+          ]
+        },
+        {
+          "name": "Feather Fall",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_feather_fall"
+          ]
+        },
+        {
+          "name": "Floating Disk",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_floating_disk"
+          ]
+        },
+        {
+          "name": "Hold Portal",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_hold_portal"
+          ]
+        },
+        {
+          "name": "Light",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_light"
+          ]
+        },
+        {
+          "name": "Mage Armor",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_mage_armor"
+          ]
+        },
+        {
+          "name": "Magic Missile",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_magic_missile"
+          ]
+        },
+        {
+          "name": "Protection from Evil",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_protection_from_evil"
+          ]
+        },
+        {
+          "name": "Sleep",
+          "class_id": "class_wizard",
+          "tier": 1,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_sleep"
+          ]
+        },
+        {
+          "name": "Acid Arrow",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_acid_arrow"
+          ]
+        },
+        {
+          "name": "Alter Self",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_alter_self"
+          ]
+        },
+        {
+          "name": "Detect Thoughts",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_detect_thoughts"
+          ]
+        },
+        {
+          "name": "Fixed Object",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_fixed_object"
+          ]
+        },
+        {
+          "name": "Hold Person",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_hold_person"
+          ]
+        },
+        {
+          "name": "Invisibility",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_invisibility"
+          ]
+        },
+        {
+          "name": "Knock",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_knock"
+          ]
+        },
+        {
+          "name": "Levitate",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_levitate"
+          ]
+        },
+        {
+          "name": "Mirror Image",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_mirror_image"
+          ]
+        },
+        {
+          "name": "Misty Step",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_misty_step"
+          ]
+        },
+        {
+          "name": "Silence",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_silence"
+          ]
+        },
+        {
+          "name": "Web",
+          "class_id": "class_wizard",
+          "tier": 2,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_web"
+          ]
+        },
+        {
+          "name": "Animate Dead",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_animate_dead"
+          ]
+        },
+        {
+          "name": "Dispel Magic",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_dispel_magic"
+          ]
+        },
+        {
+          "name": "Fabricate",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_fabricate"
+          ]
+        },
+        {
+          "name": "Fireball",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_fireball"
+          ]
+        },
+        {
+          "name": "Fly",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_fly"
+          ]
+        },
+        {
+          "name": "Gaseous Form",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_gaseous_form"
+          ]
+        },
+        {
+          "name": "Illusion",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_illusion"
+          ]
+        },
+        {
+          "name": "Lightning Bolt",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_lightning_bolt"
+          ]
+        },
+        {
+          "name": "Magic Circle",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_magic_circle"
+          ]
+        },
+        {
+          "name": "Protection from Energy",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_protection_from_energy"
+          ]
+        },
+        {
+          "name": "Sending",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_sending"
+          ]
+        },
+        {
+          "name": "Speak with Dead",
+          "class_id": "class_wizard",
+          "tier": 3,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 21,
+          "resolved_ids": [
+            "spell_speak_with_dead"
+          ]
+        },
+        {
+          "name": "Arcane Eye",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_arcane_eye"
+          ]
+        },
+        {
+          "name": "Cloudkill",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_cloudkill"
+          ]
+        },
+        {
+          "name": "Confusion",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_confusion"
+          ]
+        },
+        {
+          "name": "Control Water",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_control_water"
+          ]
+        },
+        {
+          "name": "Dimension Door",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_dimension_door"
+          ]
+        },
+        {
+          "name": "Divination",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_divination"
+          ]
+        },
+        {
+          "name": "Passwall",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_passwall"
+          ]
+        },
+        {
+          "name": "Polymorph",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_polymorph"
+          ]
+        },
+        {
+          "name": "Resilient Sphere",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_resilient_sphere"
+          ]
+        },
+        {
+          "name": "Stoneskin",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_stoneskin"
+          ]
+        },
+        {
+          "name": "Telekinesis",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_telekinesis"
+          ]
+        },
+        {
+          "name": "Wall of Force",
+          "class_id": "class_wizard",
+          "tier": 4,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 23,
+          "resolved_ids": [
+            "spell_wall_of_force"
+          ]
+        },
+        {
+          "name": "Antimagic Shell",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_antimagic_shell"
+          ]
+        },
+        {
+          "name": "Create Undead",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_create_undead"
+          ]
+        },
+        {
+          "name": "Disintegrate",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_disintegrate"
+          ]
+        },
+        {
+          "name": "Hold Monster",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_hold_monster"
+          ]
+        },
+        {
+          "name": "Plane Shift",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_plane_shift"
+          ]
+        },
+        {
+          "name": "Power Word Kill",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_power_word_kill"
+          ]
+        },
+        {
+          "name": "Prismatic Orb",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_prismatic_orb"
+          ]
+        },
+        {
+          "name": "Scrying",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_scrying"
+          ]
+        },
+        {
+          "name": "Shapechange",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_shapechange"
+          ]
+        },
+        {
+          "name": "Summon Extraplanar",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_summon_extraplanar"
+          ]
+        },
+        {
+          "name": "Teleport",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_teleport"
+          ]
+        },
+        {
+          "name": "Wish",
+          "class_id": "class_wizard",
+          "tier": 5,
+          "source_file": "books/shadowdark/sd/packets/incoming/019-priest-and-wizard-spell-lists.md",
+          "pandoc_block": 25,
+          "resolved_ids": [
+            "spell_wish"
+          ]
+        }
+      ],
+      "missing_class_memberships": [],
+      "missing_book_scoped_memberships": [],
+      "missing_expected_tier": [],
+      "extra_scoped_class_edges": [],
+      "no_incident_nonclassification_edges": [
+        "spell_alarm",
+        "spell_alter_self",
+        "spell_augury",
+        "spell_bless",
+        "spell_fabricate",
+        "spell_fixed_object",
+        "spell_knock",
+        "spell_passwall",
+        "spell_restoration"
+      ]
+    },
+    "CS1": {
+      "entry_count": 46,
+      "unique_nodes": 46,
+      "rows": [
+        {
+          "name": "Cauldron",
+          "class_id": "class_witch",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 13,
+          "resolved_ids": [
+            "spell_cauldron"
+          ]
+        },
+        {
+          "name": "Charm Person",
+          "class_id": "class_witch",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 13,
+          "resolved_ids": [
+            "spell_charm_person"
+          ]
+        },
+        {
+          "name": "Eyebite",
+          "class_id": "class_witch",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 13,
+          "resolved_ids": [
+            "spell_eyebite"
+          ]
+        },
+        {
+          "name": "Fog",
+          "class_id": "class_witch",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 13,
+          "resolved_ids": [
+            "spell_fog"
+          ]
+        },
+        {
+          "name": "Hypnotize",
+          "class_id": "class_witch",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 13,
+          "resolved_ids": [
+            "spell_hypnotize"
+          ]
+        },
+        {
+          "name": "Oak, Ash, Thorn",
+          "class_id": "class_witch",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 13,
+          "resolved_ids": [
+            "spell_oak_ash_thorn"
+          ]
+        },
+        {
+          "name": "Puppet",
+          "class_id": "class_witch",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 13,
+          "resolved_ids": [
+            "spell_puppet"
+          ]
+        },
+        {
+          "name": "Shadowdance",
+          "class_id": "class_witch",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 13,
+          "resolved_ids": [
+            "spell_shadowdance"
+          ]
+        },
+        {
+          "name": "Willowman",
+          "class_id": "class_witch",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 13,
+          "resolved_ids": [
+            "spell_willowman"
+          ]
+        },
+        {
+          "name": "Witchlight",
+          "class_id": "class_witch",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 13,
+          "resolved_ids": [
+            "spell_witchlight"
+          ]
+        },
+        {
+          "name": "Alter Self",
+          "class_id": "class_witch",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 15,
+          "resolved_ids": [
+            "spell_alter_self"
+          ]
+        },
+        {
+          "name": "Augury",
+          "class_id": "class_witch",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 15,
+          "resolved_ids": [
+            "spell_augury"
+          ]
+        },
+        {
+          "name": "Bogboil",
+          "class_id": "class_witch",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 15,
+          "resolved_ids": [
+            "spell_bogboil"
+          ]
+        },
+        {
+          "name": "Cacklerot",
+          "class_id": "class_witch",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 15,
+          "resolved_ids": [
+            "spell_cacklerot"
+          ]
+        },
+        {
+          "name": "Cat\u02bcs Eye",
+          "class_id": "class_witch",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 15,
+          "resolved_ids": [
+            "spell_cats_eye"
+          ]
+        },
+        {
+          "name": "Frog Rain",
+          "class_id": "class_witch",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 15,
+          "resolved_ids": [
+            "spell_frog_rain"
+          ]
+        },
+        {
+          "name": "Invisibility",
+          "class_id": "class_witch",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 15,
+          "resolved_ids": [
+            "spell_invisibility"
+          ]
+        },
+        {
+          "name": "Poison",
+          "class_id": "class_witch",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 15,
+          "resolved_ids": [
+            "spell_poison"
+          ]
+        },
+        {
+          "name": "Spidersilk",
+          "class_id": "class_witch",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 15,
+          "resolved_ids": [
+            "spell_spidersilk"
+          ]
+        },
+        {
+          "name": "Toadstool",
+          "class_id": "class_witch",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 15,
+          "resolved_ids": [
+            "spell_toadstool"
+          ]
+        },
+        {
+          "name": "Broomstick",
+          "class_id": "class_witch",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_broomstick"
+          ]
+        },
+        {
+          "name": "Coven",
+          "class_id": "class_witch",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_coven"
+          ]
+        },
+        {
+          "name": "Howl",
+          "class_id": "class_witch",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_howl"
+          ]
+        },
+        {
+          "name": "Mistletoe",
+          "class_id": "class_witch",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_mistletoe"
+          ]
+        },
+        {
+          "name": "Pin Doll",
+          "class_id": "class_witch",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_pin_doll"
+          ]
+        },
+        {
+          "name": "Speak with Dead",
+          "class_id": "class_witch",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_speak_with_dead"
+          ]
+        },
+        {
+          "name": "Swarm",
+          "class_id": "class_witch",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_swarm"
+          ]
+        },
+        {
+          "name": "Void Stare",
+          "class_id": "class_witch",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_void_stare"
+          ]
+        },
+        {
+          "name": "Whisper",
+          "class_id": "class_witch",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 17,
+          "resolved_ids": [
+            "spell_whisper"
+          ]
+        },
+        {
+          "name": "Beguile",
+          "class_id": "class_witch",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_beguile"
+          ]
+        },
+        {
+          "name": "Cloak of Night",
+          "class_id": "class_witch",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_cloak_of_night"
+          ]
+        },
+        {
+          "name": "Curse",
+          "class_id": "class_witch",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_curse"
+          ]
+        },
+        {
+          "name": "Dimension Door",
+          "class_id": "class_witch",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_dimension_door"
+          ]
+        },
+        {
+          "name": "Divination",
+          "class_id": "class_witch",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_divination"
+          ]
+        },
+        {
+          "name": "Glassbones",
+          "class_id": "class_witch",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_glassbones"
+          ]
+        },
+        {
+          "name": "Moonbeam",
+          "class_id": "class_witch",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_moonbeam"
+          ]
+        },
+        {
+          "name": "Nightmare",
+          "class_id": "class_witch",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_nightmare"
+          ]
+        },
+        {
+          "name": "Polymorph",
+          "class_id": "class_witch",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 19,
+          "resolved_ids": [
+            "spell_polymorph"
+          ]
+        },
+        {
+          "name": "Anathema",
+          "class_id": "class_witch",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 22,
+          "resolved_ids": [
+            "spell_anathema"
+          ]
+        },
+        {
+          "name": "Dreamwalk",
+          "class_id": "class_witch",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 22,
+          "resolved_ids": [
+            "spell_dreamwalk"
+          ]
+        },
+        {
+          "name": "Enfeeble",
+          "class_id": "class_witch",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 22,
+          "resolved_ids": [
+            "spell_enfeeble"
+          ]
+        },
+        {
+          "name": "Finger of Death",
+          "class_id": "class_witch",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 22,
+          "resolved_ids": [
+            "spell_finger_of_death"
+          ]
+        },
+        {
+          "name": "Mother of Night",
+          "class_id": "class_witch",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 22,
+          "resolved_ids": [
+            "spell_mother_of_night"
+          ]
+        },
+        {
+          "name": "Scrying",
+          "class_id": "class_witch",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 22,
+          "resolved_ids": [
+            "spell_scrying"
+          ]
+        },
+        {
+          "name": "Shapechange",
+          "class_id": "class_witch",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 22,
+          "resolved_ids": [
+            "spell_shapechange"
+          ]
+        },
+        {
+          "name": "Soul Jar",
+          "class_id": "class_witch",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs1/packets/incoming/cs1.21-38.md",
+          "pandoc_block": 22,
+          "resolved_ids": [
+            "spell_soul_jar"
+          ]
+        }
+      ],
+      "missing_class_memberships": [],
+      "missing_book_scoped_memberships": [],
+      "missing_expected_tier": [],
+      "extra_scoped_class_edges": [],
+      "no_incident_nonclassification_edges": [
+        "spell_alter_self",
+        "spell_anathema",
+        "spell_augury",
+        "spell_beguile",
+        "spell_bogboil",
+        "spell_broomstick",
+        "spell_cacklerot",
+        "spell_cats_eye",
+        "spell_cauldron",
+        "spell_cloak_of_night",
+        "spell_coven",
+        "spell_curse",
+        "spell_dreamwalk",
+        "spell_enfeeble",
+        "spell_eyebite",
+        "spell_finger_of_death",
+        "spell_fog",
+        "spell_frog_rain",
+        "spell_glassbones",
+        "spell_howl",
+        "spell_hypnotize",
+        "spell_mistletoe",
+        "spell_moonbeam",
+        "spell_mother_of_night",
+        "spell_nightmare",
+        "spell_oak_ash_thorn",
+        "spell_pin_doll",
+        "spell_poison",
+        "spell_puppet",
+        "spell_shadowdance",
+        "spell_soul_jar",
+        "spell_spidersilk",
+        "spell_swarm",
+        "spell_toadstool",
+        "spell_void_stare",
+        "spell_whisper",
+        "spell_willowman",
+        "spell_witchlight"
+      ]
+    },
+    "CS3": {
+      "entry_count": 20,
+      "unique_nodes": 20,
+      "rows": [
+        {
+          "name": "Chant",
+          "class_id": "class_seer",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 6,
+          "resolved_ids": [
+            "spell_chant"
+          ]
+        },
+        {
+          "name": "Evoke Rage",
+          "class_id": "class_seer",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 6,
+          "resolved_ids": [
+            "spell_evoke_rage"
+          ]
+        },
+        {
+          "name": "Potion",
+          "class_id": "class_seer",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 6,
+          "resolved_ids": [
+            "spell_potion"
+          ]
+        },
+        {
+          "name": "Trance",
+          "class_id": "class_seer",
+          "tier": 1,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 6,
+          "resolved_ids": [
+            "spell_trance"
+          ]
+        },
+        {
+          "name": "Fate",
+          "class_id": "class_seer",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 8,
+          "resolved_ids": [
+            "spell_fate"
+          ]
+        },
+        {
+          "name": "Read the Runes",
+          "class_id": "class_seer",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 8,
+          "resolved_ids": [
+            "spell_read_the_runes"
+          ]
+        },
+        {
+          "name": "Sacrifice",
+          "class_id": "class_seer",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 8,
+          "resolved_ids": [
+            "spell_sacrifice"
+          ]
+        },
+        {
+          "name": "Soulbind",
+          "class_id": "class_seer",
+          "tier": 2,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 8,
+          "resolved_ids": [
+            "spell_soulbind"
+          ]
+        },
+        {
+          "name": "Cast Out",
+          "class_id": "class_seer",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 10,
+          "resolved_ids": [
+            "spell_cast_out"
+          ]
+        },
+        {
+          "name": "Hallucinate",
+          "class_id": "class_seer",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 10,
+          "resolved_ids": [
+            "spell_hallucinate"
+          ]
+        },
+        {
+          "name": "Raven",
+          "class_id": "class_seer",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 10,
+          "resolved_ids": [
+            "spell_raven"
+          ]
+        },
+        {
+          "name": "Wolfshape",
+          "class_id": "class_seer",
+          "tier": 3,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 10,
+          "resolved_ids": [
+            "spell_wolfshape"
+          ]
+        },
+        {
+          "name": "Freya\u02bcs Omen",
+          "class_id": "class_seer",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 12,
+          "resolved_ids": [
+            "spell_freyas_omen"
+          ]
+        },
+        {
+          "name": "Loki\u02bcs Trickery",
+          "class_id": "class_seer",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 12,
+          "resolved_ids": [
+            "spell_lokis_trickery"
+          ]
+        },
+        {
+          "name": "Odin\u02bcs Wisdom",
+          "class_id": "class_seer",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 12,
+          "resolved_ids": [
+            "spell_odins_wisdom"
+          ]
+        },
+        {
+          "name": "Thor\u02bcs Thunder",
+          "class_id": "class_seer",
+          "tier": 4,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 12,
+          "resolved_ids": [
+            "spell_thors_thunder"
+          ]
+        },
+        {
+          "name": "Ragnarok",
+          "class_id": "class_seer",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 14,
+          "resolved_ids": [
+            "spell_ragnarok"
+          ]
+        },
+        {
+          "name": "Valkyrie",
+          "class_id": "class_seer",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 14,
+          "resolved_ids": [
+            "spell_valkyrie"
+          ]
+        },
+        {
+          "name": "World Serpent",
+          "class_id": "class_seer",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 14,
+          "resolved_ids": [
+            "spell_world_serpent"
+          ]
+        },
+        {
+          "name": "World Tree",
+          "class_id": "class_seer",
+          "tier": 5,
+          "source_file": "books/shadowdark/cs3/packets/incoming/cs3.29-36.md",
+          "pandoc_block": 14,
+          "resolved_ids": [
+            "spell_world_tree"
+          ]
+        }
+      ],
+      "missing_class_memberships": [],
+      "missing_book_scoped_memberships": [],
+      "missing_expected_tier": [],
+      "extra_scoped_class_edges": [],
+      "no_incident_nonclassification_edges": [
+        "spell_cast_out",
+        "spell_chant",
+        "spell_evoke_rage",
+        "spell_fate",
+        "spell_freyas_omen",
+        "spell_hallucinate",
+        "spell_lokis_trickery",
+        "spell_odins_wisdom",
+        "spell_potion",
+        "spell_ragnarok",
+        "spell_raven",
+        "spell_read_the_runes",
+        "spell_sacrifice",
+        "spell_soulbind",
+        "spell_thors_thunder",
+        "spell_trance",
+        "spell_valkyrie",
+        "spell_wolfshape",
+        "spell_world_serpent",
+        "spell_world_tree"
+      ]
+    }
+  }
+}

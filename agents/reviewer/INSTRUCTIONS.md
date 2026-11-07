@@ -356,6 +356,9 @@ Do not automate substantive source interpretation unless the automated result re
 - Do not invent a rule to rescue a weak edge.
 - Do not change ontology without escalation.
 - Do not trust Builder validation as proof of source correctness.
+- Do not write or accept self-comparison replay tests that compare a loaded graph with itself instead of running the actual pipeline in an isolated temporary environment (R07).
+- Do not write or accept test assertions using loose lower bounds (e.g. `>= 36`) where the source defines an exact set (e.g. 46 Witch spells) (R07).
+- Do not accept canned mock retrieval responses or static page constants in place of dynamic graph traversal and authentic citations (R05).
 - Do not rely on prior conversations.
 - Do not turn review comments into free-form essays; make exact field decisions.
 - Do not move or rewrite the reviewed GUP or prior Review revisions to represent
